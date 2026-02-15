@@ -1,11 +1,54 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#1a1f16"><title>Transition OPS - Veteran Bridge Solutions</title><link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body,#root{height:100%;width:100%}body{background:#1a1f16;font-family:Courier Prime,Courier New,monospace;color:#d4cbb3;-webkit-font-smoothing:antialiased}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#1a1f16}::-webkit-scrollbar-thumb{background:#3d4a2a;border-radius:2px}input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}</style></head><body><div id="root"></div><script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script><script>(function(){const {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Transition OPS">
+<meta name="theme-color" content="#1a1f16">
+<meta name="description" content="Military transition operations center. Timeline, benefits, SkillBridge, VSO directory, healthcare, tax planning, and document tracking.">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="icon" type="image/png" href="/icon-192.png">
+<title>Transition OPS - Veteran Bridge Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body,#root{height:100%;width:100%}
+body{background:#1a1f16;font-family:'Courier Prime','Courier New',monospace;color:#d4cbb3;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#1a1f16}
+::-webkit-scrollbar-thumb{background:#3d4a2a;border-radius:2px}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script>
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js')
+      .then(function(reg) { console.log('SW registered:', reg.scope); })
+      .catch(function(err) { console.log('SW registration failed:', err); });
+  });
+}
+</script>
+<script>
+(function(){
+const {
   useState,
+  useEffect,
   useCallback
 } = React;
 
 // ═══════════════════════════════════════════════════════════════
-// TRANSITION OPS — VETERAN BRIDGE SOLUTIONS
-// Wix-Ready Standalone Build
+// TRANSITION OPS — PWA BUILD v3.0
+// Veteran Bridge Solutions
+// Push Notifications + Offline + Installable
 // ═══════════════════════════════════════════════════════════════
 
 const TRANSITION_MILESTONES = [{
@@ -722,6 +765,107 @@ function App() {
   const [documents, setDocuments] = useState(DOCUMENT_VAULT);
   const [vsoFilter, setVsoFilter] = useState("ALL");
   const [subTab, setSubTab] = useState("vsos");
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const [notifStatus, setNotifStatus] = useState("default");
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  // Load saved data from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedETS = localStorage.getItem("etsDate");
+      if (savedETS) setSeparationDate(savedETS);
+      const savedTasks = localStorage.getItem("taskProgress");
+      if (savedTasks) setMilestones(JSON.parse(savedTasks));
+      const savedDocs = localStorage.getItem("docProgress");
+      if (savedDocs) setDocuments(JSON.parse(savedDocs));
+      const savedDismissed = localStorage.getItem("dismissedNotifs");
+      if (savedDismissed) setDismissedNotifs(new Set(JSON.parse(savedDismissed)));
+      if ("Notification" in window) setNotifStatus(Notification.permission);
+    } catch (e) {
+      console.log("Load error:", e);
+    }
+  }, []);
+
+  // Save task progress
+  useEffect(() => {
+    try {
+      localStorage.setItem("taskProgress", JSON.stringify(milestones));
+    } catch (e) {}
+  }, [milestones]);
+  useEffect(() => {
+    try {
+      localStorage.setItem("docProgress", JSON.stringify(documents));
+    } catch (e) {}
+  }, [documents]);
+  useEffect(() => {
+    try {
+      localStorage.setItem("dismissedNotifs", JSON.stringify([...dismissedNotifs]));
+    } catch (e) {}
+  }, [dismissedNotifs]);
+
+  // PWA install prompt
+  useEffect(() => {
+    const handler = e => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBanner(true);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  // Save ETS date and schedule notifications
+  const handleETSChange = useCallback(dateStr => {
+    setSeparationDate(dateStr);
+    try {
+      localStorage.setItem("etsDate", dateStr);
+    } catch (e) {}
+    if (notifStatus === "granted" && dateStr && navigator.serviceWorker && navigator.serviceWorker.controller) {
+      const ets = new Date(dateStr);
+      const now = new Date();
+      const diffMonths = Math.ceil((ets - now) / (1000 * 60 * 60 * 24 * 30));
+      const alerts = NOTIFICATIONS.filter(n => n.monthsOut >= diffMonths - 1 && n.monthsOut <= diffMonths + 1);
+      const lastShown = localStorage.getItem("lastNotifDate");
+      const today = new Date().toDateString();
+      if (lastShown !== today && alerts.length > 0) {
+        localStorage.setItem("lastNotifDate", today);
+        alerts.slice(0, 3).forEach((n, i) => {
+          setTimeout(() => {
+            navigator.serviceWorker.controller.postMessage({
+              type: "SHOW_NOTIFICATION",
+              title: n.title,
+              body: n.body,
+              tag: "ets-" + n.id
+            });
+          }, (i + 1) * 2000);
+        });
+      }
+    }
+  }, [notifStatus]);
+  const handleInstall = useCallback(() => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => {
+        setDeferredPrompt(null);
+        setShowInstallBanner(false);
+      });
+    }
+  }, [deferredPrompt]);
+  const handleEnableNotifs = useCallback(() => {
+    if (!("Notification" in window)) {
+      showToast("Notifications not supported on this device.");
+      return;
+    }
+    Notification.requestPermission().then(p => {
+      setNotifStatus(p);
+      if (p === "granted") {
+        showToast("NOTIFICATIONS ENABLED \u2014 Standing by.");
+        if (separationDate) handleETSChange(separationDate);
+      } else {
+        showToast("Notifications blocked. Check browser settings.");
+      }
+    });
+  }, [separationDate, handleETSChange, showToast]);
   const showToast = useCallback(msg => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
@@ -1083,7 +1227,7 @@ function App() {
   }, "ETS / EAOS / SEPARATION DATE"), /*#__PURE__*/React.createElement("input", {
     type: "date",
     value: separationDate,
-    onChange: e => setSeparationDate(e.target.value),
+    onChange: e => handleETSChange(e.target.value),
     style: S.input
   }), separationDate && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1095,7 +1239,164 @@ function App() {
     const diff = Math.ceil((new Date(separationDate) - new Date()) / (1000 * 60 * 60 * 24 * 30));
     if (diff <= 0) return "STATUS: Post-separation. Focus on First 90 Days.";
     return "STATUS: T-" + diff + " months. " + (diff > 12 ? "Use this time wisely." : diff > 6 ? "Critical planning phase." : diff > 3 ? "Accelerate admin actions." : "Final execution. No time to waste.");
-  })())), milestones.map(m => {
+  })())), showInstallBanner && /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...S.card,
+      padding: 14,
+      borderColor: "#8B7D3C",
+      borderWidth: 2
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "'Oswald', sans-serif",
+      fontSize: 12,
+      color: "#F5F0E1",
+      fontWeight: 600
+    }
+  }, "INSTALL APP"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: "#8a8062",
+      marginTop: 2
+    }
+  }, "Add to home screen for offline access")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: handleInstall,
+    style: {
+      padding: "8px 14px",
+      background: "#4A5D23",
+      border: "none",
+      borderRadius: 4,
+      color: "#F5F0E1",
+      fontFamily: "'Oswald', sans-serif",
+      fontSize: 11,
+      letterSpacing: 1,
+      cursor: "pointer"
+    }
+  }, "INSTALL"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setShowInstallBanner(false),
+    style: {
+      padding: "8px 10px",
+      background: "none",
+      border: "1px solid #3d4a2a",
+      borderRadius: 4,
+      color: "#5a5540",
+      fontSize: 9,
+      cursor: "pointer"
+    }
+  }, "\u2715")))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginBottom: 12
+    }
+  }, notifStatus !== "granted" && /*#__PURE__*/React.createElement("button", {
+    onClick: handleEnableNotifs,
+    style: {
+      flex: 1,
+      padding: "10px 12px",
+      background: "#2a2518",
+      border: "1px solid #8B6914",
+      borderRadius: 6,
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16
+    }
+  }, "\uD83D\uDD14"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "left"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "'Oswald', sans-serif",
+      fontSize: 10,
+      color: "#DAA520",
+      letterSpacing: 1
+    }
+  }, "ENABLE ALERTS"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 8,
+      color: "#8a8062"
+    }
+  }, "Get notified at each milestone"))), notifStatus === "granted" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      padding: "10px 12px",
+      background: "#2a3320",
+      border: "1px solid #4A5D23",
+      borderRadius: 6,
+      display: "flex",
+      alignItems: "center",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16
+    }
+  }, "\u2705"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "'Oswald', sans-serif",
+      fontSize: 10,
+      color: "#6B8E23",
+      letterSpacing: 1
+    }
+  }, "ALERTS ACTIVE"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 8,
+      color: "#8a8062"
+    }
+  }, "Notifications synced to your ETS date"))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      if (navigator.share) {
+        navigator.share({
+          title: "Transition OPS",
+          text: "Military transition planning tool by Veteran Bridge Solutions",
+          url: window.location.href
+        });
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        showToast("LINK COPIED — Send to your battle buddies.");
+      }
+    },
+    style: {
+      padding: "10px 14px",
+      background: "#232920",
+      border: "1px solid #3d4a2a",
+      borderRadius: 6,
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16
+    }
+  }, "\uD83D\uDCE4"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "'Oswald', sans-serif",
+      fontSize: 10,
+      color: "#8a8062",
+      letterSpacing: 1
+    }
+  }, "SHARE"))), milestones.map(m => {
     const progress = getProgress(m);
     const cat = CATEGORIES[m.category];
     return /*#__PURE__*/React.createElement("button", {
@@ -2173,4 +2474,10 @@ function App() {
     }
   }, toast));
 }
-ReactDOM.render(/*#__PURE__*/React.createElement(App, null), document.getElementById("root"));})();</script></body></html>
+ReactDOM.render(/*#__PURE__*/React.createElement(App, null), document.getElementById("root"));
+
+ReactDOM.render(React.createElement(App, null), document.getElementById("root"));
+})();
+</script>
+</body>
+</html>
