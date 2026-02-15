@@ -2,742 +2,246 @@
 
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="theme-color" content="#1a1f16" />
-<title>Transition OPS — Veteran Bridge Solutions</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a1f16">
+<title>Transition OPS - Veteran Bridge Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body, #root { height: 100%; width: 100%; }
-  body { background: #1a1f16; font-family: 'Courier Prime', 'Courier New', monospace; color: #d4cbb3; -webkit-font-smoothing: antialiased; }
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: #1a1f16; }
-  ::-webkit-scrollbar-thumb { background: #3d4a2a; border-radius: 2px; }
-  input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
-  a { -webkit-touch-callout: default; }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body,#root{height:100%;width:100%}
+body{background:#1a1f16;font-family:'Courier Prime','Courier New',monospace;color:#d4cbb3;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#1a1f16}
+::-webkit-scrollbar-thumb{background:#3d4a2a;border-radius:2px}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 </head>
 <body>
-<div id="root"></div>
-<script>const {
-  useState,
-  useCallback
-} = React;
+<div id="root"><div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#8B7D3C;font-family:Oswald,sans-serif;letter-spacing:3px;font-size:14px">LOADING TRANSITION OPS...</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script type="text/babel" data-type="module">
+const { useState, useCallback } = React;
 
 // ═══════════════════════════════════════════════════════════════
 // TRANSITION OPS — VETERAN BRIDGE SOLUTIONS
 // Wix-Ready Standalone Build
 // ═══════════════════════════════════════════════════════════════
 
-const TRANSITION_MILESTONES = [{
-id: 1,
-phase: “18 Months Out”,
-monthsOut: 18,
-category: “PLANNING”,
-title: “Initial Transition Planning”,
-tasks: [{
-id: “t1”,
-text: “Attend Initial TAP briefing”,
-done: false
-}, {
-id: “t2”,
-text: “Complete Individual Transition Plan (ITP) with commander”,
-done: false
-}, {
-id: “t3”,
-text: “Review military service records for accuracy (OMPF)”,
-done: false
-}, {
-id: “t4”,
-text: “Research post-separation locations (state tax implications)”,
-done: false
-}, {
-id: “t5”,
-text: “Begin networking \u2014 LinkedIn profile, veteran groups, mentors”,
-done: false
-}],
-reminder: “Initiate ITP with your chain of command. Time is your most valuable asset \u2014 use it.”
-}, {
-id: 2,
-phase: “12 Months Out”,
-monthsOut: 12,
-category: “BENEFITS”,
-title: “Benefits & Claims Preparation”,
-tasks: [{
-id: “t6”,
-text: “File VA disability claim (BDD \u2014 180-90 days pre-sep)”,
-done: false
-}, {
-id: “t7”,
-text: “Schedule C&P exams through VA”,
-done: false
-}, {
-id: “t8”,
-text: “Gather all medical records \u2014 document EVERYTHING”,
-done: false
-}, {
-id: “t9”,
-text: “Attend TAPS Career Skills Program (CSP) workshops”,
-done: false
-}, {
-id: “t10”,
-text: “Research GI Bill eligibility and transfer options”,
-done: false
-}, {
-id: “t11”,
-text: “Verify SGLI to VGLI conversion timeline”,
-done: false
-}],
-reminder: “BDD window is 180-90 days pre-separation. Get medical records squared away NOW.”
-}, {
-id: 3,
-phase: “9 Months Out”,
-monthsOut: 9,
-category: “CAREER”,
-title: “Career & Education Targeting”,
-tasks: [{
-id: “t12”,
-text: “Translate military experience to civilian resume”,
-done: false
-}, {
-id: “t13”,
-text: “Identify target industries and roles”,
-done: false
-}, {
-id: “t14”,
-text: “Research certs & credentials (Army COOL/Navy COOL)”,
-done: false
-}, {
-id: “t15”,
-text: “Apply for SkillBridge / Career Skills Program”,
-done: false
-}, {
-id: “t16”,
-text: “Begin informational interviews with industry contacts”,
-done: false
-}],
-reminder: “SkillBridge apps take time through your command. Start early. Check the SkillBridge Feed tab weekly.”
-}, {
-id: 4,
-phase: “6 Months Out”,
-monthsOut: 6,
-category: “FINANCE”,
-title: “Financial Operations & Housing”,
-tasks: [{
-id: “t17”,
-text: “Build post-separation budget (no BAH/BAS)”,
-done: false
-}, {
-id: “t18”,
-text: “Determine state of residence for tax purposes”,
-done: false
-}, {
-id: “t19”,
-text: “Research VA home loan pre-approval”,
-done: false
-}, {
-id: “t20”,
-text: “Open/verify civilian bank accounts”,
-done: false
-}, {
-id: “t21”,
-text: “Review TSP rollover options”,
-done: false
-}, {
-id: “t22”,
-text: “Secure housing at post-separation location”,
-done: false
-}],
-reminder: “Home of RESIDENCE determines state tax \u2014 NOT Home of Record. Plan accordingly.”
-}, {
-id: 5,
-phase: “3 Months Out”,
-monthsOut: 3,
-category: “ADMIN”,
-title: “Administrative & Legal Closeout”,
-tasks: [{
-id: “t23”,
-text: “Complete DD214 worksheet \u2014 verify every line”,
-done: false
-}, {
-id: “t24”,
-text: “Schedule separation physical”,
-done: false
-}, {
-id: “t25”,
-text: “Verify all awards, decorations, schools on record”,
-done: false
-}, {
-id: “t26”,
-text: “Set up VA healthcare enrollment”,
-done: false
-}, {
-id: “t27”,
-text: “Update DEERS for dependents”,
-done: false
-}, {
-id: “t28”,
-text: “Finalize SBP elections (if retiring)”,
-done: false
-}],
-reminder: “Your DD214 is your most important document. Verify every entry. Errors are costly.”
-}, {
-id: 6,
-phase: “1 Month Out”,
-monthsOut: 1,
-category: “EXECUTION”,
-title: “Final Preparations & Outprocessing”,
-tasks: [{
-id: “t29”,
-text: “Complete installation outprocessing checklist”,
-done: false
-}, {
-id: “t30”,
-text: “Turn in all CIF / organizational equipment”,
-done: false
-}, {
-id: “t31”,
-text: “Obtain 10+ certified copies of DD214”,
-done: false
-}, {
-id: “t32”,
-text: “Verify final pay / leave sellback”,
-done: false
-}, {
-id: “t33”,
-text: “Set up TRICARE transition (TAMP 180 days / CHCBP)”,
-done: false
-}, {
-id: “t34”,
-text: “Confirm VA disability rating status”,
-done: false
-}],
-reminder: “Get 10+ certified copies of your DD214. You will need them for everything.”
-}, {
-id: 7,
-phase: “Post-Separation”,
-monthsOut: 0,
-category: “VETERAN”,
-title: “First 90 Days as a Veteran”,
-tasks: [{
-id: “t35”,
-text: “Register with VA healthcare system”,
-done: false
-}, {
-id: “t36”,
-text: “Apply for state veteran benefits”,
-done: false
-}, {
-id: “t37”,
-text: “File for unemployment (UCX) if applicable”,
-done: false
-}, {
-id: “t38”,
-text: “Connect with local veteran service organizations”,
-done: false
-}, {
-id: “t39”,
-text: “Verify GI Bill enrollment / housing allowance”,
-done: false
-}, {
-id: “t40”,
-text: “Establish primary care provider”,
-done: false
-}],
-reminder: “You earned these benefits. Don’t leave anything on the table. Execute.”
-}];
-const NOTIFICATIONS = [{
-id: “n1”,
-monthsOut: 18,
-title: “OPORD: Initiate Transition Planning”,
-body: “Report to your Transition Center. Begin ITP with chain of command.”,
-priority: “HIGH”
-}, {
-id: “n2”,
-monthsOut: 12,
-title: “ALERT: VA BDD Window Opening”,
-body: “File VA disability claim via BDD. Window: 180-90 days pre-sep.”,
-priority: “CRITICAL”
-}, {
-id: “n3”,
-monthsOut: 12,
-title: “ACTION: Medical Records”,
-body: “Request complete medical/dental records. Document ALL service-connected conditions.”,
-priority: “HIGH”
-}, {
-id: “n4”,
-monthsOut: 9,
-title: “TASK: Build Civilian Resume”,
-body: “Translate MOS, schools, and leadership to civilian language.”,
-priority: “MEDIUM”
-}, {
-id: “n5”,
-monthsOut: 9,
-title: “INTEL: SkillBridge Window”,
-body: “Submit SkillBridge/CSP application. Processing: 60-90 days.”,
-priority: “HIGH”
-}, {
-id: “n6”,
-monthsOut: 6,
-title: “FRAGO: Financial Readiness”,
-body: “Build post-sep budget. No more BAH, BAS, or tax-free allowances.”,
-priority: “HIGH”
-}, {
-id: “n7”,
-monthsOut: 6,
-title: “INTEL: State Tax Recon”,
-body: “Research state tax on retired pay. Home of RESIDENCE, not Home of Record.”,
-priority: “MEDIUM”
-}, {
-id: “n8”,
-monthsOut: 3,
-title: “CRITICAL: DD214 Verification”,
-body: “Review DD214 worksheet line by line. Verify rank, MOS, awards, schools.”,
-priority: “CRITICAL”
-}, {
-id: “n9”,
-monthsOut: 3,
-title: “ACTION: VA Healthcare”,
-body: “Enroll in VA healthcare. Combat vets: 5-year enhanced eligibility window.”,
-priority: “HIGH”
-}, {
-id: “n10”,
-monthsOut: 1,
-title: “EXECUTE: Outprocessing”,
-body: “Installation clearing. CIF turn-in. Final pay. TRICARE transition.”,
-priority: “CRITICAL”
-}, {
-id: “n11”,
-monthsOut: 1,
-title: “TASK: DD214 Copies”,
-body: “Minimum 10 certified copies. VA, employers, state benefits, home loans.”,
-priority: “HIGH”
-}, {
-id: “n12”,
-monthsOut: 0,
-title: “WELCOME: First 90 Days”,
-body: “Register VA. File state benefits. Connect with VSOs. Execute.”,
-priority: “HIGH”
-}, {
-id: “n13”,
-monthsOut: 9,
-title: “WEEKLY: SkillBridge Feed”,
-body: “Check the SkillBridge tab for newly approved companies this week.”,
-priority: “MEDIUM”
-}, {
-id: “n14”,
-monthsOut: 6,
-title: “CONNECT: VSO Outreach”,
-body: “Contact a VSO for free claims assistance. See the VSO directory.”,
-priority: “MEDIUM”
-}];
-const VSO_DIRECTORY = [{
-category: “CONGRESSIONALLY CHARTERED VSOs”,
-desc: “Chartered by Congress and recognized by VA to assist with claims.”,
-orgs: [{
-name: “Veterans of Foreign Wars (VFW)”,
-url: “https://www.vfw.org”,
-desc: “Nation’s largest war veterans org. Free claims assistance, transition support, and legislative advocacy.”,
-icon: “\u2B50”
-}, {
-name: “The American Legion”,
-url: “https://www.legion.org”,
-desc: “Founded 1919. Four pillars: veterans affairs, defense, youth, and Americanism. Free VSO reps for claims.”,
-icon: “\u2B50”
-}, {
-name: “Disabled American Veterans (DAV)”,
-url: “https://www.dav.org”,
-desc: “Free claims assistance, transportation to VA appointments, employment programs, 1M+ members.”,
-icon: “\u2B50”
-}, {
-name: “AMVETS”,
-url: “https://amvets.org”,
-desc: “Open to all who served honorably. Career centers, claims assistance, scholarships.”,
-icon: “\u2B50”
-}, {
-name: “Paralyzed Veterans of America (PVA)”,
-url: “https://pva.org”,
-desc: “Veterans career program, benefits advocacy, spinal cord injury/disease research.”,
-icon: “\u2B50”
-}, {
-name: “Vietnam Veterans of America (VVA)”,
-url: “https://vva.org”,
-desc: “Agent Orange advocacy, PTSD support, benefits claims assistance.”,
-icon: “\u2B50”
-}]
-}, {
-category: “TRANSITION-FOCUSED ORGANIZATIONS”,
-desc: “Purpose-built to help service members navigate the transition to civilian life.”,
-orgs: [{
-name: “Hiring Our Heroes”,
-url: “https://www.hiringourheroes.org”,
-desc: “U.S. Chamber of Commerce Foundation. Corporate Fellowship Program, career fairs, SkillBridge partner.”,
-icon: “\uD83C\uDFAF”
-}, {
-name: “Hire Heroes USA”,
-url: “https://www.hireheroesusa.org”,
-desc: “Free career coaching, resume assistance, job matching. 110,000+ confirmed hires.”,
-icon: “\uD83C\uDFAF”
-}, {
-name: “The COMMIT Foundation”,
-url: “https://www.commitfoundation.org”,
-desc: “Executive coaching, mentoring workshops, resume/interview assistance for high-performing vets.”,
-icon: “\uD83C\uDFAF”
-}, {
-name: “VetJobs / Military Spouse Jobs”,
-url: “https://vetjobs.com”,
-desc: “Free career placement. 111,000+ verified placements since 2010.”,
-icon: “\uD83C\uDFAF”
-}, {
-name: “RecruitMilitary”,
-url: “https://recruitmilitary.com”,
-desc: “100+ veteran-focused job fairs per year, virtual and in-person.”,
-icon: “\uD83C\uDFAF”
-}, {
-name: “Veterans Transition Support (VTS)”,
-url: “https://veteranstransitionsupport.org”,
-desc: “Free OSHA 10/30, Lean Six Sigma, and project management certs for vets and spouses.”,
-icon: “\uD83C\uDFAF”
-}, {
-name: “Student Veterans of America (SVA)”,
-url: “https://studentveterans.org”,
-desc: “1,500+ campus chapters. Peer support and advocacy for student veterans.”,
-icon: “\uD83C\uDFAF”
-}]
-}, {
-category: “PURPOSE & COMMUNITY ORGANIZATIONS”,
-desc: “Organizations providing purpose, identity, and community after service.”,
-orgs: [{
-name: “Team Rubicon”,
-url: “https://teamrubiconusa.org”,
-desc: “Veteran-led disaster response. Purpose, community, and identity through continued service.”,
-icon: “\uD83D\uDD25”
-}, {
-name: “The Mission Continues”,
-url: “https://www.missioncontinues.org”,
-desc: “Service platoons and fellowships. Veterans solving community challenges.”,
-icon: “\uD83D\uDD25”
-}, {
-name: “Team Red, White & Blue”,
-url: “https://www.teamrwb.org”,
-desc: “Social fitness through physical and social activities. Local chapters nationwide.”,
-icon: “\uD83D\uDD25”
-}, {
-name: “Travis Manion Foundation”,
-url: “https://www.travismanion.org”,
-desc: “Character development, veteran mentoring, and community leadership.”,
-icon: “\uD83D\uDD25”
-}, {
-name: “Iraq & Afghanistan Veterans of America (IAVA)”,
-url: “https://iava.org”,
-desc: “Advocacy, community, and peer support. 1.2M+ veterans connected.”,
-icon: “\uD83D\uDD25”
-}, {
-name: “Bob Woodruff Foundation”,
-url: “https://bobwoodrufffoundation.org”,
-desc: “Funds high-impact veteran programs in health, education, employment, family.”,
-icon: “\uD83D\uDD25”
-}]
-}, {
-category: “MENTAL HEALTH & CRISIS”,
-desc: “Immediate support for veterans in crisis or needing mental health assistance.”,
-orgs: [{
-name: “Veterans Crisis Line”,
-url: “https://www.veteranscrisisline.net”,
-desc: “Dial 988, press 1. Text 838255. Chat online. Available 24/7/365.”,
-icon: “\uD83D\uDEE1\uFE0F”
-}, {
-name: “TAPS (Tragedy Assistance Program)”,
-url: “https://www.taps.org”,
-desc: “Grief support for families who lost a military loved one.”,
-icon: “\uD83D\uDEE1\uFE0F”
-}, {
-name: “Give an Hour”,
-url: “https://giveanhour.org”,
-desc: “Free mental health services for veterans and military families.”,
-icon: “\uD83D\uDEE1\uFE0F”
-}, {
-name: “Cohen Veterans Network”,
-url: “https://www.cohenveteransnetwork.org”,
-desc: “No/low-cost mental health care for post-9/11 veterans and families.”,
-icon: “\uD83D\uDEE1\uFE0F”
-}]
-}, {
-category: “SPOUSE & FAMILY RESOURCES”,
-desc: “Support for military spouses and families during transition.”,
-orgs: [{
-name: “Blue Star Families”,
-url: “https://bluestarfam.org”,
-desc: “Career development, peer support, and community programs for military families.”,
-icon: “\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66”
-}, {
-name: “National Military Family Association”,
-url: “https://www.militaryfamily.org”,
-desc: “Scholarships, family camps, and advocacy for military families.”,
-icon: “\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66”
-}, {
-name: “Elizabeth Dole Foundation”,
-url: “https://elizabethdolefoundation.org”,
-desc: “Support for military and veteran caregivers. Hidden Heroes campaign.”,
-icon: “\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66”
-}, {
-name: “Military OneSource”,
-url: “https://www.militaryonesource.mil”,
-desc: “Free 24/7: counseling, financial planning, relocation, spouse education.”,
-icon: “\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66”
-}]
-}];
-const SKILLBRIDGE_FEED = [{
-week: “10-16 FEB 2026”,
-companies: [{
-name: “GE Aerospace”,
-industry: “Aerospace & Defense”,
-locations: “Multiple US”,
-url: “https://careers.geaerospace.com/global/en/skillbridge”,
-highlight: true
-}, {
-name: “Northrop Grumman”,
-industry: “Defense / Technology”,
-locations: “Multiple US”,
-url: “https://www.northropgrumman.com/careers/dod-skillbridge”,
-highlight: false
-}, {
-name: “U.S. Department of Interior”,
-industry: “Federal Government”,
-locations: “Nationwide”,
-url: “https://www.doi.gov/veterans/skillbridge”,
-highlight: true
-}],
-notes: “Spring Application Enrollment Period for NEW providers opens 1 FEB 2026.”
-}, {
-week: “3-9 FEB 2026”,
-companies: [{
-name: “ASRC Federal”,
-industry: “IT / Professional Services”,
-locations: “Multiple US”,
-url: “https://www.asrcfederal.com/skillbridge/”,
-highlight: false
-}, {
-name: “Amazon (Military Fellowship)”,
-industry: “Technology / Logistics”,
-locations: “Nationwide”,
-url: “https://www.aboutamazon.com/impact/community/military”,
-highlight: true
-}],
-notes: “Amazon expanding SkillBridge fellowship slots. High demand \u2014 apply early.”
-}, {
-week: “27 JAN - 2 FEB 2026”,
-companies: [{
-name: “Microsoft MSSA”,
-industry: “Technology / Cybersecurity”,
-locations: “Virtual + Select”,
-url: “https://military.microsoft.com/mssa/”,
-highlight: true
-}, {
-name: “Lowe’s”,
-industry: “Retail / Supply Chain”,
-locations: “Nationwide”,
-url: “https://corporate.lowes.com/careers/military”,
-highlight: false
-}],
-notes: “Microsoft MSSA: 17-week course, guaranteed interviews on completion.”
-}];
+const TRANSITION_MILESTONES = [
+{ id: 1, phase: “18 Months Out”, monthsOut: 18, category: “PLANNING”, title: “Initial Transition Planning”,
+tasks: [
+{ id: “t1”, text: “Attend Initial TAP briefing”, done: false },
+{ id: “t2”, text: “Complete Individual Transition Plan (ITP) with commander”, done: false },
+{ id: “t3”, text: “Review military service records for accuracy (OMPF)”, done: false },
+{ id: “t4”, text: “Research post-separation locations (state tax implications)”, done: false },
+{ id: “t5”, text: “Begin networking \u2014 LinkedIn profile, veteran groups, mentors”, done: false },
+],
+reminder: “Initiate ITP with your chain of command. Time is your most valuable asset \u2014 use it.”,
+},
+{ id: 2, phase: “12 Months Out”, monthsOut: 12, category: “BENEFITS”, title: “Benefits & Claims Preparation”,
+tasks: [
+{ id: “t6”, text: “File VA disability claim (BDD \u2014 180-90 days pre-sep)”, done: false },
+{ id: “t7”, text: “Schedule C&P exams through VA”, done: false },
+{ id: “t8”, text: “Gather all medical records \u2014 document EVERYTHING”, done: false },
+{ id: “t9”, text: “Attend TAPS Career Skills Program (CSP) workshops”, done: false },
+{ id: “t10”, text: “Research GI Bill eligibility and transfer options”, done: false },
+{ id: “t11”, text: “Verify SGLI to VGLI conversion timeline”, done: false },
+],
+reminder: “BDD window is 180-90 days pre-separation. Get medical records squared away NOW.”,
+},
+{ id: 3, phase: “9 Months Out”, monthsOut: 9, category: “CAREER”, title: “Career & Education Targeting”,
+tasks: [
+{ id: “t12”, text: “Translate military experience to civilian resume”, done: false },
+{ id: “t13”, text: “Identify target industries and roles”, done: false },
+{ id: “t14”, text: “Research certs & credentials (Army COOL/Navy COOL)”, done: false },
+{ id: “t15”, text: “Apply for SkillBridge / Career Skills Program”, done: false },
+{ id: “t16”, text: “Begin informational interviews with industry contacts”, done: false },
+],
+reminder: “SkillBridge apps take time through your command. Start early. Check the SkillBridge Feed tab weekly.”,
+},
+{ id: 4, phase: “6 Months Out”, monthsOut: 6, category: “FINANCE”, title: “Financial Operations & Housing”,
+tasks: [
+{ id: “t17”, text: “Build post-separation budget (no BAH/BAS)”, done: false },
+{ id: “t18”, text: “Determine state of residence for tax purposes”, done: false },
+{ id: “t19”, text: “Research VA home loan pre-approval”, done: false },
+{ id: “t20”, text: “Open/verify civilian bank accounts”, done: false },
+{ id: “t21”, text: “Review TSP rollover options”, done: false },
+{ id: “t22”, text: “Secure housing at post-separation location”, done: false },
+],
+reminder: “Home of RESIDENCE determines state tax \u2014 NOT Home of Record. Plan accordingly.”,
+},
+{ id: 5, phase: “3 Months Out”, monthsOut: 3, category: “ADMIN”, title: “Administrative & Legal Closeout”,
+tasks: [
+{ id: “t23”, text: “Complete DD214 worksheet \u2014 verify every line”, done: false },
+{ id: “t24”, text: “Schedule separation physical”, done: false },
+{ id: “t25”, text: “Verify all awards, decorations, schools on record”, done: false },
+{ id: “t26”, text: “Set up VA healthcare enrollment”, done: false },
+{ id: “t27”, text: “Update DEERS for dependents”, done: false },
+{ id: “t28”, text: “Finalize SBP elections (if retiring)”, done: false },
+],
+reminder: “Your DD214 is your most important document. Verify every entry. Errors are costly.”,
+},
+{ id: 6, phase: “1 Month Out”, monthsOut: 1, category: “EXECUTION”, title: “Final Preparations & Outprocessing”,
+tasks: [
+{ id: “t29”, text: “Complete installation outprocessing checklist”, done: false },
+{ id: “t30”, text: “Turn in all CIF / organizational equipment”, done: false },
+{ id: “t31”, text: “Obtain 10+ certified copies of DD214”, done: false },
+{ id: “t32”, text: “Verify final pay / leave sellback”, done: false },
+{ id: “t33”, text: “Set up TRICARE transition (TAMP 180 days / CHCBP)”, done: false },
+{ id: “t34”, text: “Confirm VA disability rating status”, done: false },
+],
+reminder: “Get 10+ certified copies of your DD214. You will need them for everything.”,
+},
+{ id: 7, phase: “Post-Separation”, monthsOut: 0, category: “VETERAN”, title: “First 90 Days as a Veteran”,
+tasks: [
+{ id: “t35”, text: “Register with VA healthcare system”, done: false },
+{ id: “t36”, text: “Apply for state veteran benefits”, done: false },
+{ id: “t37”, text: “File for unemployment (UCX) if applicable”, done: false },
+{ id: “t38”, text: “Connect with local veteran service organizations”, done: false },
+{ id: “t39”, text: “Verify GI Bill enrollment / housing allowance”, done: false },
+{ id: “t40”, text: “Establish primary care provider”, done: false },
+],
+reminder: “You earned these benefits. Don’t leave anything on the table. Execute.”,
+},
+];
+
+const NOTIFICATIONS = [
+{ id: “n1”, monthsOut: 18, title: “OPORD: Initiate Transition Planning”, body: “Report to your Transition Center. Begin ITP with chain of command.”, priority: “HIGH” },
+{ id: “n2”, monthsOut: 12, title: “ALERT: VA BDD Window Opening”, body: “File VA disability claim via BDD. Window: 180-90 days pre-sep.”, priority: “CRITICAL” },
+{ id: “n3”, monthsOut: 12, title: “ACTION: Medical Records”, body: “Request complete medical/dental records. Document ALL service-connected conditions.”, priority: “HIGH” },
+{ id: “n4”, monthsOut: 9, title: “TASK: Build Civilian Resume”, body: “Translate MOS, schools, and leadership to civilian language.”, priority: “MEDIUM” },
+{ id: “n5”, monthsOut: 9, title: “INTEL: SkillBridge Window”, body: “Submit SkillBridge/CSP application. Processing: 60-90 days.”, priority: “HIGH” },
+{ id: “n6”, monthsOut: 6, title: “FRAGO: Financial Readiness”, body: “Build post-sep budget. No more BAH, BAS, or tax-free allowances.”, priority: “HIGH” },
+{ id: “n7”, monthsOut: 6, title: “INTEL: State Tax Recon”, body: “Research state tax on retired pay. Home of RESIDENCE, not Home of Record.”, priority: “MEDIUM” },
+{ id: “n8”, monthsOut: 3, title: “CRITICAL: DD214 Verification”, body: “Review DD214 worksheet line by line. Verify rank, MOS, awards, schools.”, priority: “CRITICAL” },
+{ id: “n9”, monthsOut: 3, title: “ACTION: VA Healthcare”, body: “Enroll in VA healthcare. Combat vets: 5-year enhanced eligibility window.”, priority: “HIGH” },
+{ id: “n10”, monthsOut: 1, title: “EXECUTE: Outprocessing”, body: “Installation clearing. CIF turn-in. Final pay. TRICARE transition.”, priority: “CRITICAL” },
+{ id: “n11”, monthsOut: 1, title: “TASK: DD214 Copies”, body: “Minimum 10 certified copies. VA, employers, state benefits, home loans.”, priority: “HIGH” },
+{ id: “n12”, monthsOut: 0, title: “WELCOME: First 90 Days”, body: “Register VA. File state benefits. Connect with VSOs. Execute.”, priority: “HIGH” },
+{ id: “n13”, monthsOut: 9, title: “WEEKLY: SkillBridge Feed”, body: “Check the SkillBridge tab for newly approved companies this week.”, priority: “MEDIUM” },
+{ id: “n14”, monthsOut: 6, title: “CONNECT: VSO Outreach”, body: “Contact a VSO for free claims assistance. See the VSO directory.”, priority: “MEDIUM” },
+];
+
+const VSO_DIRECTORY = [
+{ category: “CONGRESSIONALLY CHARTERED VSOs”, desc: “Chartered by Congress and recognized by VA to assist with claims.”,
+orgs: [
+{ name: “Veterans of Foreign Wars (VFW)”, url: “https://www.vfw.org”, desc: “Nation’s largest war veterans org. Free claims assistance, transition support, and legislative advocacy.”, icon: “\u2B50” },
+{ name: “The American Legion”, url: “https://www.legion.org”, desc: “Founded 1919. Four pillars: veterans affairs, defense, youth, and Americanism. Free VSO reps for claims.”, icon: “\u2B50” },
+{ name: “Disabled American Veterans (DAV)”, url: “https://www.dav.org”, desc: “Free claims assistance, transportation to VA appointments, employment programs, 1M+ members.”, icon: “\u2B50” },
+{ name: “AMVETS”, url: “https://amvets.org”, desc: “Open to all who served honorably. Career centers, claims assistance, scholarships.”, icon: “\u2B50” },
+{ name: “Paralyzed Veterans of America (PVA)”, url: “https://pva.org”, desc: “Veterans career program, benefits advocacy, spinal cord injury/disease research.”, icon: “\u2B50” },
+{ name: “Vietnam Veterans of America (VVA)”, url: “https://vva.org”, desc: “Agent Orange advocacy, PTSD support, benefits claims assistance.”, icon: “\u2B50” },
+],
+},
+{ category: “TRANSITION-FOCUSED ORGANIZATIONS”, desc: “Purpose-built to help service members navigate the transition to civilian life.”,
+orgs: [
+{ name: “Hiring Our Heroes”, url: “https://www.hiringourheroes.org”, desc: “U.S. Chamber of Commerce Foundation. Corporate Fellowship Program, career fairs, SkillBridge partner.”, icon: “\uD83C\uDFAF” },
+{ name: “Hire Heroes USA”, url: “https://www.hireheroesusa.org”, desc: “Free career coaching, resume assistance, job matching. 110,000+ confirmed hires.”, icon: “\uD83C\uDFAF” },
+{ name: “The COMMIT Foundation”, url: “https://www.commitfoundation.org”, desc: “Executive coaching, mentoring workshops, resume/interview assistance for high-performing vets.”, icon: “\uD83C\uDFAF” },
+{ name: “VetJobs / Military Spouse Jobs”, url: “https://vetjobs.com”, desc: “Free career placement. 111,000+ verified placements since 2010.”, icon: “\uD83C\uDFAF” },
+{ name: “RecruitMilitary”, url: “https://recruitmilitary.com”, desc: “100+ veteran-focused job fairs per year, virtual and in-person.”, icon: “\uD83C\uDFAF” },
+{ name: “Veterans Transition Support (VTS)”, url: “https://veteranstransitionsupport.org”, desc: “Free OSHA 10/30, Lean Six Sigma, and project management certs for vets and spouses.”, icon: “\uD83C\uDFAF” },
+{ name: “Student Veterans of America (SVA)”, url: “https://studentveterans.org”, desc: “1,500+ campus chapters. Peer support and advocacy for student veterans.”, icon: “\uD83C\uDFAF” },
+],
+},
+{ category: “PURPOSE & COMMUNITY ORGANIZATIONS”, desc: “Organizations providing purpose, identity, and community after service.”,
+orgs: [
+{ name: “Team Rubicon”, url: “https://teamrubiconusa.org”, desc: “Veteran-led disaster response. Purpose, community, and identity through continued service.”, icon: “\uD83D\uDD25” },
+{ name: “The Mission Continues”, url: “https://www.missioncontinues.org”, desc: “Service platoons and fellowships. Veterans solving community challenges.”, icon: “\uD83D\uDD25” },
+{ name: “Team Red, White & Blue”, url: “https://www.teamrwb.org”, desc: “Social fitness through physical and social activities. Local chapters nationwide.”, icon: “\uD83D\uDD25” },
+{ name: “Travis Manion Foundation”, url: “https://www.travismanion.org”, desc: “Character development, veteran mentoring, and community leadership.”, icon: “\uD83D\uDD25” },
+{ name: “Iraq & Afghanistan Veterans of America (IAVA)”, url: “https://iava.org”, desc: “Advocacy, community, and peer support. 1.2M+ veterans connected.”, icon: “\uD83D\uDD25” },
+{ name: “Bob Woodruff Foundation”, url: “https://bobwoodrufffoundation.org”, desc: “Funds high-impact veteran programs in health, education, employment, family.”, icon: “\uD83D\uDD25” },
+],
+},
+{ category: “MENTAL HEALTH & CRISIS”, desc: “Immediate support for veterans in crisis or needing mental health assistance.”,
+orgs: [
+{ name: “Veterans Crisis Line”, url: “https://www.veteranscrisisline.net”, desc: “Dial 988, press 1. Text 838255. Chat online. Available 24/7/365.”, icon: “\uD83D\uDEE1\uFE0F” },
+{ name: “TAPS (Tragedy Assistance Program)”, url: “https://www.taps.org”, desc: “Grief support for families who lost a military loved one.”, icon: “\uD83D\uDEE1\uFE0F” },
+{ name: “Give an Hour”, url: “https://giveanhour.org”, desc: “Free mental health services for veterans and military families.”, icon: “\uD83D\uDEE1\uFE0F” },
+{ name: “Cohen Veterans Network”, url: “https://www.cohenveteransnetwork.org”, desc: “No/low-cost mental health care for post-9/11 veterans and families.”, icon: “\uD83D\uDEE1\uFE0F” },
+],
+},
+{ category: “SPOUSE & FAMILY RESOURCES”, desc: “Support for military spouses and families during transition.”,
+orgs: [
+{ name: “Blue Star Families”, url: “https://bluestarfam.org”, desc: “Career development, peer support, and community programs for military families.”, icon: “\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66” },
+{ name: “National Military Family Association”, url: “https://www.militaryfamily.org”, desc: “Scholarships, family camps, and advocacy for military families.”, icon: “\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66” },
+{ name: “Elizabeth Dole Foundation”, url: “https://elizabethdolefoundation.org”, desc: “Support for military and veteran caregivers. Hidden Heroes campaign.”, icon: “\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66” },
+{ name: “Military OneSource”, url: “https://www.militaryonesource.mil”, desc: “Free 24/7: counseling, financial planning, relocation, spouse education.”, icon: “\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66” },
+],
+},
+];
+
+const SKILLBRIDGE_FEED = [
+{ week: “10-16 FEB 2026”, companies: [
+{ name: “GE Aerospace”, industry: “Aerospace & Defense”, locations: “Multiple US”, url: “https://careers.geaerospace.com/global/en/skillbridge”, highlight: true },
+{ name: “Northrop Grumman”, industry: “Defense / Technology”, locations: “Multiple US”, url: “https://www.northropgrumman.com/careers/dod-skillbridge”, highlight: false },
+{ name: “U.S. Department of Interior”, industry: “Federal Government”, locations: “Nationwide”, url: “https://www.doi.gov/veterans/skillbridge”, highlight: true },
+], notes: “Spring Application Enrollment Period for NEW providers opens 1 FEB 2026.”,
+},
+{ week: “3-9 FEB 2026”, companies: [
+{ name: “ASRC Federal”, industry: “IT / Professional Services”, locations: “Multiple US”, url: “https://www.asrcfederal.com/skillbridge/”, highlight: false },
+{ name: “Amazon (Military Fellowship)”, industry: “Technology / Logistics”, locations: “Nationwide”, url: “https://www.aboutamazon.com/impact/community/military”, highlight: true },
+], notes: “Amazon expanding SkillBridge fellowship slots. High demand \u2014 apply early.”,
+},
+{ week: “27 JAN - 2 FEB 2026”, companies: [
+{ name: “Microsoft MSSA”, industry: “Technology / Cybersecurity”, locations: “Virtual + Select”, url: “https://military.microsoft.com/mssa/”, highlight: true },
+{ name: “Lowe’s”, industry: “Retail / Supply Chain”, locations: “Nationwide”, url: “https://corporate.lowes.com/careers/military”, highlight: false },
+], notes: “Microsoft MSSA: 17-week course, guaranteed interviews on completion.”,
+},
+];
+
 const STATE_TAX_DATA = {
-noIncomeTax: [“AK”, “FL”, “NV”, “NH”, “SD”, “TN”, “TX”, “WA”, “WY”],
-noTaxRetiredPay: [“AL”, “AR”, “CT”, “HI”, “IA”, “IL”, “KS”, “LA”, “MA”, “ME”, “MI”, “MN”, “MO”, “MS”, “NJ”, “NY”, “NC”, “ND”, “OH”, “OK”, “OR”, “PA”, “WI”, “WV”, “DC”],
-someTax: [“AZ”, “CO”, “DE”, “GA”, “ID”, “IN”, “KY”, “MD”, “NE”, “NM”, “RI”, “SC”, “VA”, “VT”],
-fullTax: [“CA”, “MT”, “UT”]
+noIncomeTax: [“AK”,“FL”,“NV”,“NH”,“SD”,“TN”,“TX”,“WA”,“WY”],
+noTaxRetiredPay: [“AL”,“AR”,“CT”,“HI”,“IA”,“IL”,“KS”,“LA”,“MA”,“ME”,“MI”,“MN”,“MO”,“MS”,“NJ”,“NY”,“NC”,“ND”,“OH”,“OK”,“OR”,“PA”,“WI”,“WV”,“DC”],
+someTax: [“AZ”,“CO”,“DE”,“GA”,“ID”,“IN”,“KY”,“MD”,“NE”,“NM”,“RI”,“SC”,“VA”,“VT”],
+fullTax: [“CA”,“MT”,“UT”],
 };
+
 const CATEGORIES = {
-PLANNING: {
-color: “#4A5D23”,
-label: “OPORD”
-},
-BENEFITS: {
-color: “#8B6914”,
-label: “BENEFITS”
-},
-CAREER: {
-color: “#2D5F2D”,
-label: “CAREER”
-},
-FINANCE: {
-color: “#6B4423”,
-label: “FINANCE”
-},
-ADMIN: {
-color: “#4A4A4A”,
-label: “ADMIN”
-},
-EXECUTION: {
-color: “#8B0000”,
-label: “EXECUTION”
-},
-VETERAN: {
-color: “#1B3A4B”,
-label: “VETERAN”
-}
+PLANNING: { color: “#4A5D23”, label: “OPORD” }, BENEFITS: { color: “#8B6914”, label: “BENEFITS” },
+CAREER: { color: “#2D5F2D”, label: “CAREER” }, FINANCE: { color: “#6B4423”, label: “FINANCE” },
+ADMIN: { color: “#4A4A4A”, label: “ADMIN” }, EXECUTION: { color: “#8B0000”, label: “EXECUTION” },
+VETERAN: { color: “#1B3A4B”, label: “VETERAN” },
 };
-const DOCUMENT_VAULT = [{
-id: “d1”,
-name: “DD214 (Member-4 Copy)”,
-critical: true,
-obtained: false,
-notes: “Get 10+ certified copies. Required for nearly all veteran benefits.”
-}, {
-id: “d2”,
-name: “VA Disability Rating Letter”,
-critical: true,
-obtained: false,
-notes: “Download from VA.gov or eBenefits.”
-}, {
-id: “d3”,
-name: “Military Medical Records (Complete)”,
-critical: true,
-obtained: false,
-notes: “Request from MTF. Include dental. Takes 30-90 days.”
-}, {
-id: “d4”,
-name: “Service Record (OMPF)”,
-critical: true,
-obtained: false,
-notes: “Verify all entries via iPERMS or branch equivalent.”
-}, {
-id: “d5”,
-name: “Joint Services Transcript (JST)”,
-critical: false,
-obtained: false,
-notes: “Download from jst.doded.mil. Maps training to ACE credits.”
-}, {
-id: “d6”,
-name: “VMET Document”,
-critical: false,
-obtained: false,
-notes: “Translates military experience to civilian terms.”
-}, {
-id: “d7”,
-name: “TSP Account Statement”,
-critical: false,
-obtained: false,
-notes: “Current balance, fund allocations, beneficiary info.”
-}, {
-id: “d8”,
-name: “SGLI/VGLI Documentation”,
-critical: false,
-obtained: false,
-notes: “SGLI to VGLI conversion within 240 days of separation.”
-}, {
-id: “d9”,
-name: “VA Certificate of Eligibility (COE)”,
-critical: false,
-obtained: false,
-notes: “For VA home loan. Request via VA.gov.”
-}, {
-id: “d10”,
-name: “GI Bill Statement of Benefits”,
-critical: false,
-obtained: false,
-notes: “Verify months remaining, transfer status.”
-}, {
-id: “d11”,
-name: “Security Clearance Verification”,
-critical: false,
-obtained: false,
-notes: “Clearance status and investigation dates.”
-}, {
-id: “d12”,
-name: “Awards/Decoration Certificates”,
-critical: false,
-obtained: false,
-notes: “Physical copies of all awards.”
-}];
-const HEALTHCARE_TIMELINE = [{
-phase: “Active Duty”,
-coverage: “TRICARE Prime”,
-action: “Ensure all conditions documented before separation”,
-status: “active”
-}, {
-phase: “Separation Day”,
-coverage: “Coverage ends”,
-action: “Last day of active duty TRICARE”,
-status: “warning”
-}, {
-phase: “Day 1 \u2013 Day 180”,
-coverage: “TAMP”,
-action: “180 days of premium-free TRICARE. Automatic enrollment.”,
-status: “active”
-}, {
-phase: “Day 181+”,
-coverage: “CHCBP or VA”,
-action: “Purchase CHCBP within 60 days of TAMP expiring, OR enroll in VA healthcare”,
-status: “warning”
-}, {
-phase: “VA Healthcare”,
-coverage: “Priority Group”,
-action: “Enroll at VA.gov. Combat vets: 5-year enhanced eligibility.”,
-status: “info”
-}, {
-phase: “VA Dental”,
-coverage: “VADIP”,
-action: “Only 100% SC qualifies for free VA dental. Others: VADIP insurance.”,
-status: “info”
-}];
+
+const DOCUMENT_VAULT = [
+{ id: “d1”, name: “DD214 (Member-4 Copy)”, critical: true, obtained: false, notes: “Get 10+ certified copies. Required for nearly all veteran benefits.” },
+{ id: “d2”, name: “VA Disability Rating Letter”, critical: true, obtained: false, notes: “Download from VA.gov or eBenefits.” },
+{ id: “d3”, name: “Military Medical Records (Complete)”, critical: true, obtained: false, notes: “Request from MTF. Include dental. Takes 30-90 days.” },
+{ id: “d4”, name: “Service Record (OMPF)”, critical: true, obtained: false, notes: “Verify all entries via iPERMS or branch equivalent.” },
+{ id: “d5”, name: “Joint Services Transcript (JST)”, critical: false, obtained: false, notes: “Download from jst.doded.mil. Maps training to ACE credits.” },
+{ id: “d6”, name: “VMET Document”, critical: false, obtained: false, notes: “Translates military experience to civilian terms.” },
+{ id: “d7”, name: “TSP Account Statement”, critical: false, obtained: false, notes: “Current balance, fund allocations, beneficiary info.” },
+{ id: “d8”, name: “SGLI/VGLI Documentation”, critical: false, obtained: false, notes: “SGLI to VGLI conversion within 240 days of separation.” },
+{ id: “d9”, name: “VA Certificate of Eligibility (COE)”, critical: false, obtained: false, notes: “For VA home loan. Request via VA.gov.” },
+{ id: “d10”, name: “GI Bill Statement of Benefits”, critical: false, obtained: false, notes: “Verify months remaining, transfer status.” },
+{ id: “d11”, name: “Security Clearance Verification”, critical: false, obtained: false, notes: “Clearance status and investigation dates.” },
+{ id: “d12”, name: “Awards/Decoration Certificates”, critical: false, obtained: false, notes: “Physical copies of all awards.” },
+];
+
+const HEALTHCARE_TIMELINE = [
+{ phase: “Active Duty”, coverage: “TRICARE Prime”, action: “Ensure all conditions documented before separation”, status: “active” },
+{ phase: “Separation Day”, coverage: “Coverage ends”, action: “Last day of active duty TRICARE”, status: “warning” },
+{ phase: “Day 1 \u2013 Day 180”, coverage: “TAMP”, action: “180 days of premium-free TRICARE. Automatic enrollment.”, status: “active” },
+{ phase: “Day 181+”, coverage: “CHCBP or VA”, action: “Purchase CHCBP within 60 days of TAMP expiring, OR enroll in VA healthcare”, status: “warning” },
+{ phase: “VA Healthcare”, coverage: “Priority Group”, action: “Enroll at VA.gov. Combat vets: 5-year enhanced eligibility.”, status: “info” },
+{ phase: “VA Dental”, coverage: “VADIP”, action: “Only 100% SC qualifies for free VA dental. Others: VADIP insurance.”, status: “info” },
+];
+
 const S = {
-card: {
-background: “#232920”,
-border: “1px solid #3d4a2a”,
-borderRadius: 6,
-padding: 16,
-marginBottom: 12
-},
-cardTitle: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 16,
-fontWeight: 600,
-color: “#F5F0E1”,
-marginBottom: 4
-},
-sectionLabel: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 11,
-letterSpacing: 3,
-color: “#8B7D3C”,
-marginBottom: 10,
-paddingBottom: 6,
-borderBottom: “1px solid #3d4a2a”
-},
-bodyText: {
-fontSize: 12,
-color: “#8a8062”,
-lineHeight: 1.6,
-fontFamily: “‘Source Sans 3’, sans-serif”
-},
-input: {
-width: “100%”,
-padding: “10px 12px”,
-background: “#1a1f16”,
-border: “1px solid #3d4a2a”,
-borderRadius: 4,
-color: “#F5F0E1”,
-fontFamily: “‘Courier Prime’, monospace”,
-fontSize: 14,
-boxSizing: “border-box”
-},
-warningBox: {
-background: “#2a2518”,
-border: “1px solid rgba(139,125,60,0.27)”,
-borderRadius: 6,
-padding: “12px 16px”,
-marginBottom: 12
-}
+card: { background: “#232920”, border: “1px solid #3d4a2a”, borderRadius: 6, padding: 16, marginBottom: 12 },
+cardTitle: { fontFamily: “‘Oswald’, sans-serif”, fontSize: 16, fontWeight: 600, color: “#F5F0E1”, marginBottom: 4 },
+sectionLabel: { fontFamily: “‘Oswald’, sans-serif”, fontSize: 11, letterSpacing: 3, color: “#8B7D3C”, marginBottom: 10, paddingBottom: 6, borderBottom: “1px solid #3d4a2a” },
+bodyText: { fontSize: 12, color: “#8a8062”, lineHeight: 1.6, fontFamily: “‘Source Sans 3’, sans-serif” },
+input: { width: “100%”, padding: “10px 12px”, background: “#1a1f16”, border: “1px solid #3d4a2a”, borderRadius: 4, color: “#F5F0E1”, fontFamily: “‘Courier Prime’, monospace”, fontSize: 14, boxSizing: “border-box” },
+warningBox: { background: “#2a2518”, border: “1px solid rgba(139,125,60,0.27)”, borderRadius: 6, padding: “12px 16px”, marginBottom: 12 },
 };
+
 function App() {
 const [activeTab, setActiveTab] = useState(“timeline”);
 const [milestones, setMilestones] = useState(TRANSITION_MILESTONES);
@@ -750,1458 +254,367 @@ const [toast, setToast] = useState(null);
 const [documents, setDocuments] = useState(DOCUMENT_VAULT);
 const [vsoFilter, setVsoFilter] = useState(“ALL”);
 const [subTab, setSubTab] = useState(“vsos”);
-const showToast = useCallback(msg => {
-setToast(msg);
-setTimeout(() => setToast(null), 3000);
-}, []);
+
+const showToast = useCallback((msg) => { setToast(msg); setTimeout(() => setToast(null), 3000); }, []);
 const toggleTask = useCallback((milestoneId, taskId) => {
-setMilestones(prev => prev.map(m => m.id === milestoneId ? {
-…m,
-tasks: m.tasks.map(t => t.id === taskId ? {
-…t,
-done: !t.done
-} : t)
-} : m));
+setMilestones(prev => prev.map(m => m.id === milestoneId ? { …m, tasks: m.tasks.map(t => t.id === taskId ? { …t, done: !t.done } : t) } : m));
 }, []);
-const toggleDoc = useCallback(docId => {
-setDocuments(prev => prev.map(d => d.id === docId ? {
-…d,
-obtained: !d.obtained
-} : d));
-}, []);
-const getProgress = useCallback(m => {
-const done = m.tasks.filter(t => t.done).length;
-return {
-done,
-total: m.tasks.length,
-pct: Math.round(done / m.tasks.length * 100)
-};
-}, []);
-const getTotalProgress = useCallback(() => {
-const all = milestones.flatMap(m => m.tasks);
-const done = all.filter(t => t.done).length;
-return {
-done,
-total: all.length,
-pct: Math.round(done / all.length * 100)
-};
-}, [milestones]);
-const getStateTaxStatus = useCallback(st => {
+const toggleDoc = useCallback((docId) => { setDocuments(prev => prev.map(d => d.id === docId ? { …d, obtained: !d.obtained } : d)); }, []);
+const getProgress = useCallback((m) => { const done = m.tasks.filter(t => t.done).length; return { done, total: m.tasks.length, pct: Math.round((done / m.tasks.length) * 100) }; }, []);
+const getTotalProgress = useCallback(() => { const all = milestones.flatMap(m => m.tasks); const done = all.filter(t => t.done).length; return { done, total: all.length, pct: Math.round((done / all.length) * 100) }; }, [milestones]);
+const getStateTaxStatus = useCallback((st) => {
 const s = st.toUpperCase();
-if (STATE_TAX_DATA.noIncomeTax.includes(s)) return {
-status: “NO STATE INCOME TAX”,
-color: “#4A5D23”,
-detail: “No income tax. Retired pay is tax-free at the state level.”
-};
-if (STATE_TAX_DATA.noTaxRetiredPay.includes(s)) return {
-status: “NO TAX ON RETIRED PAY”,
-color: “#6B8E23”,
-detail: “This state exempts military retired pay from state income tax.”
-};
-if (STATE_TAX_DATA.someTax.includes(s)) return {
-status: “PARTIAL TAX ON RETIRED PAY”,
-color: “#DAA520”,
-detail: “Some military retired pay is taxed. Conditions apply.”
-};
-if (STATE_TAX_DATA.fullTax.includes(s)) return {
-status: “FULL TAX ON RETIRED PAY”,
-color: “#8B0000”,
-detail: “All military retired pay is taxed. Factor into planning.”
-};
+if (STATE_TAX_DATA.noIncomeTax.includes(s)) return { status: “NO STATE INCOME TAX”, color: “#4A5D23”, detail: “No income tax. Retired pay is tax-free at the state level.” };
+if (STATE_TAX_DATA.noTaxRetiredPay.includes(s)) return { status: “NO TAX ON RETIRED PAY”, color: “#6B8E23”, detail: “This state exempts military retired pay from state income tax.” };
+if (STATE_TAX_DATA.someTax.includes(s)) return { status: “PARTIAL TAX ON RETIRED PAY”, color: “#DAA520”, detail: “Some military retired pay is taxed. Conditions apply.” };
+if (STATE_TAX_DATA.fullTax.includes(s)) return { status: “FULL TAX ON RETIRED PAY”, color: “#8B0000”, detail: “All military retired pay is taxed. Factor into planning.” };
 return null;
 }, []);
+
 const activeNotifCount = NOTIFICATIONS.filter(n => !dismissedNotifs.has(n.id)).length;
 const totalProgress = getTotalProgress();
 const docsObtained = documents.filter(d => d.obtained).length;
-return /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Courier Prime’, ‘Courier New’, monospace”,
-background: “#1a1f16”,
-color: “#d4cbb3”,
-minHeight: “100vh”,
-maxWidth: 540,
-margin: “0 auto”,
-position: “relative”
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-background: “linear-gradient(180deg, #3d4a2a 0%, #2a3320 100%)”,
-borderBottom: “3px solid #8B7D3C”,
-padding: “14px 16px 10px”,
-position: “sticky”,
-top: 0,
-zIndex: 100
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-justifyContent: “space-between”,
-alignItems: “flex-start”
-}
-}, /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 10,
-letterSpacing: 4,
-color: “#8B7D3C”
-}
-}, “VETERAN BRIDGE SOLUTIONS”), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 24,
-fontWeight: 700,
-color: “#F5F0E1”,
-letterSpacing: 1,
-lineHeight: 1.1
-}
-}, “TRANSITION OPS”), /*#**PURE***/React.createElement(“a”, {
-href: “https://www.veteranbridgesolutions.com”,
-target: “_blank”,
-rel: “noopener noreferrer”,
-style: {
-fontSize: 9,
-color: “#8BB83C”,
-letterSpacing: 2,
-marginTop: 3,
-textDecoration: “none”,
-display: “block”
-}
-}, “veteranbridgesolutions.com \u2192”)), /*#**PURE***/React.createElement(“button”, {
-onClick: () => setShowNotifPanel(!showNotifPanel),
-style: {
-background: activeNotifCount > 0 ? “#8B0000” : “#4a4a3a”,
-border: “1px solid #8B7D3C”,
-borderRadius: 4,
-padding: “7px 10px”,
-cursor: “pointer”,
-position: “relative”,
-color: “#F5F0E1”,
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 11,
-letterSpacing: 1
-}
-}, “ALERTS”, activeNotifCount > 0 && /*#**PURE***/React.createElement(“span”, {
-style: {
-position: “absolute”,
-top: -6,
-right: -6,
-background: “#FF4444”,
-color: “#fff”,
-borderRadius: “50%”,
-width: 17,
-height: 17,
-display: “flex”,
-alignItems: “center”,
-justifyContent: “center”,
-fontSize: 9,
-fontWeight: 700
-}
-}, activeNotifCount))), /*#**PURE***/React.createElement(“div”, {
-style: {
-marginTop: 10
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-justifyContent: “space-between”,
-fontSize: 9,
-marginBottom: 3,
-color: “#8a8062”,
-letterSpacing: 1
-}
-}, /*#**PURE***/React.createElement(“span”, null, “MISSION PROGRESS”), /*#**PURE***/React.createElement(“span”, null, totalProgress.done, “/”, totalProgress.total, “ (”, totalProgress.pct, “%)”)), /*#**PURE***/React.createElement(“div”, {
-style: {
-background: “#1a1f16”,
-borderRadius: 2,
-height: 7,
-overflow: “hidden”,
-border: “1px solid #3d4a2a”
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-width: totalProgress.pct + “%”,
-height: “100%”,
-background: totalProgress.pct === 100 ? “#4A5D23” : “linear-gradient(90deg, #8B7D3C, #B8A94E)”,
-borderRadius: 2,
-transition: “width 0.5s ease”
-}
-})))), showNotifPanel && /*#**PURE***/React.createElement(“div”, {
-style: {
-position: “fixed”,
-top: 0,
-left: 0,
-right: 0,
-bottom: 0,
-background: “rgba(0,0,0,0.85)”,
-zIndex: 200,
-display: “flex”,
-justifyContent: “center”,
-alignItems: “flex-start”,
-paddingTop: 16
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-background: “#232920”,
-border: “2px solid #8B7D3C”,
-borderRadius: 8,
-width: “92%”,
-maxWidth: 500,
-maxHeight: “85vh”,
-overflow: “auto”
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-padding: “14px 16px”,
-borderBottom: “1px solid #3d4a2a”,
-display: “flex”,
-justifyContent: “space-between”,
-alignItems: “center”,
-position: “sticky”,
-top: 0,
-background: “#232920”,
-zIndex: 1
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 16,
-fontWeight: 600,
-color: “#F5F0E1”,
-letterSpacing: 2
-}
-}, “ALERTS (”, activeNotifCount, “)”), /*#**PURE***/React.createElement(“button”, {
-onClick: () => setShowNotifPanel(false),
-style: {
-background: “none”,
-border: “1px solid #8a8062”,
-color: “#8a8062”,
-padding: “3px 10px”,
-cursor: “pointer”,
-borderRadius: 3,
-fontSize: 11
-}
-}, “CLOSE”)), NOTIFICATIONS.filter(n => !dismissedNotifs.has(n.id)).map(n => /*#**PURE***/React.createElement(“div”, {
-key: n.id,
-style: {
-padding: “12px 16px”,
-borderBottom: “1px solid #2a3320”,
-display: “flex”,
-gap: 10,
-alignItems: “flex-start”
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-background: n.priority === “CRITICAL” ? “#8B0000” : n.priority === “HIGH” ? “#8B6914” : “#4A5D23”,
-color: “#F5F0E1”,
-fontSize: 7,
-padding: “2px 5px”,
-borderRadius: 2,
-fontWeight: 700,
-letterSpacing: 1,
-whiteSpace: “nowrap”,
-marginTop: 2
-}
-}, n.priority), /*#**PURE***/React.createElement(“div”, {
-style: {
-flex: 1
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 12,
-fontWeight: 600,
-color: “#F5F0E1”,
-marginBottom: 3
-}
-}, n.title), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 10,
-color: “#8a8062”,
-lineHeight: 1.5
-}
-}, n.body), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 8,
-color: “#5a5540”,
-marginTop: 3,
-letterSpacing: 1
-}
-}, “T-”, n.monthsOut, “ MONTHS”)), /*#**PURE***/React.createElement(“button”, {
-onClick: () => {
-setDismissedNotifs(prev => {
-const s = new Set(prev);
-s.add(n.id);
-return s;
-});
-showToast(“Alert acknowledged.”);
-},
-style: {
-background: “none”,
-border: “1px solid #3d4a2a”,
-color: “#5a5540”,
-fontSize: 8,
-padding: “3px 6px”,
-cursor: “pointer”,
-borderRadius: 2
-}
-}, “ACK”))), activeNotifCount === 0 && /*#**PURE***/React.createElement(“div”, {
-style: {
-padding: 30,
-textAlign: “center”,
-color: “#5a5540”,
-fontSize: 11
-}
-}, “All alerts acknowledged.”))), /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-background: “#232920”,
-borderBottom: “1px solid #3d4a2a”,
-position: “sticky”,
-top: 108,
-zIndex: 50
-}
-}, [{
-id: “timeline”,
-label: “TIMELINE”
-}, {
-id: “resources”,
-label: “RESOURCES”
-}, {
-id: “taxes”,
-label: “TAX INTEL”
-}, {
-id: “dd214”,
-label: “DD214”
-}].map(tab => /*#**PURE***/React.createElement(“button”, {
-key: tab.id,
-onClick: () => {
-setActiveTab(tab.id);
-setSelectedMilestone(null);
-},
-style: {
-flex: 1,
-padding: “9px 2px”,
-background: activeTab === tab.id ? “#3d4a2a” : “transparent”,
-border: “none”,
-borderBottom: activeTab === tab.id ? “2px solid #8B7D3C” : “2px solid transparent”,
-color: activeTab === tab.id ? “#F5F0E1” : “#5a5540”,
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 10,
-letterSpacing: 2,
-cursor: “pointer”
-}
-}, tab.label))), /*#**PURE***/React.createElement(“div”, {
-style: {
-padding: “14px 14px 80px”
-}
-}, activeTab === “timeline” && !selectedMilestone && /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.card,
-padding: 14
-}
-}, /*#**PURE***/React.createElement(“label”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 10,
-letterSpacing: 2,
-color: “#8B7D3C”,
-display: “block”,
-marginBottom: 6
-}
-}, “ETS / EAOS / SEPARATION DATE”), /*#**PURE***/React.createElement(“input”, {
-type: “date”,
-value: separationDate,
-onChange: e => setSeparationDate(e.target.value),
-style: S.input
-}), separationDate && /*#**PURE***/React.createElement(“div”, {
-style: {
-marginTop: 6,
-fontSize: 10,
-color: “#8a8062”
-}
-}, (() => {
-const diff = Math.ceil((new Date(separationDate) - new Date()) / (1000 * 60 * 60 * 24 * 30));
-if (diff <= 0) return “STATUS: Post-separation. Focus on First 90 Days.”;
-return “STATUS: T-” + diff + “ months. “ + (diff > 12 ? “Use this time wisely.” : diff > 6 ? “Critical planning phase.” : diff > 3 ? “Accelerate admin actions.” : “Final execution. No time to waste.”);
-})())), milestones.map(m => {
-const progress = getProgress(m);
-const cat = CATEGORIES[m.category];
-return /*#**PURE***/React.createElement(“button”, {
-key: m.id,
-onClick: () => setSelectedMilestone(m.id),
-style: {
-display: “block”,
-width: “100%”,
-background: “#232920”,
-border: “1px solid #3d4a2a”,
-borderLeft: “4px solid “ + cat.color,
-borderRadius: 6,
-padding: “12px 14px”,
-marginBottom: 8,
-cursor: “pointer”,
-textAlign: “left”,
-position: “relative”
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-justifyContent: “space-between”,
-alignItems: “center”,
-marginBottom: 4
-}
-}, /*#**PURE***/React.createElement(“span”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 9,
-letterSpacing: 2,
-color: cat.color,
-background: cat.color + “22”,
-padding: “1px 6px”,
-borderRadius: 2
-}
-}, cat.label), /*#**PURE***/React.createElement(“span”, {
-style: {
-fontSize: 9,
-color: “#5a5540”,
-letterSpacing: 1
-}
-}, m.monthsOut > 0 ? “T-” + m.monthsOut + “ MO” : “POST-SEP”)), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 15,
-fontWeight: 600,
-color: “#F5F0E1”,
-marginBottom: 3
-}
-}, m.phase), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 10,
-color: “#8a8062”,
-marginBottom: 8
-}
-}, m.title), /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-alignItems: “center”,
-gap: 8
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-flex: 1,
-background: “#1a1f16”,
-borderRadius: 2,
-height: 5
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-width: progress.pct + “%”,
-height: “100%”,
-background: progress.pct === 100 ? “#4A5D23” : cat.color,
-transition: “width 0.3s”
-}
-})), /*#**PURE***/React.createElement(“span”, {
-style: {
-fontSize: 9,
-color: progress.pct === 100 ? “#4A5D23” : “#5a5540”,
-fontWeight: 700
-}
-}, progress.pct === 100 ? “COMPLETE” : progress.done + “/” + progress.total)), /*#**PURE***/React.createElement(“div”, {
-style: {
-position: “absolute”,
-right: 14,
-top: “50%”,
-transform: “translateY(-50%)”,
-color: “#3d4a2a”,
-fontSize: 18
-}
-}, “\u203A”));
-})), activeTab === “timeline” && selectedMilestone && (() => {
-const m = milestones.find(ms => ms.id === selectedMilestone);
-const progress = getProgress(m);
-const cat = CATEGORIES[m.category];
-return /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“button”, {
-onClick: () => setSelectedMilestone(null),
-style: {
-background: “none”,
-border: “none”,
-color: “#8B7D3C”,
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 11,
-letterSpacing: 2,
-cursor: “pointer”,
-marginBottom: 12,
-padding: 0
-}
-}, “\u2039 BACK TO TIMELINE”), /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.card,
-borderLeft: “4px solid “ + cat.color,
-padding: 18
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 9,
-letterSpacing: 3,
-color: cat.color,
-marginBottom: 4
-}
-}, cat.label, “ \u2014 “, m.monthsOut > 0 ? “T-” + m.monthsOut + “ MONTHS” : “POST-SEPARATION”), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 20,
-fontWeight: 700,
-color: “#F5F0E1”,
-marginBottom: 3
-}
-}, m.phase), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 12,
-color: “#8a8062”,
-marginBottom: 10
-}
-}, m.title), /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-alignItems: “center”,
-gap: 8
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-flex: 1,
-background: “#1a1f16”,
-borderRadius: 2,
-height: 7
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-width: progress.pct + “%”,
-height: “100%”,
-background: progress.pct === 100 ? “#4A5D23” : cat.color,
-borderRadius: 2
-}
-})), /*#**PURE***/React.createElement(“span”, {
-style: {
-fontSize: 11,
-color: “#F5F0E1”,
-fontWeight: 700
-}
-}, progress.pct, “%”))), /*#**PURE***/React.createElement(“div”, {
-style: S.warningBox
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-gap: 8
-}
-}, /*#**PURE***/React.createElement(“span”, {
-style: {
-fontSize: 14
-}
-}, “\u26A0”), /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 9,
-letterSpacing: 2,
-color: “#8B7D3C”,
-marginBottom: 3
-}
-}, “COMMANDER’S NOTE”), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 11,
-color: “#d4cbb3”,
-lineHeight: 1.6
-}
-}, m.reminder)))), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 10,
-letterSpacing: 2,
-color: “#5a5540”,
-marginBottom: 8
-}
-}, “CHECKLIST (”, progress.done, “/”, progress.total, “)”), m.tasks.map(t => /*#**PURE***/React.createElement(“button”, {
-key: t.id,
-onClick: () => toggleTask(m.id, t.id),
-style: {
-display: “flex”,
-alignItems: “flex-start”,
-gap: 10,
-padding: “10px 12px”,
-background: t.done ? “#2a3320” : “#232920”,
-border: “1px solid “ + (t.done ? “#4A5D23” : “#3d4a2a”),
-borderRadius: 4,
-marginBottom: 5,
-cursor: “pointer”,
-width: “100%”,
-textAlign: “left”
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-width: 18,
-height: 18,
-minWidth: 18,
-border: “2px solid “ + (t.done ? “#4A5D23” : “#5a5540”),
-borderRadius: 3,
-display: “flex”,
-alignItems: “center”,
-justifyContent: “center”,
-background: t.done ? “#4A5D23” : “transparent”,
-marginTop: 1
-}
-}, t.done && /*#**PURE***/React.createElement(“span”, {
-style: {
-color: “#F5F0E1”,
-fontSize: 11,
-fontWeight: 700
-}
-}, “\u2713”)), /*#**PURE***/React.createElement(“span”, {
-style: {
-fontSize: 11,
-color: t.done ? “#6B8E23” : “#d4cbb3”,
-textDecoration: t.done ? “line-through” : “none”,
-lineHeight: 1.5,
-fontFamily: “‘Source Sans 3’, sans-serif”
-}
-}, t.text))));
-})(), activeTab === “resources” && /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-gap: 4,
-marginBottom: 14,
-flexWrap: “wrap”
-}
-}, [{
-id: “vsos”,
-label: “VSOs”
-}, {
-id: “skillbridge”,
-label: “SKILLBRIDGE”
-}, {
-id: “healthcare”,
-label: “HEALTHCARE”
-}, {
-id: “documents”,
-label: “DOC VAULT”
-}].map(st => /*#**PURE***/React.createElement(“button”, {
-key: st.id,
-onClick: () => setSubTab(st.id),
-style: {
-padding: “6px 12px”,
-background: subTab === st.id ? “#8B7D3C” : “#232920”,
-border: “1px solid “ + (subTab === st.id ? “#8B7D3C” : “#3d4a2a”),
-borderRadius: 4,
-color: subTab === st.id ? “#1a1f16” : “#8a8062”,
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 10,
-letterSpacing: 2,
-cursor: “pointer”,
-fontWeight: subTab === st.id ? 700 : 400
-}
-}, st.label))), subTab === “vsos” && /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.card,
-padding: 14
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: S.cardTitle
-}, “VETERAN SERVICE ORGANIZATIONS”), /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.bodyText,
-marginBottom: 10
-}
-}, “Direct links to every major VSO. Free claims assistance, career support, community, and crisis resources.”), /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-gap: 4,
-flexWrap: “wrap”
-}
-}, [“ALL”, “CHARTERED”, “TRANSITION”, “COMMUNITY”, “CRISIS”, “FAMILY”].map(f => /*#**PURE***/React.createElement(“button”, {
-key: f,
-onClick: () => setVsoFilter(f),
-style: {
-padding: “3px 8px”,
-background: vsoFilter === f ? “#4A5D23” : “transparent”,
-border: “1px solid “ + (vsoFilter === f ? “#4A5D23” : “#3d4a2a”),
-borderRadius: 3,
-color: vsoFilter === f ? “#F5F0E1” : “#5a5540”,
-fontSize: 8,
-fontFamily: “‘Oswald’, sans-serif”,
-letterSpacing: 1,
-cursor: “pointer”
-}
-}, f)))), /*#**PURE***/React.createElement(“a”, {
-href: “https://www.veteranbridgesolutions.com”,
-target: “_blank”,
-rel: “noopener noreferrer”,
-style: {
-display: “block”,
-textDecoration: “none”,
-padding: “14px 16px”,
-background: “linear-gradient(135deg, #3d4a2a 0%, #2a3320 100%)”,
-border: “2px solid #8B7D3C”,
-borderRadius: 6,
-marginBottom: 14
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-justifyContent: “space-between”,
-alignItems: “center”
-}
-}, /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 8,
-letterSpacing: 3,
-color: “#8B7D3C”,
-marginBottom: 2
-}
-}, “PRESENTED BY”), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 16,
-fontWeight: 700,
-color: “#F5F0E1”
-}
-}, “VETERAN BRIDGE SOLUTIONS”), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 10,
-color: “#8BB83C”,
-marginTop: 3
-}
-}, “www.veteranbridgesolutions.com \u2192”)), /*#**PURE***/React.createElement(“span”, {
-style: {
-fontSize: 22,
-color: “#8B7D3C”
-}
-}, “\u2192”))), VSO_DIRECTORY.filter(section => {
-if (vsoFilter === “ALL”) return true;
-if (vsoFilter === “CHARTERED”) return section.category.includes(“CHARTERED”);
-if (vsoFilter === “TRANSITION”) return section.category.includes(“TRANSITION”);
-if (vsoFilter === “COMMUNITY”) return section.category.includes(“PURPOSE”);
-if (vsoFilter === “CRISIS”) return section.category.includes(“MENTAL”);
-if (vsoFilter === “FAMILY”) return section.category.includes(“SPOUSE”);
-return true;
-}).map((section, si) => /*#**PURE***/React.createElement(“div”, {
-key: si,
-style: {
-marginBottom: 16
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: S.sectionLabel
-}, section.category), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 10,
-color: “#5a5540”,
-marginBottom: 10,
-marginTop: -4
-}
-}, section.desc), section.orgs.map((org, oi) => /*#**PURE***/React.createElement(“a”, {
-key: oi,
-href: org.url,
-target: “_blank”,
-rel: “noopener noreferrer”,
-style: {
-display: “block”,
-textDecoration: “none”,
-padding: “11px 13px”,
-background: “#232920”,
-border: “1px solid #3d4a2a”,
-borderRadius: 4,
-marginBottom: 5
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-justifyContent: “space-between”,
-alignItems: “center”,
-marginBottom: 3
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-alignItems: “center”,
-gap: 6
-}
-}, /*#**PURE***/React.createElement(“span”, {
-style: {
-fontSize: 14
-}
-}, org.icon), /*#**PURE***/React.createElement(“span”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 13,
-color: “#F5F0E1”,
-fontWeight: 600
-}
-}, org.name)), /*#**PURE***/React.createElement(“span”, {
-style: {
-fontSize: 12,
-color: “#8BB83C”
-}
-}, “\u2192”)), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 10,
-color: “#8a8062”,
-lineHeight: 1.5,
-fontFamily: “‘Source Sans 3’, sans-serif”,
-paddingLeft: 22
-}
-}, org.desc), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 8,
-color: “#6B8E23”,
-marginTop: 3,
-paddingLeft: 22
-}
-}, org.url.replace(“https://”, “”))))))), subTab === “skillbridge” && /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.card,
-padding: 14
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: S.cardTitle
-}, “SKILLBRIDGE WEEKLY INTEL”), /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.bodyText,
-marginBottom: 8
-}
-}, “Newly approved and featured SkillBridge companies, updated weekly.”), /*#**PURE***/React.createElement(“div”, {
-style: S.warningBox
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-gap: 8
-}
-}, /*#**PURE***/React.createElement(“span”, {
-style: {
-fontSize: 12
-}
-}, “\uD83D\uDCE1”), /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 9,
-letterSpacing: 2,
-color: “#8B7D3C”,
-marginBottom: 2
-}
-}, “WEEKLY NOTIFICATION”), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 10,
-color: “#d4cbb3”,
-lineHeight: 1.5
-}
-}, “Check this feed weekly for newly approved providers. Spring Enrollment: 1 FEB - 1 APR 2026.”)))), /*#**PURE***/React.createElement(“a”, {
-href: “https://skillbridge.osd.mil/organizations.htm”,
-target: “_blank”,
-rel: “noopener noreferrer”,
-style: {
-display: “inline-block”,
-padding: “8px 16px”,
-background: “#4A5D23”,
-borderRadius: 4,
-color: “#F5F0E1”,
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 11,
-letterSpacing: 1,
-textDecoration: “none”,
-marginTop: 4
-}
-}, “VIEW FULL DOD LIST \u2192”)), SKILLBRIDGE_FEED.map((week, wi) => /*#**PURE***/React.createElement(“div”, {
-key: wi,
-style: {
-marginBottom: 16
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: S.sectionLabel
-}, “WEEK OF “, week.week), week.companies.map((co, ci) => /*#**PURE***/React.createElement(“a”, {
-key: ci,
-href: co.url,
-target: “_blank”,
-rel: “noopener noreferrer”,
-style: {
-display: “block”,
-textDecoration: “none”,
-padding: “11px 13px”,
-background: co.highlight ? “#2a3320” : “#232920”,
-border: “1px solid “ + (co.highlight ? “#4A5D23” : “#3d4a2a”),
-borderLeft: co.highlight ? “4px solid #4A5D23” : “4px solid transparent”,
-borderRadius: 4,
-marginBottom: 5
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-justifyContent: “space-between”,
-alignItems: “center”,
-marginBottom: 3
-}
-}, /*#**PURE***/React.createElement(“span”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 13,
-color: “#F5F0E1”,
-fontWeight: 600
-}
-}, co.name), co.highlight && /*#**PURE***/React.createElement(“span”, {
-style: {
-fontSize: 7,
-background: “#4A5D23”,
-color: “#F5F0E1”,
-padding: “1px 5px”,
-borderRadius: 2,
-fontFamily: “‘Oswald’, sans-serif”,
-letterSpacing: 1
-}
-}, “NEW”)), /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-gap: 8,
-fontSize: 9,
-color: “#8a8062”
-}
-}, /*#**PURE***/React.createElement(“span”, {
-style: {
-background: “#1a1f16”,
-padding: “1px 6px”,
-borderRadius: 2
-}
-}, co.industry), /*#**PURE***/React.createElement(“span”, {
-style: {
-background: “#1a1f16”,
-padding: “1px 6px”,
-borderRadius: 2
-}
-}, co.locations)), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 8,
-color: “#6B8E23”,
-marginTop: 4
-}
-}, co.url.replace(“https://”, “”)))), week.notes && /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.warningBox,
-marginTop: 6,
-padding: “8px 12px”
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 10,
-color: “#d4cbb3”,
-lineHeight: 1.5
-}
-}, “\uD83D\uDCCB”, “ “, week.notes)))), /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.card,
-padding: 14,
-borderStyle: “dashed”
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 12,
-color: “#8B7D3C”,
-letterSpacing: 2,
-marginBottom: 6
-}
-}, “ADDITIONAL RESOURCES”), [{
-name: “DOD SkillBridge Official”,
-url: “https://skillbridge.osd.mil”
-}, {
-name: “Hiring Our Heroes Fellowship”,
-url: “https://www.hiringourheroes.org”
-}, {
-name: “Rate My SkillBridge”,
-url: “https://ratemyskb.com”
-}, {
-name: “Military OneSource Guide”,
-url: “https://www.militaryonesource.mil/resources/gov/dod-skillbridge/”
-}].map((r, i) => /*#**PURE***/React.createElement(“a”, {
-key: i,
-href: r.url,
-target: “_blank”,
-rel: “noopener noreferrer”,
-style: {
-display: “block”,
-padding: “6px 0”,
-borderBottom: i < 3 ? “1px solid #2a3320” : “none”,
-textDecoration: “none”
-}
-}, /*#**PURE***/React.createElement(“span”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 12,
-color: “#F5F0E1”
-}
-}, r.name), /*#**PURE***/React.createElement(“span”, {
-style: {
-fontSize: 10,
-color: “#6B8E23”,
-marginLeft: 8
-}
-}, “\u2192”))))), subTab === “healthcare” && /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.card,
-padding: 14
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: S.cardTitle
-}, “HEALTHCARE TRANSITION”), /*#**PURE***/React.createElement(“div”, {
-style: S.bodyText
-}, “No automatic bridge from TRICARE to VA. Plan ahead.”)), HEALTHCARE_TIMELINE.map((h, i) => /*#**PURE***/React.createElement(“div”, {
-key: i,
-style: {
-padding: “11px 13px”,
-background: “#232920”,
-border: “1px solid #3d4a2a”,
-borderLeft: “4px solid “ + (h.status === “warning” ? “#DAA520” : h.status === “active” ? “#4A5D23” : “#1B3A4B”),
-borderRadius: 4,
-marginBottom: 6
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-justifyContent: “space-between”,
-marginBottom: 3
-}
-}, /*#**PURE***/React.createElement(“span”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 12,
-color: “#F5F0E1”
-}
-}, h.phase), /*#**PURE***/React.createElement(“span”, {
-style: {
-fontSize: 9,
-color: h.status === “warning” ? “#DAA520” : “#4A5D23”,
-fontFamily: “‘Oswald’, sans-serif”,
-letterSpacing: 1
-}
-}, h.coverage)), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 10,
-color: “#8a8062”,
-lineHeight: 1.5,
-fontFamily: “‘Source Sans 3’, sans-serif”
-}
-}, h.action))), /*#**PURE***/React.createElement(“div”, {
-style: S.warningBox
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 10,
-letterSpacing: 2,
-color: “#8B7D3C”,
-marginBottom: 4
-}
-}, “KEY INTEL”), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 10,
-color: “#d4cbb3”,
-lineHeight: 1.8,
-fontFamily: “‘Source Sans 3’, sans-serif”
-}
-}, /*#**PURE***/React.createElement(“div”, null, “\u25CF”, “ TAMP: 180 days free TRICARE after separation”), /*#**PURE***/React.createElement(“div”, null, “\u25CF”, “ Must ACTIVELY enroll in VA healthcare”), /*#**PURE***/React.createElement(“div”, null, “\u25CF”, “ Combat vets: 5-year enhanced eligibility”), /*#**PURE***/React.createElement(“div”, null, “\u25CF”, “ CHCBP: purchase within 60 days of TAMP expiring”), /*#**PURE***/React.createElement(“div”, null, “\u25CF”, “ VA dental NOT included unless 100% SC”)))), subTab === “documents” && /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.card,
-padding: 14
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: S.cardTitle
-}, “DOCUMENT VAULT”), /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.bodyText,
-marginBottom: 8
-}
-}, “Track every critical document. Mark each as obtained.”), /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-justifyContent: “space-between”,
-fontSize: 10,
-color: “#8a8062”
-}
-}, /*#**PURE***/React.createElement(“span”, null, “SECURED”), /*#**PURE***/React.createElement(“span”, {
-style: {
-color: docsObtained === documents.length ? “#4A5D23” : “#F5F0E1”,
-fontWeight: 700
-}
-}, docsObtained, “/”, documents.length)), /*#**PURE***/React.createElement(“div”, {
-style: {
-background: “#1a1f16”,
-borderRadius: 2,
-height: 6,
-overflow: “hidden”,
-marginTop: 4
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-width: Math.round(docsObtained / documents.length * 100) + “%”,
-height: “100%”,
-background: docsObtained === documents.length ? “#4A5D23” : “#8B7D3C”,
-transition: “width 0.3s”
-}
-}))), /*#**PURE***/React.createElement(“div”, {
-style: S.sectionLabel
-}, “CRITICAL DOCUMENTS”), documents.filter(d => d.critical).map(d => /*#**PURE***/React.createElement(“button”, {
-key: d.id,
-onClick: () => toggleDoc(d.id),
-style: {
-display: “flex”,
-alignItems: “flex-start”,
-gap: 10,
-padding: “10px 12px”,
-background: d.obtained ? “#2a3320” : “#232920”,
-border: “1px solid “ + (d.obtained ? “#4A5D23” : “#3d4a2a”),
-borderLeft: d.obtained ? “4px solid #4A5D23” : “4px solid #8B0000”,
-borderRadius: 4,
-marginBottom: 5,
-cursor: “pointer”,
-width: “100%”,
-textAlign: “left”
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-width: 18,
-height: 18,
-minWidth: 18,
-border: “2px solid “ + (d.obtained ? “#4A5D23” : “#8B0000”),
-borderRadius: 3,
-display: “flex”,
-alignItems: “center”,
-justifyContent: “center”,
-background: d.obtained ? “#4A5D23” : “transparent”
-}
-}, d.obtained && /*#**PURE***/React.createElement(“span”, {
-style: {
-color: “#F5F0E1”,
-fontSize: 11,
-fontWeight: 700
-}
-}, “\u2713”)), /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 12,
-color: d.obtained ? “#6B8E23” : “#F5F0E1”,
-textDecoration: d.obtained ? “line-through” : “none”
-}
-}, d.name), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 9,
-color: “#5a5540”,
-marginTop: 2,
-lineHeight: 1.4,
-fontFamily: “‘Source Sans 3’, sans-serif”
-}
-}, d.notes)))), /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.sectionLabel,
-marginTop: 16
-}
-}, “SUPPORTING DOCUMENTS”), documents.filter(d => !d.critical).map(d => /*#**PURE***/React.createElement(“button”, {
-key: d.id,
-onClick: () => toggleDoc(d.id),
-style: {
-display: “flex”,
-alignItems: “flex-start”,
-gap: 10,
-padding: “10px 12px”,
-background: d.obtained ? “#2a3320” : “#232920”,
-border: “1px solid “ + (d.obtained ? “#4A5D23” : “#3d4a2a”),
-borderRadius: 4,
-marginBottom: 5,
-cursor: “pointer”,
-width: “100%”,
-textAlign: “left”
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-width: 18,
-height: 18,
-minWidth: 18,
-border: “2px solid “ + (d.obtained ? “#4A5D23” : “#5a5540”),
-borderRadius: 3,
-display: “flex”,
-alignItems: “center”,
-justifyContent: “center”,
-background: d.obtained ? “#4A5D23” : “transparent”
-}
-}, d.obtained && /*#**PURE***/React.createElement(“span”, {
-style: {
-color: “#F5F0E1”,
-fontSize: 11,
-fontWeight: 700
-}
-}, “\u2713”)), /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 12,
-color: d.obtained ? “#6B8E23” : “#F5F0E1”,
-textDecoration: d.obtained ? “line-through” : “none”
-}
-}, d.name), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 9,
-color: “#5a5540”,
-marginTop: 2,
-lineHeight: 1.4,
-fontFamily: “‘Source Sans 3’, sans-serif”
-}
-}, d.notes)))))), activeTab === “taxes” && /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: S.card
-}, /*#**PURE***/React.createElement(“div”, {
-style: S.cardTitle
-}, “STATE TAX INTEL \u2014 RETIRED PAY”), /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.bodyText,
-marginBottom: 14
-}
-}, “Federal taxes are due on all retired military compensation. State taxes vary by “, /*#**PURE***/React.createElement(“span”, {
-style: {
-color: “#DAA520”,
-fontWeight: 700
-}
-}, “Home of RESIDENCE”), “ \u2014 not Home of Record.”), /*#**PURE***/React.createElement(“label”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 10,
-letterSpacing: 2,
-color: “#8B7D3C”,
-display: “block”,
-marginBottom: 5
-}
-}, “STATE (2-LETTER)”), /*#**PURE***/React.createElement(“input”, {
-type: “text”,
-value: userState,
-onChange: e => setUserState(e.target.value.toUpperCase().slice(0, 2)),
-placeholder: “TX, FL, VA…”,
-maxLength: 2,
-style: {
-…S.input,
-fontSize: 18,
-textTransform: “uppercase”,
-letterSpacing: 6,
-textAlign: “center”
-}
-}), userState.length === 2 && getStateTaxStatus(userState) && /*#**PURE***/React.createElement(“div”, {
-style: {
-marginTop: 10,
-padding: 14,
-background: “#1a1f16”,
-border: “2px solid “ + getStateTaxStatus(userState).color,
-borderRadius: 6
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 13,
-fontWeight: 700,
-color: getStateTaxStatus(userState).color,
-letterSpacing: 2,
-marginBottom: 6
-}
-}, getStateTaxStatus(userState).status), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 11,
-color: “#d4cbb3”,
-lineHeight: 1.6
-}
-}, getStateTaxStatus(userState).detail))), /*#**PURE***/React.createElement(“div”, {
-style: S.warningBox
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 10,
-letterSpacing: 2,
-color: “#8B7D3C”,
-marginBottom: 6
-}
-}, “KEY INTEL”), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 10,
-color: “#d4cbb3”,
-lineHeight: 1.8,
-fontFamily: “‘Source Sans 3’, sans-serif”
-}
-}, /*#**PURE***/React.createElement(“div”, null, “\u25CF”, “ NO Social Security or Medicare tax on retired pay”), /*#**PURE***/React.createElement(“div”, null, “\u25CF”, “ Full Social Security benefits at eligibility age”), /*#**PURE***/React.createElement(“div”, null, “\u25CF”, “ MSRRA: Spouses may declare same residency as SM”), /*#**PURE***/React.createElement(“div”, null, “\u25CF”, “ Verify current state law \u2014 conditions apply”))), /*#**PURE***/React.createElement(“a”, {
-href: “https://myarmybenefits.us.army.mil/Benefit-Library/State/Territory-Benefits”,
-target: “_blank”,
-rel: “noopener noreferrer”,
-style: {
-display: “block”,
-textAlign: “center”,
-padding: “10px 16px”,
-background: “#4A5D23”,
-borderRadius: 4,
-color: “#F5F0E1”,
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 11,
-letterSpacing: 1,
-textDecoration: “none”
-}
-}, “VIEW STATE FACT SHEETS \u2192”)), activeTab === “dd214” && /*#**PURE***/React.createElement(“div”, null, /*#**PURE***/React.createElement(“div”, {
-style: S.card
-}, /*#**PURE***/React.createElement(“div”, {
-style: S.cardTitle
-}, “DD214 & SERVICE RECORD”), /*#**PURE***/React.createElement(“div”, {
-style: S.bodyText
-}, “Your DD214 is the single most important document you’ll carry as a veteran. Verify every line.”)), /*#**PURE***/React.createElement(“div”, {
-style: S.sectionLabel
-}, “CRITICAL BLOCKS TO VERIFY”), [{
-block: “Block 4a”,
-label: “Grade/Rate/Rank”,
-note: “Ensure highest rank is correct”
-}, {
-block: “Block 12a”,
-label: “Date Entered AD”,
-note: “Affects retirement calculations”
-}, {
-block: “Block 12d”,
-label: “Net Active Service”,
-note: “Cross-reference with LES”
-}, {
-block: “Block 13”,
-label: “Decorations & Medals”,
-note: “List EVERY award”
-}, {
-block: “Block 14”,
-label: “Military Education”,
-note: “All PME, schools, certs”
-}, {
-block: “Block 18”,
-label: “Remarks”,
-note: “MOS translation, qualifications”
-}, {
-block: “Block 24”,
-label: “Character of Service”,
-note: “Must read Honorable”
-}, {
-block: “Block 26”,
-label: “Separation Code”,
-note: “Research your code”
-}].map((item, i) => /*#**PURE***/React.createElement(“div”, {
-key: i,
-style: {
-padding: “10px 12px”,
-background: “#1a1f16”,
-border: “1px solid #3d4a2a”,
-borderRadius: 4,
-marginBottom: 5
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-display: “flex”,
-justifyContent: “space-between”,
-marginBottom: 3
-}
-}, /*#**PURE***/React.createElement(“span”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 11,
-color: “#8B7D3C”
-}
-}, item.block), /*#**PURE***/React.createElement(“span”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 11,
-color: “#F5F0E1”
-}
-}, item.label)), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 9,
-color: “#8a8062”,
-fontFamily: “‘Source Sans 3’, sans-serif”
-}
-}, item.note))), /*#**PURE***/React.createElement(“div”, {
-style: {
-…S.card,
-marginTop: 12,
-borderStyle: “dashed”,
-textAlign: “center”,
-padding: 24
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 28,
-marginBottom: 6
-}
-}, “\uD83D\uDCC4”), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 11,
-letterSpacing: 2,
-color: “#5a5540”
-}
-}, “RESUME TRANSLATION ENGINE”), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 9,
-color: “#3d4a2a”,
-marginTop: 4
-}
-}, “DD214/JST auto-pull \u2192 civilian resume. In development.”)))), /*#**PURE***/React.createElement(“div”, {
-style: {
-padding: “20px 14px 24px”,
-borderTop: “1px solid #3d4a2a”,
-textAlign: “center”,
-background: “#1a1f16”
-}
-}, /*#**PURE***/React.createElement(“div”, {
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 10,
-letterSpacing: 3,
-color: “#5a5540”,
-marginBottom: 6
-}
-}, “BUILT BY”), /*#**PURE***/React.createElement(“a”, {
-href: “https://www.veteranbridgesolutions.com”,
-target: “_blank”,
-rel: “noopener noreferrer”,
-style: {
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 16,
-fontWeight: 700,
-color: “#8B7D3C”,
-textDecoration: “none”,
-letterSpacing: 1,
-display: “block”,
-marginBottom: 4
-}
-}, “VETERAN BRIDGE SOLUTIONS”), /*#**PURE***/React.createElement(“a”, {
-href: “https://www.veteranbridgesolutions.com”,
-target: “_blank”,
-rel: “noopener noreferrer”,
-style: {
-fontSize: 11,
-color: “#8BB83C”,
-textDecoration: “none”,
-letterSpacing: 1,
-fontFamily: “‘Source Sans 3’, sans-serif”
-}
-}, “www.veteranbridgesolutions.com”), /*#**PURE***/React.createElement(“div”, {
-style: {
-fontSize: 9,
-color: “#3d4a2a”,
-marginTop: 8
-}
-}, “Bridging the gap between service and civilian success.”)), toast && /*#**PURE***/React.createElement(“div”, {
-style: {
-position: “fixed”,
-bottom: 16,
-left: “50%”,
-transform: “translateX(-50%)”,
-background: “#4A5D23”,
-color: “#F5F0E1”,
-padding: “8px 20px”,
-borderRadius: 6,
-fontFamily: “‘Oswald’, sans-serif”,
-fontSize: 11,
-letterSpacing: 2,
-zIndex: 300,
-boxShadow: “0 4px 20px rgba(0,0,0,0.4)”
-}
-}, toast));
-}
-ReactDOM.render(/*#**PURE***/React.createElement(App, null), document.getElementById(“root”));</script>
 
-</body>
-</html>
+return (
+<div style={{ fontFamily: “‘Courier Prime’, ‘Courier New’, monospace”, background: “#1a1f16”, color: “#d4cbb3”, minHeight: “100vh”, maxWidth: 540, margin: “0 auto”, position: “relative” }}>
+
+```
+  {/* HEADER */}
+  <div style={{ background: "linear-gradient(180deg, #3d4a2a 0%, #2a3320 100%)", borderBottom: "3px solid #8B7D3C", padding: "14px 16px 10px", position: "sticky", top: 0, zIndex: 100 }}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+      <div>
+        <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 4, color: "#8B7D3C" }}>VETERAN BRIDGE SOLUTIONS</div>
+        <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 24, fontWeight: 700, color: "#F5F0E1", letterSpacing: 1, lineHeight: 1.1 }}>TRANSITION OPS</div>
+        <a href="https://www.veteranbridgesolutions.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: 9, color: "#8BB83C", letterSpacing: 2, marginTop: 3, textDecoration: "none", display: "block" }}>veteranbridgesolutions.com &rarr;</a>
+      </div>
+      <button onClick={() => setShowNotifPanel(!showNotifPanel)} style={{ background: activeNotifCount > 0 ? "#8B0000" : "#4a4a3a", border: "1px solid #8B7D3C", borderRadius: 4, padding: "7px 10px", cursor: "pointer", position: "relative", color: "#F5F0E1", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1 }}>
+        ALERTS
+        {activeNotifCount > 0 && <span style={{ position: "absolute", top: -6, right: -6, background: "#FF4444", color: "#fff", borderRadius: "50%", width: 17, height: 17, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700 }}>{activeNotifCount}</span>}
+      </button>
+    </div>
+    <div style={{ marginTop: 10 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, marginBottom: 3, color: "#8a8062", letterSpacing: 1 }}>
+        <span>MISSION PROGRESS</span><span>{totalProgress.done}/{totalProgress.total} ({totalProgress.pct}%)</span>
+      </div>
+      <div style={{ background: "#1a1f16", borderRadius: 2, height: 7, overflow: "hidden", border: "1px solid #3d4a2a" }}>
+        <div style={{ width: totalProgress.pct + "%", height: "100%", background: totalProgress.pct === 100 ? "#4A5D23" : "linear-gradient(90deg, #8B7D3C, #B8A94E)", borderRadius: 2, transition: "width 0.5s ease" }} />
+      </div>
+    </div>
+  </div>
+
+  {/* NOTIF PANEL */}
+  {showNotifPanel && (
+    <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 200, display: "flex", justifyContent: "center", alignItems: "flex-start", paddingTop: 16 }}>
+      <div style={{ background: "#232920", border: "2px solid #8B7D3C", borderRadius: 8, width: "92%", maxWidth: 500, maxHeight: "85vh", overflow: "auto" }}>
+        <div style={{ padding: "14px 16px", borderBottom: "1px solid #3d4a2a", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, background: "#232920", zIndex: 1 }}>
+          <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 600, color: "#F5F0E1", letterSpacing: 2 }}>ALERTS ({activeNotifCount})</div>
+          <button onClick={() => setShowNotifPanel(false)} style={{ background: "none", border: "1px solid #8a8062", color: "#8a8062", padding: "3px 10px", cursor: "pointer", borderRadius: 3, fontSize: 11 }}>CLOSE</button>
+        </div>
+        {NOTIFICATIONS.filter(n => !dismissedNotifs.has(n.id)).map(n => (
+          <div key={n.id} style={{ padding: "12px 16px", borderBottom: "1px solid #2a3320", display: "flex", gap: 10, alignItems: "flex-start" }}>
+            <div style={{ background: n.priority === "CRITICAL" ? "#8B0000" : n.priority === "HIGH" ? "#8B6914" : "#4A5D23", color: "#F5F0E1", fontSize: 7, padding: "2px 5px", borderRadius: 2, fontWeight: 700, letterSpacing: 1, whiteSpace: "nowrap", marginTop: 2 }}>{n.priority}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 12, fontWeight: 600, color: "#F5F0E1", marginBottom: 3 }}>{n.title}</div>
+              <div style={{ fontSize: 10, color: "#8a8062", lineHeight: 1.5 }}>{n.body}</div>
+              <div style={{ fontSize: 8, color: "#5a5540", marginTop: 3, letterSpacing: 1 }}>T-{n.monthsOut} MONTHS</div>
+            </div>
+            <button onClick={() => { setDismissedNotifs(prev => { const s = new Set(prev); s.add(n.id); return s; }); showToast("Alert acknowledged."); }} style={{ background: "none", border: "1px solid #3d4a2a", color: "#5a5540", fontSize: 8, padding: "3px 6px", cursor: "pointer", borderRadius: 2 }}>ACK</button>
+          </div>
+        ))}
+        {activeNotifCount === 0 && <div style={{ padding: 30, textAlign: "center", color: "#5a5540", fontSize: 11 }}>All alerts acknowledged.</div>}
+      </div>
+    </div>
+  )}
+
+  {/* TABS */}
+  <div style={{ display: "flex", background: "#232920", borderBottom: "1px solid #3d4a2a", position: "sticky", top: 108, zIndex: 50 }}>
+    {[{id:"timeline",label:"TIMELINE"},{id:"resources",label:"RESOURCES"},{id:"taxes",label:"TAX INTEL"},{id:"dd214",label:"DD214"}].map(tab => (
+      <button key={tab.id} onClick={() => { setActiveTab(tab.id); setSelectedMilestone(null); }} style={{ flex: 1, padding: "9px 2px", background: activeTab === tab.id ? "#3d4a2a" : "transparent", border: "none", borderBottom: activeTab === tab.id ? "2px solid #8B7D3C" : "2px solid transparent", color: activeTab === tab.id ? "#F5F0E1" : "#5a5540", fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, cursor: "pointer" }}>{tab.label}</button>
+    ))}
+  </div>
+
+  {/* CONTENT */}
+  <div style={{ padding: "14px 14px 80px" }}>
+
+    {/* TIMELINE */}
+    {activeTab === "timeline" && !selectedMilestone && (
+      <div>
+        <div style={{ ...S.card, padding: 14 }}>
+          <label style={{ fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: "#8B7D3C", display: "block", marginBottom: 6 }}>ETS / EAOS / SEPARATION DATE</label>
+          <input type="date" value={separationDate} onChange={(e) => setSeparationDate(e.target.value)} style={S.input} />
+          {separationDate && <div style={{ marginTop: 6, fontSize: 10, color: "#8a8062" }}>{(() => { const diff = Math.ceil((new Date(separationDate) - new Date()) / (1000*60*60*24*30)); if (diff <= 0) return "STATUS: Post-separation. Focus on First 90 Days."; return "STATUS: T-" + diff + " months. " + (diff > 12 ? "Use this time wisely." : diff > 6 ? "Critical planning phase." : diff > 3 ? "Accelerate admin actions." : "Final execution. No time to waste."); })()}</div>}
+        </div>
+        {milestones.map((m) => {
+          const progress = getProgress(m); const cat = CATEGORIES[m.category];
+          return (
+            <button key={m.id} onClick={() => setSelectedMilestone(m.id)} style={{ display: "block", width: "100%", background: "#232920", border: "1px solid #3d4a2a", borderLeft: "4px solid " + cat.color, borderRadius: 6, padding: "12px 14px", marginBottom: 8, cursor: "pointer", textAlign: "left", position: "relative" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2, color: cat.color, background: cat.color + "22", padding: "1px 6px", borderRadius: 2 }}>{cat.label}</span>
+                <span style={{ fontSize: 9, color: "#5a5540", letterSpacing: 1 }}>{m.monthsOut > 0 ? "T-" + m.monthsOut + " MO" : "POST-SEP"}</span>
+              </div>
+              <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 15, fontWeight: 600, color: "#F5F0E1", marginBottom: 3 }}>{m.phase}</div>
+              <div style={{ fontSize: 10, color: "#8a8062", marginBottom: 8 }}>{m.title}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ flex: 1, background: "#1a1f16", borderRadius: 2, height: 5 }}><div style={{ width: progress.pct + "%", height: "100%", background: progress.pct === 100 ? "#4A5D23" : cat.color, transition: "width 0.3s" }} /></div>
+                <span style={{ fontSize: 9, color: progress.pct === 100 ? "#4A5D23" : "#5a5540", fontWeight: 700 }}>{progress.pct === 100 ? "COMPLETE" : progress.done + "/" + progress.total}</span>
+              </div>
+              <div style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", color: "#3d4a2a", fontSize: 18 }}>&rsaquo;</div>
+            </button>
+          );
+        })}
+      </div>
+    )}
+
+    {/* MILESTONE DETAIL */}
+    {activeTab === "timeline" && selectedMilestone && (() => {
+      const m = milestones.find(ms => ms.id === selectedMilestone); const progress = getProgress(m); const cat = CATEGORIES[m.category];
+      return (
+        <div>
+          <button onClick={() => setSelectedMilestone(null)} style={{ background: "none", border: "none", color: "#8B7D3C", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 2, cursor: "pointer", marginBottom: 12, padding: 0 }}>&lsaquo; BACK TO TIMELINE</button>
+          <div style={{ ...S.card, borderLeft: "4px solid " + cat.color, padding: 18 }}>
+            <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 3, color: cat.color, marginBottom: 4 }}>{cat.label} &mdash; {m.monthsOut > 0 ? "T-" + m.monthsOut + " MONTHS" : "POST-SEPARATION"}</div>
+            <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 20, fontWeight: 700, color: "#F5F0E1", marginBottom: 3 }}>{m.phase}</div>
+            <div style={{ fontSize: 12, color: "#8a8062", marginBottom: 10 }}>{m.title}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ flex: 1, background: "#1a1f16", borderRadius: 2, height: 7 }}><div style={{ width: progress.pct + "%", height: "100%", background: progress.pct === 100 ? "#4A5D23" : cat.color, borderRadius: 2 }} /></div>
+              <span style={{ fontSize: 11, color: "#F5F0E1", fontWeight: 700 }}>{progress.pct}%</span>
+            </div>
+          </div>
+          <div style={S.warningBox}><div style={{ display: "flex", gap: 8 }}><span style={{ fontSize: 14 }}>{"\u26A0"}</span><div><div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2, color: "#8B7D3C", marginBottom: 3 }}>COMMANDER'S NOTE</div><div style={{ fontSize: 11, color: "#d4cbb3", lineHeight: 1.6 }}>{m.reminder}</div></div></div></div>
+          <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: "#5a5540", marginBottom: 8 }}>CHECKLIST ({progress.done}/{progress.total})</div>
+          {m.tasks.map(t => (
+            <button key={t.id} onClick={() => toggleTask(m.id, t.id)} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", background: t.done ? "#2a3320" : "#232920", border: "1px solid " + (t.done ? "#4A5D23" : "#3d4a2a"), borderRadius: 4, marginBottom: 5, cursor: "pointer", width: "100%", textAlign: "left" }}>
+              <div style={{ width: 18, height: 18, minWidth: 18, border: "2px solid " + (t.done ? "#4A5D23" : "#5a5540"), borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", background: t.done ? "#4A5D23" : "transparent", marginTop: 1 }}>
+                {t.done && <span style={{ color: "#F5F0E1", fontSize: 11, fontWeight: 700 }}>{"\u2713"}</span>}
+              </div>
+              <span style={{ fontSize: 11, color: t.done ? "#6B8E23" : "#d4cbb3", textDecoration: t.done ? "line-through" : "none", lineHeight: 1.5, fontFamily: "'Source Sans 3', sans-serif" }}>{t.text}</span>
+            </button>
+          ))}
+        </div>
+      );
+    })()}
+
+    {/* RESOURCES */}
+    {activeTab === "resources" && (
+      <div>
+        <div style={{ display: "flex", gap: 4, marginBottom: 14, flexWrap: "wrap" }}>
+          {[{id:"vsos",label:"VSOs"},{id:"skillbridge",label:"SKILLBRIDGE"},{id:"healthcare",label:"HEALTHCARE"},{id:"documents",label:"DOC VAULT"}].map(st => (
+            <button key={st.id} onClick={() => setSubTab(st.id)} style={{ padding: "6px 12px", background: subTab === st.id ? "#8B7D3C" : "#232920", border: "1px solid " + (subTab === st.id ? "#8B7D3C" : "#3d4a2a"), borderRadius: 4, color: subTab === st.id ? "#1a1f16" : "#8a8062", fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, cursor: "pointer", fontWeight: subTab === st.id ? 700 : 400 }}>{st.label}</button>
+          ))}
+        </div>
+
+        {/* VSOs */}
+        {subTab === "vsos" && (
+          <div>
+            <div style={{ ...S.card, padding: 14 }}>
+              <div style={S.cardTitle}>VETERAN SERVICE ORGANIZATIONS</div>
+              <div style={{ ...S.bodyText, marginBottom: 10 }}>Direct links to every major VSO. Free claims assistance, career support, community, and crisis resources.</div>
+              <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                {["ALL","CHARTERED","TRANSITION","COMMUNITY","CRISIS","FAMILY"].map(f => (
+                  <button key={f} onClick={() => setVsoFilter(f)} style={{ padding: "3px 8px", background: vsoFilter === f ? "#4A5D23" : "transparent", border: "1px solid " + (vsoFilter === f ? "#4A5D23" : "#3d4a2a"), borderRadius: 3, color: vsoFilter === f ? "#F5F0E1" : "#5a5540", fontSize: 8, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" }}>{f}</button>
+                ))}
+              </div>
+            </div>
+            <a href="https://www.veteranbridgesolutions.com" target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", padding: "14px 16px", background: "linear-gradient(135deg, #3d4a2a 0%, #2a3320 100%)", border: "2px solid #8B7D3C", borderRadius: 6, marginBottom: 14 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 8, letterSpacing: 3, color: "#8B7D3C", marginBottom: 2 }}>PRESENTED BY</div>
+                  <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 700, color: "#F5F0E1" }}>VETERAN BRIDGE SOLUTIONS</div>
+                  <div style={{ fontSize: 10, color: "#8BB83C", marginTop: 3 }}>www.veteranbridgesolutions.com &rarr;</div>
+                </div>
+                <span style={{ fontSize: 22, color: "#8B7D3C" }}>&rarr;</span>
+              </div>
+            </a>
+            {VSO_DIRECTORY.filter(section => {
+              if (vsoFilter === "ALL") return true;
+              if (vsoFilter === "CHARTERED") return section.category.includes("CHARTERED");
+              if (vsoFilter === "TRANSITION") return section.category.includes("TRANSITION");
+              if (vsoFilter === "COMMUNITY") return section.category.includes("PURPOSE");
+              if (vsoFilter === "CRISIS") return section.category.includes("MENTAL");
+              if (vsoFilter === "FAMILY") return section.category.includes("SPOUSE");
+              return true;
+            }).map((section, si) => (
+              <div key={si} style={{ marginBottom: 16 }}>
+                <div style={S.sectionLabel}>{section.category}</div>
+                <div style={{ fontSize: 10, color: "#5a5540", marginBottom: 10, marginTop: -4 }}>{section.desc}</div>
+                {section.orgs.map((org, oi) => (
+                  <a key={oi} href={org.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", padding: "11px 13px", background: "#232920", border: "1px solid #3d4a2a", borderRadius: 4, marginBottom: 5 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={{ fontSize: 14 }}>{org.icon}</span>
+                        <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, color: "#F5F0E1", fontWeight: 600 }}>{org.name}</span>
+                      </div>
+                      <span style={{ fontSize: 12, color: "#8BB83C" }}>&rarr;</span>
+                    </div>
+                    <div style={{ fontSize: 10, color: "#8a8062", lineHeight: 1.5, fontFamily: "'Source Sans 3', sans-serif", paddingLeft: 22 }}>{org.desc}</div>
+                    <div style={{ fontSize: 8, color: "#6B8E23", marginTop: 3, paddingLeft: 22 }}>{org.url.replace("https://","")}</div>
+                  </a>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* SKILLBRIDGE */}
+        {subTab === "skillbridge" && (
+          <div>
+            <div style={{ ...S.card, padding: 14 }}>
+              <div style={S.cardTitle}>SKILLBRIDGE WEEKLY INTEL</div>
+              <div style={{ ...S.bodyText, marginBottom: 8 }}>Newly approved and featured SkillBridge companies, updated weekly.</div>
+              <div style={S.warningBox}><div style={{ display: "flex", gap: 8 }}><span style={{ fontSize: 12 }}>{"\uD83D\uDCE1"}</span><div><div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2, color: "#8B7D3C", marginBottom: 2 }}>WEEKLY NOTIFICATION</div><div style={{ fontSize: 10, color: "#d4cbb3", lineHeight: 1.5 }}>Check this feed weekly for newly approved providers. Spring Enrollment: 1 FEB - 1 APR 2026.</div></div></div></div>
+              <a href="https://skillbridge.osd.mil/organizations.htm" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", padding: "8px 16px", background: "#4A5D23", borderRadius: 4, color: "#F5F0E1", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1, textDecoration: "none", marginTop: 4 }}>VIEW FULL DOD LIST &rarr;</a>
+            </div>
+            {SKILLBRIDGE_FEED.map((week, wi) => (
+              <div key={wi} style={{ marginBottom: 16 }}>
+                <div style={S.sectionLabel}>WEEK OF {week.week}</div>
+                {week.companies.map((co, ci) => (
+                  <a key={ci} href={co.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", padding: "11px 13px", background: co.highlight ? "#2a3320" : "#232920", border: "1px solid " + (co.highlight ? "#4A5D23" : "#3d4a2a"), borderLeft: co.highlight ? "4px solid #4A5D23" : "4px solid transparent", borderRadius: 4, marginBottom: 5 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3 }}>
+                      <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, color: "#F5F0E1", fontWeight: 600 }}>{co.name}</span>
+                      {co.highlight && <span style={{ fontSize: 7, background: "#4A5D23", color: "#F5F0E1", padding: "1px 5px", borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 }}>NEW</span>}
+                    </div>
+                    <div style={{ display: "flex", gap: 8, fontSize: 9, color: "#8a8062" }}>
+                      <span style={{ background: "#1a1f16", padding: "1px 6px", borderRadius: 2 }}>{co.industry}</span>
+                      <span style={{ background: "#1a1f16", padding: "1px 6px", borderRadius: 2 }}>{co.locations}</span>
+                    </div>
+                    <div style={{ fontSize: 8, color: "#6B8E23", marginTop: 4 }}>{co.url.replace("https://","")}</div>
+                  </a>
+                ))}
+                {week.notes && <div style={{ ...S.warningBox, marginTop: 6, padding: "8px 12px" }}><div style={{ fontSize: 10, color: "#d4cbb3", lineHeight: 1.5 }}>{"\uD83D\uDCCB"} {week.notes}</div></div>}
+              </div>
+            ))}
+            <div style={{ ...S.card, padding: 14, borderStyle: "dashed" }}>
+              <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 12, color: "#8B7D3C", letterSpacing: 2, marginBottom: 6 }}>ADDITIONAL RESOURCES</div>
+              {[{ name: "DOD SkillBridge Official", url: "https://skillbridge.osd.mil" },{ name: "Hiring Our Heroes Fellowship", url: "https://www.hiringourheroes.org" },{ name: "Rate My SkillBridge", url: "https://ratemyskb.com" },{ name: "Military OneSource Guide", url: "https://www.militaryonesource.mil/resources/gov/dod-skillbridge/" }].map((r,i) => (
+                <a key={i} href={r.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "6px 0", borderBottom: i < 3 ? "1px solid #2a3320" : "none", textDecoration: "none" }}>
+                  <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 12, color: "#F5F0E1" }}>{r.name}</span>
+                  <span style={{ fontSize: 10, color: "#6B8E23", marginLeft: 8 }}>&rarr;</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* HEALTHCARE */}
+        {subTab === "healthcare" && (
+          <div>
+            <div style={{ ...S.card, padding: 14 }}><div style={S.cardTitle}>HEALTHCARE TRANSITION</div><div style={S.bodyText}>No automatic bridge from TRICARE to VA. Plan ahead.</div></div>
+            {HEALTHCARE_TIMELINE.map((h, i) => (
+              <div key={i} style={{ padding: "11px 13px", background: "#232920", border: "1px solid #3d4a2a", borderLeft: "4px solid " + (h.status === "warning" ? "#DAA520" : h.status === "active" ? "#4A5D23" : "#1B3A4B"), borderRadius: 4, marginBottom: 6 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                  <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 12, color: "#F5F0E1" }}>{h.phase}</span>
+                  <span style={{ fontSize: 9, color: h.status === "warning" ? "#DAA520" : "#4A5D23", fontFamily: "'Oswald', sans-serif", letterSpacing: 1 }}>{h.coverage}</span>
+                </div>
+                <div style={{ fontSize: 10, color: "#8a8062", lineHeight: 1.5, fontFamily: "'Source Sans 3', sans-serif" }}>{h.action}</div>
+              </div>
+            ))}
+            <div style={S.warningBox}>
+              <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: "#8B7D3C", marginBottom: 4 }}>KEY INTEL</div>
+              <div style={{ fontSize: 10, color: "#d4cbb3", lineHeight: 1.8, fontFamily: "'Source Sans 3', sans-serif" }}>
+                <div>{"\u25CF"} TAMP: 180 days free TRICARE after separation</div>
+                <div>{"\u25CF"} Must ACTIVELY enroll in VA healthcare</div>
+                <div>{"\u25CF"} Combat vets: 5-year enhanced eligibility</div>
+                <div>{"\u25CF"} CHCBP: purchase within 60 days of TAMP expiring</div>
+                <div>{"\u25CF"} VA dental NOT included unless 100% SC</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* DOCUMENT VAULT */}
+        {subTab === "documents" && (
+          <div>
+            <div style={{ ...S.card, padding: 14 }}>
+              <div style={S.cardTitle}>DOCUMENT VAULT</div>
+              <div style={{ ...S.bodyText, marginBottom: 8 }}>Track every critical document. Mark each as obtained.</div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#8a8062" }}><span>SECURED</span><span style={{ color: docsObtained === documents.length ? "#4A5D23" : "#F5F0E1", fontWeight: 700 }}>{docsObtained}/{documents.length}</span></div>
+              <div style={{ background: "#1a1f16", borderRadius: 2, height: 6, overflow: "hidden", marginTop: 4 }}><div style={{ width: Math.round((docsObtained/documents.length)*100) + "%", height: "100%", background: docsObtained === documents.length ? "#4A5D23" : "#8B7D3C", transition: "width 0.3s" }} /></div>
+            </div>
+            <div style={S.sectionLabel}>CRITICAL DOCUMENTS</div>
+            {documents.filter(d => d.critical).map(d => (
+              <button key={d.id} onClick={() => toggleDoc(d.id)} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", background: d.obtained ? "#2a3320" : "#232920", border: "1px solid " + (d.obtained ? "#4A5D23" : "#3d4a2a"), borderLeft: (d.obtained ? "4px solid #4A5D23" : "4px solid #8B0000"), borderRadius: 4, marginBottom: 5, cursor: "pointer", width: "100%", textAlign: "left" }}>
+                <div style={{ width: 18, height: 18, minWidth: 18, border: "2px solid " + (d.obtained ? "#4A5D23" : "#8B0000"), borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", background: d.obtained ? "#4A5D23" : "transparent" }}>{d.obtained && <span style={{ color: "#F5F0E1", fontSize: 11, fontWeight: 700 }}>{"\u2713"}</span>}</div>
+                <div><div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 12, color: d.obtained ? "#6B8E23" : "#F5F0E1", textDecoration: d.obtained ? "line-through" : "none" }}>{d.name}</div><div style={{ fontSize: 9, color: "#5a5540", marginTop: 2, lineHeight: 1.4, fontFamily: "'Source Sans 3', sans-serif" }}>{d.notes}</div></div>
+              </button>
+            ))}
+            <div style={{ ...S.sectionLabel, marginTop: 16 }}>SUPPORTING DOCUMENTS</div>
+            {documents.filter(d => !d.critical).map(d => (
+              <button key={d.id} onClick={() => toggleDoc(d.id)} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", background: d.obtained ? "#2a3320" : "#232920", border: "1px solid " + (d.obtained ? "#4A5D23" : "#3d4a2a"), borderRadius: 4, marginBottom: 5, cursor: "pointer", width: "100%", textAlign: "left" }}>
+                <div style={{ width: 18, height: 18, minWidth: 18, border: "2px solid " + (d.obtained ? "#4A5D23" : "#5a5540"), borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", background: d.obtained ? "#4A5D23" : "transparent" }}>{d.obtained && <span style={{ color: "#F5F0E1", fontSize: 11, fontWeight: 700 }}>{"\u2713"}</span>}</div>
+                <div><div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 12, color: d.obtained ? "#6B8E23" : "#F5F0E1", textDecoration: d.obtained ? "line-through" : "none" }}>{d.name}</div><div style={{ fontSize: 9, color: "#5a5540", marginTop: 2, lineHeight: 1.4, fontFamily: "'Source Sans 3', sans-serif" }}>{d.notes}</div></div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    )}
+
+    {/* TAX INTEL */}
+    {activeTab === "taxes" && (
+      <div>
+        <div style={S.card}>
+          <div style={S.cardTitle}>STATE TAX INTEL &mdash; RETIRED PAY</div>
+          <div style={{ ...S.bodyText, marginBottom: 14 }}>Federal taxes are due on all retired military compensation. State taxes vary by <span style={{ color: "#DAA520", fontWeight: 700 }}>Home of RESIDENCE</span> &mdash; not Home of Record.</div>
+          <label style={{ fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: "#8B7D3C", display: "block", marginBottom: 5 }}>STATE (2-LETTER)</label>
+          <input type="text" value={userState} onChange={(e) => setUserState(e.target.value.toUpperCase().slice(0,2))} placeholder="TX, FL, VA..." maxLength={2} style={{ ...S.input, fontSize: 18, textTransform: "uppercase", letterSpacing: 6, textAlign: "center" }} />
+          {userState.length === 2 && getStateTaxStatus(userState) && (
+            <div style={{ marginTop: 10, padding: 14, background: "#1a1f16", border: "2px solid " + getStateTaxStatus(userState).color, borderRadius: 6 }}>
+              <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, color: getStateTaxStatus(userState).color, letterSpacing: 2, marginBottom: 6 }}>{getStateTaxStatus(userState).status}</div>
+              <div style={{ fontSize: 11, color: "#d4cbb3", lineHeight: 1.6 }}>{getStateTaxStatus(userState).detail}</div>
+            </div>
+          )}
+        </div>
+        <div style={S.warningBox}>
+          <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: "#8B7D3C", marginBottom: 6 }}>KEY INTEL</div>
+          <div style={{ fontSize: 10, color: "#d4cbb3", lineHeight: 1.8, fontFamily: "'Source Sans 3', sans-serif" }}>
+            <div>{"\u25CF"} NO Social Security or Medicare tax on retired pay</div>
+            <div>{"\u25CF"} Full Social Security benefits at eligibility age</div>
+            <div>{"\u25CF"} MSRRA: Spouses may declare same residency as SM</div>
+            <div>{"\u25CF"} Verify current state law &mdash; conditions apply</div>
+          </div>
+        </div>
+        <a href="https://myarmybenefits.us.army.mil/Benefit-Library/State/Territory-Benefits" target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", padding: "10px 16px", background: "#4A5D23", borderRadius: 4, color: "#F5F0E1", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1, textDecoration: "none" }}>VIEW STATE FACT SHEETS &rarr;</a>
+      </div>
+    )}
+
+    {/* DD214 */}
+    {activeTab === "dd214" && (
+      <div>
+        <div style={S.card}><div style={S.cardTitle}>DD214 & SERVICE RECORD</div><div style={S.bodyText}>Your DD214 is the single most important document you'll carry as a veteran. Verify every line.</div></div>
+        <div style={S.sectionLabel}>CRITICAL BLOCKS TO VERIFY</div>
+        {[{ block: "Block 4a", label: "Grade/Rate/Rank", note: "Ensure highest rank is correct" },{ block: "Block 12a", label: "Date Entered AD", note: "Affects retirement calculations" },{ block: "Block 12d", label: "Net Active Service", note: "Cross-reference with LES" },{ block: "Block 13", label: "Decorations & Medals", note: "List EVERY award" },{ block: "Block 14", label: "Military Education", note: "All PME, schools, certs" },{ block: "Block 18", label: "Remarks", note: "MOS translation, qualifications" },{ block: "Block 24", label: "Character of Service", note: "Must read Honorable" },{ block: "Block 26", label: "Separation Code", note: "Research your code" }].map((item, i) => (
+          <div key={i} style={{ padding: "10px 12px", background: "#1a1f16", border: "1px solid #3d4a2a", borderRadius: 4, marginBottom: 5 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, color: "#8B7D3C" }}>{item.block}</span>
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, color: "#F5F0E1" }}>{item.label}</span>
+            </div>
+            <div style={{ fontSize: 9, color: "#8a8062", fontFamily: "'Source Sans 3', sans-serif" }}>{item.note}</div>
+          </div>
+        ))}
+        <div style={{ ...S.card, marginTop: 12, borderStyle: "dashed", textAlign: "center", padding: 24 }}>
+          <div style={{ fontSize: 28, marginBottom: 6 }}>{"\uD83D\uDCC4"}</div>
+          <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 2, color: "#5a5540" }}>RESUME TRANSLATION ENGINE</div>
+          <div style={{ fontSize: 9, color: "#3d4a2a", marginTop: 4 }}>DD214/JST auto-pull &rarr; civilian resume. In development.</div>
+        </div>
+      </div>
+    )}
+  </div>
+
+  {/* FOOTER */}
+  <div style={{ padding: "20px 14px 24px", borderTop: "1px solid #3d4a2a", textAlign: "center", background: "#1a1f16" }}>
+    <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#5a5540", marginBottom: 6 }}>BUILT BY</div>
+    <a href="https://www.veteranbridgesolutions.com" target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 700, color: "#8B7D3C", textDecoration: "none", letterSpacing: 1, display: "block", marginBottom: 4 }}>VETERAN BRIDGE SOLUTIONS</a>
+    <a href="https://www.veteranbridgesolutions.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "#8BB83C", textDecoration: "none", letterSpacing: 1, fontFamily: "'Source Sans 3', sans-serif" }}>www.veteranbridgesolutions.com</a>
+    <div style={{ fontSize: 9, color: "#3d4a2a", marginTop: 8 }}>Bridging the gap between service and civilian success.</div>
+  </div>
+
+  {/* TOAST */}
+  {toast && <div style={{ position: "fixed", bottom: 16, left: "50%", transform: "translateX(-50%)", background: "#4A5D23", color: "#F5F0E1", padding: "8px 20px", borderRadius: 6, fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 2, zIndex: 300, boxShadow: "0 4px 20px rgba(0,0,0,0.4)" }}>{toast}</div>}
+</div>
+```
+
+);
+}
+
+ReactDOM.render(<App />, document.getElementById(“root”));
+</script></body></html>
