@@ -2567,6 +2567,217 @@ const SMART_REMINDERS = [
   {id:"r-p12",mo:-12,cat:"BENEFITS",pri:"HIGH",title:"One-Year AAR — Benefits & Career",brief:"You've been out a year. Time for an honest after-action review.",items:["Review VA claim — file supplemental if needed","Career at target level and salary?","If underemployed, use VET HUB tools","Check VR&E (Ch.31) eligibility","Rebalance TSP/retirement accounts"],deadline:"Self-imposed 12-month AAR",why:"Veterans who don't course-correct in Year 1 are more likely to stay underemployed.",link:null}
 ];
 
+// ═══════════════════════════════════════════════════════════════════
+// CRITICAL WINDOWS MODULE — Source-verified time-bound windows
+// All data traceable to DoDI / VA / Title 10 / Title 38 primary sources.
+// Added: 18 APR 2026. Reviewed against 2025–2026 guidance.
+// ═══════════════════════════════════════════════════════════════════
+const CRITICAL_WINDOWS = [
+  {
+    id:"tap", num:1, name:"TAP MANDATE", fullName:"Transition Assistance Program",
+    authority:"10 U.S.C. Ch. 58 · DoDI 1332.35 (Ch. 1, 29 Jul 2025)",
+    startDay:-540, hardStartDay:-365, endDay:0, irrevocable:false,
+    shortDesc:"Federally mandated. NLT T-365. Initial Counseling → Pre-Sep → Transition Day → Track(s) → Capstone.",
+    whyMatters:"Non-compliance can delay terminal leave, SkillBridge, and separation orders. Command must release you from duty to attend — statutory obligation, not a favor.",
+    prerequisites:["Current LES","VMET from milConnect","Credit report"],
+    actionSteps:["Contact installation Military & Family Readiness Center","Complete Self-Assessment and Statement of Understanding","Schedule Initial Counseling — mandatory before any other TAP component","Receive Tier assignment (1, 2, or 3) driving required 2-Day Tracks"],
+    forms:["DD Form 2648 (Pre-Separation Counseling Checklist)"],
+    pocs:["Installation TAP office","dodtap.mil"],
+    consequence:"Must begin ASAP in remaining service. Unresolved TAP requirements block final separation processing.",
+    guardReserve:"Applies if demobilizing from 180+ continuous days on Title 10. If demobilizing with <365 days remaining, begin immediately.",
+    sources:[{label:"DoDI 1332.35",url:"https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/133235p.pdf"},{label:"Military OneSource TAP Policy",url:"https://www.militaryonesource.mil/leaders-service-providers/transition-assistance-leaders-service-providers/ta-department-of-defense-policy/"}],
+    reminderDays:[-730,-540,-365,-270,-180,-90]
+  },
+  {
+    id:"skillbridge", num:2, name:"SKILLBRIDGE", fullName:"DoD SkillBridge Program",
+    authority:"10 U.S.C. § 1143 · DoDI 1322.29",
+    startDay:-365, hardStartDay:-180, endDay:0, irrevocable:false,
+    shortDesc:"Civilian employer training up to T-180. Retain pay, BAH, healthcare. First field-grade commander (O-4+) approval required.",
+    whyMatters:"Frequently the only practical opportunity to gain civilian work experience before DD-214. Command approval is often the rate-limiting step — start conversations 6+ months out.",
+    prerequisites:["TAP Initial Counseling complete","Tier-appropriate Career Readiness Standards met or on track","Unit commander endorsement","Identified approved SkillBridge partner program"],
+    actionSteps:["Begin identifying potential SkillBridge partners at T-365","Obtain command endorsement — start the conversation 6+ months out","Submit package through service-specific process","Coordinate timing so clearing is complete before separation"],
+    forms:["Service-specific SkillBridge application package"],
+    pocs:["Service SkillBridge office","Partner program POC","Installation TAP"],
+    consequence:"Entering civilian job market cold — no paid work experience bridge between active duty and first post-service job.",
+    guardReserve:"Active-duty program. Guard/Reserve on qualifying Title 10 orders may qualify depending on orders length and command approval.",
+    sources:[{label:"DoD SkillBridge",url:"https://skillbridge.osd.mil"}],
+    reminderDays:[-365,-270,-180]
+  },
+  {
+    id:"bdd", num:3, name:"BDD CLAIM", fullName:"Benefits Delivery at Discharge",
+    authority:"38 U.S.C. § 5101 et seq.",
+    startDay:-180, hardStartDay:-180, endDay:-90, irrevocable:true,
+    shortDesc:"Pre-discharge VA disability claim. File T-180 to T-90 only. Goal: rating decision within 30 days of separation.",
+    whyMatters:"Can result in disability compensation starting within 15 days of separation. Standard post-discharge claims take 3–6 months — sometimes 9–12. Highest-leverage pre-separation action for service-connected conditions.",
+    prerequisites:["Confirmed separation date (180–90 days away)","Complete Service Treatment Records from current period","Completed SHA — Part A Self-Assessment","Availability for VA medical exams 45+ days after filing"],
+    actionSteps:["Request complete STRs at T-180 — medical, dental, mental health (separately)","Gather private medical records for service-connected conditions","Complete SHA Part A Self-Assessment","File VA Form 21-526EZ (check BDD box, upper-left) via VA.gov or BDD intake site","Attend every scheduled C&P exam"],
+    forms:["VA Form 21-526EZ (BDD)","SHA Part A DBQ"],
+    pocs:["VA.gov","Installation TAP VA Benefits Briefing","VA 1-800-827-1000"],
+    consequence:"Before T-180: cannot process. After T-90: drops to Standard or FDC process — no expedited decision. After separation: 3–12 month delay before any compensation begins. Intent to File does NOT preserve effective date for BDD.",
+    guardReserve:"Applies to members activated 180+ days whose DD-214 will issue during activation. Verify with local VA rep before filing.",
+    sources:[{label:"VA Pre-Discharge Claim",url:"https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/"},{label:"VBA BDD Program",url:"https://benefits.va.gov/BENEFITS/benefits-delivery-discharge-program.asp"}],
+    reminderDays:[-210,-180,-150,-120,-90]
+  },
+  {
+    id:"sha", num:4, name:"SEP PHYSICAL", fullName:"Separation Health Assessment (SHA/SHPE)",
+    authority:"DoDI 6040.46 · 10 U.S.C. § 1145(a)(5) · 2013 VA/DoD MOA",
+    startDay:-180, hardStartDay:-180, endDay:-30, irrevocable:false,
+    shortDesc:"Single exam satisfying both DoD separation physical and VA disability rating exam. Admin review and validation NLT T-30.",
+    whyMatters:"Tightly coupled to BDD. Conditions not documented here are significantly harder to service-connect later. Cannot separate without a completed separation physical — delays DD-214 issuance.",
+    prerequisites:["Access to MHS Genesis or installation medical out-processing portal","List of current medications and supplements","Deployment history","List of claimed conditions"],
+    actionSteps:["Complete Part A Self-Assessment (online via military medical portal) BEFORE scheduling Part B","Attend Part B clinical assessment with provider","Obtain copy of completed SHA for personal records","Ensure SHA data transfers to VA via DoD/VA interface if filing BDD"],
+    forms:["DBQ SHA Part A Self-Assessment","DD Form 2807-1","DD Form 2808"],
+    pocs:["Installation medical","TMIP","Branch health clinic"],
+    consequence:"Cannot separate without completed separation physical. Delays DD-214. Makes future VA claims substantially harder to service-connect.",
+    guardReserve:"Required for members separating from 180+ day activation or 30+ day contingency orders.",
+    sources:[{label:"DoDI 6040.46",url:"https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/604046p.pdf"},{label:"VA SHA Program",url:"https://benefits.va.gov/BENEFITS/separation-health-assessment.asp"}],
+    reminderDays:[-180,-120,-90,-60,-30]
+  },
+  {
+    id:"teb", num:5, name:"GI BILL TRANSFER", fullName:"Transfer of Education Benefits (TEB)",
+    authority:"38 U.S.C. § 3319 · DoDI 1341.13",
+    startDay:-730, hardStartDay:-365, endDay:-1, irrevocable:true,
+    shortDesc:"Transfer up to 36 months of Post-9/11 GI Bill to spouse or dependents. MUST be approved while on active duty or in Selected Reserve.",
+    whyMatters:"Potentially $100,000+ in education funding. Once you separate, this door closes PERMANENTLY. Even one day past separation and the transfer cannot be initiated.",
+    policyUpdate:"FY20 NDAA removed the 16-year maximum-service rule. Members with 16+ years may still transfer. Purple Heart recipients (on/after 31 Aug 2018) may transfer regardless of time in service with no additional service obligation.",
+    prerequisites:["6+ years of service on date of request","Agreement to serve 4 additional years (unless Purple Heart exception)","ETS date supports the 4-year obligation — extend contract if needed","Dependents enrolled in DEERS","Not currently flagged, MEB, or retention board"],
+    actionSteps:["Verify ETS date supports 4-year obligation; extend contract if required (allow processing time)","Confirm dependents are in DEERS","Log in to milConnect → Benefits → Transfer of Education Benefits","Allocate months to each dependent (whole months >0)","Service Rep approves, rejects, or sets to pending","Sign Statement of Understanding if required by branch"],
+    forms:["milConnect TEB portal","VA Form 22-1990e (for dependent use AFTER DoD approves)"],
+    pocs:["milConnect.dmdc.osd.mil","Branch education services office"],
+    consequence:"PERMANENT forfeiture of the transfer option. Post-separation: can only reduce/revoke months for dependents already approved. Cannot add new spouse (remarriage) or children born after separation.",
+    decisionBranch:{title:"Spouse usage timing",options:[{condition:"Member separated BEFORE 1 Jan 2013",result:"Spouse must use transferred benefits within 15 years of member's separation"},{condition:"Member separated ON/AFTER 1 Jan 2013",result:"Spouse has no time limit"},{condition:"Child transferee",result:"Must use benefits before age 26, regardless of separation date"}]},
+    guardReserve:"Applies to members currently in Selected Reserve as well as active duty. Transition to IRR closes the window.",
+    sources:[{label:"VA TEB",url:"https://www.va.gov/education/transfer-post-9-11-gi-bill-benefits/"},{label:"DoDI 1341.13",url:"https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/134113p.pdf"}],
+    reminderDays:[-730,-540,-365,-180,-90,-60,-30]
+  },
+  {
+    id:"tricare", num:6, name:"TRICARE TRANSITION", fullName:"TAMP → CHCBP / TRS / TRR / Civilian",
+    authority:"10 U.S.C. § 1145 · TRICARE Policy Manual Ch. 10",
+    startDay:0, hardStartDay:0, endDay:240, irrevocable:false,
+    shortDesc:"TAMP: 180 days of premium-free TRICARE after separation (if eligible). CHCBP application: 60 days after TAMP ends.",
+    whyMatters:"Gap in health coverage is one of the most financially catastrophic outcomes of poor separation planning. TAMP is the primary 180-day cushion — but only for qualifying separations. Retirees NOT eligible for TAMP.",
+    prerequisites:["Verify TAMP eligibility in DEERS via milConnect","Determine post-separation TRICARE plan (Prime vs Select)","Family members updated in DEERS"],
+    actionSteps:["T-60: Verify TAMP eligibility in DEERS","T-30: Select post-separation plan; re-enrollment required (you are leaving active-duty TRICARE system)","T-7: Submit TRICARE enrollment before the 20th of the month to lock 1st-of-next-month coverage","Day 181: TAMP ends — must have next coverage in place","Day 181+60: CHCBP application deadline (if using CHCBP bridge)"],
+    forms:["Regional TRICARE contractor enrollment","DD-214 (proof of separation characterization)"],
+    pocs:["milConnect (DEERS)","Humana Military (regional contractor)","CHCBP via Humana Military"],
+    consequence:"Miss CHCBP 60-day window: limited to civilian market (ACA), VA health care (if enrolled), TRS/TRR (if Guard/Reserve qualifying). No recovery path to CHCBP once missed.",
+    decisionBranch:{title:"Post-TAMP coverage pathway",options:[{condition:"Retiring from active duty",result:"TRICARE Prime/Select → TRICARE For Life at 65. NOT eligible for TAMP."},{condition:"Guard/Reserve, qualifying activation",result:"TRICARE Reserve Select after TAMP — or CHCBP as backup"},{condition:"Separating to civilian life",result:"VA health care (if service-connected) + CHCBP up to 18 months (apply within 60 days of TAMP end) → ACA Marketplace"},{condition:"Retiring Reserve, under 60",result:"TRICARE Retired Reserve (TRR) — or CHCBP as backup"}]},
+    tampEligibility:["Involuntary separation under honorable conditions","VSI or VSP without retired/retainer pay entitlement","Guard/Reserve separating from 30+ consecutive days active duty for contingency","Separation following involuntary retention (stop-loss) for contingency","Separation after voluntarily staying on active duty <1 year for contingency","Separation from active duty with agreement to join Selected Reserve"],
+    note:"NOT eligible for TAMP while on terminal leave — active-duty TRICARE continues. Retirees NOT eligible. Dishonorable NOT eligible.",
+    guardReserve:"Active-duty TRICARE during activation → TAMP (if qualifying contingency orders 30+ days) → TRS on return to Selected Reserve. Submit new TRICARE enrollment within 90 days of last day on active duty or be limited to MTF-only.",
+    sources:[{label:"TRICARE TAMP",url:"https://www.tricare.mil/TAMP"},{label:"TRICARE Activation/Deactivation",url:"https://tricare.mil/Plans/Eligibility/NGRMandFamilies/CoverageScenarios"}],
+    reminderDays:[-60,-30,-7,60,150,180,240]
+  },
+  {
+    id:"sgli_vgli", num:7, name:"SGLI \u2192 VGLI", fullName:"SGLI to VGLI Conversion",
+    authority:"38 U.S.C. § 1977 · 38 CFR § 9.2",
+    startDay:0, hardStartDay:0, endDay:485, criticalEndDay:240, irrevocable:true,
+    shortDesc:"Convert SGLI to VGLI. Guaranteed acceptance (no medical) within 240 days. Medical underwriting days 241–485. Permanent ineligibility after day 486.",
+    whyMatters:"Members with any adverse medical condition (PTSD, sleep apnea, musculoskeletal injury, cardiovascular issue) may be rated up or declined on the civilian market. VGLI offers guaranteed acceptance with no underwriting — but only within the window.",
+    policyUpdate:"VGLI premium rates LOWERED effective 1 Jul 2025. Rates are lower than pre-2025 figures.",
+    prerequisites:["Had SGLI coverage at separation","Know your current SGLI coverage amount (VGLI capped at that)"],
+    actionSteps:["T-90: Compare VGLI rates vs civilian term life (civilian exams take 4–8 weeks)","T+0: Clock starts. 240-day no-medical window opens.","T+30–60: If pursuing civilian coverage, complete medical exam and lock in before SGLI free period ends","T+120: SGLI free coverage ENDS. Commercial SGLI conversion window closes.","T+200 (internal deadline): Submit VGLI application — buffer before T+240","T+240: VGLI no-medical window CLOSES","T+486: Permanent ineligibility for VGLI"],
+    forms:["SGLV Form 8714 (VGLI application)","Online: myvgli.prudential.com","SGLV Form 180 (reinstatement if lapsed)"],
+    pocs:["OSGLI / Prudential: 800-419-1473","osgli.osgli.conversions@prudential.com"],
+    consequence:"Day 121–240: no SGLI coverage gap, but VGLI still guaranteed — sign up immediately. Day 241–485: medical underwriting; may be denied. Day 486+: PERMANENTLY ineligible for VGLI.",
+    decisionBranch:{title:"Which product fits",options:[{condition:"Medically high-risk (service-connected conditions)",result:"Apply for VGLI within 240 days. Guaranteed coverage, no underwriting."},{condition:"Medically low-risk, under 40",result:"Compare civilian term life before the 240-day deadline — civilian may be cheaper. Secure VGLI as backstop if in doubt."},{condition:"Want permanent (whole life) coverage",result:"Convert SGLI to commercial permanent policy within 120 days — separate process from VGLI."},{condition:"FSGLI spouse coverage",result:"Spouse coverage can convert to commercial permanent within 240 days post-separation."}]},
+    guardReserve:"Members released from Ready Reserve, assigned to IRR, or placed on TDRL have the same window (1 year + 120 days) starting from that status change.",
+    sources:[{label:"VA VGLI",url:"https://www.va.gov/life-insurance/options-eligibility/vgli/"},{label:"VA SGLI",url:"https://www.va.gov/life-insurance/options-eligibility/sgli/"}],
+    reminderDays:[-90,-30,0,60,120,180,200,240]
+  }
+];
+
+const SCRA_WINDOW = {
+  id:"scra", num:"+", name:"SCRA SUNSET", fullName:"Servicemembers Civil Relief Act Protections",
+  authority:"50 U.S.C. § 3901 et seq.",
+  startDay:-90, endDay:90, irrevocable:false,
+  shortDesc:"Most SCRA protections end at separation or within 90 days. Foreclosure protection extends 1 year; default judgment protection 60 days.",
+  whyMatters:"Execute any pending SCRA-protected actions (lease terminations, interest rate reductions on pre-service debt) before or immediately after separation. State of legal residence does NOT automatically follow you — standard domicile rules apply the moment you separate.",
+  actionSteps:["T-90: Determine post-separation state of residence. Establish domicile indicators if changing states","T-30: Execute any SCRA-protected lease terminations (rental, cell, cable, gym, home security) with written notice plus orders","T+0: Document status at separation for pending debt reductions","T+90 hard deadline: Most SCRA protections expire"],
+  pocs:["Installation legal assistance office (free)","SCRA.dmdc.osd.mil","Military OneSource legal"],
+  sources:[{label:"Military OneSource SCRA",url:"https://www.militaryonesource.mil/financial-legal/legal/servicemembers-civil-relief-act/"}],
+  reminderDays:[-90,-30,0,60,90]
+};
+
+// Day-level ETS helper (distinct from month-level moToETS)
+function daysToETSDate(dateStr) {
+  if (!dateStr) return null;
+  var ets = new Date(dateStr);
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  ets.setHours(0,0,0,0);
+  return Math.round((ets - today) / (1000*60*60*24));
+}
+
+// Returns {state, color, label} for a window given days until ETS
+function getCriticalWindowStatus(win, daysOut, C) {
+  if (daysOut === null) return {state:"unknown", color:C.inactive, label:"SET ETS DATE"};
+  var todayOffsetFromETS = -daysOut;
+  var startDay = win.startDay;
+  var endDay = win.endDay;
+  var hardStart = win.hardStartDay !== undefined ? win.hardStartDay : startDay;
+  var criticalEnd = win.criticalEndDay;
+  if (todayOffsetFromETS < startDay) {
+    var daysUntilOpen = startDay - todayOffsetFromETS;
+    return {state:"future", color:C.inactive, label:"OPENS IN "+daysUntilOpen+"D"};
+  }
+  if (todayOffsetFromETS > endDay) {
+    if (win.irrevocable) return {state:"missed_perm", color:"#C94A4A", label:"CLOSED — IRREVOCABLE"};
+    return {state:"missed", color:"#C94A4A", label:"CLOSED"};
+  }
+  var daysLeft = endDay - todayOffsetFromETS;
+  if (criticalEnd !== undefined && todayOffsetFromETS <= criticalEnd) {
+    var daysToCritical = criticalEnd - todayOffsetFromETS;
+    if (daysToCritical <= 30) return {state:"closing_critical", color:"#C94A4A", label:daysToCritical+"D TO NO-MEDICAL CUTOFF"};
+    if (daysToCritical <= 60) return {state:"closing", color:C.goldBright, label:daysToCritical+"D TO NO-MEDICAL CUTOFF"};
+  }
+  if (daysLeft <= 30) return {state:"closing", color:C.goldBright, label:daysLeft+"D TO CLOSE"};
+  if (todayOffsetFromETS >= hardStart) return {state:"open", color:C.greenBright, label:"OPEN · "+daysLeft+"D LEFT"};
+  return {state:"open_early", color:C.greenBright, label:"OPEN · "+daysLeft+"D LEFT"};
+}
+
+// Filter windows by userStatus. spouse gets empty list (not their use case).
+function filterCriticalWindows(userStatus) {
+  if (userStatus === "spouse") return [];
+  var list = CRITICAL_WINDOWS.slice();
+  if (userStatus === "retired") {
+    list = list.filter(function(w){ return w.id !== "skillbridge"; });
+  }
+  if (userStatus === "guard") {
+    list = list.filter(function(w){ return w.id !== "skillbridge"; });
+  }
+  return list;
+}
+
+// Generate SMART_REMINDERS-compatible entries from CRITICAL_WINDOWS.reminderDays
+function generateCriticalWindowReminders(userStatus) {
+  if (userStatus === "spouse") return [];
+  var windows = filterCriticalWindows(userStatus).concat([SCRA_WINDOW]);
+  var CATEGORY_MAP = {tap:"ADMIN", skillbridge:"CAREER", bdd:"BENEFITS", sha:"HEALTH", teb:"BENEFITS", tricare:"HEALTH", sgli_vgli:"BENEFITS", scra:"ADMIN"};
+  var reminders = [];
+  windows.forEach(function(w) {
+    (w.reminderDays || []).forEach(function(dayOffset) {
+      var monthOffset = Math.round(dayOffset / 30.44);
+      var priority = w.irrevocable ? "CRITICAL" : (dayOffset >= -30 && dayOffset <= 0 ? "CRITICAL" : "HIGH");
+      reminders.push({
+        id: "cw-" + w.id + "-" + dayOffset,
+        mo: -monthOffset,
+        cat: CATEGORY_MAP[w.id] || "ADMIN",
+        pri: priority,
+        title: "[" + w.name + "] " + w.shortDesc.split(".")[0],
+        brief: w.whyMatters,
+        items: w.actionSteps || [],
+        deadline: dayOffset < 0 ? "T" + dayOffset + " days (pre-separation)" : dayOffset === 0 ? "Separation day" : "T+" + dayOffset + " days (post-separation)",
+        why: w.consequence,
+        link: w.sources && w.sources.length ? w.sources[0].url : null,
+        origin: "cw",
+        cwId: w.id
+      });
+    });
+  });
+  return reminders;
+}
+
 const REMINDER_PRIORITIES = {CRITICAL:{bg:"#3d1111",bdr:"#8B0000",txt:"#ff6b6b",bdg:"#8B0000"},HIGH:{bg:"#3d3011",bdr:"#B8860B",txt:"#f0c040",bdg:"#8B6D0B"},ADVISORY:{bg:"#1a2810",bdr:"#4A5D23",txt:"#8faf5f",bdg:"#4A5D23"}};
 
 // ═══════════════════════════════════════════════════════════════
@@ -3633,6 +3844,8 @@ function App() {
   // Smart Reminder Engine state
   const [dismissedReminders, setDismissedReminders] = useState(function() { try { var v = window.__safeGet("tops_dismissed_reminders"); return v ? JSON.parse(v) : {}; } catch(e) { return {}; } });
   const [reminderExpanded, setReminderExpanded] = useState(null);
+  const [expandedWindow, setExpandedWindow] = useState(null);
+  const [criticalFilter, setCriticalFilter] = useState("ALL");
   const [reminderFilterPri, setReminderFilterPri] = useState("ALL");
   const [reminderFilterCat, setReminderFilterCat] = useState("ALL");
   const [showDismissed, setShowDismissed] = useState(false);
@@ -4767,6 +4980,31 @@ function App() {
           React.createElement("div", { style: { fontSize: 9, color: rInfo.c, fontWeight: 700, letterSpacing: 1, fontFamily: "'Oswald', sans-serif" } }, rInfo.l)
         )
       ),
+
+      // CRITICAL WINDOWS URGENT CARD
+      (function() {
+        var daysOut = daysToETSDate(separationDate);
+        if (daysOut === null) return null;
+        var urgent = filterCriticalWindows(userStatus).filter(function(w) {
+          var s = getCriticalWindowStatus(w, daysOut, C);
+          return s.state === "closing" || s.state === "closing_critical" || s.state === "missed_perm";
+        });
+        if (urgent.length === 0) return null;
+        return React.createElement("div", {key:"cw-urgent-card", style:{background:"linear-gradient(180deg,rgba(201,74,74,0.08) 0%, " + C.bgCard + " 100%)", border:"1px solid #C94A4A", borderLeft:"4px solid #C94A4A", borderRadius:8, padding:"14px 16px", marginBottom:12, cursor:"pointer"}, onClick:function(){ setActiveTab("critical"); }},
+          React.createElement("div", {style:{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8}},
+            React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:3, color:"#C94A4A"}}, "\u26A0 CRITICAL WINDOWS CLOSING"),
+            React.createElement("div", {style:{fontSize:11, color:C.textSecondary}}, urgent.length + " window" + (urgent.length > 1 ? "s" : ""))
+          ),
+          urgent.slice(0,3).map(function(w) {
+            var s = getCriticalWindowStatus(w, daysOut, C);
+            return React.createElement("div", {key:w.id, style:{fontSize:12, color:C.textBody, lineHeight:1.5, marginBottom:4}},
+              React.createElement("span", {style:{color:s.color, fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:1, marginRight:6}}, s.label),
+              w.name
+            );
+          }),
+          React.createElement("div", {style:{marginTop:10, fontSize:11, color:C.greenBright, fontFamily:"'Oswald',sans-serif", letterSpacing:1}}, "\u2192 OPEN CRITICAL WINDOWS")
+        );
+      })(),
 
       // URGENT REMINDERS
       urgentReminders.length > 0 && React.createElement("div", { className: "dash-card", style: { borderColor: "#8B0000", background: "linear-gradient(135deg, #2a1010, #1a0808)", animation: "pulse 3s ease-in-out infinite", margin: "0 0 10px" }, onClick: function() { setActiveTab("reminders"); } },
@@ -11251,7 +11489,7 @@ function App() {
     var etsMonths = moToETS(separationDate);
     var phase = !separationDate ? "SET ETS DATE" : etsMonths > 18 ? "PLANNING" : etsMonths > 12 ? "PREPARATION" : etsMonths > 4 ? "EXECUTION" : etsMonths > 0 ? "FINAL PREP" : etsMonths === 0 ? "ETS" : "POST-SEP";
     var urgentR = etsMonths !== null ? SMART_REMINDERS.filter(function(r) { var d = r.mo - etsMonths; return d >= -1 && d <= 2 && r.pri === "CRITICAL" && !dismissedReminders[r.id]; }) : [];
-    var filtered = SMART_REMINDERS.slice().sort(function(a, b) { if (etsMonths === null) return 0; var da = Math.abs(a.mo - etsMonths), db = Math.abs(b.mo - etsMonths); var au = a.mo >= etsMonths ? 0 : 1, bu = b.mo >= etsMonths ? 0 : 1; if (au !== bu) return au - bu; return da - db; });
+    var filtered = SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)).slice().sort(function(a, b) { if (etsMonths === null) return 0; var da = Math.abs(a.mo - etsMonths), db = Math.abs(b.mo - etsMonths); var au = a.mo >= etsMonths ? 0 : 1, bu = b.mo >= etsMonths ? 0 : 1; if (au !== bu) return au - bu; return da - db; });
     if (reminderFilterCat !== "ALL") filtered = filtered.filter(function(x) { return x.cat === reminderFilterCat; });
     if (reminderFilterPri !== "ALL") filtered = filtered.filter(function(x) { return x.pri === reminderFilterPri; });
     if (!showDismissed) filtered = filtered.filter(function(x) { return !dismissedReminders[x.id]; });
@@ -11321,6 +11559,185 @@ function App() {
           )
         );
       })
+    );
+  })()),
+
+  // ═══════════ CRITICAL WINDOWS TAB ═══════════
+  activeTab === "critical" && /*#__PURE__*/React.createElement("div", null, (function() {
+    var daysOut = daysToETSDate(separationDate);
+    var windows = filterCriticalWindows(userStatus);
+    var visible = criticalFilter === "ALL" ? windows.concat([SCRA_WINDOW]) : windows.filter(function(w) {
+      var s = getCriticalWindowStatus(w, daysOut, C);
+      if (criticalFilter === "OPEN") return s.state === "open" || s.state === "open_early" || s.state === "closing" || s.state === "closing_critical";
+      if (criticalFilter === "CLOSING") return s.state === "closing" || s.state === "closing_critical";
+      if (criticalFilter === "MISSED") return s.state === "missed" || s.state === "missed_perm";
+      return true;
+    });
+    var phaseLabel = daysOut === null ? "—" :
+      daysOut > 540 ? "PLANNING" : daysOut > 365 ? "PRE-TAP" : daysOut > 180 ? "TAP ACTIVE" :
+      daysOut > 90 ? "BDD WINDOW" : daysOut > 30 ? "FINAL PREP" : daysOut > 0 ? "IMMINENT" :
+      daysOut === 0 ? "SEPARATION DAY" : daysOut > -180 ? "TAMP ACTIVE" :
+      daysOut > -240 ? "VGLI NO-MEDICAL" : daysOut > -485 ? "VGLI MEDICAL" : "POST-WINDOWS";
+
+    if (daysOut === null) {
+      return React.createElement("div", null,
+        React.createElement("div", {style:{...S.card, padding:18, borderColor:C.gold}},
+          React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:3, color:C.gold, marginBottom:6}}, "\u258C CRITICAL WINDOWS"),
+          React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:700, color:C.textPrimary, marginBottom:10}}, "SET YOUR SEPARATION DATE"),
+          React.createElement("div", {style:{fontSize:13, color:C.textBody, lineHeight:1.7, marginBottom:12}}, "Critical Windows tracks seven time-bound windows where missing the date costs money, benefits, or both. The tracker activates once you enter your ETS / EAOS / retirement date."),
+          React.createElement("input", {type:"date", value:separationDate, onChange:function(e){ handleETSChange(e.target.value); }, style:S.input})
+        )
+      );
+    }
+
+    return React.createElement("div", null,
+      React.createElement("div", {style:{background:"linear-gradient(180deg," + C.border + " 0%, " + C.gradStart + " 100%)", border:"1px solid " + C.gold, borderRadius:8, padding:"14px 16px", marginBottom:14}},
+        React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:3, color:C.gold, marginBottom:4}}, "MISSION-CRITICAL WINDOWS"),
+        React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:700, color:C.textPrimary, letterSpacing:2, marginBottom:6}}, "CRITICAL WINDOWS"),
+        React.createElement("div", {style:{fontSize:12, color:C.textBody, lineHeight:1.6, marginBottom:10}}, "Seven time-bound windows where missing the date costs money, benefits, or both."),
+        React.createElement("div", {style:{display:"flex", gap:6, flexWrap:"wrap"}},
+          React.createElement("div", {style:{background:C.bg, border:"1px solid " + C.goldBright, borderRadius:4, padding:"4px 10px", fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:1}},
+            React.createElement("span", {style:{color:C.inactive, marginRight:6}}, "ETS"),
+            React.createElement("span", {style:{color:C.goldBright, fontWeight:700}}, daysOut > 0 ? "T-" + daysOut + "D" : daysOut === 0 ? "TODAY" : "T+" + Math.abs(daysOut) + "D")
+          ),
+          React.createElement("div", {style:{background:C.bg, border:"1px solid " + C.greenBright, borderRadius:4, padding:"4px 10px", fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:1}},
+            React.createElement("span", {style:{color:C.inactive, marginRight:6}}, "PHASE"),
+            React.createElement("span", {style:{color:C.greenBright, fontWeight:700}}, phaseLabel)
+          ),
+          userStatus && React.createElement("div", {style:{background:C.bg, border:"1px solid " + C.textSecondary, borderRadius:4, padding:"4px 10px", fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:1}},
+            React.createElement("span", {style:{color:C.inactive, marginRight:6}}, "STATUS"),
+            React.createElement("span", {style:{color:C.textPrimary, fontWeight:700}}, userStatus.toUpperCase().replace("_"," "))
+          )
+        )
+      ),
+
+      userStatus === "retired" && React.createElement("div", {style:{background:"rgba(139,125,60,0.12)", border:"1px solid " + C.gold, borderRadius:6, padding:"10px 12px", marginBottom:12}},
+        React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:C.gold, marginBottom:4}}, "\u258C RETIREE PATHWAY"),
+        React.createElement("div", {style:{fontSize:12, color:C.textBody, lineHeight:1.6}}, "Retirees are NOT eligible for TAMP. Transition to TRICARE Prime/Select — TRICARE For Life at 65. TAP recommended start: T-730 (24 months). SkillBridge hidden (not applicable).")
+      ),
+
+      userStatus === "guard" && React.createElement("div", {style:{background:"rgba(74,93,35,0.12)", border:"1px solid " + C.green, borderRadius:6, padding:"10px 12px", marginBottom:12}},
+        React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:C.greenBright, marginBottom:4}}, "\u258C GUARD / RESERVE PATHWAY"),
+        React.createElement("div", {style:{fontSize:12, color:C.textBody, lineHeight:1.6}}, "Most windows apply only if activated 180+ days on Title 10. TRICARE path: active-duty TRICARE → TAMP (if qualifying) → TRS on return to Selected Reserve. Submit new TRICARE enrollment within 90 days of last active-duty day or be limited to MTF-only.")
+      ),
+
+      React.createElement("div", {style:{display:"flex", gap:6, marginBottom:12, overflowX:"auto", WebkitOverflowScrolling:"touch"}},
+        ["ALL","OPEN","CLOSING","MISSED"].map(function(f) {
+          return React.createElement("button", {key:f, onClick:function(){ setCriticalFilter(f); }, style:{padding:"6px 12px", borderRadius:4, fontSize:10, fontWeight:700, letterSpacing:1.5, color:criticalFilter === f ? C.textPrimary : C.inactive, background:criticalFilter === f ? C.border : "transparent", border:"1px solid " + (criticalFilter === f ? C.gold : C.border), fontFamily:"'Oswald',sans-serif", cursor:"pointer", whiteSpace:"nowrap"}}, f);
+        })
+      ),
+
+      visible.length === 0 ? React.createElement("div", {style:{padding:"30px 14px", textAlign:"center", color:C.inactive, fontSize:13}}, "No windows match current filter.") :
+      visible.map(function(w) {
+        var s = getCriticalWindowStatus(w, daysOut, C);
+        var isExpanded = expandedWindow === w.id;
+        return React.createElement("div", {key:w.id, style:{background:C.bgCard, border:"1px solid " + (s.state === "closing" || s.state === "closing_critical" ? s.color : C.border), borderLeft:"4px solid " + s.color, borderRadius:8, marginBottom:10, overflow:"hidden"}},
+          React.createElement("button", {onClick:function(){ setExpandedWindow(isExpanded ? null : w.id); }, style:{width:"100%", background:"transparent", border:"none", padding:"14px 16px", cursor:"pointer", textAlign:"left", color:"inherit", fontFamily:"inherit"}},
+            React.createElement("div", {style:{display:"flex", alignItems:"center", gap:10}},
+              React.createElement("div", {style:{width:28, height:28, borderRadius:4, background:s.color, opacity:0.2, border:"1px solid " + s.color, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Oswald',sans-serif", fontSize:13, fontWeight:700, color:s.color, flexShrink:0}}, w.num),
+              React.createElement("div", {style:{flex:1}},
+                React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:14, letterSpacing:2, color:C.textPrimary, fontWeight:700}}, w.name),
+                React.createElement("div", {style:{fontSize:10, color:s.color, fontFamily:"'Oswald',sans-serif", letterSpacing:1, marginTop:2}},
+                  s.label,
+                  w.irrevocable && s.state !== "open" && s.state !== "open_early" && s.state !== "future" ? React.createElement("span", {style:{color:"#C94A4A", marginLeft:6}}, "\uD83D\uDD12") : null
+                )
+              ),
+              React.createElement("div", {style:{fontSize:16, color:C.textSecondary}}, isExpanded ? "−" : "+")
+            ),
+            !isExpanded && React.createElement("div", {style:{fontSize:12, color:C.textBody, marginTop:8, lineHeight:1.5}}, w.shortDesc)
+          ),
+          isExpanded && React.createElement("div", {style:{padding:"0 16px 16px"}},
+            React.createElement("div", {style:{marginTop:12}},
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:4}}, "AUTHORITY"),
+              React.createElement("div", {style:{fontSize:12, color:C.textBody, lineHeight:1.5}}, w.authority)
+            ),
+            React.createElement("div", {style:{marginTop:12}},
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:4}}, "WHY IT MATTERS"),
+              React.createElement("div", {style:{fontSize:12, color:C.textBody, lineHeight:1.5}}, w.whyMatters)
+            ),
+            w.policyUpdate && React.createElement("div", {style:{background:"rgba(218,165,32,0.1)", border:"1px solid " + C.goldBright, borderRadius:4, padding:"8px 10px", margin:"12px 0"}},
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.goldBright, marginBottom:4}}, "\u26A0 RECENT POLICY UPDATE"),
+              React.createElement("div", {style:{fontSize:12, color:C.textBody, lineHeight:1.5}}, w.policyUpdate)
+            ),
+            w.prerequisites && React.createElement("div", {style:{marginTop:12}},
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:6}}, "PREREQUISITES"),
+              w.prerequisites.map(function(item, i) {
+                return React.createElement("div", {key:i, style:{fontSize:12, color:C.textBody, lineHeight:1.5, marginBottom:4, paddingLeft:16, position:"relative"}},
+                  React.createElement("span", {style:{position:"absolute", left:0, color:C.greenBright, fontFamily:"'Oswald',sans-serif"}}, "\u25B8"),
+                  item
+                );
+              })
+            ),
+            w.actionSteps && React.createElement("div", {style:{marginTop:12}},
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:6}}, "ACTION STEPS"),
+              w.actionSteps.map(function(item, i) {
+                return React.createElement("div", {key:i, style:{fontSize:12, color:C.textBody, lineHeight:1.5, marginBottom:4, paddingLeft:16, position:"relative"}},
+                  React.createElement("span", {style:{position:"absolute", left:0, color:C.greenBright, fontFamily:"'Oswald',sans-serif"}}, (i+1) + "."),
+                  item
+                );
+              })
+            ),
+            w.tampEligibility && React.createElement("div", {style:{marginTop:12}},
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:6}}, "TAMP ELIGIBILITY (must meet \u22651)"),
+              w.tampEligibility.map(function(item, i) {
+                return React.createElement("div", {key:i, style:{fontSize:12, color:C.textBody, lineHeight:1.5, marginBottom:4, paddingLeft:16, position:"relative"}},
+                  React.createElement("span", {style:{position:"absolute", left:0, color:C.greenBright, fontFamily:"'Oswald',sans-serif"}}, "\u25B8"),
+                  item
+                );
+              })
+            ),
+            w.decisionBranch && React.createElement("div", {style:{marginTop:14, background:C.bg, border:"1px solid " + C.border, borderRadius:4, padding:"10px 12px"}},
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.greenBright, marginBottom:8}}, "\u25C7 DECISION BRANCH \u00B7 " + w.decisionBranch.title),
+              w.decisionBranch.options.map(function(opt, i) {
+                return React.createElement("div", {key:i, style:{display:"flex", gap:8, marginBottom:8, fontSize:12, lineHeight:1.5}},
+                  React.createElement("div", {style:{flex:"0 0 40%", color:C.textPrimary, fontFamily:"'Oswald',sans-serif", fontSize:11, letterSpacing:0.5}}, "IF " + opt.condition),
+                  React.createElement("div", {style:{flex:1, color:C.textBody, paddingLeft:10, borderLeft:"1px solid " + C.border}}, "\u2192 " + opt.result)
+                );
+              })
+            ),
+            w.note && React.createElement("div", {style:{background:"rgba(139,0,0,0.1)", border:"1px solid #8B0000", borderRadius:4, padding:"8px 10px", margin:"12px 0"}},
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:"#C94A4A", marginBottom:4}}, "\u26A0 CRITICAL NOTE"),
+              React.createElement("div", {style:{fontSize:12, color:C.textBody, lineHeight:1.5}}, w.note)
+            ),
+            w.forms && React.createElement("div", {style:{marginTop:12}},
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:6}}, "FORMS"),
+              w.forms.map(function(item, i) {
+                return React.createElement("div", {key:i, style:{fontSize:12, color:C.textBody, lineHeight:1.5, marginBottom:4, paddingLeft:16, position:"relative"}},
+                  React.createElement("span", {style:{position:"absolute", left:0, color:C.greenBright, fontFamily:"'Oswald',sans-serif"}}, "\u25B8"),
+                  item
+                );
+              })
+            ),
+            w.pocs && React.createElement("div", {style:{marginTop:12}},
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:6}}, "POCs"),
+              w.pocs.map(function(item, i) {
+                return React.createElement("div", {key:i, style:{fontSize:12, color:C.textBody, lineHeight:1.5, marginBottom:4, paddingLeft:16, position:"relative"}},
+                  React.createElement("span", {style:{position:"absolute", left:0, color:C.greenBright, fontFamily:"'Oswald',sans-serif"}}, "\u25B8"),
+                  item
+                );
+              })
+            ),
+            (userStatus === "guard") && w.guardReserve && React.createElement("div", {style:{background:"rgba(139,125,60,0.08)", border:"1px solid " + C.gold, borderRadius:4, padding:"8px 10px", margin:"12px 0"}},
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:4}}, "\u2691 GUARD / RESERVE"),
+              React.createElement("div", {style:{fontSize:12, color:C.textBody, lineHeight:1.5}}, w.guardReserve)
+            ),
+            React.createElement("div", {style:{marginTop:12}},
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:4}}, "CONSEQUENCE OF MISSING"),
+              React.createElement("div", {style:{fontSize:12, color:w.irrevocable ? "#C94A4A" : C.textBody, lineHeight:1.5}}, w.consequence)
+            ),
+            w.sources && React.createElement("div", {style:{marginTop:14, paddingTop:10, borderTop:"1px solid " + C.border}},
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:6}}, "VERIFIED SOURCES"),
+              w.sources.map(function(src, i) {
+                return React.createElement("a", {key:i, href:src.url, target:"_blank", rel:"noopener noreferrer", style:{display:"block", fontSize:11, color:C.greenBright, textDecoration:"none", marginBottom:3, wordBreak:"break-all"}}, "\u2192 " + src.label);
+              })
+            )
+          )
+        );
+      }),
+
+      React.createElement("div", {style:{marginTop:20, paddingTop:14, borderTop:"1px solid " + C.border, fontSize:10, color:C.inactive, lineHeight:1.6}},
+        "All dates, deadlines, and eligibility criteria verified against primary sources (DoD Instructions, VA.gov, Title 10/Title 38 U.S.C.). Currency confirmed against 2025\u20132026 guidance. Informational only \u2014 always confirm specifics with your installation TAP office, VA representative, or legal assistance office before acting."
+      )
     );
   })()),
 
@@ -11909,7 +12326,7 @@ function App() {
       React.createElement("button", { onClick: function() { setShowMoreMenu(false); }, style: { background: "none", border: "none", color: C.textPrimary, fontSize: 28, cursor: "pointer", padding: "0 4px" } }, "\u2715")
     ),
     React.createElement("div", { style: { fontSize: 11, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif", marginBottom: 14 } }, "MORE TOOLS"),
-    [{id:"vamath",icon:"\uD83E\uDDEE",label:"VA MATH CALCULATOR",desc:"Combine multiple ratings using VA's formula"},{id:"vapay",icon:"\uD83D\uDCB5",label:"VA PAY ESTIMATOR",desc:"Calculate your monthly disability compensation"},{id:"finalpcs",icon:"\uD83D\uDCE6",label:"FINAL PCS ENTITLEMENTS",desc:"Weight allowances, MALT, move timelines by grade"},{id:"vethub",icon:"\uD83C\uDF96\uFE0F",label:"VET HUB",desc:"Career score, benefits, employers, entrepreneurship"},{id:"resources",icon:"\uD83D\uDD17",label:"RESOURCES",desc:"VSOs, SkillBridge, healthcare, document vault"},{id:"taxes",icon:"\uD83D\uDCB2",label:"TAX INTEL",desc:"State tax on retired pay, MSRRA, residency"},{id:"dd214",icon:"\uD83D\uDCDC",label:"DD214 GUIDE",desc:"Verification checklist, service record review"}].map(function(m) {
+    [{id:"critical",icon:"\u26A0",label:"CRITICAL WINDOWS",desc:"Seven time-bound windows with irrevocable deadlines"},{id:"readiness",icon:"\uD83D\uDCCA",label:"READINESS SCORE",desc:"Self-assessment across transition categories"},{id:"vamath",icon:"\uD83E\uDDEE",label:"VA MATH CALCULATOR",desc:"Combine multiple ratings using VA's formula"},{id:"vapay",icon:"\uD83D\uDCB5",label:"VA PAY ESTIMATOR",desc:"Calculate your monthly disability compensation"},{id:"finalpcs",icon:"\uD83D\uDCE6",label:"FINAL PCS ENTITLEMENTS",desc:"Weight allowances, MALT, move timelines by grade"},{id:"vethub",icon:"\uD83C\uDF96\uFE0F",label:"VET HUB",desc:"Career score, benefits, employers, entrepreneurship"},{id:"resources",icon:"\uD83D\uDD17",label:"RESOURCES",desc:"VSOs, SkillBridge, healthcare, document vault"},{id:"taxes",icon:"\uD83D\uDCB2",label:"TAX INTEL",desc:"State tax on retired pay, MSRRA, residency"},{id:"dd214",icon:"\uD83D\uDCDC",label:"DD214 GUIDE",desc:"Verification checklist, service record review"}].map(function(m) {
       return React.createElement("button", { key: m.id, onClick: function() { setActiveTab(m.id); setShowMoreMenu(false); }, style: undefined },
         React.createElement("span", { style: { fontSize: 28 } }, m.icon),
         React.createElement("div", { style: { flex: 1 } },
@@ -11924,7 +12341,7 @@ function App() {
 
   // ═══════════ BOTTOM NAVIGATION BAR ═══════════
   /*#__PURE__*/React.createElement("div", { className: "bottom-nav" },
-    (userStatus === "guard" ? [{id:"dashboard",icon:"\u2302",label:"HOME"},{id:"pathway",icon:"\uD83C\uDFAF",label:"CAREER"},{id:"vamath",icon:"\uD83E\uDDEE",label:"VA MATH"},{id:"vapay",icon:"\uD83D\uDCB5",label:"VA PAY"},{id:"vethub",icon:"\uD83C\uDF96\uFE0F",label:"VET HUB"},{id:"more",icon:"\u2630",label:"MORE"}] : [{id:"dashboard",icon:"\u2302",label:"HOME"},{id:"timeline",icon:"\uD83D\uDCC5",label:"TIMELINE"},{id:"reminders",icon:"\u23F0",label:"ALERTS"},{id:"pathway",icon:"\uD83C\uDFAF",label:"CAREER"},{id:"readiness",icon:"\uD83D\uDCCA",label:"READY"},{id:"more",icon:"\u2630",label:"MORE"}]).map(function(n) {
+    (userStatus === "guard" ? [{id:"dashboard",icon:"\u2302",label:"HOME"},{id:"pathway",icon:"\uD83C\uDFAF",label:"CAREER"},{id:"vamath",icon:"\uD83E\uDDEE",label:"VA MATH"},{id:"vapay",icon:"\uD83D\uDCB5",label:"VA PAY"},{id:"vethub",icon:"\uD83C\uDF96\uFE0F",label:"VET HUB"},{id:"more",icon:"\u2630",label:"MORE"}] : [{id:"dashboard",icon:"\u2302",label:"HOME"},{id:"timeline",icon:"\uD83D\uDCC5",label:"TIMELINE"},{id:"critical",icon:"\u26A0",label:"CRITICAL"},{id:"reminders",icon:"\u23F0",label:"ALERTS"},{id:"pathway",icon:"\uD83C\uDFAF",label:"CAREER"},{id:"more",icon:"\u2630",label:"MORE"}]).map(function(n) {
       var isActive = n.id === "more" ? showMoreMenu : activeTab === n.id;
       return React.createElement("button", { key: n.id, onClick: function() {
         if (n.id === "more") { setShowMoreMenu(!showMoreMenu); }
