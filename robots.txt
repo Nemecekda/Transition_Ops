@@ -1,0 +1,48 @@
+# Transition OPS — robots.txt
+# Veteran Bridge Solutions · https://transitionops.org
+# Updated: 18 APR 2026
+
+User-agent: *
+Allow: /
+
+# Explicit allow for search engine image and preview crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Social media preview crawlers (critical for OG card rendering)
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+# Block known bad actors and scrapers
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+# Sitemap location
+Sitemap: https://transitionops.org/sitemap.xml
