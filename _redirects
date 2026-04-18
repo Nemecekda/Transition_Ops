@@ -1,0 +1,14 @@
+# Transition OPS — Netlify redirects
+# Force canonical domain (transitionops.org) over .netlify.app subdomain
+# This prevents duplicate content issues and consolidates SEO authority
+
+# Redirect Netlify subdomain to primary domain (301 permanent)
+https://veteranbridge-tools.netlify.app/*  https://transitionops.org/:splat  301!
+http://veteranbridge-tools.netlify.app/*   https://transitionops.org/:splat  301!
+
+# Force HTTPS on primary domain
+http://transitionops.org/*  https://transitionops.org/:splat  301!
+http://www.transitionops.org/*  https://transitionops.org/:splat  301!
+
+# Redirect www to apex
+https://www.transitionops.org/*  https://transitionops.org/:splat  301!
