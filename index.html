@@ -285,7 +285,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .onboard-cta-skip {
   background: none;
   border: none;
-  color: #5a5540;
+  color: #8B7D3C;
   font-size: 11px;
   font-family: 'Oswald', sans-serif;
   letter-spacing: 2px;
@@ -294,7 +294,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
   padding: 8px 16px;
   transition: color 0.15s ease;
 }
-.onboard-cta-skip:hover { color: #8B7D3C; }
+.onboard-cta-skip:hover { color: #DAA520; }
 .onboard-trust-line {
   font-family: 'Courier Prime', monospace;
   font-size: 10px;
@@ -3959,7 +3959,7 @@ function App() {
         color: C.gold,
         marginBottom: 4
       }
-    }, "WEEKLY INTEL BRIEF"), /*#__PURE__*/React.createElement("div", {
+    }, "POLICY CHANGE ALERTS"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontFamily: "'Oswald', sans-serif",
         fontSize: 15,
@@ -3967,14 +3967,14 @@ function App() {
         color: C.textPrimary,
         marginBottom: 6
       }
-    }, variant === "vethub" ? "Get Career Intel Delivered Weekly" : userStatus === "guard" ? "Get Career & Benefits Intel Weekly" : "Get Transition Intel Delivered Weekly"), /*#__PURE__*/React.createElement("div", {
+    }, variant === "vethub" ? "Get notified when policy changes affect your benefits" : userStatus === "guard" ? "Get notified when policy changes affect your benefits" : "et notified when policy changes affect your benefits"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: C.textSecondary,
         lineHeight: 1.6,
         marginBottom: 12
       }
-    }, variant === "vethub" ? "New employer listings, free certification deadlines, benefit updates, and career tools \u2014 delivered to your inbox every week. Free. No spam. Unsubscribe anytime." : userStatus === "guard" ? "Career tools, certification deadlines, VA benefit updates, and employer intel \u2014 delivered to your inbox every week. Free. No spam. Unsubscribe anytime." : "SkillBridge updates, benefit deadlines, career tools, and critical reminders \u2014 delivered to your inbox every week. Free. No spam. Unsubscribe anytime."), /*#__PURE__*/React.createElement("input", {
+    }, variant === "vethub" ? "VA disability rules, GI Bill changes, VR&E updates, employer programs \u2014 when something changes that affects your benefits, you get an email. The kind of changes that cost money if missed. No marketing. No spam." : userStatus === "guard" ? "A rules, TA caps, GI Bill changes, deployment benefits \u2014 when something changes that affects your benefits, you get an email. The kind of changes that cost money if missed. No marketing. No spam." : "SVA rules, SkillBridge eligibility, TA caps, BDD windows \u2014 when something changes that affects your benefits, you get an email. The kind of changes that cost money if missed. No marketing. No spam."), /*#__PURE__*/React.createElement("input", {
       type: "email",
       value: emailSignup.email,
       onChange: e => setEmailSignup(prev => ({
@@ -4075,14 +4075,14 @@ function App() {
         cursor: emailSubmitting ? "default" : "pointer",
         opacity: emailSubmitting ? 0.6 : 1
       }
-    }, emailSubmitting ? "SUBSCRIBING..." : "SUBSCRIBE \u2014 IT'S FREE"), /*#__PURE__*/React.createElement("div", {
+    }, emailSubmitting ? "SUBSCRIBING..." : "GET POLICY ALERTS"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 10,
         color: C.inactive,
         textAlign: "center",
         marginTop: 6
       }
-    }, "No spam. No ads. Just weekly veteran career and transition intel. Unsubscribe anytime."));
+    }, "No marketing. No spam. Unsubscribe anytime. Just the changes that matter to your benefits."));
   };
 
   // Load saved data from localStorage on mount
@@ -4368,9 +4368,9 @@ function App() {
             className: "onboard-divider"
           }), /*#__PURE__*/React.createElement("p", {
             className: "onboard-description"
-          }, "Your complete military transition operations center. Timeline, career pathways, VA tools, benefits, and resources \u2014 all in one place. Built by a veteran, for those who serve."), /*#__PURE__*/React.createElement("div", {
+          }, "No marketing. No spam. Unsubscribe anytime. Just the changes that matter to your benefits."), /*#__PURE__*/React.createElement("div", {
             className: "onboard-micro-copy"
-          }, "Let's personalize your experience.", /*#__PURE__*/React.createElement("br", null), "Takes about 30 seconds."), /*#__PURE__*/React.createElement("button", {
+          }, "The next 4 questions personalize your timeline so the right reminders fire at the right time.", /*#__PURE__*/React.createElement("br", null), "About 60 seconds. Or skip and explore the tools first."), /*#__PURE__*/React.createElement("button", {
             onClick: function () {
               setOnboardStep(1);
             },
@@ -4381,7 +4381,7 @@ function App() {
               setShowOnboarding(false);
             },
             className: "onboard-cta-skip"
-          }, "SKIP FOR NOW"), /*#__PURE__*/React.createElement("div", {
+          }, "EXPLORE TOOLS FIRST"), /*#__PURE__*/React.createElement("div", {
             className: "onboard-trust-line"
           }, "FREE \xB7 NO ADS \xB7 NO SUBSCRIPTION \xB7 BUILT BY A VETERAN")), /*#__PURE__*/React.createElement("div", {
             className: "onboard-welcome-features"
