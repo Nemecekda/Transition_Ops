@@ -10593,7 +10593,94 @@ function App() {
       textDecoration: "none",
       marginTop: 4
     }
-  }, "VIEW FULL DOD LIST \u2192")), SKILLBRIDGE_FEED.map((week, wi) => /*#__PURE__*/React.createElement("div", {
+  }, "VIEW FULL DOD LIST \u2192")), (onboardData.branch === "air_force" || onboardData.branch === "space_force") && /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "rgba(139,125,60,0.1)",
+        border: "1px solid " + C.gold,
+        borderLeft: "4px solid " + C.goldBright,
+        borderRadius: 4,
+        padding: "12px 14px",
+        marginBottom: 12
+      }
+    },
+      /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: "'Oswald', sans-serif",
+          fontSize: 11,
+          letterSpacing: 2,
+          color: C.goldBright,
+          marginBottom: 6
+        }
+      }, "\u26A0 DAF POLICY UPDATE \u2014 EFF 31 MAR 2026"),
+      /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: "'Oswald', sans-serif",
+          fontSize: 14,
+          fontWeight: 700,
+          color: C.textPrimary,
+          marginBottom: 8,
+          letterSpacing: 1
+        }
+      }, "RANK-BASED PARTICIPATION CAPS"),
+      /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 12,
+          color: C.textBody,
+          lineHeight: 1.6,
+          marginBottom: 10
+        }
+      }, "SkillBridge participation is now limited by rank under AFI 36-2671 (Air Force) and SPFI 36-2672 (Space Force). Approval authority raised to Squadron CC and above."),
+      onboardData.branch === "air_force" && /*#__PURE__*/React.createElement("div", {
+        style: { marginBottom: 8 }
+      },
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: "'Oswald', sans-serif",
+            fontSize: 11,
+            color: C.gold,
+            letterSpacing: 1.5,
+            marginBottom: 4
+          }
+        }, "AIR FORCE CAPS"),
+        /*#__PURE__*/React.createElement("div", {
+          style: { fontSize: 12, color: C.textBody, lineHeight: 1.8 }
+        },
+          /*#__PURE__*/React.createElement("div", null, "\u2022 E-1 to E-6, O-1 to O-3: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "120 days max")),
+          /*#__PURE__*/React.createElement("div", null, "\u2022 E-7 to E-8, O-4: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "90 days max")),
+          /*#__PURE__*/React.createElement("div", null, "\u2022 E-9, O-5: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "60 days max")),
+          /*#__PURE__*/React.createElement("div", null, "\u2022 O-6 (Colonels): ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "ETP required"))
+        )
+      ),
+      onboardData.branch === "space_force" && /*#__PURE__*/React.createElement("div", {
+        style: { marginBottom: 8 }
+      },
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: "'Oswald', sans-serif",
+            fontSize: 11,
+            color: C.gold,
+            letterSpacing: 1.5,
+            marginBottom: 4
+          }
+        }, "SPACE FORCE CAPS"),
+        /*#__PURE__*/React.createElement("div", {
+          style: { fontSize: 12, color: C.textBody, lineHeight: 1.8 }
+        },
+          /*#__PURE__*/React.createElement("div", null, "\u2022 Ranks below E-9 / O-6: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "120 days max")),
+          /*#__PURE__*/React.createElement("div", null, "\u2022 E-9, O-6 and above: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "90 days max"))
+        )
+      ),
+      /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 11,
+          color: C.textSecondary,
+          lineHeight: 1.5,
+          paddingTop: 8,
+          borderTop: "1px dashed " + C.border,
+          marginTop: 4
+        }
+      }, "Members approved before 31 MAR 2026 remain under previous policy. Coordinate with your unit Education & Training Office and Squadron CC before applying.")
+    ), SKILLBRIDGE_FEED.map((week, wi) => /*#__PURE__*/React.createElement("div", {
     key: wi,
     style: {
       marginBottom: 16
