@@ -3819,8 +3819,7 @@ function App() {
   }, [activeTab]);
 
   useEffect(function() {
-    if (window.__trackEvent && emailSubmitted) {
-      window.__trackEvent('email_signup', {
+    if (window.__trackEvent && emailSubmitted && !window.__safeGet("ga_email_signup_fired")) { window.__safeSet("ga_email_signup_fired", "1");      window.__trackEvent('email_signup', {
         'branch': emailSignup.branch || 'unset',
         'status': emailSignup.status || 'unset',
         'active_tab': activeTab
