@@ -2301,6 +2301,40 @@ const VSO_DIRECTORY = [{
     url: "https://www.militaryonesource.mil",
     desc: "Free 24/7: counseling, financial planning, relocation, spouse education.",
     icon: "\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66"
+}]
+}, {
+  category: "WELLNESS & FAMILY SUPPORT",
+  desc: "Family financial aid, wounded recovery, outdoor therapy, and recreation for veterans and their families.",
+  orgs: [{
+    name: "Operation Homefront",
+    url: "https://operationhomefront.org",
+    desc: "Critical financial assistance, transitional housing, mortgage-free permanent homes, and family support programs. Serving military families since 2002.",
+    icon: "\uD83C\uDFE0"
+  }, {
+    name: "\u2B50 Wounded Warrior Project (WWP)",
+    url: "https://www.woundedwarriorproject.org",
+    desc: "Programs for post-9/11 wounded/ill/injured veterans: mental health, peer support, career counseling, financial wellness, adaptive sports. Free to eligible warriors.",
+    icon: "\u2B50"
+  }, {
+    name: "Project Healing Waters Fly Fishing",
+    url: "https://projecthealingwaters.org",
+    desc: "Free fly fishing programs for disabled veterans. PTSD recovery focus. 200+ programs in 45 states. Equipment and trips provided at no cost.",
+    icon: "\uD83C\uDFA3"
+  }, {
+    name: "Warrior Expeditions",
+    url: "https://warriorexpeditions.org",
+    desc: "Long-distance outdoor expeditions for combat veterans: Appalachian Trail (hiking), Great American Trail (biking), Mississippi River (paddling). Gear and logistics provided.",
+    icon: "\u26F0\uFE0F"
+  }, {
+    name: "Vet Tix (Veteran Tickets Foundation)",
+    url: "https://www.vettix.org",
+    desc: "Free event tickets to sports, concerts, performing arts, family activities. All eras eligible. Active military, veterans, and KIA families. 37M+ tickets distributed.",
+    icon: "\uD83C\uDFAB"
+  }, {
+    name: "Vacations for Veterans",
+    url: "https://www.vacationsforveterans.org",
+    desc: "Free vacation lodging at donated vacation homes. LIMITED ELIGIBILITY: Purple Heart recipients from Iraq/Afghanistan campaigns only. 500+ veterans served since 2007.",
+    icon: "\uD83C\uDFD6\uFE0F"
   }]
 }];
 const SKILLBRIDGE_FEED = [{
@@ -4238,6 +4272,47 @@ function App() {
     return () => window.removeEventListener("appinstalled", handler);
   }, []);
   // Save ETS date and schedule notifications
+  // Centralized OneSignal tagging — refreshes all tags based on current state
+  // Called on app mount and any time ETS changes. Self-healing: keeps days_out/months_out accurate.
+  const __updateOneSignalTags = useCallback(() => {
+    if (window.__IS_IFRAME) return;
+    if (!window.OneSignal) return;
+
+    let etsDate = "";
+    try {
+      etsDate = window.__safeGet("etsDate") || "";
+    } catch (e) {}
+
+    const nowIso = new Date().toISOString();
+    const tags = { last_active: nowIso };
+
+    if (etsDate) {
+      const ets = new Date(etsDate);
+      const now = new Date();
+      const diffDays = Math.ceil((ets - now) / (1000 * 60 * 60 * 24));
+      const diffMonths = Math.ceil((ets - now) / (1000 * 60 * 60 * 24 * 30));
+      tags.ets_date = etsDate;
+      tags.days_out = String(diffDays);
+      tags.months_out = String(diffMonths);
+      tags.status = diffMonths <= 0 ? "post-sep" : "active";
+    }
+
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(async function(OneSignal) {
+      try {
+        await OneSignal.User.addTags(tags);
+      } catch (e) {}
+    });
+  }, []);
+  // Mount-time tag refresh — fires ~1500ms after app loads to give OneSignal SDK time to init
+  // This is what makes tags self-healing: every app open re-syncs days_out, months_out, status
+  useEffect(() => {
+    if (window.__IS_IFRAME) return;
+    const t = setTimeout(() => {
+      __updateOneSignalTags();
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [__updateOneSignalTags]);
   const handleETSChange = useCallback(dateStr => {
     setSeparationDate(dateStr);
     if (window.__IS_IFRAME) return;
@@ -8855,7 +8930,7 @@ function App() {
       gap: 4,
       flexWrap: "wrap"
     }
-  }, ["ALL", "CHARTERED", "TRANSITION", "COMMUNITY", "CRISIS", "FAMILY"].map(f => /*#__PURE__*/React.createElement("button", {
+  }, ["ALL", "CHARTERED", "TRANSITION", "COMMUNITY", "CRISIS", "FAMILY", "WELLNESS"].map(f => /*#__PURE__*/React.createElement("button", {
     key: f,
     onClick: () => setVsoFilter(f),
     style: {
@@ -8869,7 +8944,7 @@ function App() {
       letterSpacing: 1,
       cursor: "pointer"
     }
-  }, f)))), /*#__PURE__*/React.createElement("a", {
+  }, f === "ALL" ? "ALL (" + VSO_DIRECTORY.reduce((sum, s) => sum + s.orgs.length, 0) + ")" : f + " (" + VSO_DIRECTORY.filter(s => { if (f === "CHARTERED") return s.category.includes("CHARTERED"); if (f === "TRANSITION") return s.category.includes("TRANSITION"); if (f === "COMMUNITY") return s.category.includes("PURPOSE"); if (f === "CRISIS") return s.category.includes("MENTAL"); if (f === "FAMILY") return s.category.includes("SPOUSE"); if (f === "WELLNESS") return s.category.includes("WELLNESS"); return false; }).reduce((sum, s) => sum + s.orgs.length, 0) + ")")))), /*#__PURE__*/React.createElement("a", {
     href: "https://www.veteranbridgesolutions.com",
     target: "_blank",
     rel: "noopener noreferrer",
@@ -8920,7 +8995,7 @@ function App() {
     if (vsoFilter === "TRANSITION") return section.category.includes("TRANSITION");
     if (vsoFilter === "COMMUNITY") return section.category.includes("PURPOSE");
     if (vsoFilter === "CRISIS") return section.category.includes("MENTAL");
-    if (vsoFilter === "FAMILY") return section.category.includes("SPOUSE");
+    if (vsoFilter === "FAMILY") return section.category.includes("SPOUSE"); if (vsoFilter === "WELLNESS") return section.category.includes("WELLNESS"); if (vsoFilter === "WELLNESS") return section.category.includes("WELLNESS"); if (vsoFilter === "WELLNESS") return section.category.includes("WELLNESS"); if (vsoFilter === "WELLNESS") return section.category.includes("WELLNESS");
     return true;
   }).map((section, si) => /*#__PURE__*/React.createElement("div", {
     key: si,
