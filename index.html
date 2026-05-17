@@ -2301,6 +2301,40 @@ const VSO_DIRECTORY = [{
     url: "https://www.militaryonesource.mil",
     desc: "Free 24/7: counseling, financial planning, relocation, spouse education.",
     icon: "\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66"
+}]
+}, {
+  category: "WELLNESS & FAMILY SUPPORT",
+  desc: "Family financial aid, wounded recovery, outdoor therapy, and recreation for veterans and their families.",
+  orgs: [{
+    name: "Operation Homefront",
+    url: "https://operationhomefront.org",
+    desc: "Critical financial assistance, transitional housing, mortgage-free permanent homes, and family support programs. Serving military families since 2002.",
+    icon: "\uD83C\uDFE0"
+  }, {
+    name: "\u2B50 Wounded Warrior Project (WWP)",
+    url: "https://www.woundedwarriorproject.org",
+    desc: "Programs for post-9/11 wounded/ill/injured veterans: mental health, peer support, career counseling, financial wellness, adaptive sports. Free to eligible warriors.",
+    icon: "\u2B50"
+  }, {
+    name: "Project Healing Waters Fly Fishing",
+    url: "https://projecthealingwaters.org",
+    desc: "Free fly fishing programs for disabled veterans. PTSD recovery focus. 200+ programs in 45 states. Equipment and trips provided at no cost.",
+    icon: "\uD83C\uDFA3"
+  }, {
+    name: "Warrior Expeditions",
+    url: "https://warriorexpeditions.org",
+    desc: "Long-distance outdoor expeditions for combat veterans: Appalachian Trail (hiking), Great American Trail (biking), Mississippi River (paddling). Gear and logistics provided.",
+    icon: "\u26F0\uFE0F"
+  }, {
+    name: "Vet Tix (Veteran Tickets Foundation)",
+    url: "https://www.vettix.org",
+    desc: "Free event tickets to sports, concerts, performing arts, family activities. All eras eligible. Active military, veterans, and KIA families. 37M+ tickets distributed.",
+    icon: "\uD83C\uDFAB"
+  }, {
+    name: "Vacations for Veterans",
+    url: "https://www.vacationsforveterans.org",
+    desc: "Free vacation lodging at donated vacation homes. LIMITED ELIGIBILITY: Purple Heart recipients from Iraq/Afghanistan campaigns only. 500+ veterans served since 2007.",
+    icon: "\uD83C\uDFD6\uFE0F"
   }]
 }];
 const SKILLBRIDGE_FEED = [{
@@ -2538,13 +2572,74 @@ const THEMES = {
     inactive: "#999999"
   }
 };
+// ═══════════════════════════════════════════════════════════════
+// RESOURCE DIRECTORY — Single source of truth for veteran resources
+// Filterable by category, cost, eligibility. URLs verified per audit.
+// ═══════════════════════════════════════════════════════════════
+const RESOURCE_CATEGORIES = {
+  education:        { label: "EDUCATION & ACADEMIC",         color: "#4A5D23", icon: "🎓" },
+  certs:            { label: "CERTS & TECH TRAINING",        color: "#2C5F2D", icon: "📜" },
+  apprenticeships:  { label: "APPRENTICESHIPS & FELLOWSHIPS", color: "#6B4423", icon: "🛠️" },
+  mentorship:       { label: "MENTORSHIP & NETWORKING",      color: "#1B3A4B", icon: "🤝" },
+  employment:       { label: "EMPLOYMENT & TRANSITION",      color: "#8B6914", icon: "💼" },
+  entrepreneurship: { label: "ENTREPRENEURSHIP",             color: "#8B0000", icon: "💡" }
+};
 
+const RESOURCES = [
+  // ═══ EDUCATION & ACADEMIC ═══
+  { id: "sva", name: "Student Veterans of America (SVA)", url: "https://studentveterans.org", category: "education", cost: "free", eligibility: ["veteran","active","spouse"], description: "1,500+ campus chapters. Peer support, advocacy, and scholarships for student veterans.", verified: true },
+  { id: "warrior-scholar", name: "Warrior-Scholar Project", url: "https://www.warrior-scholar.org", category: "education", cost: "free", eligibility: ["veteran","active"], description: "Free academic boot camps preparing enlisted veterans for top-tier four-year colleges.",verified: true },
+  { id: "boots-to-books", name: "Boots to Books", url: "https://www.boots2books.org", category: "education", cost: "free", eligibility: ["veteran","active","spouse"], description: "Transition support helping veterans move into higher education.",verified: true },
+  { id: "service-to-school", name: "Service to School (S2S)", url: "https://www.service2school.org", category: "education", cost: "free", eligibility: ["veteran","active"], description: "Free college admissions mentorship for undergraduate and graduate programs.",verified: true },
+  { id: "posse-vets", name: "Posse Veterans Program", url: "https://www.possefoundation.org/veterans-posse-program", category: "education", cost: "free", eligibility: ["veteran"], description: "Full-tuition scholarships and elite university pathways. Cohort-based peer support.",verified: true },
+
+  // ═══ CERTS & TECH TRAINING ═══
+  { id: "o2o", name: "Onward to Opportunity (IVMF)", url: "https://ivmf.syracuse.edu/programs/career-training/", category: "certs", cost: "free", eligibility: ["veteran","active","spouse"], description: "Syracuse IVMF. 40+ free industry certs incl. PMP, CISSP, SHRM, Six Sigma. Includes career coaching and employer matching.", verified: true, priority: true },
+  { id: "mssa", name: "Microsoft MSSA", url: "https://military.microsoft.com/mssa/", category: "certs", cost: "free", eligibility: ["active","spouse"], description: "17-week cloud or cybersecurity bootcamp with paid stipend. Guaranteed Microsoft interview at completion.", verified: true, priority: true },
+  { id: "aws-restart", name: "AWS re/Start Veterans", url: "https://aws.amazon.com/training/restart/", category: "certs", cost: "free", eligibility: ["veteran","active","spouse"], description: "12-week cloud computing training. No prior IT experience required. Job placement assistance.", verified: true },
+  { id: "cisa-learning", name: "CISA Learning (formerly FedVTE)", url: "https://learning.cisa.gov/", category: "certs", cost: "free", eligibility: ["veteran","active"], description: "850+ hours of free cybersecurity training. Replaced FedVTE Nov 2024. Aligned to Security+, Network+, CISSP.", verified: true },
+  { id: "vetsintech", name: "VetsinTech (ViT)", url: "https://vetsintech.co", category: "certs", cost: "free", eligibility: ["veteran","active","spouse"], description: "Tech-focused programs covering education, employment, and entrepreneurship. Training, networking, and placement.", verified: true },
+  { id: "vets2pm", name: "Vets2PM", url: "https://vets2pm.com", category: "certs", cost: "paid", eligibility: ["veteran","active","spouse"], description: "PMP, Scrum, Lean Six Sigma, and project management career prep. GI Bill and VR&E approved.",verified: true },
+  { id: "npower", name: "NPower", url: "https://www.npower.org", category: "certs", cost: "free", eligibility: ["veteran","active","spouse"], description: "Free IT and cybersecurity training plus job placement. Industry certifications and employer partnerships.",verified: true },
+  { id: "cisco-networking", name: "Cisco Networking Academy — Veterans", url: "https://www.cisco.com/c/en/us/about/csr/impact/education/veterans-program.html", category: "certs", cost: "free", eligibility: ["veteran","active","spouse"], description: "Networking and cybersecurity training with industry-recognized certifications.",verified: true },
+  { id: "code-platoon", name: "Code Platoon", url: "https://www.codeplatoon.org", category: "ttps:certs", cost: "gi_bill", eligibility: ["veteran","active","spouse"], description: "Veteran-focused software engineering bootcamp. GI Bill, VR&E, and scholarships accepted.",verified: true },
+
+  // ═══ APPRENTICESHIPS & FELLOWSHIPS ═══
+  { id: "dod-skillbridge", name: "DoD SkillBridge", url: "https://skillbridge.osd.mil/", category: "apprenticeships", cost: "free", eligibility: ["active"], description: "Work civilian during last 180 days of service. Retain military pay and benefits. 3,700+ approved companies.", verified: true, priority: true },
+  { id: "hoh-fellowship", name: "Hiring Our Heroes Corporate Fellowship", url: "https://www.hiringourheroes.org/fellowships/", category: "apprenticeships", cost: "free", eligibility: ["active","spouse"], description: "12-week paid corporate fellowship with Fortune 500 companies. Strong direct-hire rate.", verified: true },
+  { id: "amazon-military", name: "Amazon Military Apprenticeships", url: "https://www.aboutamazon.com/impact/community/military", category: "apprenticeships", cost: "free", eligibility: ["veteran","active","spouse"], description: "Military apprenticeship, SkillBridge, and Career Choice education benefit ($5,250/yr).", verified: true },
+  { id: "lockheed-heroes", name: "Lockheed Martin Heroes Program", url: "https://www.lockheedmartin.com/en-us/careers/military.html", category: "apprenticeships", cost: "free", eligibility: ["veteran","active"], description: "SkillBridge, military fellowships, clearance-friendly roles, tuition reimbursement.", verified: true },
+  { id: "boeing-skillbridge", name: "Boeing SkillBridge", url: "https://jobs.boeing.com/Veterans-SkillBridge", category: "apprenticeships", cost: "free", eligibility: ["active"], description: "SkillBridge internships and apprenticeships in aerospace, defense, and manufacturing.",verified: true },
+
+  // ═══ MENTORSHIP & NETWORKING ═══
+  { id: "acp", name: "American Corporate Partners (ACP)", url: "https://www.acp-usa.org", category: "mentorship", cost: "free", eligibility: ["veteran","active","spouse"], description: "Year-long 1-on-1 mentorship with Fortune 500 professionals. Post-9/11 vets eligible. Spouse program available.", verified: true, priority: true },
+  { id: "milmentor", name: "MilMentor", url: "https://www.milmentor.com", category: "mentorship", cost: "free", eligibility: ["veteran","active","spouse","guard_reserve"], description: "On-demand mentorship platform. Pick your own mentors from Fortune 500s. Replaces Veterati (shut down Aug 2024).", verified: true, priority: true },
+  { id: "50-strong", name: "50 Strong", url: "https://www.50-strong.us", category: "mentorship", cost: "free", eligibility: ["veteran","active","spouse"], description: "On-demand mentoring + employer connects + daily-updated job board. 200+ employer partners.", verified: true },
+  { id: "fourblock", name: "FourBlock", url: "https://fourblock.org", category: "mentorship", cost: "free", eligibility: ["veteran","active","spouse"], description: "Career readiness program, networking, and executive mentorship for transitioning service members.",verified: true },
+  { id: "bunker-labs-mentor", name: "Bunker Labs (Mentorship)", url: "https://ivmf.syracuse.edu/bunker-labs/", category: "mentorship", cost: "free", eligibility: ["veteran","active","spouse"], description: "ENow part of Syracuse IVMF. Entrepreneur mentorship and community for military-connected founders.",verified: true },
+
+  // ═══ EMPLOYMENT & TRANSITION ═══
+  { id: "hire-heroes", name: "Hire Heroes USA", url: "https://www.hireheroesusa.org", category: "employment", cost: "free", eligibility: ["veteran","active","spouse"], description: "Free career coaching, resume assistance, job matching. 110,000+ confirmed hires.", verified: true, priority: true },
+  { id: "hoh", name: "Hiring Our Heroes", url: "https://www.hiringourheroes.org", category: "employment", cost: "free", eligibility: ["veteran","active","spouse"], description: "U.S. Chamber of Commerce Foundation. Career fairs, hiring events, employment programs.", verified: true },
+  { id: "recruitmilitary", name: "RecruitMilitary", url: "https://recruitmilitary.com", category: "employment", cost: "free", eligibility: ["veteran","active","spouse"], description: "100+ veteran-focused job fairs per year, virtual and in-person.", verified: true },
+  { id: "vts", name: "Veteran Transition Support (VTS)", url: "https://veteranstransitionsupport.org", category: "employment", cost: "free", eligibility: ["veteran","active","spouse"], description: "Free OSHA 10/30, Lean Six Sigma, and PM certifications. Transition assistance and peer support.", verified: true },
+  { id: "actnow", name: "ActNow Education", url: "https://www.actnoweducation.org", category: "employment", cost: "free", eligibility: ["veteran","active","spouse"], description: "Education benefits guidance, career support, and certifications navigation.",verified: true },
+  { id: "military-com-jobs", name: "Military.com Veteran Jobs", url: "https://www.military.com/veteran-jobs", category: "employment", cost: "free", eligibility: ["veteran","active","spouse"], description: "Veteran job board, career resources, and employment tools.",verified: true },
+  { id: "shift", name: "Shift.org", url: "https://www.shift.org", category: "employment", cost: "free", eligibility: ["active"], description: "Military transition internships and career placement at high-growth companies.",verified: true },
+  { id: "nextop", name: "NextOp Veterans", url: "https://nextopvets.org", category: "employment", cost: "free", eligibility: ["veteran","active"], description: "Career placement and transition support for enlisted veterans. Industrial and skilled-trade focus.",verified: true },
+
+  // ═══ ENTREPRENEURSHIP ═══
+  { id: "bunker-labs-ent", name: "Bunker Labs (Entrepreneurship)", url: "https://ivmf.syracuse.edu/bunker-labs/", category: "entrepreneurship", cost: "free", eligibility: ["veteran","active","spouse"], description: "Now part of Syracuse IVMF. Veteran entrepreneur incubator, founder programs, and startup community.",verified: true },
+  { id: "vetfran", name: "VetFran", url: "https://www.vetfran.org", category: "entrepreneurship", cost: "paid", eligibility: ["veteran","active","spouse"], description: "Franchise opportunities with veteran discounts. 600+ participating franchisors offering reduced fees.",verified: true },
+  { id: "sba-vboc", name: "SBA Veterans Business Outreach Center (VBOC)", url: "https://www.sba.gov/local-assistance/resource-partners/veterans-business-outreach-center-vboc", category: "entrepreneurship", cost: "free", eligibility: ["veteran","active","spouse"], description: "SBA-funded business mentoring, training, and Boots to Business courses.",verified: true },
+  { id: "ivmf-business", name: "Institute for Veterans & Military Families (IVMF)", url: "https://ivmf.syracuse.edu", category: "entrepreneurship", cost: "free", eligibility: ["veteran","active","spouse"], description: "Veteran career, education, and entrepreneurship ecosystem. Programs include EBV, V-WISE, Boots to Business.",verified: true }
+];
 // ═══════════════════════════════════════════════════════════════
 // SMART REMINDER ENGINE — 22 TIMED TRANSITION REMINDERS
 // ═══════════════════════════════════════════════════════════════
 const SMART_REMINDERS = [
   {id:"r-24-itp",mo:24,cat:"ADMIN",pri:"ADVISORY",title:"Initiate Individual Transition Plan (ITP)",brief:"Sit down with your commander and establish your ITP. This is the foundation — everything builds from here.",items:["Schedule ITP meeting with chain of command","Attend initial TAP/Transition GPS briefing","Request copies of ORB/SRB and review for accuracy","Pull OMPF and verify all service records"],deadline:"No hard deadline — but every day you wait compresses your timeline",why:"Late starts lead to rushed decisions on benefits worth six figures over your lifetime.",link:"https://www.tapevents.mil"},
-  {id:"r-24-net",mo:24,cat:"CAREER",pri:"ADVISORY",title:"Begin Building Your Civilian Network",brief:"Your DD214 won't get you hired — your network will. Start now.",items:["Create or update LinkedIn profile","Join veteran networking groups (ACP, Veterati)","Identify 3-5 mentors in target industry","Attend at least one industry event monthly"],deadline:null,why:"Veterans who network 18+ months out have significantly higher placement rates.",link:"https://www.linkedin.com"},
+  {id:"r-24-net",mo:24,cat:"CAREER",pri:"ADVISORY",title:"Begin Building Your Civilian Network",brief:"Your DD214 won't get you hired — your network will. Start now.",items:["Create or update LinkedIn profile","Join veteran networking groups (ACP, MilMentor)","Identify 3-5 mentors in target industry","Attend at least one industry event monthly"],deadline:null,why:"Veterans who network 18+ months out have significantly higher placement rates.",link:"https://www.linkedin.com"},
   {id:"r-18-sb",mo:18,cat:"CAREER",pri:"HIGH",title:"Research SkillBridge Opportunities",brief:"SkillBridge = civilian internship during last 180 days while collecting military pay. Slots fill fast.",items:["Browse SkillBridge employers in the app feed","Identify 3-5 target companies","Verify commander support and unit manning","Begin application packet (some need 12+ months lead)"],deadline:"Applications often due 6-12 months before start",why:"Over 90% of SkillBridge participants receive job offers. Missing this window = walking out with no income.",link:"https://skillbridge.osd.mil"},
   {id:"r-18-res",mo:18,cat:"CAREER",pri:"HIGH",title:"Begin Resume Development",brief:"Translating military experience into civilian language takes time. Don't wait.",items:["Use MOS Crosswalk to identify civilian job titles","Draft resume with accomplishment-based bullets","Remove ALL military jargon","Get feedback from a civilian hiring manager"],deadline:"First draft complete NLT 12 months out",why:"Poorly translated resumes get filtered by ATS before a human ever sees them.",link:null},
   {id:"r-12-bdd",mo:12,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F BDD Claim Window OPENS",brief:"File your VA disability claim 180-365 days before separation. Rating effective DAY ONE.",items:["Gather all medical records and LOD determinations","Schedule pre-claim consultation with VSO (DAV, VFW, American Legion)","File BDD claim on VA.gov","Get buddy statements for service-connected conditions","Schedule remaining medical appointments for documentation"],deadline:"File between 365 and 180 days before separation",why:"Filing after separation can delay your rating by 6-12+ months. That's $20,000+ in delayed compensation.",link:"https://www.va.gov/disability/how-to-file-claim/"},
@@ -3783,6 +3878,7 @@ function App() {
   const [milestones, setMilestones] = useState(TRANSITION_MILESTONES);
   const [selectedMilestone, setSelectedMilestone] = useState(null);
   const [separationDate, setSeparationDate] = useState("");
+  const [policyIntelOpen, setPolicyIntelOpen] = useState(false);
   const [showNotifPanel, setShowNotifPanel] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -3792,6 +3888,7 @@ function App() {
   const [toast, setToast] = useState(null);
   const [documents, setDocuments] = useState(DOCUMENT_VAULT);
   const [vsoFilter, setVsoFilter] = useState("ALL");
+  const [resourceFilter, setResourceFilter] = useState({ category: "ALL", cost: "ALL", eligibility: "ALL" });
   const [subTab, setSubTab] = useState("vsos");
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [notifStatus, setNotifStatus] = useState("default");
@@ -4176,6 +4273,47 @@ function App() {
     return () => window.removeEventListener("appinstalled", handler);
   }, []);
   // Save ETS date and schedule notifications
+  // Centralized OneSignal tagging — refreshes all tags based on current state
+  // Called on app mount and any time ETS changes. Self-healing: keeps days_out/months_out accurate.
+  const __updateOneSignalTags = useCallback(() => {
+    if (window.__IS_IFRAME) return;
+    if (!window.OneSignal) return;
+
+    let etsDate = "";
+    try {
+      etsDate = window.__safeGet("etsDate") || "";
+    } catch (e) {}
+
+    const nowIso = new Date().toISOString();
+    const tags = { last_active: nowIso };
+
+    if (etsDate) {
+      const ets = new Date(etsDate);
+      const now = new Date();
+      const diffDays = Math.ceil((ets - now) / (1000 * 60 * 60 * 24));
+      const diffMonths = Math.ceil((ets - now) / (1000 * 60 * 60 * 24 * 30));
+      tags.ets_date = etsDate;
+      tags.days_out = String(diffDays);
+      tags.months_out = String(diffMonths);
+      tags.status = diffMonths <= 0 ? "post-sep" : "active";
+    }
+
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(async function(OneSignal) {
+      try {
+        await OneSignal.User.addTags(tags);
+      } catch (e) {}
+    });
+  }, []);
+  // Mount-time tag refresh — fires ~1500ms after app loads to give OneSignal SDK time to init
+  // This is what makes tags self-healing: every app open re-syncs days_out, months_out, status
+  useEffect(() => {
+    if (window.__IS_IFRAME) return;
+    const t = setTimeout(() => {
+      __updateOneSignalTags();
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [__updateOneSignalTags]);
   const handleETSChange = useCallback(dateStr => {
     setSeparationDate(dateStr);
     if (window.__IS_IFRAME) return;
@@ -8729,6 +8867,9 @@ function App() {
       paddingBottom: 4
     }
   }, [{
+    id: "directory",
+    label: "⭐ DIRECTORY"
+  }, {
     id: "vsos",
     label: "VSOs"
   }, {
@@ -8772,7 +8913,7 @@ function App() {
       whiteSpace: "nowrap",
       flexShrink: 0
     }
-  }, st.label))), subTab === "vsos" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, st.label))), subTab === "directory" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 14 } }, /*#__PURE__*/React.createElement("div", { style: S.cardTitle }, "RESOURCE DIRECTORY"), /*#__PURE__*/React.createElement("div", { style: { ...S.bodyText, lineHeight: 1.7, marginBottom: 10 } }, "Filter by what you need. Every resource here has been verified or flagged for review. Tap any card to open the resource site."), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "CATEGORY"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 } }, ["ALL"].concat(Object.keys(RESOURCE_CATEGORIES)).map(cat => /*#__PURE__*/React.createElement("button", { key: cat, onClick: () => setResourceFilter({ ...resourceFilter, category: cat }), style: { padding: "4px 8px", background: resourceFilter.category === cat ? C.green : "transparent", border: "1px solid " + (resourceFilter.category === cat ? C.green : C.border), borderRadius: 3, color: resourceFilter.category === cat ? C.textPrimary : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, cat === "ALL" ? "ALL" : RESOURCE_CATEGORIES[cat].label))), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "COST"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 } }, [{ id: "ALL", label: "ALL" }, { id: "free", label: "FREE" }, { id: "gi_bill", label: "GI BILL" }, { id: "paid", label: "PAID" }].map(c => /*#__PURE__*/React.createElement("button", { key: c.id, onClick: () => setResourceFilter({ ...resourceFilter, cost: c.id }), style: { padding: "4px 8px", background: resourceFilter.cost === c.id ? C.gold : "transparent", border: "1px solid " + (resourceFilter.cost === c.id ? C.gold : C.border), borderRadius: 3, color: resourceFilter.cost === c.id ? C.bg : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, c.label))), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "ELIGIBILITY"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap" } }, [{ id: "ALL", label: "ALL" }, { id: "veteran", label: "VETERAN" }, { id: "active", label: "ACTIVE DUTY" }, { id: "spouse", label: "SPOUSE" }, { id: "guard_reserve", label: "GUARD/RESERVE" }].map(e => /*#__PURE__*/React.createElement("button", { key: e.id, onClick: () => setResourceFilter({ ...resourceFilter, eligibility: e.id }), style: { padding: "4px 8px", background: resourceFilter.eligibility === e.id ? "#1B3A4B" : "transparent", border: "1px solid " + (resourceFilter.eligibility === e.id ? "#1B3A4B" : C.border), borderRadius: 3, color: resourceFilter.eligibility === e.id ? C.textPrimary : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, e.label)))), (function() { var filtered = RESOURCES.filter(function(r) { if (resourceFilter.category !== "ALL" && r.category !== resourceFilter.category) return false; if (resourceFilter.cost !== "ALL" && r.cost !== resourceFilter.cost) return false; if (resourceFilter.eligibility !== "ALL" && r.eligibility.indexOf(resourceFilter.eligibility) === -1) return false; return true; }); if (filtered.length === 0) { return /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 20, textAlign: "center" } }, /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.inactive } }, "No resources match the current filters. Try broadening your selection.")); } var grouped = {}; filtered.forEach(function(r) { if (!grouped[r.category]) grouped[r.category] = []; grouped[r.category].push(r); }); return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.greenBright, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginBottom: 8, marginTop: 10 } }, filtered.length + " RESOURCE" + (filtered.length !== 1 ? "S" : "") + " MATCH YOUR FILTERS"), Object.keys(grouped).map(function(catKey) { var cat = RESOURCE_CATEGORIES[catKey]; return /*#__PURE__*/React.createElement("div", { key: catKey, style: { marginBottom: 14 } }, /*#__PURE__*/React.createElement("div", { style: { ...S.sectionLabel, color: cat.color } }, cat.icon + " " + cat.label), grouped[catKey].map(function(r) { return /*#__PURE__*/React.createElement("a", { key: r.id, href: r.url, target: "_blank", rel: "noopener noreferrer", style: { display: "block", padding: "12px 14px", marginBottom: 5, background: r.priority ? "linear-gradient(135deg, " + C.bgCard + ", " + C.gradStart + ")" : C.bgCard, border: "1px solid " + (r.priority ? C.gold : C.border), borderLeft: r.priority ? "3px solid " + C.gold : "1px solid " + C.border, borderRadius: 4, textDecoration: "none" } }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 } }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: r.priority ? C.goldBright : C.textPrimary, fontWeight: 600 } }, (r.priority ? "⭐ " : "") + r.name), /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: C.greenBright } }, "→")), /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5, marginBottom: 6 } }, r.description), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap" } }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: r.cost === "free" ? C.green : r.cost === "gi_bill" ? "#1B3A4B" : C.bg, color: r.cost === "free" || r.cost === "gi_bill" ? C.textPrimary : C.inactive, borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, r.cost === "free" ? "FREE" : r.cost === "gi_bill" ? "GI BILL" : "PAID"), r.eligibility.map(function(elig) { return /*#__PURE__*/React.createElement("span", { key: elig, style: { fontSize: 9, padding: "2px 6px", background: C.bg, color: C.inactive, borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, border: "1px solid " + C.border } }, elig.toUpperCase().replace("_", "/")); }), !r.verified && /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: "rgba(139,105,20,0.2)", color: C.gold, borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, "⚠ VERIFY"))); })); })); })()),subTab === "vsos" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
       padding: 14
@@ -8790,7 +8931,7 @@ function App() {
       gap: 4,
       flexWrap: "wrap"
     }
-  }, ["ALL", "CHARTERED", "TRANSITION", "COMMUNITY", "CRISIS", "FAMILY"].map(f => /*#__PURE__*/React.createElement("button", {
+  }, ["ALL", "CHARTERED", "TRANSITION", "COMMUNITY", "CRISIS", "FAMILY", "WELLNESS"].map(f => /*#__PURE__*/React.createElement("button", {
     key: f,
     onClick: () => setVsoFilter(f),
     style: {
@@ -8804,7 +8945,7 @@ function App() {
       letterSpacing: 1,
       cursor: "pointer"
     }
-  }, f)))), /*#__PURE__*/React.createElement("a", {
+  }, f === "ALL" ? "ALL (" + VSO_DIRECTORY.reduce((sum, s) => sum + s.orgs.length, 0) + ")" : f + " (" + VSO_DIRECTORY.filter(s => { if (f === "CHARTERED") return s.category.includes("CHARTERED"); if (f === "TRANSITION") return s.category.includes("TRANSITION"); if (f === "COMMUNITY") return s.category.includes("PURPOSE"); if (f === "CRISIS") return s.category.includes("MENTAL"); if (f === "FAMILY") return s.category.includes("SPOUSE"); if (f === "WELLNESS") return s.category.includes("WELLNESS"); return false; }).reduce((sum, s) => sum + s.orgs.length, 0) + ")")))), /*#__PURE__*/React.createElement("a", {
     href: "https://www.veteranbridgesolutions.com",
     target: "_blank",
     rel: "noopener noreferrer",
@@ -8855,7 +8996,7 @@ function App() {
     if (vsoFilter === "TRANSITION") return section.category.includes("TRANSITION");
     if (vsoFilter === "COMMUNITY") return section.category.includes("PURPOSE");
     if (vsoFilter === "CRISIS") return section.category.includes("MENTAL");
-    if (vsoFilter === "FAMILY") return section.category.includes("SPOUSE");
+    if (vsoFilter === "FAMILY") return section.category.includes("SPOUSE"); if (vsoFilter === "WELLNESS") return section.category.includes("WELLNESS"); if (vsoFilter === "WELLNESS") return section.category.includes("WELLNESS"); if (vsoFilter === "WELLNESS") return section.category.includes("WELLNESS"); if (vsoFilter === "WELLNESS") return section.category.includes("WELLNESS");
     return true;
   }).map((section, si) => /*#__PURE__*/React.createElement("div", {
     key: si,
@@ -9090,11 +9231,6 @@ function App() {
     url: "https://50-strongmentor.us/",
     desc: "Choose your own mentors based on career goals and interests. Flexible scheduling. One conversation can change everything.",
     icon: "\uD83C\uDFAF"
-  }, {
-    name: "Veterati",
-    url: "https://www.veterati.com",
-    desc: "FREE unlimited mentorship calls with successful professionals. Average user picks 4 mentors. Choose mentors by industry, company, or career field.",
-    icon: "\uD83D\uDCDE"
   }, {
     name: "The COMMIT Foundation",
     url: "https://www.commitfoundation.org",
@@ -12083,6 +12219,40 @@ function App() {
         React.createElement("div", { style: { fontSize: 11, color: C.inactive, marginTop: 6, lineHeight: 1.5 } }, "VA doesn't add ratings. They use \"VA Math\" \u2014 percentages of percentages. Two 50% ratings = 75%, not 100%.")
       ),
 
+      // 2026 Policy Intel — collapsible advisory card
+      React.createElement("div", { style: { background: "linear-gradient(135deg, rgba(139,105,20,0.08), rgba(139,105,20,0.02))", border: "1px solid " + C.gold, borderRadius: 8, padding: 12, marginBottom: 12 } },
+        React.createElement("div", { onClick: function() { setPolicyIntelOpen(!policyIntelOpen); }, style: { cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.gold, letterSpacing: 2 } }, (policyIntelOpen ? "\u25BC" : "\u25B6") + " 2026 POLICY INTEL"),
+          React.createElement("div", { style: { fontSize: 10, color: C.inactive, letterSpacing: 1 } }, policyIntelOpen ? "COLLAPSE" : "EXPAND")
+        ),
+        policyIntelOpen && React.createElement("div", { style: { marginTop: 12, paddingTop: 12, borderTop: "1px solid " + C.border } },
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 MEDICATION RULE \u2014 RESCINDED"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "The Feb 2026 interim rule on medication-controlled symptoms (38 CFR \u00A74.10) was rescinded 27 FEB 2026. Pre-Feb 17 regulatory text restored. No action needed for current ratings.")
+          ),
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.gold, letterSpacing: 1, marginBottom: 4 } }, "\u26A0 PROPOSED VASRD CHANGES \u2014 UNDER REVIEW"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5, marginBottom: 6 } }, "Proposals from 2022 still pending. NOT FINAL as of April 2026. If finalized:"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.7, paddingLeft: 12 } },
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "Sleep apnea"), ": automatic 50% for CPAP eliminated. Most could drop to 10%."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "Tinnitus"), ": standalone 10% eliminated. Only rated as part of another condition."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "Mental health"), ": new domain-based model. Could help many veterans.")
+            )
+          ),
+          React.createElement("div", { style: { padding: 10, background: "rgba(74,93,35,0.15)", borderLeft: "3px solid " + C.greenBright, borderRadius: 4, marginBottom: 12 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2192 ACTION"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textPrimary, lineHeight: 1.5 } }, "If you have sleep apnea or tinnitus and haven't filed, file now under current criteria. Existing ratings are grandfathered.")
+          ),
+          React.createElement("div", { style: { fontSize: 11, color: C.inactive, lineHeight: 1.5, paddingTop: 8, borderTop: "1px solid " + C.border } },
+            "For real-time VA policy updates: ",
+            React.createElement("a", { href: "https://www.dav.org/learn-more/news/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "DAV"),
+            " \u2022 ",
+            React.createElement("a", { href: "https://www.vfw.org/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "VFW"),
+            " \u2022 Your VSO",
+            React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 4 } }, "Last verified: 17 MAY 2026")
+          )
+        )
+      ),
       // COMBINED RESULT (show if conditions exist)
       vaConditions.length > 0 && React.createElement("div", { style: { background: "linear-gradient(135deg, #1e2814, #141a0c)", border: "2px solid " + C.green, borderRadius: 12, padding: 20, marginBottom: 14, textAlign: "center" } },
         React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "YOUR COMBINED VA RATING"),
@@ -12241,6 +12411,40 @@ function App() {
         React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 2, fontStyle: "italic" } }, "TAX-FREE compensation")
       ),
 
+      // 2026 Policy Intel — collapsible advisory card
+      React.createElement("div", { style: { background: "linear-gradient(135deg, rgba(139,105,20,0.08), rgba(139,105,20,0.02))", border: "1px solid " + C.gold, borderRadius: 8, padding: 12, marginBottom: 12 } },
+        React.createElement("div", { onClick: function() { setPolicyIntelOpen(!policyIntelOpen); }, style: { cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.gold, letterSpacing: 2 } }, (policyIntelOpen ? "\u25BC" : "\u25B6") + " 2026 POLICY INTEL"),
+          React.createElement("div", { style: { fontSize: 10, color: C.inactive, letterSpacing: 1 } }, policyIntelOpen ? "COLLAPSE" : "EXPAND")
+        ),
+        policyIntelOpen && React.createElement("div", { style: { marginTop: 12, paddingTop: 12, borderTop: "1px solid " + C.border } },
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 MEDICATION RULE \u2014 RESCINDED"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "The Feb 2026 interim rule on medication-controlled symptoms (38 CFR \u00A74.10) was rescinded 27 FEB 2026. Pre-Feb 17 regulatory text restored. No action needed for current ratings.")
+          ),
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.gold, letterSpacing: 1, marginBottom: 4 } }, "\u26A0 PROPOSED VASRD CHANGES \u2014 UNDER REVIEW"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5, marginBottom: 6 } }, "Proposals from 2022 still pending. NOT FINAL as of April 2026. If finalized:"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.7, paddingLeft: 12 } },
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "Sleep apnea"), ": automatic 50% for CPAP eliminated. Most could drop to 10%."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "Tinnitus"), ": standalone 10% eliminated. Only rated as part of another condition."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "Mental health"), ": new domain-based model. Could help many veterans.")
+            )
+          ),
+          React.createElement("div", { style: { padding: 10, background: "rgba(74,93,35,0.15)", borderLeft: "3px solid " + C.greenBright, borderRadius: 4, marginBottom: 12 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2192 ACTION"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textPrimary, lineHeight: 1.5 } }, "If you have sleep apnea or tinnitus and haven't filed, file now under current criteria. Existing ratings are grandfathered.")
+          ),
+          React.createElement("div", { style: { fontSize: 11, color: C.inactive, lineHeight: 1.5, paddingTop: 8, borderTop: "1px solid " + C.border } },
+            "For real-time VA policy updates: ",
+            React.createElement("a", { href: "https://www.dav.org/learn-more/news/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "DAV"),
+            " \u2022 ",
+            React.createElement("a", { href: "https://www.vfw.org/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "VFW"),
+            " \u2022 Your VSO",
+            React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 4 } }, "Last verified: 17 MAY 2026")
+          )
+        )
+      ),
       // Rating selector
       React.createElement("div", { style: { background: C.bgCard, border: "1px solid " + C.border, borderRadius: 10, padding: 16, marginBottom: 12 } },
         React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 12 } }, "YOUR DISABILITY RATING"),
