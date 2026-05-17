@@ -12219,6 +12219,40 @@ function App() {
         React.createElement("div", { style: { fontSize: 11, color: C.inactive, marginTop: 6, lineHeight: 1.5 } }, "VA doesn't add ratings. They use \"VA Math\" \u2014 percentages of percentages. Two 50% ratings = 75%, not 100%.")
       ),
 
+      // 2026 Policy Intel — collapsible advisory card
+      React.createElement("div", { style: { background: "linear-gradient(135deg, rgba(139,105,20,0.08), rgba(139,105,20,0.02))", border: "1px solid " + C.gold, borderRadius: 8, padding: 12, marginBottom: 12 } },
+        React.createElement("div", { onClick: function() { setPolicyIntelOpen(!policyIntelOpen); }, style: { cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.gold, letterSpacing: 2 } }, (policyIntelOpen ? "\u25BC" : "\u25B6") + " 2026 POLICY INTEL"),
+          React.createElement("div", { style: { fontSize: 10, color: C.inactive, letterSpacing: 1 } }, policyIntelOpen ? "COLLAPSE" : "EXPAND")
+        ),
+        policyIntelOpen && React.createElement("div", { style: { marginTop: 12, paddingTop: 12, borderTop: "1px solid " + C.border } },
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 MEDICATION RULE \u2014 RESCINDED"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "The Feb 2026 interim rule on medication-controlled symptoms (38 CFR \u00A74.10) was rescinded 27 FEB 2026. Pre-Feb 17 regulatory text restored. No action needed for current ratings.")
+          ),
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.gold, letterSpacing: 1, marginBottom: 4 } }, "\u26A0 PROPOSED VASRD CHANGES \u2014 UNDER REVIEW"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5, marginBottom: 6 } }, "Proposals from 2022 still pending. NOT FINAL as of April 2026. If finalized:"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.7, paddingLeft: 12 } },
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "Sleep apnea"), ": automatic 50% for CPAP eliminated. Most could drop to 10%."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "Tinnitus"), ": standalone 10% eliminated. Only rated as part of another condition."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "Mental health"), ": new domain-based model. Could help many veterans.")
+            )
+          ),
+          React.createElement("div", { style: { padding: 10, background: "rgba(74,93,35,0.15)", borderLeft: "3px solid " + C.greenBright, borderRadius: 4, marginBottom: 12 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2192 ACTION"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textPrimary, lineHeight: 1.5 } }, "If you have sleep apnea or tinnitus and haven't filed, file now under current criteria. Existing ratings are grandfathered.")
+          ),
+          React.createElement("div", { style: { fontSize: 11, color: C.inactive, lineHeight: 1.5, paddingTop: 8, borderTop: "1px solid " + C.border } },
+            "For real-time VA policy updates: ",
+            React.createElement("a", { href: "https://www.dav.org/learn-more/news/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "DAV"),
+            " \u2022 ",
+            React.createElement("a", { href: "https://www.vfw.org/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "VFW"),
+            " \u2022 Your VSO",
+            React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 4 } }, "Last verified: 17 MAY 2026")
+          )
+        )
+      ),
       // COMBINED RESULT (show if conditions exist)
       vaConditions.length > 0 && React.createElement("div", { style: { background: "linear-gradient(135deg, #1e2814, #141a0c)", border: "2px solid " + C.green, borderRadius: 12, padding: 20, marginBottom: 14, textAlign: "center" } },
         React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "YOUR COMBINED VA RATING"),
