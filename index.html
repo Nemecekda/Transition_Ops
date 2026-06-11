@@ -2386,6 +2386,28 @@ const VSO_DIRECTORY = [{
   }]
 }];
 const SKILLBRIDGE_FEED = [{
+  week: "8-14 JUN 2026",
+  companies: [{
+    name: "\u2B50 HII Newport News Shipbuilding (DIB PRIORITY)",
+    industry: "Shipbuilding / Defense",
+    locations: "Newport News, VA",
+    url: "https://careers.huntingtoningalls.com",
+    highlight: true
+  }, {
+    name: "KBR Government Solutions",
+    industry: "Defense / Engineering Services",
+    locations: "Multiple US",
+    url: "https://careers.kbr.com",
+    highlight: false
+  }, {
+    name: "DoDEA / DoWEA (DoD Education Activity)",
+    industry: "Federal Government / Education",
+    locations: "CONUS + OCONUS",
+    url: "https://www.dodea.edu",
+    highlight: false
+  }],
+  notes: "\u2B50 DEFENSE INDUSTRIAL BASE ALERT: 3 JUN 2026 SecWar directive orders services to APPROVE SkillBridge requests supporting the defense industrial base \u2014 shipbuilding, missile defense, aircraft, munitions \u2014 denying only for documented readiness reasons. HII Newport News (nuclear carriers and submarines, Virginia's largest industrial employer) is running multiple live SkillBridge internships built to convert to permanent shipyard roles \u2014 engineering, production planning, safety. If your target employer supports the DIB, your approval packet just got stronger. Service-level guidance pending \u2014 confirm with your Transition Center."
+}, {
   week: "10-16 FEB 2026",
   companies: [{
     name: "⭐ Clarios (PRIORITY PARTNER)",
@@ -5177,25 +5199,25 @@ function App() {
   },
 
   // ═══════════ DASHBOARD TAB ═══════════
-  activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, !sitrepDismissed && React.createElement("div", { style: { background: "linear-gradient(135deg, #2a3320, #1a2113)", border: "2px solid " + C.goldBright, borderRadius: 12, padding: 16, marginBottom: 14, position: "relative" } },
-    React.createElement("div", { onClick: function() { setSitrepDismissed(true); try { localStorage.setItem("tops_sitrep_jun2026", "1"); } catch (e) {} }, style: { position: "absolute", top: 8, right: 12, cursor: "pointer", color: C.inactive, fontSize: 16, lineHeight: 1, padding: 4 } }, "\u2715"),
-    React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.goldBright, letterSpacing: 3, marginBottom: 8 } }, "\u26A1 SITREP \u2014 POLICY UPDATE 11 JUN 2026"),
+  activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, !sitrepDismissed && React.createElement("div", { style: { background: "linear-gradient(135deg, #2a3320, #1a2113)", border: "2px solid " + "#F0C419", borderRadius: 12, padding: 16, marginBottom: 14, position: "relative" } },
+    React.createElement("div", { onClick: function() { setSitrepDismissed(true); try { localStorage.setItem("tops_sitrep_jun2026", "1"); } catch (e) {} }, style: { position: "absolute", top: 8, right: 12, cursor: "pointer", color: "#b5ab8c", fontSize: 16, lineHeight: 1, padding: 4 } }, "\u2715"),
+    React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: "#F0C419", letterSpacing: 3, marginBottom: 8 } }, "\u26A1 SITREP \u2014 POLICY UPDATE 11 JUN 2026"),
     (function() {
       var openDate = new Date(2026, 5, 15);
       var today = new Date(); today.setHours(0, 0, 0, 0);
       var daysLeft = Math.round((openDate - today) / 86400000);
       var line = daysLeft > 1 ? ("VET TEC 2.0 \u2014 APPLICATIONS OPEN IN " + daysLeft + " DAYS") : daysLeft === 1 ? "VET TEC 2.0 \u2014 APPLICATIONS OPEN TOMORROW" : "VET TEC 2.0 \u2014 APPLICATIONS ARE OPEN";
-      return React.createElement("div", { style: { padding: "10px 12px", background: "rgba(218,165,32,0.12)", borderLeft: "3px solid " + C.goldBright, borderRadius: 4, marginBottom: 10 } },
-        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: C.goldBright, letterSpacing: 1 } }, line),
-        React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, marginTop: 2, lineHeight: 1.5 } }, "Tech training with housing allowance \u2014 no degree required. 4,000 slots per fiscal year. Open to service members within 180 days of discharge.")
+      return React.createElement("div", { style: { padding: "10px 12px", background: "rgba(218,165,32,0.12)", borderLeft: "3px solid " + "#F0C419", borderRadius: 4, marginBottom: 10 } },
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: "#F0C419", letterSpacing: 1 } }, line),
+        React.createElement("div", { style: { fontSize: 11, color: "#c9c0a2", marginTop: 2, lineHeight: 1.5 } }, "Tech training with housing allowance \u2014 no degree required. 4,000 slots per fiscal year. Open to service members within 180 days of discharge.")
       );
     })(),
-    React.createElement("div", { style: { fontSize: 12, color: C.textBody, lineHeight: 1.8 } },
-      React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "FY26 NDAA"), ": TAP overhauled \u2014 in-person counseling, spouse pilot, exposure records (ILER) now flow straight to VA"),
-      React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "GI Bill"), ": up to 48 months of combined entitlement \u2014 over 1 million veterans may qualify"),
-      React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "SkillBridge"), ": approval presumption now favors defense-industry opportunities")
+    React.createElement("div", { style: { fontSize: 12, color: "#e8e0c8", lineHeight: 1.8 } },
+      React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: "#FFFFFF" } }, "FY26 NDAA"), ": TAP overhauled \u2014 in-person counseling, spouse pilot, exposure records (ILER) now flow straight to VA"),
+      React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: "#FFFFFF" } }, "GI Bill"), ": up to 48 months of combined entitlement \u2014 over 1 million veterans may qualify"),
+      React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: "#FFFFFF" } }, "SkillBridge"), ": approval presumption now favors defense-industry opportunities")
     ),
-    React.createElement("div", { onClick: function() { setActiveTab("vapay"); }, style: { marginTop: 10, fontSize: 11, color: C.greenBright, letterSpacing: 1, fontFamily: "'Oswald', sans-serif", cursor: "pointer" } }, "FULL BRIEFING: VA PAY \u2192 2026 POLICY INTEL \u2192")
+    React.createElement("div", { onClick: function() { setActiveTab("vapay"); }, style: { marginTop: 10, fontSize: 11, color: "#9FD14A", letterSpacing: 1, fontFamily: "'Oswald', sans-serif", cursor: "pointer" } }, "FULL BRIEFING: VA PAY \u2192 2026 POLICY INTEL \u2192")
   ), (function() {
 
     // ═══════════ GUARD / RESERVE DASHBOARD ═══════════
