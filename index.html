@@ -1020,6 +1020,54 @@ const NOTIFICATIONS = [{
   title: "ACTION: TRICARE Transition — Know Your Timeline",
   body: "TRICARE Prime ends on separation day. TAMP gives you 180 days of premium-free TRICARE. After TAMP, you must enroll in CHCBP (within 60 days of TAMP ending) or VA healthcare. Mark these dates NOW.",
   priority: "CRITICAL"
+}, {
+  id: "n31",
+  monthsOut: 18,
+  title: "ACTION: Verify Your ILER Exposure Record",
+  body: "FY26 NDAA: your toxic exposure record (ILER) now goes straight to the VA with your claims. Pull it via milConnect, verify every deployment and exposure event, and correct errors NOW — while you are still in uniform.",
+  priority: "HIGH"
+}, {
+  id: "n32",
+  monthsOut: 15,
+  title: "INTEL: New TAP Rules — FY26 NDAA In Effect",
+  body: "Congress overhauled TAP: in-person pre-separation counseling when possible, expanded financial counseling on loans and debt, a spouse TAP pilot at 5 installations, and DoD now tracks whether you started on time. Use the upgrades.",
+  priority: "MEDIUM"
+}, {
+  id: "n33",
+  monthsOut: 12,
+  title: "ACTION: GI Bill 48-Month Entitlement Check",
+  body: "Court rulings (Rudisill, Perkins) expanded combined GI Bill entitlement to up to 48 months for those with both Montgomery and Post-9/11 qualifying periods. Pull your eligibility letter on VA.gov before building your education plan.",
+  priority: "HIGH"
+}, {
+  id: "n34",
+  monthsOut: 9,
+  title: "INTEL: TRICARE 2026 Cost Changes",
+  body: "Pharmacy copays rose 1 JAN 2026: $48 brand-name retail, $44 brand home delivery. Military pharmacies stay $0. Prime travel benefit now triggers at 75 miles. Budget post-separation healthcare with current numbers. See Reminders.",
+  priority: "MEDIUM"
+}, {
+  id: "n35",
+  monthsOut: 3,
+  title: "CHECK: Digital GI Bill Payment Status",
+  body: "The VA Digital GI Bill system has documented payment failures. Confirm your enrollment certification was submitted and monitor your first BAH payment. Problems: 1-888-442-4551.",
+  priority: "HIGH"
+}, {
+  id: "n36",
+  monthsOut: 6,
+  title: "ACTION: VET TEC 2.0 — Applications Open",
+  body: "The VA's tech training program is back as of 15 JUN 2026. Tuition + housing allowance for cyber, software, cloud, and IT training. Capped at 4,000 participants per fiscal year. Service members within 180 days of discharge can apply. NOTE: now charges GI Bill entitlement 1:1 if you have any remaining. See Reminders.",
+  priority: "HIGH"
+}, {
+  id: "n37",
+  monthsOut: 11,
+  title: "INTEL: VR&E — Use It Before Your GI Bill, and Watch the Hill",
+  body: "Standing rule: if rated 30%+, evaluate VR&E (Ch.31) BEFORE touching your GI Bill. On the Hill: H.R. 980 (expanded flight training, more VR&E outreach) passed the House 402-2 and awaits the Senate. H.R. 3579 would cap VR&E employment assistance at 365 days — if you are eligible, do not wait for the rules to tighten.",
+  priority: "MEDIUM"
+}, {
+  id: "n38",
+  monthsOut: 17,
+  title: "INTEL: SkillBridge Approval Rules Shifted — Defense Employers",
+  body: "JUN 2026 SecWar directive: services must approve SkillBridge requests that support the defense industrial base (shipbuilding, missile defense, aircraft, munitions), denying only for readiness reasons. Targeting a defense employer strengthens your packet. Service guidance still rolling out — confirm with your Transition Center. Jobs and credentialing: mypatriotcareer.mil.",
+  priority: "HIGH"
 }];
 
 // ═══════════════════════════════════════════════════════════════
@@ -2640,7 +2688,7 @@ const RESOURCES = [
 const SMART_REMINDERS = [
   {id:"r-24-itp",mo:24,cat:"ADMIN",pri:"ADVISORY",title:"Initiate Individual Transition Plan (ITP)",brief:"Sit down with your commander and establish your ITP. This is the foundation — everything builds from here.",items:["Schedule ITP meeting with chain of command","Attend initial TAP/Transition GPS briefing","Request copies of ORB/SRB and review for accuracy","Pull OMPF and verify all service records"],deadline:"No hard deadline — but every day you wait compresses your timeline",why:"Late starts lead to rushed decisions on benefits worth six figures over your lifetime.",link:"https://www.tapevents.mil"},
   {id:"r-24-net",mo:24,cat:"CAREER",pri:"ADVISORY",title:"Begin Building Your Civilian Network",brief:"Your DD214 won't get you hired — your network will. Start now.",items:["Create or update LinkedIn profile","Join veteran networking groups (ACP, MilMentor)","Identify 3-5 mentors in target industry","Attend at least one industry event monthly"],deadline:null,why:"Veterans who network 18+ months out have significantly higher placement rates.",link:"https://www.linkedin.com"},
-  {id:"r-18-sb",mo:18,cat:"CAREER",pri:"HIGH",title:"Research SkillBridge Opportunities",brief:"SkillBridge = civilian internship during last 180 days while collecting military pay. Slots fill fast.",items:["Browse SkillBridge employers in the app feed","Identify 3-5 target companies","Verify commander support and unit manning","Begin application packet (some need 12+ months lead)"],deadline:"Applications often due 6-12 months before start",why:"Over 90% of SkillBridge participants receive job offers. Missing this window = walking out with no income.",link:"https://skillbridge.osd.mil"},
+  {id:"r-18-sb",mo:18,cat:"CAREER",pri:"HIGH",title:"Research SkillBridge Opportunities",brief:"SkillBridge = civilian internship during last 180 days while collecting military pay. Slots fill fast — and the approval rules just shifted in your favor.",items:["Browse SkillBridge employers in the app feed","Identify 3-5 target companies","NEW (JUN 2026): services are directed to APPROVE SkillBridge requests that support the defense industrial base — shipbuilding, missile defense, aircraft, munitions — denying only for readiness reasons. Targeting a defense employer strengthens your packet","Verify commander support and unit manning","Begin application packet (some need 12+ months lead)","Check mypatriotcareer.mil for defense-sector openings and credentialing resources"],deadline:"Applications often due 6-12 months before start",why:"Over 90% of SkillBridge participants receive job offers. Missing this window = walking out with no income. If your target employer supports the defense industrial base, the approval presumption now works for you — service-level implementation guidance is still rolling out, so confirm with your Transition Center.",link:"https://skillbridge.osd.mil"},
   {id:"r-18-res",mo:18,cat:"CAREER",pri:"HIGH",title:"Begin Resume Development",brief:"Translating military experience into civilian language takes time. Don't wait.",items:["Use MOS Crosswalk to identify civilian job titles","Draft resume with accomplishment-based bullets","Remove ALL military jargon","Get feedback from a civilian hiring manager"],deadline:"First draft complete NLT 12 months out",why:"Poorly translated resumes get filtered by ATS before a human ever sees them.",link:null},
   {id:"r-12-bdd",mo:12,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F BDD Claim Window OPENS",brief:"File your VA disability claim 180-365 days before separation. Rating effective DAY ONE.",items:["Gather all medical records and LOD determinations","Schedule pre-claim consultation with VSO (DAV, VFW, American Legion)","File BDD claim on VA.gov","Get buddy statements for service-connected conditions","Schedule remaining medical appointments for documentation"],deadline:"File between 365 and 180 days before separation",why:"Filing after separation can delay your rating by 6-12+ months. That's $20,000+ in delayed compensation.",link:"https://www.va.gov/disability/how-to-file-claim/"},
   {id:"r-12-tax",mo:12,cat:"FINANCE",pri:"CRITICAL",title:"\u26A0\uFE0F State Tax Residency — Home of RESIDENCE Matters",brief:"Home of RESIDENCE (not Home of Record) determines state tax on retired pay. $5K-$15K+/year impact.",items:["No state income tax: AK, FL, NV, NH, SD, TN, TX, WA, WY","No tax on retired pay: AL, HI, IL, IA, KS, KY, LA, MA, MI, MS, MO, NJ, NY, NC, OH, OK, OR, PA, WI","Some tax: AZ, AR, CO, CT, DE, GA, ID, IN, ME, MD, MN, MT, NE, NM, ND, SC, VA, WV","Establish legal residency BEFORE separation","MSRRA allows spouses same state for tax"],deadline:"Establish residency before separation date",why:"Wrong state costs retirees thousands annually for life.",link:"https://myarmybenefits.us.army.mil/Benefit-Library/State/Territory-Benefits"},
@@ -2657,9 +2705,15 @@ const SMART_REMINDERS = [
   {id:"r-1-final",mo:1,cat:"ADMIN",pri:"CRITICAL",title:"Final Out-Processing & Life Admin",brief:"You're on the objective. Execute with discipline.",items:["Complete TAP Capstone","USPS mail forwarding","Update banks, credit cards, insurance","Obtain 10+ certified DD214 copies","Verify final LES","Letter of service for employment verification","Download all military email contacts"],deadline:"All items complete before ETS",why:"Loose ends after separation become 10x harder without base access.",link:null},
   {id:"r-0-ets",mo:0,cat:"ADMIN",pri:"CRITICAL",title:"SEPARATION DAY — Verify Everything",brief:"Before you drive off for the last time, make sure your paperwork is squared away.",items:["VERIFY DD214 — read every line before signing","Obtain multiple certified copies","Verify sep code, RE code, characterization","Secure medical and dental records"],deadline:"TODAY",why:"Your DD214 is your new birth certificate. Get it right.",link:null},
   {id:"r-p1",mo:-1,cat:"BENEFITS",pri:"CRITICAL",title:"First 30 Days — File Unemployment & Activate Benefits",brief:"Several critical windows open at separation and close fast.",items:["File unemployment IMMEDIATELY (DD214 = proof)","Register for VA healthcare if not done","Monitor VA.gov for C&P exam schedule","Apply veteran's preference (SF-15)","Veteran driver's license designation"],deadline:"State unemployment deadlines start from sep date",why:"Unemployment = $1,500-$2,800/month bridge income. Don't leave it on the table.",link:null},
-  {id:"r-p4",mo:-4,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F SGLI to VGLI — 120-Day Window",brief:"SGLI ends 120 days after separation. Convert to VGLI without health exam — ONLY within this window.",items:["Compare VGLI vs commercial term life rates","VGLI: no health exam within 120 days","VGLI premiums increase with age","If service-connected issues, VGLI may be only option","Apply at VA.gov or 1-800-419-1473"],deadline:"120 days post-separation — HARD DEADLINE",why:"After 120 days, must prove good health. Pre-existing conditions can disqualify you.",link:"https://www.va.gov/life-insurance/options-eligibility/vgli/"},
+  {id:"r-p4",mo:-4,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F SGLI to VGLI — The Clock Is Running",brief:"Free SGLI coverage ends 120 days after separation. VGLI with NO health exam is available only through day 240.",items:["Day 0-120: SGLI continues free — compare VGLI vs commercial term rates NOW","Day 0-240: VGLI guaranteed acceptance, no medical exam","Day 241-485: VGLI still possible but medical evidence required — can be denied","Day 486+: VGLI window closed permanently","If service-connected conditions exist, VGLI may be your only option","Apply at myvgli.prudential.com or 1-800-419-1473"],deadline:"240 days post-separation for no-exam VGLI — HARD DEADLINE",why:"After day 240 you must prove good health. PTSD, sleep apnea, or musculoskeletal conditions can disqualify you on the civilian market.",link:"https://www.va.gov/life-insurance/options-eligibility/vgli/"},
   {id:"r-p6",mo:-6,cat:"HEALTH",pri:"HIGH",title:"TAMP Ending — Healthcare Decision",brief:"180-day TAMP TRICARE is ending. You need a plan.",items:["VA-rated: verify enrollment and Priority Group","Employed: enroll in employer healthcare","Retiring: TRICARE Retired (Prime, Select, For Life at 65)","Otherwise: ACA marketplace (HealthCare.gov)","VA doesn't cover routine dental unless 100%"],deadline:"180 days post-separation",why:"One ER visit without coverage averages $2,200+.",link:"https://www.tricare.mil/Plans/Leaving"},
-  {id:"r-p12",mo:-12,cat:"BENEFITS",pri:"HIGH",title:"One-Year AAR — Benefits & Career",brief:"You've been out a year. Time for an honest after-action review.",items:["Review VA claim — file supplemental if needed","Career at target level and salary?","If underemployed, use VET HUB tools","Check VR&E (Ch.31) eligibility","Rebalance TSP/retirement accounts"],deadline:"Self-imposed 12-month AAR",why:"Veterans who don't course-correct in Year 1 are more likely to stay underemployed.",link:null}
+  {id:"r-p12",mo:-12,cat:"BENEFITS",pri:"HIGH",title:"One-Year AAR — Benefits & Career",brief:"You've been out a year. Time for an honest after-action review.",items:["Review VA claim — file supplemental if needed","Career at target level and salary?","If underemployed, use VET HUB tools","Check VR&E (Ch.31) eligibility","Rebalance TSP/retirement accounts"],deadline:"Self-imposed 12-month AAR",why:"Veterans who don't course-correct in Year 1 are more likely to stay underemployed.",link:null},
+  {id:"r-18-iler",mo:18,cat:"BENEFITS",pri:"HIGH",title:"Verify Your ILER Exposure Record",brief:"FY26 NDAA codified the Individual Longitudinal Exposure Record. Your toxic exposure history now flows directly to the VA — verify it while you can still fix it.",items:["Pull your ILER through milConnect","Cross-check deployments, burn pit locations, and known exposure events","Report gaps or errors through your medical channel NOW — corrections are 10x harder after DD214","Gather buddy statements for any exposure not yet documented"],deadline:"Before separation — while records can still be corrected in uniform",why:"The VA now receives your complete exposure history up front to speed toxic-exposure claims. Errors or gaps in that record follow you into the claims process.",link:"https://milconnect.dmdc.osd.mil"},
+  {id:"r-15-tap26",mo:15,cat:"ADMIN",pri:"ADVISORY",title:"New TAP Rules In Effect — FY26 NDAA",brief:"Congress overhauled TAP in December 2025. Know what changed and use it.",items:["Pre-separation counseling now delivered in person whenever possible — request it","DoD now tracks WHEN you start TAP — late starts are visible to your command","Financial counseling expanded: individualized guidance on loans and debt management","Spouses: TAP pilot program launching at 5 installations — ask your Transition Center","Guard/Reserve: waiver provision allows TAP every 3 years unless circumstances changed"],deadline:"Statutory TAP start remains NLT 365 days before separation",why:"Only about half of transitioning service members start TAP on time. Congress added these accountability measures because late starts cost real money in missed benefits.",link:"https://www.dodtap.mil"},
+  {id:"r-12-gib48",mo:12,cat:"BENEFITS",pri:"HIGH",title:"GI Bill — Check for 48 Months of Entitlement",brief:"Rudisill (2024) and Perkins (2026) court rulings: served two qualifying periods? You may rate up to 48 months of combined education benefits — not 36.",items:["Pull your education benefits eligibility letter on VA.gov","Identify qualifying periods: one under Montgomery GI Bill, one under Post-9/11","If previously capped at 36 months, request a review — VA updated its awarding process","Factor a potential extra 12 months into your education and VR&E plan"],deadline:"Verify before locking in your education plan",why:"Twelve additional months can mean a full year of tuition plus BAH. Over a million veterans may qualify and most don't know it.",link:"https://benefits.va.gov/gibill/"},
+  {id:"r-9-tri26",mo:9,cat:"HEALTH",pri:"MEDIUM",title:"TRICARE 2026 — Costs and Access Changed",brief:"Pharmacy copays rose 1 JAN 2026 and access rules shifted. Budget your post-separation healthcare with current numbers.",items:["Retail (30-day): $16 generic / $48 brand-name","Home delivery (90-day): $14 generic / $44 brand / $85 non-formulary","Military pharmacies remain $0 for all covered medications","Prime travel benefit threshold reduced from 100 to 75 miles for specialty care","TRICARE Open Season runs Nov-Dec annually — plan changes happen then or at a Qualifying Life Event"],deadline:"Open Season window if changing plans",why:"Separation IS a Qualifying Life Event — but knowing 2026 costs before you choose between TAMP, CHCBP, employer coverage, or VA care prevents budget surprises.",link:"https://www.tricare.mil/changes"},
+  {id:"r-6-vettec",mo:6,cat:"CAREER",pri:"HIGH",title:"VET TEC 2.0 — Tech Training Is Back",brief:"The VA's high-tech training program returned under the Dole Act. Applications opened 15 JUN 2026. Capped at 4,000 paid participants per fiscal year — slots will go fast.",items:["Eligible: veterans under 62 with 36+ months active duty, OR service members within 180 days of discharge who will hit 36 months by ETS","Covers tuition, monthly housing allowance, and books through VA-approved providers","Fields: software development, cybersecurity, cloud computing, IT, data processing","CHANGED FROM THE ORIGINAL: if you have remaining GI Bill or DEA entitlement, VET TEC 2.0 now charges 1 month of entitlement per month of full-time training — factor this into your education plan","Preferred providers must place 70% of graduates in-field within 180 days or refund tuition to VA","Apply at VA.gov — VA Form 22-10297"],deadline:"Annual cap of 4,000 participants — apply early in the fiscal year",why:"Accelerated tech training with housing allowance, without committing to a degree program. But the entitlement charge means the old 'doesn't touch your GI Bill' advice no longer applies — verify your math first.",link:"https://www.va.gov/education/other-va-education-benefits/vet-tec-2/"},
+  {id:"r-3-dgib",mo:3,cat:"BENEFITS",pri:"HIGH",title:"Digital GI Bill — Verify Your Payments",brief:"The VA's $2.3B Digital GI Bill system has documented payment failures under active congressional oversight. Trust but verify.",items:["Confirm your School Certifying Official submitted your enrollment certification","Verify your Certificate of Eligibility is on file with the school","Monitor your first BAH payment date — do not assume it processed","Payment problems: call the VA Education Call Center at 1-888-442-4551 immediately"],deadline:"Before your first tuition deadline and rent payment",why:"Automation now handles most education claims, but documented failures have left student veterans waiting on housing payments. Your rent does not wait for a system fix.",link:"https://www.va.gov/education/gi-bill-comparison-tool/"}
 ];
 
 // ═══════════════════════════════════════════════════════════════════
@@ -12227,6 +12281,37 @@ function App() {
         ),
         policyIntelOpen && React.createElement("div", { style: { marginTop: 12, paddingTop: 12, borderTop: "1px solid " + C.border } },
           React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 FY26 NDAA \u2014 ENACTED 18 DEC 2025"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.7, paddingLeft: 12 } },
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "TAP overhaul"), ": in-person pre-sep counseling when possible, expanded financial counseling, spouse TAP pilot (5 installations), Guard/Reserve 3-year waiver, DoD now tracks TAP start timeliness."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "ILER codified"), ": toxic exposures auto-documented in service records and shared with VA up front \u2014 faster, fairer exposure claims. Verify yours via milConnect before separation."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "TRICARE"), ": Prime travel benefit threshold cut to 75 miles; 3.8% military pay raise.")
+            )
+          ),
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 GI BILL \u2014 UP TO 48 MONTHS"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "Rudisill (2024) and Perkins (2026) rulings: veterans with both Montgomery and Post-9/11 qualifying periods may now receive up to 48 months of combined entitlement. VA updated its awarding process \u2014 over 1 million veterans may qualify. Verify on VA.gov.")
+          ),
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 PROJECT PATRIOT PIPELINE \u2014 DIRECTED 3 JUN 2026"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "SecWar memo launches mypatriotcareer.mil (defense-sector jobs, credentialing, counseling \u2014 for service members, spouses, and federal civilians) and directs the services to ", React.createElement("strong", { style: { color: C.textPrimary } }, "approve SkillBridge requests that support the defense industrial base"), ", denying only for readiness reasons. Implementation plan due ~18 JUL 2026 \u2014 service-level guidance pending. If your SkillBridge target is a defense employer, your approval case just got stronger.")
+          ),
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 VET TEC 2.0 \u2014 APPLICATIONS OPEN 15 JUN 2026"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "The VA's high-tech training program is back (Dole Act). Tuition, housing allowance, and books for cyber, software, cloud, and IT training. Capped at 4,000 participants per fiscal year. Open to veterans under 62 with 36+ months active duty AND service members within 180 days of discharge. ", React.createElement("strong", { style: { color: C.textPrimary } }, "Changed from the original: remaining GI Bill entitlement is now charged 1:1 during training."), " VA Form 22-10297 at VA.gov.")
+          ),
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.gold, letterSpacing: 1, marginBottom: 4 } }, "\u26A0 ON THE HILL \u2014 WATCH LIST"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.7, paddingLeft: 12 } },
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "H.R. 980 (VR&E Improvement)"), ": expanded flight training under VR&E, more counselor access, monthly VA outreach. Passed House 402-2 \u2014 awaiting Senate."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "H.R. 1458 (VETS Opportunity)"), ": extends GI Bill to in-person and hybrid skilled-trade training. Passed House \u2014 awaiting Senate."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "H.R. 3579 (VR&E Integrity)"), ": would cap VR&E employment assistance at 365 days. If VR&E-eligible, act under current rules."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "GI Bill modernization"), ": six-bill package marked up FEB 2026."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "VA Home Loan reform"), ": affordability and red-tape bills moving in committee."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "FY27 NDAA cycle"), ": pregnancy as TRICARE Qualifying Life Event pilot; Guard/Reserve duty status reform proposals. NOT LAW YET.")
+            )
+          ),
+          React.createElement("div", { style: { marginBottom: 14 } },
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 MEDICATION RULE \u2014 RESCINDED"),
             React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "The Feb 2026 interim rule on medication-controlled symptoms (38 CFR \u00A74.10) was rescinded 27 FEB 2026. Pre-Feb 17 regulatory text restored. No action needed for current ratings.")
           ),
@@ -12249,7 +12334,7 @@ function App() {
             " \u2022 ",
             React.createElement("a", { href: "https://www.vfw.org/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "VFW"),
             " \u2022 Your VSO",
-            React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 4 } }, "Last verified: 17 MAY 2026")
+            React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 4 } }, "Last verified: 11 JUN 2026")
           )
         )
       ),
@@ -12419,6 +12504,37 @@ function App() {
         ),
         policyIntelOpen && React.createElement("div", { style: { marginTop: 12, paddingTop: 12, borderTop: "1px solid " + C.border } },
           React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 FY26 NDAA \u2014 ENACTED 18 DEC 2025"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.7, paddingLeft: 12 } },
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "TAP overhaul"), ": in-person pre-sep counseling when possible, expanded financial counseling, spouse TAP pilot (5 installations), Guard/Reserve 3-year waiver, DoD now tracks TAP start timeliness."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "ILER codified"), ": toxic exposures auto-documented in service records and shared with VA up front \u2014 faster, fairer exposure claims. Verify yours via milConnect before separation."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "TRICARE"), ": Prime travel benefit threshold cut to 75 miles; 3.8% military pay raise.")
+            )
+          ),
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 GI BILL \u2014 UP TO 48 MONTHS"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "Rudisill (2024) and Perkins (2026) rulings: veterans with both Montgomery and Post-9/11 qualifying periods may now receive up to 48 months of combined entitlement. VA updated its awarding process \u2014 over 1 million veterans may qualify. Verify on VA.gov.")
+          ),
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 PROJECT PATRIOT PIPELINE \u2014 DIRECTED 3 JUN 2026"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "SecWar memo launches mypatriotcareer.mil (defense-sector jobs, credentialing, counseling \u2014 for service members, spouses, and federal civilians) and directs the services to ", React.createElement("strong", { style: { color: C.textPrimary } }, "approve SkillBridge requests that support the defense industrial base"), ", denying only for readiness reasons. Implementation plan due ~18 JUL 2026 \u2014 service-level guidance pending. If your SkillBridge target is a defense employer, your approval case just got stronger.")
+          ),
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 VET TEC 2.0 \u2014 APPLICATIONS OPEN 15 JUN 2026"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "The VA's high-tech training program is back (Dole Act). Tuition, housing allowance, and books for cyber, software, cloud, and IT training. Capped at 4,000 participants per fiscal year. Open to veterans under 62 with 36+ months active duty AND service members within 180 days of discharge. ", React.createElement("strong", { style: { color: C.textPrimary } }, "Changed from the original: remaining GI Bill entitlement is now charged 1:1 during training."), " VA Form 22-10297 at VA.gov.")
+          ),
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.gold, letterSpacing: 1, marginBottom: 4 } }, "\u26A0 ON THE HILL \u2014 WATCH LIST"),
+            React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.7, paddingLeft: 12 } },
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "H.R. 980 (VR&E Improvement)"), ": expanded flight training under VR&E, more counselor access, monthly VA outreach. Passed House 402-2 \u2014 awaiting Senate."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "H.R. 1458 (VETS Opportunity)"), ": extends GI Bill to in-person and hybrid skilled-trade training. Passed House \u2014 awaiting Senate."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "H.R. 3579 (VR&E Integrity)"), ": would cap VR&E employment assistance at 365 days. If VR&E-eligible, act under current rules."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "GI Bill modernization"), ": six-bill package marked up FEB 2026."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "VA Home Loan reform"), ": affordability and red-tape bills moving in committee."),
+              React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: C.textPrimary } }, "FY27 NDAA cycle"), ": pregnancy as TRICARE Qualifying Life Event pilot; Guard/Reserve duty status reform proposals. NOT LAW YET.")
+            )
+          ),
+          React.createElement("div", { style: { marginBottom: 14 } },
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 MEDICATION RULE \u2014 RESCINDED"),
             React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "The Feb 2026 interim rule on medication-controlled symptoms (38 CFR \u00A74.10) was rescinded 27 FEB 2026. Pre-Feb 17 regulatory text restored. No action needed for current ratings.")
           ),
@@ -12441,7 +12557,7 @@ function App() {
             " \u2022 ",
             React.createElement("a", { href: "https://www.vfw.org/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "VFW"),
             " \u2022 Your VSO",
-            React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 4 } }, "Last verified: 17 MAY 2026")
+            React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 4 } }, "Last verified: 11 JUN 2026")
           )
         )
       ),
