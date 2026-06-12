@@ -2616,7 +2616,7 @@ const THEMES = {
     textPrimary: "#F5F0E1",
     textSecondary: "#b5ab8c",
     textBody: "#d4cbb3",
-    gold: "#C9B45A",
+    gold: "#9C9577",
     goldBright: "#DAA520",
     green: "#4A5D23",
     greenBright: "#8BB83C",
@@ -5487,24 +5487,6 @@ function App() {
 
       // PROGRESS CARDS ROW
       React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 } },
-        // Timeline Progress
-        React.createElement("div", { className: "dash-card", style: { margin: 0 }, onClick: function() { setActiveTab("timeline"); } },
-          React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "TIMELINE"),
-          React.createElement("div", { style: { fontSize: 28, fontWeight: 700, color: tlPct >= 75 ? C.greenBright : tlPct >= 40 ? C.gold : C.inactive, fontFamily: "'Oswald', sans-serif", lineHeight: 1 } }, tlPct + "%"),
-          React.createElement("div", { style: { height: 4, borderRadius: 2, background: C.border, marginTop: 6, overflow: "hidden" } },
-            React.createElement("div", { style: { height: "100%", width: tlPct + "%", background: C.green, borderRadius: 2, transition: "width 0.6s" } })
-          ),
-          React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 4 } }, doneTasks + "/" + totalTasks + " tasks")
-        ),
-        // Reminders Progress
-        React.createElement("div", { className: "dash-card", style: { margin: 0 }, onClick: function() { setActiveTab("reminders"); } },
-          React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "REMINDERS"),
-          React.createElement("div", { style: { fontSize: 28, fontWeight: 700, color: C.greenBright, fontFamily: "'Oswald', sans-serif", lineHeight: 1 } }, remDismissed + "/" + remTotal),
-          React.createElement("div", { style: { height: 4, borderRadius: 2, background: C.border, marginTop: 6, overflow: "hidden" } },
-            React.createElement("div", { style: { height: "100%", width: (remTotal ? Math.round(remDismissed / remTotal * 100) : 0) + "%", background: "#C9B45A", borderRadius: 2, transition: "width 0.6s" } })
-          ),
-          React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 4 } }, "completed")
-        ),
         // Documents
         React.createElement("div", { className: "dash-card", style: { margin: 0 }, onClick: function() { setActiveTab("resources"); setSubTab("documents"); } },
           React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "DOCUMENTS"),
