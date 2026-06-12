@@ -4933,9 +4933,9 @@ function App() {
       )
     ), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: theme === "tactical" ? "linear-gradient(180deg, " + C.border + " 0%, " + C.gradStart + " 100%)" : "linear-gradient(180deg, #2C5234 0%, #1A3A24 100%)",
-      borderBottom: "3px solid " + (theme === "tactical" ? C.gold : "#2C5234"),
-      padding: "14px 16px 10px",
+      background: theme === "tactical" ? "#0E120B" : "linear-gradient(180deg, #2C5234 0%, #1A3A24 100%)",
+      borderBottom: theme === "tactical" ? "1px solid #161B11" : "3px solid #2C5234",
+      padding: "18px 18px 12px",
       position: "sticky",
       top: 0,
       zIndex: 100
@@ -4956,25 +4956,14 @@ function App() {
   }, "VETERAN BRIDGE SOLUTIONS"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontFamily: "'Oswald', sans-serif",
-      fontSize: 26,
-      fontWeight: 700,
-      color: "#F5F0E1",
-      letterSpacing: 1,
-      lineHeight: 1.1
-    }
-  }, "TRANSITION OPS"), /*#__PURE__*/React.createElement("a", {
-    href: "https://www.veteranbridgesolutions.com",
-    target: "_blank",
-    rel: "noopener noreferrer",
-    style: {
-      fontSize: 11,
-      color: "#8BB83C",
+      fontSize: 22,
+      fontWeight: 600,
+      color: "#EDE7D4",
       letterSpacing: 2,
-      marginTop: 3,
-      textDecoration: "none",
-      display: "block"
+      lineHeight: 1.1,
+      marginTop: 2
     }
-  }, "veteranbridgesolutions.com \u2192")), /*#__PURE__*/React.createElement("div", {
+  }, "TRANSITION OPS")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -4983,12 +4972,12 @@ function App() {
   }, /*#__PURE__*/React.createElement("button", {
     onClick: toggleTheme,
     style: {
-      background: theme === "tactical" ? "#4a4a3a" : "#E8E8E8",
-      border: "1px solid " + C.gold,
-      borderRadius: 4,
-      padding: "7px 8px",
+      background: theme === "tactical" ? "#1C2315" : "#E8E8E8",
+      border: "1px solid transparent",
+      borderRadius: 8,
+      padding: "8px 10px",
       cursor: "pointer",
-      color: theme === "tactical" ? C.textPrimary : "#1A1A1A",
+      color: theme === "tactical" ? "#9C9577" : "#1A1A1A",
       fontFamily: "'Oswald', sans-serif",
       fontSize: 10,
       letterSpacing: 1
@@ -4996,10 +4985,10 @@ function App() {
   }, theme === "tactical" ? "\u263D" : "\u2600", " ", theme === "tactical" ? "PRO" : "TAC"), userStatus !== "guard" && /*#__PURE__*/React.createElement("button", {
     onClick: () => setShowNotifPanel(!showNotifPanel),
     style: {
-      background: activeNotifCount > 0 ? "#8B0000" : "#4a4a3a",
-      border: "1px solid " + C.gold,
-      borderRadius: 4,
-      padding: "7px 10px",
+      background: theme === "tactical" ? "#1C2315" : "#ECECEA",
+      border: "1px solid transparent",
+      borderRadius: 8,
+      padding: "8px 14px",
       cursor: "pointer",
       position: "relative",
       color: C.textPrimary,
@@ -5012,47 +5001,19 @@ function App() {
       position: "absolute",
       top: -6,
       right: -6,
-      background: "#FF4444",
+      background: "#E05252",
       color: "#fff",
       borderRadius: "50%",
-      width: 17,
-      height: 17,
+      width: 16,
+      height: 16,
+      fontFamily: "'JetBrains Mono', monospace",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       fontSize: 10,
       fontWeight: 700
     }
-  }, activeNotifCount)))), userStatus !== "guard" && /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginTop: 10
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "space-between",
-      fontSize: 11,
-      marginBottom: 3,
-      color: theme === "tactical" ? C.textSecondary : "#B0B0B0",
-      letterSpacing: 1
-    }
-  }, /*#__PURE__*/React.createElement("span", null, "MISSION PROGRESS"), /*#__PURE__*/React.createElement("span", null, totalProgress.done, "/", totalProgress.total, " (", totalProgress.pct, "%)")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: theme === "tactical" ? C.bg : "#0d1f12",
-      borderRadius: 2,
-      height: 7,
-      overflow: "hidden",
-      border: "1px solid " + (theme === "tactical" ? C.border : "#3d5a3a")
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: totalProgress.pct + "%",
-      height: "100%",
-      background: totalProgress.pct === 100 ? C.green : "linear-gradient(90deg, " + C.gold + ", " + C.goldBright + ")",
-      borderRadius: 2,
-      transition: "width 0.5s ease"
-    }
-  })))), showNotifPanel && /*#__PURE__*/React.createElement("div", {
+  }, activeNotifCount))))), showNotifPanel && /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       top: 0,
@@ -5201,7 +5162,7 @@ function App() {
 
   // ═══════════ DASHBOARD TAB ═══════════
   activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, React.createElement("div", { style: { marginBottom: 14 } },
-    React.createElement("input", { type: "text", value: searchQ, onChange: function(e) { setSearchQ(e.target.value); }, placeholder: "\uD83D\uDD0D FIND: VGLI, SkillBridge, GI Bill, terminal leave...", style: { width: "100%", boxSizing: "border-box", padding: "12px 14px", background: "#11150e", border: "1px solid #4a523c", borderRadius: 8, color: "#e8e0c8", fontSize: 14, fontFamily: "'JetBrains Mono', monospace", outline: "none" } }),
+    React.createElement("input", { type: "text", value: searchQ, onChange: function(e) { setSearchQ(e.target.value); }, placeholder: "\uD83D\uDD0D FIND: VGLI, SkillBridge, GI Bill, terminal leave...", style: { width: "100%", boxSizing: "border-box", padding: "13px 16px", background: "#161B11", border: "1px solid transparent", borderRadius: 10, color: "#e8e0c8", fontSize: 14, fontFamily: "'JetBrains Mono', monospace", outline: "none" } }),
     searchQ.length >= 2 && (function() {
       var q = searchQ.toLowerCase().split(/\s+/).filter(function(t) { return t.length > 0; });
       function score(fields) {
@@ -13010,8 +12971,8 @@ function App() {
         if (n.id === "more") { setShowMoreMenu(!showMoreMenu); }
         else { setActiveTab(n.id); setSelectedMilestone(null); setShowMoreMenu(false); }
       } },
-        React.createElement("span", { className: "nav-icon", style: { color: isActive ? (n.id === "more" ? C.gold : C.greenBright) : C.inactive, transition: "color 0.2s" } }, n.icon),
-        React.createElement("span", { className: "nav-label", style: { color: isActive ? (n.id === "more" ? C.gold : C.greenBright) : C.inactive, transition: "color 0.2s" } }, n.label)
+        React.createElement("span", { className: "nav-icon", style: { color: isActive ? C.textPrimary : C.inactive, transition: "color 0.2s" } }, n.icon),
+        React.createElement("span", { className: "nav-label", style: { color: isActive ? C.textPrimary : C.inactive, transition: "color 0.2s" } }, n.label)
       );
     })
   ),
