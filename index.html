@@ -285,7 +285,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .onboard-cta-skip {
   background: none;
   border: none;
-  color: #C9B45A;
+  color: #9C9577;
   font-size: 11px;
   font-family: 'Oswald', sans-serif;
   letter-spacing: 2px;
@@ -3164,7 +3164,7 @@ function calcCatScore(cid, ans) {
 function getScoreLabel(s) {
   if (s >= 90) return { l: "MISSION READY", c: "#4A5D23" };
   if (s >= 70) return { l: "ON TRACK", c: "#2D5016" };
-  if (s >= 50) return { l: "NEEDS ATTENTION", c: "#C9B45A" };
+  if (s >= 50) return { l: "NEEDS ATTENTION", c: "#E09A52" };
   if (s >= 30) return { l: "AT RISK", c: "#B8860B" };
   return { l: "CRITICAL", c: "#8B0000" };
 }
@@ -3243,7 +3243,7 @@ function FeedbackFAB(props) {
       bottom: 80,
       right: 14,
       zIndex: 150,
-      background: "linear-gradient(135deg, " + C.gold + " 0%, " + C.goldBright + " 100%)",
+      background: "linear-gradient(135deg, #C9B45A 0%, #DAA520 100%)",
       border: "2px solid " + (C.bg || "#0E120B"),
       boxShadow: "0 6px 18px rgba(0,0,0,0.55), 0 0 0 1px " + C.goldBright,
       display: "flex",
@@ -4717,7 +4717,7 @@ function App() {
             // Step 1: Military Status
       function() {
         return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#C9B45A", marginBottom: 6 } }, "STEP 1 OF 4"),
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 1 OF 4"),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "WHAT'S YOUR STATUS?"),
           React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, "This helps us surface the right tools and timelines for your situation."),
           [{id:"active",label:"ACTIVE DUTY",desc:"Currently serving, planning transition",icon:"\uD83C\uDF96\uFE0F"},{id:"guard",label:"GUARD / RESERVE",desc:"Leverage your military training in a civilian career",icon:"\u2694\uFE0F"},{id:"separated",label:"ALREADY SEPARATED",desc:"Recently transitioned, navigating benefits",icon:"\uD83C\uDFE0"},{id:"retired",label:"RETIRED",desc:"20+ years, managing retirement benefits",icon:"\u2B50"},{id:"spouse",label:"MILITARY SPOUSE",desc:"Supporting a transitioning service member",icon:"\uD83D\uDC9C"}].map(function(s) {
@@ -4737,7 +4737,7 @@ function App() {
       // Step 2: Branch
       function() {
         return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#C9B45A", marginBottom: 6 } }, "STEP 2 OF 4"),
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 2 OF 4"),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "BRANCH OF SERVICE"),
           React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32 } }, "Select your branch."),
           React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 } },
@@ -4761,7 +4761,7 @@ function App() {
         var isGuard = onboardData.status === "guard";
         if (isGuard) {
           return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
-            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#C9B45A", marginBottom: 6 } }, "STEP 3 OF 4"),
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 3 OF 4"),
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "WHAT BRINGS YOU HERE?"),
             React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, "Your military training has civilian value. Tell us what you're looking to do and we'll point you to the right tools."),
             [{id:"career",label:"TRANSLATE MY TRAINING",desc:"Map my MOS, AIT, or military schools to civilian careers and certifications",icon:"\uD83C\uDFAF"},{id:"benefits",label:"VA BENEFITS & EDUCATION",desc:"VA disability, GI Bill, VR&E, healthcare eligibility",icon:"\uD83C\uDFE5"},{id:"newmos",label:"JUST COMPLETED NEW TRAINING",desc:"Finished AIT, reclassed, or earned a new MOS \u2014 show me what it's worth",icon:"\uD83D\uDCDC"},{id:"start",label:"EXPLORE ALL TOOLS",desc:"Show me everything available",icon:"\uD83D\uDCCB"}].map(function(c) {
@@ -4792,7 +4792,7 @@ function App() {
           );
         }
         return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#C9B45A", marginBottom: 6 } }, "STEP 3 OF 4"),
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 3 OF 4"),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, isSeparated ? "WHEN DID YOU SEPARATE?" : "WHEN IS YOUR ETS / EAOS?"),
           React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, isSeparated ? "This helps us identify benefits and deadlines that may still apply." : "This activates your personalized timeline, reminders, and countdown."),
           React.createElement("input", { type: "date", value: onboardData.etsDate, onChange: function(e) { setOnboardData(function(p) { return Object.assign({}, p, {etsDate: e.target.value}); }); }, style: { width: "100%", padding: "16px", background: "#0f120b", border: "2px solid #222A19", borderRadius: 10, color: "#d4cbb3", fontSize: 18, fontFamily: "'Courier Prime', monospace", textAlign: "center", marginBottom: 16 } }),
@@ -4809,7 +4809,7 @@ function App() {
       // Step 4: Biggest concern
       function() {
         return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#C9B45A", marginBottom: 6 } }, "STEP 4 OF 4"),
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 4 OF 4"),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "BIGGEST CONCERN?"),
           React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, "We'll point you to the most relevant tools first."),
           [{id:"career",label:"FINDING A CAREER",desc:"Resume, job search, SkillBridge, career mapping",icon:"\uD83C\uDFAF"},{id:"benefits",label:"VA BENEFITS & CLAIMS",desc:"Disability rating, BDD, healthcare, GI Bill",icon:"\uD83C\uDFE5"},{id:"money",label:"FINANCIAL READINESS",desc:"Pay gap, TSP, budgeting, SBP, taxes",icon:"\uD83D\uDCB0"},{id:"start",label:"JUST GETTING STARTED",desc:"Don't know where to begin \u2014 show me everything",icon:"\uD83D\uDCCB"}].map(function(c) {

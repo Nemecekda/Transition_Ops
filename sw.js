@@ -1,4 +1,4 @@
-const CACHE_NAME = 'transition-ops-v51';
+const CACHE_NAME = 'transition-ops-v52';
 const ASSETS = [
   '/',
   '/index.html',
