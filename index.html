@@ -36,7 +36,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Transition OPS">
 <meta name="application-name" content="Transition OPS">
-<meta name="theme-color" content="#1a1f16">
+<meta name="theme-color" content="#0E120B">
 <meta name="format-detection" content="telephone=no">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -140,7 +140,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body,#root{height:100%;width:100%;margin:0;padding:0}
-body{background:#1a1f16;font-family:"Courier Prime","Courier New",monospace;color:#d4cbb3;-webkit-font-smoothing:antialiased}
+body{background:#0E120B;font-family:"Courier Prime","Courier New",monospace;color:#d4cbb3;-webkit-font-smoothing:antialiased}
 #root{width:100%;max-width:100%}
 /* Desktop: full width with readable content */
 @media(min-width:641px){
@@ -153,19 +153,19 @@ body{background:#1a1f16;font-family:"Courier Prime","Courier New",monospace;colo
   .more-overlay{left:0;right:0}
 }
 ::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:#1a1f16}
-::-webkit-scrollbar-thumb{background:#3d4a2a;border-radius:2px}
+::-webkit-scrollbar-track{background:#0E120B}
+::-webkit-scrollbar-thumb{background:#222A19;border-radius:2px}
 input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,0,0,0.4)}50%{box-shadow:0 0 12px 4px rgba(139,0,0,0.2)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0f120b;border-top:1px solid #2a3418;z-index:200;padding-bottom:env(safe-area-inset-bottom,0)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0f120b;border-top:1px solid #222A19;z-index:200;padding-bottom:env(safe-area-inset-bottom,0)}
 .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 6px;background:none;border:none;cursor:pointer;transition:all 0.2s}
 .bottom-nav button .nav-icon{font-size:20px;line-height:1}
 .bottom-nav button .nav-label{font-size:9px;letter-spacing:1px;font-family:'Oswald',sans-serif}
 .more-overlay{position:fixed;inset:0;background:rgba(10,12,8,0.95);z-index:250;display:flex;flex-direction:column;justify-content:center;padding:40px 24px;animation:slideUp 0.25s ease}
-.more-overlay button{display:flex;align-items:center;gap:14px;padding:18px 16px;background:#1a1f16;border:1px solid #2a3418;border-radius:10px;margin-bottom:10px;cursor:pointer;width:100%;text-align:left}
-.dash-card{background:#1e2414;border:1px solid #2a3418;border-radius:10px;padding:16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s}
+.more-overlay button{display:flex;align-items:center;gap:14px;padding:18px 16px;background:#0E120B;border:1px solid #222A19;border-radius:10px;margin-bottom:10px;cursor:pointer;width:100%;text-align:left}
+.dash-card{background:#161B11;border:1px solid #222A19;border-radius:10px;padding:16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s}
 .dash-card:active{border-color:#4A5D23}
 @media(min-width:641px){
   .dash-card:hover{border-color:#4A5D23;background:#232b18}
@@ -206,14 +206,14 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
   letter-spacing: 4px;
   color: #6b5f2e;
   margin-bottom: 28px;
-  border-top: 1px solid #3d4a2a;
-  border-bottom: 1px solid #3d4a2a;
+  border-top: 1px solid #222A19;
+  border-bottom: 1px solid #222A19;
   padding: 6px 16px;
 }
 .onboard-logo-badge {
   width: 96px;
   height: 96px;
-  background: linear-gradient(135deg, #2a3418, #1e2814);
+  background: linear-gradient(135deg, #222A19, #1C2315);
   border: 2px solid #C9B45A;
   border-radius: 14px;
   display: flex;
@@ -302,7 +302,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
   letter-spacing: 1.5px;
   margin-top: 28px;
   padding-top: 20px;
-  border-top: 1px dashed #2a3418;
+  border-top: 1px dashed #222A19;
   width: 100%;
 }
 .onboard-welcome-features {
@@ -332,8 +332,8 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
   margin-bottom: 20px;
 }
 .onboard-feature-card {
-  background: linear-gradient(180deg, #1e2414 0%, #1a1f16 100%);
-  border: 1px solid #2a3418;
+  background: linear-gradient(180deg, #161B11 0%, #0E120B 100%);
+  border: 1px solid #222A19;
   border-radius: 8px;
   padding: 16px 14px;
   text-align: left;
@@ -367,7 +367,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
   justify-content: space-around;
   padding: 16px 12px;
   background: rgba(139,125,60,0.06);
-  border: 1px dashed #3d4a2a;
+  border: 1px dashed #222A19;
   border-radius: 6px;
   margin-top: 10px;
 }
@@ -433,7 +433,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 <div style="font-family:'Oswald',sans-serif;font-size:13px;color:#DAA520;letter-spacing:3px">MISSION-READY TOOLS FOR MILITARY TRANSITION</div>
 </div>
 <p style="font-size:15px;line-height:1.65;color:#d4cbb3;margin-bottom:18px">Free mobile-friendly transition toolkit built for service members, veterans, and Guard/Reserve personnel. Consolidates the scattered resources you need to navigate ETS, separation, retirement, and post-service life into one operationally-focused platform. No subscriptions, no paywalls, no ads.</p>
-<h2 style="font-family:'Oswald',sans-serif;font-size:15px;color:#DAA520;letter-spacing:2px;margin-top:24px;margin-bottom:10px;border-bottom:1px solid #3d4a2a;padding-bottom:6px">CORE CAPABILITIES</h2>
+<h2 style="font-family:'Oswald',sans-serif;font-size:15px;color:#DAA520;letter-spacing:2px;margin-top:24px;margin-bottom:10px;border-bottom:1px solid #222A19;padding-bottom:6px">CORE CAPABILITIES</h2>
 <ul style="list-style:none;padding:0;font-size:14px;line-height:1.8">
 <li><strong style="color:#F5F0E1">VA Combined Rating Calculator (VA Math)</strong> — Calculate your combined disability rating using the official VA formula</li>
 <li><strong style="color:#F5F0E1">VA Disability Pay Estimator</strong> — Project monthly compensation based on rating and dependents</li>
@@ -446,7 +446,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 <li><strong style="color:#F5F0E1">Career Pathway Mapper</strong> — Translate your MOS/AFSC to civilian roles with realistic bridge assessments</li>
 <li><strong style="color:#F5F0E1">Transition Readiness Score</strong> — Self-assessment that identifies gaps in your transition plan</li>
 </ul>
-<h2 style="font-family:'Oswald',sans-serif;font-size:15px;color:#DAA520;letter-spacing:2px;margin-top:24px;margin-bottom:10px;border-bottom:1px solid #3d4a2a;padding-bottom:6px">BUILT BY A VETERAN</h2>
+<h2 style="font-family:'Oswald',sans-serif;font-size:15px;color:#DAA520;letter-spacing:2px;margin-top:24px;margin-bottom:10px;border-bottom:1px solid #222A19;padding-bottom:6px">BUILT BY A VETERAN</h2>
 <p style="font-size:14px;line-height:1.65;color:#d4cbb3">Founded by Dean Nemecek — Army veteran, Senior HR professional (SPHR, SHRM-SCP), and founder of Veteran Bridge Solutions. Developed on personal time to fill the gap that leaves too many service members flat-footed at separation. Currently in distribution to Wisconsin National Guard transition staff, local MFRCs, and CVSO networks.</p>
 <div style="margin-top:36px;padding:18px;background:rgba(139,125,60,0.1);border-left:3px solid #C9B45A;font-family:'Oswald',sans-serif;font-size:12px;color:#DAA520;letter-spacing:2px;text-align:center">LOADING OPERATIONS CENTER...</div>
 </div></div>
@@ -2610,9 +2610,9 @@ const HEALTHCARE_TIMELINE = [{
 }];
 const THEMES = {
   tactical: {
-    bg: "#1a1f16",
-    bgCard: "#232920",
-    border: "#3d4a2a",
+    bg: "#0E120B",
+    bgCard: "#161B11",
+    border: "#222A19",
     textPrimary: "#F5F0E1",
     textSecondary: "#b5ab8c",
     textBody: "#d4cbb3",
@@ -2621,7 +2621,7 @@ const THEMES = {
     green: "#4A5D23",
     greenBright: "#8BB83C",
     warning: "#E09A52",
-    gradStart: "#2a3320",
+    gradStart: "#1C2315",
     bgWarning: "#2a2518",
     inactive: "#8a8468"
   },
@@ -3244,7 +3244,7 @@ function FeedbackFAB(props) {
       right: 14,
       zIndex: 150,
       background: "linear-gradient(135deg, " + C.gold + " 0%, " + C.goldBright + " 100%)",
-      border: "2px solid " + (C.bg || "#1a1f16"),
+      border: "2px solid " + (C.bg || "#0E120B"),
       boxShadow: "0 6px 18px rgba(0,0,0,0.55), 0 0 0 1px " + C.goldBright,
       display: "flex",
       alignItems: "center",
@@ -3424,7 +3424,7 @@ function FeedbackModal(props) {
   const catBtn = function (active) {
     return {
       padding: "9px 10px",
-      background: active ? "rgba(139,125,60,0.2)" : C.bgCard === "#FFFFFF" ? "#F7F7F5" : "#1a1f16",
+      background: active ? "rgba(139,125,60,0.2)" : C.bgCard === "#FFFFFF" ? "#F7F7F5" : "#0E120B",
       border: "1px solid " + (active ? C.goldBright : C.border),
       color: active ? C.textPrimary : C.textBody,
       fontFamily: "'Oswald', sans-serif",
@@ -3940,6 +3940,7 @@ function App() {
   };
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sitrepDismissed, setSitrepDismissed] = useState(function() { try { return localStorage.getItem("tops_sitrep_jun2026") === "1"; } catch (e) { return false; } });
+  const [searchQ, setSearchQ] = useState("");
   const [userStatus, setUserStatus] = useState(function() { try { return window.__safeGet("tops_user_status") || ""; } catch(e) { return ""; } });
   // Onboarding state
   const [showOnboarding, setShowOnboarding] = useState(function() { try { return !window.__safeGet("tops_onboarded"); } catch(e) { return true; } });
@@ -4715,13 +4716,13 @@ function App() {
       },
             // Step 1: Military Status
       function() {
-        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#1a1f16" } },
+        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#C9B45A", marginBottom: 6 } }, "STEP 1 OF 4"),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "WHAT'S YOUR STATUS?"),
           React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, "This helps us surface the right tools and timelines for your situation."),
           [{id:"active",label:"ACTIVE DUTY",desc:"Currently serving, planning transition",icon:"\uD83C\uDF96\uFE0F"},{id:"guard",label:"GUARD / RESERVE",desc:"Leverage your military training in a civilian career",icon:"\u2694\uFE0F"},{id:"separated",label:"ALREADY SEPARATED",desc:"Recently transitioned, navigating benefits",icon:"\uD83C\uDFE0"},{id:"retired",label:"RETIRED",desc:"20+ years, managing retirement benefits",icon:"\u2B50"},{id:"spouse",label:"MILITARY SPOUSE",desc:"Supporting a transitioning service member",icon:"\uD83D\uDC9C"}].map(function(s) {
             var isActive = onboardData.status === s.id;
-            return React.createElement("button", { key: s.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {status: s.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : "#1e2414", border: isActive ? "2px solid #4A5D23" : "1px solid #2a3418", borderRadius: 10, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
+            return React.createElement("button", { key: s.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {status: s.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : "#161B11", border: isActive ? "2px solid #4A5D23" : "1px solid #222A19", borderRadius: 10, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
               React.createElement("span", { style: { fontSize: 24 } }, s.icon),
               React.createElement("div", null,
                 React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: isActive ? "#d4cbb3" : "#a09878", letterSpacing: 1, fontWeight: 700 } }, s.label),
@@ -4735,21 +4736,21 @@ function App() {
       },
       // Step 2: Branch
       function() {
-        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#1a1f16" } },
+        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#C9B45A", marginBottom: 6 } }, "STEP 2 OF 4"),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "BRANCH OF SERVICE"),
           React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32 } }, "Select your branch."),
           React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 } },
             [{id:"army",label:"ARMY"},{id:"navy",label:"NAVY"},{id:"air_force",label:"AIR FORCE"},{id:"marines",label:"MARINES"},{id:"coast_guard",label:"COAST GUARD"},{id:"space_force",label:"SPACE FORCE"}].map(function(b) {
               var isActive = onboardData.branch === b.id;
-              return React.createElement("button", { key: b.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {branch: b.id}); }); }, style: { padding: "18px 12px", background: isActive ? "rgba(74,93,35,0.2)" : "#1e2414", border: isActive ? "2px solid #4A5D23" : "1px solid #2a3418", borderRadius: 10, cursor: "pointer" } },
+              return React.createElement("button", { key: b.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {branch: b.id}); }); }, style: { padding: "18px 12px", background: isActive ? "rgba(74,93,35,0.2)" : "#161B11", border: isActive ? "2px solid #4A5D23" : "1px solid #222A19", borderRadius: 10, cursor: "pointer" } },
                 React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: isActive ? "#d4cbb3" : "#a09878", letterSpacing: 2, fontWeight: 700 } }, b.label)
               );
             })
           ),
           React.createElement("div", { style: { flex: 1 } }),
           React.createElement("div", { style: { display: "flex", gap: 10, marginTop: 30 } },
-            React.createElement("button", { onClick: function() { setOnboardStep(1); }, style: { flex: 1, padding: "14px", background: "none", border: "1px solid #2a3418", borderRadius: 8, color: "#b5ab8c", fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK"),
+            React.createElement("button", { onClick: function() { setOnboardStep(1); }, style: { flex: 1, padding: "14px", background: "none", border: "1px solid #222A19", borderRadius: 8, color: "#b5ab8c", fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK"),
             onboardData.branch && React.createElement("button", { onClick: function() { setOnboardStep(3); }, style: { flex: 2, padding: "14px", background: "linear-gradient(135deg, #4A5D23, #2D5016)", border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "CONTINUE \u2192")
           )
         );
@@ -4759,13 +4760,13 @@ function App() {
         var isSeparated = onboardData.status === "separated" || onboardData.status === "retired";
         var isGuard = onboardData.status === "guard";
         if (isGuard) {
-          return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#1a1f16" } },
+          return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#C9B45A", marginBottom: 6 } }, "STEP 3 OF 4"),
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "WHAT BRINGS YOU HERE?"),
             React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, "Your military training has civilian value. Tell us what you're looking to do and we'll point you to the right tools."),
             [{id:"career",label:"TRANSLATE MY TRAINING",desc:"Map my MOS, AIT, or military schools to civilian careers and certifications",icon:"\uD83C\uDFAF"},{id:"benefits",label:"VA BENEFITS & EDUCATION",desc:"VA disability, GI Bill, VR&E, healthcare eligibility",icon:"\uD83C\uDFE5"},{id:"newmos",label:"JUST COMPLETED NEW TRAINING",desc:"Finished AIT, reclassed, or earned a new MOS \u2014 show me what it's worth",icon:"\uD83D\uDCDC"},{id:"start",label:"EXPLORE ALL TOOLS",desc:"Show me everything available",icon:"\uD83D\uDCCB"}].map(function(c) {
               var isActive = onboardData.concern === c.id;
-              return React.createElement("button", { key: c.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {concern: c.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : "#1e2414", border: isActive ? "2px solid #4A5D23" : "1px solid #2a3418", borderRadius: 10, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
+              return React.createElement("button", { key: c.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {concern: c.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : "#161B11", border: isActive ? "2px solid #4A5D23" : "1px solid #222A19", borderRadius: 10, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
                 React.createElement("span", { style: { fontSize: 24 } }, c.icon),
                 React.createElement("div", null,
                   React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: isActive ? "#d4cbb3" : "#a09878", letterSpacing: 1, fontWeight: 700 } }, c.label),
@@ -4786,34 +4787,34 @@ function App() {
               showToast("WELCOME TO TRANSITION OPS");
             }, style: { width: "100%", padding: "16px", background: "linear-gradient(135deg, #4A5D23, #2D5016)", border: "none", borderRadius: 10, color: "#fff", fontSize: 16, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 3, cursor: "pointer", boxShadow: "0 4px 20px rgba(74,93,35,0.4)" } }, "LAUNCH TRANSITION OPS \u2192"),
             React.createElement("div", { style: { display: "flex", gap: 10, marginTop: 10 } },
-              React.createElement("button", { onClick: function() { setOnboardStep(2); }, style: { flex: 1, padding: "14px", background: "none", border: "1px solid #2a3418", borderRadius: 8, color: "#b5ab8c", fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK")
+              React.createElement("button", { onClick: function() { setOnboardStep(2); }, style: { flex: 1, padding: "14px", background: "none", border: "1px solid #222A19", borderRadius: 8, color: "#b5ab8c", fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK")
             )
           );
         }
-        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#1a1f16" } },
+        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#C9B45A", marginBottom: 6 } }, "STEP 3 OF 4"),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, isSeparated ? "WHEN DID YOU SEPARATE?" : "WHEN IS YOUR ETS / EAOS?"),
           React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, isSeparated ? "This helps us identify benefits and deadlines that may still apply." : "This activates your personalized timeline, reminders, and countdown."),
-          React.createElement("input", { type: "date", value: onboardData.etsDate, onChange: function(e) { setOnboardData(function(p) { return Object.assign({}, p, {etsDate: e.target.value}); }); }, style: { width: "100%", padding: "16px", background: "#0f120b", border: "2px solid #2a3418", borderRadius: 10, color: "#d4cbb3", fontSize: 18, fontFamily: "'Courier Prime', monospace", textAlign: "center", marginBottom: 16 } }),
+          React.createElement("input", { type: "date", value: onboardData.etsDate, onChange: function(e) { setOnboardData(function(p) { return Object.assign({}, p, {etsDate: e.target.value}); }); }, style: { width: "100%", padding: "16px", background: "#0f120b", border: "2px solid #222A19", borderRadius: 10, color: "#d4cbb3", fontSize: 18, fontFamily: "'Courier Prime', monospace", textAlign: "center", marginBottom: 16 } }),
           !onboardData.etsDate && React.createElement("div", { style: { textAlign: "center", marginBottom: 20 } },
             React.createElement("button", { onClick: function() { setOnboardStep(4); }, style: { background: "none", border: "none", color: "#8a8468", fontSize: 11, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "I DON'T KNOW YET \u2014 SKIP")
           ),
           React.createElement("div", { style: { flex: 1 } }),
           React.createElement("div", { style: { display: "flex", gap: 10, marginTop: 30 } },
-            React.createElement("button", { onClick: function() { setOnboardStep(2); }, style: { flex: 1, padding: "14px", background: "none", border: "1px solid #2a3418", borderRadius: 8, color: "#b5ab8c", fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK"),
+            React.createElement("button", { onClick: function() { setOnboardStep(2); }, style: { flex: 1, padding: "14px", background: "none", border: "1px solid #222A19", borderRadius: 8, color: "#b5ab8c", fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK"),
             onboardData.etsDate && React.createElement("button", { onClick: function() { setOnboardStep(4); }, style: { flex: 2, padding: "14px", background: "linear-gradient(135deg, #4A5D23, #2D5016)", border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "CONTINUE \u2192")
           )
         );
       },
       // Step 4: Biggest concern
       function() {
-        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#1a1f16" } },
+        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#C9B45A", marginBottom: 6 } }, "STEP 4 OF 4"),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "BIGGEST CONCERN?"),
           React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, "We'll point you to the most relevant tools first."),
           [{id:"career",label:"FINDING A CAREER",desc:"Resume, job search, SkillBridge, career mapping",icon:"\uD83C\uDFAF"},{id:"benefits",label:"VA BENEFITS & CLAIMS",desc:"Disability rating, BDD, healthcare, GI Bill",icon:"\uD83C\uDFE5"},{id:"money",label:"FINANCIAL READINESS",desc:"Pay gap, TSP, budgeting, SBP, taxes",icon:"\uD83D\uDCB0"},{id:"start",label:"JUST GETTING STARTED",desc:"Don't know where to begin \u2014 show me everything",icon:"\uD83D\uDCCB"}].map(function(c) {
             var isActive = onboardData.concern === c.id;
-            return React.createElement("button", { key: c.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {concern: c.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : "#1e2414", border: isActive ? "2px solid #4A5D23" : "1px solid #2a3418", borderRadius: 10, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
+            return React.createElement("button", { key: c.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {concern: c.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : "#161B11", border: isActive ? "2px solid #4A5D23" : "1px solid #222A19", borderRadius: 10, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
               React.createElement("span", { style: { fontSize: 24 } }, c.icon),
               React.createElement("div", null,
                 React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: isActive ? "#d4cbb3" : "#a09878", letterSpacing: 1, fontWeight: 700 } }, c.label),
@@ -4861,7 +4862,7 @@ function App() {
     },
       /*#__PURE__*/React.createElement("div", {
         style: {
-          background: "linear-gradient(135deg, #2a2f1f 0%, #1a1f16 100%)",
+          background: "linear-gradient(135deg, #2a2f1f 0%, #0E120B 100%)",
           borderBottom: "2px solid " + C.gold,
           padding: "10px 14px"
         }
@@ -5199,32 +5200,103 @@ function App() {
   },
 
   // ═══════════ DASHBOARD TAB ═══════════
-  activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, !sitrepDismissed && React.createElement("div", { style: { background: "linear-gradient(135deg, #2a3320, #1a2113)", border: "2px solid " + "#F0C419", borderRadius: 12, padding: 16, marginBottom: 14, position: "relative" } },
-    React.createElement("div", { onClick: function() { setSitrepDismissed(true); try { localStorage.setItem("tops_sitrep_jun2026", "1"); } catch (e) {} }, style: { position: "absolute", top: 8, right: 12, cursor: "pointer", color: "#b5ab8c", fontSize: 16, lineHeight: 1, padding: 4 } }, "\u2715"),
-    React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: "#F0C419", letterSpacing: 3, marginBottom: 8 } }, "\u26A1 SITREP \u2014 POLICY UPDATE 11 JUN 2026"),
+  activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, React.createElement("div", { style: { marginBottom: 14 } },
+    React.createElement("input", { type: "text", value: searchQ, onChange: function(e) { setSearchQ(e.target.value); }, placeholder: "\uD83D\uDD0D FIND: VGLI, SkillBridge, GI Bill, terminal leave...", style: { width: "100%", boxSizing: "border-box", padding: "12px 14px", background: "#11150e", border: "1px solid #4a523c", borderRadius: 8, color: "#e8e0c8", fontSize: 14, fontFamily: "'JetBrains Mono', monospace", outline: "none" } }),
+    searchQ.length >= 2 && (function() {
+      var q = searchQ.toLowerCase().split(/\s+/).filter(function(t) { return t.length > 0; });
+      function score(fields) {
+        var titleText = (fields[0] || "").toLowerCase();
+        var bodyText = fields.join(" ").toLowerCase();
+        var s = 0;
+        for (var i = 0; i < q.length; i++) {
+          if (bodyText.indexOf(q[i]) === -1) return 0;
+          s += titleText.indexOf(q[i]) !== -1 ? 2 : 1;
+        }
+        return s;
+      }
+      var hits = [];
+      SMART_REMINDERS.forEach(function(r) {
+        var s = score([r.title, r.brief || "", r.why || "", r.cat || "", (r.items || []).join(" ")]);
+        if (s > 0) hits.push({ s: s, tag: "REMINDER", tagColor: "#F0C419", title: r.title, snip: r.brief || r.why || "", act: "tab", tab: "reminders" });
+      });
+      CRITICAL_WINDOWS.forEach(function(w) {
+        var s = score([(w.name || "") + " " + (w.fullName || ""), w.shortDesc || "", w.whyMatters || "", w.authority || ""]);
+        if (s > 0) hits.push({ s: s + 1, tag: "CRITICAL WINDOW", tagColor: "#E05252", title: w.fullName || w.name, snip: w.shortDesc || "", act: "tab", tab: "critical" });
+      });
+      RESOURCES.forEach(function(r) {
+        var s = score([r.name, r.description || "", r.category || ""]);
+        if (s > 0) hits.push({ s: s, tag: "RESOURCE", tagColor: "#9FD14A", title: r.name, snip: r.description || "", act: "url", url: r.url });
+      });
+      VSO_DIRECTORY.forEach(function(sec) {
+        (sec.orgs || []).forEach(function(o) {
+          var s = score([o.name, o.desc || "", sec.category || ""]);
+          if (s > 0) hits.push({ s: s, tag: "VSO / ORG", tagColor: "#9FD14A", title: o.name, snip: o.desc || "", act: "url", url: o.url });
+        });
+      });
+      SKILLBRIDGE_FEED.forEach(function(wk) {
+        (wk.companies || []).forEach(function(c) {
+          var s = score([c.name, (c.industry || "") + " " + (c.locations || ""), wk.notes || ""]);
+          if (s > 0) hits.push({ s: s, tag: "SKILLBRIDGE", tagColor: "#F0C419", title: c.name, snip: (c.industry || "") + " \u2014 " + (c.locations || ""), act: "url", url: c.url });
+        });
+      });
+      hits.sort(function(a, b) { return b.s - a.s; });
+      hits = hits.slice(0, 10);
+      if (hits.length === 0) return React.createElement("div", { style: { marginTop: 6, padding: "10px 14px", background: "#11150e", border: "1px solid #4a523c", borderRadius: 8, fontSize: 12, color: "#b5ab8c" } }, "No matches in the app for \u201C" + searchQ + "\u201D. Try a benefit name, program, or deadline (e.g. VGLI, TAP, BDD).");
+      return React.createElement("div", { style: { marginTop: 6, background: "#11150e", border: "1px solid #4a523c", borderRadius: 8, overflow: "hidden" } }, hits.map(function(h, i) {
+        var inner = [
+          React.createElement("div", { key: "t", style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 3 } },
+            React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: "rgba(255,255,255,0.06)", color: h.tagColor, borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, flexShrink: 0 } }, h.tag),
+            React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: "#FFFFFF" } }, h.title)
+          ),
+          React.createElement("div", { key: "s", style: { fontSize: 11, color: "#c9c0a2", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" } }, h.snip)
+        ];
+        var rowStyle = { display: "block", padding: "10px 14px", borderBottom: i < hits.length - 1 ? "1px solid #2c3324" : "none", cursor: "pointer", textDecoration: "none" };
+        if (h.act === "url") return React.createElement("a", { key: i, href: h.url, target: "_blank", rel: "noopener noreferrer", style: rowStyle }, inner);
+        return React.createElement("div", { key: i, onClick: function() { setActiveTab(h.tab); setSearchQ(""); }, style: rowStyle }, inner);
+      }));
+    })()
+  ), !sitrepDismissed && React.createElement("div", { style: { background: "#1C2315", borderRadius: 12, padding: "12px 14px", marginBottom: 12, display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }, onClick: function() { setActiveTab("vapay"); } },
     (function() {
       var openDate = new Date(2026, 5, 15);
       var today = new Date(); today.setHours(0, 0, 0, 0);
-      var daysLeft = Math.round((openDate - today) / 86400000);
-      var line = daysLeft > 1 ? ("VET TEC 2.0 \u2014 APPLICATIONS OPEN IN " + daysLeft + " DAYS") : daysLeft === 1 ? "VET TEC 2.0 \u2014 APPLICATIONS OPEN TOMORROW" : "VET TEC 2.0 \u2014 APPLICATIONS ARE OPEN";
-      return React.createElement("div", { style: { padding: "10px 12px", background: "rgba(218,165,32,0.12)", borderLeft: "3px solid " + "#F0C419", borderRadius: 4, marginBottom: 10 } },
-        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: "#F0C419", letterSpacing: 1 } }, line),
-        React.createElement("div", { style: { fontSize: 11, color: "#c9c0a2", marginTop: 2, lineHeight: 1.5 } }, "Tech training with housing allowance \u2014 no degree required. 4,000 slots per fiscal year. Open to service members within 180 days of discharge.")
-      );
+      var d = Math.round((openDate - today) / 86400000);
+      var chip = d > 0 ? "T\u2212" + d + (d === 1 ? " DAY" : " DAYS") : "OPEN NOW";
+      return React.createElement("div", { style: { background: "rgba(240,196,25,0.14)", color: "#F0C419", fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 12, padding: "7px 11px", borderRadius: 7, whiteSpace: "nowrap", flexShrink: 0 } }, chip);
     })(),
-    React.createElement("div", { style: { fontSize: 12, color: "#e8e0c8", lineHeight: 1.8 } },
-      React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: "#FFFFFF" } }, "FY26 NDAA"), ": TAP overhauled \u2014 in-person counseling, spouse pilot, exposure records (ILER) now flow straight to VA"),
-      React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: "#FFFFFF" } }, "GI Bill"), ": up to 48 months of combined entitlement \u2014 over 1 million veterans may qualify"),
-      React.createElement("div", null, "\u2022 ", React.createElement("strong", { style: { color: "#FFFFFF" } }, "SkillBridge"), ": approval presumption now favors defense-industry opportunities")
+    React.createElement("div", { style: { minWidth: 0 } },
+      React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: "#EDE7D4", letterSpacing: 0.5 } }, "VET TEC 2.0 applications open 15 JUN"),
+      React.createElement("div", { style: { fontSize: 11, color: "#9C9577", marginTop: 2, lineHeight: 1.4 } }, "4,000 slots/FY \u00B7 FY26 NDAA \u00B7 GI Bill 48-mo \u00B7 Tap for full SITREP")
     ),
-    React.createElement("div", { onClick: function() { setActiveTab("vapay"); }, style: { marginTop: 10, fontSize: 11, color: "#9FD14A", letterSpacing: 1, fontFamily: "'Oswald', sans-serif", cursor: "pointer" } }, "FULL BRIEFING: VA PAY \u2192 2026 POLICY INTEL \u2192")
+    React.createElement("div", { onClick: function(e) { e.stopPropagation(); setSitrepDismissed(true); try { localStorage.setItem("tops_sitrep_jun2026", "1"); } catch (err) {} }, style: { marginLeft: "auto", color: "#6A6650", fontSize: 15, padding: 6, flexShrink: 0 } }, "\u2715")
   ), (function() {
 
     // ═══════════ GUARD / RESERVE DASHBOARD ═══════════
     if (userStatus === "guard") {
       return React.createElement("div", null,
+        separationDate && (function() {
+          var daysOut = daysToETSDate(separationDate);
+          if (daysOut === null || daysOut < 0) return null;
+          var RUNWAY = 540, CIRC = 659.7;
+          var pct = Math.min(1, Math.max(0, (RUNWAY - daysOut) / RUNWAY));
+          var theta = pct * 2 * Math.PI;
+          var tickX = 114 + 105 * Math.sin(theta), tickY = 114 - 105 * Math.cos(theta);
+          return React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 16, marginTop: 4 } },
+            React.createElement("div", { style: { position: "relative", width: 228, height: 228 } },
+              React.createElement("svg", { width: 228, height: 228, viewBox: "0 0 228 228", style: { transform: "rotate(-90deg)" } },
+                React.createElement("circle", { cx: 114, cy: 114, r: 105, fill: "none", stroke: "#1E2417", strokeWidth: 9 }),
+                React.createElement("circle", { cx: 114, cy: 114, r: 105, fill: "none", stroke: "#8BB83C", strokeWidth: 9, strokeLinecap: "round", strokeDasharray: CIRC, strokeDashoffset: CIRC * (1 - pct), style: { transition: "stroke-dashoffset 1s cubic-bezier(.6,0,.2,1)" } })
+              ),
+              React.createElement("div", { style: { position: "absolute", left: tickX - 1.5, top: tickY - 8, width: 3, height: 16, background: "#F0C419", borderRadius: 2, transform: "rotate(" + (pct * 360) + "deg)" } }),
+              React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" } },
+                React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: daysOut > 999 ? 48 : 60, lineHeight: 1, color: daysOut <= 90 ? "#E05252" : "#EDE7D4" } }, daysOut),
+                React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 4, color: "#9C9577", marginTop: 6 } }, "DAYS TO SEPARATION"),
+                React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#6A6650", marginTop: 3 } }, new Date(separationDate + "T12:00:00").toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }).toUpperCase())
+              )
+            )
+          );
+        })(),
         // Welcome header
-        React.createElement("div", { style: { padding: "16px 14px", borderRadius: 10, marginBottom: 14, background: "linear-gradient(135deg, #1e2814, #141a0c)", border: "1px solid " + C.border, textAlign: "center" } },
+        React.createElement("div", { style: { padding: "16px 14px", borderRadius: 10, marginBottom: 14, background: "linear-gradient(135deg, #1C2315, #11150E)", border: "1px solid " + C.border, textAlign: "center" } },
           React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif", marginBottom: 6 } }, "GUARD / RESERVE"),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 18, fontWeight: 700, color: C.textPrimary, lineHeight: 1.3, marginBottom: 6 } }, "Your Military Training Has Civilian Value"),
           React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.6 } }, "Use the tools below to translate your skills, find career matches, explore benefits, and connect with employers who value military training.")
@@ -5311,7 +5383,7 @@ function App() {
           React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.textSecondary, letterSpacing: 1 } }, "SHARE WITH YOUR UNIT")
         ),
 
-        React.createElement("a", { href: "https://www.veteranbridgesolutions.com", target: "_blank", rel: "noopener noreferrer", style: { display: "block", textDecoration: "none", marginTop: 4, padding: "14px 16px", background: "linear-gradient(135deg, #2a3320, #1e2814)", border: "1px solid " + C.gold, borderRadius: 10, textAlign: "center" } },
+        React.createElement("a", { href: "https://www.veteranbridgesolutions.com", target: "_blank", rel: "noopener noreferrer", style: { display: "block", textDecoration: "none", marginTop: 4, padding: "14px 16px", background: "linear-gradient(135deg, #1C2315, #1C2315)", border: "1px solid " + C.gold, borderRadius: 10, textAlign: "center" } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 3, color: C.gold, marginBottom: 2 } }, "BUILT BY"),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 700, color: C.textPrimary } }, "VETERAN BRIDGE SOLUTIONS"),
           React.createElement("div", { style: { fontSize: 11, color: C.greenBright, marginTop: 4 } }, "veteranbridgesolutions.com \u2192")
@@ -5333,33 +5405,58 @@ function App() {
     var urgentReminders = etsMonths !== null ? SMART_REMINDERS.filter(function(r) { var d = r.mo - etsMonths; return d >= -1 && d <= 3 && !dismissedReminders[r.id]; }).slice(0, 3) : [];
 
     return React.createElement("div", null,
-      // ETS COUNTDOWN + READINESS RING
-      React.createElement("div", { style: { display: "flex", gap: 14, marginBottom: 14 } },
-        // Left: ETS Countdown
-        React.createElement("div", { style: { flex: 1, background: "linear-gradient(135deg, #1e2814, #141a0c)", border: "1px solid " + C.border, borderRadius: 10, padding: 16, textAlign: "center" } },
-          !separationDate ? React.createElement("div", null,
-            React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "SET ETS DATE"),
-            React.createElement("input", { type: "date", value: separationDate, onChange: function(e) { setSeparationDate(e.target.value); try { window.__safeSet("tops_sep_date", e.target.value); } catch(ex) {} }, style: { width: "100%", padding: 10, background: C.bg, border: "1px solid " + C.border, borderRadius: 6, color: C.textPrimary, fontSize: 14, fontFamily: "'Courier Prime', monospace" } })
-          ) : React.createElement("div", null,
-            React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif" } }, etsMonths > 0 ? "MONTHS TO ETS" : etsMonths === 0 ? "ETS DAY" : "MONTHS POST-SEP"),
-            React.createElement("div", { style: { fontSize: 52, fontWeight: 700, color: etsMonths !== null && etsMonths <= 3 ? "#ff6b6b" : C.greenBright, fontFamily: "'Oswald', sans-serif", lineHeight: 1.1, marginTop: 4 } }, etsMonths > 0 ? etsMonths : Math.abs(etsMonths || 0)),
-            React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 4, cursor: "pointer" }, onClick: function() { setSeparationDate(""); } }, "TAP TO CHANGE")
-          )
-        ),
-        // Right: Readiness Ring
-        React.createElement("div", { className: "dash-card", style: { flex: 1, textAlign: "center", cursor: "pointer", margin: 0 }, onClick: function() { setActiveTab("readiness"); } },
-          React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 4 } }, "READINESS"),
-          React.createElement("div", { style: { position: "relative", width: 90, height: 90, margin: "0 auto 6px" } },
-            React.createElement("svg", { width: 90, height: 90, viewBox: "0 0 90 90", style: { transform: "rotate(-90deg)" } },
-              React.createElement("circle", { cx: 45, cy: 45, r: 38, fill: "none", stroke: C.border, strokeWidth: 6 }),
-              React.createElement("circle", { cx: 45, cy: 45, r: 38, fill: "none", stroke: rInfo.c, strokeWidth: 6, strokeDasharray: (rScore / 100) * 238.76 + " 238.76", strokeLinecap: "round", style: { transition: "stroke-dasharray 0.8s ease" } })
+      // ═══ v49 INSTRUMENT: timeline ring + ETS countdown fused ═══
+      (function() {
+        var daysOut = daysToETSDate(separationDate);
+        if (!separationDate) {
+          return React.createElement("div", { style: { background: "#161B11", borderRadius: 14, padding: "22px 18px", marginBottom: 14, textAlign: "center" } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 4, color: "#9C9577", marginBottom: 12 } }, "SET YOUR ETS DATE TO ARM THE MISSION CLOCK"),
+            React.createElement("input", { type: "date", value: separationDate, onChange: function(e) { setSeparationDate(e.target.value); try { window.__safeSet("tops_sep_date", e.target.value); } catch (ex) {} }, style: { width: "80%", padding: 12, background: "#0E120B", border: "1px solid #222A19", borderRadius: 8, color: "#EDE7D4", fontSize: 14, fontFamily: "'JetBrains Mono', monospace" } })
+          );
+        }
+        var RUNWAY = 540;
+        var pct = daysOut >= 0 ? Math.min(1, Math.max(0, (RUNWAY - daysOut) / RUNWAY)) : 1;
+        var CIRC = 659.7;
+        var theta = pct * 2 * Math.PI;
+        var tickX = 114 + 105 * Math.sin(theta);
+        var tickY = 114 - 105 * Math.cos(theta);
+        var numColor = daysOut !== null && daysOut >= 0 && daysOut <= 90 ? "#E05252" : "#EDE7D4";
+        return React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 16, marginTop: 4 } },
+          React.createElement("div", { style: { position: "relative", width: 228, height: 228, cursor: "pointer" }, onClick: function() { setSeparationDate(""); } },
+            React.createElement("svg", { width: 228, height: 228, viewBox: "0 0 228 228", style: { transform: "rotate(-90deg)" } },
+              React.createElement("circle", { cx: 114, cy: 114, r: 105, fill: "none", stroke: "#1E2417", strokeWidth: 9 }),
+              React.createElement("circle", { cx: 114, cy: 114, r: 105, fill: "none", stroke: "#8BB83C", strokeWidth: 9, strokeLinecap: "round", strokeDasharray: CIRC, strokeDashoffset: CIRC * (1 - pct), style: { transition: "stroke-dashoffset 1s cubic-bezier(.6,0,.2,1)" } })
             ),
-            React.createElement("div", { style: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, display: "flex", alignItems: "center", justifyContent: "center" } },
-              React.createElement("span", { style: { fontSize: 26, fontWeight: 700, color: rInfo.c, fontFamily: "'Oswald', sans-serif" } }, rScore)
+            React.createElement("div", { style: { position: "absolute", left: tickX - 1.5, top: tickY - 8, width: 3, height: 16, background: "#F0C419", borderRadius: 2, transform: "rotate(" + (pct * 360) + "deg)" } }),
+            React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" } },
+              React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: daysOut >= 0 && daysOut > 999 ? 48 : 60, lineHeight: 1, color: numColor } }, daysOut >= 0 ? daysOut : Math.abs(etsMonths || 0)),
+              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 4, color: "#9C9577", marginTop: 6 } }, daysOut > 0 ? "DAYS TO ETS" : daysOut === 0 ? "ETS DAY" : "MONTHS POST-SEP"),
+              React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#6A6650", marginTop: 3 } }, new Date(separationDate + "T12:00:00").toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }).toUpperCase())
             )
           ),
-          React.createElement("div", { style: { fontSize: 9, color: rInfo.c, fontWeight: 700, letterSpacing: 1, fontFamily: "'Oswald', sans-serif" } }, rInfo.l)
-        )
+          React.createElement("div", { style: { display: "flex", gap: 34, marginTop: 14 } },
+            React.createElement("div", { style: { textAlign: "center", cursor: "pointer" }, onClick: function() { setActiveTab("timeline"); } },
+              React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: "#8BB83C" } }, tlPct + "%"),
+              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: "#6A6650", marginTop: 3 } }, "TIMELINE")),
+            React.createElement("div", { style: { textAlign: "center" } },
+              React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: "#EDE7D4" } }, doneTasks, React.createElement("span", { style: { color: "#6A6650" } }, "/" + totalTasks)),
+              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: "#6A6650", marginTop: 3 } }, "TASKS")),
+            React.createElement("div", { style: { textAlign: "center", cursor: "pointer" }, onClick: function() { setActiveTab("readiness"); } },
+              React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: rInfo.c } }, rScore),
+              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: "#6A6650", marginTop: 3 } }, "READINESS"))
+          )
+        );
+      })(),
+
+      // ═══ v49 NEXT ACTION (replaces pulsing urgent card) ═══
+      urgentReminders.length > 0 && React.createElement("div", { style: { background: "#161B11", borderRadius: 12, padding: "14px 16px", marginBottom: 12, display: "flex", alignItems: "center", gap: 13, cursor: "pointer" }, onClick: function() { setActiveTab("reminders"); } },
+        React.createElement("div", { style: { width: 3, alignSelf: "stretch", borderRadius: 2, background: "#F0C419", flexShrink: 0 } }),
+        React.createElement("div", { style: { minWidth: 0 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 3, color: "#9C9577" } }, "NEXT ACTION"),
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 15, color: "#EDE7D4", marginTop: 3 } }, urgentReminders[0].title.replace(/\u26A0\uFE0F /g, "")),
+          React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#9C9577", marginTop: 3 } }, (urgentReminders[0].deadline || urgentReminders[0].brief || "").toUpperCase().slice(0, 52) + (urgentReminders.length > 1 ? "  \u00B7  +" + (urgentReminders.length - 1) + " MORE" : ""))
+        ),
+        React.createElement("div", { style: { marginLeft: "auto", color: "#9C9577", fontSize: 18 } }, "\u203A")
       ),
 
       // CRITICAL WINDOWS URGENT CARD
@@ -5387,17 +5484,6 @@ function App() {
         );
       })(),
 
-      // URGENT REMINDERS
-      urgentReminders.length > 0 && React.createElement("div", { className: "dash-card", style: { borderColor: "#8B0000", background: "linear-gradient(135deg, #2a1010, #1a0808)", animation: "pulse 3s ease-in-out infinite", margin: "0 0 10px" }, onClick: function() { setActiveTab("reminders"); } },
-        React.createElement("div", { style: { fontSize: 10, color: "#ff6b6b", letterSpacing: 2, fontWeight: 700, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "\u26A0\uFE0F ACTION REQUIRED"),
-        urgentReminders.map(function(r) {
-          var ps = REMINDER_PRIORITIES[r.pri] || REMINDER_PRIORITIES.ADVISORY;
-          return React.createElement("div", { key: r.id, style: { display: "flex", gap: 8, alignItems: "center", padding: "6px 0", borderBottom: "1px solid rgba(139,0,0,0.2)" } },
-            React.createElement("span", { style: { padding: "1px 6px", background: ps.bdg, color: "#fff", fontSize: 8, fontWeight: 700, borderRadius: 2, fontFamily: "'Oswald', sans-serif" } }, r.pri),
-            React.createElement("span", { style: { fontSize: 12, color: ps.txt, flex: 1 } }, r.title.replace(/\u26A0\uFE0F /g, ""))
-          );
-        })
-      ),
 
       // PROGRESS CARDS ROW
       React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 } },
@@ -5462,7 +5548,7 @@ function App() {
       ),
 
       // VBS LINK
-      React.createElement("a", { href: "https://www.veteranbridgesolutions.com", target: "_blank", rel: "noopener noreferrer", style: { display: "block", textDecoration: "none", marginTop: 14, padding: "14px 16px", background: "linear-gradient(135deg, #2a3320, #1e2814)", border: "1px solid " + C.gold, borderRadius: 10, textAlign: "center" } },
+      React.createElement("a", { href: "https://www.veteranbridgesolutions.com", target: "_blank", rel: "noopener noreferrer", style: { display: "block", textDecoration: "none", marginTop: 14, padding: "14px 16px", background: "linear-gradient(135deg, #1C2315, #1C2315)", border: "1px solid " + C.gold, borderRadius: 10, textAlign: "center" } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 3, color: C.gold, marginBottom: 2 } }, "BUILT BY"),
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 700, color: C.textPrimary } }, "VETERAN BRIDGE SOLUTIONS"),
         React.createElement("div", { style: { fontSize: 11, color: C.greenBright, marginTop: 4 } }, "veteranbridgesolutions.com \u2192")
@@ -8195,7 +8281,7 @@ function App() {
       alignItems: "flex-start",
       gap: 10,
       padding: "8px 10px",
-      background: vetScore[item.id] ? C.bg === "#FFFFFF" ? "#E8F5E9" : "#2a3320" : C.bg,
+      background: vetScore[item.id] ? C.bg === "#FFFFFF" ? "#E8F5E9" : "#1C2315" : C.bg,
       border: "1px solid " + (vetScore[item.id] ? C.greenBright : C.border),
       borderRadius: 4,
       marginBottom: 4,
@@ -8216,7 +8302,7 @@ function App() {
     }
   }, vetScore[item.id] && /*#__PURE__*/React.createElement("span", {
     style: {
-      color: C.bg === "#FFFFFF" ? "#FFFFFF" : "#1a1f16",
+      color: C.bg === "#FFFFFF" ? "#FFFFFF" : "#0E120B",
       fontSize: 13,
       fontWeight: 700
     }
@@ -8421,7 +8507,7 @@ function App() {
       fontSize: 10,
       padding: "2px 6px",
       background: C.gold,
-      color: C.bg === "#FFFFFF" ? "#FFFFFF" : "#1a1f16",
+      color: C.bg === "#FFFFFF" ? "#FFFFFF" : "#0E120B",
       borderRadius: 2,
       fontFamily: "'Oswald', sans-serif"
     }
@@ -8582,7 +8668,7 @@ function App() {
       fontSize: 9,
       padding: "2px 6px",
       background: r.tag === "FREE" ? C.greenBright : r.tag === "VA BENEFIT" ? C.gold : C.green,
-      color: C.bg === "#FFFFFF" ? "#FFFFFF" : "#1a1f16",
+      color: C.bg === "#FFFFFF" ? "#FFFFFF" : "#0E120B",
       borderRadius: 2,
       fontFamily: "'Oswald', sans-serif",
       letterSpacing: 1
@@ -8894,7 +8980,7 @@ function App() {
       fontSize: 9,
       padding: "2px 6px",
       background: C.gold,
-      color: C.bg === "#FFFFFF" ? "#FFFFFF" : "#1a1f16",
+      color: C.bg === "#FFFFFF" ? "#FFFFFF" : "#0E120B",
       borderRadius: 2,
       fontFamily: "'Oswald', sans-serif"
     }
@@ -8947,7 +9033,7 @@ function App() {
       background: C.greenBright,
       border: "none",
       borderRadius: 4,
-      color: C.bg === "#FFFFFF" ? "#FFFFFF" : "#1a1f16",
+      color: C.bg === "#FFFFFF" ? "#FFFFFF" : "#0E120B",
       fontFamily: "'Oswald', sans-serif",
       fontSize: 14,
       letterSpacing: 2,
@@ -11964,7 +12050,7 @@ function App() {
         React.createElement("label", { style: { fontSize: 11, color: C.gold, letterSpacing: 2, fontWeight: 700, fontFamily: "'Oswald', sans-serif" } }, "SET YOUR ETS DATE TO ACTIVATE REMINDERS"),
         React.createElement("input", { type: "date", value: separationDate, onChange: function(e) { setSeparationDate(e.target.value); }, style: { width: "100%", padding: "12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 6, color: C.textPrimary, fontSize: 15, fontFamily: "'Courier Prime', monospace", marginTop: 6 } })
       ),
-      etsMonths !== null && React.createElement("div", { style: { padding: "10px 0 12px", marginBottom: 10, background: etsMonths <= 2 ? "linear-gradient(90deg,#3d1111,#1a0808)" : "linear-gradient(90deg,#1e2814,#0f1208)", borderRadius: 6, display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: 14, paddingRight: 14 } },
+      etsMonths !== null && React.createElement("div", { style: { padding: "10px 0 12px", marginBottom: 10, background: etsMonths <= 2 ? "linear-gradient(90deg,#3d1111,#1a0808)" : "linear-gradient(90deg,#1C2315,#0f1208)", borderRadius: 6, display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: 14, paddingRight: 14 } },
         React.createElement("div", null,
           React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif" } }, "PHASE"),
           React.createElement("div", { style: { fontSize: 16, fontWeight: 700, color: etsMonths <= 2 ? "#ff6b6b" : C.textPrimary, fontFamily: "'Oswald', sans-serif" } }, phase)
@@ -12381,7 +12467,7 @@ function App() {
         )
       ),
       // COMBINED RESULT (show if conditions exist)
-      vaConditions.length > 0 && React.createElement("div", { style: { background: "linear-gradient(135deg, #1e2814, #141a0c)", border: "2px solid " + C.green, borderRadius: 12, padding: 20, marginBottom: 14, textAlign: "center" } },
+      vaConditions.length > 0 && React.createElement("div", { style: { background: "linear-gradient(135deg, #1C2315, #11150E)", border: "2px solid " + C.green, borderRadius: 12, padding: 20, marginBottom: 14, textAlign: "center" } },
         React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "YOUR COMBINED VA RATING"),
         React.createElement("div", { style: { display: "flex", justifyContent: "center", alignItems: "baseline", gap: 8 } },
           React.createElement("span", { style: { fontSize: 64, fontWeight: 700, color: C.greenBright, fontFamily: "'Oswald', sans-serif", lineHeight: 1 } }, result.rounded),
@@ -12626,7 +12712,7 @@ function App() {
       ),
 
       // RESULTS
-      hasResult && React.createElement("div", { style: { background: "linear-gradient(135deg, #1e2814, #141a0c)", border: "2px solid " + C.green, borderRadius: 12, padding: 20, marginBottom: 12, textAlign: "center" } },
+      hasResult && React.createElement("div", { style: { background: "linear-gradient(135deg, #1C2315, #11150E)", border: "2px solid " + C.green, borderRadius: 12, padding: 20, marginBottom: 12, textAlign: "center" } },
         React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif", marginBottom: 12 } }, "YOUR ESTIMATED COMPENSATION"),
         React.createElement("div", { style: { display: "flex", justifyContent: "center", gap: 24, marginBottom: 16 } },
           React.createElement("div", null,
@@ -12730,7 +12816,7 @@ function App() {
 
         // SUMMARY
         pcsSection==="summary" && React.createElement("div",null,
-          React.createElement("div",{style:{padding:"12px 14px",borderRadius:6,marginBottom:12,background:"linear-gradient(135deg,#1e2814,#0a1206)",border:"1px solid "+C.border}},
+          React.createElement("div",{style:{padding:"12px 14px",borderRadius:6,marginBottom:12,background:"linear-gradient(135deg,#1C2315,#0a1206)",border:"1px solid "+C.border}},
             React.createElement("div",{style:{fontFamily:"'Oswald',sans-serif",fontSize:14,color:C.greenBright,letterSpacing:2,marginBottom:4}},"FINAL PCS \u2014 "+pcsGrade),
             React.createElement("div",{style:{fontSize:11,color:C.textSecondary}},(pcsDeps?"With Dependents":"Without Dependents")+" // "+(pcsMoveType==="retirement"?"Retirement":"ETS/Separation"))
           ),
