@@ -4642,26 +4642,32 @@ function App() {
       function() {
           const features = [{
             icon: "🧮",
+            route: "vamath",
             label: "VA MATH",
             desc: "Combine disability ratings using VA's formula"
           }, {
             icon: "💵",
+            route: "vapay",
             label: "VA PAY",
             desc: "Project your monthly compensation"
           }, {
             icon: "🎯",
+            route: "pathway",
             label: "CAREER PATHWAYS",
             desc: "Translate your MOS to civilian roles"
           }, {
             icon: "🏢",
+            route: "resources",
             label: "SKILLBRIDGE",
             desc: "Current employer opportunities"
           }, {
             icon: "💰",
+            route: "taxes",
             label: "STATE TAX INTEL",
             desc: "Retired pay taxation by state"
           }, {
             icon: "📅",
+            route: "timeline",
             label: "SMART TIMELINE",
             desc: "Deadline alerts that save you money"
           }];
@@ -4729,14 +4735,25 @@ function App() {
           }, features.map(function (f, i) {
             return /*#__PURE__*/React.createElement("div", {
               key: i,
-              className: "onboard-feature-card"
+              className: "onboard-feature-card",
+              onClick: function() {
+                if (window.__trackEvent) window.__trackEvent("explore_tool_tapped", { tool: f.route || f.label });
+                if (f.route) {
+                  try { window.__safeSet("tops_onboarded", "explored"); } catch (e) {}
+                  setActiveTab(f.route);
+                  setShowOnboarding(false);
+                }
+              },
+              style: { cursor: "pointer" }
             }, /*#__PURE__*/React.createElement("div", {
               className: "onboard-feature-icon"
             }, f.icon), /*#__PURE__*/React.createElement("div", {
               className: "onboard-feature-label"
             }, f.label), /*#__PURE__*/React.createElement("div", {
               className: "onboard-feature-desc"
-            }, f.desc));
+            }, f.desc), /*#__PURE__*/React.createElement("div", {
+              style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 1.5, color: "#8BB83C", marginTop: 8 }
+            }, "TAP TO EXPLORE \u2192"));
           })), /*#__PURE__*/React.createElement("div", {
             className: "onboard-features-footer"
           }, /*#__PURE__*/React.createElement("div", {
