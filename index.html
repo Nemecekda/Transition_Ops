@@ -1186,6 +1186,7 @@ const CAREER_TARGETS = [
 // === TRADES ===
 {
   id: "electrician",
+  dib: ["MANUFACTURING"],
   label: "Electrician",
   category: "Skilled Trades",
   directMatch: ["maint", "comms"],
@@ -1283,6 +1284,7 @@ const CAREER_TARGETS = [
 // === TECHNOLOGY ===
 {
   id: "cybersecurity",
+  dib: ["CYBER SECURITY"],
   label: "Cybersecurity Analyst",
   category: "Technology",
   directMatch: ["comms", "intel"],
@@ -1351,6 +1353,7 @@ const CAREER_TARGETS = [
 // === HEALTHCARE ===
 {
   id: "nurse",
+  dib: ["HEALTH CARE"],
   label: "Registered Nurse (RN)",
   category: "Healthcare",
   directMatch: ["medical"],
@@ -1384,6 +1387,7 @@ const CAREER_TARGETS = [
   degreeNeeded: "Yes (ADN 2yr or BSN 4yr)"
 }, {
   id: "doctor",
+  dib: ["HEALTH CARE"],
   label: "Physician (MD/DO)",
   category: "Healthcare",
   directMatch: ["medical"],
@@ -1591,6 +1595,7 @@ const CAREER_TARGETS = [
   degreeNeeded: "Yes (Bachelor's)"
 }, {
   id: "welder",
+  dib: ["MANUFACTURING", "SHIPBUILDING"],
   label: "Welder / Fabricator",
   category: "Skilled Trades",
   directMatch: ["maint"],
@@ -1856,6 +1861,7 @@ const CAREER_TARGETS = [
 },
 {
   id: "software_developer",
+  dib: ["ENGINEERING"],
   label: "Software Developer / Engineer",
   category: "Technology",
   directMatch: ["comms"],
@@ -2057,6 +2063,7 @@ const CAREER_TARGETS = [
   degreeNeeded: "Bachelor's strongly preferred (sometimes waived for strong military/medical background)"
 }, {
   id: "cloud_engineer",
+  dib: ["CYBER SECURITY"],
   label: "Cloud Engineer / DevOps",
   category: "Technology",
   directMatch: ["comms"],
@@ -2123,6 +2130,7 @@ const CAREER_TARGETS = [
   degreeNeeded: "Bachelor's typically required for GS-11+"
 }, {
   id: "ap_mechanic",
+  dib: ["AVIATION MAINTENANCE"],
   label: "Aircraft Mechanic (A&P)",
   category: "Aviation / Trades",
   directMatch: ["maint"],
@@ -2389,12 +2397,14 @@ const SKILLBRIDGE_FEED = [{
   week: "8-14 JUN 2026",
   companies: [{
     name: "\u2B50 HII Newport News Shipbuilding (DIB PRIORITY)",
+    dib: ["SHIPBUILDING"],
     industry: "Shipbuilding / Defense",
     locations: "Newport News, VA",
     url: "https://careers.huntingtoningalls.com",
     highlight: true
   }, {
     name: "KBR Government Solutions",
+    dib: ["ENGINEERING"],
     industry: "Defense / Engineering Services",
     locations: "Multiple US",
     url: "https://careers.kbr.com",
@@ -2417,12 +2427,14 @@ const SKILLBRIDGE_FEED = [{
     highlight: true
   }, {
     name: "GE Aerospace",
+    dib: ["AVIATION MAINTENANCE", "ENGINEERING"],
     industry: "Aerospace & Defense",
     locations: "Multiple US",
     url: "https://careers.geaerospace.com/global/en/skillbridge",
     highlight: true
   }, {
     name: "Northrop Grumman",
+    dib: ["ENGINEERING", "KINETIC CAPABILITIES"],
     industry: "Defense / Technology",
     locations: "Multiple US",
     url: "https://www.northropgrumman.com/careers/dod-skillbridge",
@@ -2455,6 +2467,7 @@ const SKILLBRIDGE_FEED = [{
   week: "27 JAN - 2 FEB 2026",
   companies: [{
     name: "Microsoft MSSA",
+    dib: ["CYBER SECURITY"],
     industry: "Technology / Cybersecurity",
     locations: "Virtual + Select",
     url: "https://military.microsoft.com/mssa/",
@@ -2504,6 +2517,7 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
+const DIB_DIRECTIVE_URL = "https://media.defense.gov/2026/Jun/03/2003943800/-1/-1/1/ENHANCING-WORKFORCE-DEVELOPMENT-THROUGH-THE-DEPARTMENT-OF-WAR-PROJECT-PATRIOT-PIPELINE.PDF";
 const POLICY_CHANGES = [
   { date: "18 DEC 2025", title: "FY26 NDAA \u2014 TAP Overhaul + ILER Codified", sum: "In-person pre-sep counseling when possible, spouse TAP pilot at 5 installations, Guard/Reserve 3-year waiver. Toxic exposure records (ILER) now flow to VA with your claim.", src: "Congress.gov \u2014 S.1071", url: "https://www.congress.gov/bill/119th-congress/senate-bill/1071" },
   { date: "1 JAN 2026", title: "TRICARE 2026 \u2014 Copays Up, Travel Threshold Down", sum: "Retail brand-name $48/30-day; home delivery $44 brand, $85 non-formulary; military pharmacies stay $0. Prime travel benefit now triggers at 75 miles.", src: "TRICARE.mil \u2014 Changes", url: "https://www.tricare.mil/changes" },
@@ -5492,7 +5506,7 @@ function App() {
         SKILLBRIDGE_FEED[0].companies.slice(0, 3).map(function(c, i, arr) {
           return React.createElement("a", { key: i, href: c.url, target: "_blank", rel: "noopener noreferrer", style: { display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, padding: "11px 0", borderBottom: i < arr.length - 1 ? "1px solid #161B11" : "none", textDecoration: "none" } },
             React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: "#EDE7D4", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, c.name.replace("\u2B50 ", "").replace(" (DIB PRIORITY)", "").replace(" (PRIORITY PARTNER)", "")),
-            React.createElement("span", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "#9C9577", flexShrink: 0 } }, (c.industry || "").split(" / ")[0].toUpperCase())
+            React.createElement("span", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "#9C9577", flexShrink: 0 } }, c.dib ? React.createElement("span", { style: { color: "#8BB83C" } }, "DIB · ") : null, (c.industry || "").split(" / ")[0].toUpperCase())
           );
         }),
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: "#8BB83C", marginTop: 8, cursor: "pointer" }, onClick: function() { setActiveTab("resources"); } }, "FULL FEED \u2192")
@@ -6302,7 +6316,7 @@ function App() {
       fontSize: 14,
       color: C.textPrimary
     }
-  }, career.label), /*#__PURE__*/React.createElement("span", {
+  }, career.label, career.dib && React.createElement("span", { style: { fontSize: 8, background: "rgba(139,184,60,0.15)", color: "#8BB83C", padding: "2px 6px", borderRadius: 3, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginLeft: 6, whiteSpace: "nowrap" } }, "DIB")), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 10,
       fontFamily: "'Oswald', sans-serif",
@@ -6367,7 +6381,7 @@ function App() {
       fontSize: 14,
       color: C.textBody
     }
-  }, career.label), /*#__PURE__*/React.createElement("span", {
+  }, career.label, career.dib && React.createElement("span", { style: { fontSize: 8, background: "rgba(139,184,60,0.15)", color: "#8BB83C", padding: "2px 6px", borderRadius: 3, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginLeft: 6, whiteSpace: "nowrap" } }, "DIB")), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 10,
       fontFamily: "'Oswald', sans-serif",
@@ -6432,7 +6446,7 @@ function App() {
       fontSize: 14,
       color: C.textSecondary
     }
-  }, career.label), /*#__PURE__*/React.createElement("span", {
+  }, career.label, career.dib && React.createElement("span", { style: { fontSize: 8, background: "rgba(139,184,60,0.15)", color: "#8BB83C", padding: "2px 6px", borderRadius: 3, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginLeft: 6, whiteSpace: "nowrap" } }, "DIB")), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 10,
       fontFamily: "'Oswald', sans-serif",
@@ -6505,7 +6519,11 @@ function App() {
     if (!career) return null;
     const mosLabel = MOS_CATEGORIES.find(m => m.id === journeyMOS);
     const matchType = career.directMatch.includes(journeyMOS) ? "DIRECT MATCH" : career.relatedMatch.includes(journeyMOS) ? "RELATED SKILLS" : "CAREER PIVOT";
-    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+    return /*#__PURE__*/React.createElement("div", null, career.dib && /*#__PURE__*/React.createElement("div", { style: { background: "rgba(139,184,60,0.08)", borderLeft: "3px solid #8BB83C", borderRadius: 6, padding: "12px 14px", marginBottom: 12 } },
+      React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: "#8BB83C", marginBottom: 4 } }, "DIB-CRITICAL FIELD: " + career.dib.join(" \u00B7 ")),
+      React.createElement("div", { style: { fontSize: 12, color: "#c9c0a2", lineHeight: 1.55 } }, "Named in the 3 JUN 2026 SecWar directive. SkillBridge requests supporting the defense industrial base will be approved by the services \u2014 denied only for critical readiness impact. Targeting this field gives you the strongest approval case on record, and Patriot Pipeline incentives are being built for these exact skills."),
+      React.createElement("a", { href: DIB_DIRECTIVE_URL, target: "_blank", rel: "noopener noreferrer", style: { display: "inline-block", marginTop: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "#8BB83C", textDecoration: "none", letterSpacing: 1 } }, "READ THE DIRECTIVE \u2192")
+    ), /*#__PURE__*/React.createElement("button", {
       onClick: () => setJourneyTarget(""),
       style: {
         display: "flex",
@@ -6544,7 +6562,7 @@ function App() {
         fontWeight: 700,
         marginBottom: 4
       }
-    }, career.label), mosLabel && /*#__PURE__*/React.createElement("div", {
+    }, career.label, career.dib && React.createElement("span", { style: { fontSize: 9, background: "rgba(139,184,60,0.15)", color: "#8BB83C", padding: "2px 7px", borderRadius: 3, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginLeft: 8, verticalAlign: "middle", whiteSpace: "nowrap" } }, "DIB-CRITICAL")), mosLabel && /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: C.textSecondary
@@ -10993,6 +11011,10 @@ function App() {
           marginTop: 4
         }
       }, "Members approved before 31 MAR 2026 remain under previous policy. Coordinate with your unit Education & Training Office and Squadron CC before applying.")
+    ), React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.6, marginBottom: 10 } },
+      React.createElement("span", { style: { fontSize: 9, background: "rgba(139,184,60,0.15)", color: C.greenBright, padding: "1px 6px", borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginRight: 6 } }, "DIB-CRITICAL"),
+      "= defense industrial base employer per the 3 JUN 2026 SecWar directive \u2014 the services are directed to approve SkillBridge requests supporting these, denying only for readiness. ",
+      React.createElement("a", { href: DIB_DIRECTIVE_URL, target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "none" } }, "Read the directive \u2192")
     ), SKILLBRIDGE_FEED.map((week, wi) => /*#__PURE__*/React.createElement("div", {
     key: wi,
     style: {
@@ -11029,7 +11051,7 @@ function App() {
       color: C.textPrimary,
       fontWeight: 600
     }
-  }, co.name), co.highlight && /*#__PURE__*/React.createElement("span", {
+  }, co.name), co.dib && /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, background: "rgba(139,184,60,0.15)", color: C.greenBright, padding: "1px 6px", borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, "DIB-CRITICAL"), co.highlight && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 9,
       background: C.green,
