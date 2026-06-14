@@ -5536,6 +5536,14 @@ function App() {
       ),
 
       // QUICK LINKS
+      React.createElement("div", { onClick: function() { setActiveTab("resources"); setSubTab("directory"); setResourceFilter({ category: "ALL", cost: "ALL", eligibility: "spouse" }); }, style: { background: "linear-gradient(135deg, #161B11, #1C2315)", border: "1px solid #222A19", borderLeft: "3px solid #8BB83C", borderRadius: 12, padding: "14px 16px", marginBottom: 14, cursor: "pointer", display: "flex", alignItems: "center", gap: 13 } },
+        React.createElement("span", { style: { fontSize: 20, flexShrink: 0 } }, "\uD83D\uDC9C"),
+        React.createElement("div", { style: { minWidth: 0, flex: 1 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1, color: "#EDE7D4", fontWeight: 600 } }, "MILITARY SPOUSE RESOURCES"),
+          React.createElement("div", { style: { fontSize: 11, color: "#9C9577", marginTop: 2, lineHeight: 1.4 } }, "Career, education, and employment programs open to spouses \u2014 MyCAA, MSSA, ACP, and more. Patriot Pipeline names spouses too.")
+        ),
+        React.createElement("span", { style: { marginLeft: "auto", color: "#8BB83C", fontSize: 18, flexShrink: 0 } }, "\u203A")
+      ),
       React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginTop: 6, marginBottom: 8 } }, "QUICK ACCESS"),
       React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr", gap: 6 } },
         [{id:"vamath",icon:"\uD83E\uDDEE",label:"VA MATH"},{id:"vapay",icon:"\uD83D\uDCB5",label:"VA PAY"},{id:"finalpcs",icon:"\uD83D\uDCE6",label:"FINAL PCS"},{id:"vethub",icon:"\uD83C\uDF96\uFE0F",label:"VET HUB"},{id:"taxes",icon:"\uD83D\uDCB2",label:"TAX INTEL"},{id:"dd214",icon:"\uD83D\uDCDC",label:"DD214"}].map(function(q) {
