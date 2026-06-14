@@ -1220,6 +1220,7 @@ const CAREER_TARGETS = [
   degreeNeeded: "No"
 }, {
   id: "hvac",
+  dib: ["MANUFACTURING"],
   label: "HVAC Technician",
   category: "Skilled Trades",
   directMatch: ["maint"],
@@ -1318,6 +1319,7 @@ const CAREER_TARGETS = [
   degreeNeeded: "No (helps for advancement)"
 }, {
   id: "it_support",
+  dib: ["CYBER SECURITY"],
   label: "IT Support / Help Desk → Sysadmin",
   category: "Technology",
   directMatch: ["comms"],
@@ -1997,6 +1999,7 @@ const CAREER_TARGETS = [
 },
 {
   id: "healthcare_admin",
+  dib: ["HEALTH CARE"],
   label: "Healthcare Administrator / Manager",
   category: "Healthcare",
   directMatch: ["medical", "admin"],
@@ -6281,7 +6284,13 @@ function App() {
     }
   }, cat.codes)))), journeyMOS && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
-  }, "STEP 2: WHERE DO YOU WANT TO GO?"), CAREER_TARGETS.filter(c => c.directMatch.includes(journeyMOS)).length > 0 && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, "STEP 2: WHERE DO YOU WANT TO GO?"), CAREER_TARGETS.filter(c => c.dib && (c.directMatch.includes(journeyMOS) || c.relatedMatch.includes(journeyMOS))).length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: { background: "rgba(139,184,60,0.08)", borderLeft: "3px solid #8BB83C", borderRadius: 6, padding: "10px 12px", marginBottom: 12, marginTop: 2 }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: { fontSize: 9, background: "rgba(139,184,60,0.15)", color: C.greenBright, padding: "2px 6px", borderRadius: 3, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginRight: 7 }
+  }, "DIB-CRITICAL"), /*#__PURE__*/React.createElement("span", {
+    style: { fontSize: 11, color: C.textBody, lineHeight: 1.5 }
+  }, "= named in the 3 JUN 2026 SecWar directive. For these fields the services are directed to approve your SkillBridge request \u2014 your strongest approval case on record.")), CAREER_TARGETS.filter(c => c.directMatch.includes(journeyMOS)).length > 0 && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 11,
