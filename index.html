@@ -12188,6 +12188,9 @@ function App() {
   activeTab === "critical" && /*#__PURE__*/React.createElement("div", null, (function() {
     var daysOut = daysToETSDate(separationDate);
     var windows = filterCriticalWindows(userStatus);
+    var pushNudge = (separationDate && notifStatus !== "granted") ? /*#__PURE__*/React.createElement("div", {
+      style: { background: "rgba(240,196,25,0.08)", border: "1px solid #222A19", borderLeft: "3px solid #F0C419", borderRadius: 10, padding: "13px 15px", marginBottom: 14, display: "flex", alignItems: "center", gap: 12 }
+    }, /*#__PURE__*/React.createElement("div", { style: { minWidth: 0, flex: 1 } }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.textPrimary, fontWeight: 600, letterSpacing: 0.5 } }, "DON'T MISS THESE WINDOWS"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.textBody, lineHeight: 1.5, marginTop: 3 } }, "Get a reminder before each window closes \u2014 timed to your date. Some can't be reopened once they pass.")), /*#__PURE__*/React.createElement("button", { onClick: handleEnableNotifs, style: { flexShrink: 0, background: "#F0C419", color: "#0E120B", border: "none", borderRadius: 8, padding: "10px 14px", fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: "pointer" } }, "REMIND ME")) : null;
     var visible = criticalFilter === "ALL" ? windows.concat([SCRA_WINDOW]) : windows.filter(function(w) {
       var s = getCriticalWindowStatus(w, daysOut, C);
       if (criticalFilter === "OPEN") return s.state === "open" || s.state === "open_early" || s.state === "closing" || s.state === "closing_critical";
@@ -12212,7 +12215,7 @@ function App() {
       );
     }
 
-    return React.createElement("div", null,
+    return React.createElement("div", null, pushNudge,
       React.createElement("div", {style:{background:"linear-gradient(180deg," + C.border + " 0%, " + C.gradStart + " 100%)", border:"1px solid " + C.gold, borderRadius:8, padding:"14px 16px", marginBottom:14}},
         React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:3, color:C.gold, marginBottom:4}}, "MISSION-CRITICAL WINDOWS"),
         React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:700, color:C.textPrimary, letterSpacing:2, marginBottom:6}}, "CRITICAL WINDOWS"),
