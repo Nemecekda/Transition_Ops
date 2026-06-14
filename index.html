@@ -2520,6 +2520,16 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
+const APP_VERSION = "v60";
+const WHATS_NEW = [
+  { v: "v60", date: "14 JUN 2026", note: "Added this What's New panel so you can see what changed each update." },
+  { v: "v59", date: "14 JUN 2026", note: "New Military Spouse Resources shortcut on the home screen \u2014 jumps straight to career, education, and employment programs open to spouses." },
+  { v: "v58", date: "14 JUN 2026", note: "Patriot Pipeline policy entry now notes that the SecWar directive names military spouses, not just service members." },
+  { v: "v57", date: "14 JUN 2026", note: "Expanded DIB-Critical career tagging (HVAC, healthcare admin, IT support) and added a plain-language explainer on the career screen." },
+  { v: "v56", date: "13 JUN 2026", note: "DIB-Critical tags across careers and the SkillBridge feed, linked to the 3 JUN 2026 SecWar directive \u2014 your strongest SkillBridge approval case." },
+  { v: "v55", date: "12 JUN 2026", note: "Policy Changes panel now links every tracked change to its primary source (Congress.gov, VA.gov, TRICARE.mil, the signed memo)." },
+  { v: "v54", date: "12 JUN 2026", note: "Home screen rebuilt as a command console: mission clock, next action, reminders due, policy changes, and live SkillBridge intel." }
+];
 const DIB_DIRECTIVE_URL = "https://media.defense.gov/2026/Jun/03/2003943800/-1/-1/1/ENHANCING-WORKFORCE-DEVELOPMENT-THROUGH-THE-DEPARTMENT-OF-WAR-PROJECT-PATRIOT-PIPELINE.PDF";
 const POLICY_CHANGES = [
   { date: "18 DEC 2025", title: "FY26 NDAA \u2014 TAP Overhaul + ILER Codified", sum: "In-person pre-sep counseling when possible, spouse TAP pilot at 5 installations, Guard/Reserve 3-year waiver. Toxic exposure records (ILER) now flow to VA with your claim.", src: "Congress.gov \u2014 S.1071", url: "https://www.congress.gov/bill/119th-congress/senate-bill/1071" },
@@ -3967,6 +3977,8 @@ function App() {
   const [sitrepDismissed, setSitrepDismissed] = useState(function() { try { return localStorage.getItem("tops_sitrep_jun2026") === "1"; } catch (e) { return false; } });
   const [searchQ, setSearchQ] = useState("");
   const [policyPanelOpen, setPolicyPanelOpen] = useState(false);
+  const [whatsNewOpen, setWhatsNewOpen] = useState(false);
+  const [whatsNewUnseen, setWhatsNewUnseen] = useState(function() { try { return window.__safeGet("tops_whatsnew_seen") !== APP_VERSION; } catch (e) { return false; } });
   const [userStatus, setUserStatus] = useState(function() { try { return window.__safeGet("tops_user_status") || ""; } catch(e) { return ""; } });
   // Onboarding state
   const [showOnboarding, setShowOnboarding] = useState(function() { try { return !window.__safeGet("tops_onboarded"); } catch(e) { return true; } });
@@ -5187,7 +5199,24 @@ function App() {
   },
 
   // ═══════════ DASHBOARD TAB ═══════════
-  activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, policyPanelOpen && React.createElement("div", { onClick: function() { setPolicyPanelOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
+  activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, whatsNewOpen && React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
+    React.createElement("div", { onClick: function(e) { e.stopPropagation(); }, style: { background: "#161B11", borderRadius: 16, width: "100%", maxWidth: 520, maxHeight: "82vh", overflowY: "auto", padding: "18px 18px 14px" } },
+      React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } },
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: "#9C9577" } }, "WHAT'S NEW \u2014 TRANSITION OPS"),
+        React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { color: "#6A6650", fontSize: 16, cursor: "pointer", padding: 4 } }, "\u2715")
+      ),
+      WHATS_NEW.map(function(item, i) {
+        return React.createElement("div", { key: i, style: { padding: "12px 0", borderBottom: i < WHATS_NEW.length - 1 ? "1px solid #222A19" : "none" } },
+          React.createElement("div", { style: { display: "flex", alignItems: "baseline", gap: 8 } },
+            React.createElement("span", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#8BB83C", flexShrink: 0 } }, item.v),
+            React.createElement("span", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "#6A6650" } }, item.date)
+          ),
+          React.createElement("div", { style: { fontSize: 12.5, color: "#c9c0a2", lineHeight: 1.55, marginTop: 4 } }, item.note)
+        );
+      }),
+      React.createElement("div", { style: { fontFamily: "'Courier Prime', monospace", fontSize: 10, color: "#6A6650", letterSpacing: 1, marginTop: 12, textAlign: "center" } }, "FREE \u00B7 NO ADS \u00B7 BUILT BY A VETERAN")
+    )
+  ), policyPanelOpen && React.createElement("div", { onClick: function() { setPolicyPanelOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
     React.createElement("div", { onClick: function(e) { e.stopPropagation(); }, style: { background: "#161B11", borderRadius: 16, width: "100%", maxWidth: 560, maxHeight: "82vh", overflowY: "auto", padding: "18px 18px 14px" } },
       React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: "#9C9577" } }, "2026 POLICY CHANGES \u2014 TRACKED & SOURCED"),
@@ -5543,6 +5572,14 @@ function App() {
           React.createElement("div", { style: { fontSize: 11, color: "#9C9577", marginTop: 2, lineHeight: 1.4 } }, "Career, education, and employment programs open to spouses \u2014 MyCAA, MSSA, ACP, and more. Patriot Pipeline names spouses too.")
         ),
         React.createElement("span", { style: { marginLeft: "auto", color: "#8BB83C", fontSize: 18, flexShrink: 0 } }, "\u203A")
+      ),
+      React.createElement("div", { onClick: function() { setWhatsNewOpen(true); setWhatsNewUnseen(false); try { window.__safeSet("tops_whatsnew_seen", APP_VERSION); } catch (e) {} }, style: { background: "#161B11", border: "1px solid #222A19", borderRadius: 12, padding: "12px 16px", marginBottom: 14, cursor: "pointer", display: "flex", alignItems: "center", gap: 11 } },
+        React.createElement("span", { style: { fontSize: 15, flexShrink: 0 } }, "\u2728"),
+        React.createElement("div", { style: { minWidth: 0, flex: 1 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1, color: "#EDE7D4", fontWeight: 600 } }, "WHAT'S NEW", whatsNewUnseen && React.createElement("span", { style: { display: "inline-block", width: 7, height: 7, borderRadius: "50%", background: "#8BB83C", marginLeft: 7, verticalAlign: "middle" } })),
+          React.createElement("div", { style: { fontSize: 11, color: "#9C9577", marginTop: 1 } }, WHATS_NEW[0] ? WHATS_NEW[0].note.slice(0, 60) + (WHATS_NEW[0].note.length > 60 ? "\u2026" : "") : "")
+        ),
+        React.createElement("span", { style: { marginLeft: "auto", color: "#9C9577", fontSize: 17, flexShrink: 0 } }, "\u203A")
       ),
       React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginTop: 6, marginBottom: 8 } }, "QUICK ACCESS"),
       React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr", gap: 6 } },
