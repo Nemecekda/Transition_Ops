@@ -1,1 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VA Disability Calculator 2026 — Combined Ratings Math</title>
+<meta name="description" content="Free 2026 VA disability calculator. See why 50% + 30% isn't 80%, how the VA rounds combined ratings, and estimate your monthly pay.">
+<link rel="canonical" href="https://transitionops.org/va-math/">
+<meta name="robots" content="index, follow">
 
+<!-- Open Graph -->
+<meta property="og:title" content="VA Disability Calculator 2026 — Combined Ratings Math Explained">
+<meta property="og:description" content="Why 50% + 30% doesn't equal 80%. A plain-English guide to VA combined ratings math, with a free calculator and 2026 compensation estimates.">
+<meta property="og:url" content="https://transitionops.org/va-math/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Transition OPS">
+
+<!-- Schema: FAQ + Breadcrumb -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why doesn't 50% plus 30% equal 80% in VA disability math?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The VA uses combined ratings math, not simple addition. Each disability rating is applied to the remaining healthy percentage of the body, not added directly. So a 50% rating leaves 50% healthy, and a 30% rating is then applied to that remaining 50% (giving 15%), for a combined 65% before rounding."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the VA round combined disability ratings?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "After calculating the combined value, the VA rounds to the nearest 10 percent. A combined value of 65 rounds to 70 percent; a combined value of 64 rounds to 60 percent."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the VA disability calculator on Transition OPS free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Transition OPS is a free app built by a veteran, with no ads, no login, and no paywall. The VA Math calculator and pay estimator are part of the free toolkit."
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+  :root{--canvas:#0E120B;--surface:#161B11;--ink:#EDE7D4;--dim:#9C9577;--gold:#F0C419;--ok:#8BB83C}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--canvas);color:var(--ink);font-family:-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.65;padding:0 0 60px}
+  .wrap{max-width:760px;margin:0 auto;padding:0 22px}
+  header{padding:34px 0 10px;border-bottom:1px solid var(--surface);margin-bottom:32px}
+  .eyebrow{font-size:11px;letter-spacing:3px;color:var(--dim);text-transform:uppercase}
+  h1{font-size:33px;line-height:1.2;margin:8px 0 14px;letter-spacing:-0.5px}
+  h2{font-size:23px;margin:34px 0 12px;color:var(--ink)}
+  h3{font-size:17px;margin:22px 0 8px;color:var(--ok)}
+  p{margin-bottom:14px;color:#d8d0bb}
+  .lead{font-size:18px;color:var(--ink)}
+  .box{background:var(--surface);border-radius:12px;padding:20px 22px;margin:22px 0;border-left:3px solid var(--gold)}
+  .ex{background:var(--surface);border-radius:10px;padding:16px 18px;margin:14px 0;font-family:'JetBrains Mono',monospace;font-size:14px;color:#d8d0bb}
+  .ex b{color:var(--gold)}
+  .cta{display:inline-block;background:var(--gold);color:#0E120B;font-weight:700;text-decoration:none;padding:14px 26px;border-radius:10px;margin:10px 0;font-size:16px}
+  .cta-wrap{text-align:center;margin:36px 0}
+  a{color:var(--ok)}
+  ul{margin:0 0 14px 22px}li{margin-bottom:7px;color:#d8d0bb}
+  footer{margin-top:48px;padding-top:22px;border-top:1px solid var(--surface);font-size:13px;color:var(--dim)}
+  .step{display:flex;gap:12px;margin-bottom:10px}.step b{color:var(--gold);flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Transition OPS — Free Veteran Toolkit</div>
+  <h1>VA Disability Calculator 2026: How Combined Ratings Math Actually Works</h1>
+  <p class="lead">If you have two or more disability ratings, the VA doesn't just add them together. Here's the plain-English math, why 50% + 30% isn't 80%, and a free calculator to estimate your real combined rating.</p>
+</header>
+
+<p>Every year, thousands of veterans look at their VA disability ratings and assume the math is simple addition. It isn't — and the difference can be worth hundreds of dollars a month in compensation. This guide walks through exactly how the VA calculates combined ratings, with worked examples, so you can check your own numbers.</p>
+
+<div class="cta-wrap">
+  <a class="cta" href="https://transitionops.org/?tool=vamath">Open the Free VA Math Calculator →</a>
+</div>
+
+<h2>Why 50% + 30% Doesn't Equal 80%</h2>
+<p>The VA uses what's called <strong>combined ratings math</strong>. Instead of adding percentages, each rating is applied to the portion of you the VA still considers healthy. The idea: you can never be more than 100% disabled, so each new rating takes a bite out of what's left, not the whole.</p>
+
+<div class="ex">
+Start: <b>100%</b> healthy<br>
+Apply 50% rating → 50% of 100 = 50 used. <b>50%</b> healthy remains.<br>
+Apply 30% rating → 30% of 50 = 15 used. <b>35%</b> healthy remains.<br>
+Total used: 50 + 15 = <b>65</b> → rounds to <b>70%</b>
+</div>
+
+<p>So a veteran with a 50% and a 30% rating ends up at <strong>70% combined</strong>, not 80%. That rounding step matters too — the VA rounds the combined value to the nearest 10%.</p>
+
+<h2>The 4 Steps of VA Combined Ratings Math</h2>
+<div class="step"><b>1.</b><span>Order your ratings from highest to lowest.</span></div>
+<div class="step"><b>2.</b><span>Start with the highest rating. Subtract it from 100 to find your "remaining healthy" percentage.</span></div>
+<div class="step"><b>3.</b><span>Apply the next rating to that remaining percentage, and add the result to your running total. Repeat for each rating.</span></div>
+<div class="step"><b>4.</b><span>Round the final combined value to the nearest 10%.</span></div>
+
+<div class="box">
+<h3 style="margin-top:0">Worked Example: Three Ratings (40%, 30%, 20%)</h3>
+<div class="ex" style="background:var(--canvas)">
+Highest first: 40, 30, 20<br>
+100 − 40 = 60 healthy. Total used: <b>40</b><br>
+30% of 60 = 18. Total used: 40 + 18 = <b>58</b>. (42 healthy)<br>
+20% of 42 = 8.4. Total used: 58 + 8.4 = <b>66.4</b><br>
+Round 66.4 → <b>70% combined</b>
+</div>
+<p style="margin-bottom:0">Three ratings that "add up" to 90% on paper combine to a 70% rating in reality. This is exactly why a calculator helps.</p>
+</div>
+
+<h2>What Your Combined Rating Is Worth in 2026</h2>
+<p>Your combined rating determines your monthly tax-free compensation, which also varies by your number of dependents. Because these dollar figures are set by the VA and updated annually, the most reliable way to see your current estimate is to run your specific ratings and dependent situation through a calculator built on the latest published rates.</p>
+<p>The Transition OPS VA Math tool does both jobs: it combines your ratings correctly <em>and</em> estimates your monthly payment using current-year figures, so you're not doing the rounding by hand or guessing at the dollar amount.</p>
+
+<div class="cta-wrap">
+  <a class="cta" href="https://transitionops.org/?tool=vamath">Calculate My Combined Rating →</a>
+</div>
+
+<h2>Common Questions</h2>
+<h3>Does the order of my ratings change the result?</h3>
+<p>No — the final combined value is the same regardless of order. But working highest-to-lowest is the standard method and makes the running math easier to follow.</p>
+
+<h3>What is the "bilateral factor"?</h3>
+<p>If you have disabilities affecting both arms, both legs, or paired skeletal muscles, the VA adds an extra factor before combining. It's an additional step beyond basic combined math — a full calculator accounts for it so you don't undercount.</p>
+
+<h3>Where does this leave me for benefits?</h3>
+<p>Your combined rating affects compensation, healthcare priority, and eligibility for programs across your transition. Tracking it alongside your other deadlines — BDD claim windows, separation health assessment, TRICARE transition — is exactly what Transition OPS is built to do.</p>
+
+<div class="box">
+<h3 style="margin-top:0">About Transition OPS</h3>
+<p style="margin-bottom:0">Transition OPS is a free progressive web app for transitioning service members, veterans, and Guard/Reserve members across all branches. It covers VA math and pay estimation, SkillBridge employer intel, benefits deadlines timed to your separation date, state tax intelligence, and policy alerts verified against primary sources. No ads, no login, no paywall — built by a veteran.</p>
+</div>
+
+<div class="cta-wrap">
+  <a class="cta" href="https://transitionops.org/">Explore the Full Free Toolkit →</a>
+</div>
+
+<footer>
+  <p>Transition OPS is an independent resource and is not affiliated with the U.S. Department of Veterans Affairs or Department of Defense. Compensation figures change annually; always verify your specific situation against official VA sources. This page is educational and does not constitute benefits advice.</p>
+  <p style="margin-top:10px"><a href="https://transitionops.org/">transitionops.org</a> — Free Military Transition Toolkit</p>
+</footer>
+</div>
+</body>
+</html>
