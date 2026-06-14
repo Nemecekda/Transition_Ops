@@ -4535,12 +4535,14 @@ function App() {
   }, []);
   const handleEnableNotifs = useCallback(() => {
     // Step 1: Confirm button works
+    if (window.__trackEvent) window.__trackEvent('notif_enable_tapped', {});
     showToast("Requesting notification permission...");
 
     // Step 2: Check iOS standalone
     var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     var isStandalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
     if (isIOS && !isStandalone) {
+      if (window.__trackEvent) window.__trackEvent('notif_blocked_ios_install', {});
       setTimeout(function () {
         showToast("INSTALL APP FIRST — Add to Home Screen, then enable alerts.");
       }, 500);
@@ -4551,6 +4553,7 @@ function App() {
     if ("Notification" in window) {
       Notification.requestPermission().then(function (perm) {
         setNotifStatus(perm);
+        if (window.__trackEvent) window.__trackEvent('notif_permission_result', { result: perm });
         if (perm === "granted") {
           showToast("ALERTS ENABLED — You will receive transition reminders.");
         } else if (perm === "denied") {
