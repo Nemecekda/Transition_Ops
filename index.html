@@ -5784,7 +5784,7 @@ function App() {
         color: C.textPrimary,
         fontWeight: 700
       }
-    }, "\"Add to Home Screen\"")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    }, "\"Add to Home Screen\""), /*#__PURE__*/React.createElement("span", { style: { color: C.warning, fontWeight: 700 } }, " (NOT \u201cAdd Bookmark\u201d \u2014 a bookmark can\u2019t send alerts)")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
       style: {
         color: C.gold,
         fontWeight: 700
@@ -5833,7 +5833,7 @@ function App() {
         color: C.textPrimary,
         fontWeight: 700
       }
-    }, "\"Add to Home Screen\"")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    }, "\"Add to Home Screen\""), /*#__PURE__*/React.createElement("span", { style: { color: C.warning, fontWeight: 700 } }, " (NOT \u201cAdd Bookmark\u201d \u2014 a bookmark can\u2019t send alerts)")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
       style: {
         color: C.gold,
         fontWeight: 700
@@ -6751,7 +6751,7 @@ function App() {
         borderRadius: 4,
         borderLeft: "3px solid " + C.green
       }
-    }, career.whatYouHave)), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    }, career.whatYouHave)), /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 16, marginTop: 12, borderLeft: "3px solid " + C.greenBright } }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 2, color: C.greenBright, marginBottom: 4 } }, "\uD83D\uDCDD RESUME STARTER \u2014 " + career.label.toUpperCase()), /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, color: C.textBody, lineHeight: 1.55, marginBottom: 10 } }, "Civilian-framed bullets built from your military experience. Copy, then tailor with your own numbers and results."), /*#__PURE__*/React.createElement("div", { style: { background: C.bg, borderRadius: 6, padding: "12px 14px", fontSize: 12.5, color: C.textPrimary, lineHeight: 1.7, fontFamily: "'Source Sans 3', sans-serif", whiteSpace: "pre-wrap" } }, (function() { var skills = (career.whatYouHave || "").replace(/\.$/, "").split(/,\s*/).filter(Boolean); var verbs = ["Applied", "Leveraged", "Demonstrated", "Utilized", "Maintained", "Executed"]; var bullets = skills.slice(0, 5).map(function(sk, i) { var s = sk.trim(); s = s.charAt(0).toLowerCase() + s.slice(1); return "\u2022 " + verbs[i % verbs.length] + " " + s + " in support of " + career.label.toLowerCase() + " responsibilities."; }); return "TARGET ROLE: " + career.label + "\n\n" + bullets.join("\n") + "\n\n\u2022 [Add a bullet with a specific accomplishment + number: \u201cReduced X by Y%\u201d or \u201cManaged $Z in equipment.\u201d]"; })()), /*#__PURE__*/React.createElement("button", { onClick: function() { var skills = (career.whatYouHave || "").replace(/\.$/, "").split(/,\s*/).filter(Boolean); var verbs = ["Applied", "Leveraged", "Demonstrated", "Utilized", "Maintained", "Executed"]; var bullets = skills.slice(0, 5).map(function(sk, i) { var s = sk.trim(); s = s.charAt(0).toLowerCase() + s.slice(1); return "\u2022 " + verbs[i % verbs.length] + " " + s + " in support of " + career.label.toLowerCase() + " responsibilities."; }); var text = "TARGET ROLE: " + career.label + "\n\n" + bullets.join("\n"); if (navigator.clipboard) { navigator.clipboard.writeText(text).then(function() { showToast("BULLETS COPIED \u2014 paste and tailor with your numbers."); }); } if (window.__trackEvent) window.__trackEvent("resume_bullets_copied", { career: career.id }); }, style: { marginTop: 10, background: C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "10px 16px", fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: "pointer" } }, "COPY BULLETS")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
         fontFamily: "'Oswald', sans-serif",
         fontSize: 11,
