@@ -15,14 +15,16 @@
     </image:image>
   </url>
 
-  <!-- FUTURE LANDING PAGES (uncomment as you build them) ──── -->
-  <!--
+  <!-- SEO landing pages (live) ─────────────────────────────── -->
   <url>
     <loc>https://transitionops.org/va-math/</loc>
-    <lastmod>2026-04-18</lastmod>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
+
+  <!-- FUTURE LANDING PAGES (uncomment as you build them) ──── -->
+  <!--
   <url>
     <loc>https://transitionops.org/va-disability-calculator/</loc>
     <lastmod>2026-04-18</lastmod>
