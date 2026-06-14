@@ -3977,7 +3977,14 @@ function App() {
       marginBottom: 12
     }
   };
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState(function() {
+    try {
+      var validTabs = ["dashboard","vamath","vapay","pathway","resources","taxes","timeline","critical","reminders","readiness","vethub","dd214","finalpcs"];
+      var t = new URLSearchParams(window.location.search).get("tool");
+      if (t && validTabs.indexOf(t) !== -1) return t;
+    } catch (e) {}
+    return "dashboard";
+  });
   const [sitrepDismissed, setSitrepDismissed] = useState(function() { try { return localStorage.getItem("tops_sitrep_jun2026") === "1"; } catch (e) { return false; } });
   const [searchQ, setSearchQ] = useState("");
   const [policyPanelOpen, setPolicyPanelOpen] = useState(false);
@@ -3985,7 +3992,14 @@ function App() {
   const [whatsNewUnseen, setWhatsNewUnseen] = useState(function() { try { return window.__safeGet("tops_whatsnew_seen") !== APP_VERSION; } catch (e) { return false; } });
   const [userStatus, setUserStatus] = useState(function() { try { return window.__safeGet("tops_user_status") || ""; } catch(e) { return ""; } });
   // Onboarding state
-  const [showOnboarding, setShowOnboarding] = useState(function() { try { return !window.__safeGet("tops_onboarded"); } catch(e) { return true; } });
+  const [showOnboarding, setShowOnboarding] = useState(function() {
+    try {
+      var validTabs = ["dashboard","vamath","vapay","pathway","resources","taxes","timeline","critical","reminders","readiness","vethub","dd214","finalpcs"];
+      var t = new URLSearchParams(window.location.search).get("tool");
+      if (t && validTabs.indexOf(t) !== -1) return false;
+      return !window.__safeGet("tops_onboarded");
+    } catch(e) { return true; }
+  });
   const [onboardStep, setOnboardStep] = useState(0);
   const [onboardData, setOnboardData] = useState({ status: "", branch: "", etsDate: "", concern: "" });
   const [mosBranch, setMosBranch] = useState("");
@@ -4027,6 +4041,13 @@ function App() {
   // Fires custom events to Google Analytics 4 for tab navigation,
   // calculator completions, and key conversions. Respects iframe guard
   // (window.__trackEvent is only defined when not embedded).
+  useEffect(function() {
+    try {
+      var t = new URLSearchParams(window.location.search).get("tool");
+      if (t && window.__trackEvent) window.__trackEvent("deeplink_tool_arrival", { tool: t });
+    } catch (e) {}
+  }, []);
+
   useEffect(function() {
     if (window.__trackEvent) {
       window.__trackEvent('tab_view', {
