@@ -502,7 +502,7 @@ const TRANSITION_MILESTONES = [{
     done: false
   }, {
     id: "t1b",
-    text: "START documenting ALL medical conditions NOW \u2014 VA graders may not rate conditions on record less than 1 year",
+    text: "START documenting ALL medical conditions NOW \u2014 a longer treatment history makes conditions far easier for VA to rate",
     done: false
   }, {
     id: "t1c",
@@ -510,7 +510,7 @@ const TRANSITION_MILESTONES = [{
     done: false
   }, {
     id: "t1d",
-    text: "Research VR&E (Chapter 31) \u2014 extra education benefits at 30%+ disability rating. MUST use BEFORE GI Bill or you lose it",
+    text: "Research VR&E (Chapter 31) \u2014 vocational rehab benefits at 10%+ disability rating (priority at 20%+). It interacts with your GI Bill and the choice matters \u2014 understand both before you elect. Ask a VSO",
     done: false
   }, {
     id: "t3",
@@ -529,7 +529,7 @@ const TRANSITION_MILESTONES = [{
     text: "Get professional headshot \u2014 Portraits for Patriots offers FREE headshots for military (see Resources \u2192 TAP+)",
     done: false
   }],
-  reminder: "MEDICAL IS YOUR #1 PRIORITY. VA graders may not rate conditions documented for less than 1 year. Appointments take months. Specialist referrals add more time. Start NOW or you risk running out the clock before BDD at 180 days. Also: research VR&E (Ch. 31) \u2014 if you qualify (30%+ disability), you MUST use it BEFORE GI Bill or you lose it."
+  reminder: "MEDICAL IS YOUR #1 PRIORITY. Conditions with a longer treatment history are far easier for VA to rate \u2014 start documenting every issue now. Appointments take months. Specialist referrals add more time. Start NOW or you risk running out the clock before BDD at 180 days. Also: research VR&E (Ch. 31) \u2014 if you qualify, understand how it interacts with your GI Bill before you choose, because the election affects both."
 }, {
   id: 2,
   phase: "12 Months Out",
@@ -546,7 +546,7 @@ const TRANSITION_MILESTONES = [{
     done: false
   }, {
     id: "t7b",
-    text: "If eligible: apply for VR&E (Chapter 31) NOW — 30%+ disability rating. MUST use BEFORE GI Bill or you lose it",
+    text: "If eligible: apply for VR&E (Chapter 31) NOW \u2014 vocational rehab for service-connected veterans. Understand how it interacts with your GI Bill before you elect \u2014 the choice matters",
     done: false
   }, {
     id: "t8",
@@ -565,7 +565,7 @@ const TRANSITION_MILESTONES = [{
     text: "Verify SGLI to VGLI conversion timeline",
     done: false
   }],
-  reminder: "BDD opens at 180 days. Medical conditions need treatment history BEFORE you file. Some VA graders won't rate conditions on record less than 1 year. VR&E (Ch. 31) MUST be used BEFORE GI Bill — don't burn GI Bill months if you qualify for VR&E."
+  reminder: "BDD opens at 180 days. Medical conditions need treatment history BEFORE you file. The longer your documented treatment history, the easier conditions are to rate \u2014 document early. VR&E (Ch. 31) Consider VR&E before spending GI Bill months if you qualify \u2014 the two interact and the election matters. Ask a VSO which fits your plan."
 }, {
   id: 3,
   phase: "9 Months Out",
@@ -808,13 +808,13 @@ const NOTIFICATIONS = [{
   id: "n1b",
   monthsOut: 18,
   title: "CRITICAL: Start Medical Documentation NOW",
-  body: "VA graders may not rate conditions on record less than 1 year. Specialist referrals take 1-2 months. Start every appointment NOW or you run out of time before BDD.",
+  body: "Conditions with a longer documented history are easier to rate. Specialist referrals take 1-2 months. Start every appointment NOW or you run out of time before BDD.",
   priority: "CRITICAL"
 }, {
   id: "n1c",
   monthsOut: 18,
   title: "INTEL: Research VR&E (Chapter 31)",
-  body: "If 30%+ disability rating, VR&E gives extra education benefits. You MUST use VR&E BEFORE GI Bill or you lose it. Research now, apply at 12 months.",
+  body: "If service-connected, VR&E (Ch. 31) offers vocational rehab and education support. It interacts with your GI Bill \u2014 understand the election before you choose. Research now, apply early.",
   priority: "HIGH"
 }, {
   id: "n1d",
@@ -2520,8 +2520,9 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v64";
+const APP_VERSION = "v65";
 const WHATS_NEW = [
+  { v: "v65", date: "9 JUL 2026", note: "Added a clear independence notice (this is an independent veteran-built tool, not a government service), and tightened benefit accuracy on VR\u0026E and medical-documentation guidance." },
   { v: "v64", date: "14 JUN 2026", note: "New Resume Starter on every career screen \u2014 turns your military experience into civilian-framed resume bullets you can copy. Plus a clearer install guide." },
   { v: "v63", date: "14 JUN 2026", note: "Behind-the-scenes: added analytics so we can see which deadline alerts help most and improve them." },
   { v: "v62", date: "14 JUN 2026", note: "On the Critical Windows screen you can now turn on reminders for the exact deadlines you're viewing \u2014 timed to your separation date." },
@@ -3888,6 +3889,10 @@ function AboutModal(props) {
   }, "DISTRIBUTION"), /*#__PURE__*/React.createElement("p", {
     style: bodyText
   }, "Currently in distribution through Wisconsin National Guard transition staff, local Military and Family Readiness Centers (MFRCs), and a growing network of County Veteran Service Officers (CVSOs) across the Upper Midwest. Featured in the Wisconsin J9 Family Readiness Newsletter."), /*#__PURE__*/React.createElement("div", {
+    style: sectionLabel
+  }, "INDEPENDENCE"), /*#__PURE__*/React.createElement("p", {
+    style: bodyText
+  }, "Transition OPS is an independent tool built by a veteran. It is ", /*#__PURE__*/React.createElement("strong", { style: { color: C.goldBright } }, "not affiliated with, endorsed by, or an official service of"), " the U.S. Department of Veterans Affairs, the Department of Defense, or any government agency. Every figure, deadline, and benefit is an estimate or summary to help you plan \u2014 always verify your specific situation with a VSO (DAV, VFW, American Legion), your transition counselor, or official sources before making irrevocable decisions."), /*#__PURE__*/React.createElement("div", {
     style: sectionLabel
   }, "GET INVOLVED"), /*#__PURE__*/React.createElement("p", {
     style: bodyText
@@ -5720,7 +5725,12 @@ function App() {
       flexShrink: 0,
       marginLeft: 10
     }
-  }, "\u2192")), renderEmailSignup("hero"), (() => {
+  }, "\u2192")), /*#__PURE__*/React.createElement("div", {
+    onClick: function() { setAboutOpen(true); },
+    style: { marginTop: 14, marginBottom: 4, padding: "11px 14px", background: "rgba(20,25,15,0.5)", border: "1px solid #222A19", borderRadius: 8, cursor: "pointer" }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 10.5, color: "#8A8468", lineHeight: 1.6 }
+  }, /*#__PURE__*/React.createElement("strong", { style: { color: "#9C9577" } }, "Independent tool, not a government service."), " Not affiliated with or endorsed by the VA or DoD. Figures are estimates to help you plan \u2014 verify with a VSO or official sources before any irrevocable decision. ", /*#__PURE__*/React.createElement("span", { style: { color: C.gold } }, "Tap for details \u203A"))), renderEmailSignup("hero"), (() => {
     const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const isAndroid = /Android/.test(navigator.userAgent);
@@ -7449,7 +7459,7 @@ function App() {
     }
   }, [{
     name: "VR&E (Chapter 31) — USE FIRST",
-    desc: "30%+ disability rating. Covers tuition, supplies, tools, monthly stipend. MUST use BEFORE GI Bill or you lose it. Does NOT count against GI Bill months.",
+    desc: "Service-connected disability required. Covers tuition, supplies, tools, monthly stipend. Understand how it interacts with your GI Bill before electing \u2014 a VSO can help you choose.",
     url: "https://www.va.gov/careers-employment/vocational-rehabilitation/"
   }, {
     name: "GI Bill (Post-9/11)",
@@ -9873,7 +9883,7 @@ function App() {
       lineHeight: 1.9,
       marginBottom: 10
     }
-  }, "For years, maybe decades, your identity has been your rank, your unit, your MOS. You were SGT Smith. You were a leader. People saluted you, followed your orders, depended on you. Every day had structure, purpose, and mission."), /*#__PURE__*/React.createElement("div", {
+  }, "For years, maybe decades, your identity has been your rank, your unit, your occupational specialty. You had a title and people knew what it meant. You were a leader. People saluted you, followed your orders, depended on you. Every day had structure, purpose, and mission."), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: C.textBody,
@@ -10194,7 +10204,7 @@ function App() {
       color: C.textBody,
       lineHeight: 1.8
     }
-  }, "\"I need to complete my Individual Transition Plan per [DOD Instruction 1332.35 / Service regulation]. I have medical appointments that need to happen now \u2014 VA graders may not rate conditions documented for less than a year, so I can't wait on these. I've already started cross-training [NAME] on my primary duties. Here's my proposed timeline for TAP attendance and transition appointments over the next 12 months. I want to make sure this is coordinated and doesn't create gaps.\"")), /*#__PURE__*/React.createElement("div", {
+  }, "\"I need to complete my Individual Transition Plan per [DOD Instruction 1332.35 / Service regulation]. I have medical appointments that need to happen now \u2014 conditions with a longer documented treatment history are easier to rate, so I can't wait on these. I've already started cross-training [NAME] on my primary duties. Here's my proposed timeline for TAP attendance and transition appointments over the next 12 months. I want to make sure this is coordinated and doesn't create gaps.\"")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: C.textSecondary,
