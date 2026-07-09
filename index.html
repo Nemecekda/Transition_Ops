@@ -2536,7 +2536,7 @@ const CATEGORIES = {
 const APP_VERSION = "v72";
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
-  { v: "v72", date: "9 JUL 2026", note: "Deep-dive polish: fixed a Resource Directory crash, completed light-theme coverage on every screen, stronger contrast in both themes, a SITREP card showing what changed since your last check-in, and a new one-tap \u201Cadd my deadlines to calendar\u201D export on Critical Windows." },
+  { v: "v72", date: "9 JUL 2026", note: "Deep-dive polish: fixed a Resource Directory crash, completed light-theme coverage on every screen, stronger contrast in both themes, a SITREP card showing what changed since your last check-in, and a new one-tap \u201Cadd my deadlines to calendar\u201D export on Critical Windows. Policy tracker updated: SpouseWorks launch (1 JUL) and the Take Care of America's Veterans Act / Major Richard Star Act now tracked." },
   { v: "v71", date: "9 JUL 2026", note: "Light theme is here \u2014 tap PRO in the header for a clean professional look (great on laptops and in bright sun). Feedback now transmits directly from the app, screen-reader support improved throughout, and the app no longer depends on any outside server to load." },
   { v: "v70", date: "9 JUL 2026", note: "Navigation overhaul: your phone's Back button now steps back inside the app instead of exiting, VA calculators moved into the home bar and a new quick-tools row, one clean icon set across the app, larger body text, easier-to-tap controls, and a finish-setup shortcut if you skipped onboarding." },
   { v: "v69", date: "10 JUL 2026", note: "Accuracy and accessibility pass ahead of VSO review: corrected the BDD window (180\u201390 days), PACT Act 10-year healthcare enrollment, VR&E eligibility thresholds, DAF SkillBridge rank caps, and HHG claim deadlines. Plus bigger tap targets, stronger contrast, pinch-zoom restored, and full offline support." },
@@ -2560,9 +2560,10 @@ const POLICY_CHANGES = [
   { date: "18 DEC 2025", title: "FY26 NDAA \u2014 TAP Overhaul + ILER Codified", sum: "In-person pre-sep counseling when possible, spouse TAP pilot at 5 installations, Guard/Reserve 3-year waiver. Toxic exposure records (ILER) now flow to VA with your claim.", src: "Congress.gov \u2014 S.1071", url: "https://www.congress.gov/bill/119th-congress/senate-bill/1071" },
   { date: "1 JAN 2026", title: "TRICARE 2026 \u2014 Copays Up, Travel Threshold Down", sum: "Retail brand-name $48/30-day; home delivery $44 brand, $85 non-formulary; military pharmacies stay $0. Prime travel benefit now triggers at 75 miles.", src: "TRICARE.mil \u2014 Changes", url: "https://www.tricare.mil/changes" },
   { date: "MAR 2026", title: "GI Bill \u2014 Up to 48 Months Combined", sum: "Rudisill and Perkins rulings: both Montgomery and Post-9/11 qualifying periods may rate up to 48 months of entitlement. Over 1 million veterans may qualify.", src: "VA.gov \u2014 GI Bill", url: "https://benefits.va.gov/gibill/" },
-  { date: "3 JUN 2026", title: "Patriot Pipeline \u2014 SkillBridge Approval Presumption", sum: "Services directed to APPROVE SkillBridge requests supporting the defense industrial base, denying only for readiness. Military spouses are named throughout the directive \u2014 spouse employment programs and DIB hiring partnerships are part of the same framework (mypatriotcareer.mil). Service-level guidance pending (~18 JUL).", src: "SecWar Memo (PDF)", url: "https://media.defense.gov/2026/Jun/03/2003943800/-1/-1/1/ENHANCING-WORKFORCE-DEVELOPMENT-THROUGH-THE-DEPARTMENT-OF-WAR-PROJECT-PATRIOT-PIPELINE.PDF" },
+  { date: "3 JUN 2026", title: "Patriot Pipeline \u2014 SkillBridge Approval Presumption", sum: "Services directed to APPROVE SkillBridge requests supporting the defense industrial base, denying only for readiness. Military spouses are named throughout the directive \u2014 spouse employment programs and DIB hiring partnerships are part of the same framework (mypatriotcareer.mil). Regional pilots underway: Puget Sound shipyards, San Antonio, Maine. Service-level guidance pending (~18 JUL).", src: "SecWar Memo (PDF)", url: "https://media.defense.gov/2026/Jun/03/2003943800/-1/-1/1/ENHANCING-WORKFORCE-DEVELOPMENT-THROUGH-THE-DEPARTMENT-OF-WAR-PROJECT-PATRIOT-PIPELINE.PDF" },
   { date: "15 JUN 2026", title: "VET TEC 2.0 \u2014 Applications Open", sum: "Tuition + housing allowance for tech training, 4,000 slots per fiscal year. CHANGED from the original: charges remaining GI Bill entitlement month-for-month.", src: "VA.gov \u2014 VET TEC 2.0", url: "https://www.va.gov/education/other-va-education-benefits/vet-tec-2/" },
-  { date: "PENDING", title: "On the Hill \u2014 NOT LAW YET", sum: "H.R. 980 (VR&E expansion) and H.R. 1458 (skilled-trades GI Bill) passed the House, await Senate. H.R. 3579 would cap VR&E employment assistance at 365 days.", src: "Congress.gov \u2014 H.R. 980", url: "https://www.congress.gov/bill/119th-congress/house-bill/980" }
+  { date: "1 JUL 2026", title: "SpouseWorks Launches \u2014 Spouse Career Program, All Services", sum: "SECO/MySECO relaunched as SpouseWorks under Military OneSource: free one-on-one career coaching, resume help, 5,000+ online courses, and job matching through MSEP and FlexJobs \u2014 with scholarships and 12-week paid fellowships announced. Coast Guard spouses are now included for the first time.", src: "Military OneSource \u2014 SpouseWorks", url: "https://www.militaryonesource.mil/benefits/spouseworks-career-education/" },
+  { date: "PENDING", title: "On the Hill \u2014 NOT LAW YET", sum: "NEW: H.R. 9237 (Take Care of America's Veterans Act, introduced 10 JUN 2026) bundles 60+ bills including the Major Richard Star Act \u2014 concurrent receipt of retired pay AND VA disability for ~54,000 combat-injured veterans with under 20 years. H.R. 980 (VR&E expansion) and H.R. 1458 (skilled-trades GI Bill) passed the House, await Senate. H.R. 3579 would cap VR&E employment assistance at 365 days.", src: "Congress.gov \u2014 H.R. 9237", url: "https://www.congress.gov/bill/119th-congress/house-bill/9237" }
 ];
 const DOCUMENT_VAULT = [{
   id: "d1",
@@ -5860,7 +5861,7 @@ function App() {
         React.createElement("span", { style: { fontSize: 20, flexShrink: 0 } }, "\uD83D\uDC9C"),
         React.createElement("div", { style: { minWidth: 0, flex: 1 } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "MILITARY SPOUSE RESOURCES"),
-          React.createElement("div", { style: { fontSize: 13, color: C.gold, marginTop: 2, lineHeight: 1.4 } }, "Career, education, and employment programs open to spouses \u2014 MyCAA, MSSA, ACP, and more. Patriot Pipeline names spouses too.")
+          React.createElement("div", { style: { fontSize: 13, color: C.gold, marginTop: 2, lineHeight: 1.4 } }, "Career, education, and employment programs open to spouses \u2014 SpouseWorks (NEW 1 JUL), MyCAA, MSSA, ACP, and more. Patriot Pipeline names spouses too.")
         ),
         React.createElement("span", { style: { marginLeft: "auto", color: C.greenBright, fontSize: 18, flexShrink: 0 } }, "\u203A")
       ),
@@ -10744,9 +10745,9 @@ function App() {
       textAlign: "center"
     }
   }, "APPLY FOR MyCAA \u2192")), [{
-    name: "SECO Career Coaching",
-    url: "https://www.militaryonesource.mil/resources/network/mycaa-scholarship/",
-    desc: "FREE career coaching from DoD's Spouse Education and Career Opportunities program. Career exploration, resume help, interview prep, relocation planning.",
+    name: "SpouseWorks Career Coaching (formerly SECO)",
+    url: "https://www.militaryonesource.mil/benefits/spouseworks-career-education/",
+    desc: "FREE one-on-one career coaching via Military OneSource's relaunched SpouseWorks (1 JUL 2026): career exploration, resume help, interview prep, 5,000+ online courses, job matching \u2014 all services including Coast Guard.",
     icon: "\uD83C\uDFAF"
   }, {
     name: "\u2B50 Onward to Opportunity (O2O)",
@@ -10828,7 +10829,7 @@ function App() {
       lineHeight: 1.8,
       marginBottom: 8
     }
-  }, "The Military Spouses Residency Relief Act (MSRRA) allows spouses to maintain their state of legal residency for tax and voting purposes \u2014 even if living in a different state. For professional licenses:"), ["Many states now have interstate license compacts for nursing, teaching, counseling, and other professions", "The Military Spouse Licensing Relief Act (2023) requires states to honor many spouse licenses after a PCS", "DoD reimburses up to $1,000 for license transfer costs when PCS moves require a new state license", "Check your profession: some licenses transfer automatically, others require application in the new state", "SECO career coaches (800-342-9647) help navigate license requirements state by state"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  }, "The Military Spouses Residency Relief Act (MSRRA) allows spouses to maintain their state of legal residency for tax and voting purposes \u2014 even if living in a different state. For professional licenses:"), ["Many states now have interstate license compacts for nursing, teaching, counseling, and other professions", "The Military Spouse Licensing Relief Act (2023) requires states to honor many spouse licenses after a PCS", "DoD reimburses up to $1,000 for license transfer costs when PCS moves require a new state license", "Check your profession: some licenses transfer automatically, others require application in the new state", "SpouseWorks career coaches (formerly SECO, 800-342-9647) help navigate license requirements state by state"].map((item, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       padding: "4px 10px",
@@ -10909,7 +10910,7 @@ function App() {
     detail: "This is the first time location isn't dictated by the military. Choose a location that serves BOTH careers. Your employment matters for family financial stability — especially if the service member is still figuring out their next move."
   }, {
     tip: "You have your own benefits",
-    detail: "MyCAA, MSEP, non-competitive federal hiring, SECO coaching, and many of the same free training programs available to veterans. These are YOUR benefits — not your spouse's. Use them."
+    detail: "MyCAA, MSEP, non-competitive federal hiring, SpouseWorks coaching, and many of the same free training programs available to veterans. These are YOUR benefits — not your spouse's. Use them."
   }, {
     tip: "Build your own professional identity",
     detail: "You are not 'just a military spouse.' You are a professional who has managed a household through chaos, adapted to new environments constantly, and built community from scratch — repeatedly. That IS a resume."
