@@ -3,7 +3,7 @@
 // install time, caching still works and push simply activates on a later install.
 try { importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js'); } catch (e) {}
 
-const CACHE_NAME = 'transition-ops-v71';
+const CACHE_NAME = 'transition-ops-v72';
 const ASSETS = [
   '/',
   '/index.html',
@@ -65,20 +65,9 @@ self.addEventListener('notificationclick', event => {
 });
 
 self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SCHEDULE_NOTIFICATION') {
-    const { title, body, tag, delay } = event.data;
-    setTimeout(() => {
-      self.registration.showNotification(title, {
-        body: body,
-        tag: tag,
-        icon: '/icon-192.png',
-        badge: '/icon-192.png',
-        vibrate: [200, 100, 200],
-        requireInteraction: true,
-        data: { url: '/' }
-      });
-    }, delay);
-  }
+  // v72: SCHEDULE_NOTIFICATION (setTimeout inside a service worker) removed - browsers
+  // terminate idle workers, so delayed timers silently never fired. Threshold pushes
+  // now come from OneSignal segments (ets_epoch_day tag) instead.
   if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
     const { title, body, tag } = event.data;
     self.registration.showNotification(title, {
