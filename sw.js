@@ -1,11 +1,14 @@
-const CACHE_NAME = 'transition-ops-v68';
+const CACHE_NAME = 'transition-ops-v69';
 const ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
-  'https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap'
+  '/va-math/',
+  'https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js',
+  'https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap'
 ];
 
 self.addEventListener('install', event => {
@@ -22,16 +25,27 @@ self.addEventListener('activate', event => {
   );
 });
 
-// NETWORK FIRST — always try to get latest, fall back to cache if offline
+// NETWORK FIRST with a timeout — try to get latest; on failure OR a slow/dead
+// connection (>3.5s), fall back to cache so the app never hangs on bad Wi-Fi.
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return; // never intercept/cache POSTs (GA, email signup)
+  const networkFetch = fetch(event.request).then(response => {
+    if (response && response.status === 200) {
+      const clone = response.clone();
+      caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone)).catch(() => {});
+    }
+    return response;
+  });
+  const timeout = new Promise((resolve, reject) => setTimeout(() => reject(new Error('sw-timeout')), 3500));
   event.respondWith(
-    fetch(event.request).then(response => {
-      if (response && response.status === 200) {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-      }
-      return response;
-    }).catch(() => caches.match(event.request))
+    Promise.race([networkFetch, timeout]).catch(() =>
+      caches.match(event.request, { ignoreSearch: event.request.mode === 'navigate' }).then(cached => {
+        if (cached) return cached;
+        // Deep links like /?tool=vamath or /va-math/ fall back to the app shell offline
+        if (event.request.mode === 'navigate') return caches.match('/');
+        return networkFetch; // last resort: let the slow network answer (or fail) naturally
+      })
+    )
   );
 });
 

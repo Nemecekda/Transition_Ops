@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <!-- PRIMARY META ─────────────────────────────────────────── -->
 <title>Transition OPS — Free Military Transition App | VA Math, SkillBridge, Benefits</title>
@@ -74,7 +74,7 @@
         "Final PCS Entitlements Calculator (JTR, DLA, MALT)",
         "Personalized Transition Timeline with Smart Reminders",
         "Guard/Reserve Dedicated Dashboard",
-        "DD-214 Verification Guide",
+        "DD214 Verification Guide",
         "Career Pathway Mapper",
         "Transition Readiness Assessment"
       ]
@@ -136,7 +136,7 @@
     });
   });
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body,#root{height:100%;width:100%;margin:0;padding:0}
@@ -163,7 +163,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 6px;background:none;border:none;cursor:pointer;transition:all 0.2s}
 .bottom-nav button .nav-icon{font-size:20px;line-height:1}
 .bottom-nav button .nav-label{font-size:9px;letter-spacing:1px;font-family:'Oswald',sans-serif}
-.more-overlay{position:fixed;inset:0;background:rgba(10,12,8,0.95);z-index:250;display:flex;flex-direction:column;justify-content:center;padding:40px 24px;animation:slideUp 0.25s ease}
+.more-overlay{position:fixed;inset:0;background:rgba(10,12,8,0.95);z-index:250;display:flex;flex-direction:column;justify-content:flex-start;padding:40px 24px 70px;overflow-y:auto;animation:slideUp 0.25s ease}
 .more-overlay button{display:flex;align-items:center;gap:14px;padding:18px 16px;background:#0E120B;border:1px solid #222A19;border-radius:10px;margin-bottom:10px;cursor:pointer;width:100%;text-align:left}
 .dash-card{background:#161B11;border:1px solid #222A19;border-radius:10px;padding:16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s}
 .dash-card:active{border-color:#4A5D23}
@@ -204,7 +204,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 4px;
-  color: #6b5f2e;
+  color: #9C9577;
   margin-bottom: 28px;
   border-top: 1px solid #222A19;
   border-bottom: 1px solid #222A19;
@@ -256,7 +256,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 .onboard-micro-copy {
   font-family: 'Courier Prime', monospace;
   font-size: 12px;
-  color: #6b5f2e;
+  color: #9C9577;
   line-height: 1.5;
   margin-bottom: 28px;
   letter-spacing: 0.5px;
@@ -389,7 +389,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
   font-family: 'Oswald', sans-serif;
   font-size: 9px;
   font-weight: 600;
-  color: #6b5f2e;
+  color: #9C9577;
   letter-spacing: 2px;
 }
 
@@ -442,7 +442,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 <li><strong style="color:#F5F0E1">Final PCS Entitlements</strong> — JTR weight allowances, DLA timing, MALT calculator, move timeline</li>
 <li><strong style="color:#F5F0E1">Smart Reminder Engine</strong> — Personalized timeline alerts for BDD filing, SBP election, TAMP, TSP rollover, and every other deadline that costs money if missed</li>
 <li><strong style="color:#F5F0E1">Guard/Reserve Dedicated Dashboard</strong> — Separate flows for drilling Reservists and gray-area retirees</li>
-<li><strong style="color:#F5F0E1">DD-214 Verification Guide</strong> — Line-by-line checklist so you don't leave errors on your separation document</li>
+<li><strong style="color:#F5F0E1">DD214 Verification Guide</strong> — Line-by-line checklist so you don't leave errors on your separation document</li>
 <li><strong style="color:#F5F0E1">Career Pathway Mapper</strong> — Translate your MOS/AFSC to civilian roles with realistic bridge assessments</li>
 <li><strong style="color:#F5F0E1">Transition Readiness Score</strong> — Self-assessment that identifies gaps in your transition plan</li>
 </ul>
@@ -456,8 +456,8 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.7)}
 }
 @keyframes fadeOut { to { opacity: 0.7; } }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script>
 // Global iframe detection
 var __EMBED_MODE = false;
@@ -622,7 +622,7 @@ const TRANSITION_MILESTONES = [{
     done: false
   }, {
     id: "t17b",
-    text: "VA will schedule C&P exam within 45 days of receipt",
+    text: "Be available for VA C&P exams within 45 days of filing",
     done: false
   }, {
     id: "t17c",
@@ -653,7 +653,7 @@ const TRANSITION_MILESTONES = [{
     text: "Secure housing at post-separation location",
     done: false
   }],
-  reminder: "BDD WINDOW IS OPEN. Submit your claim NOW (180-90 days pre-sep). VA schedules your physical within 45 days. The military accepts the VA physical — keep your records current."
+  reminder: "BDD WINDOW IS OPEN. Submit your claim NOW (180-90 days pre-sep). Be available for VA exams within 45 days of filing. The military accepts the VA physical — keep your records current."
 }, {
   id: 5,
   phase: "3 Months Out",
@@ -698,7 +698,7 @@ const TRANSITION_MILESTONES = [{
     done: false
   }, {
     id: "t30",
-    text: "Turn in all CIF / organizational equipment",
+    text: "Turn in all CIF/IIF (unit supply) and organizational equipment",
     done: false
   }, {
     id: "t31",
@@ -710,7 +710,7 @@ const TRANSITION_MILESTONES = [{
     done: false
   }, {
     id: "t33",
-    text: "Set up TRICARE transition (TAMP 180 days / CHCBP)",
+    text: "Set up TRICARE transition (TAMP if eligible / CHCBP)",
     done: false
   }, {
     id: "t34",
@@ -758,7 +758,7 @@ const TRANSITION_MILESTONES = [{
     done: false
   }, {
     id: "t43",
-    text: "Join a veteran community \u2014 Team RWB, The Mission Continues, Team Rubicon, Next 18 (free golf & wellness camps), local VFW/AL. Don't isolate.",
+    text: "Join a veteran community \u2014 Team RWB, The Mission Continues, Team Rubicon, Next 18 (free golf & wellness camps), local VFW or American Legion post. Don't isolate.",
     done: false
   }, {
     id: "t44",
@@ -790,7 +790,7 @@ const NOTIFICATIONS = [{
   id: "n1g",
   monthsOut: 12,
   title: "ACTION: Leadership Conversation — Set the Plan",
-  body: "Formalize your ITP with commander signature. Present your timeline for TAP and medical appointments. Reference DOD Instruction 1332.35. See Lead Comms tab.",
+  body: "Formalize your ITP with commander signature. Present your timeline for TAP and medical appointments. Reference DoD Instruction 1332.35. See Lead Comms tab.",
   priority: "HIGH"
 }, {
   id: "n1h",
@@ -832,7 +832,7 @@ const NOTIFICATIONS = [{
   id: "n2",
   monthsOut: 6,
   title: "CRITICAL: BDD Window is OPEN",
-  body: "Submit your BDD claim NOW. Window: 180-90 days pre-sep. VA schedules physical within 45 days of receipt.",
+  body: "Submit your BDD claim NOW. Window: 180-90 days pre-sep. Be available for VA exams within 45 days of filing.",
   priority: "CRITICAL"
 }, {
   id: "n3",
@@ -874,7 +874,7 @@ const NOTIFICATIONS = [{
   id: "n7",
   monthsOut: 6,
   title: "INTEL: State Tax Recon",
-  body: "Research state tax on retired pay. Home of RESIDENCE, not Home of Record.",
+  body: "Research state tax on retired pay. State of LEGAL RESIDENCE, not Home of Record.",
   priority: "MEDIUM"
 }, {
   id: "n8",
@@ -886,13 +886,13 @@ const NOTIFICATIONS = [{
   id: "n9",
   monthsOut: 3,
   title: "ACTION: VA Healthcare",
-  body: "Enroll in VA healthcare. Combat vets: 5-year enhanced eligibility window.",
+  body: "Enroll in VA healthcare. Combat vets: 10-year enhanced eligibility window.",
   priority: "HIGH"
 }, {
   id: "n10",
   monthsOut: 1,
   title: "EXECUTE: Outprocessing",
-  body: "Installation clearing. CIF turn-in. Final pay. TRICARE transition.",
+  body: "Installation clearing. CIF/IIF or unit supply turn-in. Final pay. TRICARE transition.",
   priority: "CRITICAL"
 }, {
   id: "n11",
@@ -964,7 +964,7 @@ const NOTIFICATIONS = [{
   id: "n21",
   monthsOut: 5,
   title: "CHECK: Security Clearance Status",
-  body: "Active clearance = $10-30K salary premium. Know your expiration date. Defense contractors hiring NOW.",
+  body: "An active clearance typically adds $10-30K to salary offers. Know your expiration date. Defense contractors hiring NOW.",
   priority: "MEDIUM"
 }, {
   id: "n22",
@@ -982,7 +982,7 @@ const NOTIFICATIONS = [{
   id: "n24",
   monthsOut: 14,
   title: "INTEL: State Tax — Where You Live Determines Your Tax Bill",
-  body: "Your HOME OF RESIDENCE determines state tax on retired pay — NOT your Home of Record. 9 states have no income tax. 25+ exempt military retired pay. Some states tax all of it. Research NOW — this decision is worth thousands per year. See Tax Intel tab.",
+  body: "Your STATE OF LEGAL RESIDENCE determines state tax on retired pay — NOT your Home of Record. 9 states have no income tax, and most others now exempt military retired pay — a few still tax some or all of it. Research NOW — this decision is worth thousands per year. See Tax Intel tab.",
   priority: "HIGH"
 }, {
   id: "n25",
@@ -1006,7 +1006,7 @@ const NOTIFICATIONS = [{
   id: "n28",
   monthsOut: 6,
   title: "INTEL: SBP Decision — No Take-Backs",
-  body: "Retirees: Survivor Benefit Plan (SBP) election MUST be made at retirement. Provides up to 55% of retired pay to surviving spouse. You CANNOT change this after retirement. Research now, decide with your family.",
+  body: "Retirees: Survivor Benefit Plan (SBP) election MUST be made at retirement. Provides up to 55% of retired pay to surviving spouse. Outside a narrow discontinuation window (months 25-36 of retirement), it cannot be changed. Research now, decide with your family.",
   priority: "CRITICAL"
 }, {
   id: "n29",
@@ -1018,7 +1018,7 @@ const NOTIFICATIONS = [{
   id: "n30",
   monthsOut: 1,
   title: "ACTION: TRICARE Transition — Know Your Timeline",
-  body: "TRICARE Prime ends on separation day. TAMP gives you 180 days of premium-free TRICARE. After TAMP, you must enroll in CHCBP (within 60 days of TAMP ending) or VA healthcare. Mark these dates NOW.",
+  body: "TRICARE Prime ends on separation day. If you qualify (mostly involuntary or contingency separations \u2014 not retirees), TAMP gives you 180 days of premium-free TRICARE. After TAMP, you must enroll in CHCBP (within 60 days of TAMP ending) or VA healthcare. Mark these dates NOW.",
   priority: "CRITICAL"
 }, {
   id: "n31",
@@ -1060,7 +1060,7 @@ const NOTIFICATIONS = [{
   id: "n37",
   monthsOut: 11,
   title: "INTEL: VR&E — Use It Before Your GI Bill, and Watch the Hill",
-  body: "Standing rule: if rated 30%+, evaluate VR&E (Ch.31) BEFORE touching your GI Bill. On the Hill: H.R. 980 (expanded flight training, more VR&E outreach) passed the House 402-2 and awaits the Senate. H.R. 3579 would cap VR&E employment assistance at 365 days — if you are eligible, do not wait for the rules to tighten.",
+  body: "Standing rule: if rated 10%+, evaluate VR&E (Ch.31) BEFORE touching your GI Bill. On the Hill: H.R. 980 (expanded flight training, more VR&E outreach) passed the House 402-2 and awaits the Senate. H.R. 3579 would cap VR&E employment assistance at 365 days — if you are eligible, do not wait for the rules to tighten.",
   priority: "MEDIUM"
 }, {
   id: "n38",
@@ -1148,7 +1148,7 @@ const CAREER_TARGETS = [
   protip: "Federal law enforcement (CBP, USMS, FBI, Secret Service) actively recruits vets and pays significantly more. Military experience is a direct qualifier. Apply federal AND local simultaneously.",
   giBill: false,
   certNeeded: "POST Academy",
-  degreeNeeded: "No (some agencies prefer Associates+)"
+  degreeNeeded: "No (some agencies prefer Associate's+)"
 }, {
   id: "firefighter",
   label: "Firefighter / EMT",
@@ -1285,7 +1285,7 @@ const CAREER_TARGETS = [
 // === TECHNOLOGY ===
 {
   id: "cybersecurity",
-  dib: ["CYBER SECURITY"],
+  dib: ["CYBERSECURITY"],
   label: "Cybersecurity Analyst",
   category: "Technology",
   directMatch: ["comms", "intel"],
@@ -1296,7 +1296,7 @@ const CAREER_TARGETS = [
   whatYouHave: "Security clearance (if active), network fundamentals, operational security mindset, threat awareness, analytical thinking.",
   whatYouNeed: "Security+ certification (minimum), ideally CISSP or CEH. CompTIA stack preferred. Clearance is your golden ticket.",
   steps: [{
-    action: "Earn CompTIA Security+ (study 4-8 weeks, test $392 — often free for vets via DOD COOL)",
+    action: "Earn CompTIA Security+ (study 4-8 weeks, test $439 — often free for vets via DOD COOL)",
     timeline: "Month 1-2",
     resource: "https://www.comptia.org/certifications/security"
   }, {
@@ -1319,7 +1319,7 @@ const CAREER_TARGETS = [
   degreeNeeded: "No (helps for advancement)"
 }, {
   id: "it_support",
-  dib: ["CYBER SECURITY"],
+  dib: ["CYBERSECURITY"],
   label: "IT Support / Help Desk → Sysadmin",
   category: "Technology",
   directMatch: ["comms"],
@@ -1516,8 +1516,8 @@ const CAREER_TARGETS = [
     timeline: "Month 6-12",
     resource: ""
   }],
-  income: "SBA Boots to Business is FREE. SCORE mentoring is FREE. VBOC services are FREE. Owners In Honor program is FREE to veterans. GI Bill covers business-related degree programs. VA disability provides stable base income during startup/acquisition phase. SDVOSB status opens BILLIONS in set-aside federal contracts. VR&E (Chapter 31) can cover business startup costs if approved. Veteran-led businesses outperform civilian startups by 400%.",
-  protip: "TWO PATHS TO OWNERSHIP: Most people think entrepreneurship means starting from scratch. It doesn't. Entrepreneurship Through Acquisition (ETA) means buying an EXISTING business with customers, revenue, and staff already in place. 70% of small businesses have no succession plan — that's millions of businesses looking for a buyer. Veterans are 4x more likely to succeed as business owners. Owners In Honor\u2122 (ownersinhonor.org) provides the full pipeline: training, search support, capital readiness, legal/financial allies, and post-acquisition mentoring. Their goal: 100 veteran acquisitions by 2028. Whether you start or buy — SDVOSB status, SBA loans, and your military discipline are superpowers. Don't bet the house on day one.",
+  income: "SBA Boots to Business is FREE. SCORE mentoring is FREE. VBOC services are FREE. Owners In Honor program is FREE to veterans. GI Bill covers business-related degree programs. VA disability provides stable base income during startup/acquisition phase. SDVOSB status opens BILLIONS in set-aside federal contracts. VR&E (Chapter 31) can cover business startup costs if approved.",
+  protip: "TWO PATHS TO OWNERSHIP: Most people think entrepreneurship means starting from scratch. It doesn't. Entrepreneurship Through Acquisition (ETA) means buying an EXISTING business with customers, revenue, and staff already in place. 70% of small businesses have no succession plan — that's millions of businesses looking for a buyer. Owners In Honor\u2122 (ownersinhonor.org) provides the full pipeline: training, search support, capital readiness, legal/financial allies, and post-acquisition mentoring. Their goal: 100 veteran acquisitions by 2028. Whether you start or buy — SDVOSB status, SBA loans, and your military discipline are superpowers. Don't bet the house on day one.",
   giBill: true,
   certNeeded: "None required",
   degreeNeeded: "No (but MBA helps for growth)"
@@ -1590,7 +1590,7 @@ const CAREER_TARGETS = [
     timeline: "Upon certification",
     resource: ""
   }],
-  income: "GI Bill covers bachelor's + BAH. Troops to Teachers may offer stipends. Many districts offer loan forgiveness after 5 years. JROTC instructor positions hire directly from military with no teaching cert required.",
+  income: "GI Bill covers bachelor's + BAH. Some state teacher-pathway programs offer stipends. Many districts offer loan forgiveness after 5 years. JROTC instructor positions hire directly from military with no teaching cert required.",
   protip: "If you were EVER an instructor in the military (drill sergeant, PME instructor, MOS school instructor), you have directly transferable teaching experience. JROTC positions let you teach immediately with no civilian teaching license — they want YOUR military experience. Salary is typically $50-65K + full benefits.",
   giBill: true,
   certNeeded: "State Teaching License",
@@ -1757,7 +1757,7 @@ const CAREER_TARGETS = [
     resource: ""
   }],
   income: "ATD CPTD exam ($975 members / $1,195 non-members) — GI Bill eligible. Articulate 360 free trial, then $1,299/year (employer-paid for most corporate roles). Defense contractors frequently pay 10-15% premium for veterans with instructional design background due to their familiarity with military training systems.",
-  protip: "If you've been a drill instructor, schoolhouse cadre, or senior NCO running squad/platoon training — you're not entry-level L&D. Lead with specific outcomes: 'Trained 240 soldiers through 12-week qualification course with 97% pass rate.' Metrics-backed training stories win interviews.",
+  protip: "If you've been a drill instructor, schoolhouse cadre, or senior NCO running squad/platoon training — you're not entry-level L&D. Lead with specific outcomes: 'Trained 240 personnel through 12-week qualification course with 97% pass rate.' Metrics-backed training stories win interviews.",
   giBill: true,
   certNeeded: "Optional: ATD CPTD or Master Trainer",
   degreeNeeded: "Bachelor's typically required for corporate roles"
@@ -1790,7 +1790,7 @@ const CAREER_TARGETS = [
     resource: ""
   }],
   income: "CCP program is modular (~$1,000-1,500 per module, 9 modules total for full certification) — GI Bill eligible through some pathways. Most employers pay for certification after hire. Strong career ladder: analyst → senior analyst → manager → director typically pays 15-20% increases at each step.",
-  protip: "This role is one of the most underrated in HR — analytical rigor rewarded with strong salaries and clear advancement. If you enjoyed the structured problem-solving of military work and want a desk-based career with minimal politics, comp analysis is an excellent fit. ⚠️ SME REVIEW: confirm CCP specifics reflect current WorldatWork structure.",
+  protip: "This role is one of the most underrated in HR — analytical rigor rewarded with strong salaries and clear advancement. If you enjoyed the structured problem-solving of military work and want a desk-based career with minimal politics, comp analysis is an excellent fit.",
   giBill: true,
   certNeeded: "CCP (Certified Compensation Professional) — strongly recommended",
   degreeNeeded: "Bachelor's typically required"
@@ -1803,7 +1803,7 @@ const CAREER_TARGETS = [
   timeline: "1-3 months",
   difficulty: 1,
   avgSalary: "$45,000-$75,000",
-  whatYouHave: "If you're 36B (Army Financial Management Technician) or similar — you've been running payroll operations. DFAS, mypay, pay differentials, allotments, garnishments, federal tax withholding. Civilian payroll uses the same mechanics with different system names.",
+  whatYouHave: "If you're 36B (Army Financial Management Technician) or similar — you've been running payroll operations. DFAS, myPay, pay differentials, allotments, garnishments, federal tax withholding. Civilian payroll uses the same mechanics with different system names.",
   whatYouNeed: "Experience with civilian payroll systems (ADP, Paychex, UKG, Workday Payroll), state/federal tax compliance knowledge, and understanding of multi-state tax rules if the company operates across states. Fundamental Payroll Certification (FPC) or Certified Payroll Professional (CPP) strongly preferred.",
   steps: [{
     action: "Translate your DFAS experience into civilian terms — 'LES reconciliation' becomes 'payroll audit,' 'allotments' become 'deductions'",
@@ -1856,7 +1856,7 @@ const CAREER_TARGETS = [
     resource: ""
   }],
   income: "FMVA certification (~$497-847 depending on package). Financial analysts at defense contractors (Lockheed, Raytheon, Northrop) frequently pay 10-20% premium for veterans with financial management experience. Career ladder: analyst → senior analyst → manager → director, each step typically adds $20-40K.",
-  protip: "Defense contractors and federal agencies are the fastest path for vets with finance backgrounds. They understand DOD budget cycles, appropriations, and funding document workflows better than any commercial employer ever will. ⚠️ SME REVIEW: confirm FMVA pricing and that it's still the most common non-CFA credential.",
+  protip: "Defense contractors and federal agencies are the fastest path for vets with finance backgrounds. They understand DOD budget cycles, appropriations, and funding document workflows better than any commercial employer ever will.",
   giBill: true,
   certNeeded: "FMVA (fast path) or CFA (premium path)",
   degreeNeeded: "Bachelor's in Finance/Accounting/Economics preferred"
@@ -1891,7 +1891,7 @@ const CAREER_TARGETS = [
     resource: "https://leetcode.com"
   }],
   income: "VET TEC covers tuition + monthly housing stipend for eligible veterans — one of the most underused VA benefits. Defense contractors actively hire veterans with TS/SCI clearance for cleared development roles ($120K+ starting). Cleared SWE market has structural shortage that benefits veterans enormously.",
-  protip: "If you have an active TS/SCI, do not separate without understanding what that clearance is worth in the cleared development market. Cleared entry-level SWEs regularly start at $100-130K. The clearance alone is worth 20-40% more than the same role without it. Interview cleared employers BEFORE your separation date. ⚠️ SME REVIEW: VET TEC eligibility rules — verify current regulations before deploying this as advice.",
+  protip: "If you have an active TS/SCI, do not separate without understanding what that clearance is worth in the cleared development market. Cleared entry-level SWEs regularly start at $100-130K. The clearance alone is worth 20-40% more than the same role without it. Interview cleared employers BEFORE your separation date.",
   giBill: true,
   certNeeded: "None required; AWS/Azure/GCP certifications helpful",
   degreeNeeded: "Not required (but helpful) — bootcamp or equivalent self-study expected"
@@ -2027,7 +2027,7 @@ const CAREER_TARGETS = [
     resource: "https://www.va.gov/jobs/"
   }],
   income: "CAHIMS exam (~$199 members / $399 non-members). VA healthcare system offers the fastest entry path for veterans — strong preference hiring, pension portability to FERS, and pay grades 11-13 ($65K-$115K) for entry-to-mid roles. MHA programs are fully GI Bill eligible.",
-  protip: "VA healthcare hires veterans aggressively. The path from combat medic or medical NCO to VA healthcare administrator is well-worn — many have walked it. Target VA facilities near major military bases (San Antonio, DC, Norfolk) where veteran hiring is heaviest and advancement is fastest. ⚠️ SME REVIEW: CAHIMS pricing and exam structure — verify current HIMSS requirements.",
+  protip: "VA healthcare hires veterans aggressively. The path from combat medic or medical NCO to VA healthcare administrator is well-worn — many have walked it. Target VA facilities near major military bases (San Antonio, DC, Norfolk) where veteran hiring is heaviest and advancement is fastest.",
   giBill: true,
   certNeeded: "CAHIMS (entry); CHFP or FACHE (senior)",
   degreeNeeded: "Bachelor's required; Master's (MHA) strongly preferred for advancement"
@@ -2066,7 +2066,7 @@ const CAREER_TARGETS = [
   degreeNeeded: "Bachelor's strongly preferred (sometimes waived for strong military/medical background)"
 }, {
   id: "cloud_engineer",
-  dib: ["CYBER SECURITY"],
+  dib: ["CYBERSECURITY"],
   label: "Cloud Engineer / DevOps",
   category: "Technology",
   directMatch: ["comms"],
@@ -2094,7 +2094,7 @@ const CAREER_TARGETS = [
     resource: ""
   }],
   income: "AWS certification exams $150-300 each, often reimbursed by employers after hire. VET TEC program covers cloud/DevOps bootcamps for eligible veterans. Cleared cloud engineers regularly start at $130-150K; senior cleared engineers exceed $200K. Top 10% nationally clears $199K per Glassdoor Dec 2025 data.",
-  protip: "TS/SCI + AWS certification + 5 years signals/cyber experience = $150K+ starting offers from defense contractors. This is one of the fastest paths to high income post-separation. If you have an active clearance and even basic cloud skills, contact Booz Allen, CACI, or Leidos BEFORE your separation date — they hire directly out of transition. ⚠️ SME REVIEW: VET TEC bootcamp approval list changes — verify current eligible programs.",
+  protip: "TS/SCI + AWS certification + 5 years signals/cyber experience = $150K+ starting offers from defense contractors. This is one of the fastest paths to high income post-separation. If you have an active clearance and even basic cloud skills, contact Booz Allen, CACI, or Leidos BEFORE your separation date — they hire directly out of transition.",
   giBill: true,
   certNeeded: "AWS Solutions Architect Associate (baseline); AWS DevOps Engineer Professional (premium)",
   degreeNeeded: "Not required (but helpful) — certifications + portfolio outweigh degree"
@@ -2126,7 +2126,7 @@ const CAREER_TARGETS = [
     timeline: "Pre-separation",
     resource: "https://skillbridge.osd.mil/"
   }],
-  income: "Federal civilian GS pay scale: intel analysts typically GS-11 ($60-80K) to GS-13 ($90-115K) entry range. Contractor roles with active TS/SCI frequently start at $110-140K. Federal pension (FERS) is valuable if planning a full second career. ⚠️ SME REVIEW: GS pay scales adjust annually — verify current locality pay rates.",
+  income: "Federal civilian GS pay scale: intel analysts typically GS-11 ($60-80K) to GS-13 ($90-115K) entry range. Contractor roles with active TS/SCI frequently start at $110-140K. Federal pension (FERS) is valuable if planning a full second career.",
   protip: "Your clearance is an asset that depreciates FAST once you separate — after 2 years inactive, reinstatement requires a full reinvestigation. Use it or lose value. SkillBridge placements at CIA, NSA, DIA, and FBI Intelligence Branch frequently convert to full-time offers. Start that application 12 months before separation.",
   giBill: true,
   certNeeded: "None required; ACIA (Army Certified Intelligence Analyst) or similar credentials helpful",
@@ -2194,7 +2194,7 @@ const CAREER_TARGETS = [
     resource: ""
   }],
   income: "Corporate Security Manager: $80-150K + bonus. Executive Protection: $75-200K (commission and hazard-based). Federal cleared contractors: $90-140K. ⚠️ CANDID ADVICE: Overseas PMC work pays $400-800/day ($100-200K tax-advantaged annually) but involves substantial personal risk, family strain, and career limitations upon return. Weigh this seriously.",
-  protip: "The honest tactical note: the 'high-speed' overseas contractor path is NOT the best long-term play for most veterans. Short-term money, long-term career drift, and often unsustainable for those with families. Corporate security leadership (CPP + MBA) is a quieter but significantly better long-term trajectory — many corporate CSOs (Chief Security Officers) at Fortune 500 companies are retired officers earning $250K+ with equity. ⚠️ SME REVIEW: this section addresses a path with genuine risks — consider whether to include PMC discussion or remove based on your comfort.",
+  protip: "The honest tactical note: the 'high-speed' overseas contractor path is NOT the best long-term play for most veterans. Short-term money, long-term career drift, and often unsustainable for those with families. Corporate security leadership (CPP + MBA) is a quieter but significantly better long-term trajectory — many corporate CSOs (Chief Security Officers) at Fortune 500 companies are retired officers earning $250K+ with equity.",
   giBill: true,
   certNeeded: "CPP (corporate); state licensure varies (executive protection)",
   degreeNeeded: "Bachelor's preferred for corporate roles; none required for contractor work"
@@ -2443,7 +2443,7 @@ const SKILLBRIDGE_FEED = [{
     url: "https://www.northropgrumman.com/careers/dod-skillbridge",
     highlight: false
   }, {
-    name: "U.S. Department of Interior",
+    name: "U.S. Department of the Interior",
     industry: "Federal Government",
     locations: "Nationwide",
     url: "https://www.doi.gov/veterans/skillbridge",
@@ -2470,7 +2470,7 @@ const SKILLBRIDGE_FEED = [{
   week: "27 JAN - 2 FEB 2026",
   companies: [{
     name: "Microsoft MSSA",
-    dib: ["CYBER SECURITY"],
+    dib: ["CYBERSECURITY"],
     industry: "Technology / Cybersecurity",
     locations: "Virtual + Select",
     url: "https://military.microsoft.com/mssa/",
@@ -2487,8 +2487,8 @@ const SKILLBRIDGE_FEED = [{
 const STATE_TAX_DATA = {
   noIncomeTax: ["AK", "FL", "NV", "NH", "SD", "TN", "TX", "WA", "WY"],
   noTaxRetiredPay: ["AL", "AR", "AZ", "CT", "HI", "IA", "IL", "IN", "KS", "LA", "MA", "ME", "MI", "MN", "MO", "MS", "NC", "ND", "NE", "NJ", "NY", "OH", "OK", "PA", "RI", "SC", "UT", "WI", "WV"],
-  someTax: ["CO", "DC", "DE", "GA", "ID", "KY", "MD", "NM", "OR", "VA", "VT"],
-  fullTax: ["CA", "MT"]
+  someTax: ["CO", "DC", "DE", "GA", "ID", "KY", "MD", "MT", "NM", "OR", "VA", "VT"],
+  fullTax: ["CA"]
 };
 const CATEGORIES = {
   PLANNING: {
@@ -2520,9 +2520,12 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v65";
+const APP_VERSION = "v69";
 const WHATS_NEW = [
+  { v: "v69", date: "10 JUL 2026", note: "Accuracy and accessibility pass ahead of VSO review: corrected the BDD window (180\u201390 days), PACT Act 10-year healthcare enrollment, VR&E eligibility thresholds, DAF SkillBridge rank caps, and HHG claim deadlines. Plus bigger tap targets, stronger contrast, pinch-zoom restored, and full offline support." },
   { v: "v65", date: "9 JUL 2026", note: "Added a clear independence notice (this is an independent veteran-built tool, not a government service), and tightened benefit accuracy on VR\u0026E and medical-documentation guidance." },
+  { v: "v67", date: "14 JUN 2026", note: "Deep links: arriving from a Transition OPS article or shared link now lands you directly inside the right tool." },
+  { v: "v66", date: "14 JUN 2026", note: "Explore-first welcome: tappable cards on the landing screen route straight into live tools \u2014 no setup required." },
   { v: "v64", date: "14 JUN 2026", note: "New Resume Starter on every career screen \u2014 turns your military experience into civilian-framed resume bullets you can copy. Plus a clearer install guide." },
   { v: "v63", date: "14 JUN 2026", note: "Behind-the-scenes: added analytics so we can see which deadline alerts help most and improve them." },
   { v: "v62", date: "14 JUN 2026", note: "On the Critical Windows screen you can now turn on reminders for the exact deadlines you're viewing \u2014 timed to your separation date." },
@@ -2555,7 +2558,7 @@ const DOCUMENT_VAULT = [{
   name: "VA Disability Rating Letter",
   critical: true,
   obtained: false,
-  notes: "Download from VA.gov or eBenefits."
+  notes: "Download from VA.gov (Records → VA letters)."
 }, {
   id: "d3",
   name: "Military Medical Records (Complete)",
@@ -2640,12 +2643,12 @@ const HEALTHCARE_TIMELINE = [{
 }, {
   phase: "VA Healthcare",
   coverage: "Priority Group",
-  action: "Enroll at VA.gov. Combat vets: 5-year enhanced eligibility.",
+  action: "Enroll at VA.gov. Combat vets: 10-year enhanced eligibility.",
   status: "info"
 }, {
   phase: "VA Dental",
   coverage: "VADIP",
-  action: "Only 100% SC qualifies for free VA dental. Others: VADIP insurance.",
+  action: "Free VA dental is limited (100% SC, service-connected dental conditions, ex-POW \u2014 plus one-time care if you APPLY WITHIN 180 DAYS of separation). Most vets: VADIP insurance.",
   status: "info"
 }];
 const THEMES = {
@@ -2748,25 +2751,25 @@ const RESOURCES = [
 // SMART REMINDER ENGINE — 22 TIMED TRANSITION REMINDERS
 // ═══════════════════════════════════════════════════════════════
 const SMART_REMINDERS = [
-  {id:"r-24-itp",mo:24,cat:"ADMIN",pri:"ADVISORY",title:"Initiate Individual Transition Plan (ITP)",brief:"Sit down with your commander and establish your ITP. This is the foundation — everything builds from here.",items:["Schedule ITP meeting with chain of command","Attend initial TAP/Transition GPS briefing","Request copies of ORB/SRB and review for accuracy","Pull OMPF and verify all service records"],deadline:"No hard deadline — but every day you wait compresses your timeline",why:"Late starts lead to rushed decisions on benefits worth six figures over your lifetime.",link:"https://www.tapevents.mil"},
+  {id:"r-24-itp",mo:24,cat:"ADMIN",pri:"ADVISORY",title:"Initiate Individual Transition Plan (ITP)",brief:"Sit down with your commander and establish your ITP. This is the foundation — everything builds from here.",items:["Schedule ITP meeting with chain of command","Attend initial TAP briefing","Request copies of ORB/SRB (or branch equivalent) and review for accuracy","Pull OMPF and verify all service records"],deadline:"No hard deadline — but every day you wait compresses your timeline",why:"Late starts lead to rushed decisions on benefits worth six figures over your lifetime.",link:"https://www.tapevents.mil"},
   {id:"r-24-net",mo:24,cat:"CAREER",pri:"ADVISORY",title:"Begin Building Your Civilian Network",brief:"Your DD214 won't get you hired — your network will. Start now.",items:["Create or update LinkedIn profile","Join veteran networking groups (ACP, MilMentor)","Identify 3-5 mentors in target industry","Attend at least one industry event monthly"],deadline:null,why:"Veterans who network 18+ months out have significantly higher placement rates.",link:"https://www.linkedin.com"},
-  {id:"r-18-sb",mo:18,cat:"CAREER",pri:"HIGH",title:"Research SkillBridge Opportunities",brief:"SkillBridge = civilian internship during last 180 days while collecting military pay. Slots fill fast — and the approval rules just shifted in your favor.",items:["Browse SkillBridge employers in the app feed","Identify 3-5 target companies","NEW (JUN 2026): services are directed to APPROVE SkillBridge requests that support the defense industrial base — shipbuilding, missile defense, aircraft, munitions — denying only for readiness reasons. Targeting a defense employer strengthens your packet","Verify commander support and unit manning","Begin application packet (some need 12+ months lead)","Check mypatriotcareer.mil for defense-sector openings and credentialing resources"],deadline:"Applications often due 6-12 months before start",why:"Over 90% of SkillBridge participants receive job offers. Missing this window = walking out with no income. If your target employer supports the defense industrial base, the approval presumption now works for you — service-level implementation guidance is still rolling out, so confirm with your Transition Center.",link:"https://skillbridge.osd.mil"},
-  {id:"r-18-res",mo:18,cat:"CAREER",pri:"HIGH",title:"Begin Resume Development",brief:"Translating military experience into civilian language takes time. Don't wait.",items:["Use MOS Crosswalk to identify civilian job titles","Draft resume with accomplishment-based bullets","Remove ALL military jargon","Get feedback from a civilian hiring manager"],deadline:"First draft complete NLT 12 months out",why:"Poorly translated resumes get filtered by ATS before a human ever sees them.",link:null},
-  {id:"r-12-bdd",mo:12,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F BDD Claim Window OPENS",brief:"File your VA disability claim 180-365 days before separation. Rating effective DAY ONE.",items:["Gather all medical records and LOD determinations","Schedule pre-claim consultation with VSO (DAV, VFW, American Legion)","File BDD claim on VA.gov","Get buddy statements for service-connected conditions","Schedule remaining medical appointments for documentation"],deadline:"File between 365 and 180 days before separation",why:"Filing after separation can delay your rating by 6-12+ months. That's $20,000+ in delayed compensation.",link:"https://www.va.gov/disability/how-to-file-claim/"},
-  {id:"r-12-tax",mo:12,cat:"FINANCE",pri:"CRITICAL",title:"\u26A0\uFE0F State Tax Residency — Home of RESIDENCE Matters",brief:"Home of RESIDENCE (not Home of Record) determines state tax on retired pay. $5K-$15K+/year impact.",items:["No state income tax: AK, FL, NV, NH, SD, TN, TX, WA, WY","No tax on retired pay: AL, HI, IL, IA, KS, KY, LA, MA, MI, MS, MO, NJ, NY, NC, OH, OK, OR, PA, WI","Some tax: AZ, AR, CO, CT, DE, GA, ID, IN, ME, MD, MN, MT, NE, NM, ND, SC, VA, WV","Establish legal residency BEFORE separation","MSRRA allows spouses same state for tax"],deadline:"Establish residency before separation date",why:"Wrong state costs retirees thousands annually for life.",link:"https://myarmybenefits.us.army.mil/Benefit-Library/State/Territory-Benefits"},
+  {id:"r-18-sb",mo:18,cat:"CAREER",pri:"HIGH",title:"Research SkillBridge Opportunities",brief:"SkillBridge = civilian internship during last 180 days while collecting military pay. Slots fill fast — and the approval rules just shifted in your favor.",items:["Browse SkillBridge employers in the app feed","Identify 3-5 target companies","NEW (JUN 2026): services are directed to APPROVE SkillBridge requests that support the defense industrial base — shipbuilding, missile defense, aircraft, munitions — denying only for readiness reasons. Targeting a defense employer strengthens your packet","Verify commander support and unit manning","Begin application packet (some need 12+ months lead)","Check mypatriotcareer.mil for defense-sector openings and credentialing resources"],deadline:"Applications often due 6-12 months before start",why:"Most SkillBridge participants report job offers from their programs. Missing this window = walking out with no income. If your target employer supports the defense industrial base, the approval presumption now works for you — service-level implementation guidance is still rolling out, so confirm with your Transition Center.",link:"https://skillbridge.osd.mil"},
+  {id:"r-18-res",mo:18,cat:"CAREER",pri:"HIGH",title:"Begin Resume Development",brief:"Translating military experience into civilian language takes time. Don't wait.",items:["Use MOS Crosswalk to identify civilian job titles","Draft resume with accomplishment-based bullets","Remove ALL military jargon","Get feedback from a civilian hiring manager"],deadline:"First draft complete no later than 12 months out",why:"Poorly translated resumes get filtered by ATS before a human ever sees them.",link:null},
+  {id:"r-12-bdd",mo:12,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F BDD Claim \u2014 Prep Now, File at 180 Days",brief:"File your VA disability claim in the 180-90 day window before separation. Rating effective DAY ONE.",items:["Gather all medical records and Line of Duty (LOD) determinations","Schedule pre-claim consultation with VSO (DAV, VFW, American Legion)","File BDD claim on VA.gov","Get buddy statements for service-connected conditions","Schedule remaining medical appointments for documentation"],deadline:"File between 180 and 90 days before separation",why:"Filing after separation can delay your rating by 6-12+ months. That can mean tens of thousands in delayed compensation.",link:"https://www.va.gov/disability/how-to-file-claim/"},
+  {id:"r-12-tax",mo:12,cat:"FINANCE",pri:"CRITICAL",title:"\u26A0\uFE0F State Tax Residency — Legal RESIDENCE Matters",brief:"Your state of LEGAL RESIDENCE (not Home of Record) determines state tax on retired pay. $5K-$15K+/year impact.",items:["No state income tax: AK, FL, NV, NH, SD, TN, TX, WA, WY","Most other states fully exempt military retired pay — check YOUR state's current status in the Tax Intel tab","Establish legal residency BEFORE separation","MSRRA allows spouses same state for tax"],deadline:"Establish residency before separation date",why:"Wrong state costs retirees thousands annually for life.",link:"https://myarmybenefits.us.army.mil/Benefit-Library/State/Territory-Benefits"},
   {id:"r-12-sbp",mo:12,cat:"FINANCE",pri:"CRITICAL",title:"\u26A0\uFE0F Survivor Benefit Plan (SBP) — IRREVOCABLE",brief:"Retirees must elect or decline SBP. Nearly IRREVOCABLE. Provides up to 55% of retired pay to survivors.",items:["SBP costs 6.5% of retired pay for spouse","Calculate breakeven vs commercial life insurance","Spouse concurrence required to decline","SBP is inflation-adjusted; commercial is not","Consider DIC offset and SBP-DIC interaction"],deadline:"Election must be made before retirement",why:"Declining and dying without adequate life insurance leaves your family exposed. Cannot be undone.",link:null},
-  {id:"r-12-tsp",mo:12,cat:"FINANCE",pri:"HIGH",title:"TSP Strategy & Rollover Planning",brief:"TSP expense ratio 0.043% — lowest in the industry. Don't roll over blindly.",items:["Review current allocation and rebalance","Options: leave in TSP, rollover to IRA, or new 401(k)","TSP expense ratio: 0.043% vs civilian 0.5-1.5%","Use DIRECT rollover to avoid 20% withholding","Consider Roth conversion if lower tax bracket post-sep"],deadline:"Have plan before separation",why:"Indirect rollovers trigger 20% withholding and potential early withdrawal penalties.",link:"https://www.tsp.gov"},
-  {id:"r-8-clr",mo:8,cat:"CAREER",pri:"HIGH",title:"Security Clearance Monetization",brief:"Secret or TS/SCI = $10K-$30K+ salary premium — but only if you use it before it lapses.",items:["Verify clearance status with SSO/FSO","Target cleared positions in defense/intel/contracting","Booz Allen, SAIC, Leidos, Raytheon recruit cleared vets","Clearance stays active 24 months post-sep if no break"],deadline:"24 months post-sep for most clearances",why:"A lapsed TS/SCI costs $50K+ and 12-18 months to reinvestigate. Use it or lose it.",link:null},
-  {id:"r-6-bdd2",mo:6,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F BDD Window CLOSES at 180 Days",brief:"If you haven't filed yet, you are AT THE DEADLINE. After this, you lose the fast-track.",items:["File BDD claim on VA.gov IMMEDIATELY","Ensure all C&P exams scheduled","Submit remaining buddy statements","Confirm VSO submitted your package"],deadline:"180 days before separation — HARD DEADLINE",why:"Missing BDD means 6-18 months delay on your rating and backpay.",link:"https://www.va.gov/disability/how-to-file-claim/"},
-  {id:"r-6-house",mo:6,cat:"HOUSING",pri:"HIGH",title:"Post-Separation Housing Plan",brief:"Where are you living after ETS? BAH is going away.",items:["Research housing costs in target area","VA Home Loan: $0 down, no PMI — use it","Get pre-approved before separation (active duty income helps)","If renting, budget first/last/deposit without BAH"],deadline:"Housing secured NLT 60 days before ETS",why:"Separating without housing leads to financial stress and family strain.",link:"https://www.va.gov/housing-assistance/home-loans/"},
-  {id:"r-6-gi",mo:6,cat:"BENEFITS",pri:"HIGH",title:"GI Bill & Education Planning",brief:"Use VR&E (Chapter 31) BEFORE GI Bill (Chapter 33) to preserve months of entitlement.",items:["Apply to target schools","Apply for GI Bill COE on VA.gov","CRITICAL: Apply for VR&E (Ch.31) FIRST","Research Yellow Ribbon programs","Factor in BAH-equivalent MHA (based on school zip)"],deadline:"School applications 6+ months before start",why:"Using GI Bill before VR&E wastes months worth tens of thousands.",link:"https://www.va.gov/education/"},
-  {id:"r-4-med",mo:4,cat:"HEALTH",pri:"HIGH",title:"Final Medical & Dental",brief:"Get everything documented while it's still free. Dental alone runs $500-$2K after separation.",items:["Schedule dental cleaning and procedures","Vision exam and updated prescription","Complete all pending referrals","Request complete medical and dental records","Schedule separation physical","Document ANY condition for potential VA claim"],deadline:"Complete all appointments NLT 30 days before ETS",why:"Undocumented conditions are exponentially harder to claim after separation.",link:null},
-  {id:"r-4-dd214",mo:4,cat:"ADMIN",pri:"CRITICAL",title:"DD214 Worksheet Review",brief:"Your DD214 is the most important document of your military career. Errors take months to correct.",items:["Review worksheet with S-1/admin","Verify dates, rank, MOS, awards, deployments","Ensure all schools and qualifications listed","Verify separation code and RE code","Dispute BEFORE signing — correcting after is a nightmare"],deadline:"Review as soon as generated — typically 90 days before ETS",why:"Errors affect VA benefits, employment, and veterans preference for life.",link:null},
-  {id:"r-3-va",mo:3,cat:"HEALTH",pri:"HIGH",title:"Register for VA Healthcare",brief:"Apply now so coverage is ready on Day 1.",items:["Apply at VA.gov or nearest VA medical center","Understand your Priority Group","Locate nearest VAMC and CBOC","TAMP: 180 days TRICARE after separation","Retirees: review TRICARE Retired options"],deadline:"Apply before separation for seamless coverage",why:"TAMP only lasts 180 days. Gaps put your family at risk.",link:"https://www.va.gov/health-care/apply/"},
-  {id:"r-2-fin",mo:2,cat:"FINANCE",pri:"HIGH",title:"Final Financial Readiness Check",brief:"Do you have 3-6 months saved? Know when the money stops.",items:["Verify final pay date and amount with finance","Calculate terminal leave (sell back vs take leave)","Ensure 3-6 months emergency fund accessible","Budget first 90 days without military pay","Cancel military-specific allotments","File unemployment on Day 1 — veterans qualify"],deadline:"NLT 60 days before ETS",why:"35% of veterans report financial hardship in Year 1. Don't be a statistic.",link:null},
+  {id:"r-12-tsp",mo:12,cat:"FINANCE",pri:"HIGH",title:"TSP Strategy & Rollover Planning",brief:"TSP expense ratios (~0.05%) are among the lowest anywhere. Don't roll over blindly.",items:["Review current allocation and rebalance","Options: leave in TSP, rollover to IRA, or new 401(k)","TSP expense ratio ~0.05% vs typical civilian 0.5-1.5%","Use DIRECT rollover to avoid 20% withholding","Consider Roth conversion if lower tax bracket post-sep"],deadline:"Have plan before separation",why:"Indirect rollovers trigger 20% withholding and potential early withdrawal penalties.",link:"https://www.tsp.gov"},
+  {id:"r-8-clr",mo:8,cat:"CAREER",pri:"HIGH",title:"Security Clearance Monetization",brief:"Secret or TS/SCI typically adds $10K-$30K+ to salary offers — but only if you use it before it lapses.",items:["Verify clearance status with SSO/FSO","Target cleared positions in defense/intel/contracting","Booz Allen, SAIC, Leidos, Raytheon recruit cleared vets","Clearance stays active 24 months post-sep if no break"],deadline:"24 months post-sep for most clearances",why:"A lapsed TS/SCI costs $50K+ and 12-18 months to reinvestigate. Use it or lose it.",link:null},
+  {id:"r-6-bdd2",mo:6,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F BDD Window OPEN \u2014 Closes at 90 Days",brief:"The BDD window runs 180 to 90 days out. If you haven't filed yet, move now \u2014 at 90 days you lose the fast-track.",items:["File BDD claim on VA.gov IMMEDIATELY","Ensure all C&P exams scheduled","Submit remaining buddy statements","Confirm VSO submitted your package"],deadline:"Closes 90 days before separation — HARD DEADLINE",why:"Missing BDD means 6-18 months delay on your rating and backpay.",link:"https://www.va.gov/disability/how-to-file-claim/"},
+  {id:"r-6-house",mo:6,cat:"HOUSING",pri:"HIGH",title:"Post-Separation Housing Plan",brief:"Where are you living after ETS? BAH is going away.",items:["Research housing costs in target area","VA Home Loan: $0 down, no PMI — use it","Get pre-approved before separation (active duty income helps)","If renting, budget first/last/deposit without BAH"],deadline:"Housing secured no later than 60 days before ETS",why:"Separating without housing leads to financial stress and family strain.",link:"https://www.va.gov/housing-assistance/home-loans/"},
+  {id:"r-6-gi",mo:6,cat:"BENEFITS",pri:"HIGH",title:"GI Bill & Education Planning",brief:"If eligible, evaluate VR&E (Chapter 31) before the GI Bill (Chapter 33) \u2014 it can preserve months of entitlement.",items:["Apply to target schools","Apply for GI Bill COE on VA.gov","If eligible: evaluate VR&E (Ch.31) BEFORE using GI Bill","Research Yellow Ribbon programs","Factor in BAH-equivalent MHA (based on school zip)"],deadline:"School applications 6+ months before start",why:"VR&E does not count against your 36 GI Bill months \u2014 sequencing right can preserve benefits worth tens of thousands.",link:"https://www.va.gov/education/"},
+  {id:"r-4-med",mo:4,cat:"HEALTH",pri:"HIGH",title:"Final Medical & Dental",brief:"Get everything documented while it's still free. Dental alone runs $500-$2K after separation.",items:["Schedule dental cleaning and procedures","Vision exam and updated prescription","Complete all pending referrals","Request complete medical and dental records","Schedule separation physical","Document ANY condition for potential VA claim"],deadline:"Complete all appointments no later than 30 days before ETS",why:"Undocumented conditions are exponentially harder to claim after separation.",link:null},
+  {id:"r-4-dd214",mo:4,cat:"ADMIN",pri:"CRITICAL",title:"DD214 Worksheet Review",brief:"Your DD214 is the most important document of your military career. Errors take months to correct.",items:["Review worksheet with S-1/admin/personnel office","Verify dates, rank, MOS, awards, deployments","Ensure all schools and qualifications listed","Verify separation code and RE code","Dispute BEFORE signing — correcting after is a nightmare"],deadline:"Review as soon as generated — typically 90 days before ETS",why:"Errors affect VA benefits, employment, and veterans preference for life.",link:null},
+  {id:"r-3-va",mo:3,cat:"HEALTH",pri:"HIGH",title:"Register for VA Healthcare",brief:"Apply now so coverage is ready on Day 1.",items:["Apply at VA.gov or nearest VA medical center","Understand your Priority Group","Locate nearest VAMC and CBOC","TAMP (if you qualify): 180 days TRICARE after separation","Retirees: review TRICARE Retired options"],deadline:"Apply before separation for seamless coverage",why:"TAMP (when it applies) only lasts 180 days. Gaps put your family at risk.",link:"https://www.va.gov/health-care/apply/"},
+  {id:"r-2-fin",mo:2,cat:"FINANCE",pri:"HIGH",title:"Final Financial Readiness Check",brief:"Do you have 3-6 months saved? Know when the money stops.",items:["Verify final pay date and amount with finance","Calculate terminal leave (sell back vs take leave)","Ensure 3-6 months emergency fund accessible","Budget first 90 days without military pay","Cancel military-specific allotments","File unemployment on Day 1 — most separating members qualify (varies by state)"],deadline:"No later than 60 days before ETS",why:"35% of veterans report financial hardship in Year 1. Don't be a statistic.",link:null},
   {id:"r-1-final",mo:1,cat:"ADMIN",pri:"CRITICAL",title:"Final Out-Processing & Life Admin",brief:"You're on the objective. Execute with discipline.",items:["Complete TAP Capstone","USPS mail forwarding","Update banks, credit cards, insurance","Obtain 10+ certified DD214 copies","Verify final LES","Letter of service for employment verification","Download all military email contacts"],deadline:"All items complete before ETS",why:"Loose ends after separation become 10x harder without base access.",link:null},
   {id:"r-0-ets",mo:0,cat:"ADMIN",pri:"CRITICAL",title:"SEPARATION DAY — Verify Everything",brief:"Before you drive off for the last time, make sure your paperwork is squared away.",items:["VERIFY DD214 — read every line before signing","Obtain multiple certified copies","Verify sep code, RE code, characterization","Secure medical and dental records"],deadline:"TODAY",why:"Your DD214 is your new birth certificate. Get it right.",link:null},
-  {id:"r-p1",mo:-1,cat:"BENEFITS",pri:"CRITICAL",title:"First 30 Days — File Unemployment & Activate Benefits",brief:"Several critical windows open at separation and close fast.",items:["File unemployment IMMEDIATELY (DD214 = proof)","Register for VA healthcare if not done","Monitor VA.gov for C&P exam schedule","Apply veteran's preference (SF-15)","Veteran driver's license designation"],deadline:"State unemployment deadlines start from sep date",why:"Unemployment = $1,500-$2,800/month bridge income. Don't leave it on the table.",link:null},
+  {id:"r-p1",mo:-1,cat:"BENEFITS",pri:"CRITICAL",title:"First 30 Days — File Unemployment & Activate Benefits",brief:"Several critical windows open at separation and close fast.",items:["File unemployment IMMEDIATELY (DD214 = proof)","Register for VA healthcare if not done","Monitor VA.gov for C&P exam schedule","Apply veteran's preference (SF-15)","Veteran driver's license designation"],deadline:"State unemployment deadlines start from sep date",why:"Unemployment (UCX) can mean roughly $1,300-$2,200/month of bridge income depending on your state. Don't leave it on the table.",link:null},
   {id:"r-p4",mo:-4,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F SGLI to VGLI — The Clock Is Running",brief:"Free SGLI coverage ends 120 days after separation. VGLI with NO health exam is available only through day 240.",items:["Day 0-120: SGLI continues free — compare VGLI vs commercial term rates NOW","Day 0-240: VGLI guaranteed acceptance, no medical exam","Day 241-485: VGLI still possible but medical evidence required — can be denied","Day 486+: VGLI window closed permanently","If service-connected conditions exist, VGLI may be your only option","Apply at myvgli.prudential.com or 1-800-419-1473"],deadline:"240 days post-separation for no-exam VGLI — HARD DEADLINE",why:"After day 240 you must prove good health. PTSD, sleep apnea, or musculoskeletal conditions can disqualify you on the civilian market.",link:"https://www.va.gov/life-insurance/options-eligibility/vgli/"},
   {id:"r-p6",mo:-6,cat:"HEALTH",pri:"HIGH",title:"TAMP Ending — Healthcare Decision",brief:"180-day TAMP TRICARE is ending. You need a plan.",items:["VA-rated: verify enrollment and Priority Group","Employed: enroll in employer healthcare","Retiring: TRICARE Retired (Prime, Select, For Life at 65)","Otherwise: ACA marketplace (HealthCare.gov)","VA doesn't cover routine dental unless 100%"],deadline:"180 days post-separation",why:"One ER visit without coverage averages $2,200+.",link:"https://www.tricare.mil/Plans/Leaving"},
   {id:"r-p12",mo:-12,cat:"BENEFITS",pri:"HIGH",title:"One-Year AAR — Benefits & Career",brief:"You've been out a year. Time for an honest after-action review.",items:["Review VA claim — file supplemental if needed","Career at target level and salary?","If underemployed, use VET HUB tools","Check VR&E (Ch.31) eligibility","Rebalance TSP/retirement accounts"],deadline:"Self-imposed 12-month AAR",why:"Veterans who don't course-correct in Year 1 are more likely to stay underemployed.",link:null},
@@ -2788,7 +2791,7 @@ const CRITICAL_WINDOWS = [
     id:"tap", num:1, name:"TAP MANDATE", fullName:"Transition Assistance Program",
     authority:"10 U.S.C. Ch. 58 · DoDI 1332.35 (Ch. 1, 29 Jul 2025)",
     startDay:-540, hardStartDay:-365, endDay:0, irrevocable:false,
-    shortDesc:"Federally mandated. NLT T-365. Initial Counseling → Pre-Sep → Transition Day → Track(s) → Capstone.",
+    shortDesc:"Federally mandated. Start no later than 365 days out (T-365). Initial Counseling → Pre-Sep → Transition Day → Track(s) → Capstone.",
     whyMatters:"Non-compliance can delay terminal leave, SkillBridge, and separation orders. Command must release you from duty to attend — statutory obligation, not a favor.",
     prerequisites:["Current LES","VMET from milConnect","Credit report"],
     actionSteps:["Contact installation Military & Family Readiness Center","Complete Self-Assessment and Statement of Understanding","Schedule Initial Counseling — mandatory before any other TAP component","Receive Tier assignment (1, 2, or 3) driving required 2-Day Tracks"],
@@ -2804,7 +2807,7 @@ const CRITICAL_WINDOWS = [
     authority:"10 U.S.C. § 1143 · DoDI 1322.29",
     startDay:-365, hardStartDay:-180, endDay:0, irrevocable:false,
     shortDesc:"Civilian employer training up to T-180. Retain pay, BAH, healthcare. First field-grade commander (O-4+) approval required.",
-    whyMatters:"Frequently the only practical opportunity to gain civilian work experience before DD-214. Command approval is often the rate-limiting step — start conversations 6+ months out.",
+    whyMatters:"Frequently the only practical opportunity to gain civilian work experience before DD214. Command approval is often the rate-limiting step — start conversations 6+ months out.",
     prerequisites:["TAP Initial Counseling complete","Tier-appropriate Career Readiness Standards met or on track","Unit commander endorsement","Identified approved SkillBridge partner program"],
     actionSteps:["Begin identifying potential SkillBridge partners at T-365","Obtain command endorsement — start the conversation 6+ months out","Submit package through service-specific process","Coordinate timing so clearing is complete before separation"],
     forms:["Service-specific SkillBridge application package"],
@@ -2819,13 +2822,13 @@ const CRITICAL_WINDOWS = [
     authority:"38 U.S.C. § 5101 et seq.",
     startDay:-180, hardStartDay:-180, endDay:-90, irrevocable:true,
     shortDesc:"Pre-discharge VA disability claim. File T-180 to T-90 only. Goal: rating decision within 30 days of separation.",
-    whyMatters:"Can result in disability compensation starting within 15 days of separation. Standard post-discharge claims take 3–6 months — sometimes 9–12. Highest-leverage pre-separation action for service-connected conditions.",
+    whyMatters:"Often delivers a rating decision within about a month of separation. Standard post-discharge claims take 3–6 months — sometimes 9–12. Highest-leverage pre-separation action for service-connected conditions.",
     prerequisites:["Confirmed separation date (180–90 days away)","Complete Service Treatment Records from current period","Completed SHA — Part A Self-Assessment","Availability for VA medical exams 45+ days after filing"],
     actionSteps:["Request complete STRs at T-180 — medical, dental, mental health (separately)","Gather private medical records for service-connected conditions","Complete SHA Part A Self-Assessment","File VA Form 21-526EZ (check BDD box, upper-left) via VA.gov or BDD intake site","Attend every scheduled C&P exam"],
     forms:["VA Form 21-526EZ (BDD)","SHA Part A DBQ"],
     pocs:["VA.gov","Installation TAP VA Benefits Briefing","VA 1-800-827-1000"],
     consequence:"Before T-180: cannot process. After T-90: drops to Standard or FDC process — no expedited decision. After separation: 3–12 month delay before any compensation begins. Intent to File does NOT preserve effective date for BDD.",
-    guardReserve:"Applies to members activated 180+ days whose DD-214 will issue during activation. Verify with local VA rep before filing.",
+    guardReserve:"Applies to members activated 180+ days whose DD214 will issue during activation. Verify with local VA rep before filing.",
     sources:[{label:"VA Pre-Discharge Claim",url:"https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/"},{label:"VBA BDD Program",url:"https://benefits.va.gov/BENEFITS/benefits-delivery-discharge-program.asp"}],
     reminderDays:[-210,-180,-150,-120,-90]
   },
@@ -2834,12 +2837,12 @@ const CRITICAL_WINDOWS = [
     authority:"DoDI 6040.46 · 10 U.S.C. § 1145(a)(5) · 2013 VA/DoD MOA",
     startDay:-180, hardStartDay:-180, endDay:-30, irrevocable:false,
     shortDesc:"Single exam satisfying both DoD separation physical and VA disability rating exam. Admin review and validation NLT T-30.",
-    whyMatters:"Tightly coupled to BDD. Conditions not documented here are significantly harder to service-connect later. Cannot separate without a completed separation physical — delays DD-214 issuance.",
+    whyMatters:"Tightly coupled to BDD. Conditions not documented here are significantly harder to service-connect later. Cannot separate without a completed separation physical — delays DD214 issuance.",
     prerequisites:["Access to MHS Genesis or installation medical out-processing portal","List of current medications and supplements","Deployment history","List of claimed conditions"],
     actionSteps:["Complete Part A Self-Assessment (online via military medical portal) BEFORE scheduling Part B","Attend Part B clinical assessment with provider","Obtain copy of completed SHA for personal records","Ensure SHA data transfers to VA via DoD/VA interface if filing BDD"],
     forms:["DBQ SHA Part A Self-Assessment","DD Form 2807-1","DD Form 2808"],
     pocs:["Installation medical","TMIP","Branch health clinic"],
-    consequence:"Cannot separate without completed separation physical. Delays DD-214. Makes future VA claims substantially harder to service-connect.",
+    consequence:"Cannot separate without completed separation physical. Delays DD214. Makes future VA claims substantially harder to service-connect.",
     guardReserve:"Required for members separating from 180+ day activation or 30+ day contingency orders.",
     sources:[{label:"DoDI 6040.46",url:"https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/604046p.pdf"},{label:"VA SHA Program",url:"https://benefits.va.gov/BENEFITS/separation-health-assessment.asp"}],
     reminderDays:[-180,-120,-90,-60,-30]
@@ -2869,7 +2872,7 @@ const CRITICAL_WINDOWS = [
     whyMatters:"Gap in health coverage is one of the most financially catastrophic outcomes of poor separation planning. TAMP is the primary 180-day cushion — but only for qualifying separations. Retirees NOT eligible for TAMP.",
     prerequisites:["Verify TAMP eligibility in DEERS via milConnect","Determine post-separation TRICARE plan (Prime vs Select)","Family members updated in DEERS"],
     actionSteps:["T-60: Verify TAMP eligibility in DEERS","T-30: Select post-separation plan; re-enrollment required (you are leaving active-duty TRICARE system)","T-7: Submit TRICARE enrollment before the 20th of the month to lock 1st-of-next-month coverage","Day 181: TAMP ends — must have next coverage in place","Day 181+60: CHCBP application deadline (if using CHCBP bridge)"],
-    forms:["Regional TRICARE contractor enrollment","DD-214 (proof of separation characterization)"],
+    forms:["Regional TRICARE contractor enrollment","DD214 (proof of separation characterization)"],
     pocs:["milConnect (DEERS)","Humana Military (regional contractor)","CHCBP via Humana Military"],
     consequence:"Miss CHCBP 60-day window: limited to civilian market (ACA), VA health care (if enrolled), TRS/TRR (if Guard/Reserve qualifying). No recovery path to CHCBP once missed.",
     decisionBranch:{title:"Post-TAMP coverage pathway",options:[{condition:"Retiring from active duty",result:"TRICARE Prime/Select → TRICARE For Life at 65. NOT eligible for TAMP."},{condition:"Guard/Reserve, qualifying activation",result:"TRICARE Reserve Select after TAMP — or CHCBP as backup"},{condition:"Separating to civilian life",result:"VA health care (if service-connected) + CHCBP up to 18 months (apply within 60 days of TAMP end) → ACA Marketplace"},{condition:"Retiring Reserve, under 60",result:"TRICARE Retired Reserve (TRR) — or CHCBP as backup"}]},
@@ -2890,7 +2893,7 @@ const CRITICAL_WINDOWS = [
     actionSteps:["T-90: Compare VGLI rates vs civilian term life (civilian exams take 4–8 weeks)","T+0: Clock starts. 240-day no-medical window opens.","T+30–60: If pursuing civilian coverage, complete medical exam and lock in before SGLI free period ends","T+120: SGLI free coverage ENDS. Commercial SGLI conversion window closes.","T+200 (internal deadline): Submit VGLI application — buffer before T+240","T+240: VGLI no-medical window CLOSES","T+486: Permanent ineligibility for VGLI"],
     forms:["SGLV Form 8714 (VGLI application)","Online: myvgli.prudential.com","SGLV Form 180 (reinstatement if lapsed)"],
     pocs:["OSGLI / Prudential: 800-419-1473","osgli.osgli.conversions@prudential.com"],
-    consequence:"Day 121–240: no SGLI coverage gap, but VGLI still guaranteed — sign up immediately. Day 241–485: medical underwriting; may be denied. Day 486+: PERMANENTLY ineligible for VGLI.",
+    consequence:"Day 121–240: SGLI has ENDED — you are uncovered, but VGLI is still guaranteed. Sign up immediately. Day 241–485: medical underwriting; may be denied. Day 486+: PERMANENTLY ineligible for VGLI.",
     decisionBranch:{title:"Which product fits",options:[{condition:"Medically high-risk (service-connected conditions)",result:"Apply for VGLI within 240 days. Guaranteed coverage, no underwriting."},{condition:"Medically low-risk, under 40",result:"Compare civilian term life before the 240-day deadline — civilian may be cheaper. Secure VGLI as backstop if in doubt."},{condition:"Want permanent (whole life) coverage",result:"Convert SGLI to commercial permanent policy within 120 days — separate process from VGLI."},{condition:"FSGLI spouse coverage",result:"Spouse coverage can convert to commercial permanent within 240 days post-separation."}]},
     guardReserve:"Members released from Ready Reserve, assigned to IRR, or placed on TDRL have the same window (1 year + 120 days) starting from that status change.",
     sources:[{label:"VA VGLI",url:"https://www.va.gov/life-insurance/options-eligibility/vgli/"},{label:"VA SGLI",url:"https://www.va.gov/life-insurance/options-eligibility/sgli/"}],
@@ -2902,7 +2905,7 @@ const SCRA_WINDOW = {
   id:"scra", num:"+", name:"SCRA SUNSET", fullName:"Servicemembers Civil Relief Act Protections",
   authority:"50 U.S.C. § 3901 et seq.",
   startDay:-90, endDay:90, irrevocable:false,
-  shortDesc:"Most SCRA protections end at separation or within 90 days. Foreclosure protection extends 1 year; default judgment protection 60 days.",
+  shortDesc:"Most SCRA protections end at separation or within 90 days. Foreclosure protection extends 1 year; default judgments may be reopened up to 90 days after separation.",
   whyMatters:"Execute any pending SCRA-protected actions (lease terminations, interest rate reductions on pre-service debt) before or immediately after separation. State of legal residence does NOT automatically follow you — standard domicile rules apply the moment you separate.",
   actionSteps:["T-90: Determine post-separation state of residence. Establish domicile indicators if changing states","T-30: Execute any SCRA-protected lease terminations (rental, cell, cable, gym, home security) with written notice plus orders","T+0: Document status at separation for pending debt reductions","T+90 hard deadline: Most SCRA protections expire"],
   pocs:["Installation legal assistance office (free)","SCRA.dmdc.osd.mil","Military OneSource legal"],
@@ -2933,13 +2936,13 @@ function getCriticalWindowStatus(win, daysOut, C) {
     return {state:"future", color:C.inactive, label:"OPENS IN "+daysUntilOpen+"D"};
   }
   if (todayOffsetFromETS > endDay) {
-    if (win.irrevocable) return {state:"missed_perm", color:"#C94A4A", label:"CLOSED — IRREVOCABLE"};
-    return {state:"missed", color:"#C94A4A", label:"CLOSED"};
+    if (win.irrevocable) return {state:"missed_perm", color:"#E05252", label:"CLOSED — IRREVOCABLE"};
+    return {state:"missed", color:"#E05252", label:"CLOSED"};
   }
   var daysLeft = endDay - todayOffsetFromETS;
   if (criticalEnd !== undefined && todayOffsetFromETS <= criticalEnd) {
     var daysToCritical = criticalEnd - todayOffsetFromETS;
-    if (daysToCritical <= 30) return {state:"closing_critical", color:"#C94A4A", label:daysToCritical+"D TO NO-MEDICAL CUTOFF"};
+    if (daysToCritical <= 30) return {state:"closing_critical", color:"#E05252", label:daysToCritical+"D TO NO-MEDICAL CUTOFF"};
     if (daysToCritical <= 60) return {state:"closing", color:C.goldBright, label:daysToCritical+"D TO NO-MEDICAL CUTOFF"};
   }
   if (daysLeft <= 30) return {state:"closing", color:C.goldBright, label:daysLeft+"D TO CLOSE"};
@@ -3259,12 +3262,12 @@ var PCS_PROGEAR_S = 500;
 var PCS_FIELD_NOTES = [
   {t:"DLA and TLE Do NOT Apply to Final Move",b:"This is the #1 misconception. Your separation or retirement move does NOT qualify for Dislocation Allowance or Temporary Lodging Expense. Budget accordingly.",c:"#ff6b6b"},
   {t:"Pro-Gear Must Be Packed Separately",b:"Your 2,000 lbs of pro-gear (and spouse\u2019s 500 lbs) is only exempt if packed and labeled SEPARATELY. If packers mix it with HHG, it counts against your allowance.",c:"#f0c040"},
-  {t:"75 Days to Claim Damage",b:"After delivery, inspect EVERYTHING. Note damage on the delivery inventory. File through Defense Personal Property System (DPS). After 75 days, you lose your right to file.",c:"#f0c040"},
+  {t:"180 Days to Report Damage",b:"After delivery, inspect EVERYTHING. Note damage on the delivery inventory. Give written notice of loss/damage within 180 days, then file the claim within 9 months for full replacement value (12 months for shipments picked up on/after 15 MAY 2026). File through DPS.",c:"#f0c040"},
   {t:"GHC Contract Canceled (JUN 2025)",b:"All shipments now route through the legacy Tender of Service program. May cause delays during peak PCS season (May-Aug). Plan early.",c:"#8BB83C"},
   {t:"Storage Entitlements Exist",b:"You may be entitled to Non-Temporary Storage (NTS) while you decide where to settle. Especially valuable for retirees using the 3-6 year window. Verify with your transportation office.",c:"#8BB83C"},
   {t:"MALT Uses DTOD, Not Your Odometer",b:"Mileage reimbursement uses the Defense Table of Official Distances \u2014 not the route you drive. Check DTOD distance before planning.",c:"#8BB83C"},
   {t:"PPM Can Put Money in Your Pocket",b:"If you do a Personally Procured Move under your weight allowance, you keep the difference. Reimbursement is taxable income, but can be significant for lighter moves.",c:"#8BB83C"},
-  {t:"Your DD-214 Grade = Your Weight Allowance",b:"The grade on your DD-214 determines your allowance. If your promotion isn\u2019t reflected, get it corrected BEFORE separation.",c:"#ff6b6b"}
+  {t:"Your DD214 Grade = Your Weight Allowance",b:"The grade on your DD214 determines your allowance. If your promotion isn\u2019t reflected, get it corrected BEFORE separation.",c:"#ff6b6b"}
 ];
 
 
@@ -3543,7 +3546,7 @@ function FeedbackModal(props) {
         color: C.textBody,
         lineHeight: 1.55
       }
-    }, "Your email app opened with the message ready to send.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), "Thank you for making this tool better for the force."), /*#__PURE__*/React.createElement("div", {
+    }, "Your email app should have opened with the message ready to send. If it didn't, email dean@veteranbridgesolutions.com directly.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), "Thank you for making this tool better for the force."), /*#__PURE__*/React.createElement("div", {
       style: {
         fontFamily: "'Oswald', sans-serif",
         fontSize: 12,
@@ -3876,7 +3879,7 @@ function AboutModal(props) {
     style: {
       color: C.goldBright
     }
-  }, "Private."), " Your data stores locally on your device. Nothing transmitted, nothing sold.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", {
+  }, "Private."), " Your planning data — dates, ratings, checklists — stays on your device; we never see it. Anonymous usage analytics only. Optional email signup is used solely for update alerts and never sold.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", {
     style: {
       color: C.goldBright
     }
@@ -3919,8 +3922,7 @@ function App() {
   const [theme, setTheme] = useState(() => {
     try {
       if (!window.__IS_IFRAME) {
-        const t = window.__safeGet("tops_theme");
-        return t === "professional" ? "professional" : "tactical";
+        return "tactical"; // light theme paused until fully themed
       }
     } catch (e) {}
     return "tactical";
@@ -4210,14 +4212,14 @@ function App() {
         color: C.textPrimary,
         marginBottom: 6
       }
-    }, variant === "vethub" ? "Get notified when policy changes affect your benefits" : userStatus === "guard" ? "Get notified when policy changes affect your benefits" : "get notified when policy changes affect your benefits"), /*#__PURE__*/React.createElement("div", {
+    }, variant === "vethub" ? "Get notified when policy changes affect your benefits" : userStatus === "guard" ? "Get notified when policy changes affect your benefits" : "Get notified when policy changes affect your benefits"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: C.textSecondary,
         lineHeight: 1.6,
         marginBottom: 12
       }
-    }, variant === "vethub" ? "VA disability rules, GI Bill changes, VR&E updates, employer programs \u2014 when something changes that affects your benefits, you get an email. The kind of changes that cost money if missed. No marketing. No spam." : userStatus === "guard" ? "A rules, TA caps, GI Bill changes, deployment benefits \u2014 when something changes that affects your benefits, you get an email. The kind of changes that cost money if missed. No marketing. No spam." : "SVA rules, SkillBridge eligibility, TA caps, BDD windows \u2014 when something changes that affects your benefits, you get an email. The kind of changes that cost money if missed. No marketing. No spam."), /*#__PURE__*/React.createElement("input", {
+    }, variant === "vethub" ? "VA disability rules, GI Bill changes, VR&E updates, employer programs \u2014 when something changes that affects your benefits, you get an email. The kind of changes that cost money if missed. No marketing. No spam." : userStatus === "guard" ? "TA rules and caps, GI Bill changes, deployment benefits \u2014 when something changes that affects your benefits, you get an email. The kind of changes that cost money if missed. No marketing. No spam." : "VA rules, SkillBridge eligibility, TA caps, BDD windows \u2014 when something changes that affects your benefits, you get an email. The kind of changes that cost money if missed. No marketing. No spam."), /*#__PURE__*/React.createElement("input", {
       type: "email",
       value: emailSignup.email,
       onChange: e => setEmailSignup(prev => ({
@@ -4332,7 +4334,7 @@ function App() {
   useEffect(() => {
     if (window.__IS_IFRAME) return;
     try {
-      const savedETS = window.__safeGet("etsDate");
+      const savedETS = window.__safeGet("etsDate") || window.__safeGet("tops_sep_date");
       if (savedETS) setSeparationDate(savedETS);
       const savedTasks = window.__safeGet("taskProgress");
       if (savedTasks) setMilestones(JSON.parse(savedTasks));
@@ -4427,7 +4429,7 @@ function App() {
 
     let etsDate = "";
     try {
-      etsDate = window.__safeGet("etsDate") || "";
+      etsDate = window.__safeGet("etsDate") || window.__safeGet("tops_sep_date") || "";
     } catch (e) {}
 
     const nowIso = new Date().toISOString();
@@ -4636,7 +4638,7 @@ function App() {
     const s = st.toUpperCase();
     if (STATE_TAX_DATA.noIncomeTax.includes(s)) return {
       status: "NO STATE INCOME TAX",
-      color: C.green,
+      color: C.greenBright,
       detail: "No income tax. Retired pay is tax-free at the state level."
     };
     if (STATE_TAX_DATA.noTaxRetiredPay.includes(s)) return {
@@ -4733,7 +4735,7 @@ function App() {
             className: "onboard-divider"
           }), /*#__PURE__*/React.createElement("p", {
             className: "onboard-description"
-          }, "No marketing. No spam. Unsubscribe anytime. Just the changes that matter to your benefits."), /*#__PURE__*/React.createElement("div", {
+          }, "Deadlines, VA math, pay estimates, SkillBridge intel, and state tax answers \u2014 one free toolkit for your whole transition."), /*#__PURE__*/React.createElement("div", {
             className: "onboard-micro-copy"
           }, "The next 4 questions personalize your timeline so the right reminders fire at the right time.", /*#__PURE__*/React.createElement("br", null), "About 60 seconds. Or skip and explore the tools first."), /*#__PURE__*/React.createElement("button", {
             onClick: function () {
@@ -4852,7 +4854,7 @@ function App() {
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 3 OF 4"),
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "WHAT BRINGS YOU HERE?"),
             React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, "Your military training has civilian value. Tell us what you're looking to do and we'll point you to the right tools."),
-            [{id:"career",label:"TRANSLATE MY TRAINING",desc:"Map my MOS, AIT, or military schools to civilian careers and certifications",icon:"\uD83C\uDFAF"},{id:"benefits",label:"VA BENEFITS & EDUCATION",desc:"VA disability, GI Bill, VR&E, healthcare eligibility",icon:"\uD83C\uDFE5"},{id:"newmos",label:"JUST COMPLETED NEW TRAINING",desc:"Finished AIT, reclassed, or earned a new MOS \u2014 show me what it's worth",icon:"\uD83D\uDCDC"},{id:"start",label:"EXPLORE ALL TOOLS",desc:"Show me everything available",icon:"\uD83D\uDCCB"}].map(function(c) {
+            [{id:"career",label:"TRANSLATE MY TRAINING",desc:"Map my MOS/rating/AFSC, tech school, or military schools to civilian careers and certifications",icon:"\uD83C\uDFAF"},{id:"benefits",label:"VA BENEFITS & EDUCATION",desc:"VA disability, GI Bill, VR&E, healthcare eligibility",icon:"\uD83C\uDFE5"},{id:"newmos",label:"JUST COMPLETED NEW TRAINING",desc:"Finished AIT/tech school, retrained, or earned a new specialty \u2014 show me what it's worth",icon:"\uD83D\uDCDC"},{id:"start",label:"EXPLORE ALL TOOLS",desc:"Show me everything available",icon:"\uD83D\uDCCB"}].map(function(c) {
               var isActive = onboardData.concern === c.id;
               return React.createElement("button", { key: c.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {concern: c.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : "#161B11", border: isActive ? "2px solid #4A5D23" : "1px solid #222A19", borderRadius: 10, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
                 React.createElement("span", { style: { fontSize: 24 } }, c.icon),
@@ -4920,6 +4922,7 @@ function App() {
             if (onboardData.etsDate) {
               setSeparationDate(onboardData.etsDate);
               window.__safeSet("tops_sep_date", onboardData.etsDate);
+              window.__safeSet("etsDate", onboardData.etsDate);
             }
             window.__safeSet("tops_user_concern", onboardData.concern);
             // Route based on concern
@@ -5006,7 +5009,7 @@ function App() {
             onClick: handleInstallBannerDismiss,
             "aria-label": "Dismiss",
             style: {
-              padding: "5px 8px",
+              padding: "10px 12px",
               background: "transparent",
               border: "1px solid " + C.border,
               borderRadius: 4,
@@ -5057,20 +5060,7 @@ function App() {
       gap: 6,
       alignItems: "flex-start"
     }
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: toggleTheme,
-    style: {
-      background: theme === "tactical" ? "#1C2315" : "#E8E8E8",
-      border: "1px solid transparent",
-      borderRadius: 8,
-      padding: "8px 10px",
-      cursor: "pointer",
-      color: theme === "tactical" ? "#9C9577" : "#1A1A1A",
-      fontFamily: "'Oswald', sans-serif",
-      fontSize: 10,
-      letterSpacing: 1
-    }
-  }, theme === "tactical" ? "\u263D" : "\u2600", " ", theme === "tactical" ? "PRO" : "TAC"), userStatus !== "guard" && /*#__PURE__*/React.createElement("button", {
+  }, null, userStatus !== "guard" && /*#__PURE__*/React.createElement("button", {
     onClick: () => setShowNotifPanel(!showNotifPanel),
     style: {
       background: theme === "tactical" ? "#1C2315" : "#ECECEA",
@@ -5151,7 +5141,7 @@ function App() {
       background: "none",
       border: "1px solid " + C.textSecondary,
       color: C.textSecondary,
-      padding: "3px 10px",
+      padding: "9px 16px",
       cursor: "pointer",
       borderRadius: 3,
       fontSize: 13
@@ -5214,9 +5204,9 @@ function App() {
     style: {
       background: "none",
       border: "1px solid " + C.border,
-      color: C.inactive,
-      fontSize: 10,
-      padding: "4px 8px",
+      color: C.textSecondary,
+      fontSize: 11,
+      padding: "9px 14px",
       cursor: "pointer",
       borderRadius: 2
     }
@@ -5231,14 +5221,14 @@ function App() {
 
   // Secondary tab sub-header (shows only when on VET HUB, Resources, Tax Intel, DD214)
   ["vamath","vapay","vethub","resources","taxes","dd214","finalpcs"].includes(activeTab) && /*#__PURE__*/React.createElement("div", {
-    style: { display: "flex", alignItems: "center", gap: 10, padding: "8px 14px", background: C.bgCard, borderBottom: "1px solid " + C.border, position: "sticky", top: 108, zIndex: 50 }
+    style: { display: "flex", alignItems: "center", gap: 10, padding: "8px 14px", background: C.bgCard, borderBottom: "1px solid " + C.border, position: "sticky", top: 76, zIndex: 50 }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: function() { setActiveTab("dashboard"); },
-    style: { background: "none", border: "1px solid " + C.border, borderRadius: 4, color: C.inactive, fontSize: 10, padding: "4px 10px", cursor: "pointer", fontFamily: "'Oswald', sans-serif", letterSpacing: 1 }
+    style: { background: "none", border: "1px solid " + C.border, borderRadius: 4, color: C.textSecondary, fontSize: 11, padding: "10px 14px", cursor: "pointer", fontFamily: "'Oswald', sans-serif", letterSpacing: 1 }
   }, "\u2190 HOME"), /*#__PURE__*/React.createElement("div", {
     style: { flex: 1, display: "flex", gap: 4, overflowX: "auto", WebkitOverflowScrolling: "touch" }
   }, [{id:"vamath",label:"VA MATH"},{id:"vapay",label:"VA PAY"},{id:"finalpcs",label:"FINAL PCS"},{id:"vethub",label:"VET HUB"},{id:"resources",label:"RESOURCES"},{id:"taxes",label:"TAX INTEL"},{id:"dd214",label:"DD214"}].map(function(t) {
-    return React.createElement("button", { key: t.id, onClick: function() { setActiveTab(t.id); setSelectedMilestone(null); }, style: { padding: "5px 10px", background: activeTab === t.id ? C.border : "transparent", border: "none", borderBottom: activeTab === t.id ? "2px solid " + C.gold : "2px solid transparent", color: activeTab === t.id ? C.textPrimary : C.inactive, fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.5, cursor: "pointer", whiteSpace: "nowrap" } }, t.label);
+    return React.createElement("button", { key: t.id, onClick: function() { setActiveTab(t.id); setSelectedMilestone(null); }, style: { padding: "10px 12px", background: activeTab === t.id ? C.border : "transparent", border: "none", borderBottom: activeTab === t.id ? "2px solid " + C.gold : "2px solid transparent", color: activeTab === t.id ? C.textPrimary : C.inactive, fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.5, cursor: "pointer", whiteSpace: "nowrap" } }, t.label);
   }))),
 
   /*#__PURE__*/React.createElement("div", {
@@ -5253,28 +5243,28 @@ function App() {
     React.createElement("div", { onClick: function(e) { e.stopPropagation(); }, style: { background: "#161B11", borderRadius: 16, width: "100%", maxWidth: 520, maxHeight: "82vh", overflowY: "auto", padding: "18px 18px 14px" } },
       React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: "#9C9577" } }, "WHAT'S NEW \u2014 TRANSITION OPS"),
-        React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { color: "#6A6650", fontSize: 16, cursor: "pointer", padding: 4 } }, "\u2715")
+        React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { color: "#b5ab8c", fontSize: 18, cursor: "pointer", padding: "10px 14px", margin: "-10px -14px" } }, "\u2715")
       ),
       WHATS_NEW.map(function(item, i) {
         return React.createElement("div", { key: i, style: { padding: "12px 0", borderBottom: i < WHATS_NEW.length - 1 ? "1px solid #222A19" : "none" } },
           React.createElement("div", { style: { display: "flex", alignItems: "baseline", gap: 8 } },
             React.createElement("span", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#8BB83C", flexShrink: 0 } }, item.v),
-            React.createElement("span", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "#6A6650" } }, item.date)
+            React.createElement("span", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "#8a8468" } }, item.date)
           ),
           React.createElement("div", { style: { fontSize: 12.5, color: "#c9c0a2", lineHeight: 1.55, marginTop: 4 } }, item.note)
         );
       }),
-      React.createElement("div", { style: { fontFamily: "'Courier Prime', monospace", fontSize: 10, color: "#6A6650", letterSpacing: 1, marginTop: 12, textAlign: "center" } }, "FREE \u00B7 NO ADS \u00B7 BUILT BY A VETERAN")
+      React.createElement("div", { style: { fontFamily: "'Courier Prime', monospace", fontSize: 10, color: "#8a8468", letterSpacing: 1, marginTop: 12, textAlign: "center" } }, "FREE \u00B7 NO ADS \u00B7 BUILT BY A VETERAN")
     )
   ), policyPanelOpen && React.createElement("div", { onClick: function() { setPolicyPanelOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
     React.createElement("div", { onClick: function(e) { e.stopPropagation(); }, style: { background: "#161B11", borderRadius: 16, width: "100%", maxWidth: 560, maxHeight: "82vh", overflowY: "auto", padding: "18px 18px 14px" } },
       React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: "#9C9577" } }, "2026 POLICY CHANGES \u2014 TRACKED & SOURCED"),
-        React.createElement("div", { onClick: function() { setPolicyPanelOpen(false); }, style: { color: "#6A6650", fontSize: 16, cursor: "pointer", padding: 4 } }, "\u2715")
+        React.createElement("div", { onClick: function() { setPolicyPanelOpen(false); }, style: { color: "#b5ab8c", fontSize: 18, cursor: "pointer", padding: "10px 14px", margin: "-10px -14px" } }, "\u2715")
       ),
       POLICY_CHANGES.map(function(p, i) {
         return React.createElement("div", { key: i, style: { padding: "13px 0", borderBottom: i < POLICY_CHANGES.length - 1 ? "1px solid #222A19" : "none" } },
-          React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "#6A6650", letterSpacing: 1 } }, p.date),
+          React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "#8a8468", letterSpacing: 1 } }, p.date),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 15, color: "#EDE7D4", marginTop: 3, lineHeight: 1.3 } }, p.title),
           React.createElement("div", { style: { fontSize: 12, color: "#c9c0a2", lineHeight: 1.55, marginTop: 4 } }, p.sum),
           React.createElement("a", { href: p.url, target: "_blank", rel: "noopener noreferrer", onClick: function(e) { e.stopPropagation(); }, style: { display: "inline-block", marginTop: 7, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: 1, color: "#8BB83C", textDecoration: "none" } }, "SOURCE: " + p.src + " \u2192")
@@ -5349,7 +5339,7 @@ function App() {
       React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: "#EDE7D4", letterSpacing: 0.5 } }, "VET TEC 2.0 applications open 15 JUN"),
       React.createElement("div", { style: { fontSize: 11, color: "#9C9577", marginTop: 2, lineHeight: 1.4 } }, "4,000 slots/FY \u00B7 FY26 NDAA \u00B7 GI Bill 48-mo \u00B7 Tap for full SITREP")
     ),
-    React.createElement("div", { onClick: function(e) { e.stopPropagation(); setSitrepDismissed(true); try { localStorage.setItem("tops_sitrep_jun2026", "1"); } catch (err) {} }, style: { marginLeft: "auto", color: "#6A6650", fontSize: 15, padding: 6, flexShrink: 0 } }, "\u2715")
+    React.createElement("div", { onClick: function(e) { e.stopPropagation(); setSitrepDismissed(true); try { localStorage.setItem("tops_sitrep_jun2026", "1"); } catch (err) {} }, style: { marginLeft: "auto", color: "#b5ab8c", fontSize: 16, padding: 12, flexShrink: 0 } }, "\u2715")
   ), (function() {
 
     // ═══════════ GUARD / RESERVE DASHBOARD ═══════════
@@ -5372,7 +5362,7 @@ function App() {
               React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" } },
                 React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: daysOut > 999 ? 48 : 60, lineHeight: 1, color: daysOut <= 90 ? "#E05252" : "#EDE7D4" } }, daysOut),
                 React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 4, color: "#9C9577", marginTop: 6 } }, "DAYS TO SEPARATION"),
-                React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#6A6650", marginTop: 3 } }, new Date(separationDate + "T12:00:00").toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }).toUpperCase())
+                React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#8a8468", marginTop: 3 } }, new Date(separationDate + "T12:00:00").toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }).toUpperCase())
               )
             )
           );
@@ -5423,10 +5413,10 @@ function App() {
         React.createElement("div", { style: { ...S.card, padding: 14, borderColor: C.gold } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "GUARD / RESERVE INTEL"),
           React.createElement("div", { style: { fontSize: 12, color: C.textBody, lineHeight: 1.8 } },
-            "Every drill weekend, AT, and school you attend builds skills that civilian employers pay for. The gap between what you know and what you earn is often a translation problem \u2014 not a skills problem. Use the Career Pathway Planner to see what your training is actually worth in the civilian market."
+            "Every drill weekend, Annual Training (AT), and school you attend builds skills that civilian employers pay for. The gap between what you know and what you earn is often a translation problem \u2014 not a skills problem. Use the Career Pathway Planner to see what your training is actually worth in the civilian market."
           ),
           React.createElement("div", { style: { fontSize: 12, color: C.textBody, lineHeight: 1.8, marginTop: 10 } },
-            "If you have a VA disability rating (even from one deployment or an LOD), use the VA Math and VA Pay tools to verify you're receiving correct compensation. Many Guard/Reserve members underrate or never file."
+            "If you have a VA disability rating (even from one deployment or a Line of Duty determination), use the VA Math and VA Pay tools to verify you're receiving correct compensation. Many Guard/Reserve members are under-rated or never file."
           )
         ),
 
@@ -5493,7 +5483,7 @@ function App() {
         if (!separationDate) {
           return React.createElement("div", { style: { background: "#161B11", borderRadius: 14, padding: "22px 18px", marginBottom: 14, textAlign: "center" } },
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 4, color: "#9C9577", marginBottom: 12 } }, "SET YOUR ETS DATE TO ARM THE MISSION CLOCK"),
-            React.createElement("input", { type: "date", value: separationDate, onChange: function(e) { setSeparationDate(e.target.value); try { window.__safeSet("tops_sep_date", e.target.value); } catch (ex) {} }, style: { width: "80%", padding: 12, background: "#0E120B", border: "1px solid #222A19", borderRadius: 8, color: "#EDE7D4", fontSize: 14, fontFamily: "'JetBrains Mono', monospace" } })
+            React.createElement("input", { type: "date", value: separationDate, onChange: function(e) { setSeparationDate(e.target.value); try { window.__safeSet("tops_sep_date", e.target.value); window.__safeSet("etsDate", e.target.value); } catch (ex) {} }, style: { width: "80%", padding: 12, background: "#0E120B", border: "1px solid #222A19", borderRadius: 8, color: "#EDE7D4", fontSize: 14, fontFamily: "'JetBrains Mono', monospace" } })
           );
         }
         var RUNWAY = 540;
@@ -5504,7 +5494,7 @@ function App() {
         var tickY = 114 - 105 * Math.cos(theta);
         var numColor = daysOut !== null && daysOut >= 0 && daysOut <= 90 ? "#E05252" : "#EDE7D4";
         return React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 16, marginTop: 4 } },
-          React.createElement("div", { style: { position: "relative", width: 228, height: 228, cursor: "pointer" }, onClick: function() { setSeparationDate(""); } },
+          React.createElement("div", { style: { position: "relative", width: 228, height: 228 } },
             React.createElement("svg", { width: 228, height: 228, viewBox: "0 0 228 228", style: { transform: "rotate(-90deg)" } },
               React.createElement("circle", { cx: 114, cy: 114, r: 105, fill: "none", stroke: "#1E2417", strokeWidth: 9 }),
               React.createElement("circle", { cx: 114, cy: 114, r: 105, fill: "none", stroke: "#8BB83C", strokeWidth: 9, strokeLinecap: "round", strokeDasharray: CIRC, strokeDashoffset: CIRC * (1 - pct), style: { transition: "stroke-dashoffset 1s cubic-bezier(.6,0,.2,1)" } })
@@ -5513,19 +5503,19 @@ function App() {
             React.createElement("div", { style: { position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" } },
               React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: daysOut >= 0 && daysOut > 999 ? 48 : 60, lineHeight: 1, color: numColor } }, daysOut >= 0 ? daysOut : Math.abs(etsMonths || 0)),
               React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 4, color: "#9C9577", marginTop: 6 } }, daysOut > 0 ? "DAYS TO ETS" : daysOut === 0 ? "ETS DAY" : "MONTHS POST-SEP"),
-              React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#6A6650", marginTop: 3 } }, new Date(separationDate + "T12:00:00").toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }).toUpperCase())
+              React.createElement("div", { onClick: function() { setSeparationDate(""); }, style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#b5ab8c", marginTop: 3, cursor: "pointer", padding: "8px 10px" } }, new Date(separationDate + "T12:00:00").toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }).toUpperCase(), " \u00B7 EDIT")
             )
           ),
           React.createElement("div", { style: { display: "flex", gap: 34, marginTop: 14 } },
             React.createElement("div", { style: { textAlign: "center", cursor: "pointer" }, onClick: function() { setActiveTab("timeline"); } },
               React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: "#8BB83C" } }, tlPct + "%"),
-              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: "#6A6650", marginTop: 3 } }, "TIMELINE")),
+              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: "#8a8468", marginTop: 3 } }, "TIMELINE")),
             React.createElement("div", { style: { textAlign: "center" } },
-              React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: "#EDE7D4" } }, doneTasks, React.createElement("span", { style: { color: "#6A6650" } }, "/" + totalTasks)),
-              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: "#6A6650", marginTop: 3 } }, "TASKS")),
+              React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: "#EDE7D4" } }, doneTasks, React.createElement("span", { style: { color: "#8a8468" } }, "/" + totalTasks)),
+              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: "#8a8468", marginTop: 3 } }, "TASKS")),
             React.createElement("div", { style: { textAlign: "center", cursor: "pointer" }, onClick: function() { setActiveTab("readiness"); } },
               React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: rInfo.c } }, rScore),
-              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: "#6A6650", marginTop: 3 } }, "READINESS"))
+              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: "#8a8468", marginTop: 3 } }, "READINESS"))
           )
         );
       })(),
@@ -5550,9 +5540,9 @@ function App() {
           return s.state === "closing" || s.state === "closing_critical" || s.state === "missed_perm";
         });
         if (urgent.length === 0) return null;
-        return React.createElement("div", {key:"cw-urgent-card", style:{background:"linear-gradient(180deg,rgba(201,74,74,0.08) 0%, " + C.bgCard + " 100%)", border:"1px solid #C94A4A", borderLeft:"4px solid #C94A4A", borderRadius:8, padding:"14px 16px", marginBottom:12, cursor:"pointer"}, onClick:function(){ setActiveTab("critical"); }},
+        return React.createElement("div", {key:"cw-urgent-card", style:{background:"linear-gradient(180deg,rgba(201,74,74,0.08) 0%, " + C.bgCard + " 100%)", border:"1px solid #E05252", borderLeft:"4px solid #E05252", borderRadius:8, padding:"14px 16px", marginBottom:12, cursor:"pointer"}, onClick:function(){ setActiveTab("critical"); }},
           React.createElement("div", {style:{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8}},
-            React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:3, color:"#C94A4A"}}, "\u26A0 CRITICAL WINDOWS CLOSING"),
+            React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:3, color:"#E05252"}}, "\u26A0 CRITICAL WINDOWS CLOSING"),
             React.createElement("div", {style:{fontSize:11, color:C.textSecondary}}, urgent.length + " window" + (urgent.length > 1 ? "s" : ""))
           ),
           urgent.slice(0,3).map(function(w) {
@@ -5572,19 +5562,19 @@ function App() {
         (function() {
           var due = etsMonths !== null ? SMART_REMINDERS.filter(function(r) { return !dismissedReminders[r.id] && r.mo === etsMonths; }).length : (remTotal - remDismissed);
           return React.createElement("div", { style: { background: "#161B11", borderRadius: 12, padding: 16, cursor: "pointer" }, onClick: function() { setActiveTab("reminders"); } },
-            React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 30, lineHeight: 1, color: due > 0 ? "#EDE7D4" : "#6A6650" } }, due),
+            React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 30, lineHeight: 1, color: due > 0 ? "#EDE7D4" : "#8a8468" } }, due),
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: "#9C9577", marginTop: 6 } }, etsMonths !== null ? "REMINDERS DUE THIS MONTH" : "REMINDERS OPEN")
           );
         })(),
         React.createElement("div", { style: { background: "#161B11", borderRadius: 12, padding: 16, cursor: "pointer" }, onClick: function() { setPolicyPanelOpen(true); } },
-          React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 30, lineHeight: 1, color: "#EDE7D4" } }, POLICY_CHANGES.length, React.createElement("span", { style: { fontSize: 15, color: "#6A6650", fontWeight: 400 } }, "\u2009tracked")),
+          React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 30, lineHeight: 1, color: "#EDE7D4" } }, POLICY_CHANGES.length, React.createElement("span", { style: { fontSize: 15, color: "#8a8468", fontWeight: 400 } }, "\u2009tracked")),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: "#9C9577", marginTop: 6 } }, "POLICY CHANGES \u2014 TAP FOR SOURCES")
         )
       ),
 
       // MOCKUP SKILLBRIDGE INTEL: typographic rows from the live feed, zero box decoration
       React.createElement("div", { style: { margin: "20px 2px 16px" } },
-        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#6A6650", marginBottom: 8 } }, "SKILLBRIDGE INTEL \u2014 " + (SKILLBRIDGE_FEED[0].week || "")),
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#8a8468", marginBottom: 8 } }, "SKILLBRIDGE INTEL \u2014 " + (SKILLBRIDGE_FEED[0].week || "")),
         SKILLBRIDGE_FEED[0].companies.slice(0, 3).map(function(c, i, arr) {
           return React.createElement("a", { key: i, href: c.url, target: "_blank", rel: "noopener noreferrer", style: { display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, padding: "11px 0", borderBottom: i < arr.length - 1 ? "1px solid #161B11" : "none", textDecoration: "none" } },
             React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: "#EDE7D4", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, c.name.replace("\u2B50 ", "").replace(" (DIB PRIORITY)", "").replace(" (PRIORITY PARTNER)", "")),
@@ -6041,7 +6031,7 @@ function App() {
         });
       } else {
         navigator.clipboard.writeText(window.location.href);
-        showToast("LINK COPIED — Send to your battle buddies.");
+        showToast("LINK COPIED — Share it with your crew.");
       }
     },
     style: {
@@ -6154,7 +6144,7 @@ function App() {
         right: 14,
         top: "50%",
         transform: "translateY(-50%)",
-        color: C.border,
+        color: C.inactive,
         fontSize: 18
       }
     }, "\u203A"));
@@ -6395,7 +6385,7 @@ function App() {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 11,
       letterSpacing: 2,
-      color: C.green,
+      color: C.greenBright,
       marginBottom: 6,
       paddingLeft: 4
     }
@@ -6620,7 +6610,7 @@ function App() {
   }, "Select your category above to see every career path available \u2014 from direct crosswalks to complete pivots."), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
-      color: C.border,
+      color: C.inactive,
       marginTop: 8
     }
   }, "Every path shows: timeline, difficulty, skills gap, steps, income bridge, and resources."))), pathwayMode === "journey" && journeyTarget && (() => {
@@ -6790,7 +6780,7 @@ function App() {
         fontFamily: "'Oswald', sans-serif",
         fontSize: 11,
         letterSpacing: 2,
-        color: C.green,
+        color: C.greenBright,
         marginBottom: 6
       }
     }, "\u2713 WHAT YOU ALREADY HAVE"), /*#__PURE__*/React.createElement("div", {
@@ -6909,7 +6899,7 @@ function App() {
         fontFamily: "'Oswald', sans-serif",
         fontSize: 11,
         letterSpacing: 2,
-        color: C.green,
+        color: C.greenBright,
         marginBottom: 6
       }
     }, "\uD83D\uDCB0 HOW YOU GET PAID WHILE YOU CLOSE THE GAP"), /*#__PURE__*/React.createElement("div", {
@@ -7070,7 +7060,9 @@ function App() {
     value: "marine+corps"
   }, "Marine Corps"), /*#__PURE__*/React.createElement("option", {
     value: "coast+guard"
-  }, "Coast Guard")), /*#__PURE__*/React.createElement("input", {
+  }, "Coast Guard"), /*#__PURE__*/React.createElement("option", {
+    value: "space+force"
+  }, "Space Force")), /*#__PURE__*/React.createElement("input", {
     type: "text",
     value: mosCode,
     onChange: e => setMosCode(e.target.value.toUpperCase()),
@@ -7363,7 +7355,7 @@ function App() {
       color: C.textBody,
       lineHeight: 1.7
     }
-  }, "Many certs are FREE while on active duty through DOD COOL, Army/Navy/AF credentialing programs, and Tuition Assistance. The day you separate, those free programs end. Use every resource now.")), /*#__PURE__*/React.createElement("div", {
+  }, "Many certs are FREE while on active duty through DOD COOL, your service's credentialing program (all six branches), and Tuition Assistance. The day you separate, those free programs end. Use every resource now.")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -7458,7 +7450,7 @@ function App() {
       borderTop: "1px solid " + C.border
     }
   }, [{
-    name: "VR&E (Chapter 31) — USE FIRST",
+    name: "VR&E (Chapter 31) — EVALUATE FIRST",
     desc: "Service-connected disability required. Covers tuition, supplies, tools, monthly stipend. Understand how it interacts with your GI Bill before electing \u2014 a VSO can help you choose.",
     url: "https://www.va.gov/careers-employment/vocational-rehabilitation/"
   }, {
@@ -7514,7 +7506,7 @@ function App() {
       borderRadius: 4,
       lineHeight: 1.6
     }
-  }, "\uD83D\uDCA1 PRO TIP: If you have 30%+ disability, apply for VR&E FIRST \u2014 it covers everything GI Bill does plus more, and it does NOT burn your 36 GI Bill months. GI Bill BAH pays E-5 with dependents rate ($2,000-3,500/mo TAX FREE)."))), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDCA1 PRO TIP: With a 10%+ rating you may qualify for VR&E \u2014 evaluate it BEFORE the GI Bill. It can cover what the GI Bill does and more, without burning your 36 GI Bill months. GI Bill MHA pays at the E-5-with-dependents BAH rate for your school's ZIP (tax-free; varies widely)."))), /*#__PURE__*/React.createElement("div", {
     onClick: () => setPathwayType(pathwayType === "cert" ? "" : "cert"),
     style: {
       ...S.card,
@@ -7676,7 +7668,7 @@ function App() {
       borderTop: "1px solid " + C.border
     }
   }, [{
-    name: "DOD SkillBridge",
+    name: "DoD SkillBridge",
     desc: "Work for a civilian company last 180 days of service. Keep military pay + benefits. Over 3,700 companies.",
     url: "https://skillbridge.osd.mil/"
   }, {
@@ -7781,17 +7773,17 @@ function App() {
     }
   }, "IMMEDIATE INCOME SOURCES"), [{
     name: "VA Disability Compensation",
-    desc: "Tax-free monthly payment based on service-connected conditions. File BDD at 180 days. Average: $1,400-$3,600/mo.",
+    desc: "Tax-free monthly payment based on service-connected conditions. File BDD at 180 days. 2026 rates run ~$180/mo (10%) to $3,900+/mo (100%) \u2014 see VA PAY tab.",
     icon: "💰",
-    color: C.green
+    color: C.greenBright
   }, {
     name: "GI Bill BAH (if in school)",
-    desc: "Monthly housing allowance while enrolled. E-5 w/dependents rate. Tax-free. Average: $2,000-3,500/mo.",
+    desc: "Monthly housing allowance while enrolled, at the E-5 w/dependents rate for your school's ZIP. Tax-free. Varies widely by location.",
     icon: "🏠",
     color: "#4A90D9"
   }, {
     name: "Unemployment (UCX)",
-    desc: "Veterans are eligible for unemployment in most states. File immediately at separation. Averages $300-500/wk.",
+    desc: "Most separating members qualify, depending on state rules and discharge. File immediately at separation. Typically $300-500/wk \u2014 varies by state.",
     icon: "📄",
     color: C.goldBright
   }, {
@@ -7848,7 +7840,7 @@ function App() {
     }
   }, "SHORT-TERM WORK WHILE TRAINING"), [{
     name: "Defense Contracting (clearance holders)",
-    desc: "Your security clearance is worth $10-30K in salary premium. Contract roles start fast. Use it before it expires.",
+    desc: "An active clearance typically adds $10-30K to salary offers. Contract roles start fast. Use it before it expires.",
     url: "https://www.clearancejobs.com"
   }, {
     name: "VA Work-Study Program",
@@ -7949,7 +7941,7 @@ function App() {
   }, {
     name: "Amazon Career Choice",
     type: "TUITION + JOB",
-    desc: "$5,250/yr education benefit from Day 1. Earn full pay while training. Apprenticeship programs in tech, logistics, and operations.",
+    desc: "$5,250/yr education benefit after 90 days on the job. Earn full pay while training. Apprenticeship programs in tech, logistics, and operations.",
     color: C.goldBright
   }, {
     name: "Hiring Our Heroes Fellowship",
@@ -7975,11 +7967,11 @@ function App() {
     name: "Helmets to Hardhats",
     type: "UNION APPRENTICE + PAY",
     desc: "Walk into union construction trades. EARN full journeyman pay during apprenticeship. Pension, healthcare, and overtime from Day 1.",
-    color: C.green
+    color: C.greenBright
   }, {
-    name: "Troops to Teachers",
-    type: "STIPEND + LICENSE",
-    desc: "Up to $10,000 stipend to earn teaching license. Additional $10,000 bonus if teaching in high-need schools.",
+    name: "Teaching (State Pathways)",
+    type: "LICENSE PATHWAY",
+    desc: "The federal Troops to Teachers program ended in 2024, but many states run successor programs and alternative licensure paths for veterans. Teacher-shortage districts actively recruit vets.",
     color: "#4A90D9"
   }].map((p, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
@@ -8689,7 +8681,7 @@ function App() {
       lineHeight: 1.8,
       marginBottom: 6
     }
-  }, "Vocational Rehabilitation & Employment. If you have a service-connected disability rating (even 10%), you may qualify for free career training, education, resume help, job placement, and even a monthly stipend. No time limit on basic eligibility for some qualifying conditions. This is NOT the GI Bill ", "\u2014", " it's a separate benefit and can be used INSTEAD of or AFTER the GI Bill."), ["Free tuition, books, and supplies for approved training programs", "Monthly subsistence allowance while training", "Resume development and interview preparation", "Job placement assistance with dedicated counselor", "Self-employment track for veteran entrepreneurs", "Can cover certifications, apprenticeships, OJT, or degree programs", "Independent Living track for severely disabled veterans"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  }, "Veteran Readiness and Employment. If you have a service-connected disability rating (even 10%), you may qualify for free career training, education, resume help, job placement, and even a monthly stipend. No time limit on basic eligibility for some qualifying conditions. This is NOT the GI Bill ", "\u2014", " it's a separate benefit and can be used INSTEAD of or AFTER the GI Bill."), ["Free tuition, books, and supplies for approved training programs", "Monthly subsistence allowance while training", "Resume development and interview preparation", "Job placement assistance with dedicated counselor", "Self-employment track for veteran entrepreneurs", "Can cover certifications, apprenticeships, OJT, or degree programs", "Independent Living track for severely disabled veterans"].map((item, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       padding: "4px 10px",
@@ -9045,7 +9037,7 @@ function App() {
       lineHeight: 1.8,
       marginBottom: 10
     }
-  }, "Veteran-led businesses outperform civilian startups. You already have the discipline, risk tolerance, and leadership. Two paths: build from scratch (startup) or buy an existing cash-flowing business (Entrepreneurship Through Acquisition). 70% of small businesses in America have no succession plan ", "\u2014", " they need a buyer with your skillset."), [{
+  }, "Veterans are well-positioned for business ownership. You already have the discipline, risk tolerance, and leadership. Two paths: build from scratch (startup) or buy an existing cash-flowing business (Entrepreneurship Through Acquisition). 70% of small businesses in America have no succession plan ", "\u2014", " they need a buyer with your skillset."), [{
     name: "\u2B50 Owners In Honor",
     url: "https://www.ownersinhonor.org/",
     desc: "Year-long ETA program for veterans. Buyer Basecamp training, acquisition coaching, capital readiness, legal/financial allies, post-acquisition mentoring. Founded by Army Special Forces vet. FREE to veterans.",
@@ -9204,7 +9196,7 @@ function App() {
     key: st.id,
     onClick: () => setSubTab(st.id),
     style: {
-      padding: "5px 8px",
+      padding: "9px 12px",
       background: subTab === st.id ? C.gold : C.bgCard,
       border: "1px solid " + (subTab === st.id ? C.gold : C.border),
       borderRadius: 4,
@@ -9217,7 +9209,7 @@ function App() {
       whiteSpace: "nowrap",
       flexShrink: 0
     }
-  }, st.label))), subTab === "directory" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 14 } }, /*#__PURE__*/React.createElement("div", { style: S.cardTitle }, "RESOURCE DIRECTORY"), /*#__PURE__*/React.createElement("div", { style: { ...S.bodyText, lineHeight: 1.7, marginBottom: 10 } }, "Filter by what you need. Every resource here has been verified or flagged for review. Tap any card to open the resource site."), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "CATEGORY"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 } }, ["ALL"].concat(Object.keys(RESOURCE_CATEGORIES)).map(cat => /*#__PURE__*/React.createElement("button", { key: cat, onClick: () => setResourceFilter({ ...resourceFilter, category: cat }), style: { padding: "4px 8px", background: resourceFilter.category === cat ? C.green : "transparent", border: "1px solid " + (resourceFilter.category === cat ? C.green : C.border), borderRadius: 3, color: resourceFilter.category === cat ? C.textPrimary : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, cat === "ALL" ? "ALL" : RESOURCE_CATEGORIES[cat].label))), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "COST"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 } }, [{ id: "ALL", label: "ALL" }, { id: "free", label: "FREE" }, { id: "gi_bill", label: "GI BILL" }, { id: "paid", label: "PAID" }].map(c => /*#__PURE__*/React.createElement("button", { key: c.id, onClick: () => setResourceFilter({ ...resourceFilter, cost: c.id }), style: { padding: "4px 8px", background: resourceFilter.cost === c.id ? C.gold : "transparent", border: "1px solid " + (resourceFilter.cost === c.id ? C.gold : C.border), borderRadius: 3, color: resourceFilter.cost === c.id ? C.bg : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, c.label))), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "ELIGIBILITY"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap" } }, [{ id: "ALL", label: "ALL" }, { id: "veteran", label: "VETERAN" }, { id: "active", label: "ACTIVE DUTY" }, { id: "spouse", label: "SPOUSE" }, { id: "guard_reserve", label: "GUARD/RESERVE" }].map(e => /*#__PURE__*/React.createElement("button", { key: e.id, onClick: () => setResourceFilter({ ...resourceFilter, eligibility: e.id }), style: { padding: "4px 8px", background: resourceFilter.eligibility === e.id ? "#1B3A4B" : "transparent", border: "1px solid " + (resourceFilter.eligibility === e.id ? "#1B3A4B" : C.border), borderRadius: 3, color: resourceFilter.eligibility === e.id ? C.textPrimary : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, e.label)))), (function() { var filtered = RESOURCES.filter(function(r) { if (resourceFilter.category !== "ALL" && r.category !== resourceFilter.category) return false; if (resourceFilter.cost !== "ALL" && r.cost !== resourceFilter.cost) return false; if (resourceFilter.eligibility !== "ALL" && r.eligibility.indexOf(resourceFilter.eligibility) === -1) return false; return true; }); if (filtered.length === 0) { return /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 20, textAlign: "center" } }, /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.inactive } }, "No resources match the current filters. Try broadening your selection.")); } var grouped = {}; filtered.forEach(function(r) { if (!grouped[r.category]) grouped[r.category] = []; grouped[r.category].push(r); }); return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.greenBright, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginBottom: 8, marginTop: 10 } }, filtered.length + " RESOURCE" + (filtered.length !== 1 ? "S" : "") + " MATCH YOUR FILTERS"), Object.keys(grouped).map(function(catKey) { var cat = RESOURCE_CATEGORIES[catKey]; return /*#__PURE__*/React.createElement("div", { key: catKey, style: { marginBottom: 14 } }, /*#__PURE__*/React.createElement("div", { style: { ...S.sectionLabel, color: cat.color } }, cat.icon + " " + cat.label), grouped[catKey].map(function(r) { return /*#__PURE__*/React.createElement("a", { key: r.id, href: r.url, target: "_blank", rel: "noopener noreferrer", style: { display: "block", padding: "12px 14px", marginBottom: 5, background: r.priority ? "linear-gradient(135deg, " + C.bgCard + ", " + C.gradStart + ")" : C.bgCard, border: "1px solid " + (r.priority ? C.gold : C.border), borderLeft: r.priority ? "3px solid " + C.gold : "1px solid " + C.border, borderRadius: 4, textDecoration: "none" } }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 } }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: r.priority ? C.goldBright : C.textPrimary, fontWeight: 600 } }, (r.priority ? "⭐ " : "") + r.name), /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: C.greenBright } }, "→")), /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5, marginBottom: 6 } }, r.description), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap" } }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: r.cost === "free" ? C.green : r.cost === "gi_bill" ? "#1B3A4B" : C.bg, color: r.cost === "free" || r.cost === "gi_bill" ? C.textPrimary : C.inactive, borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, r.cost === "free" ? "FREE" : r.cost === "gi_bill" ? "GI BILL" : "PAID"), r.eligibility.map(function(elig) { return /*#__PURE__*/React.createElement("span", { key: elig, style: { fontSize: 9, padding: "2px 6px", background: C.bg, color: C.inactive, borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, border: "1px solid " + C.border } }, elig.toUpperCase().replace("_", "/")); }), !r.verified && /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: "rgba(139,105,20,0.2)", color: C.gold, borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, "⚠ VERIFY"))); })); })); })()),subTab === "vsos" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, st.label))), subTab === "directory" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 14 } }, /*#__PURE__*/React.createElement("div", { style: S.cardTitle }, "RESOURCE DIRECTORY"), /*#__PURE__*/React.createElement("div", { style: { ...S.bodyText, lineHeight: 1.7, marginBottom: 10 } }, "Filter by what you need. Every resource here has been verified or flagged for review. Tap any card to open the resource site."), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "CATEGORY"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 } }, ["ALL"].concat(Object.keys(RESOURCE_CATEGORIES)).map(cat => /*#__PURE__*/React.createElement("button", { key: cat, onClick: () => setResourceFilter({ ...resourceFilter, category: cat }), style: { padding: "9px 12px", background: resourceFilter.category === cat ? C.green : "transparent", border: "1px solid " + (resourceFilter.category === cat ? C.green : C.border), borderRadius: 3, color: resourceFilter.category === cat ? C.textPrimary : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, cat === "ALL" ? "ALL" : RESOURCE_CATEGORIES[cat].label))), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "COST"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 } }, [{ id: "ALL", label: "ALL" }, { id: "free", label: "FREE" }, { id: "gi_bill", label: "GI BILL" }, { id: "paid", label: "PAID" }].map(c => /*#__PURE__*/React.createElement("button", { key: c.id, onClick: () => setResourceFilter({ ...resourceFilter, cost: c.id }), style: { padding: "9px 12px", background: resourceFilter.cost === c.id ? C.gold : "transparent", border: "1px solid " + (resourceFilter.cost === c.id ? C.gold : C.border), borderRadius: 3, color: resourceFilter.cost === c.id ? C.bg : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, c.label))), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "ELIGIBILITY"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap" } }, [{ id: "ALL", label: "ALL" }, { id: "veteran", label: "VETERAN" }, { id: "active", label: "ACTIVE DUTY" }, { id: "spouse", label: "SPOUSE" }, { id: "guard_reserve", label: "GUARD/RESERVE" }].map(e => /*#__PURE__*/React.createElement("button", { key: e.id, onClick: () => setResourceFilter({ ...resourceFilter, eligibility: e.id }), style: { padding: "9px 12px", background: resourceFilter.eligibility === e.id ? "#1B3A4B" : "transparent", border: "1px solid " + (resourceFilter.eligibility === e.id ? "#1B3A4B" : C.border), borderRadius: 3, color: resourceFilter.eligibility === e.id ? C.textPrimary : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, e.label)))), (function() { var filtered = RESOURCES.filter(function(r) { if (resourceFilter.category !== "ALL" && r.category !== resourceFilter.category) return false; if (resourceFilter.cost !== "ALL" && r.cost !== resourceFilter.cost) return false; if (resourceFilter.eligibility !== "ALL" && r.eligibility.indexOf(resourceFilter.eligibility) === -1) return false; return true; }); if (filtered.length === 0) { return /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 20, textAlign: "center" } }, /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.inactive } }, "No resources match the current filters. Try broadening your selection.")); } var grouped = {}; filtered.forEach(function(r) { if (!grouped[r.category]) grouped[r.category] = []; grouped[r.category].push(r); }); return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.greenBright, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginBottom: 8, marginTop: 10 } }, filtered.length + " RESOURCE" + (filtered.length !== 1 ? "S" : "") + " MATCH YOUR FILTERS"), Object.keys(grouped).map(function(catKey) { var cat = RESOURCE_CATEGORIES[catKey]; return /*#__PURE__*/React.createElement("div", { key: catKey, style: { marginBottom: 14 } }, /*#__PURE__*/React.createElement("div", { style: { ...S.sectionLabel, color: cat.color } }, cat.icon + " " + cat.label), grouped[catKey].map(function(r) { return /*#__PURE__*/React.createElement("a", { key: r.id, href: r.url, target: "_blank", rel: "noopener noreferrer", style: { display: "block", padding: "12px 14px", marginBottom: 5, background: r.priority ? "linear-gradient(135deg, " + C.bgCard + ", " + C.gradStart + ")" : C.bgCard, border: "1px solid " + (r.priority ? C.gold : C.border), borderLeft: r.priority ? "3px solid " + C.gold : "1px solid " + C.border, borderRadius: 4, textDecoration: "none" } }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 } }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: r.priority ? C.goldBright : C.textPrimary, fontWeight: 600 } }, (r.priority ? "⭐ " : "") + r.name), /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: C.greenBright } }, "→")), /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5, marginBottom: 6 } }, r.description), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap" } }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: r.cost === "free" ? C.green : r.cost === "gi_bill" ? "#1B3A4B" : C.bg, color: r.cost === "free" || r.cost === "gi_bill" ? C.textPrimary : C.inactive, borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, r.cost === "free" ? "FREE" : r.cost === "gi_bill" ? "GI BILL" : "PAID"), r.eligibility.map(function(elig) { return /*#__PURE__*/React.createElement("span", { key: elig, style: { fontSize: 9, padding: "2px 6px", background: C.bg, color: C.inactive, borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, border: "1px solid " + C.border } }, elig.toUpperCase().replace("_", "/")); }), !r.verified && /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: "rgba(139,105,20,0.2)", color: C.gold, borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, "⚠ VERIFY"))); })); })); })()),subTab === "vsos" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
       padding: 14
@@ -9239,7 +9231,7 @@ function App() {
     key: f,
     onClick: () => setVsoFilter(f),
     style: {
-      padding: "3px 8px",
+      padding: "9px 12px",
       background: vsoFilter === f ? C.green : "transparent",
       border: "1px solid " + (vsoFilter === f ? C.green : C.border),
       borderRadius: 3,
@@ -9450,7 +9442,7 @@ function App() {
       fontSize: 14,
       color: C.textPrimary
     }
-  }, r.name, " \\u2192")), /*#__PURE__*/React.createElement("div", {
+  }, r.name, " \u2192")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: C.textSecondary,
@@ -9460,7 +9452,7 @@ function App() {
     }
   }, r.desc))), /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
-  }, "VR&E (CHAPTER 31) \\u2014 KNOW BEFORE YOU USE GI BILL"), /*#__PURE__*/React.createElement("div", {
+  }, "VR&E (CHAPTER 31) \u2014 KNOW BEFORE YOU USE GI BILL"), /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
       padding: 14,
@@ -9473,7 +9465,7 @@ function App() {
       lineHeight: 1.8,
       marginBottom: 8
     }
-  }, "Vocational Rehabilitation & Employment (VR&E) provides education, training, and job placement for veterans with service-connected disabilities rated 30% or higher (or 20% with serious employment handicap)."), /*#__PURE__*/React.createElement("div", {
+  }, "Veteran Readiness and Employment (VR&E) provides education, training, and job placement for veterans with a service-connected rating of 20% or higher and an employment handicap \u2014 or 10% with a serious employment handicap. A VSO can confirm your eligibility."), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: C.textPrimary,
@@ -9481,7 +9473,7 @@ function App() {
       fontWeight: 700,
       marginBottom: 8
     }
-  }, "CRITICAL: You MUST use VR&E BEFORE your GI Bill. If you use GI Bill first, you may lose VR&E eligibility. VR&E does NOT count against your 36 months of GI Bill."), /*#__PURE__*/React.createElement("div", {
+  }, "SEQUENCING: Consider evaluating VR&E before using your GI Bill \u2014 VR&E does NOT count against your 36 months of GI Bill. The election has tradeoffs; talk it through with a VSO first."), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: C.textSecondary,
@@ -9504,7 +9496,7 @@ function App() {
       textDecoration: "none",
       textAlign: "center"
     }
-  }, "APPLY FOR VR&E (CHAPTER 31) \\u2192")), /*#__PURE__*/React.createElement("div", {
+  }, "APPLY FOR VR&E (CHAPTER 31) \u2192")), /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
   }, "FREE MENTORING PROGRAMS"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -9570,7 +9562,7 @@ function App() {
       fontSize: 14,
       color: C.textPrimary
     }
-  }, r.name, " \\u2192")), /*#__PURE__*/React.createElement("div", {
+  }, r.name, " \u2192")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: C.textSecondary,
@@ -9588,7 +9580,7 @@ function App() {
       lineHeight: 1.6,
       marginBottom: 8
     }
-  }, "\\uD83D\\uDCA1 START AT 9 MONTHS OUT. Mentors help you translate your experience, navigate corporate culture, expand your network, and avoid the mistakes they've seen other vets make. Apply to ACP and register on 50 Strong the same week."), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDCA1 START AT 9 MONTHS OUT. Mentors help you translate your experience, navigate corporate culture, expand your network, and avoid the mistakes they've seen other vets make. Apply to ACP and register on 50 Strong the same week."), /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
   }, "RESUME & INTERVIEW PREP"), [{
     name: "Hire Heroes USA",
@@ -9626,7 +9618,7 @@ function App() {
       fontSize: 13,
       color: C.textPrimary
     }
-  }, r.name, " \\u2192"), /*#__PURE__*/React.createElement("div", {
+  }, r.name, " \u2192"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11,
       color: C.textSecondary,
@@ -9657,7 +9649,7 @@ function App() {
       lineHeight: 1.8,
       marginBottom: 6
     }
-  }, "Most veterans think entrepreneurship means starting from zero. It doesn't. Entrepreneurship Through Acquisition (ETA) means buying an EXISTING business with customers, revenue, and staff already in place. 70% of small businesses have no succession plan \u2014 millions of businesses need a buyer. Veterans are 4x more likely to succeed as business owners."), /*#__PURE__*/React.createElement("div", {
+  }, "Most veterans think entrepreneurship means starting from zero. It doesn't. Entrepreneurship Through Acquisition (ETA) means buying an EXISTING business with customers, revenue, and staff already in place. 70% of small businesses have no succession plan \u2014 millions of businesses need a buyer."), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -9771,7 +9763,7 @@ function App() {
       fontSize: 13,
       color: r.highlight ? C.goldBright : C.textPrimary
     }
-  }, r.name, " ", r.highlight ? "\u2605" : "", " \\u2192")), /*#__PURE__*/React.createElement("div", {
+  }, r.name, " ", r.highlight ? "\u2605" : "", " \u2192")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11,
       color: C.textSecondary,
@@ -9851,7 +9843,7 @@ function App() {
       textDecoration: "none",
       textAlign: "center"
     }
-  }, "FIND YOUR STATE VA OFFICE \\u2192"))), subTab === "mindset" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, "FIND YOUR STATE VA OFFICE \u2192"))), subTab === "mindset" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: S.card
   }, /*#__PURE__*/React.createElement("div", {
     style: S.cardTitle
@@ -9861,7 +9853,7 @@ function App() {
       lineHeight: 1.8,
       color: C.textBody
     }
-  }, "Nobody prepares you for this. One day you're responsible for millions of dollars in equipment and the lives of your Soldiers. The next day, nobody calls. Nobody needs you. The structure, the identity, the mission \u2014 gone. This section is about getting ahead of that.")), /*#__PURE__*/React.createElement("div", {
+  }, "Nobody prepares you for this. One day you're responsible for millions of dollars in equipment and the lives of your people. The next day, nobody calls. Nobody needs you. The structure, the identity, the mission \u2014 gone. This section is about getting ahead of that.")), /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
   }, "THE IDENTITY SHIFT"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -9909,7 +9901,7 @@ function App() {
   }, "WHAT TO EXPECT"), [{
     phase: "The Honeymoon (Weeks 1-4)",
     desc: "Relief. Freedom. Sleeping in. No formations. Feels great... for about a month.",
-    color: C.green
+    color: C.greenBright
   }, {
     phase: "The Drop (Months 1-3)",
     desc: "The silence hits. Nobody calls. No mission. No urgency. You feel purposeless, restless, maybe angry. You start questioning your worth. This is normal. THIS IS WHERE VETERANS ARE MOST VULNERABLE.",
@@ -9925,7 +9917,7 @@ function App() {
   }, {
     phase: "The New Normal (Year 1+)",
     desc: "You're a veteran who also happens to be a [new career]. Both identities coexist. The military shaped you — it doesn't have to define you. You still have the discipline, the grit, and the mission mindset. Now you apply it differently.",
-    color: C.green
+    color: C.greenBright
   }].map((p, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
@@ -10057,7 +10049,7 @@ function App() {
       fontSize: 14,
       color: C.textPrimary
     }
-  }, r.name, " \\u2192")), /*#__PURE__*/React.createElement("div", {
+  }, r.name, " \u2192")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: C.textSecondary,
@@ -10165,11 +10157,11 @@ function App() {
     style: {
       marginBottom: 4
     }
-  }, "\\u2192 Frame it as mission continuity, not personal departure"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 Frame it as mission continuity, not personal departure"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 4
     }
-  }, "\\u2192 Offer a cross-training plan \u2014 shows you care about the unit"), /*#__PURE__*/React.createElement("div", null, "\\u2192 Document this conversation in writing (email follow-up)"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 Offer a cross-training plan \u2014 shows you care about the unit"), /*#__PURE__*/React.createElement("div", null, "\u2192 Document this conversation in writing (email follow-up)"))), /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
   }, "12 MONTHS OUT \u2014 SET THE PLAN"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -10204,7 +10196,7 @@ function App() {
       color: C.textBody,
       lineHeight: 1.8
     }
-  }, "\"I need to complete my Individual Transition Plan per [DOD Instruction 1332.35 / Service regulation]. I have medical appointments that need to happen now \u2014 conditions with a longer documented treatment history are easier to rate, so I can't wait on these. I've already started cross-training [NAME] on my primary duties. Here's my proposed timeline for TAP attendance and transition appointments over the next 12 months. I want to make sure this is coordinated and doesn't create gaps.\"")), /*#__PURE__*/React.createElement("div", {
+  }, "\"I need to complete my Individual Transition Plan per [DoD Instruction 1332.35 / Service regulation]. I have medical appointments that need to happen now \u2014 conditions with a longer documented treatment history are easier to rate, so I can't wait on these. I've already started cross-training [NAME] on my primary duties. Here's my proposed timeline for TAP attendance and transition appointments over the next 12 months. I want to make sure this is coordinated and doesn't create gaps.\"")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: C.textSecondary,
@@ -10214,15 +10206,15 @@ function App() {
     style: {
       marginBottom: 4
     }
-  }, "\\u2192 Reference the regulation \u2014 this isn't optional"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 Reference the regulation \u2014 this isn't optional"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 4
     }
-  }, "\\u2192 Present a written timeline \u2014 leaders respect planning"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 Present a written timeline \u2014 leaders respect planning"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 4
     }
-  }, "\\u2192 Explain medical urgency with the 1-year documentation fact"), /*#__PURE__*/React.createElement("div", null, "\\u2192 Keep cross-training visible \u2014 it protects you and the unit"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 Explain medical urgency with the 1-year documentation fact"), /*#__PURE__*/React.createElement("div", null, "\u2192 Keep cross-training visible \u2014 it protects you and the unit"))), /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
   }, "6 MONTHS OUT \u2014 HOLD THE LINE"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -10274,15 +10266,15 @@ function App() {
     style: {
       marginBottom: 4
     }
-  }, "\\u2192 Make it about family financial impact \u2014 leaders understand this"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 Make it about family financial impact \u2014 leaders understand this"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 4
     }
-  }, "\\u2192 BDD is time-sensitive and cannot be rescheduled \u2014 emphasize this"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 BDD is time-sensitive and cannot be rescheduled \u2014 emphasize this"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 4
     }
-  }, "\\u2192 Show your coverage plan is in place"), /*#__PURE__*/React.createElement("div", null, "\\u2192 If blocked: go to your Transition Center / SFL-TAP. They have regulatory authority to support you"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 Show your coverage plan is in place"), /*#__PURE__*/React.createElement("div", null, "\u2192 If blocked: go to your Transition Center / SFL-TAP. They have regulatory authority to support you"))), /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
   }, "3 MONTHS OUT \u2014 CLOSE IT OUT"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -10327,11 +10319,11 @@ function App() {
     style: {
       marginBottom: 4
     }
-  }, "\\u2192 Leave professionally \u2014 your reputation follows you"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 Leave professionally \u2014 your reputation follows you"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 4
     }
-  }, "\\u2192 DD214 review is non-negotiable \u2014 errors are extremely costly"), /*#__PURE__*/React.createElement("div", null, "\\u2192 Thank your leadership sincerely, even if they made it hard"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 DD214 review is non-negotiable \u2014 errors are extremely costly"), /*#__PURE__*/React.createElement("div", null, "\u2192 Thank your leadership sincerely, even if they made it hard"))), /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
   }, "IF LEADERSHIP BLOCKS YOU"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -10346,7 +10338,7 @@ function App() {
       fontFamily: "'Oswald', sans-serif",
       marginBottom: 8
     }
-  }, "KNOW YOUR RIGHTS"), ["DOD Instruction 1332.35 mandates transition preparation for all separating service members", "Commanders MUST allow TAP attendance — it is not optional", "Your Transition Center / SFL-TAP office has regulatory authority and can intervene", "Medical appointments for BDD claims are VA-scheduled and take priority", "IG complaint is a last resort but available if rights are being denied", "Document everything in writing — emails, counseling statements, signed memos", "Connect with your installation's Transition Services Manager — they are your advocate"].map((r, i) => /*#__PURE__*/React.createElement("div", {
+  }, "KNOW YOUR RIGHTS"), ["DoD Instruction 1332.35 mandates transition preparation for all separating service members", "Commanders are required by law to make you available for mandatory TAP components — attendance is a statutory entitlement", "Your Transition Center / SFL-TAP office has regulatory authority and can intervene", "Medical appointments for BDD claims are VA-scheduled and take priority", "IG complaint is a last resort but available if rights are being denied", "Document everything in writing — emails, counseling statements, signed memos", "Connect with your installation's Transition Services Manager — they are your advocate"].map((r, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       padding: "6px 10px",
@@ -10434,7 +10426,7 @@ function App() {
       fontSize: 14,
       color: C.textPrimary
     }
-  }, r.name, " \\u2192")), /*#__PURE__*/React.createElement("div", {
+  }, r.name, " \u2192")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: C.textSecondary,
@@ -10476,15 +10468,15 @@ function App() {
     style: {
       marginBottom: 3
     }
-  }, "\\u2192 Spouses of E-1 to E-9, W-1 to W-3, O-1 to O-3 eligible"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 Spouses of E-1 to E-9, W-1 to W-3, O-1 to O-3 eligible"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 3
     }
-  }, "\\u2192 Active duty, Guard, and Reserve (on Title 10 orders)"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 Active duty, Guard, and Reserve (on Title 10 orders)"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 3
     }
-  }, "\\u2192 Covers tuition AND exam fees for certifications"), /*#__PURE__*/React.createElement("div", null, "\\u2192 Must complete within 3 years of start date")), /*#__PURE__*/React.createElement("a", {
+  }, "\u2192 Covers tuition AND exam fees for certifications"), /*#__PURE__*/React.createElement("div", null, "\u2192 Must complete within 3 years of start date")), /*#__PURE__*/React.createElement("a", {
     href: "https://mycaa.militaryonesource.mil/mycaa/",
     target: "_blank",
     rel: "noopener noreferrer",
@@ -10500,7 +10492,7 @@ function App() {
       textDecoration: "none",
       textAlign: "center"
     }
-  }, "APPLY FOR MyCAA \\u2192")), [{
+  }, "APPLY FOR MyCAA \u2192")), [{
     name: "SECO Career Coaching",
     url: "https://www.militaryonesource.mil/resources/network/mycaa-scholarship/",
     desc: "FREE career coaching from DoD's Spouse Education and Career Opportunities program. Career exploration, resume help, interview prep, relocation planning.",
@@ -10555,7 +10547,7 @@ function App() {
       fontSize: 13,
       color: C.textPrimary
     }
-  }, r.name, " \\u2192")), /*#__PURE__*/React.createElement("div", {
+  }, r.name, " \u2192")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11,
       color: C.textSecondary,
@@ -10585,7 +10577,7 @@ function App() {
       lineHeight: 1.8,
       marginBottom: 8
     }
-  }, "The Military Spouses Residency Relief Act (MSRRA) allows spouses to maintain their state of legal residency for tax and voting purposes \u2014 even if living in a different state. For professional licenses:"), ["Many states now have interstate license compacts for nursing, teaching, counseling, and other professions", "The PACT Act expanded support for spouse license portability across state lines", "DoD reimburses up to $1,000 for license transfer costs when PCS moves require a new state license", "Check your profession: some licenses transfer automatically, others require application in the new state", "SECO career coaches (800-342-9647) help navigate license requirements state by state"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  }, "The Military Spouses Residency Relief Act (MSRRA) allows spouses to maintain their state of legal residency for tax and voting purposes \u2014 even if living in a different state. For professional licenses:"), ["Many states now have interstate license compacts for nursing, teaching, counseling, and other professions", "The Military Spouse Licensing Relief Act (2023) requires states to honor many spouse licenses after a PCS", "DoD reimburses up to $1,000 for license transfer costs when PCS moves require a new state license", "Check your profession: some licenses transfer automatically, others require application in the new state", "SECO career coaches (800-342-9647) help navigate license requirements state by state"].map((item, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       padding: "4px 10px",
@@ -10737,7 +10729,7 @@ function App() {
       fontSize: 13,
       color: C.textPrimary
     }
-  }, r.name, " \\u2192"), /*#__PURE__*/React.createElement("div", {
+  }, r.name, " \u2192"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11,
       color: C.textSecondary,
@@ -10768,7 +10760,7 @@ function App() {
     style: S.sectionLabel
   }, "FREE PASSES & OUTDOORS"), [{
     name: "America the Beautiful — Military Pass",
-    desc: "FREE annual pass to all National Parks, National Forests, and Federal Recreation Lands. Valid for active duty, veterans, and Gold Star families. Get it at any NPS entrance or online.",
+    desc: "FREE pass to National Parks, Forests, and Federal Recreation Lands \u2014 annual for active duty, LIFETIME for veterans and Gold Star families. Get it at any NPS entrance or online.",
     url: "https://www.nps.gov/planyourvisit/passes.htm",
     icon: "\uD83C\uDFDE\uFE0F"
   }, {
@@ -10816,7 +10808,7 @@ function App() {
       fontSize: 14,
       color: C.textPrimary
     }
-  }, r.name, " \\u2192")), /*#__PURE__*/React.createElement("div", {
+  }, r.name, " \u2192")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: C.textSecondary,
@@ -10987,12 +10979,12 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: S.cardTitle
-  }, "SKILLBRIDGE WEEKLY INTEL"), /*#__PURE__*/React.createElement("div", {
+  }, "SKILLBRIDGE INTEL FEED"), /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.bodyText,
       marginBottom: 8
     }
-  }, "Newly approved and featured SkillBridge companies, updated weekly."), /*#__PURE__*/React.createElement("div", {
+  }, "Newly approved and featured SkillBridge companies, updated as new intel drops."), /*#__PURE__*/React.createElement("div", {
     style: S.warningBox
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -11011,13 +11003,13 @@ function App() {
       color: C.gold,
       marginBottom: 2
     }
-  }, "WEEKLY NOTIFICATION"), /*#__PURE__*/React.createElement("div", {
+  }, "FEED UPDATES"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: C.textBody,
       lineHeight: 1.5
     }
-  }, "Check this feed weekly for newly approved providers. Spring Enrollment: 1 FEB - 1 APR 2026.")))), /*#__PURE__*/React.createElement("a", {
+  }, "Check this feed for newly approved providers, and skillbridge.osd.mil for current enrollment windows.")))), /*#__PURE__*/React.createElement("a", {
     href: "https://skillbridge.osd.mil/organizations.htm",
     target: "_blank",
     rel: "noopener noreferrer",
@@ -11069,7 +11061,7 @@ function App() {
           lineHeight: 1.6,
           marginBottom: 10
         }
-      }, "SkillBridge participation is now limited by rank under AFI 36-2671 (Air Force) and SPFI 36-2672 (Space Force). Approval authority raised to Squadron CC and above."),
+      }, "SkillBridge participation is now limited by rank under AFI 36-2671 (Air Force) and SPFI 36-2672 (Space Force). Approval authority has been elevated by rank tier \u2014 confirm the current approval chain with your Education & Training Office."),
       onboardData.branch === "air_force" && /*#__PURE__*/React.createElement("div", {
         style: { marginBottom: 8 }
       },
@@ -11085,9 +11077,9 @@ function App() {
         /*#__PURE__*/React.createElement("div", {
           style: { fontSize: 12, color: C.textBody, lineHeight: 1.8 }
         },
-          /*#__PURE__*/React.createElement("div", null, "\u2022 E-1 to E-6, O-1 to O-3: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "120 days max")),
-          /*#__PURE__*/React.createElement("div", null, "\u2022 E-7 to E-8, O-4: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "90 days max")),
-          /*#__PURE__*/React.createElement("div", null, "\u2022 E-9, O-5: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "60 days max")),
+          /*#__PURE__*/React.createElement("div", null, "\u2022 E-1 to E-5, O-1 to O-3: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "120 days max")),
+          /*#__PURE__*/React.createElement("div", null, "\u2022 E-6 to E-7, O-4: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "90 days max")),
+          /*#__PURE__*/React.createElement("div", null, "\u2022 E-8 to E-9, O-5: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "60 days max")),
           /*#__PURE__*/React.createElement("div", null, "\u2022 O-6 (Colonels): ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "ETP required"))
         )
       ),
@@ -11106,8 +11098,8 @@ function App() {
         /*#__PURE__*/React.createElement("div", {
           style: { fontSize: 12, color: C.textBody, lineHeight: 1.8 }
         },
-          /*#__PURE__*/React.createElement("div", null, "\u2022 Ranks below E-9 / O-6: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "120 days max")),
-          /*#__PURE__*/React.createElement("div", null, "\u2022 E-9, O-6 and above: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "90 days max"))
+          /*#__PURE__*/React.createElement("div", null, "\u2022 Ranks below E-9 / O-5: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "120 days max")),
+          /*#__PURE__*/React.createElement("div", null, "\u2022 E-9, O-5 and above: ", /*#__PURE__*/React.createElement("strong", { style: { color: C.textPrimary } }, "90 days max"))
         )
       ),
       /*#__PURE__*/React.createElement("div", {
@@ -11119,7 +11111,7 @@ function App() {
           borderTop: "1px dashed " + C.border,
           marginTop: 4
         }
-      }, "Members approved before 31 MAR 2026 remain under previous policy. Coordinate with your unit Education & Training Office and Squadron CC before applying.")
+      }, "Members approved before 31 MAR 2026 remain under previous policy. Coordinate with your unit Education & Training Office and your approval chain before applying.")
     ), React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.6, marginBottom: 10 } },
       React.createElement("span", { style: { fontSize: 9, background: "rgba(139,184,60,0.15)", color: C.greenBright, padding: "1px 6px", borderRadius: 2, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginRight: 6 } }, "DIB-CRITICAL"),
       "= defense industrial base employer per the 3 JUN 2026 SecWar directive \u2014 the services are directed to approve SkillBridge requests supporting these, denying only for readiness. ",
@@ -11317,7 +11309,7 @@ function App() {
       lineHeight: 1.8,
       fontFamily: "'Source Sans 3', sans-serif"
     }
-  }, /*#__PURE__*/React.createElement("div", null, "\u25CF", " TAMP: 180 days free TRICARE after separation"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " Must ACTIVELY enroll in VA healthcare"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " Combat vets: 5-year enhanced eligibility"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " CHCBP: purchase within 60 days of TAMP expiring"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " VA dental NOT included unless 100% SC")))), subTab === "documents" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", null, "\u25CF", " TAMP (qualifying separations only): 180 days free TRICARE"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " Must ACTIVELY enroll in VA healthcare"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " Combat vets: 10-year enhanced eligibility"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " CHCBP: purchase within 60 days of TAMP expiring"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " VA dental limited — apply within 180 days of separation for one-time care")))), subTab === "documents" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
       padding: 14
@@ -11338,7 +11330,7 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement("span", null, "SECURED"), /*#__PURE__*/React.createElement("span", {
     style: {
-      color: docsObtained === documents.length ? C.green : C.textPrimary,
+      color: docsObtained === documents.length ? C.greenBright : C.textPrimary,
       fontWeight: 700
     }
   }, docsObtained, "/", documents.length)), /*#__PURE__*/React.createElement("div", {
@@ -11476,7 +11468,7 @@ function App() {
       color: C.goldBright,
       fontWeight: 700
     }
-  }, "Home of RESIDENCE"), " \u2014 not Home of Record. This single decision can save or cost you thousands every year for the rest of your life."), /*#__PURE__*/React.createElement("label", {
+  }, "State of LEGAL RESIDENCE"), " \u2014 not Home of Record. This single decision can save or cost you thousands every year for the rest of your life."), /*#__PURE__*/React.createElement("label", {
     style: {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 10,
@@ -11498,7 +11490,7 @@ function App() {
       letterSpacing: 6,
       textAlign: "center"
     }
-  }), userState.length === 2 && getStateTaxStatus(userState) && /*#__PURE__*/React.createElement("div", {
+  }), userState.length === 2 && !getStateTaxStatus(userState) && /*#__PURE__*/React.createElement("div", { style: { marginTop: 10, padding: 12, background: C.bg, border: "1px solid " + C.border, borderRadius: 4, fontSize: 12, color: C.warning } }, "Not a recognized state code. Use the 2-letter postal abbreviation (TX, FL, VA...)."), userState.length === 2 && getStateTaxStatus(userState) && /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 10,
       padding: 14,
@@ -11546,7 +11538,7 @@ function App() {
     detail: "Federal AND state. If you have a VA rating, that portion of your income is completely untaxed. This is why filing a claim matters.",
     icon: "\u2705"
   }, {
-    fact: "Home of RESIDENCE determines state tax — NOT Home of Record",
+    fact: "State of LEGAL RESIDENCE determines state tax — NOT Home of Record",
     detail: "Where you actually live and maintain legal residency is what matters. Your Home of Record (where you enlisted from) is irrelevant for tax purposes after separation.",
     icon: "\uD83D\uDEA8"
   }].map((f, i) => /*#__PURE__*/React.createElement("div", {
@@ -11581,7 +11573,7 @@ function App() {
     style: S.sectionLabel
   }, "STATE-BY-STATE BREAKDOWN"), [{
     category: "NO STATE INCOME TAX",
-    color: C.green,
+    color: C.greenBright,
     states: "AK, FL, NV, NH, SD, TN, TX, WA, WY",
     detail: "These states have no income tax at all. Military retired pay, civilian income, investments — all state tax-free.",
     count: 9
@@ -11775,7 +11767,7 @@ function App() {
     style: S.sectionLabel
   }, "TAX PLANNING EXAMPLES"), [{
     scenario: "E-7 retiring with $2,800/mo retired pay",
-    detail: "In Texas (no income tax): $0 state tax. In California (full tax): ~$2,400/year in state taxes. In Virginia (partial): ~$800-1,200/year. Over 30 years, that's a $72,000 difference between TX and CA.",
+    detail: "In Texas (no income tax): $0 state tax. In California (still largely taxed \u2014 a partial exclusion began in 2025): ~$2,400/year in state taxes. In Virginia (partial): ~$800-1,200/year. Over 30 years, that's a $72,000 difference between TX and CA.",
     savings: "$72,000 lifetime difference"
   }, {
     scenario: "O-5 retiring with $5,200/mo retired pay + 60% VA disability",
@@ -11852,7 +11844,7 @@ function App() {
       textDecoration: "none",
       marginBottom: 6
     }
-  }, "VIEW MyARMYBENEFITS STATE FACT SHEETS ", "\u2192"), /*#__PURE__*/React.createElement("a", {
+  }, "VIEW MyArmyBenefits STATE FACT SHEETS (ALL BRANCHES) ", "\u2192"), /*#__PURE__*/React.createElement("a", {
     href: "https://www.militaryonesource.mil/financial-legal/tax-resource-center/",
     target: "_blank",
     rel: "noopener noreferrer",
@@ -12003,7 +11995,9 @@ function App() {
     value: "marine+corps"
   }, "Marine Corps"), /*#__PURE__*/React.createElement("option", {
     value: "coast+guard"
-  }, "Coast Guard"))), /*#__PURE__*/React.createElement("div", {
+  }, "Coast Guard"), /*#__PURE__*/React.createElement("option", {
+    value: "space+force"
+  }, "Space Force"))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 12
     }
@@ -12020,7 +12014,7 @@ function App() {
     type: "text",
     value: mosCode,
     onChange: e => setMosCode(e.target.value.toUpperCase()),
-    placeholder: "e.g. 11B, 0311, 3D0X2",
+    placeholder: "e.g. 11B, 0311, HM, 3D0X2",
     style: {
       ...S.input,
       textTransform: "uppercase"
@@ -12066,7 +12060,7 @@ function App() {
       textAlign: "center"
     }
   }, "\uD83D\uDCCA O*NET DETAILED CROSSWALK \u2014 SKILLS, PAY & OUTLOOK"), /*#__PURE__*/React.createElement("a", {
-    href: "https://www.cool.osd.mil/" + (mosBranch === "marine+corps" ? "usmc" : mosBranch === "air+force" ? "air-force" : mosBranch === "coast+guard" ? "coast-guard" : mosBranch === "navy" ? "usn" : mosBranch) + "/",
+    href: "https://www.cool.osd.mil/" + (mosBranch === "marine+corps" ? "usmc" : mosBranch === "space+force" ? "air-force" : mosBranch === "air+force" ? "air-force" : mosBranch === "coast+guard" ? "coast-guard" : mosBranch === "navy" ? "usn" : mosBranch) + "/",
     target: "_blank",
     rel: "noopener noreferrer",
     style: {
@@ -12122,9 +12116,9 @@ function App() {
     url: "https://www.cool.osd.mil/usn/index.html",
     desc: "Credentials matching for Navy NEC/Rating codes"
   }, {
-    name: "Air Force COOL",
+    name: "Air Force & Space Force COOL",
     url: "https://www.cool.osd.mil/air-force/",
-    desc: "Credentials matching for Air Force AFSC codes"
+    desc: "Credentials matching for Air Force and Space Force specialty codes"
   }, {
     name: "Marine Corps COOL",
     url: "https://www.cool.osd.mil/usmc/",
@@ -12228,7 +12222,7 @@ function App() {
               React.createElement("strong", { style: { color: "#c4b070", fontSize: 10, letterSpacing: 1, fontFamily: "'Oswald', sans-serif" } }, "WHY THIS MATTERS:"),
               React.createElement("br"), React.createElement("span", { style: { color: "#c4b070" } }, r.why)
             ),
-            r.link && React.createElement("div", { style: { marginTop: 8 } }, React.createElement("a", { href: r.link, target: "_blank", rel: "noopener noreferrer", style: { fontSize: 12, color: C.green, textDecoration: "underline" } }, "Open Resource \u2192")),
+            r.link && React.createElement("div", { style: { marginTop: 8 } }, React.createElement("a", { href: r.link, target: "_blank", rel: "noopener noreferrer", style: { fontSize: 12, color: C.greenBright, textDecoration: "underline" } }, "Open Resource \u2192")),
             React.createElement("div", { style: { marginTop: 12 } },
               !isDis ? React.createElement("button", { onClick: function() { setDismissedReminders(function(p) { var n = Object.assign({}, p); n[r.id] = true; return n; }); setReminderExpanded(null); }, style: { padding: "8px 16px", background: "rgba(74,93,35,0.3)", border: "1px solid " + C.green, borderRadius: 4, color: "#8faf5f", fontSize: 11, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, "\u2713 MARK COMPLETE") :
               React.createElement("button", { onClick: function() { setDismissedReminders(function(p) { var n = Object.assign({}, p); delete n[r.id]; return n; }); }, style: { padding: "8px 16px", background: "rgba(139,0,0,0.2)", border: "1px solid #8B0000", borderRadius: 4, color: "#ff8888", fontSize: 11, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, "\u21A9 RESTORE")
@@ -12303,7 +12297,7 @@ function App() {
 
       React.createElement("div", {style:{display:"flex", gap:6, marginBottom:12, overflowX:"auto", WebkitOverflowScrolling:"touch"}},
         ["ALL","OPEN","CLOSING","MISSED"].map(function(f) {
-          return React.createElement("button", {key:f, onClick:function(){ setCriticalFilter(f); }, style:{padding:"6px 12px", borderRadius:4, fontSize:10, fontWeight:700, letterSpacing:1.5, color:criticalFilter === f ? C.textPrimary : C.inactive, background:criticalFilter === f ? C.border : "transparent", border:"1px solid " + (criticalFilter === f ? C.gold : C.border), fontFamily:"'Oswald',sans-serif", cursor:"pointer", whiteSpace:"nowrap"}}, f);
+          return React.createElement("button", {key:f, onClick:function(){ setCriticalFilter(f); }, style:{padding:"10px 14px", borderRadius:4, fontSize:10, fontWeight:700, letterSpacing:1.5, color:criticalFilter === f ? C.textPrimary : C.inactive, background:criticalFilter === f ? C.border : "transparent", border:"1px solid " + (criticalFilter === f ? C.gold : C.border), fontFamily:"'Oswald',sans-serif", cursor:"pointer", whiteSpace:"nowrap"}}, f);
         })
       ),
 
@@ -12319,7 +12313,7 @@ function App() {
                 React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:14, letterSpacing:2, color:C.textPrimary, fontWeight:700}}, w.name),
                 React.createElement("div", {style:{fontSize:10, color:s.color, fontFamily:"'Oswald',sans-serif", letterSpacing:1, marginTop:2}},
                   s.label,
-                  w.irrevocable && s.state !== "open" && s.state !== "open_early" && s.state !== "future" ? React.createElement("span", {style:{color:"#C94A4A", marginLeft:6}}, "\uD83D\uDD12") : null
+                  w.irrevocable && s.state !== "open" && s.state !== "open_early" && s.state !== "future" ? React.createElement("span", {style:{color:"#E05252", marginLeft:6}}, "\uD83D\uDD12") : null
                 )
               ),
               React.createElement("div", {style:{fontSize:16, color:C.textSecondary}}, isExpanded ? "−" : "+")
@@ -12376,7 +12370,7 @@ function App() {
               })
             ),
             w.note && React.createElement("div", {style:{background:"rgba(139,0,0,0.1)", border:"1px solid #8B0000", borderRadius:4, padding:"8px 10px", margin:"12px 0"}},
-              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:"#C94A4A", marginBottom:4}}, "\u26A0 CRITICAL NOTE"),
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:"#E05252", marginBottom:4}}, "\u26A0 CRITICAL NOTE"),
               React.createElement("div", {style:{fontSize:12, color:C.textBody, lineHeight:1.5}}, w.note)
             ),
             w.forms && React.createElement("div", {style:{marginTop:12}},
@@ -12403,7 +12397,7 @@ function App() {
             ),
             React.createElement("div", {style:{marginTop:12}},
               React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:4}}, "CONSEQUENCE OF MISSING"),
-              React.createElement("div", {style:{fontSize:12, color:w.irrevocable ? "#C94A4A" : C.textBody, lineHeight:1.5}}, w.consequence)
+              React.createElement("div", {style:{fontSize:12, color:w.irrevocable ? "#E05252" : C.textBody, lineHeight:1.5}}, w.consequence)
             ),
             w.sources && React.createElement("div", {style:{marginTop:14, paddingTop:10, borderTop:"1px solid " + C.border}},
               React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:6}}, "VERIFIED SOURCES"),
@@ -12527,7 +12521,7 @@ function App() {
       React.createElement("div", { style: { textAlign: "center", marginBottom: 16 } },
         React.createElement("div", { style: { fontSize: 11, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif" } }, "VA COMBINED RATING"),
         React.createElement("div", { style: { fontSize: 22, fontWeight: 700, color: C.textPrimary, fontFamily: "'Oswald', sans-serif", marginTop: 4 } }, "CALCULATOR"),
-        React.createElement("div", { style: { fontSize: 11, color: C.inactive, marginTop: 6, lineHeight: 1.5 } }, "VA doesn't add ratings. They use \"VA Math\" \u2014 percentages of percentages. Two 50% ratings = 75%, not 100%.")
+        React.createElement("div", { style: { fontSize: 11, color: C.inactive, marginTop: 6, lineHeight: 1.5 } }, "VA doesn't add ratings. They use \"VA Math\" \u2014 percentages of percentages. Two 50% ratings combine to 75 \u2014 which VA rounds to 80%, not 100%.")
       ),
 
       // 2026 Policy Intel — collapsible advisory card
@@ -12706,13 +12700,13 @@ function App() {
 
       // Share
       React.createElement("button", { onClick: function() {
-        var txt = "VA Combined Rating Calculator \u2014 finally understand VA Math: veteranbridge-tools.netlify.app";
-        if (navigator.share) { navigator.share({ title: "VA Math Calculator", text: txt, url: "https://veteranbridge-tools.netlify.app" }); }
+        var txt = "VA Combined Rating Calculator \u2014 finally understand VA Math: transitionops.org";
+        if (navigator.share) { navigator.share({ title: "VA Math Calculator", text: txt, url: "https://transitionops.org" }); }
         else if (navigator.clipboard) { navigator.clipboard.writeText(txt); showToast("LINK COPIED"); }
       }, style: { width: "100%", padding: "14px", background: "linear-gradient(135deg, " + C.green + ", " + C.greenBright + ")", border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\uD83D\uDCE4 SHARE THIS TOOL"),
 
       React.createElement("div", { style: { textAlign: "center", marginTop: 12 } },
-        React.createElement("a", { href: "https://www.va.gov/disability/about-disability-ratings/", target: "_blank", rel: "noopener noreferrer", style: { fontSize: 11, color: C.green, textDecoration: "underline" } }, "How VA Assigns Disability Ratings \u2192"),
+        React.createElement("a", { href: "https://www.va.gov/disability/about-disability-ratings/", target: "_blank", rel: "noopener noreferrer", style: { fontSize: 11, color: C.greenBright, textDecoration: "underline" } }, "How VA Assigns Disability Ratings \u2192"),
         React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 6, lineHeight: 1.5 } }, "This calculator provides estimates for planning purposes. Actual combined ratings are determined by VA. Bilateral factor not included in this calculator.")
       )
     );
@@ -12869,7 +12863,7 @@ function App() {
       // Key intel
       React.createElement("div", { style: { background: C.bgCard, border: "1px solid " + C.border, borderRadius: 10, padding: 16, marginBottom: 12 } },
         React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 10 } }, "INTEL YOU NEED TO KNOW"),
-        [{icon:"\u2705",text:"VA disability compensation is 100% tax-free — federal AND state."},{icon:"\u2705",text:"No Social Security or Medicare tax withheld on VA disability pay."},{icon:"\u26A0\uFE0F",text:"File your BDD claim 180-365 days before separation for a rating effective Day 1."},{icon:"\uD83D\uDCCA",text:"VA uses \"VA math\" to combine ratings — two 50% ratings = 75%, not 100%."},{icon:"\uD83D\uDCB0",text:"100% P&T (Permanent & Total) unlocks CHAMPVA, DEA Ch.35, property tax exemptions."},{icon:"\uD83C\uDFE0",text:"Home of RESIDENCE determines state tax — research before you establish residency."}].map(function(item, i) {
+        [{icon:"\u2705",text:"VA disability compensation is 100% tax-free — federal AND state."},{icon:"\u2705",text:"No Social Security or Medicare tax withheld on VA disability pay."},{icon:"\u26A0\uFE0F",text:"File your BDD claim 180-90 days before separation for a rating effective Day 1."},{icon:"\uD83D\uDCCA",text:"VA uses \"VA math\" to combine ratings — two 50% ratings combine to 75, which rounds to 80% \u2014 not 100%."},{icon:"\uD83D\uDCB0",text:"100% P&T (Permanent & Total) unlocks CHAMPVA, DEA Ch.35, property tax exemptions."},{icon:"\uD83C\uDFE0",text:"State of legal residence determines state tax — research before you establish residency."}].map(function(item, i) {
           return React.createElement("div", { key: i, style: { display: "flex", gap: 10, padding: "8px 0", borderBottom: i < 5 ? "1px solid rgba(255,255,255,0.04)" : "none" } },
             React.createElement("span", { style: { fontSize: 16, flexShrink: 0 } }, item.icon),
             React.createElement("span", { style: { fontSize: 12, color: "#c4b888", lineHeight: 1.5 } }, item.text)
@@ -12879,14 +12873,14 @@ function App() {
 
       // Source + CTA
       React.createElement("div", { style: { textAlign: "center", padding: "10px 0" } },
-        React.createElement("a", { href: "https://www.va.gov/disability/compensation-rates/veteran-rates/", target: "_blank", rel: "noopener noreferrer", style: { fontSize: 11, color: C.green, textDecoration: "underline" } }, "Official VA.gov Rate Tables \u2192"),
+        React.createElement("a", { href: "https://www.va.gov/disability/compensation-rates/veteran-rates/", target: "_blank", rel: "noopener noreferrer", style: { fontSize: 11, color: C.greenBright, textDecoration: "underline" } }, "Official VA.gov Rate Tables \u2192"),
         React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 8, lineHeight: 1.5 } }, "Rates effective Dec 1, 2025 through Nov 30, 2026. This is an estimate \u2014 actual compensation determined by VA. Special Monthly Compensation (SMC) not included.")
       ),
 
       // Share
       React.createElement("button", { onClick: function() {
-        var txt = "VA Disability Pay Estimator — check what your rating is worth: veteranbridge-tools.netlify.app";
-        if (navigator.share) { navigator.share({ title: "VA Pay Estimator", text: txt, url: "https://veteranbridge-tools.netlify.app" }); }
+        var txt = "VA Disability Pay Estimator — check what your rating is worth: transitionops.org";
+        if (navigator.share) { navigator.share({ title: "VA Pay Estimator", text: txt, url: "https://transitionops.org" }); }
         else if (navigator.clipboard) { navigator.clipboard.writeText(txt); showToast("LINK COPIED"); }
       }, style: { width: "100%", padding: "14px", background: "linear-gradient(135deg, " + C.green + ", " + C.greenBright + ")", border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer", marginTop: 8 } }, "\uD83D\uDCE4 SHARE THIS TOOL")
     );
@@ -12906,7 +12900,7 @@ function App() {
       pcsData = {wLbs:wLbs,wTons:(wLbs/2000).toFixed(1),proM:PCS_PROGEAR_M,proS:pcsDeps?PCS_PROGEAR_S:0,
         totalW:wLbs+PCS_PROGEAR_M+(pcsDeps?PCS_PROGEAR_S:0),dlaAmt:dlaAmt,
         maltT:Math.round(mi*PCS_MALT*100)/100,maltT2:Math.round(mi*PCS_MALT*2*100)/100,mi:mi,
-        deadline:pcsMoveType==="retirement"?"3 years (extendable to 6)":"1 year"};
+        deadline:pcsMoveType==="retirement"?"3 years (extendable to 6)":"180 days (extensions possible)"};
     }
 
     var StatBox = function(p){return React.createElement("div",{style:{flex:1,padding:"10px 12px",borderRadius:6,background:p.alert?"#2a0808":C.bgCard,border:"1px solid "+(p.alert?"#5a0000":C.border)}},
@@ -12940,7 +12934,7 @@ function App() {
       pcsData && React.createElement("div", null,
         // Section tabs
         React.createElement("div",{style:{display:"flex",gap:3,marginBottom:14}},
-          [{id:"summary",l:"SUMMARY"},{id:"weight",l:"WEIGHT"},{id:"money",l:"MONEY"},{id:"timeline",l:"TIMELINE"},{id:"tips",l:"FIELD NOTES"}].map(function(s){return React.createElement("button",{key:s.id,onClick:function(){setPcsSection(s.id);},style:{flex:1,padding:"7px 2px",borderRadius:4,background:pcsSection===s.id?C.border:"transparent",border:"1px solid "+(pcsSection===s.id?C.greenBright+"66":C.border),color:pcsSection===s.id?C.greenBright:C.inactive,fontFamily:"'Oswald',sans-serif",fontSize:9,letterSpacing:1,cursor:"pointer"}},s.l);})
+          [{id:"summary",l:"SUMMARY"},{id:"weight",l:"WEIGHT"},{id:"money",l:"MONEY"},{id:"timeline",l:"TIMELINE"},{id:"tips",l:"FIELD NOTES"}].map(function(s){return React.createElement("button",{key:s.id,onClick:function(){setPcsSection(s.id);},style:{flex:1,padding:"11px 2px",borderRadius:4,background:pcsSection===s.id?C.border:"transparent",border:"1px solid "+(pcsSection===s.id?C.greenBright+"66":C.border),color:pcsSection===s.id?C.greenBright:C.inactive,fontFamily:"'Oswald',sans-serif",fontSize:10,letterSpacing:1,cursor:"pointer"}},s.l);})
         ),
 
         // SUMMARY
@@ -13035,11 +13029,11 @@ function App() {
                 "You have ",React.createElement("strong",{style:{color:C.greenBright,fontSize:16}},"3 years")," from retirement date. Extensions available up to ",React.createElement("strong",{style:{color:C.goldBright}},"6 years maximum"),". Request annually through your transportation office. Store HHG in NTS while you decide."
               ):
               React.createElement("div",{style:{fontSize:12,color:C.textBody,lineHeight:1.8}},
-                "You have ",React.createElement("strong",{style:{color:C.goldBright,fontSize:16}},"1 year")," from separation date. After that, you pay out of pocket. Limited extension options \u2014 check with your transportation office."
+                "You have ",React.createElement("strong",{style:{color:C.goldBright,fontSize:16}},"180 days")," from separation date. Extensions are possible \u2014 request through your transportation office BEFORE it expires, or you pay out of pocket."
               )
           ),
           React.createElement("div",{style:{fontSize:10,color:C.gold,letterSpacing:2,fontFamily:"'Oswald',sans-serif",marginTop:12,marginBottom:8}},"EXECUTION CHECKLIST"),
-          [{w:"90+ DAYS",t:"Contact TMO/PPO for counseling. Get weight allowance confirmed in writing."},{w:"60-90 DAYS",t:"Decide: HHG move, PPM/DITY, or combo. Get GCC estimate."},{w:"45-60 DAYS",t:"Schedule pack-out. Declutter. Separate and label pro-gear."},{w:"30 DAYS",t:"Confirm dates. Inventory high-value items with photos."},{w:"PACK-OUT",t:"Be present. Watch everything. Review inventory sheet. Note pre-existing damage."},{w:"DELIVERY",t:"Inspect all items. Note ALL damage. 75 days to file claims through DPS."},{w:"VOUCHER",t:"Submit DD 1351-2 with receipts, MALT, per diem. Don't leave money on the table."}].map(function(s,i){
+          [{w:"90+ DAYS",t:"Contact TMO/PPO for counseling. Get weight allowance confirmed in writing."},{w:"60-90 DAYS",t:"Decide: HHG move, PPM/DITY, or combo. Get GCC estimate."},{w:"45-60 DAYS",t:"Schedule pack-out. Declutter. Separate and label pro-gear."},{w:"30 DAYS",t:"Confirm dates. Inventory high-value items with photos."},{w:"PACK-OUT",t:"Be present. Watch everything. Review inventory sheet. Note pre-existing damage."},{w:"DELIVERY",t:"Inspect all items. Note ALL damage. Written notice within 180 days; claim within 9 months through DPS."},{w:"VOUCHER",t:"Submit DD 1351-2 with receipts, MALT, per diem. Don't leave money on the table."}].map(function(s,i){
             return React.createElement("div",{key:i,style:{display:"flex",gap:12,marginBottom:6,padding:"10px 12px",borderRadius:6,background:C.bgCard,border:"1px solid "+C.border}},
               React.createElement("div",{style:{minWidth:28,height:28,borderRadius:"50%",background:C.border,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Oswald',sans-serif",fontSize:12,fontWeight:700,color:C.greenBright}},String(i+1)),
               React.createElement("div",null,
@@ -13125,7 +13119,7 @@ function App() {
   }, "www.veteranbridgesolutions.com"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11,
-      color: C.border,
+      color: C.inactive,
       marginTop: 8
     }
   }, "Bridging the gap between service and civilian success.")),
@@ -13190,7 +13184,7 @@ function App() {
 ReactDOM.render(/*#__PURE__*/React.createElement(App, null), document.getElementById("root"));
 } catch(err) {
   console.error("Transition OPS error:", err);
-  document.getElementById("root").innerHTML = '<div style="padding:40px;text-align:center;color:#d4cbb3;font-family:sans-serif"><h2 style="color:#C9B45A">TRANSITION OPS</h2><p style="margin-top:10px;font-size:14px">Loading error. <a href="https://veteranbridge-tools.netlify.app" target="_blank" style="color:#8BB83C">Open directly &rarr;</a></p></div>';
+  document.getElementById("root").innerHTML = '<div style="padding:40px;text-align:center;color:#d4cbb3;font-family:sans-serif"><h2 style="color:#C9B45A">TRANSITION OPS</h2><p style="margin-top:10px;font-size:14px">Loading error. <a href="https://transitionops.org" target="_blank" style="color:#8BB83C">Open directly &rarr;</a></p></div>';
 }
 
 </script>
