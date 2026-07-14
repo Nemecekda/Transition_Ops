@@ -2557,9 +2557,10 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v75";
+const APP_VERSION = "v76";
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v76", date: "14 JUL 2026", note: "From our call with the American Legion: IDES proposed-vs-final rating guidance on the VA calculator, SBA Boots to Business in resources, and NEED A HUMAN contact numbers (MyVA411, VA Benefits, Crisis Line) on the VSO finder." },
   { v: "v75", date: "10 JUL 2026", note: "Cleaner home screen: your countdown, critical windows, and next action stay front and center \u2014 everything else now lives under MORE TOOLS & INTEL (one tap). First step of a redesign shaped by service-officer feedback." },
   { v: "v73", date: "10 JUL 2026", note: "Fixed the ETS date picker on iPhone (it was closing before you could pick a future date) and added FIND YOUR LOCAL VSO / CVSO \u2014 official locators for free, in-person claims help near you." },
   { v: "v72", date: "9 JUL 2026", note: "Deep-dive polish: fixed a Resource Directory crash, completed light-theme coverage on every screen, stronger contrast in both themes, a SITREP card showing what changed since your last check-in, and a new one-tap \u201Cadd my deadlines to calendar\u201D export on Critical Windows. Policy tracker updated: SpouseWorks launch (1 JUL) and the Take Care of America's Veterans Act / Major Richard Star Act now tracked." },
@@ -2756,6 +2757,7 @@ const RESOURCE_CATEGORIES = {
 
 const RESOURCES = [
   // ═══ EDUCATION & ACADEMIC ═══
+  { id: "boots-to-business", name: "SBA Boots to Business (B2B)", url: "https://www.sba.gov/sba-learning-platform/boots-business", category: "entrepreneurship", cost: "free", eligibility: ["active","veteran","spouse"], description: "SBA's FREE entrepreneurship course — the official TAP business track. Two-day intro during transition, Already out? B2B Reboot is the same course for veterans of ALL eras, no installation needed. Spouses eligible.", verified: true },
   { id: "sva", name: "Student Veterans of America (SVA)", url: "https://studentveterans.org", category: "education", cost: "free", eligibility: ["veteran","active","spouse"], description: "1,500+ campus chapters. Peer support, advocacy, and scholarships for student veterans.", verified: true },
   { id: "warrior-scholar", name: "Warrior-Scholar Project", url: "https://www.warrior-scholar.org", category: "education", cost: "free", eligibility: ["veteran","active"], description: "Free academic boot camps preparing enlisted veterans for top-tier four-year colleges.",verified: true },
   { id: "boots-to-books", name: "Boots to Books", url: "https://www.boots2books.org", category: "education", cost: "free", eligibility: ["veteran","active","spouse"], description: "Transition support helping veterans move into higher education.",verified: true },
@@ -9532,7 +9534,12 @@ function App() {
     style: { display: "block", padding: "11px 13px", marginBottom: 8, background: C.bg, border: "1px solid " + C.gold, borderRadius: 6, textDecoration: "none" }
   }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.goldBright, fontWeight: 600 } }, "\u2B50 Wisconsin: Find My CVSO / TVSO \u2192"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.inactive, marginTop: 2 } }, "WDVA's official directory \u2014 72 county CVSOs + 11 Tribal Veterans Service Officers")), /*#__PURE__*/React.createElement("div", {
     style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.5 }
-  }, "Tip: CVSOs are county/state employees; Legion, VFW, and DAV service officers are organization-based. Both are VA-accredited and both file your claims free.")), /*#__PURE__*/React.createElement("div", {
+  }, "Tip: CVSOs are county/state employees; Legion, VFW, and DAV service officers are organization-based. Both are VA-accredited and both file your claims free."), /*#__PURE__*/React.createElement("div", { style: { marginTop: 10, paddingTop: 10, borderTop: "1px solid " + C.border } },
+    React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1.5, color: C.textPrimary, fontWeight: 700, marginBottom: 6 } }, "\uD83D\uDCDE NEED A HUMAN RIGHT NOW?"),
+    React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.7 } },
+      React.createElement("div", null, React.createElement("strong", { style: { color: C.textPrimary } }, "MyVA411: 1-800-698-2411"), " \u2014 any VA question, 24/7, a live person"),
+      React.createElement("div", null, React.createElement("strong", { style: { color: C.textPrimary } }, "VA Benefits: 1-800-827-1000"), " \u2014 claims and benefits questions"),
+      React.createElement("div", null, React.createElement("strong", { style: { color: C.goldBright } }, "Veterans Crisis Line: dial 988, then press 1"), " \u2014 or text 838255 \u2014 24/7/365")))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 4,
@@ -13019,7 +13026,9 @@ function App() {
 
       React.createElement("div", { style: { textAlign: "center", marginTop: 12 } },
         React.createElement("a", { href: "https://www.va.gov/disability/about-disability-ratings/", target: "_blank", rel: "noopener noreferrer", style: { fontSize: 11, color: C.greenBright, textDecoration: "underline" } }, "How VA Assigns Disability Ratings \u2192"),
-        React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 6, lineHeight: 1.5 } }, "This calculator provides estimates for planning purposes. Actual combined ratings are determined by VA. Bilateral factor not included in this calculator.")
+        React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 6, lineHeight: 1.5 } }, "This calculator provides estimates for planning purposes. Actual combined ratings are determined by VA. Bilateral factor not included in this calculator."), /*#__PURE__*/React.createElement("div", { style: { background: C.bgCard, border: "1px solid " + C.border, borderLeft: "3px solid " + C.gold, borderRadius: 8, padding: "13px 15px", marginTop: 14 } },
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1.5, color: C.gold, fontWeight: 700, marginBottom: 5 } }, "\u26A0 MEDICALLY RETIRING? PROPOSED \u2260 FINAL"),
+        React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.6 } }, "If you're going through IDES / medical retirement: the PROPOSED rating you receive during the process is not your final rating. The final VA rating decision can come back lower (or higher) than what was proposed \u2014 don't make financial plans on a proposed 80% or 100% until the decision is final. Ratings are assigned under the VA Schedule for Rating Disabilities (38 CFR Part 4); the disability evaluation process runs under DoDI 1332.18. If your final rating differs from the proposal, talk to an accredited VSO about your options \u2014 including whether to appeal."))
       )
     );
   })()),
