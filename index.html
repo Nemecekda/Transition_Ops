@@ -2557,9 +2557,10 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v73";
+const APP_VERSION = "v75";
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v75", date: "10 JUL 2026", note: "Cleaner home screen: your countdown, critical windows, and next action stay front and center \u2014 everything else now lives under MORE TOOLS & INTEL (one tap). First step of a redesign shaped by service-officer feedback." },
   { v: "v73", date: "10 JUL 2026", note: "Fixed the ETS date picker on iPhone (it was closing before you could pick a future date) and added FIND YOUR LOCAL VSO / CVSO \u2014 official locators for free, in-person claims help near you." },
   { v: "v72", date: "9 JUL 2026", note: "Deep-dive polish: fixed a Resource Directory crash, completed light-theme coverage on every screen, stronger contrast in both themes, a SITREP card showing what changed since your last check-in, and a new one-tap \u201Cadd my deadlines to calendar\u201D export on Critical Windows. Policy tracker updated: SpouseWorks launch (1 JUL) and the Take Care of America's Veterans Act / Major Richard Star Act now tracked." },
   { v: "v71", date: "9 JUL 2026", note: "Light theme is here \u2014 tap PRO in the header for a clean professional look (great on laptops and in bright sun). Feedback now transmits directly from the app, screen-reader support improved throughout, and the app no longer depends on any outside server to load." },
@@ -4143,6 +4144,7 @@ function App() {
   const [sitrepDismissed, setSitrepDismissed] = useState(function() { try { return localStorage.getItem("tops_sitrep_jul2026") === "1"; } catch (e) { return false; } });
   const [searchQ, setSearchQ] = useState("");
   const [policyPanelOpen, setPolicyPanelOpen] = useState(false);
+  const [dashMoreOpen, setDashMoreOpen] = useState(false);
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [whatsNewUnseen, setWhatsNewUnseen] = useState(function() { try { return window.__safeGet("tops_whatsnew_seen") !== APP_VERSION; } catch (e) { return false; } });
   const [userStatus, setUserStatus] = useState(function() { try { return window.__safeGet("tops_user_status") || ""; } catch(e) { return ""; } });
@@ -5849,6 +5851,16 @@ function App() {
         )
       ),
 
+      // v75 BRIEFING DASHBOARD: mission state + next actions stay up top; everything else recedes here
+      React.createElement("div", { onClick: function() { setDashMoreOpen(!dashMoreOpen); if (window.__trackEvent) window.__trackEvent("dash_more_toggled", { open: !dashMoreOpen }); }, style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "13px 16px", background: "#161B11", border: "1px solid #222A19", borderRadius: 10, marginBottom: 12, cursor: "pointer" } },
+        React.createElement("div", null,
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 2, color: C.gold, fontWeight: 600 } }, "MORE TOOLS & INTEL"),
+          React.createElement("div", { style: { fontSize: 10.5, color: "#8A8468", marginTop: 2 } }, "SkillBridge feed \u00B7 career maps \u00B7 documents \u00B7 spouse resources \u00B7 app updates")
+        ),
+        React.createElement("span", { style: { color: C.gold, fontSize: 14, transform: dashMoreOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" } }, "\u203A")
+      ),
+      dashMoreOpen && React.createElement("div", null,
+
       // MOCKUP SKILLBRIDGE INTEL: typographic rows from the live feed, zero box decoration
       SKILLBRIDGE_FEED.length > 0 && SKILLBRIDGE_FEED[0].companies && React.createElement("div", { style: { margin: "20px 2px 16px" } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: C.inactive, marginBottom: 8 } }, "SKILLBRIDGE INTEL \u2014 LATEST BATCH (" + (SKILLBRIDGE_FEED[0].week || "") + ")"),
@@ -5926,7 +5938,7 @@ function App() {
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 3, color: C.gold, marginBottom: 2 } }, "BUILT BY"),
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 16, fontWeight: 700, color: C.textPrimary } }, "VETERAN BRIDGE SOLUTIONS"),
         React.createElement("div", { style: { fontSize: 11, color: C.greenBright, marginTop: 4 } }, "veteranbridgesolutions.com \u2192")
-      )
+      ))
     );
   })()),
 
