@@ -2557,9 +2557,10 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v72";
+const APP_VERSION = "v73";
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v73", date: "10 JUL 2026", note: "Fixed the ETS date picker on iPhone (it was closing before you could pick a future date) and added FIND YOUR LOCAL VSO / CVSO \u2014 official locators for free, in-person claims help near you." },
   { v: "v72", date: "9 JUL 2026", note: "Deep-dive polish: fixed a Resource Directory crash, completed light-theme coverage on every screen, stronger contrast in both themes, a SITREP card showing what changed since your last check-in, and a new one-tap \u201Cadd my deadlines to calendar\u201D export on Critical Windows. Policy tracker updated: SpouseWorks launch (1 JUL) and the Take Care of America's Veterans Act / Major Richard Star Act now tracked." },
   { v: "v71", date: "9 JUL 2026", note: "Light theme is here \u2014 tap PRO in the header for a clean professional look (great on laptops and in bright sun). Feedback now transmits directly from the app, screen-reader support improved throughout, and the app no longer depends on any outside server to load." },
   { v: "v70", date: "9 JUL 2026", note: "Navigation overhaul: your phone's Back button now steps back inside the app instead of exiting, VA calculators moved into the home bar and a new quick-tools row, one clean icon set across the app, larger body text, easier-to-tap controls, and a finish-setup shortcut if you skipped onboarding." },
@@ -9500,6 +9501,26 @@ function App() {
       marginBottom: 10
     }
   }, "Direct links to every major VSO. Free claims assistance, career support, community, and crisis resources."), /*#__PURE__*/React.createElement("div", {
+    style: { background: "linear-gradient(135deg, " + C.bgCard + ", " + C.gradStart + ")", border: "1px solid " + C.greenBright, borderLeft: "3px solid " + C.greenBright, borderRadius: 8, padding: "14px 15px", marginBottom: 14 }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.greenBright, fontWeight: 700, marginBottom: 4 }
+  }, "\uD83D\uDCCD FIND YOUR LOCAL VSO / CVSO"), /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.55, marginBottom: 10 }
+  }, "A real person, near you, free. County Veterans Service Officers (CVSOs) and accredited VSO reps file claims, gather evidence, and represent you \u2014 at no cost, ever. These official locators are maintained by the VA and NACVSO and stay current:"), /*#__PURE__*/React.createElement("a", {
+    href: "https://www.va.gov/get-help-from-accredited-representative/find-rep/", target: "_blank", rel: "noopener noreferrer",
+    style: { display: "block", padding: "11px 13px", marginBottom: 6, background: C.bg, border: "1px solid " + C.border, borderRadius: 6, textDecoration: "none" }
+  }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.textPrimary, fontWeight: 600 } }, "VA: Find an Accredited Rep or VSO \u2192"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.inactive, marginTop: 2 } }, "Official VA search by location \u2014 the system of record")), /*#__PURE__*/React.createElement("a", {
+    href: "https://www.va.gov/ogc/apps/accreditation/index.asp", target: "_blank", rel: "noopener noreferrer",
+    style: { display: "block", padding: "11px 13px", marginBottom: 6, background: C.bg, border: "1px solid " + C.border, borderRadius: 6, textDecoration: "none" }
+  }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.textPrimary, fontWeight: 600 } }, "VA OGC Accreditation Search \u2192"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.inactive, marginTop: 2 } }, "Verify any rep, agent, or attorney is VA-accredited \u2014 refreshed 3x weekly")), /*#__PURE__*/React.createElement("a", {
+    href: "https://www.nacvso.org/", target: "_blank", rel: "noopener noreferrer",
+    style: { display: "block", padding: "11px 13px", marginBottom: 6, background: C.bg, border: "1px solid " + C.border, borderRadius: 6, textDecoration: "none" }
+  }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.textPrimary, fontWeight: 600 } }, "NACVSO: County Veterans Service Officers \u2192"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.inactive, marginTop: 2 } }, "The national association of county-level officers \u2014 2,400+ CVSOs across 29 states")), /*#__PURE__*/React.createElement("a", {
+    href: "https://dva.wi.gov/resources/find-my-cvso-tvso/", target: "_blank", rel: "noopener noreferrer",
+    style: { display: "block", padding: "11px 13px", marginBottom: 8, background: C.bg, border: "1px solid " + C.gold, borderRadius: 6, textDecoration: "none" }
+  }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.goldBright, fontWeight: 600 } }, "\u2B50 Wisconsin: Find My CVSO / TVSO \u2192"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.inactive, marginTop: 2 } }, "WDVA's official directory \u2014 72 county CVSOs + 11 Tribal Veterans Service Officers")), /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.5 }
+  }, "Tip: CVSOs are county/state employees; Legion, VFW, and DAV service officers are organization-based. Both are VA-accredited and both file your claims free.")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 4,
