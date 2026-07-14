@@ -2557,9 +2557,10 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v76";
+const APP_VERSION = "v77";
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v77", date: "14 JUL 2026", note: "NEW: free AI Resume Builder on the Career tab \u2014 type what you actually did in your own words and get civilian, ATS-ready resume bullets. 3 free generations a day. Nothing you type is stored." },
   { v: "v76", date: "14 JUL 2026", note: "From our call with the American Legion: IDES proposed-vs-final rating guidance on the VA calculator, SBA Boots to Business in resources, and NEED A HUMAN contact numbers (MyVA411, VA Benefits, Crisis Line) on the VSO finder." },
   { v: "v75", date: "10 JUL 2026", note: "Cleaner home screen: your countdown, critical windows, and next action stay front and center \u2014 everything else now lives under MORE TOOLS & INTEL (one tap). First step of a redesign shaped by service-officer feedback." },
   { v: "v73", date: "10 JUL 2026", note: "Fixed the ETS date picker on iPhone (it was closing before you could pick a future date) and added FIND YOUR LOCAL VSO / CVSO \u2014 official locators for free, in-person claims help near you." },
@@ -4147,6 +4148,7 @@ function App() {
   const [searchQ, setSearchQ] = useState("");
   const [policyPanelOpen, setPolicyPanelOpen] = useState(false);
   const [dashMoreOpen, setDashMoreOpen] = useState(false);
+  const [aiR, setAiR] = useState({ open: false, role: "", years: "", target: "", skills: "", certs: "", exp: "", loading: false, out: "", err: "" });
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [whatsNewUnseen, setWhatsNewUnseen] = useState(function() { try { return window.__safeGet("tops_whatsnew_seen") !== APP_VERSION; } catch (e) { return false; } });
   const [userStatus, setUserStatus] = useState(function() { try { return window.__safeGet("tops_user_status") || ""; } catch(e) { return ""; } });
@@ -6589,7 +6591,40 @@ function App() {
         fontFamily: "'Source Sans 3', sans-serif"
       }
     }, t.text))));
-  })(), activeTab === "pathway" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  })(), activeTab === "pathway" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { ...S.card, borderLeft: "3px solid " + C.greenBright, marginBottom: 14 } },
+    React.createElement("div", { onClick: function() { setAiR(function(p){ return Object.assign({}, p, { open: !p.open }); }); if (window.__trackEvent) window.__trackEvent("ai_resume_opened", {}); }, style: { display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" } },
+      React.createElement("div", null,
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.greenBright, fontWeight: 700 } }, "\u2728 AI RESUME BUILDER \u2014 FREE"),
+        React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "YOUR experience \u2014 not just your MOS \u2014 rewritten into civilian resume bullets. 3 free generations a day.")),
+      React.createElement("span", { style: { color: C.greenBright, fontSize: 16, transform: aiR.open ? "rotate(90deg)" : "none" } }, "\u203A")),
+    aiR.open && React.createElement("div", { style: { marginTop: 12 } },
+      React.createElement("input", { placeholder: "Your MOS / AFSC / rate (e.g. 92A)", defaultValue: aiR.role, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { role: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
+      React.createElement("div", { style: { display: "flex", gap: 8 } },
+        React.createElement("input", { placeholder: "Years served", defaultValue: aiR.years, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { years: v }); }); }, style: { ...S.input, marginBottom: 8, flex: 1 } }),
+        React.createElement("input", { placeholder: "Target civilian role", defaultValue: aiR.target, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { target: v }); }); }, style: { ...S.input, marginBottom: 8, flex: 2 } })),
+      React.createElement("input", { placeholder: "ASIs / additional skills (optional)", defaultValue: aiR.skills, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { skills: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
+      React.createElement("input", { placeholder: "Certifications (optional)", defaultValue: aiR.certs, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { certs: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
+      React.createElement("textarea", { placeholder: "What did you ACTUALLY do? In your own words \u2014 duties, numbers, people led, equipment, results. The more real detail, the better the bullets.", defaultValue: aiR.exp, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { exp: v }); }); }, rows: 5, style: { ...S.input, marginBottom: 10, resize: "vertical", fontFamily: "inherit" } }),
+      React.createElement("button", { disabled: aiR.loading, onClick: function() {
+        var today = new Date().toISOString().slice(0,10);
+        var used = 0; try { var rec = JSON.parse(window.__safeGet("tops_air_uses") || "{}"); used = rec.d === today ? rec.n : 0; } catch(e) {}
+        if (used >= 3) { setAiR(function(p){ return Object.assign({}, p, { err: "Daily limit reached (3/day) \u2014 resets tomorrow. This keeps the tool free for everyone." }); }); return; }
+        setAiR(function(p){ return Object.assign({}, p, { loading: true, err: "", out: "" }); });
+        if (window.__trackEvent) window.__trackEvent("ai_resume_generated", {});
+        fetch("/.netlify/functions/resume", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp }) })
+          .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
+          .then(function(res) {
+            if (!res.ok) { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: res.d.error || "Try again in a minute." }); }); return; }
+            try { window.__safeSet("tops_air_uses", JSON.stringify({ d: new Date().toISOString().slice(0,10), n: used + 1 })); } catch(e) {}
+            setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets }); });
+          })
+          .catch(function(){ setAiR(function(p){ return Object.assign({}, p, { loading: false, err: "Network hiccup \u2014 try again." }); }); });
+      }, style: { width: "100%", background: aiR.loading ? C.border : C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? "WRITING\u2026" : "GENERATE MY BULLETS"),
+      aiR.err && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, aiR.err),
+      aiR.out && React.createElement("div", { style: { marginTop: 12 } },
+        React.createElement("div", { style: { background: C.bg, borderRadius: 8, padding: "13px 15px", fontSize: 13, color: C.textPrimary, lineHeight: 1.75, whiteSpace: "pre-wrap" } }, aiR.out),
+        React.createElement("button", { onClick: function() { if (navigator.clipboard) { navigator.clipboard.writeText(aiR.out).then(function(){ showToast("BULLETS COPIED \u2014 paste and tailor."); }); } if (window.__trackEvent) window.__trackEvent("ai_resume_copied", {}); }, style: { marginTop: 8, background: "transparent", color: C.greenBright, border: "1px solid " + C.greenBright, borderRadius: 8, padding: "9px 16px", fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: "pointer" } }, "COPY BULLETS")),
+      React.createElement("div", { style: { marginTop: 10, fontSize: 10, color: C.inactive, lineHeight: 1.5 } }, "Private by design: your text goes to the AI once to write the bullets and is never stored or logged. Powered by Claude."))), /*#__PURE__*/React.createElement("div", {
     style: S.card
   }, /*#__PURE__*/React.createElement("div", {
     style: S.cardTitle
