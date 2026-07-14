@@ -5109,7 +5109,7 @@ function App() {
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 3 OF 4"),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, isSeparated ? "WHEN DID YOU SEPARATE?" : "WHEN IS YOUR ETS / EAOS?"),
           React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, isSeparated ? "This helps us identify benefits and deadlines that may still apply." : "This activates your personalized timeline, reminders, and countdown."),
-          React.createElement("input", { type: "date", value: onboardData.etsDate, onChange: function(e) { setOnboardData(function(p) { return Object.assign({}, p, {etsDate: e.target.value}); }); }, style: { width: "100%", padding: "16px", background: "#0f120b", border: "2px solid #222A19", borderRadius: 12, color: "#d4cbb3", fontSize: 18, fontFamily: "'Courier Prime', monospace", textAlign: "center", marginBottom: 16 } }),
+          React.createElement("input", { type: "date", defaultValue: onboardData.etsDate, min: "1990-01-01", max: "2040-12-31", onBlur: function(e) { if (e.target.value) setOnboardData(function(p) { return Object.assign({}, p, {etsDate: e.target.value}); }); }, onChange: function(e) { if (e.target.value) setOnboardData(function(p) { return Object.assign({}, p, {etsDate: e.target.value}); }); }, style: { width: "100%", padding: "16px", background: "#0f120b", border: "2px solid #222A19", borderRadius: 12, color: "#d4cbb3", fontSize: 18, fontFamily: "'Courier Prime', monospace", textAlign: "center", marginBottom: 16 } }),
           !onboardData.etsDate && React.createElement("div", { style: { textAlign: "center", marginBottom: 20 } },
             React.createElement("button", { onClick: function() { setOnboardStep(4); }, style: { background: "none", border: "none", color: "#8a8468", fontSize: 11, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "I DON'T KNOW YET \u2014 SKIP")
           ),
@@ -5743,7 +5743,7 @@ function App() {
         if (!separationDate) {
           return React.createElement("div", { style: { background: C.bgCard, borderRadius: 12, padding: "22px 18px", marginBottom: 14, textAlign: "center" } },
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 4, color: C.gold, marginBottom: 12 } }, "SET YOUR ETS DATE TO ARM THE MISSION CLOCK"),
-            React.createElement("input", { type: "date", value: separationDate, onChange: function(e) { setSeparationDate(e.target.value); try { window.__safeSet("tops_sep_date", e.target.value); window.__safeSet("etsDate", e.target.value); } catch (ex) {} }, style: { width: "80%", padding: 12, background: C.bg, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, fontSize: 14, fontFamily: "'JetBrains Mono', monospace" } })
+            React.createElement("input", { type: "date", defaultValue: separationDate, min: "1990-01-01", max: "2040-12-31", onBlur: function(e) { if (e.target.value && e.target.value !== separationDate) { setSeparationDate(e.target.value); try { window.__safeSet("tops_sep_date", e.target.value); window.__safeSet("etsDate", e.target.value); } catch (ex) {} } }, style: { width: "80%", padding: 12, background: C.bg, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, fontSize: 14, fontFamily: "'JetBrains Mono', monospace" } })
           );
         }
         var RUNWAY = 540;
@@ -5945,8 +5945,10 @@ function App() {
     }
   }, "ETS / EAOS / SEPARATION DATE"), /*#__PURE__*/React.createElement("input", {
     type: "date",
-    value: separationDate,
-    onChange: e => handleETSChange(e.target.value),
+    defaultValue: separationDate,
+    min: "1990-01-01",
+    max: "2040-12-31",
+    onBlur: e => { if (e.target.value && e.target.value !== separationDate) handleETSChange(e.target.value); },
     style: S.input
   }), separationDate && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -12444,7 +12446,7 @@ function App() {
     return React.createElement("div", null,
       !separationDate && React.createElement("div", { style: { marginBottom: 12 } },
         React.createElement("label", { style: { fontSize: 11, color: C.gold, letterSpacing: 2, fontWeight: 700, fontFamily: "'Oswald', sans-serif" } }, "SET YOUR ETS DATE TO ACTIVATE REMINDERS"),
-        React.createElement("input", { type: "date", value: separationDate, onChange: function(e) { setSeparationDate(e.target.value); }, style: { width: "100%", padding: "12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, fontSize: 15, fontFamily: "'Courier Prime', monospace", marginTop: 6 } })
+        React.createElement("input", { type: "date", defaultValue: separationDate, min: "1990-01-01", max: "2040-12-31", onBlur: function(e) { if (e.target.value && e.target.value !== separationDate) setSeparationDate(e.target.value); }, style: { width: "100%", padding: "12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, fontSize: 15, fontFamily: "'Courier Prime', monospace", marginTop: 6 } })
       ),
       etsMonths !== null && React.createElement("div", { style: { padding: "10px 0 12px", marginBottom: 10, background: etsMonths <= 2 ? "rgba(192,57,43,0.14)" : C.bgElevated, border: "1px solid " + (etsMonths <= 2 ? C.danger : C.border), borderRadius: 8, display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: 14, paddingRight: 14 } },
         React.createElement("div", null,
@@ -12535,7 +12537,7 @@ function App() {
           React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:3, color:C.gold, marginBottom:6}}, "\u258C CRITICAL WINDOWS"),
           React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:700, color:C.textPrimary, marginBottom:10}}, "SET YOUR SEPARATION DATE"),
           React.createElement("div", {style:{fontSize:13, color:C.textBody, lineHeight:1.7, marginBottom:12}}, "Critical Windows tracks seven time-bound windows where missing the date costs money, benefits, or both. The tracker activates once you enter your ETS / EAOS / retirement date."),
-          React.createElement("input", {type:"date", value:separationDate, onChange:function(e){ handleETSChange(e.target.value); }, style:S.input})
+          React.createElement("input", {type:"date", defaultValue:separationDate, min:"1990-01-01", max:"2040-12-31", onBlur:function(e){ if (e.target.value && e.target.value !== separationDate) handleETSChange(e.target.value); }, style:S.input})
         )
       );
     }
