@@ -25,12 +25,12 @@ exports.handler = async function (event) {
     "Target civilian role: " + clip(target, 120),
     "Additional skills/ASIs: " + clip(skills, 400),
     "Certifications: " + clip(certs, 400),
-    "What they actually did (their own words): " + clip(experience, 2400)
+    "What they actually did (their own words): " + clip(experience, 2000)
   ].join("\n");
 
   const system = `You turn a transitioning U.S. service member's raw experience into polished, civilian-framed, ATS-friendly resume bullets.
 Rules:
-- Output 5-7 bullets, each starting with a strong action verb, each one line.
+- Output exactly 5 bullets, each starting with a strong action verb, each ONE short line. Be concise.
 - Translate military jargon to civilian equivalents (e.g., "squad" -> "team of 9", "NCOIC" -> "supervisor/lead", "motor pool" -> "vehicle fleet operations").
 - Keep every number, dollar figure, and quantity the person gave; never invent numbers, awards, or facts not provided.
 - No first person, no periods debate — end bullets without periods.
@@ -47,7 +47,7 @@ Rules:
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 700,
+        max_tokens: 500,
         system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
         messages: [{ role: "user", content: userBlock }]
       })

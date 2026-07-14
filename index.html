@@ -6611,14 +6611,15 @@ function App() {
         if (used >= 3) { setAiR(function(p){ return Object.assign({}, p, { err: "Daily limit reached (3/day) \u2014 resets tomorrow. This keeps the tool free for everyone." }); }); return; }
         setAiR(function(p){ return Object.assign({}, p, { loading: true, err: "", out: "" }); });
         if (window.__trackEvent) window.__trackEvent("ai_resume_generated", {});
-        fetch("/.netlify/functions/resume", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp }) })
+        (function attempt(n) { return fetch("/.netlify/functions/resume", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp }) })
           .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
+          .catch(function(e){ if (n < 1) { return new Promise(function(res){ setTimeout(res, 1200); }).then(function(){ return attempt(n + 1); }); } throw e; }); })(0)
           .then(function(res) {
             if (!res.ok) { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: res.d.error || "Try again in a minute." }); }); return; }
             try { window.__safeSet("tops_air_uses", JSON.stringify({ d: new Date().toISOString().slice(0,10), n: used + 1 })); } catch(e) {}
             setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets }); });
           })
-          .catch(function(){ setAiR(function(p){ return Object.assign({}, p, { loading: false, err: "Network hiccup \u2014 try again." }); }); });
+          .catch(function(){ setAiR(function(p){ return Object.assign({}, p, { loading: false, err: "Still warming up \u2014 give it 10 seconds and tap GENERATE once more." }); }); });
       }, style: { width: "100%", background: aiR.loading ? C.border : C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? "WRITING\u2026" : "GENERATE MY BULLETS"),
       aiR.err && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, aiR.err),
       aiR.out && React.createElement("div", { style: { marginTop: 12 } },
