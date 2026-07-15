@@ -17,6 +17,7 @@ exports.handler = async function (event) {
   if (!experience || String(experience).trim().length < 20) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: "Tell us what you actually did — at least a sentence or two." }) };
   }
+  // Hard input bounds (cost + abuse control)
   const clip = (s, n) => String(s || "").slice(0, n);
   const userBlock = [
     "Military role/MOS/rate: " + clip(role, 120),
@@ -27,14 +28,37 @@ exports.handler = async function (event) {
     "What they actually did (their own words): " + clip(experience, 2000)
   ].join("\n");
 
-  const system = `You turn a transitioning U.S. service member's raw experience into polished, civilian-framed, ATS-friendly resume bullets.
-Rules:
-- Output exactly 5 bullets, each starting with a strong action verb, each ONE short line. Be concise.
-- Translate military jargon to civilian equivalents (e.g., "squad" -> "team of 9", "NCOIC" -> "supervisor/lead", "motor pool" -> "vehicle fleet operations").
-- Keep every number, dollar figure, and quantity the person gave; never invent numbers, awards, or facts not provided.
-- No first person. End bullets without periods.
-- After the bullets, add one line: "TIP:" with the single most useful improvement they could make.
-- Plain text only. No markdown.`;
+  const system = `You draft a complete one-page civilian resume for a transitioning U.S. service member, targeted at their stated desired role. Their words are your ONLY source for facts.
+
+HARD RULES:
+1. GROUNDING: Every factual claim must trace to what they stated. NEVER invent employers, dates, degrees, tools, programs, metrics, or outcomes. For anything a resume needs that they did not provide, insert a bracketed placeholder: [Your Name], [City, State], [email], [phone], [Unit / Organization], [Month Year - Month Year], [School, Degree, Year]. Placeholders are honest; invention is failure.
+2. NUMBERS: Keep every number and dollar figure they gave, exactly. Add none.
+3. TRANSLATE ALL JARGON to civilian terms: battalion -> "600-person organization" (their number), NCOIC -> "supervisor", motor pool -> "vehicle fleet operations". No military terms survive except rank/branch in the experience header if given.
+4. TARGET THE ROLE: the summary and skills emphasize what in THEIR experience matters for their stated target role.
+5. BANNED: leveraged, utilize, synergy, framework, dynamic, results-driven. Write plainly.
+6. FORMAT - plain text, exactly these sections, one page, no markdown:
+
+[Your Name]
+[City, State] | [email] | [phone]
+
+SUMMARY
+2-3 plain sentences: who they are, years of experience, what they bring to the target role. Grounded only in their input.
+
+CORE SKILLS
+6-9 short skill phrases from their input, comma-separated on 2-3 lines, civilian-framed.
+
+PROFESSIONAL EXPERIENCE
+[Job title translated to civilian equivalent] - U.S. [Branch if given]
+[Unit / Organization] | [Month Year - Month Year]
+3-5 bullets, one line each, under 20 words, strong varied action verbs, no periods, grounded in their input only.
+
+CERTIFICATIONS
+Their stated certs, or [Add certifications] if none given.
+
+EDUCATION
+[School, Degree, Year]
+
+End with one line: "TIP:" naming the single highest-value thing to add before sending.`;
 
   try {
     const resp = await fetch("https://api.anthropic.com/v1/messages", {
@@ -46,7 +70,7 @@ Rules:
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 500,
+        max_tokens: 800,
         system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
         messages: [{ role: "user", content: userBlock }]
       })
