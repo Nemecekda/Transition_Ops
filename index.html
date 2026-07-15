@@ -2557,9 +2557,10 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v78";
+const APP_VERSION = "v79";
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v79", date: "15 JUL 2026", note: "Added the DOL Employment Navigator (ENPP) to resources \u2014 free one-on-one career counseling during transition, for you AND your spouse, with a virtual option that works from anywhere. Search \u201Cnavigator\u201D to find it." },
   { v: "v78", date: "14 JUL 2026", note: "The AI Resume Drafter now builds a complete one-page civilian resume targeted at the job you want \u2014 summary, skills, experience, the works \u2014 with clear [blanks] for what only you can fill. Nothing you type is stored." },
   { v: "v77", date: "14 JUL 2026", note: "NEW: free AI Resume Builder on the Career tab \u2014 type what you actually did in your own words and get civilian, ATS-ready resume bullets. 3 free generations a day. Nothing you type is stored." },
   { v: "v76", date: "14 JUL 2026", note: "From our call with the American Legion: IDES proposed-vs-final rating guidance on the VA calculator, SBA Boots to Business in resources, and NEED A HUMAN contact numbers (MyVA411, VA Benefits, Crisis Line) on the VSO finder." },
@@ -2760,6 +2761,7 @@ const RESOURCE_CATEGORIES = {
 const RESOURCES = [
   // ═══ EDUCATION & ACADEMIC ═══
   { id: "boots-to-business", name: "SBA Boots to Business (B2B)", url: "https://www.sba.gov/sba-learning-platform/boots-business", category: "entrepreneurship", cost: "free", eligibility: ["active","veteran","spouse"], description: "SBA's FREE entrepreneurship course — the official TAP business track. Two-day intro during transition, Already out? B2B Reboot is the same course for veterans of ALL eras, no installation needed. Spouses eligible.", verified: true },
+  { id: "dol-employment-navigator", name: "DOL Employment Navigator (ENPP)", url: "https://www.dol.gov/agencies/vets/programs/tap/employment-navigator-partnership", category: "employment", cost: "free", eligibility: ["active","spouse"], description: "FREE one-on-one career counseling from the Dept. of Labor during transition \u2014 a real human navigator, plus warm handoffs to 70+ partner orgs (apprenticeships, mentoring, hiring events, placement). Spouses fully eligible. Can't reach one of the 37 host installations? The Virtual Center serves everyone, Mon\u2013Fri 8am\u20139pm ET. DOL's own data: participants get hired faster and earn more.", verified: true },
   { id: "sva", name: "Student Veterans of America (SVA)", url: "https://studentveterans.org", category: "education", cost: "free", eligibility: ["veteran","active","spouse"], description: "1,500+ campus chapters. Peer support, advocacy, and scholarships for student veterans.", verified: true },
   { id: "warrior-scholar", name: "Warrior-Scholar Project", url: "https://www.warrior-scholar.org", category: "education", cost: "free", eligibility: ["veteran","active"], description: "Free academic boot camps preparing enlisted veterans for top-tier four-year colleges.",verified: true },
   { id: "boots-to-books", name: "Boots to Books", url: "https://www.boots2books.org", category: "education", cost: "free", eligibility: ["veteran","active","spouse"], description: "Transition support helping veterans move into higher education.",verified: true },
