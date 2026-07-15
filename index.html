@@ -2557,9 +2557,10 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v77";
+const APP_VERSION = "v78";
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v78", date: "14 JUL 2026", note: "The AI Resume Drafter now builds a complete one-page civilian resume targeted at the job you want \u2014 summary, skills, experience, the works \u2014 with clear [blanks] for what only you can fill. Nothing you type is stored." },
   { v: "v77", date: "14 JUL 2026", note: "NEW: free AI Resume Builder on the Career tab \u2014 type what you actually did in your own words and get civilian, ATS-ready resume bullets. 3 free generations a day. Nothing you type is stored." },
   { v: "v76", date: "14 JUL 2026", note: "From our call with the American Legion: IDES proposed-vs-final rating guidance on the VA calculator, SBA Boots to Business in resources, and NEED A HUMAN contact numbers (MyVA411, VA Benefits, Crisis Line) on the VSO finder." },
   { v: "v75", date: "10 JUL 2026", note: "Cleaner home screen: your countdown, critical windows, and next action stay front and center \u2014 everything else now lives under MORE TOOLS & INTEL (one tap). First step of a redesign shaped by service-officer feedback." },
@@ -6594,8 +6595,8 @@ function App() {
   })(), activeTab === "pathway" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { ...S.card, borderLeft: "3px solid " + C.greenBright, marginBottom: 14 } },
     React.createElement("div", { onClick: function() { setAiR(function(p){ return Object.assign({}, p, { open: !p.open }); }); if (window.__trackEvent) window.__trackEvent("ai_resume_opened", {}); }, style: { display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" } },
       React.createElement("div", null,
-        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.greenBright, fontWeight: 700 } }, "\u2728 AI RESUME BUILDER \u2014 FREE"),
-        React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "YOUR experience \u2014 not just your MOS \u2014 rewritten into civilian resume bullets. 3 free generations a day.")),
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.greenBright, fontWeight: 700 } }, "\u2728 AI RESUME DRAFTER \u2014 FREE"),
+        React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "A complete one-page civilian resume draft from YOUR real experience \u2014 targeted at the job you want. Blanks marked for what only you can fill. 3 free drafts a day.")),
       React.createElement("span", { style: { color: C.greenBright, fontSize: 16, transform: aiR.open ? "rotate(90deg)" : "none" } }, "\u203A")),
     aiR.open && React.createElement("div", { style: { marginTop: 12 } },
       React.createElement("input", { placeholder: "Your MOS / AFSC / rate (e.g. 92A)", defaultValue: aiR.role, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { role: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
@@ -6620,11 +6621,11 @@ function App() {
             setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets }); });
           })
           .catch(function(){ setAiR(function(p){ return Object.assign({}, p, { loading: false, err: "Still warming up \u2014 give it 10 seconds and tap GENERATE once more." }); }); });
-      }, style: { width: "100%", background: aiR.loading ? C.border : C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? "WRITING\u2026" : "GENERATE MY BULLETS"),
+      }, style: { width: "100%", background: aiR.loading ? C.border : C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? "DRAFTING\u2026 (10-15 SEC)" : "DRAFT MY RESUME"),
       aiR.err && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, aiR.err),
       aiR.out && React.createElement("div", { style: { marginTop: 12 } },
         React.createElement("div", { style: { background: C.bg, borderRadius: 8, padding: "13px 15px", fontSize: 13, color: C.textPrimary, lineHeight: 1.75, whiteSpace: "pre-wrap" } }, aiR.out),
-        React.createElement("button", { onClick: function() { if (navigator.clipboard) { navigator.clipboard.writeText(aiR.out).then(function(){ showToast("BULLETS COPIED \u2014 paste and tailor."); }); } if (window.__trackEvent) window.__trackEvent("ai_resume_copied", {}); }, style: { marginTop: 8, background: "transparent", color: C.greenBright, border: "1px solid " + C.greenBright, borderRadius: 8, padding: "9px 16px", fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: "pointer" } }, "COPY BULLETS")),
+        React.createElement("button", { onClick: function() { if (navigator.clipboard) { navigator.clipboard.writeText(aiR.out).then(function(){ showToast("RESUME COPIED \u2014 fill the [brackets], then send."); }); } if (window.__trackEvent) window.__trackEvent("ai_resume_copied", {}); }, style: { marginTop: 8, background: "transparent", color: C.greenBright, border: "1px solid " + C.greenBright, borderRadius: 8, padding: "9px 16px", fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: "pointer" } }, "COPY RESUME")),
       React.createElement("div", { style: { marginTop: 10, fontSize: 10, color: C.inactive, lineHeight: 1.5 } }, "Private by design: your text goes to the AI once to write the bullets and is never stored or logged. Powered by Claude."))), /*#__PURE__*/React.createElement("div", {
     style: S.card
   }, /*#__PURE__*/React.createElement("div", {

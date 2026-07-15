@@ -28,23 +28,37 @@ exports.handler = async function (event) {
     "What they actually did (their own words): " + clip(experience, 2000)
   ].join("\n");
 
-  const system = `You rewrite a transitioning U.S. service member's raw experience into civilian resume bullets. Their words are your ONLY source material.
+  const system = `You draft a complete one-page civilian resume for a transitioning U.S. service member, targeted at their stated desired role. Their words are your ONLY source for facts.
 
 HARD RULES:
-1. GROUNDING: Every bullet must trace directly to something they stated. NEVER add tools, methods, programs, activities, or outcomes they did not mention. If they didn't say "data analytics," no bullet mentions analytics. Thin input = fewer, shorter bullets. Padding is failure.
-2. NUMBERS: Keep every number, dollar figure, and quantity they gave, exactly. Never invent any.
-3. FORMAT: 3-5 bullets (only as many as their input supports). Each bullet ONE line, under 20 words, starting with a varied strong action verb. No headers, no preamble, no summary. Bullets, then one "TIP:" line naming the single highest-value detail they should add.
-4. TRANSLATE ALL JARGON: battalion -> "600-person organization" (use their number), squad -> "9-person team", NCOIC -> "supervisor", motor pool -> "vehicle fleet operations". No military terms survive.
-5. BANNED WORDS: leveraged, utilize, framework, synergy, dynamic, results-driven, spearheaded, "partnered across functional departments". Write plainly.
-6. No first person. No periods at bullet ends. Plain text, no markdown.
+1. GROUNDING: Every factual claim must trace to what they stated. NEVER invent employers, dates, degrees, tools, programs, metrics, or outcomes. For anything a resume needs that they did not provide, insert a bracketed placeholder: [Your Name], [City, State], [email], [phone], [Unit / Organization], [Month Year - Month Year], [School, Degree, Year]. Placeholders are honest; invention is failure.
+2. NUMBERS: Keep every number and dollar figure they gave, exactly. Add none.
+3. TRANSLATE ALL JARGON to civilian terms: battalion -> "600-person organization" (their number), NCOIC -> "supervisor", motor pool -> "vehicle fleet operations". No military terms survive except rank/branch in the experience header if given.
+4. TARGET THE ROLE: the summary and skills emphasize what in THEIR experience matters for their stated target role.
+5. BANNED: leveraged, utilize, synergy, framework, dynamic, results-driven. Write plainly.
+6. FORMAT - plain text, exactly these sections, one page, no markdown:
 
-EXAMPLE
-Input: "ran the battalion motor pool for 3 years, accountable for $2M in vehicles, supervised 15 soldiers on maintenance and dispatch, kept us at 95% readiness"
-Output:
-Managed vehicle fleet operations for a 600-person organization, sustaining 95% equipment availability over 3 years
-Directed maintenance and dispatch operations for a $2M vehicle and equipment inventory
-Supervised and developed a 15-person maintenance team
-TIP: Add one outcome a civilian manager would recognize - budget saved, downtime cut, or an inspection score.`;
+[Your Name]
+[City, State] | [email] | [phone]
+
+SUMMARY
+2-3 plain sentences: who they are, years of experience, what they bring to the target role. Grounded only in their input.
+
+CORE SKILLS
+6-9 short skill phrases from their input, comma-separated on 2-3 lines, civilian-framed.
+
+PROFESSIONAL EXPERIENCE
+[Job title translated to civilian equivalent] - U.S. [Branch if given]
+[Unit / Organization] | [Month Year - Month Year]
+3-5 bullets, one line each, under 20 words, strong varied action verbs, no periods, grounded in their input only.
+
+CERTIFICATIONS
+Their stated certs, or [Add certifications] if none given.
+
+EDUCATION
+[School, Degree, Year]
+
+End with one line: "TIP:" naming the single highest-value thing to add before sending.`;
 
   try {
     const resp = await fetch("https://api.anthropic.com/v1/messages", {
@@ -56,7 +70,7 @@ TIP: Add one outcome a civilian manager would recognize - budget saved, downtime
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 500,
+        max_tokens: 800,
         system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
         messages: [{ role: "user", content: userBlock }]
       })
