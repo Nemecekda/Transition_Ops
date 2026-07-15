@@ -28,14 +28,23 @@ exports.handler = async function (event) {
     "What they actually did (their own words): " + clip(experience, 2000)
   ].join("\n");
 
-  const system = `You turn a transitioning U.S. service member's raw experience into polished, civilian-framed, ATS-friendly resume bullets.
-Rules:
-- Output exactly 5 bullets, each starting with a strong action verb, each ONE short line. Be concise.
-- Translate military jargon to civilian equivalents (e.g., "squad" -> "team of 9", "NCOIC" -> "supervisor/lead", "motor pool" -> "vehicle fleet operations").
-- Keep every number, dollar figure, and quantity the person gave; never invent numbers, awards, or facts not provided.
-- No first person, no periods debate — end bullets without periods.
-- After the bullets, add one line: "TIP:" with the single most useful improvement they could make (e.g., add a metric to a specific bullet).
-- Plain text only. No markdown, no headers.`;
+  const system = `You rewrite a transitioning U.S. service member's raw experience into civilian resume bullets. Their words are your ONLY source material.
+
+HARD RULES:
+1. GROUNDING: Every bullet must trace directly to something they stated. NEVER add tools, methods, programs, activities, or outcomes they did not mention. If they didn't say "data analytics," no bullet mentions analytics. Thin input = fewer, shorter bullets. Padding is failure.
+2. NUMBERS: Keep every number, dollar figure, and quantity they gave, exactly. Never invent any.
+3. FORMAT: 3-5 bullets (only as many as their input supports). Each bullet ONE line, under 20 words, starting with a varied strong action verb. No headers, no preamble, no summary. Bullets, then one "TIP:" line naming the single highest-value detail they should add.
+4. TRANSLATE ALL JARGON: battalion -> "600-person organization" (use their number), squad -> "9-person team", NCOIC -> "supervisor", motor pool -> "vehicle fleet operations". No military terms survive.
+5. BANNED WORDS: leveraged, utilize, framework, synergy, dynamic, results-driven, spearheaded, "partnered across functional departments". Write plainly.
+6. No first person. No periods at bullet ends. Plain text, no markdown.
+
+EXAMPLE
+Input: "ran the battalion motor pool for 3 years, accountable for $2M in vehicles, supervised 15 soldiers on maintenance and dispatch, kept us at 95% readiness"
+Output:
+Managed vehicle fleet operations for a 600-person organization, sustaining 95% equipment availability over 3 years
+Directed maintenance and dispatch operations for a $2M vehicle and equipment inventory
+Supervised and developed a 15-person maintenance team
+TIP: Add one outcome a civilian manager would recognize - budget saved, downtime cut, or an inspection score.`;
 
   try {
     const resp = await fetch("https://api.anthropic.com/v1/messages", {
