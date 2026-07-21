@@ -27,28 +27,35 @@ exports.handler = async function (event) {
     return { statusCode: 503, headers, body: JSON.stringify({ error: "Job search is warming up — use the State Job Banks link in Resources meanwhile." }) };
   }
 
-  // CareerOneStop Job Search API v1 path format:
-  // /v1/jobsearch/{userId}/{keyword}/{location}/{radius}/{sortColumns}/{sortOrder}/{startRecord}/{pageSize}/{days}
-  const path = [
-    "v1/jobsearch", userId,
+  // Jobs API: tokens issued after Aug 27, 2024 use v2; older tokens use v1.
+  // Path: /{ver}/jobsearch/{userId}/{keyword}/{location}/{radius}/{sortColumns}/{sortOrder}/{startRecord}/{pageSize}/{days}
+  const tail = [
+    userId,
     encodeURIComponent(keyword),
     encodeURIComponent(location),
-    "25",      // radius (miles) — state-level searches ignore radius
-    "0",       // sortColumns: 0 = relevance
-    "0",       // sortOrder
-    "0",       // startRecord
-    "10",      // pageSize — 10 jobs per card
-    "30"       // days back
+    "25", "0", "0", "0", "10", "30"
   ].join("/");
 
-  try {
-    const resp = await fetch("https://api.careeronestop.org/" + path, {
+  async function callApi(ver) {
+    const url = "https://api.careeronestop.org/" + ver + "/jobsearch/" + tail;
+    const resp = await fetch(url, {
       headers: { "Authorization": "Bearer " + token, "Accept": "application/json" }
     });
     if (!resp.ok) {
+      let bodySnippet = "";
+      try { bodySnippet = (await resp.text()).slice(0, 200); } catch (e) {}
+      console.log("COS " + ver + " status " + resp.status + ": " + bodySnippet);
+      return null;
+    }
+    return resp.json();
+  }
+
+  try {
+    let data = await callApi("v2");
+    if (!data) data = await callApi("v1");
+    if (!data) {
       return { statusCode: 502, headers, body: JSON.stringify({ error: "Job search hiccup — the State Job Banks link in Resources always works." }) };
     }
-    const data = await resp.json();
     // Defensive parse: expected shape { Jobs: [{ JvId, JobTitle, Company, Location, DatePosted, URL }], JobCount }
     const raw = Array.isArray(data.Jobs) ? data.Jobs : [];
     const jobs = raw.slice(0, 10).map(function (j) {
@@ -56,7 +63,7 @@ exports.handler = async function (event) {
         title: String(j.JobTitle || j.Title || "Untitled role").slice(0, 120),
         company: String(j.Company || j.CompanyName || "").slice(0, 80),
         location: String(j.Location || "").slice(0, 60),
-        posted: String(j.DatePosted || j.AccquisitionDate || "").slice(0, 24),
+        posted: String(j.DatePosted || j.AcquisitionDate || j.AccquisitionDate || "").slice(0, 24),
         url: typeof (j.URL || j.Url) === "string" && /^https?:\/\//.test(j.URL || j.Url) ? (j.URL || j.Url) : null
       };
     }).filter(function (j) { return j.url; });
