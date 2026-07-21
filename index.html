@@ -2557,9 +2557,10 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v82";
+const APP_VERSION = "v83";
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v83", date: "21 JUL 2026", note: "NEW: Live Jobs in Your Target State \u2014 real openings pulled straight from the Dept. of Labor, searchable by keyword and state on the Career tab. Scout the market back home before you even move." },
   { v: "v82", date: "21 JUL 2026", note: "Search tune-up: the new state jobs and employment resources now match the words people actually type (\u201Cstate jobs\u201D, \u201Cfind work\u201D, \u201Chiring\u201D)." },
   { v: "v81", date: "21 JUL 2026", note: "Jobs in your target state: added every state's official job bank (search \u201Cstate jobs\u201D) and the benefit most veterans never use \u2014 by law you get PRIORITY at all 2,400 American Job Centers. You and your spouse both." },
   { v: "v80", date: "21 JUL 2026", note: "Policy refresh: Patriot Pipeline status updated \u2014 the SkillBridge approval presumption for defense-industrial-base employers is IN EFFECT now; detailed incentive guidance still pending public release. We track it so you don\u2019t have to." },
@@ -4157,6 +4158,7 @@ function App() {
   const [policyPanelOpen, setPolicyPanelOpen] = useState(false);
   const [dashMoreOpen, setDashMoreOpen] = useState(false);
   const [aiR, setAiR] = useState({ open: false, role: "", years: "", target: "", skills: "", certs: "", exp: "", loading: false, out: "", err: "" });
+  const [jobsQ, setJobsQ] = useState({ open: false, keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "" });
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [whatsNewUnseen, setWhatsNewUnseen] = useState(function() { try { return window.__safeGet("tops_whatsnew_seen") !== APP_VERSION; } catch (e) { return false; } });
   const [userStatus, setUserStatus] = useState(function() { try { return window.__safeGet("tops_user_status") || ""; } catch(e) { return ""; } });
@@ -6635,7 +6637,41 @@ function App() {
         style: { display: "block", marginTop: 10, padding: "11px 13px", background: C.bg, border: "1px solid " + C.gold, borderRadius: 8, textDecoration: "none" }
       }, React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1, color: C.goldBright, fontWeight: 700 } }, "\uD83C\uDFAF FREE NEXT STEP: HUMAN REVIEW"),
         React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.55 } }, "A DOL Employment Navigator will review this with you 1-on-1, free \u2014 then connect you to 70+ partner orgs for mentoring, hiring events, and placement. Virtual option works from anywhere, spouses included. \u2192"))),
-      React.createElement("div", { style: { marginTop: 10, fontSize: 10, color: C.inactive, lineHeight: 1.5 } }, "Private by design: your text goes to the AI once to write the bullets and is never stored or logged. Powered by Claude."))), /*#__PURE__*/React.createElement("div", {
+      React.createElement("div", { style: { marginTop: 10, fontSize: 10, color: C.inactive, lineHeight: 1.5 } }, "Private by design: your text goes to the AI once to write the bullets and is never stored or logged. Powered by Claude."))), /*#__PURE__*/React.createElement("div", { style: { ...S.card, borderLeft: "3px solid " + C.gold, marginBottom: 14 } },
+    React.createElement("div", { onClick: function() { setJobsQ(function(p){ return Object.assign({}, p, { open: !p.open }); }); if (window.__trackEvent) window.__trackEvent("jobs_search_opened", {}); }, style: { display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" } },
+      React.createElement("div", null,
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.goldBright, fontWeight: 700 } }, "\uD83C\uDFAF LIVE JOBS IN YOUR TARGET STATE"),
+        React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "Real openings, pulled live from the Dept. of Labor \u2014 search any state before you even move.")),
+      React.createElement("span", { style: { color: C.goldBright, fontSize: 16, transform: jobsQ.open ? "rotate(90deg)" : "none" } }, "\u203A")),
+    jobsQ.open && React.createElement("div", { style: { marginTop: 12 } },
+      React.createElement("input", { placeholder: "Job keyword (e.g. logistics manager, electrician)", defaultValue: jobsQ.keyword, onBlur: function(e){ var v=e.target.value; setJobsQ(function(p){ return Object.assign({}, p, { keyword: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
+      React.createElement("input", { placeholder: "State (e.g. Wisconsin or WI) or ZIP", defaultValue: jobsQ.state, onBlur: function(e){ var v=e.target.value; setJobsQ(function(p){ return Object.assign({}, p, { state: v }); }); }, style: { ...S.input, marginBottom: 10 } }),
+      React.createElement("button", { disabled: jobsQ.loading, onClick: function() {
+        setJobsQ(function(p){ return Object.assign({}, p, { loading: true, err: "", jobs: null, note: "" }); });
+        if (window.__trackEvent) window.__trackEvent("jobs_search_run", {});
+        (function attempt(n) { return fetch("/.netlify/functions/jobs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ keyword: jobsQ.keyword, location: jobsQ.state }) })
+          .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
+          .catch(function(e){ if (n < 1) { return new Promise(function(res){ setTimeout(res, 1200); }).then(function(){ return attempt(n + 1); }); } throw e; }); })(0)
+          .then(function(res) {
+            if (!res.ok) { setJobsQ(function(p){ return Object.assign({}, p, { loading: false, err: res.d.error || "Try again in a minute." }); }); return; }
+            setJobsQ(function(p){ return Object.assign({}, p, { loading: false, jobs: res.d.jobs || [], count: res.d.count || 0, note: res.d.note || "" }); });
+          })
+          .catch(function(){ setJobsQ(function(p){ return Object.assign({}, p, { loading: false, err: "Search hiccup \u2014 the State Job Banks link in Resources always works." }); }); });
+      }, style: { width: "100%", background: jobsQ.loading ? C.border : C.goldBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: jobsQ.loading ? "wait" : "pointer" } }, jobsQ.loading ? "SEARCHING\u2026" : "SEARCH LIVE OPENINGS"),
+      jobsQ.err && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, jobsQ.err),
+      jobsQ.note && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, jobsQ.note),
+      jobsQ.jobs && jobsQ.jobs.length > 0 && React.createElement("div", { style: { marginTop: 12 } },
+        React.createElement("div", { style: { fontSize: 11, color: C.inactive, marginBottom: 8 } }, jobsQ.count + " openings found \u2014 showing " + jobsQ.jobs.length),
+        jobsQ.jobs.map(function(j, idx) {
+          return React.createElement("a", { key: idx, href: j.url, target: "_blank", rel: "noopener noreferrer",
+            onClick: function() { if (window.__trackEvent) window.__trackEvent("jobs_result_tapped", {}); },
+            style: { display: "block", padding: "11px 13px", marginBottom: 6, background: C.bg, border: "1px solid " + C.border, borderRadius: 6, textDecoration: "none" } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.textPrimary, fontWeight: 600 } }, j.title),
+            React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, marginTop: 2 } }, (j.company ? j.company + " \u00B7 " : "") + j.location + (j.posted ? " \u00B7 " + j.posted.slice(0,10) : "")));
+        })),
+      React.createElement("div", { style: { marginTop: 10, paddingTop: 8, borderTop: "1px solid " + C.border, display: "flex", alignItems: "center", gap: 8 } },
+        React.createElement("a", { href: "https://www.careeronestop.org/", target: "_blank", rel: "noopener noreferrer", style: { flexShrink: 0 } }, React.createElement("img", { src: "https://www.careeronestop.org/tridionmultimedia/tcm24-26158_CareerOneStopLogo-linktous.gif", alt: "CareerOneStop logo", style: { height: 24, display: "block" }, onError: function(e){ e.target.style.display = "none"; } })),
+        React.createElement("div", { style: { fontSize: 10, color: C.inactive, lineHeight: 1.4 } }, "Job data by CareerOneStop, sponsored by the U.S. Department of Labor. External listings open on the source site.")))), /*#__PURE__*/React.createElement("div", {
     style: S.card
   }, /*#__PURE__*/React.createElement("div", {
     style: S.cardTitle
