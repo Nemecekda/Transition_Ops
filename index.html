@@ -2557,9 +2557,11 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v83";
+const APP_VERSION = "v85";
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v85", date: "22 JUL 2026", note: "MONEY BASICS on the VA Pay tab: the U.S. Treasury\u2019s five money fundamentals, translated for transition \u2014 first civilian paycheck, TSP, credit, budgeting, and avoiding veteran-targeted scams. Learn it here, go deeper at MyMoney.gov." },
+  { v: "v84", date: "22 JUL 2026", note: "Money basics for your first civilian paycheck: added the U.S. Treasury\u2019s MyMoney Five (search \u201Cmoney\u201D or \u201Cbudget\u201D) \u2014 free federal financial literacy on earning, saving, credit, and avoiding scams. New parents: children born 2025\u20132028 get $1,000 in Treasury seed money." },
   { v: "v83", date: "21 JUL 2026", note: "NEW: Live Jobs in Your Target State \u2014 real openings pulled straight from the Dept. of Labor, searchable by keyword and state on the Career tab. Scout the market back home before you even move." },
   { v: "v82", date: "21 JUL 2026", note: "Search tune-up: the new state jobs and employment resources now match the words people actually type (\u201Cstate jobs\u201D, \u201Cfind work\u201D, \u201Chiring\u201D)." },
   { v: "v81", date: "21 JUL 2026", note: "Jobs in your target state: added every state's official job bank (search \u201Cstate jobs\u201D) and the benefit most veterans never use \u2014 by law you get PRIORITY at all 2,400 American Job Centers. You and your spouse both." },
@@ -2768,6 +2770,7 @@ const RESOURCES = [
   { id: "dol-employment-navigator", name: "DOL Employment Navigator (ENPP)", url: "https://www.dol.gov/agencies/vets/programs/tap/employment-navigator-partnership", category: "employment", cost: "free", eligibility: ["active","spouse"], description: "FREE one-on-one employment and career counseling from the Dept. of Labor during transition \u2014 a real human navigator helps with your job search, plus warm handoffs to 70+ partner orgs (apprenticeships, mentoring, hiring events, job placement). Spouses fully eligible. Can't reach one of the 37 host installations? The Virtual Center serves everyone, Mon\u2013Fri 8am\u20139pm ET. DOL's own data: participants get hired faster and earn more.", verified: true },
   { id: "state-job-banks", name: "State Job Banks (all 50 states)", url: "https://www.careeronestop.org/Veterans/JobSearch/FindOpenings/state-job-banks.aspx", category: "employment", cost: "free", eligibility: ["active","veteran","spouse"], description: "Heading home \u2014 or to a new state? Find jobs in any state: every state runs an official job bank where employers post openings free. DOL's veteran directory links all 50 state job boards. Post your resume and set job alerts for your target state before you even move.", verified: true },
   { id: "american-job-centers", name: "American Job Centers \u2014 Priority of Service", url: "https://www.careeronestop.org/LocalHelp/AmericanJobCenters/find-american-job-centers.aspx", category: "employment", cost: "free", eligibility: ["active","veteran","spouse"], description: "The employment benefit most veterans never use: by law (Jobs for Veterans Act), you and your spouse get PRIORITY over other job seekers at all ~2,400 American Job Centers \u2014 priority referrals to jobs, hiring events, work training, free workshops, and DVOP specialists for disabled veterans. Find your nearest center.", verified: true },
+  { id: "mymoney-five", name: "MyMoney.gov \u2014 The MyMoney Five (U.S. Treasury)", url: "https://www.mymoney.gov/", category: "education", cost: "free", eligibility: ["active","veteran","spouse"], description: "Free federal financial literacy for your first civilian paychecks: the five money basics \u2014 Earn, Save & Invest, Protect, Spend, Borrow \u2014 plus budgeting, credit, savings, investing, and avoiding scams. New parent? Children born 2025\u20132028 get $1,000 in Treasury seed money through Trump Accounts \u2014 details and finances resources at MyMoney.gov.", verified: true },
   { id: "sva", name: "Student Veterans of America (SVA)", url: "https://studentveterans.org", category: "education", cost: "free", eligibility: ["veteran","active","spouse"], description: "1,500+ campus chapters. Peer support, advocacy, and scholarships for student veterans.", verified: true },
   { id: "warrior-scholar", name: "Warrior-Scholar Project", url: "https://www.warrior-scholar.org", category: "education", cost: "free", eligibility: ["veteran","active"], description: "Free academic boot camps preparing enlisted veterans for top-tier four-year colleges.",verified: true },
   { id: "boots-to-books", name: "Boots to Books", url: "https://www.boots2books.org", category: "education", cost: "free", eligibility: ["veteran","active","spouse"], description: "Transition support helping veterans move into higher education.",verified: true },
@@ -13285,7 +13288,29 @@ function App() {
         var txt = "VA Disability Pay Estimator — check what your rating is worth: transitionops.org";
         if (navigator.share) { navigator.share({ title: "VA Pay Estimator", text: txt, url: "https://transitionops.org" }); }
         else if (navigator.clipboard) { navigator.clipboard.writeText(txt); showToast("LINK COPIED"); }
-      }, style: { width: "100%", padding: "14px", background: "linear-gradient(135deg, " + C.green + ", " + C.greenBright + ")", border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer", marginTop: 8 } }, "\uD83D\uDCE4 SHARE THIS TOOL")
+      }, style: { width: "100%", padding: "14px", background: "linear-gradient(135deg, " + C.green + ", " + C.greenBright + ")", border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer", marginTop: 8 } }, "\uD83D\uDCE4 SHARE THIS TOOL"),
+      React.createElement("div", { style: { background: C.bgCard, border: "1px solid " + C.border, borderLeft: "3px solid " + C.greenBright, borderRadius: 10, padding: "15px 16px", marginTop: 14 } },
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.greenBright, fontWeight: 700, marginBottom: 4 } }, "\uD83D\uDCB0 MONEY BASICS \u2014 THE MYMONEY FIVE"),
+        React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.55, marginBottom: 12 } }, "Your first civilian paycheck works differently. The U.S. Treasury teaches five money fundamentals \u2014 here's each one, translated for transition:"),
+        [
+          ["EARN", "Your civilian salary won't have BAH, BAS, or tax-free allowances baked in \u2014 know your real take-home number before you accept an offer."],
+          ["SAVE & INVEST", "Your TSP doesn't vanish at separation \u2014 but stopping contributions and cashing out early are the two most expensive mistakes young veterans make."],
+          ["PROTECT", "SGLI ends after separation. Insurance, an emergency fund, and watching for veteran-targeted scams are now on you."],
+          ["SPEND", "Build your first civilian budget BEFORE the last military paycheck \u2014 housing, healthcare, and taxes all change at once."],
+          ["BORROW", "Your credit score is about to matter more than your rank ever did \u2014 for housing, vehicles, even some jobs. Know it and build it."]
+        ].map(function(p, i) {
+          return React.createElement("div", { key: i, style: { display: "flex", gap: 10, marginBottom: 8 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1, color: C.goldBright, fontWeight: 700, minWidth: 92, flexShrink: 0, paddingTop: 1 } }, p[0]),
+            React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, lineHeight: 1.5 } }, p[1]));
+        }),
+        React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, lineHeight: 1.55, marginTop: 4, marginBottom: 10 } }, "New parent? Children born 2025\u20132028 get ", React.createElement("strong", { style: { color: C.goldBright } }, "$1,000 in Treasury seed money"), " through Trump Accounts."),
+        React.createElement("a", { href: "https://www.mymoney.gov/", target: "_blank", rel: "noopener noreferrer", onClick: function() { if (window.__trackEvent) window.__trackEvent("mymoney_tapped", {}); }, style: { display: "block", padding: "10px 13px", marginBottom: 6, background: C.bg, border: "1px solid " + C.greenBright, borderRadius: 6, textDecoration: "none" } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.greenBright, fontWeight: 600 } }, "GO DEEPER: MyMoney.gov \u2192"),
+          React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, marginTop: 2 } }, "The full modules \u2014 budgeting worksheets, credit, investing, Trump Accounts")),
+        React.createElement("a", { href: "https://home.treasury.gov/policy-issues/consumer-policy/financial-literacy-and-education-commission", target: "_blank", rel: "noopener noreferrer", style: { display: "block", padding: "10px 13px", marginBottom: 8, background: C.bg, border: "1px solid " + C.border, borderRadius: 6, textDecoration: "none" } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.textPrimary, fontWeight: 600 } }, "Financial Literacy & Education Commission \u2192"),
+          React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, marginTop: 2 } }, "The Treasury Secretary's commission \u2014 24 federal agencies incl. DoD and VA")),
+        React.createElement("div", { style: { fontSize: 10, color: C.inactive, lineHeight: 1.4 } }, "Framework source: MyMoney.gov \u2014 U.S. Department of the Treasury, Financial Literacy and Education Commission. Educational information, not financial advice."))
     );
   })()),
 
