@@ -25,7 +25,7 @@ exports.handler = async function (event) {
     "Target civilian role: " + clip(target, 120),
     "Additional skills/ASIs: " + clip(skills, 400),
     "Certifications: " + clip(certs, 400),
-    "What they actually did (their own words): " + clip(experience, 2000)
+    "What they actually did (their own words): " + clip(experience, 4000)
   ].join("\n");
 
   const system = `You draft a complete one-page civilian resume for a transitioning U.S. service member, targeted at their stated desired role. Their words are your ONLY source for facts. They often paste text from their existing military resume, NCOER/evaluation, or award write-ups - translating that language is your core job.
