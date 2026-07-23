@@ -2557,10 +2557,11 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v88";
+const APP_VERSION = "v89";
   const JOBS_LIVE = false; // flip to true the day NLx/DOL approves Jobs API access
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v89", date: "24 JUL 2026", note: "TAILOR YOUR RESUME TO THE JOB: paste any posting \u2014 civilian ad or USAJOBS announcement \u2014 and the drafter writes your resume AT it: their keywords where your real experience matches, honest gaps flagged in the tip. Works in both civilian and federal mode." },
   { v: "v88", date: "24 JUL 2026", note: "Resume Drafter levels up: choose CIVILIAN or FEDERAL (USAJOBS) format, see your draft rendered like a real resume, and DOWNLOAD IT AS A WORD DOC \u2014 ready to edit and send. Federal mode marks the USAJOBS blanks (hours/week, supervisor, veterans\u2019 preference) only you can fill." },
   { v: "v87", date: "23 JUL 2026", note: "Resume Drafter upgrade: paste straight from your CURRENT resume or NCOER \u2014 military language is fine, we translate it (tap \u2018see an example\u2019). Plus: IUEC elevator apprenticeship added \u2014 earn from day one, GI Bill stacks on top." },
   { v: "v86", date: "22 JUL 2026", note: "Status update on Live Jobs: the DOL data-access request is in the federal approval queue \u2014 the card now shows honest status and your state\u2019s job bank meanwhile. It lights up the day approval lands." },
@@ -4165,7 +4166,7 @@ function App() {
   const [searchQ, setSearchQ] = useState("");
   const [policyPanelOpen, setPolicyPanelOpen] = useState(false);
   const [dashMoreOpen, setDashMoreOpen] = useState(false);
-  const [aiR, setAiR] = useState({ open: false, mode: "standard", role: "", years: "", target: "", skills: "", certs: "", exp: "", loading: false, out: "", err: "" });
+  const [aiR, setAiR] = useState({ open: false, mode: "standard", role: "", years: "", target: "", skills: "", certs: "", exp: "", loading: false, out: "", err: "", posting: "" });
   const [jobsQ, setJobsQ] = useState({ open: false, keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "" });
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [whatsNewUnseen, setWhatsNewUnseen] = useState(function() { try { return window.__safeGet("tops_whatsnew_seen") !== APP_VERSION; } catch (e) { return false; } });
@@ -6626,6 +6627,7 @@ function App() {
       React.createElement("div", { style: { display: "flex", gap: 8 } },
         React.createElement("input", { placeholder: "Years served", defaultValue: aiR.years, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { years: v }); }); }, style: { ...S.input, marginBottom: 8, flex: 1 } }),
         React.createElement("input", { placeholder: "Target civilian role", defaultValue: aiR.target, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { target: v }); }); }, style: { ...S.input, marginBottom: 8, flex: 2 } })),
+      React.createElement("textarea", { placeholder: "\uD83C\uDFAF TAILOR IT (optional): paste the job posting \u2014 civilian ad or USAJOBS announcement \u2014 and we write the resume AT it: their keywords, your real experience, honest gaps flagged.", defaultValue: aiR.posting, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { posting: v }); }); }, rows: 3, style: { ...S.input, marginBottom: 8, resize: "vertical", fontFamily: "inherit" } }),
       React.createElement("input", { placeholder: "ASIs / additional skills (optional)", defaultValue: aiR.skills, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { skills: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
       React.createElement("input", { placeholder: "Certifications (optional)", defaultValue: aiR.certs, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { certs: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
       React.createElement("textarea", { placeholder: "Paste straight from your CURRENT resume, NCOER/eval, or award write-ups \u2014 military language is fine, we translate it. Or just type what you did: duties, numbers, people led, equipment, results.", defaultValue: aiR.exp, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { exp: v }); }); }, rows: 5, style: { ...S.input, marginBottom: 6, resize: "vertical", fontFamily: "inherit" } }),
@@ -6637,7 +6639,7 @@ function App() {
         if (used >= 3) { setAiR(function(p){ return Object.assign({}, p, { err: "Daily limit reached (3/day) \u2014 resets tomorrow. This keeps the tool free for everyone." }); }); return; }
         setAiR(function(p){ return Object.assign({}, p, { loading: true, err: "", out: "" }); });
         if (window.__trackEvent) window.__trackEvent("ai_resume_generated", {});
-        (function attempt(n) { return fetch("/.netlify/functions/resume", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode: aiR.mode, role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp }) })
+        (function attempt(n) { return fetch("/.netlify/functions/resume", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode: aiR.mode, role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp, posting: aiR.posting }) })
           .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
           .catch(function(e){ if (n < 1) { return new Promise(function(res){ setTimeout(res, 1200); }).then(function(){ return attempt(n + 1); }); } throw e; }); })(0)
           .then(function(res) {
@@ -6664,7 +6666,8 @@ function App() {
           lines.forEach(function(ln, i) { var t = ln.trim();
             if (!t) { html += "<br/>"; return; }
             var esc = t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-            if (i === 0) html += "<p style=\"font-size:16pt;font-weight:bold;margin:0 0 2pt 0;\">" + esc + "</p>";
+            if (i === 0) html += "<p style=\"font-size:17pt;font-weight:bold;margin:0 0 1pt 0;text-align:center;letter-spacing:1pt;\">" + esc + "</p>";
+            else if (i <= 3 && /\|/.test(t)) html += "<p style=\"font-size:9.5pt;margin:0 0 2pt 0;text-align:center;color:#444;\">" + esc + "</p>";
             else if (/^(SUMMARY|PROFESSIONAL SUMMARY|CORE SKILLS|PROFESSIONAL EXPERIENCE|CERTIFICATIONS|EDUCATION|TIP:)/.test(t)) html += "<p style=\"font-size:10pt;font-weight:bold;letter-spacing:1pt;border-bottom:1pt solid #999;margin:10pt 0 3pt 0;\">" + esc + "</p>";
             else html += "<p style=\"font-size:10.5pt;margin:0 0 3pt 0;\">" + esc + "</p>"; });
           var doc = "<html xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'><title>Resume</title></head><body style=\"font-family:Calibri,Georgia,serif;max-width:7.5in;\">" + html + "</body></html>";

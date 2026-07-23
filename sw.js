@@ -3,7 +3,7 @@
 // install time, caching still works and push simply activates on a later install.
 try { importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js'); } catch (e) {}
 
-const CACHE_NAME = 'transition-ops-v89';
+const CACHE_NAME = 'transition-ops-v90';
 const ASSETS = [
   '/',
   '/index.html',

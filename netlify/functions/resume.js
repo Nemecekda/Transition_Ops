@@ -13,7 +13,7 @@ exports.handler = async function (event) {
   let input;
   try { input = JSON.parse(event.body || "{}"); } catch (e) { return { statusCode: 400, headers, body: JSON.stringify({ error: "Bad JSON" }) }; }
 
-  const { role, years, experience, skills, certs, target } = input;
+  const { role, years, experience, skills, certs, target, posting } = input;
   const mode = input.mode === "federal" ? "federal" : "standard";
   if (!experience || String(experience).trim().length < 20) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: "Tell us what you actually did — at least a sentence or two." }) };
@@ -26,8 +26,9 @@ exports.handler = async function (event) {
     "Target civilian role: " + clip(target, 120),
     "Additional skills/ASIs: " + clip(skills, 400),
     "Certifications: " + clip(certs, 400),
-    "What they actually did (their own words): " + clip(experience, 8000)
-  ].join("\n");
+    "What they actually did (their own words): " + clip(experience, 8000),
+    (posting && String(posting).trim() ? "TARGET JOB POSTING - tailor the resume to this announcement per the TAILORING rule: " + clip(posting, 3500) : "")
+  ].filter(Boolean).join("\n");
 
   const systemFederal = `You draft a FEDERAL-STYLE resume (USAJOBS format) for a transitioning U.S. service member, targeted at their stated desired role. Their words are your ONLY source for facts. Federal resumes are longer and more detailed than civilian resumes - that detail must come from what they stated, never invention.
 
@@ -36,6 +37,7 @@ HARD RULES (identical grounding discipline):
 2. NUMBERS: keep every number exactly; add none.
 3. TRANSLATE military jargon to civilian equivalents but KEEP official unit names and titles alongside (federal HR staff understand military service; specificity helps here).
 4. DUTY DETAIL: federal announcements score on specialized experience. Expand each role's bullets into fuller duty statements (2-4 sentences or dense bullets per role) - but ONLY elaborating what they actually stated. Never pad with generic duties they didn't mention.
+TAILORING (when a TARGET JOB POSTING is provided): mirror the posting's job title and its exact keyword and skill language wherever the person's REAL experience genuinely matches - legitimate ATS alignment, not invention. Order experiences and skills by relevance to the posting's requirements. NEVER claim experience, tools, or qualifications they did not state just because the posting asks - unmet requirements belong in the TIP as honest gaps. In the TIP, name the top posting keywords their background legitimately matches and the single biggest gap to address in a cover letter.
 5. BANNED: leveraged, utilize, synergy, framework, dynamic, results-driven, "Responsible for", "Ensured".
 
 FORMAT - plain text, no markdown:
@@ -70,6 +72,7 @@ HARD RULES:
 3. BULLET FORMULA - the style standard. Each bullet: strong specific verb + what they did + SCALE (people, locations, dollars, scope - use every number they gave) + outcome if they stated one. Bullets may run 15-30 words when carrying real payload. Duties without scale read as filler - anchor every bullet in the concrete.
 4. TRANSLATE military structure into corporate vocabulary: battalion -> "600-person organization", brigade staff -> "matrixed command", state HQ -> "shared services and centers of expertise", NCOIC -> "supervisor", commanded -> "led [N] people and a [$X] budget" when numbers given. No military abbreviations survive.
 5. SUMMARY FORMULA: [role identity] with [X years], [their single biggest scope fact], [2-3 concrete signature activities from their input], [credentials they listed]. Specific and stacked - no generic adjectives.
+TAILORING (when a TARGET JOB POSTING is provided): mirror the posting's job title and its exact keyword and skill language wherever the person's REAL experience genuinely matches - legitimate ATS alignment, not invention. Order experiences and skills by relevance to the posting's requirements. NEVER claim experience, tools, or qualifications they did not state just because the posting asks - unmet requirements belong in the TIP as honest gaps. In the TIP, name the top posting keywords their background legitimately matches and the single biggest gap to address in a cover letter.
 6. BANNED: leveraged, utilize, synergy, framework, dynamic, results-driven, "Responsible for", "Ensured". Write plainly and concretely.
 
 TRANSLATION EXAMPLE - typical pasted input and the correct conversion:
