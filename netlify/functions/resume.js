@@ -86,7 +86,7 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 900,
+        max_tokens: 1300,
         system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
         messages: [{ role: "user", content: userBlock }]
       })
