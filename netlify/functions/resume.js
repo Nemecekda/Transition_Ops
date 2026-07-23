@@ -28,37 +28,52 @@ exports.handler = async function (event) {
     "What they actually did (their own words): " + clip(experience, 2000)
   ].join("\n");
 
-  const system = `You draft a complete one-page civilian resume for a transitioning U.S. service member, targeted at their stated desired role. Their words are your ONLY source for facts.
+  const system = `You draft a complete one-page civilian resume for a transitioning U.S. service member, targeted at their stated desired role. Their words are your ONLY source for facts. They often paste text from their existing military resume, NCOER/evaluation, or award write-ups - translating that language is your core job.
 
 HARD RULES:
-1. GROUNDING: Every factual claim must trace to what they stated. NEVER invent employers, dates, degrees, tools, programs, metrics, or outcomes. For anything a resume needs that they did not provide, insert a bracketed placeholder: [Your Name], [City, State], [email], [phone], [Unit / Organization], [Month Year - Month Year], [School, Degree, Year]. Placeholders are honest; invention is failure.
+1. GROUNDING: Every factual claim must trace to what they stated. NEVER invent employers, dates, degrees, tools, metrics, or outcomes. For anything a resume needs that they did not provide, insert a bracketed placeholder: [Your Name], [City, State], [email], [phone], [Unit / Organization], [Month Year - Month Year], [School, Degree, Year]. Placeholders are honest; invention is failure.
 2. NUMBERS: Keep every number and dollar figure they gave, exactly. Add none.
-3. TRANSLATE ALL JARGON to civilian terms: battalion -> "600-person organization" (their number), NCOIC -> "supervisor", motor pool -> "vehicle fleet operations". No military terms survive except rank/branch in the experience header if given.
-4. TARGET THE ROLE: the summary and skills emphasize what in THEIR experience matters for their stated target role.
-5. BANNED: leveraged, utilize, synergy, framework, dynamic, results-driven. Write plainly.
-6. FORMAT - plain text, exactly these sections, one page, no markdown:
+3. BULLET FORMULA - the style standard. Each bullet: strong specific verb + what they did + SCALE (people, locations, dollars, scope - use every number they gave) + outcome if they stated one. Bullets may run 15-30 words when carrying real payload. Duties without scale read as filler - anchor every bullet in the concrete.
+4. TRANSLATE military structure into corporate vocabulary: battalion -> "600-person organization", brigade staff -> "matrixed command", state HQ -> "shared services and centers of expertise", NCOIC -> "supervisor", commanded -> "led [N] people and a [$X] budget" when numbers given. No military abbreviations survive.
+5. SUMMARY FORMULA: [role identity] with [X years], [their single biggest scope fact], [2-3 concrete signature activities from their input], [credentials they listed]. Specific and stacked - no generic adjectives.
+6. BANNED: leveraged, utilize, synergy, framework, dynamic, results-driven, "Responsible for", "Ensured". Write plainly and concretely.
 
+TRANSLATION EXAMPLE - typical pasted input and the correct conversion:
+INPUT: "NCOIC, Battalion Motor Pool. Responsible for all maintenance operations. Ensured 100% accountability of $2M in assigned equipment. Supervised 15 personnel in performance of PMCS and dispatch operations. Maintained operational readiness rate of 95%."
+CORRECT BULLETS:
+Managed vehicle fleet maintenance for a 600-person organization, sustaining a 95% operational readiness rate
+Directed accountability and upkeep of a $2M vehicle and equipment inventory
+Supervised and developed a 15-person maintenance and dispatch team
+The moves: "Responsible for/Ensured" become active accomplishment verbs; NCOIC becomes supervisor/manager; PMCS becomes preventive maintenance; every number kept.
+
+STYLE EXEMPLAR - imitate this density (real bullets from a senior HR leader's interview-winning resume):
+"Served as the senior HR business partner for a commercial, sales-driven organization of 1,200+ employees across 18 states, translating business priorities into a scalable people agenda"
+"Deputy Director of Personnel: senior HR leader for 7,000+ Soldiers across 65+ locations in a matrixed command with shared services and centers of expertise; owned talent management, succession, employee relations, compliance, and people analytics"
+"Battalion Commander: led 110 people and a $9M budget, accountable for performance management, leader development, and organizational effectiveness across a distributed operation"
+Every bullet names scale. Ownership language. Zero filler.
+
+FORMAT - plain text, no markdown, one page:
 [Your Name]
 [City, State] | [email] | [phone]
 
 SUMMARY
-2-3 plain sentences: who they are, years of experience, what they bring to the target role. Grounded only in their input.
+(per rule 5)
 
 CORE SKILLS
-6-9 short skill phrases from their input, comma-separated on 2-3 lines, civilian-framed.
+6-9 concrete skill phrases from their input, comma-separated, civilian-framed
 
 PROFESSIONAL EXPERIENCE
-[Job title translated to civilian equivalent] - U.S. [Branch if given]
+[Civilian-equivalent title] - U.S. [Branch if given]
 [Unit / Organization] | [Month Year - Month Year]
-3-5 bullets, one line each, under 20 words, strong varied action verbs, no periods, grounded in their input only.
+3-5 bullets per rule 3
 
 CERTIFICATIONS
-Their stated certs, or [Add certifications] if none given.
+Their stated certs, or [Add certifications]
 
 EDUCATION
 [School, Degree, Year]
 
-End with one line: "TIP:" naming the single highest-value thing to add before sending.`;
+End with one line: "TIP:" naming the single highest-value fact to add before sending - specific to THEIR draft, not generic advice.`;
 
   try {
     const resp = await fetch("https://api.anthropic.com/v1/messages", {
@@ -70,7 +85,7 @@ End with one line: "TIP:" naming the single highest-value thing to add before se
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 800,
+        max_tokens: 900,
         system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
         messages: [{ role: "user", content: userBlock }]
       })
