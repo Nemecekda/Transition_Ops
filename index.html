@@ -4167,6 +4167,7 @@ function App() {
   const [searchQ, setSearchQ] = useState("");
   const [policyPanelOpen, setPolicyPanelOpen] = useState(false);
   const [dashMoreOpen, setDashMoreOpen] = useState(false);
+  const [installStripX, setInstallStripX] = useState(function() { try { return window.__safeGet("tops_install_strip_x") === "1"; } catch(e) { return false; } });
   const [aiR, setAiR] = useState({ open: false, mode: "standard", role: "", years: "", target: "", skills: "", certs: "", exp: "", loading: false, out: "", err: "", posting: "" });
   const [jobsQ, setJobsQ] = useState({ open: false, keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "" });
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
@@ -5510,7 +5511,14 @@ function App() {
   },
 
   // ═══════════ DASHBOARD TAB ═══════════
-  activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, whatsNewOpen && React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
+  (function() {
+    var sa = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    if (sa || installStripX) return null;
+    return /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, background: "rgba(212,175,55,0.10)", border: "1px solid " + C.gold, borderRadius: 8, padding: "9px 12px", marginBottom: 12 } },
+      React.createElement("div", { style: { fontSize: 11.5, color: C.textPrimary, lineHeight: 1.45, flex: 1 } },
+        "\uD83D\uDCF2 ", React.createElement("strong", null, "Get deadline alerts:"), " install this app \u2014 tap ", React.createElement("strong", { style: { color: C.goldBright } }, "Share \u2192 Add to Home Screen"), " (not Bookmark)"),
+      React.createElement("div", { onClick: function() { setInstallStripX(true); try { window.__safeSet("tops_install_strip_x", "1"); } catch(e) {} }, style: { color: C.inactive, fontSize: 15, cursor: "pointer", padding: "2px 4px", flexShrink: 0 } }, "\u2715"));
+  })(), activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, whatsNewOpen && React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
     React.createElement("div", { onClick: function(e) { e.stopPropagation(); }, style: { background: C.bgCard, borderRadius: 12, width: "100%", maxWidth: 520, maxHeight: "82vh", overflowY: "auto", padding: "18px 18px 14px" } },
       React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: C.gold } }, "WHAT'S NEW \u2014 TRANSITION OPS"),
