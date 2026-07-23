@@ -2557,10 +2557,11 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v87";
+const APP_VERSION = "v88";
   const JOBS_LIVE = false; // flip to true the day NLx/DOL approves Jobs API access
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v88", date: "24 JUL 2026", note: "Resume Drafter levels up: choose CIVILIAN or FEDERAL (USAJOBS) format, see your draft rendered like a real resume, and DOWNLOAD IT AS A WORD DOC \u2014 ready to edit and send. Federal mode marks the USAJOBS blanks (hours/week, supervisor, veterans\u2019 preference) only you can fill." },
   { v: "v87", date: "23 JUL 2026", note: "Resume Drafter upgrade: paste straight from your CURRENT resume or NCOER \u2014 military language is fine, we translate it (tap \u2018see an example\u2019). Plus: IUEC elevator apprenticeship added \u2014 earn from day one, GI Bill stacks on top." },
   { v: "v86", date: "22 JUL 2026", note: "Status update on Live Jobs: the DOL data-access request is in the federal approval queue \u2014 the card now shows honest status and your state\u2019s job bank meanwhile. It lights up the day approval lands." },
   { v: "v85", date: "22 JUL 2026", note: "MONEY BASICS on the VA Pay tab: the U.S. Treasury\u2019s five money fundamentals, translated for transition \u2014 first civilian paycheck, TSP, credit, budgeting, and avoiding veteran-targeted scams. Learn it here, go deeper at MyMoney.gov." },
@@ -4164,7 +4165,7 @@ function App() {
   const [searchQ, setSearchQ] = useState("");
   const [policyPanelOpen, setPolicyPanelOpen] = useState(false);
   const [dashMoreOpen, setDashMoreOpen] = useState(false);
-  const [aiR, setAiR] = useState({ open: false, role: "", years: "", target: "", skills: "", certs: "", exp: "", loading: false, out: "", err: "" });
+  const [aiR, setAiR] = useState({ open: false, mode: "standard", role: "", years: "", target: "", skills: "", certs: "", exp: "", loading: false, out: "", err: "" });
   const [jobsQ, setJobsQ] = useState({ open: false, keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "" });
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [whatsNewUnseen, setWhatsNewUnseen] = useState(function() { try { return window.__safeGet("tops_whatsnew_seen") !== APP_VERSION; } catch (e) { return false; } });
@@ -6612,6 +6613,15 @@ function App() {
         React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "A complete one-page civilian resume draft from YOUR real experience \u2014 targeted at the job you want. Blanks marked for what only you can fill. 3 free drafts a day.")),
       React.createElement("span", { style: { color: C.greenBright, fontSize: 16, transform: aiR.open ? "rotate(90deg)" : "none" } }, "\u203A")),
     aiR.open && React.createElement("div", { style: { marginTop: 12 } },
+      React.createElement("div", { style: { display: "flex", gap: 8, marginBottom: 10 } },
+        ["standard", "federal"].map(function(m) {
+          var on = aiR.mode === m;
+          return React.createElement("div", { key: m, onClick: function() { setAiR(function(p){ return Object.assign({}, p, { mode: m }); }); },
+            style: { flex: 1, textAlign: "center", padding: "9px 6px", borderRadius: 8, cursor: "pointer", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1, fontWeight: 700,
+              background: on ? C.greenBright : "transparent", color: on ? "#0E120B" : C.textSecondary, border: "1px solid " + (on ? C.greenBright : C.border) } },
+            m === "standard" ? "CIVILIAN RESUME" : "FEDERAL (USAJOBS)");
+        })),
+      aiR.mode === "federal" && React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.5, marginBottom: 8 } }, "Federal format: longer, more detailed, with [brackets] for hours/week, supervisor contacts, and veterans' preference \u2014 the blanks USAJOBS requires that only you can fill."),
       React.createElement("input", { placeholder: "Your MOS / AFSC / rate (e.g. 92A)", defaultValue: aiR.role, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { role: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
       React.createElement("div", { style: { display: "flex", gap: 8 } },
         React.createElement("input", { placeholder: "Years served", defaultValue: aiR.years, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { years: v }); }); }, style: { ...S.input, marginBottom: 8, flex: 1 } }),
@@ -6627,7 +6637,7 @@ function App() {
         if (used >= 3) { setAiR(function(p){ return Object.assign({}, p, { err: "Daily limit reached (3/day) \u2014 resets tomorrow. This keeps the tool free for everyone." }); }); return; }
         setAiR(function(p){ return Object.assign({}, p, { loading: true, err: "", out: "" }); });
         if (window.__trackEvent) window.__trackEvent("ai_resume_generated", {});
-        (function attempt(n) { return fetch("/.netlify/functions/resume", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp }) })
+        (function attempt(n) { return fetch("/.netlify/functions/resume", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode: aiR.mode, role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp }) })
           .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
           .catch(function(e){ if (n < 1) { return new Promise(function(res){ setTimeout(res, 1200); }).then(function(){ return attempt(n + 1); }); } throw e; }); })(0)
           .then(function(res) {
@@ -6639,7 +6649,31 @@ function App() {
       }, style: { width: "100%", background: aiR.loading ? C.border : C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? "DRAFTING\u2026 (10-15 SEC)" : "DRAFT MY RESUME"),
       aiR.err && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, aiR.err),
       aiR.out && React.createElement("div", { style: { marginTop: 12 } },
-        React.createElement("div", { style: { background: C.bg, borderRadius: 8, padding: "13px 15px", fontSize: 13, color: C.textPrimary, lineHeight: 1.75, whiteSpace: "pre-wrap" } }, aiR.out),
+        React.createElement("div", { style: { background: "#FDFDF8", borderRadius: 8, padding: "18px 17px", border: "1px solid " + C.border } },
+          aiR.out.split("\n").map(function(ln, i) {
+            var t = ln.trim();
+            if (!t) return React.createElement("div", { key: i, style: { height: 8 } });
+            var isHead = /^(SUMMARY|PROFESSIONAL SUMMARY|CORE SKILLS|PROFESSIONAL EXPERIENCE|CERTIFICATIONS.*|EDUCATION|TIP:)/.test(t);
+            if (i === 0) return React.createElement("div", { key: i, style: { fontFamily: "'Oswald', sans-serif", fontSize: 17, fontWeight: 700, color: "#1a1a1a", letterSpacing: 0.5 } }, t);
+            if (isHead) return React.createElement("div", { key: i, style: { fontFamily: "'Oswald', sans-serif", fontSize: 11.5, fontWeight: 700, letterSpacing: 1.5, color: "#5A6B3B", borderBottom: "1px solid #D8D8CC", paddingBottom: 2, marginTop: 12, marginBottom: 5 } }, t);
+            var isJob = /\u2014/.test(t) && t.length < 90 && !/^[a-z]/.test(t);
+            return React.createElement("div", { key: i, style: { fontSize: 12, color: "#2a2a2a", lineHeight: 1.6, fontWeight: isJob ? 700 : 400, fontFamily: "Georgia, serif" } }, t);
+          })),
+        React.createElement("button", { onClick: function() {
+          var lines = aiR.out.split("\n"); var html = "";
+          lines.forEach(function(ln, i) { var t = ln.trim();
+            if (!t) { html += "<br/>"; return; }
+            var esc = t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+            if (i === 0) html += "<p style=\"font-size:16pt;font-weight:bold;margin:0 0 2pt 0;\">" + esc + "</p>";
+            else if (/^(SUMMARY|PROFESSIONAL SUMMARY|CORE SKILLS|PROFESSIONAL EXPERIENCE|CERTIFICATIONS|EDUCATION|TIP:)/.test(t)) html += "<p style=\"font-size:10pt;font-weight:bold;letter-spacing:1pt;border-bottom:1pt solid #999;margin:10pt 0 3pt 0;\">" + esc + "</p>";
+            else html += "<p style=\"font-size:10.5pt;margin:0 0 3pt 0;\">" + esc + "</p>"; });
+          var doc = "<html xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'><title>Resume</title></head><body style=\"font-family:Calibri,Georgia,serif;max-width:7.5in;\">" + html + "</body></html>";
+          var blob = new Blob(["\ufeff", doc], { type: "application/msword" });
+          var a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+          a.download = aiR.mode === "federal" ? "Federal_Resume_Draft.doc" : "Resume_Draft.doc";
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          if (window.__trackEvent) window.__trackEvent("ai_resume_doc_downloaded", {});
+        }, style: { width: "100%", marginTop: 8, background: C.goldBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "12px", fontFamily: "'Oswald', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1.5, cursor: "pointer" } }, "\u2B07 DOWNLOAD AS WORD DOC"),
         React.createElement("button", { onClick: function() { if (navigator.clipboard) { navigator.clipboard.writeText(aiR.out).then(function(){ showToast("RESUME COPIED \u2014 fill the [brackets], then send."); }); } if (window.__trackEvent) window.__trackEvent("ai_resume_copied", {}); }, style: { marginTop: 8, background: "transparent", color: C.greenBright, border: "1px solid " + C.greenBright, borderRadius: 8, padding: "9px 16px", fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: "pointer" } }, "COPY RESUME"), /*#__PURE__*/React.createElement("a", {
         href: "https://www.dol.gov/agencies/vets/programs/tap/employment-navigator-partnership", target: "_blank", rel: "noopener noreferrer",
         onClick: function() { if (window.__trackEvent) window.__trackEvent("enpp_handoff_tapped", {}); },

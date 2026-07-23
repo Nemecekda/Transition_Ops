@@ -14,6 +14,7 @@ exports.handler = async function (event) {
   try { input = JSON.parse(event.body || "{}"); } catch (e) { return { statusCode: 400, headers, body: JSON.stringify({ error: "Bad JSON" }) }; }
 
   const { role, years, experience, skills, certs, target } = input;
+  const mode = input.mode === "federal" ? "federal" : "standard";
   if (!experience || String(experience).trim().length < 20) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: "Tell us what you actually did — at least a sentence or two." }) };
   }
@@ -27,6 +28,39 @@ exports.handler = async function (event) {
     "Certifications: " + clip(certs, 400),
     "What they actually did (their own words): " + clip(experience, 8000)
   ].join("\n");
+
+  const systemFederal = `You draft a FEDERAL-STYLE resume (USAJOBS format) for a transitioning U.S. service member, targeted at their stated desired role. Their words are your ONLY source for facts. Federal resumes are longer and more detailed than civilian resumes - that detail must come from what they stated, never invention.
+
+HARD RULES (identical grounding discipline):
+1. GROUNDING: Every factual claim traces to their input. NEVER invent employers, dates, degrees, tools, metrics, supervisors, or outcomes. Bracket what a federal resume needs that they did not provide: [Hours per week: __], [Supervisor: Name, Phone - may contact: Yes/No], [Salary if required], [Series/Grade if known], [Month Year - Month Year].
+2. NUMBERS: keep every number exactly; add none.
+3. TRANSLATE military jargon to civilian equivalents but KEEP official unit names and titles alongside (federal HR staff understand military service; specificity helps here).
+4. DUTY DETAIL: federal announcements score on specialized experience. Expand each role's bullets into fuller duty statements (2-4 sentences or dense bullets per role) - but ONLY elaborating what they actually stated. Never pad with generic duties they didn't mention.
+5. BANNED: leveraged, utilize, synergy, framework, dynamic, results-driven, "Responsible for", "Ensured".
+
+FORMAT - plain text, no markdown:
+[Your Name]
+[City, State ZIP] | [phone] | [email]
+[Veterans' Preference: e.g., 5-point / 10-point - if they indicated service-connected disability or preference eligibility, bracket it: [Veterans' Preference: __]]
+[Citizenship: U.S. Citizen]
+
+PROFESSIONAL SUMMARY
+3-4 sentences, specific and stacked from their input, aimed at the target role.
+
+PROFESSIONAL EXPERIENCE
+One entry PER employer/role stated, most recent first, real names and dates. Per entry:
+[Title] - [Employer as stated]
+[Location] | [dates as given] | [Hours per week: __]
+[Supervisor: Name, Phone - may contact: Yes/No]
+Detailed duty and accomplishment statements per rule 4 - grounded only.
+
+EDUCATION
+Every stated degree, one line each: degree, school, year (bracket missing pieces).
+
+CERTIFICATIONS & TRAINING
+Exactly as stated - never change a certification's name or level. Include stated military training/schools here.
+
+End with: "TIP:" - the single highest-value addition for federal applications, specific to their draft (e.g., which bracket to fill first, or matching announcement keywords).`;
 
   const system = `You draft a complete one-page civilian resume for a transitioning U.S. service member, targeted at their stated desired role. Their words are your ONLY source for facts. They often paste text from their existing military resume, NCOER/evaluation, or award write-ups - translating that language is your core job.
 
@@ -86,8 +120,8 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 1300,
-        system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
+        max_tokens: mode === "federal" ? 1900 : 1300,
+        system: [{ type: "text", text: mode === "federal" ? systemFederal : system, cache_control: { type: "ephemeral" } }],
         messages: [{ role: "user", content: userBlock }]
       })
     });
