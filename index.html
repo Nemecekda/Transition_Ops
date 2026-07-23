@@ -2557,9 +2557,11 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v85";
+const APP_VERSION = "v86";
+  const JOBS_LIVE = false; // flip to true the day NLx/DOL approves Jobs API access
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v86", date: "22 JUL 2026", note: "Status update on Live Jobs: the DOL data-access request is in the federal approval queue \u2014 the card now shows honest status and your state\u2019s job bank meanwhile. It lights up the day approval lands." },
   { v: "v85", date: "22 JUL 2026", note: "MONEY BASICS on the VA Pay tab: the U.S. Treasury\u2019s five money fundamentals, translated for transition \u2014 first civilian paycheck, TSP, credit, budgeting, and avoiding veteran-targeted scams. Learn it here, go deeper at MyMoney.gov." },
   { v: "v84", date: "22 JUL 2026", note: "Money basics for your first civilian paycheck: added the U.S. Treasury\u2019s MyMoney Five (search \u201Cmoney\u201D or \u201Cbudget\u201D) \u2014 free federal financial literacy on earning, saving, credit, and avoiding scams. New parents: children born 2025\u20132028 get $1,000 in Treasury seed money." },
   { v: "v83", date: "21 JUL 2026", note: "NEW: Live Jobs in Your Target State \u2014 real openings pulled straight from the Dept. of Labor, searchable by keyword and state on the Career tab. Scout the market back home before you even move." },
@@ -6646,7 +6648,17 @@ function App() {
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.goldBright, fontWeight: 700 } }, "\uD83C\uDFAF LIVE JOBS IN YOUR TARGET STATE"),
         React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "Real openings, pulled live from the Dept. of Labor \u2014 search any state before you even move.")),
       React.createElement("span", { style: { color: C.goldBright, fontSize: 16, transform: jobsQ.open ? "rotate(90deg)" : "none" } }, "\u203A")),
-    jobsQ.open && React.createElement("div", { style: { marginTop: 12 } },
+    jobsQ.open && !JOBS_LIVE && React.createElement("div", { style: { marginTop: 12 } },
+      React.createElement("div", { style: { background: C.bg, border: "1px solid " + C.gold, borderRadius: 8, padding: "13px 15px", marginBottom: 8 } },
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1, color: C.goldBright, fontWeight: 700, marginBottom: 4 } }, "\u23F3 FINAL APPROVAL IN PROGRESS"),
+        React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.6 } }, "The live job feed is built and our data access request is in the U.S. Department of Labor's approval queue (submitted 21 JUL 2026). The moment it's granted, real openings in all 50 states appear right here \u2014 watch What's New.")),
+      React.createElement("a", { href: "https://www.careeronestop.org/Veterans/JobSearch/FindOpenings/state-job-banks.aspx", target: "_blank", rel: "noopener noreferrer", style: { display: "block", padding: "11px 13px", background: C.bg, border: "1px solid " + C.border, borderRadius: 6, textDecoration: "none" } },
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.textPrimary, fontWeight: 600 } }, "Meanwhile: your state's official job bank \u2192"),
+        React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, marginTop: 2 } }, "DOL's directory of all 50 state job banks \u2014 post your resume, set alerts")),
+      React.createElement("div", { style: { marginTop: 10, paddingTop: 8, borderTop: "1px solid " + C.border, display: "flex", alignItems: "center", gap: 8 } },
+        React.createElement("a", { href: "https://www.careeronestop.org/", target: "_blank", rel: "noopener noreferrer", style: { flexShrink: 0 } }, React.createElement("img", { src: "https://www.careeronestop.org/tridionmultimedia/tcm24-26158_CareerOneStopLogo-linktous.gif", alt: "CareerOneStop logo", style: { height: 24, display: "block" }, onError: function(e){ e.target.style.display = "none"; } })),
+        React.createElement("div", { style: { fontSize: 10, color: C.inactive, lineHeight: 1.4 } }, "Job data by CareerOneStop, sponsored by the U.S. Department of Labor."))),
+    jobsQ.open && JOBS_LIVE && React.createElement("div", { style: { marginTop: 12 } },
       React.createElement("input", { placeholder: "Job keyword (e.g. logistics manager, electrician)", defaultValue: jobsQ.keyword, onBlur: function(e){ var v=e.target.value; setJobsQ(function(p){ return Object.assign({}, p, { keyword: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
       React.createElement("input", { placeholder: "State (e.g. Wisconsin or WI) or ZIP", defaultValue: jobsQ.state, onBlur: function(e){ var v=e.target.value; setJobsQ(function(p){ return Object.assign({}, p, { state: v }); }); }, style: { ...S.input, marginBottom: 10 } }),
       React.createElement("button", { disabled: jobsQ.loading, onClick: function() {
