@@ -25,7 +25,7 @@ exports.handler = async function (event) {
     "Target civilian role: " + clip(target, 120),
     "Additional skills/ASIs: " + clip(skills, 400),
     "Certifications: " + clip(certs, 400),
-    "What they actually did (their own words): " + clip(experience, 4000)
+    "What they actually did (their own words): " + clip(experience, 8000)
   ].join("\n");
 
   const system = `You draft a complete one-page civilian resume for a transitioning U.S. service member, targeted at their stated desired role. Their words are your ONLY source for facts. They often paste text from their existing military resume, NCOER/evaluation, or award write-ups - translating that language is your core job.
@@ -63,15 +63,16 @@ CORE SKILLS
 6-9 concrete skill phrases from their input, comma-separated, civilian-framed
 
 PROFESSIONAL EXPERIENCE
-[Civilian-equivalent title] - U.S. [Branch if given]
-[Unit / Organization] | [Month Year - Month Year]
-3-5 bullets per rule 3
+CRITICAL: one entry PER employer or role they stated, most recent first, using their REAL employer names, locations, and dates whenever given. Civilian jobs keep their actual titles and companies. Military roles get civilian-equivalent titles with "- U.S. [Branch]" framing. Never merge separate employers into one block. Per entry:
+[Title] - [Employer as they stated it]
+[Location if given] | [dates as given, or [Month Year - Month Year]]
+2-4 bullets per rule 3 (fewer bullets per job when they held many jobs - one page total)
 
 CERTIFICATIONS
-Their stated certs, or [Add certifications]
+ONLY certifications and licenses, worded exactly as they stated them - never change a certification's name or level (SPHR stays SPHR; "SHRM certified" never becomes SHRM-SCP). Degrees NEVER appear here.
 
 EDUCATION
-[School, Degree, Year]
+Every degree they stated (B.A./B.S./M.A./M.S./M.B.A./PhD etc.), one line each, with their school and year when given and bracketed [School] or [Year] only for the missing pieces. If no degree was stated: [School, Degree, Year]
 
 End with one line: "TIP:" naming the single highest-value fact to add before sending - specific to THEIR draft, not generic advice.`;
 
