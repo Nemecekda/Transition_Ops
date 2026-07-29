@@ -4206,8 +4206,10 @@ function App() {
   };
   const renderNavText = function(text) {
     var MAP = { "CRITICAL WINDOWS": "critical", "VA PAY": "vapay", "MONEY BASICS": "vapay", "CAREER": "pathway", "RESOURCES": "resources", "TIMELINE": "timeline", "GUARD/RESERVE": "timeline", "VET HUB": "vethub" };
-    var parts = text.split(/(\[[A-Z \/]+\])/);
+    var parts = text.split(/(\[[A-Z \/]+\]|\*\*[^*]+\*\*)/);
     return parts.map(function(p, i) {
+      var b = p.match(/^\*\*([^*]+)\*\*$/);
+      if (b) return React.createElement("strong", { key: i, style: { color: C.goldBright } }, b[1]);
       var m = p.match(/^\[([A-Z \/]+)\]$/);
       if (m && MAP[m[1].trim()]) {
         return React.createElement("span", { key: i, onClick: function(){ setActiveTab(MAP[m[1].trim()]); window.scrollTo(0,0); }, style: { color: C.goldBright, fontFamily: "'Courier Prime', monospace", fontSize: 12, cursor: "pointer", borderBottom: "1px dotted " + C.gold } }, "[" + m[1] + " \u2197]");
