@@ -4186,9 +4186,18 @@ function App() {
     setNavInput("");
     var next = navMsgs.concat([{ r: "u", t: q }]);
     setNavMsgs(next); setNavBusy(true);
+    var ctx = "";
+    try {
+      var sd = window.__safeGet("tops_sep_date");
+      if (sd) {
+        var dd = Math.round((new Date(sd + "T00:00:00") - new Date()) / 86400000);
+        ctx = "Separation date: " + sd + " (" + (dd >= 0 ? "T-" + dd + " days out" : Math.abs(dd) + " days AFTER separation") + ").";
+        var st = window.__safeGet("tops_status"); if (st) ctx += " Status: " + st + ".";
+      }
+    } catch (e) {}
     fetch("/.netlify/functions/navigator", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: next.map(function(m){ return { role: m.r === "u" ? "user" : "assistant", content: m.t }; }) })
+      body: JSON.stringify({ context: ctx, messages: next.map(function(m){ return { role: m.r === "u" ? "user" : "assistant", content: m.t }; }) })
     }).then(function(r){ return r.json(); }).then(function(data){
       setNavBusy(false);
       if (data && data.reply) setNavMsgs(function(m){ return m.concat([{ r: "b", t: data.reply }]); });
@@ -5562,7 +5571,7 @@ function App() {
       React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 1.5, color: "#0E120B", background: C.goldBright, borderRadius: 4, padding: "2px 7px" } }, "PILOT")),
     React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.45, marginBottom: 10 } }, "Answers only from Transition OPS verified content. Educational information \u2014 not benefits counseling, not affiliated with VA or DoD. Nothing stored. In crisis: Veterans Crisis Line 988, press 1."),
     React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 } },
-      navMsgs.length === 0 && React.createElement("div", { style: { ...S.card, padding: 12, borderLeft: "3px solid " + C.gold, fontSize: 13, lineHeight: 1.55, color: C.textSecondary } }, "Navigator online. Tell me where you are in your transition \u2014 time remaining, component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook. Anything beyond my data, I\u2019ll route you to a human."),
+      navMsgs.length === 0 && React.createElement("div", { style: { ...S.card, padding: 12, borderLeft: "3px solid " + C.gold, fontSize: 13, lineHeight: 1.55, color: C.textSecondary } }, (function(){ try { var sd = window.__safeGet("tops_sep_date"); if (sd) { var dd = Math.round((new Date(sd + "T00:00:00") - new Date()) / 86400000); return "Navigator online \u2014 your timeline is loaded (" + (dd >= 0 ? "T-" + dd + " days to separation" : Math.abs(dd) + " days post-separation") + "). Ask me anything, or add context \u2014 component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook."; } } catch(e) {} return "Navigator online. Tell me where you are in your transition \u2014 time remaining, component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook. Anything beyond my data, I\u2019ll route you to a human."; })()),
       navMsgs.map(function(m, i2) {
         return React.createElement("div", { key: i2, style: m.r === "u"
           ? { alignSelf: "flex-end", maxWidth: "88%", background: "#223018", border: "1px solid " + C.border, borderRadius: 10, padding: "9px 12px", fontSize: 13.5, lineHeight: 1.55, whiteSpace: "pre-wrap" }

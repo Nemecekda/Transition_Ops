@@ -87,10 +87,16 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
         max_tokens: 800,
-        system: [
-          { type: "text", text: RULES },
-          { type: "text", text: CORPUS, cache_control: { type: "ephemeral" } }
-        ],
+        system: (function(){
+          var sys = [
+            { type: "text", text: RULES },
+            { type: "text", text: CORPUS, cache_control: { type: "ephemeral" } }
+          ];
+          if (typeof body.context === "string" && body.context.trim()) {
+            sys.push({ type: "text", text: "USER'S APP CONTEXT (from their own device, provided by them \u2014 use it to personalize sequencing; do not repeat it back verbatim): " + body.context.slice(0, 400) });
+          }
+          return sys;
+        })(),
         messages: msgs
       })
     });
