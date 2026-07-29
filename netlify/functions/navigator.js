@@ -49,6 +49,15 @@ const CORPUS = `VERIFIED CORPUS (from Transition OPS; verified against 38 CFR / 
 - U.S. Treasury MyMoney Five framework: Earn, Save & Invest, Protect, Spend, Borrow — on the app's VA PAY tab, translated for transition (first civilian paycheck has no BAH/BAS; TSP does not vanish at separation but early cash-out is costly; SGLI ends after separation; build the civilian budget BEFORE the last military paycheck; credit score matters for housing, vehicles, some jobs).
 - Trump Accounts: children born 2025-2028 receive $1,000 in Treasury seed money in tax-advantaged accounts. Details at MyMoney.gov.
 
+[VA HOME LOAN]
+- The VA home loan guaranty (VA.gov) helps veterans, service members, and eligible surviving spouses buy, build, or refinance a home. Key features: typically NO down payment, NO private mortgage insurance (PMI), and competitive rates because the VA guarantees part of the loan.
+- Step 1 is the Certificate of Eligibility (COE): obtain it through VA.gov, or most VA-approved lenders can pull it electronically.
+- The VA does not lend the money itself — you use a VA-approved private lender; the VA backs the loan.
+- Funding fee: most borrowers pay a one-time VA funding fee (can be rolled into the loan). CRITICAL EXEMPTION most veterans never learn: borrowers receiving VA disability compensation (and certain surviving spouses) are EXEMPT from the funding fee entirely — verify your exemption before closing.
+- Veterans with full entitlement no longer face VA loan limits (per the Blue Water Navy Act changes) — lenders still apply their own qualification standards.
+- WARNING: the VA-loan space attracts aggressive marketers and serial-refinance ("churning") pitches. Unsolicited refinance offers deserve skepticism. Compare multiple lenders; VA.gov's home loan pages are the authoritative source, and a HUD-approved housing counselor or accredited financial counselor (free via Military OneSource while eligible) can review any offer.
+- The app carries no lender relationships and recommends no lender — ever.
+
 [RESOURCES]
 - FIND YOUR VSO: the app routes to VA-accredited representatives (VA OGC accreditation search), county veteran service officers (CVSOs), and live human help lines. VSO claim help is FREE — no one should pay to file a claim.
 - Veterans Crisis Line: 988, press 1. Available 24/7.
