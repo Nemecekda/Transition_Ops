@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Navigator Pilot — Transition OPS</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Source+Sans+3:wght@400;600&family=Courier+Prime&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0E120B; --card:#161C12; --card2:#1C2416; --border:#2A331F; --gold:#C9A227; --goldB:#E8C547; --green:#7A8B5A; --greenB:#9DB876; --text:#E8E6DC; --text2:#A8A899; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--text); font-family: 'Source Sans 3', sans-serif; display: flex; flex-direction: column; }
+  header { padding: 12px 16px 9px; border-bottom: 1px solid var(--border); }
+  .kicker { font-family: 'Courier Prime', monospace; font-size: 10px; letter-spacing: 2px; color: var(--green); }
+  h1 { font-family: 'Oswald', sans-serif; font-size: 17px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-family: 'Oswald', sans-serif; font-size: 9px; letter-spacing: 1.5px; color: #0E120B; background: var(--goldB); border-radius: 4px; padding: 2px 7px; }
+  .disc { font-size: 10px; color: var(--text2); margin-top: 3px; line-height: 1.4; }
+  #chat { flex: 1; overflow-y: auto; padding: 14px 12px 6px; display: flex; flex-direction: column; gap: 9px; -webkit-overflow-scrolling: touch; }
+  .msg { max-width: 90%; padding: 10px 13px; border-radius: 10px; font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
+  .user { align-self: flex-end; background: #223018; border: 1px solid var(--border); }
+  .bot { align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--gold); }
+  .bot .cite { color: var(--goldB); font-family: 'Courier Prime', monospace; font-size: 12px; }
+  .thinking { align-self: flex-start; color: var(--text2); font-size: 12px; font-style: italic; padding: 2px 13px; }
+  .chips { display: flex; gap: 7px; flex-wrap: wrap; padding: 6px 12px 8px; }
+  .chip { font-size: 11.5px; color: var(--greenB); border: 1px solid var(--border); border-radius: 14px; padding: 6px 11px; cursor: pointer; background: transparent; font-family: inherit; }
+  footer { padding: 8px 12px; border-top: 1px solid var(--border); }
+  .inrow { display: flex; gap: 8px; }
+  #inp { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 12px; font-size: 16px; font-family: inherit; }
+  #inp:focus { outline: none; border-color: var(--green); }
+  #send { background: var(--goldB); color: #0E120B; border: none; border-radius: 8px; padding: 0 18px; font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1px; font-size: 13px; cursor: pointer; }
+  #send:disabled { background: var(--border); color: var(--text2); }
+  .crisis { font-size: 10px; color: var(--text2); text-align: center; padding: 6px 12px 10px; }
+  .crisis b { color: var(--greenB); }
+</style>
+</head>
+<body>
+<header>
+  <div class="kicker">VETERAN BRIDGE SOLUTIONS · TRANSITION OPS</div>
+  <h1>AI TRANSITION NAVIGATOR <span class="badge">PILOT</span></h1>
+  <div class="disc">Answers only from Transition OPS verified content. Educational information — not benefits counseling, not affiliated with VA or DoD. Nothing stored, nothing logged.</div>
+</header>
+<div id="chat">
+  <div class="msg bot">Navigator online — pilot version. Tell me where you are in your transition (time remaining, component, family, claim status) and I'll sequence your next moves from the app's verified playbook. Anything beyond my data, I'll route you to a human who can actually help.</div>
+</div>
+<div class="chips" id="chips">
+  <button class="chip" onclick="ask(this.textContent)">I'm 9 months out, Guard, married, 60% pending — what's my sequence?</button>
+  <button class="chip" onclick="ask(this.textContent)">What's the BDD window and why does it matter?</button>
+  <button class="chip" onclick="ask(this.textContent)">What rating will I get for my knee?</button>
+</div>
+<footer>
+  <div class="inrow">
+    <input id="inp" placeholder="Ask about your transition…" autocomplete="off">
+    <button id="send" onclick="ask()">SEND</button>
+  </div>
+</footer>
+<div class="crisis">In crisis? <b>Veterans Crisis Line: 988, press 1</b> — 24/7, confidential.</div>
+<script>
+var history = [];
+var chat = document.getElementById('chat');
+var inp = document.getElementById('inp');
+var send = document.getElementById('send');
+var DAILY_CAP = 20;
+
+inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') ask(); });
+
+function underCap() {
+  try {
+    var today = new Date().toISOString().slice(0,10);
+    var raw = localStorage.getItem('tops_nav_pilot') || '{}';
+    var o = JSON.parse(raw);
+    if (o.d !== today) o = { d: today, n: 0 };
+    if (o.n >= DAILY_CAP) return false;
+    o.n++; localStorage.setItem('tops_nav_pilot', JSON.stringify(o));
+    return true;
+  } catch (e) { return true; }
+}
+
+function add(cls, text) {
+  var d = document.createElement('div');
+  d.className = 'msg ' + cls;
+  if (cls === 'bot') {
+    d.innerHTML = text.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/\[([A-Z \/]+)\]/g, '<span class="cite">[$1]</span>');
+  } else { d.textContent = text; }
+  chat.appendChild(d); chat.scrollTop = chat.scrollHeight;
+}
+
+async function ask(preset) {
+  var q = (preset || inp.value).trim();
+  if (!q || send.disabled) return;
+  if (!underCap()) { add('bot', "Pilot daily limit reached (20 messages) — resets tomorrow. For anything urgent, the app's FIND YOUR VSO tool gets you a free human today."); return; }
+  inp.value = '';
+  add('user', q);
+  history.push({ role: 'user', content: q });
+  var th = document.createElement('div'); th.className = 'thinking'; th.textContent = 'Navigator consulting verified data…';
+  chat.appendChild(th); chat.scrollTop = chat.scrollHeight;
+  send.disabled = true;
+  try {
+    var r = await fetch('/.netlify/functions/navigator', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: history })
+    });
+    var data = await r.json();
+    th.remove();
+    if (data.reply) {
+      history.push({ role: 'assistant', content: data.reply });
+      add('bot', data.reply);
+    } else {
+      history.pop();
+      add('bot', data.error || 'Brief interruption — try again.');
+    }
+  } catch (e) {
+    th.remove(); history.pop();
+    add('bot', 'Connection hiccup — try again in a moment.');
+  }
+  send.disabled = false; inp.focus();
+}
+</script>
+</body>
+</html>
