@@ -107,6 +107,25 @@ exports.handler = async (event) => {
           if (typeof body.context === "string" && body.context.trim()) {
             sys.push({ type: "text", text: "USER'S APP CONTEXT (from their own device, provided by them \u2014 use it to personalize sequencing; do not repeat it back verbatim): " + body.context.slice(0, 400) });
           }
+          if (typeof body.daysOut === "number" && isFinite(body.daysOut) && Math.abs(body.daysOut) < 20000) {
+            var d = Math.round(body.daysOut);
+            var lines = ["WINDOW STATUS \u2014 COMPUTED BY THE APP, AUTHORITATIVE. Use these verbatim; NEVER recompute or contradict them:"];
+            lines.push("- User is " + (d >= 0 ? "T-" + d + " days BEFORE separation." : Math.abs(d) + " days AFTER separation."));
+            if (d > 180) lines.push("- BDD window: NOT YET OPEN. Opens at T-180 (" + (d - 180) + " days from now), closes at T-90.");
+            else if (d >= 90) lines.push("- BDD window: OPEN NOW. Closes at T-90 (" + (d - 90) + " days remaining to file).");
+            else if (d >= 0) lines.push("- BDD window: CLOSED (it closed at T-90). Standard claim path applies: file now anyway; decision typically 3-12 months after separation.");
+            else lines.push("- BDD window: CLOSED (pre-separation program). Standard post-separation claim path applies.");
+            if (d >= 0) { lines.push("- GI Bill transfer: STILL OPEN \u2014 possible only while serving; closes permanently at separation. Requires 4-year additional obligation, so act EARLY, never treat as a last-90-days item."); }
+            else { lines.push("- GI Bill transfer: CLOSED PERMANENTLY (only possible while serving)."); }
+            if (d >= 0) lines.push("- SGLI-to-VGLI no-exam window: NOT STARTED. It begins AT separation and runs 240 days after.");
+            else if (Math.abs(d) <= 240) lines.push("- SGLI-to-VGLI no-exam window: OPEN, " + (240 - Math.abs(d)) + " days remaining of the 240-day no-exam period.");
+            else if (Math.abs(d) <= 485) lines.push("- SGLI-to-VGLI: no-exam period ENDED; conversion still possible until 1 year 120 days post-separation WITH evidence of insurability.");
+            else lines.push("- SGLI-to-VGLI: conversion window fully closed.");
+            if (d >= 240) lines.push("- SkillBridge: guidance runway intact (start command conversation 8-12 months out).");
+            else if (d >= 0) lines.push("- SkillBridge: past the recommended 8-12 month runway; feasibility at this point is a command decision \u2014 route to their command, do not declare impossible.");
+            else lines.push("- SkillBridge: not applicable (pre-separation program).");
+            sys.push({ type: "text", text: lines.join("\n") });
+          }
           return sys;
         })(),
         messages: msgs

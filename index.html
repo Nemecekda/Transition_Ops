@@ -4197,7 +4197,7 @@ function App() {
     } catch (e) {}
     fetch("/.netlify/functions/navigator", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ context: ctx, messages: next.map(function(m){ return { role: m.r === "u" ? "user" : "assistant", content: m.t }; }) })
+      body: JSON.stringify({ context: ctx, daysOut: (function(){ try { var sd2 = window.__safeGet("tops_sep_date"); if (sd2) return Math.round((new Date(sd2 + "T00:00:00") - new Date()) / 86400000); } catch(e){} return null; })(), messages: next.map(function(m){ return { role: m.r === "u" ? "user" : "assistant", content: m.t }; }) })
     }).then(function(r){ return r.json(); }).then(function(data){
       setNavBusy(false);
       if (data && data.reply) setNavMsgs(function(m){ return m.concat([{ r: "b", t: data.reply }]); });
