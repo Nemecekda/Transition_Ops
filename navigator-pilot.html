@@ -56,7 +56,7 @@
 </footer>
 <div class="crisis">In crisis? <b>Veterans Crisis Line: 988, press 1</b> — 24/7, confidential.</div>
 <script>
-var history = [];
+var convo = [];
 var chat = document.getElementById('chat');
 var inp = document.getElementById('inp');
 var send = document.getElementById('send');
@@ -92,7 +92,7 @@ async function ask(preset) {
   if (!underCap()) { add('bot', "Pilot daily limit reached (20 messages) — resets tomorrow. For anything urgent, the app's FIND YOUR VSO tool gets you a free human today."); return; }
   inp.value = '';
   add('user', q);
-  history.push({ role: 'user', content: q });
+  convo.push({ role: 'user', content: q });
   var th = document.createElement('div'); th.className = 'thinking'; th.textContent = 'Navigator consulting verified data…';
   chat.appendChild(th); chat.scrollTop = chat.scrollHeight;
   send.disabled = true;
@@ -100,19 +100,19 @@ async function ask(preset) {
     var r = await fetch('/.netlify/functions/navigator', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: history })
+      body: JSON.stringify({ messages: convo })
     });
     var data = await r.json();
     th.remove();
     if (data.reply) {
-      history.push({ role: 'assistant', content: data.reply });
+      convo.push({ role: 'assistant', content: data.reply });
       add('bot', data.reply);
     } else {
-      history.pop();
+      convo.pop();
       add('bot', data.error || 'Brief interruption — try again.');
     }
   } catch (e) {
-    th.remove(); history.pop();
+    th.remove(); convo.pop();
     add('bot', 'Connection hiccup — try again in a moment.');
   }
   send.disabled = false; inp.focus();
