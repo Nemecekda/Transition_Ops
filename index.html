@@ -2557,10 +2557,11 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v90";
+const APP_VERSION = "v91";
   const JOBS_LIVE = false; // flip to true the day NLx/DOL approves Jobs API access
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v91", date: "29 JUL 2026", note: "Under the hood: the AI Transition Navigator pilot \u2014 grounded, cited answers from this app\u2019s verified content \u2014 is built and in private evaluation. Coming to a tab near you once it passes inspection." },
   { v: "v90", date: "25 JUL 2026", note: "Fixed: the INSTALL TO GET DEADLINE ALERTS card is back on the main dashboard where new users can see it (it had been tucked under MORE TOOLS). Installing from your home screen is what makes deadline alerts possible \u2014 15 seconds, worth it." },
   { v: "v89", date: "24 JUL 2026", note: "TAILOR YOUR RESUME TO THE JOB: paste any posting \u2014 civilian ad or USAJOBS announcement \u2014 and the drafter writes your resume AT it: their keywords where your real experience matches, honest gaps flagged in the tip. Works in both civilian and federal mode." },
   { v: "v88", date: "24 JUL 2026", note: "Resume Drafter levels up: choose CIVILIAN or FEDERAL (USAJOBS) format, see your draft rendered like a real resume, and DOWNLOAD IT AS A WORD DOC \u2014 ready to edit and send. Federal mode marks the USAJOBS blanks (hours/week, supervisor, veterans\u2019 preference) only you can fill." },
@@ -4157,7 +4158,7 @@ function App() {
   };
   const [activeTab, setActiveTab] = useState(function() {
     try {
-      var validTabs = ["dashboard","vamath","vapay","pathway","resources","taxes","timeline","critical","reminders","readiness","vethub","dd214","finalpcs"];
+      var validTabs = ["dashboard","vamath","vapay","pathway","resources","taxes","timeline","critical","reminders","readiness","vethub","dd214","finalpcs","navigator"];
       var t = new URLSearchParams(window.location.search).get("tool");
       if (t && validTabs.indexOf(t) !== -1) return t;
     } catch (e) {}
@@ -4168,6 +4169,43 @@ function App() {
   const [policyPanelOpen, setPolicyPanelOpen] = useState(false);
   const [dashMoreOpen, setDashMoreOpen] = useState(false);
   const [installStripX, setInstallStripX] = useState(function() { try { return window.__safeGet("tops_install_strip_x") === "1"; } catch(e) { return false; } });
+  const NAVIGATOR_LIVE = false; // flip after 50-question eval passes
+  const [navMsgs, setNavMsgs] = useState([]);
+  const [navInput, setNavInput] = useState("");
+  const [navBusy, setNavBusy] = useState(false);
+  const sendNavigator = function(preset) {
+    var q = (preset || navInput).trim();
+    if (!q || navBusy) return;
+    try {
+      var today = new Date().toISOString().slice(0,10);
+      var o = JSON.parse(window.__safeGet("tops_nav_pilot") || "{}");
+      if (o.d !== today) o = { d: today, n: 0 };
+      if (o.n >= 20) { setNavMsgs(function(m){ return m.concat([{ r: "b", t: "Pilot daily limit reached (20) \u2014 resets tomorrow. For anything urgent, FIND YOUR VSO gets you a free human today. [RESOURCES]" }]); }); return; }
+      o.n++; window.__safeSet("tops_nav_pilot", JSON.stringify(o));
+    } catch (e) {}
+    setNavInput("");
+    var next = navMsgs.concat([{ r: "u", t: q }]);
+    setNavMsgs(next); setNavBusy(true);
+    fetch("/.netlify/functions/navigator", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: next.map(function(m){ return { role: m.r === "u" ? "user" : "assistant", content: m.t }; }) })
+    }).then(function(r){ return r.json(); }).then(function(data){
+      setNavBusy(false);
+      if (data && data.reply) setNavMsgs(function(m){ return m.concat([{ r: "b", t: data.reply }]); });
+      else setNavMsgs(function(m){ return m.concat([{ r: "b", t: (data && data.error) || "Brief interruption \u2014 try again." }]); });
+    }).catch(function(){ setNavBusy(false); setNavMsgs(function(m){ return m.concat([{ r: "b", t: "Connection hiccup \u2014 try again in a moment." }]); }); });
+  };
+  const renderNavText = function(text) {
+    var MAP = { "CRITICAL WINDOWS": "critical", "VA PAY": "vapay", "MONEY BASICS": "vapay", "CAREER": "pathway", "RESOURCES": "resources", "TIMELINE": "timeline", "GUARD/RESERVE": "timeline", "VET HUB": "vethub" };
+    var parts = text.split(/(\[[A-Z \/]+\])/);
+    return parts.map(function(p, i) {
+      var m = p.match(/^\[([A-Z \/]+)\]$/);
+      if (m && MAP[m[1].trim()]) {
+        return React.createElement("span", { key: i, onClick: function(){ setActiveTab(MAP[m[1].trim()]); window.scrollTo(0,0); }, style: { color: C.goldBright, fontFamily: "'Courier Prime', monospace", fontSize: 12, cursor: "pointer", borderBottom: "1px dotted " + C.gold } }, "[" + m[1] + " \u2197]");
+      }
+      return p;
+    });
+  };
   const [aiR, setAiR] = useState({ open: false, mode: "standard", role: "", years: "", target: "", skills: "", certs: "", exp: "", loading: false, out: "", err: "", posting: "" });
   const [jobsQ, setJobsQ] = useState({ open: false, keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "" });
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
@@ -4176,7 +4214,7 @@ function App() {
   // Onboarding state
   const [showOnboarding, setShowOnboarding] = useState(function() {
     try {
-      var validTabs = ["dashboard","vamath","vapay","pathway","resources","taxes","timeline","critical","reminders","readiness","vethub","dd214","finalpcs"];
+      var validTabs = ["dashboard","vamath","vapay","pathway","resources","taxes","timeline","critical","reminders","readiness","vethub","dd214","finalpcs","navigator"];
       var t = new URLSearchParams(window.location.search).get("tool");
       if (t && validTabs.indexOf(t) !== -1) return false;
       return !window.__safeGet("tops_onboarded");
@@ -5518,7 +5556,32 @@ function App() {
       React.createElement("div", { onClick: handleInstallBannerClick, style: { fontSize: 11.5, color: C.textPrimary, lineHeight: 1.45, flex: 1, cursor: "pointer" } },
         "\uD83D\uDCF2 ", React.createElement("strong", null, "Get deadline alerts \u2014 tap here to install."), " iPhone: ", React.createElement("strong", { style: { color: C.goldBright } }, "Share \u2192 Add to Home Screen"), " (not Bookmark). Android: one tap."),
       React.createElement("div", { onClick: function() { setInstallStripX(true); try { window.__safeSet("tops_install_strip_x", "1"); } catch(e) {} }, style: { color: C.inactive, fontSize: 15, cursor: "pointer", padding: "2px 4px", flexShrink: 0 } }, "\u2715"));
-  })(), activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, whatsNewOpen && React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
+  })(), activeTab === "navigator" && /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "70vh" } },
+    React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 6 } },
+      React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 17, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "AI TRANSITION NAVIGATOR"),
+      React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 1.5, color: "#0E120B", background: C.goldBright, borderRadius: 4, padding: "2px 7px" } }, "PILOT")),
+    React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.45, marginBottom: 10 } }, "Answers only from Transition OPS verified content. Educational information \u2014 not benefits counseling, not affiliated with VA or DoD. Nothing stored. In crisis: Veterans Crisis Line 988, press 1."),
+    React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 } },
+      navMsgs.length === 0 && React.createElement("div", { style: { ...S.card, padding: 12, borderLeft: "3px solid " + C.gold, fontSize: 13, lineHeight: 1.55, color: C.textSecondary } }, "Navigator online. Tell me where you are in your transition \u2014 time remaining, component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook. Anything beyond my data, I\u2019ll route you to a human."),
+      navMsgs.map(function(m, i2) {
+        return React.createElement("div", { key: i2, style: m.r === "u"
+          ? { alignSelf: "flex-end", maxWidth: "88%", background: "#223018", border: "1px solid " + C.border, borderRadius: 10, padding: "9px 12px", fontSize: 13.5, lineHeight: 1.55, whiteSpace: "pre-wrap" }
+          : { alignSelf: "flex-start", maxWidth: "92%", background: C.cardBg, border: "1px solid " + C.border, borderLeft: "3px solid " + C.gold, borderRadius: 10, padding: "9px 12px", fontSize: 13.5, lineHeight: 1.6, whiteSpace: "pre-wrap" } },
+          m.r === "b" ? renderNavText(m.t) : m.t);
+      }),
+      navBusy && React.createElement("div", { style: { fontSize: 12, fontStyle: "italic", color: C.inactive } }, "Navigator consulting verified data\u2026")),
+    navMsgs.length === 0 && React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 } },
+      ["I'm 9 months out, Guard, married, 60% pending \u2014 what's my sequence?", "What's the BDD window and why does it matter?", "What should I not miss before separation?"].map(function(ch, i3) {
+        return React.createElement("div", { key: i3, onClick: function(){ sendNavigator(ch); }, style: { fontSize: 11.5, color: C.textSecondary, border: "1px solid " + C.border, borderRadius: 14, padding: "6px 11px", cursor: "pointer" } }, ch);
+      })),
+    React.createElement("div", { style: { display: "flex", gap: 8 } },
+      React.createElement("input", { value: navInput, onChange: function(e){ setNavInput(e.target.value); }, onKeyDown: function(e){ if (e.key === "Enter") sendNavigator(); }, placeholder: "Ask about your transition\u2026", style: { flex: 1, background: C.cardBg, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, padding: 12, fontSize: 16, fontFamily: "inherit" } }),
+      React.createElement("div", { onClick: function(){ sendNavigator(); }, style: { background: C.goldBright, color: "#0E120B", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: "pointer", opacity: navBusy ? 0.5 : 1 } }, "SEND"))),
+  NAVIGATOR_LIVE && activeTab !== "navigator" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { position: "fixed", right: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: "#0E120B", borderRadius: 22, padding: "10px 16px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
+  NAVIGATOR_LIVE && activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { ...S.card, padding: 14, borderColor: C.gold, cursor: "pointer", marginBottom: 12 } },
+    React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: C.goldBright, letterSpacing: 1, marginBottom: 4 } }, "\u2726 ASK THE NAVIGATOR"),
+    React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "Not sure what to do next? Tell it your situation \u2014 it sequences your moves from this app\u2019s verified content and routes you to humans.")),
+  activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, whatsNewOpen && React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
     React.createElement("div", { onClick: function(e) { e.stopPropagation(); }, style: { background: C.bgCard, borderRadius: 12, width: "100%", maxWidth: 520, maxHeight: "82vh", overflowY: "auto", padding: "18px 18px 14px" } },
       React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: C.gold } }, "WHAT'S NEW \u2014 TRANSITION OPS"),
