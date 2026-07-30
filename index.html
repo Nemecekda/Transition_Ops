@@ -5385,7 +5385,21 @@ function App() {
       fontSize: 10,
       letterSpacing: 1
     }
-  }, theme === "tactical" ? "\u263D" : "\u2600", " ", theme === "tactical" ? "PRO" : "TAC"), userStatus !== "guard" && /*#__PURE__*/React.createElement("button", {
+  }, theme === "tactical" ? "\u263D" : "\u2600", " ", theme === "tactical" ? "PRO" : "TAC"), activeTab !== "dashboard" && /*#__PURE__*/React.createElement("button", {
+    onClick: () => { setActiveTab("dashboard"); window.scrollTo(0, 0); },
+    "aria-label": "Go to home screen",
+    style: {
+      background: theme === "tactical" ? C.bgElevated : "#ECECEA",
+      border: "1px solid transparent",
+      borderRadius: 8,
+      padding: "8px 14px",
+      cursor: "pointer",
+      color: C.textPrimary,
+      fontFamily: "'Oswald', sans-serif",
+      fontSize: 13,
+      letterSpacing: 1
+    }
+  }, "HOME"), userStatus !== "guard" && /*#__PURE__*/React.createElement("button", {
     onClick: () => setShowNotifPanel(!showNotifPanel),
     style: {
       background: theme === "tactical" ? C.bgElevated : "#ECECEA",
