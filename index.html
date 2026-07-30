@@ -2838,6 +2838,7 @@ const SMART_REMINDERS = [
   {id:"r-12-bdd",mo:12,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F BDD Claim \u2014 Prep Now, File at 180 Days",brief:"File your VA disability claim in the 180-90 day window before separation. Rating effective DAY ONE.",items:["Gather all medical records and Line of Duty (LOD) determinations","Schedule pre-claim consultation with VSO (DAV, VFW, American Legion)","File BDD claim on VA.gov","Get buddy statements for service-connected conditions","Schedule remaining medical appointments for documentation"],deadline:"File between 180 and 90 days before separation",why:"Filing after separation can delay your rating by 6-12+ months. That can mean tens of thousands in delayed compensation.",link:"https://www.va.gov/disability/how-to-file-claim/"},
   {id:"r-12-tax",mo:12,cat:"FINANCE",pri:"CRITICAL",title:"\u26A0\uFE0F State Tax Residency — Legal RESIDENCE Matters",brief:"Your state of LEGAL RESIDENCE (not Home of Record) determines state tax on retired pay. $5K-$15K+/year impact.",items:["No state income tax: AK, FL, NV, NH, SD, TN, TX, WA, WY","Most other states fully exempt military retired pay — check YOUR state's current status in the Tax Intel tab","Establish legal residency BEFORE separation","MSRRA allows spouses same state for tax"],deadline:"Establish residency before separation date",why:"Wrong state costs retirees thousands annually for life.",link:"https://myarmybenefits.us.army.mil/Benefit-Library/State/Territory-Benefits"},
   {id:"r-12-sbp",mo:12,cat:"FINANCE",pri:"CRITICAL",title:"\u26A0\uFE0F Survivor Benefit Plan (SBP) — IRREVOCABLE",brief:"Retirees must elect or decline SBP. Nearly IRREVOCABLE. Provides up to 55% of retired pay to survivors.",items:["SBP costs 6.5% of retired pay for spouse","Calculate breakeven vs commercial life insurance","Spouse concurrence required to decline","SBP is inflation-adjusted; commercial is not","Consider DIC offset and SBP-DIC interaction"],deadline:"Election must be made before retirement",why:"Declining and dying without adequate life insurance leaves your family exposed. Cannot be undone.",link:null},
+  {id:"r-12-rso",mo:12,cat:"GUARD/RESERVE",pri:"ADVISORY",title:"Register for an RSO Retirement Planning Seminar (Guard/Reserve)",brief:"If you are headed for the Retired Reserve, the Retirement Services Office runs free Retirement Planning Seminars that cover SBP elections, gray-area status, and the age 60 retired pay application. Go before you sign anything.",items:["Find the next seminar on the Army-wide calendar: soldierforlife.army.mil/Retirement/Events","Pull your retirement points statement and bring it","Write down your SBP questions in advance. This decision follows you for decades"],deadline:"Before your transfer to the Retired Reserve",why:"SBP and retired pay decisions made blind at the end cost money for decades. The seminar is free and the counselors do this every day."},
   {id:"r-12-tsp",mo:12,cat:"FINANCE",pri:"HIGH",title:"TSP Strategy & Rollover Planning",brief:"TSP expense ratios (~0.05%) are among the lowest anywhere. Don't roll over blindly.",items:["Review current allocation and rebalance","Options: leave in TSP, rollover to IRA, or new 401(k)","TSP expense ratio ~0.05% vs typical civilian 0.5-1.5%","Use DIRECT rollover to avoid 20% withholding","Consider Roth conversion if lower tax bracket post-sep"],deadline:"Have plan before separation",why:"Indirect rollovers trigger 20% withholding and potential early withdrawal penalties.",link:"https://www.tsp.gov"},
   {id:"r-8-clr",mo:8,cat:"CAREER",pri:"HIGH",title:"Security Clearance Monetization",brief:"Secret or TS/SCI typically adds $10K-$30K+ to salary offers — but only if you use it before it lapses.",items:["Verify clearance status with SSO/FSO","Target cleared positions in defense/intel/contracting","Booz Allen, SAIC, Leidos, Raytheon recruit cleared vets","Clearance stays active 24 months post-sep if no break"],deadline:"24 months post-sep for most clearances",why:"A lapsed TS/SCI costs $50K+ and 12-18 months to reinvestigate. Use it or lose it.",link:null},
   {id:"r-6-bdd2",mo:6,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F BDD Window OPEN \u2014 Closes at 90 Days",brief:"The BDD window runs 180 to 90 days out. If you haven't filed yet, move now \u2014 at 90 days you lose the fast-track.",items:["File BDD claim on VA.gov IMMEDIATELY","Ensure all C&P exams scheduled","Submit remaining buddy statements","Confirm VSO submitted your package"],deadline:"Closes 90 days before separation — HARD DEADLINE",why:"Missing BDD means 6-18 months delay on your rating and backpay.",link:"https://www.va.gov/disability/how-to-file-claim/"},
@@ -5808,6 +5809,33 @@ function App() {
             "If you have a VA disability rating (even from one deployment or a Line of Duty determination), use the VA Math and VA Pay tools to verify you're receiving correct compensation. Many Guard/Reserve members are under-rated or never file."
           )
         ),
+
+        React.createElement("div", { style: { ...S.card, padding: 14, marginTop: 12 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "GRAY-AREA RETIREMENT RESOURCES"),
+          React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.8, marginBottom: 8 } },
+            "Straight from the Army Reserve retirement system. Bookmark these before you transfer to the Retired Reserve."),
+          [
+            { l: "Army Reserve Retirement Hub", u: "https://www.usar.army.mil/Retirement/", d: "Start here. USAR's official retirement page." },
+            { l: "HRC Gray Area Retirements Branch", u: "https://www.hrc.army.mil/content/Gray%20Area%20Retirements%20Branch", d: "Your records and the retired pay application at age 60 live here." },
+            { l: "RSO Seminar Calendar (Army-wide)", u: "https://soldierforlife.army.mil/Retirement/Events", d: "Free Retirement Planning Seminars. Find one and go." }
+          ].map(function(x, xi) {
+            return React.createElement("div", { key: xi, style: { marginBottom: 8 } },
+              React.createElement("a", { href: x.u, target: "_blank", rel: "noopener", style: { color: C.goldBright, fontSize: 13, fontWeight: 600, textDecoration: "none", borderBottom: "1px dotted " + C.gold } }, x.l),
+              React.createElement("div", { style: { fontSize: 12, color: C.textBody, lineHeight: 1.6, marginTop: 2 } }, x.d));
+          })),
+        React.createElement("div", { style: { ...S.card, padding: 14, marginTop: 12 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "WHO TO CONTACT FOR WHAT"),
+          React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.8, marginBottom: 8 } },
+            "Email the right office the first time. The wrong inbox costs you three days waiting on a redirect."),
+          [
+            { o: "Retirement Services Office (RSO)", w: "Retirement counseling, Retirement Planning Seminars, and SBP questions before you retire." },
+            { o: "HRC Gray Area Retirements Branch", w: "Your retired pay application at age 60, records issues, and gray-area status questions." },
+            { o: "Finance (DFAS)", w: "Retired pay problems after payments start. Not before." }
+          ].map(function(x, xi) {
+            return React.createElement("div", { key: xi, style: { marginBottom: 8, paddingLeft: 10, borderLeft: "2px solid " + C.border } },
+              React.createElement("div", { style: { fontSize: 12.5, fontWeight: 700, color: C.textPrimary } }, x.o),
+              React.createElement("div", { style: { fontSize: 12, color: C.textBody, lineHeight: 1.6 } }, x.w));
+          })),
 
         // Quick links for more tools
         React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginTop: 6, marginBottom: 8 } }, "MORE TOOLS"),
@@ -12429,7 +12457,10 @@ function App() {
     style: S.cardTitle
   }, "DD214 & SERVICE RECORD"), /*#__PURE__*/React.createElement("div", {
     style: S.bodyText
-  }, "Your DD214 is the single most important document you'll carry as a veteran. Verify every line.")), /*#__PURE__*/React.createElement("div", {
+  }, "Your DD214 is the single most important document you'll carry as a veteran. Verify every line.")), /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 14, borderColor: C.gold, marginTop: 12 } },
+    React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "RESERVE SOLDIERS: WHERE YOUR DD214 ACTUALLY COMES FROM"),
+    React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.8 } },
+      "Readiness Division Retirement Services Offices do not process, generate, or issue DD214s. Sending your DD214 request there buries their inbox and costs you days waiting on a redirect. Your DD214 is issued at your separation point when you come off active duty orders. For copies or corrections after the fact, go through HRC Soldier Records or milConnect.")), /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
   }, "CRITICAL BLOCKS TO VERIFY"), [{
     block: "Block 4a",
