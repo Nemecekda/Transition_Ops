@@ -2557,10 +2557,11 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v91";
+const APP_VERSION = "v92";
   const JOBS_LIVE = false; // flip to true the day NLx/DOL approves Jobs API access
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v92", date: "30 JUL 2026", note: "THE AI TRANSITION NAVIGATOR (BETA) IS LIVE. Tap the gold \u2726 ASK button on any tab. It knows your timeline, answers only from this app\u2019s verified content with sources you can tap, and routes you to real humans for everything else. It will never predict your rating or give financial advice \u2014 by design. Beta: tell us what to improve via FEEDBACK IS A GIFT." },
   { v: "v91", date: "29 JUL 2026", note: "Under the hood: the AI Transition Navigator pilot \u2014 grounded, cited answers from this app\u2019s verified content \u2014 is built and in private evaluation. Coming to a tab near you once it passes inspection." },
   { v: "v90", date: "25 JUL 2026", note: "Fixed: the INSTALL TO GET DEADLINE ALERTS card is back on the main dashboard where new users can see it (it had been tucked under MORE TOOLS). Installing from your home screen is what makes deadline alerts possible \u2014 15 seconds, worth it." },
   { v: "v89", date: "24 JUL 2026", note: "TAILOR YOUR RESUME TO THE JOB: paste any posting \u2014 civilian ad or USAJOBS announcement \u2014 and the drafter writes your resume AT it: their keywords where your real experience matches, honest gaps flagged in the tip. Works in both civilian and federal mode." },
@@ -4169,7 +4170,15 @@ function App() {
   const [policyPanelOpen, setPolicyPanelOpen] = useState(false);
   const [dashMoreOpen, setDashMoreOpen] = useState(false);
   const [installStripX, setInstallStripX] = useState(function() { try { return window.__safeGet("tops_install_strip_x") === "1"; } catch(e) { return false; } });
-  const NAVIGATOR_LIVE = false; // flip after 50-question eval passes
+  const NAVIGATOR_LIVE = true; // LIVE (BETA) — 50-question eval passed, zero fails in critical sections
+  const [navBeta] = useState(function() {
+    try {
+      var t = new URLSearchParams(window.location.search).get("tool");
+      if (t === "navigator") { window.__safeSet("tops_nav_beta", "1"); return true; }
+      return window.__safeGet("tops_nav_beta") === "1";
+    } catch (e) { return false; }
+  });
+  const navUnlocked = NAVIGATOR_LIVE || navBeta;
   const [navMsgs, setNavMsgs] = useState([]);
   const [navInput, setNavInput] = useState("");
   const [navBusy, setNavBusy] = useState(false);
@@ -4180,7 +4189,7 @@ function App() {
       var today = new Date().toISOString().slice(0,10);
       var o = JSON.parse(window.__safeGet("tops_nav_pilot") || "{}");
       if (o.d !== today) o = { d: today, n: 0 };
-      if (o.n >= 20) { setNavMsgs(function(m){ return m.concat([{ r: "b", t: "Pilot daily limit reached (20) \u2014 resets tomorrow. For anything urgent, FIND YOUR VSO gets you a free human today. [RESOURCES]" }]); }); return; }
+      if (o.n >= 20) { setNavMsgs(function(m){ return m.concat([{ r: "b", t: "Beta daily limit reached (20) \u2014 resets tomorrow. For anything urgent, FIND YOUR VSO gets you a free human today. [RESOURCES]" }]); }); return; }
       o.n++; window.__safeSet("tops_nav_pilot", JSON.stringify(o));
     } catch (e) {}
     setNavInput("");
@@ -5570,8 +5579,8 @@ function App() {
   })(), activeTab === "navigator" && /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "70vh" } },
     React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 6 } },
       React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 17, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "AI TRANSITION NAVIGATOR"),
-      React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 1.5, color: "#0E120B", background: C.goldBright, borderRadius: 4, padding: "2px 7px" } }, "PILOT")),
-    React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.45, marginBottom: 10 } }, "Answers only from Transition OPS verified content. Educational information \u2014 not benefits counseling, not affiliated with VA or DoD. Nothing stored. In crisis: Veterans Crisis Line 988, press 1."),
+      React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 1.5, color: "#0E120B", background: C.goldBright, borderRadius: 4, padding: "2px 7px" } }, "BETA")),
+    React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.45, marginBottom: 10 } }, "Answers only from Transition OPS verified content. Educational information \u2014 not benefits counseling, not affiliated with VA or DoD. Nothing stored. Beta: spot something off? Tap FEEDBACK IS A GIFT. In crisis: Veterans Crisis Line 988, press 1."),
     React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 } },
       navMsgs.length === 0 && React.createElement("div", { style: { ...S.card, padding: 12, borderLeft: "3px solid " + C.gold, fontSize: 13, lineHeight: 1.55, color: C.textSecondary } }, (function(){ try { var sd = window.__safeGet("tops_sep_date"); if (sd) { var dd = Math.round((new Date(sd + "T00:00:00") - new Date()) / 86400000); return "Navigator online \u2014 your timeline is loaded (" + (dd >= 0 ? "T-" + dd + " days to separation" : Math.abs(dd) + " days post-separation") + "). Ask me anything, or add context \u2014 component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook."; } } catch(e) {} return "Navigator online. Tell me where you are in your transition \u2014 time remaining, component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook. Anything beyond my data, I\u2019ll route you to a human."; })()),
       navMsgs.map(function(m, i2) {
@@ -5588,8 +5597,8 @@ function App() {
     React.createElement("div", { style: { display: "flex", gap: 8 } },
       React.createElement("input", { value: navInput, onChange: function(e){ setNavInput(e.target.value); }, onKeyDown: function(e){ if (e.key === "Enter") sendNavigator(); }, placeholder: "Ask about your transition\u2026", style: { flex: 1, background: "#1A2114", border: "1px solid #4A5A35", borderRadius: 8, color: "#F2EFE4", caretColor: "#E8C547", fontWeight: 600, padding: 12, fontSize: 16, fontFamily: "inherit", WebkitTextFillColor: "#F2EFE4", opacity: 1 } }),
       React.createElement("div", { onClick: function(){ sendNavigator(); }, style: { background: C.goldBright, color: "#0E120B", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: "pointer", opacity: navBusy ? 0.5 : 1 } }, "SEND"))),
-  NAVIGATOR_LIVE && activeTab !== "navigator" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { position: "fixed", right: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: "#0E120B", borderRadius: 22, padding: "10px 16px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
-  NAVIGATOR_LIVE && activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { ...S.card, padding: 14, borderColor: C.gold, cursor: "pointer", marginBottom: 12 } },
+  navUnlocked && activeTab !== "navigator" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { position: "fixed", right: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: "#0E120B", borderRadius: 22, padding: "10px 16px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
+  navUnlocked && activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { ...S.card, padding: 14, borderColor: C.gold, cursor: "pointer", marginBottom: 12 } },
     React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: C.goldBright, letterSpacing: 1, marginBottom: 4 } }, "\u2726 ASK THE NAVIGATOR"),
     React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "Not sure what to do next? Tell it your situation \u2014 it sequences your moves from this app\u2019s verified content and routes you to humans.")),
   activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, whatsNewOpen && React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
