@@ -28,7 +28,14 @@ const CORPUS = `VERIFIED CORPUS (from Transition OPS; verified against 38 CFR / 
 - TAP (Transition Assistance Program): mandated to begin no later than 365 days before separation. GAO found 70% of separating members do not start on the intended timeline.
 
 [GUARD/RESERVE]
-- Guard/Reserve members may have different timelines and benefit rules. State education benefits vary by state and can stack with the federal GI Bill — many Guard members never claim them. The app has a dedicated Guard/Reserve dashboard. Check your state's veteran affairs department for state-specific benefits.
+- Guard/Reserve members have different timelines and benefit rules than active component. State education benefits vary by state and can stack with the federal GI Bill — many Guard members never claim them. The app has a dedicated Guard/Reserve dashboard. Check your state's veteran affairs department for state-specific benefits.
+- MGIB-Selected Reserve (Chapter 1606) WARNING: this education benefit is tied to CURRENT Selected Reserve membership — eligibility generally ENDS when you separate from the Selected Reserve. If you have 1606 benefits and are leaving the SELRES, use-or-lose planning matters BEFORE separation. (The Post-9/11 GI Bill is different — it persists after separation.) Confirm your specific case with a VSO or the VA.
+- Post-9/11 GI Bill for RC: eligibility percentage is built from cumulative qualifying active service (Title 10 activations; certain other duty may qualify under later law). A VSO or the VA can compute your exact tier from your records.
+- TRICARE Reserve Select (TRS): available to most drilling Selected Reserve members — and it ENDS when you leave the Selected Reserve. Plan your health coverage bridge before separation. Retiring Guard/Reserve members under 60 ("gray area") may purchase TRICARE Retired Reserve; TRICARE retiree coverage begins at 60.
+- Reserve/Guard retirement ("gray area"): non-regular retirement is points-based, with retired PAY generally starting at age 60 — reducible below 60 in 90-day increments for certain qualifying active-duty service under 10 U.S.C. 12731(f). Your retirement points statement is the record that matters; review it BEFORE separation and correct errors while documentation is easy to reach.
+- BDD for demobilizing RC members: if you are on Title 10 active duty (e.g., a mobilization) with a known release date, the BDD window (180–90 days before release) can apply to you — you must be able to attend VA exams before release. Many demobilizing members never learn this. Confirm eligibility at your demob site or with a VSO.
+- TAP applies to RC: Guard/Reserve members demobilizing from 180+ continuous days of active service are required TAP participants — do not assume TAP is active-component-only.
+- IRR vs. discharge: transferring to the IRR is not the same as full discharge — SELRES-tied benefits (TRS, 1606) end with SELRES departure either way. Understand which separation you are executing before you sign; your unit S-1 and a VSO can walk the differences.
 
 [VA PAY]
 - 2026 VA disability compensation uses the 2.8% COLA effective 1 DEC 2025. Compensation is TAX-FREE.
@@ -57,6 +64,15 @@ const CORPUS = `VERIFIED CORPUS (from Transition OPS; verified against 38 CFR / 
 - Veterans with full entitlement no longer face VA loan limits (per the Blue Water Navy Act changes) — lenders still apply their own qualification standards.
 - WARNING: the VA-loan space attracts aggressive marketers and serial-refinance ("churning") pitches. Unsolicited refinance offers deserve skepticism. Compare multiple lenders; VA.gov's home loan pages are the authoritative source, and a HUD-approved housing counselor or accredited financial counselor (free via Military OneSource while eligible) can review any offer.
 - The app carries no lender relationships and recommends no lender — ever.
+
+[PROTECT YOUR BENEFITS]
+- Most "benefits fraud" cases against veterans begin as honest administrative mistakes, not schemes — intent matters legally, but investigations and debt collection can start long before intent is sorted out. Five protective habits keep honest veterans clean:
+- 1. REPORT CHANGES PROMPTLY: needs-based benefits (like VA pension) require timely reporting of changes in income, employment, marital status, and dependents. Unreported changes create overpayments — which become debts the VA collects, and waivers are barred where fraud, misrepresentation, or bad faith is found.
+- 2. BE CONSISTENT AND COMPLETE: disability claims run on self-reported symptoms and limitations. Inconsistencies between your statements, medical records, and employment history are a common trigger for fraud referrals even with no intent to deceive. Tell the same complete truth on every form and at every exam.
+- 3. TDIU AND WORK: if you receive Individual Unemployability (TDIU, paid at the 100% rate based on inability to maintain substantially gainful employment), you MUST report work activity and earnings — returning to work without reporting can trigger review and allegations. NOTE the distinction: statutory housebound (SMC-S) is based on rating combinations, not employability — different program, different rules. If you're unsure which you receive, ask your VSO before taking a job.
+- 4. USE ONLY ACCREDITED HELP: unaccredited "claims consultants" and "benefits coaches" may charge illegal fees or file unsupported claims — and YOU remain legally responsible for everything submitted in your name, even in good-faith reliance on bad advice. Accredited VSOs are free; verify accreditation through the VA OGC search in FIND YOUR VSO.
+- 5. IF A DEBT LETTER ARRIVES: do not ignore it — respond by its deadline, and get an accredited VSO involved immediately; waiver and dispute paths exist but are time-limited.
+- These rules protect you; they are not reasons to avoid claiming benefits you earned. File confidently, report honestly, use accredited help.
 
 [RESOURCES]
 - FIND YOUR VSO: the app routes to VA-accredited representatives (VA OGC accreditation search), county veteran service officers (CVSOs), and live human help lines. VSO claim help is FREE — no one should pay to file a claim.
