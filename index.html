@@ -5185,7 +5185,7 @@ function App() {
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 3 OF 3"),
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "WHAT BRINGS YOU HERE?"),
             React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, "Your military training has civilian value. Tell us what you're looking to do and we'll point you to the right tools."),
-            [{id:"career",label:"TRANSLATE MY TRAINING",desc:"Map my MOS/rating/AFSC, tech school, or military schools to civilian careers and certifications",icon:"\uD83C\uDFAF"},{id:"benefits",label:"VA BENEFITS & EDUCATION",desc:"VA disability, GI Bill, VR&E, healthcare eligibility",icon:"\uD83C\uDFE5"},{id:"newmos",label:"JUST COMPLETED NEW TRAINING",desc:"Finished AIT/tech school, retrained, or earned a new specialty \u2014 show me what it's worth",icon:"\uD83D\uDCDC"},{id:"start",label:"EXPLORE ALL TOOLS",desc:"Show me everything available",icon:"\uD83D\uDCCB"}].map(function(c) {
+            [{id:"career",label:"TRANSLATE MY TRAINING",desc:"Map my MOS/rating/AFSC, tech school, or military schools to civilian careers and certifications",icon:"\uD83C\uDFAF"},{id:"benefits",label:"VA BENEFITS & EDUCATION",desc:"VA disability, GI Bill, VR&E, healthcare eligibility",icon:"\uD83C\uDFE5"},{id:"newmos",label:"JUST COMPLETED NEW TRAINING",desc:"Finished AIT/tech school, retrained, or earned a new specialty \u2014 show me what it's worth",icon:"\uD83D\uDCDC"},{id:"start",label:"EXPLORE ALL TOOLS",desc:"Show me everything available",icon:"\uD83D\uDCCB"}].concat(onboardData.status === "guard" ? [{id:"points",label:"MY RESERVE RETIREMENT",desc:"What are my points worth? Read my points letter and plan for retired pay at 60",icon:"\u2B50"}] : []).map(function(c) {
               var isActive = onboardData.concern === c.id;
               return React.createElement("button", { key: c.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {concern: c.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : "#161B11", border: isActive ? "2px solid #4A5D23" : "1px solid #222A19", borderRadius: 12, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
                 React.createElement("span", { style: { fontSize: 24 } }, c.icon),
@@ -5202,7 +5202,7 @@ function App() {
               setUserStatus(onboardData.status);
               window.__safeSet("tops_user_branch", onboardData.branch);
               window.__safeSet("tops_user_concern", onboardData.concern);
-              var routeMap = { career: "pathway", benefits: "vapay", newmos: "pathway", start: "dashboard" };
+              var routeMap = { career: "pathway", benefits: "vapay", newmos: "pathway", start: "dashboard", points: "dashboard" };
               setActiveTab(routeMap[onboardData.concern] || "dashboard");
               setShowOnboarding(false);
               showToast("WELCOME TO TRANSITION OPS");
@@ -5233,7 +5233,7 @@ function App() {
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 4 OF 4"),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "BIGGEST CONCERN?"),
           React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, "We'll point you to the most relevant tools first."),
-          [{id:"career",label:"FINDING A CAREER",desc:"Resume, job search, SkillBridge, career mapping",icon:"\uD83C\uDFAF"},{id:"benefits",label:"VA BENEFITS & CLAIMS",desc:"Disability rating, BDD, healthcare, GI Bill",icon:"\uD83C\uDFE5"},{id:"money",label:"FINANCIAL READINESS",desc:"Pay gap, TSP, budgeting, SBP, taxes",icon:"\uD83D\uDCB0"},{id:"start",label:"JUST GETTING STARTED",desc:"Don't know where to begin \u2014 show me everything",icon:"\uD83D\uDCCB"}].map(function(c) {
+          [{id:"career",label:"FINDING A CAREER",desc:"Resume, job search, SkillBridge, career mapping",icon:"\uD83C\uDFAF"},{id:"benefits",label:"VA BENEFITS & CLAIMS",desc:"Disability rating, BDD, healthcare, GI Bill",icon:"\uD83C\uDFE5"},{id:"money",label:"FINANCIAL READINESS",desc:"Pay gap, TSP, budgeting, SBP, taxes",icon:"\uD83D\uDCB0"},{id:"start",label:"JUST GETTING STARTED",desc:"Don't know where to begin \u2014 show me everything",icon:"\uD83D\uDCCB"}].concat(onboardData.status === "guard" ? [{id:"points",label:"MY RESERVE RETIREMENT",desc:"What are my points worth? Read my points letter and plan for retired pay at 60",icon:"\u2B50"}] : []).map(function(c) {
             var isActive = onboardData.concern === c.id;
             return React.createElement("button", { key: c.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {concern: c.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : "#161B11", border: isActive ? "2px solid #4A5D23" : "1px solid #222A19", borderRadius: 12, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
               React.createElement("span", { style: { fontSize: 24 } }, c.icon),
@@ -5257,7 +5257,7 @@ function App() {
             }
             window.__safeSet("tops_user_concern", onboardData.concern);
             // Route based on concern
-            var routeMap = { career: "pathway", benefits: "vapay", money: "reminders", start: "dashboard" };
+            var routeMap = { career: "pathway", benefits: "vapay", money: "reminders", start: "dashboard", points: "dashboard" };
             setActiveTab(routeMap[onboardData.concern] || "dashboard");
             setShowOnboarding(false);
             showToast("WELCOME TO TRANSITION OPS");
