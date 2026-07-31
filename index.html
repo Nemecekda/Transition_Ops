@@ -5858,6 +5858,23 @@ function App() {
           })),
 
         React.createElement("div", { style: { ...S.card, padding: 14, marginTop: 12 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "READ YOUR POINTS LETTER"),
+          React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.75, marginBottom: 6 } },
+            "Your annual retirement points statement is the single document your entire Reserve retirement stands on. Army Guard: NGB Form 23B. Army Reserve: DA Form 5016, pulled through HRC's My Record Portal. Here is how to read it and what to do with it."),
+          ["YOUR YEAR IS NOT THE CALENDAR YEAR. Points count within your Retirement Year, which runs from your personal anniversary date (RYE). Every line on the statement is bucketed by that year.",
+           "A GOOD YEAR = 50+ POINTS. You need 20 qualifying years for a Reserve retirement. A year with 49 points is not a rounding error; it is a year that does not count. Check every year claimed as qualifying.",
+           "WHERE POINTS COME FROM: 15 membership points just for being in that year. 1 point per drill period (a typical MUTA-4 weekend = 4). 1 point per day of AT, ADT, or mobilization. Correspondence and distributed learning courses add more. Inactive-duty points are capped per year (130 for years since 2008; older years had lower caps).",
+           "360 POINTS = ONE YEAR OF PAY. Retired pay math converts total career points to equivalent years: points divided by 360. Every point is literally money at age 60.",
+           "AUDIT FOR THE USUAL MISSES: AT days that never posted, schools and DL courses missing, mobilization time not credited (Title 10 days are big: points now AND possible early retired pay later), and years marked non-qualifying that were actually good. Fix errors NOW, while orders and certificates are easy to find. Ten years from now they are archaeology.",
+           "THE 20-YEAR LETTER STARTS A CLOCK. When you hit 20 qualifying years you receive your Notification of Eligibility. It opens a 90-day window for the Reserve Component Survivor Benefit Plan election, one of the most consequential family decisions of your career. Do not let those 90 days pass unexamined; sit with your RSO inside the window.",
+           "PLANNING MATH YOU CAN DO TONIGHT: total points / 360 = equivalent years. Multiply by 2.5% (High-36) or 2.0% (BRS), then by the retired pay base for your grade. That is your rough monthly figure at 60, before survivor benefit and tax decisions. One more 60-point year moves that number for the rest of your life."
+          ].map(function(t, ti) {
+            return React.createElement("div", { key: ti, style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.7, marginTop: 7, paddingLeft: 10, borderLeft: "2px solid " + C.border } }, t);
+          }),
+          React.createElement("div", { style: { fontSize: 12.5, color: C.textPrimary, lineHeight: 1.7, marginTop: 9, fontWeight: 600 } },
+            "Make it a ritual: every year when the statement drops, read it line by line against your own records. Fifteen minutes a year protects a pension.")),
+
+        React.createElement("div", { style: { ...S.card, padding: 14, marginTop: 12 } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "RESERVE CLOCKS THAT DO NOT FOLLOW YOU"),
           React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.75, marginBottom: 6 } },
             "Some benefits are tied to Selected Reserve membership and end the day you leave it. Know which is which before you sign."),
