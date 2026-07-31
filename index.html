@@ -2557,10 +2557,11 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v93";
+const APP_VERSION = "v94";
   const JOBS_LIVE = false; // flip to true the day NLx/DOL approves Jobs API access
 const DATA_VERIFIED = "9 JUL 2026";
 const WHATS_NEW = [
+  { v: "v94", date: "31 JUL 2026", note: "THE GUARD PACKAGE. Two Careers, One Plan: COOL-funded certifications, your clearance as a career asset, the AGR/TPU/mil-tech decision tree, PME as civilian credentials, and the employer conversation scripts. Plus pre-mob and demob checklists, including TAMP: the 180 days of premium-free TRICARE most demobilizing members never hear about. Built by a Guard retiree who wishes someone had told him." },
   { v: "v93", date: "31 JUL 2026", note: "Notification taps now land you exactly where they point (yes, even on iPhone). New on VA PAY: the VA Home Loan basics (including the funding fee exemption most veterans never learn) and Protect Your Benefits, five habits that keep honest veterans out of trouble. Guard/Reserve: the clocks that end at your last drill, spelled out. And if the resource list ever feels like a lot, the Navigator now offers to just point you." },
   { v: "v92", date: "30 JUL 2026", note: "THE AI TRANSITION NAVIGATOR (BETA) IS LIVE. Tap the gold \u2726 ASK button on any tab. It knows your timeline, answers only from this app\u2019s verified content with sources you can tap, and routes you to real humans for everything else. It will never predict your rating or give financial advice \u2014 by design. Beta: tell us what to improve via FEEDBACK IS A GIFT." },
   { v: "v91", date: "29 JUL 2026", note: "Under the hood: the AI Transition Navigator pilot \u2014 grounded, cited answers from this app\u2019s verified content \u2014 is built and in private evaluation. Coming to a tab near you once it passes inspection." },
@@ -5829,6 +5830,90 @@ function App() {
             "If you have a VA disability rating (even from one deployment or a Line of Duty determination), use the VA Math and VA Pay tools to verify you're receiving correct compensation. Many Guard/Reserve members are under-rated or never file."
           )
         ),
+
+        React.createElement("div", { style: { marginTop: 18, marginBottom: 2 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 3, color: C.goldBright } }, "TWO CAREERS, ONE PLAN"),
+          React.createElement("div", { style: { fontSize: 12, color: C.inactive, lineHeight: 1.5, marginTop: 2 } }, "The leverage moments nobody names. Run both careers on purpose.")),
+
+        React.createElement("div", { style: { ...S.card, padding: 14, marginTop: 12 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "COOL: CERTS ON MILITARY MONEY"),
+          React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.75, marginBottom: 6 } }, "DoD Credentialing Opportunities On-Line funds civilian certification exams for Guard and Reserve members. Certs earned through COOL transfer straight to your civilian resume. Most members never touch it."),
+          ["Find your service portal (Army COOL for ARNG and USAR) and search credentials mapped to your MOS",
+           "Funding rules and caps change; check current eligibility in the portal before scheduling an exam",
+           "Stack it: a COOL-funded cert plus your military experience is a civilian pay raise you did not pay for"
+          ].map(function(t, ti) {
+            return React.createElement("div", { key: ti, style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.7, marginTop: 7, paddingLeft: 10, borderLeft: "2px solid " + C.border } }, t);
+          }),
+          React.createElement("div", { style: { fontSize: 12.5, color: C.textPrimary, lineHeight: 1.7, marginTop: 9, fontWeight: 600 } }, "One drill-year habit: pick one credential a year and let the military fund it.")),
+
+        React.createElement("div", { style: { ...S.card, padding: 14, marginTop: 12 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "YOUR CLEARANCE IS AN ASSET"),
+          ["Cleared roles command a real pay premium in defense, IT, and federal contracting",
+           "After leaving a cleared billet, employers can typically sponsor and re-use your eligibility for up to about two years; after that, expect reinvestigation",
+           "Job hunting? Do it while the clearance is warm, not after it lapses",
+           "Resume line: clearance level and investigation type only. Never operational details, ever"
+          ].map(function(t, ti) {
+            return React.createElement("div", { key: ti, style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.7, marginTop: 7, paddingLeft: 10, borderLeft: "2px solid " + C.border } }, t);
+          })),
+
+        React.createElement("div", { style: { ...S.card, padding: 14, marginTop: 12 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "THE STATUS DECISION TREE"),
+          React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.75, marginBottom: 6 } }, "TPU, AGR, mil-tech, IMA: each status changes your pay, TRICARE, points velocity, and retirement math. Members make this move blind. Do not."),
+          ["Traditional/TPU: civilian career primary, drill pay, points accrue slowly, TRS for health coverage",
+           "AGR: full-time military pay and benefits, active-duty style TRICARE, and an active-duty style retirement path at 20 years of active federal service",
+           "Military Technician: dual-status federal civilian pay plus Guard membership; federal civilian retirement (FERS) runs alongside your military points",
+           "IMA (Army Reserve): individual augmentee to active units with flexible drill scheduling",
+           "Before ANY status move: sit with your career counselor and run the retirement math both ways. The differences compound for decades"
+          ].map(function(t, ti) {
+            return React.createElement("div", { key: ti, style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.7, marginTop: 7, paddingLeft: 10, borderLeft: "2px solid " + C.border } }, t);
+          })),
+
+        React.createElement("div", { style: { ...S.card, padding: 14, marginTop: 12 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "PME PAYS TWICE"),
+          React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.75, marginBottom: 6 } }, "Your military education is a civilian leadership credential. Write it like one."),
+          ["BLC: frontline supervisor development, team leadership, counseling and performance management",
+           "ALC/SLC: operations management, multi-team leadership, resource planning",
+           "OCS/CCC/ILE: executive education, strategic planning, organizational leadership",
+           "The Resume Drafter (CAREER tab) knows how to translate these; paste your record and let it work"
+          ].map(function(t, ti) {
+            return React.createElement("div", { key: ti, style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.7, marginTop: 7, paddingLeft: 10, borderLeft: "2px solid " + C.border } }, t);
+          })),
+
+        React.createElement("div", { style: { ...S.card, padding: 14, marginTop: 12 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "THE EMPLOYER CONVERSATION"),
+          React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.75, marginBottom: 6 } }, "Your civilian boss is a stakeholder in your military career. Manage the relationship like one."),
+          ["Hand over the annual drill calendar as soon as you have it; no surprises is the whole game",
+           "AT and school dates: earliest possible notice, in writing",
+           "USERRA does not require you to burn vacation for military duty; know your rights, use them politely",
+           "Employer being difficult? ESGR (esgr.mil) mediates for free before anything escalates",
+           "Employer being great? Nominate them for an ESGR Patriot Award. Five minutes, and it buys years of goodwill"
+          ].map(function(t, ti) {
+            return React.createElement("div", { key: ti, style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.7, marginTop: 7, paddingLeft: 10, borderLeft: "2px solid " + C.border } }, t);
+          })),
+
+        React.createElement("div", { style: { ...S.card, padding: 14, marginTop: 12 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "PRE-MOBILIZATION CHECKLIST"),
+          React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.75, marginBottom: 6 } }, "Orders in hand? Work this list before you report."),
+          ["SCRA kicks in on activation: request the 6% interest cap on debts you held BEFORE service or activation (send the request with orders attached), and know your lease termination rights for longer activations",
+           "Family: care plan current, DEERS updated, POA executed, SGLI beneficiaries reviewed",
+           "TRICARE: on 30+ day orders you and your family move to active-duty coverage; confirm enrollment before you leave",
+           "Employer: written USERRA notice, dates, point of contact while you are gone",
+           "Finances: automate the bills, brief whoever holds the POA"
+          ].map(function(t, ti) {
+            return React.createElement("div", { key: ti, style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.7, marginTop: 7, paddingLeft: 10, borderLeft: "2px solid " + C.border } }, t);
+          })),
+
+        React.createElement("div", { style: { ...S.card, padding: 14, marginTop: 12 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "DEMOBILIZATION: DO NOT WALK PAST THESE"),
+          React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.75, marginBottom: 6 } }, "The demob line moves fast. These are the items members lose by rushing."),
+          ["TAMP: after a 30+ consecutive day contingency activation you get 180 DAYS of premium-free TRICARE. Most demobilizing members have never heard of it. Confirm it at demob",
+           "BDD: coming off Title 10 with a known release date can put you in the VA claim window (180 to 90 days before release). Ask at the demob site",
+           "Health assessments: complete the PDHA at demob and the PDHRA in the 90 to 180 day window after; document EVERYTHING while it is fresh",
+           "Points and early retirement: confirm your mobilization days post to your points statement, and log qualifying active service now; it can pull your retired pay start earlier in 90-day increments",
+           "Yellow Ribbon events: they exist for you and your family; go to at least one"
+          ].map(function(t, ti) {
+            return React.createElement("div", { key: ti, style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.7, marginTop: 7, paddingLeft: 10, borderLeft: "2px solid " + C.border } }, t);
+          })),
 
         React.createElement("div", { style: { ...S.card, padding: 14, marginTop: 12 } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "GRAY-AREA RETIREMENT RESOURCES"),

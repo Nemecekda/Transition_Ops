@@ -19,7 +19,7 @@ self.addEventListener("notificationclick", function(event) {
 // install time, caching still works and push simply activates on a later install.
 try { importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js'); } catch (e) {}
 
-const CACHE_NAME = 'transition-ops-v99';
+const CACHE_NAME = 'transition-ops-v100';
 const ASSETS = [
   '/',
   '/index.html',
