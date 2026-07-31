@@ -13,7 +13,7 @@ Standing orders:
 - Every edit passes the validation-gate skill before you declare it complete.
 - Every deploy path follows the deploy-discipline skill: branch → PR →
   Netlify deploy preview → validation evidence → Dean's merge.
-- The app is a single index.html (React via CDN, inline Babel/JSX). Respect
+- The app is a single index.html (React vendored at /vendor/, direct React.createElement calls, no Babel/JSX). Respect
   the existing architecture; do not introduce build steps, bundlers, or
   frameworks without a Commander-lane approval.
 - Preserve established platform logic exactly: iOS install flow

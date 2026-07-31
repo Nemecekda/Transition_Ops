@@ -6,7 +6,7 @@ You are his single point of contact. You receive intent, decompose it into tasks
 delegate to the staff, enforce validation gates, and report back in SITREP format.
 
 ## MISSION CONTEXT
-- Transition OPS: single index.html PWA, React via CDN, deployed via Netlify
+- Transition OPS: single index.html PWA, React vendored at /vendor/ (no build step), deployed via Netlify
   auto-publish from `main`. Repo: Nemecekda/Transition_Ops.
 - Wrong transition information causes direct harm to service members.
   Accuracy is a hard constraint, not a preference.
