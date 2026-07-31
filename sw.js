@@ -1,9 +1,25 @@
+// Notification tap intent recorder: iOS cold launch drops URL params, so the
+// tap's target tool is parked in a cache the app reads on boot.
+self.addEventListener("notificationclick", function(event) {
+  try {
+    var blob = "";
+    try { blob = JSON.stringify((event.notification && event.notification.data) || {}); } catch (e) {}
+    blob += " " + ((event.notification && event.notification.tag) || "");
+    var m = /tool=([a-z]+)/.exec(blob);
+    if (m) {
+      event.waitUntil(caches.open("tops-intent").then(function(c) {
+        return c.put("/intent", new Response(JSON.stringify({ tool: m[1], ts: Date.now() }), { headers: { "Content-Type": "application/json" } }));
+      }));
+    }
+  } catch (e) {}
+});
+
 // OneSignal push worker merged in (v71) — one worker owns the scope so offline
 // caching and push notifications coexist. Guarded: if the CDN is unreachable at
 // install time, caching still works and push simply activates on a later install.
 try { importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js'); } catch (e) {}
 
-const CACHE_NAME = 'transition-ops-v97';
+const CACHE_NAME = 'transition-ops-v98';
 const ASSETS = [
   '/',
   '/index.html',
@@ -25,7 +41,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
-      keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+      keys.filter(k => k !== CACHE_NAME && k !== "tops-intent").map(k => caches.delete(k))
     )).then(() => self.clients.claim())
   );
 });
