@@ -1296,7 +1296,7 @@ recorded in the Result column — not an assertion that it was checked.
 |---|---------|--------|-------|-------------------|
 | V-1 | No (urgent anyway) | OPEN | Dean | Netlify dashboard unread. Off the critical path per R1; still a live exposure |
 | V-2 | **YES** | OPEN | s3-devops | Pricing + model IDs unsourced; needs fetch approval. Evaluate against **$60**, not $100 |
-| V-3 | **YES** | OPEN | Dean | Console hard limit not yet confirmed set |
+| V-3 | **YES** | **CLOSED 2 AUG 2026** | Dean | Verified by Dean directly on the Console billing page. Monthly spend limit **$200,000 default → $100**. Auto reload **OFF**, retained deliberately as a second circuit breaker. Balance **$19.52 prepaid**, card on file. Email notification at **$45** (75% of the $60 operating target). See §8.2 |
 | V-4 | No | OPEN | Dean | GitHub notification email destination unknown |
 | V-5 | No | OPEN | Dean | Twilio + mail vendor costs, separate from the $60 |
 | V-6 | **YES** | OPEN | s3-devops | Action commit SHAs unpinned |
@@ -1309,7 +1309,80 @@ recorded in the Result column — not an assertion that it was checked.
 | **V-13** | **YES** | **OPEN** | **Dean** | **NEW, per R1b.** Where W8 lands now that v1.3 is declined. Script-injection path to the runner's API key stays open until it does |
 | **V-14** | **YES** | **OPEN** | **Dean** | **NEW, per R4.** F3 FLASH thresholds still reference the retired $100 ceiling and a $15/day figure |
 
-**Standup-gating open count: 7 of 7.** No workflow file may be authored today.
+**Standup-gating open count: 6 of 7.** V-3 CLOSED. No workflow file may be
+authored until the remaining six read CLOSED.
+
+### 8.2 BUDGET INSTRUMENTATION — as verified 2 AUG 2026
+
+Recorded from Dean's direct Console review (V-3 evidence).
+
+| Control | Value | Type |
+|---|---|---|
+| Operating target (R4) | **$60/mo** | Doctrine — this design's budget |
+| Console email notification | **$45** (75% of target) | Advisory, vendor-sent |
+| Console monthly spend limit | **$100** | Hard stop, vendor-enforced |
+| Auto reload | **OFF** | Second circuit breaker, deliberate |
+| Prepaid balance | **$19.52**, card on file | See the finding below |
+
+**The Console limit is not the budget.** $100 is a catastrophe stop sitting 67%
+above the $60 operating target. Nobody reading this later should treat $100 as
+the spend allowance — R4 governs, and the gap between them is deliberate
+headroom, not permission.
+
+**FINDING B-1 — the effective ceiling today is $19.52, not $100.**
+With auto reload OFF, the binding constraint is the prepaid balance, not the
+spend limit. The $100 limit cannot bind before the balance is exhausted, because
+the balance is a fifth of it. Against §4's estimated monthly run rate, $19.52 is
+plausibly under one month of operation.
+
+That is not an argument for turning auto reload on — keeping it off is a sound
+second breaker and Dean retained it deliberately. It is an argument for naming
+the consequence: **balance exhaustion stops every model job.** J1 fails, J2
+never fires, J4 and J5 stop. The monitoring system dies quietly at exactly the
+moment nobody is watching it.
+
+Two things already in the design blunt this, and one gap remains:
+- **Already covered:** J1's `if: failure()` step opens a FLASH issue through
+  `GITHUB_TOKEN`, which has no dependency on Anthropic credit. The failure path
+  survives an exhausted balance.
+- **Already covered, by accident worth keeping:** J3 (weekly SITREP) was made
+  **model-free** in §1 because paying a model to concatenate a list is waste.
+  That decision means the dead-man's switch in §5.3 keeps firing even with zero
+  Anthropic balance. Do not "improve" J3 by adding a model to it.
+- **GAP:** nothing monitors the balance itself. Spend-based criterion F3 measures
+  consumption against a ceiling; it does not detect a low float. A run could sit
+  at 20% of target and still fail tomorrow on an empty balance.
+
+**Proposed, NOT self-applied** — a balance floor belongs in J5 and, if it is to
+wake Dean, as a FLASH criterion. R3 makes FLASH criteria a fixed checklist and
+COMMANDER lane, so this folds into the **V-14** ruling rather than being written
+in. Candidate: *F6 — CREDIT FLOOR. Prepaid balance below one month of estimated
+run rate, or below $10, whichever is higher.*
+
+**Derived spend ladder, for the V-14 ruling.** Dean's $45 notification is 75% of
+$60 and matches §D.1's existing "75% stays ROUTINE" line exactly. Restating F3
+on the $60 basis therefore produces a coherent three-tier ladder with no
+invention required:
+
+| Trigger | Value | Severity | Enforced by |
+|---|---|---|---|
+| 75% of target | $45 | ROUTINE — weekly SITREP | Console email + J5 |
+| 90% of target | $54 | **FLASH** — SMS | J5 |
+| Hard stop | $100 | Spend halts | Anthropic Console |
+| Credit floor | proposed F6 | **FLASH** — SMS | J5 |
+
+Still Dean's ruling under R3. Recorded here so V-14 is a yes/no, not a redesign.
+
+### 8.3 API KEY — DEFERRED DELIBERATELY
+
+The account is funded and live. **API key generation is deliberately deferred to
+the workflow-standup step** (Dean, 2 AUG 2026). Correct sequencing: a key that
+exists before anything can use it is only an exposure window.
+
+Nothing currently blocked by this. V-2, V-6 and V-7 are reconnaissance items
+needing no key. The key is required only for the first live run, at which point
+it goes directly into GitHub repository secrets as `ANTHROPIC_API_KEY` — pasted
+by Dean into GitHub, never into a chat, a file, or a commit.
 
 ---
 
