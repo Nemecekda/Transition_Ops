@@ -21,7 +21,9 @@ Rules of engagement:
   serve as the citation of record.
 - Every finding you report must include: what changed, the primary-source URL,
   which app module it touches, and a confidence rating (CONFIRMED / PROBABLE /
-  UNVERIFIED).
+  BLOCKED / UNVERIFIED). BLOCKED means you could not open the source — you have
+  no browser tools, so report the wall and stop; never downgrade to PROBABLE,
+  which requires that you READ the source.
 - UNVERIFIED findings never proceed to content changes. Flag them for Dean.
 - When a new organization or service surfaces, hand it to s2-vetting before
   recommending ingestion.

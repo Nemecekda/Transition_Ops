@@ -9,9 +9,9 @@ written) · DEPRECATED (superseded — note by what)
 
 | # | Skill | Owner | Status | Version | Validated | Location |
 |---|-------|-------|--------|---------|-----------|----------|
-| 1 | validation-gate | s3-devops | CODIFIED | 1.1 | 2026-07-31 | .claude/skills/validation-gate/ |
+| 1 | validation-gate | s3-devops | CODIFIED | 1.2 | 2026-08-02 | .claude/skills/validation-gate/ |
 | 2 | deploy-discipline | s3-devops | CODIFIED | 1.2 | 2026-08-02 | .claude/skills/deploy-discipline/ |
-| 3 | policy-verification | s2-intel | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/policy-verification/ |
+| 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
 | 6 | resume-drafter-maintenance | force-mod | PENDING | — | — | prompt QA + integrity rules for the in-app Resume Drafter |
@@ -110,3 +110,61 @@ written) · DEPRECATED (superseded — note by what)
   Validation: the Commander accepted this doctrine as validated by his own
   review on 2026-08-02. No force-mod regression cases were written or run, by
   his explicit decision. The prior blocking follow-up on steps 5 and 6 is CLOSED.
+- 2026-08-02 - policy-verification 1.0 -> 1.1. Walled-source doctrine. The skill
+  assumed primary sources are reachable; in practice congress.gov, DFAS.mil,
+  eCFR.gov, dcsa.mil, esd.whs.mil, veterans.house.gov and ftb.ca.gov return 403
+  or bot-walls, and findings were sitting at PROBABLE for ACCESS reasons rather
+  than EVIDENCE reasons. (a) Adds WALLED SOURCES: separates access failure from
+  evidence failure and introduces a fourth rating, BLOCKED (source not read),
+  with a required record of host, status, highest tier attempted, and date.
+  BLOCKED does not ship and is not a resting state. (b) Adds ESCALATION LADDER:
+  tier 1 WebFetch, tier 2 orchestrator-only Chrome browser
+  (mcp__claude-in-chrome__navigate then get_page_text, proven 2026-08-02 against
+  a congress.gov Cloudflare interstitial and veterans.house.gov), tier 3 human
+  verification by Dean as a FULL citation of record with a mandatory auditable
+  record format, tier 4 only then rate below CONFIRMED. CAPTCHA solving or
+  bypass is PROHIBITED and a challenge demanding human interaction ends tier 2.
+  Encodes the SUBAGENT LIMIT: s2-intel/s2-scanner/s2-vetting have no browser
+  tools, so an analyst reports the wall and stops while the orchestrator runs
+  tier 2 and hands page text down. (c) Adds the AMENDED-BILL RULE: an
+  introduced-version summary is not evidence about a bill that passed as
+  amended; "as amended" in the actions or a title change between versions voids
+  it and the engrossed text settles content. Driver is a live production error -
+  the app claimed H.R. 980 provided "monthly VA outreach" reasoned off the
+  introduced-version CRS summary, while the engrossed text SEC. 4(a) is a
+  contact-information requirement with no cadence anywhere in the bill.
+  Distinguishes standalone CRS products (admissible; IF10260 carried the 3.8%
+  pay raise) from version-scoped CRS bill summaries.
+  Drafted by force-mod. Regression spec P1-P6 specified, NOT executed.
+  Lane: COMMANDER (benefits/policy content). Owner s2-intel.
+  (d) Charter patch, same branch: `.claude/agents/s2-intel.md` enumerated exactly
+  CONFIRMED / PROBABLE / UNVERIFIED, which left the new BLOCKED rating
+  unreachable by the agent that owns this skill. Its rating enumeration now
+  carries BLOCKED, with the no-browser-tools constraint and an explicit bar on
+  downgrading a wall to PROBABLE. Flagged by force-mod during the draft,
+  authorized by the Commander 2026-08-02, applied here. Prior blocking
+  follow-up CLOSED.
+- 2026-08-02 - validation-gate 1.1 -> 1.2. No-unreviewed-bulk-scripts doctrine,
+  standing Commander feedback from 2026-07-31 now codified. force-mod placed it
+  here over a deploy-discipline addendum: the rule governs the interval between
+  an edit being approved and an edit being proven, which is this skill's whole
+  subject; three of its four requirements extend checks the skill already owns;
+  and EDIT MODE fires on ANY code change by ANY agent, including work reverted
+  before handoff - which is exactly when unreviewed scripts do their damage.
+  Adds EDIT APPLICATION (EDIT MODE, before step 1): (A) discrete edits with old
+  and new shown - "applied 6 changes" is not a report; (B) a grep -c count after
+  EVERY edit, expected vs actual, expectation derived from the file and never
+  defaulted to 1 because the POLICY INTEL panel renders twice byte-identically;
+  (C) an itemized hunk-by-hunk diff before the commit is written; (D) user-facing
+  wording requires Dean's personal approval however mechanical the edit looks -
+  COMMANDER lane, mechanical is not the same as minor. Adds the subsection
+  "Scripts are reviewed, not banned": byte-level scripts are sometimes the only
+  correct tool because index.html stores six-character escape TEXT that editors
+  silently renormalize, but a script is permitted only when DISPLAYED BEFORE
+  EXECUTION with every operation commented to its approved edit number, and the
+  prescribed shape asserts the expected occurrence count - an unasserted bulk
+  replace is an unreviewed script under another name.
+  Drafted by force-mod, which reproduced the exact escape-normalization failure
+  inside the doctrine while writing it and corrected on read-back.
+  Regression spec 1-6 specified, NOT executed.
+  Lane: COMMANDER (hard gate + user-facing wording approval). Owner s3-devops.

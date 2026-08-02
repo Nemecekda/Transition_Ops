@@ -1,6 +1,6 @@
 ---
 name: validation-gate
-description: Validation battle drill for Transition OPS. EDIT mode runs pre-commit on any code change and before any PR. INTEGRITY mode runs against a clean tree for structural and encoding audits. Owner - s3-devops.
+description: Validation battle drill for Transition OPS. EDIT mode runs pre-commit on any code change and before any PR, and governs how edits are applied - discrete edits, per-edit counts, reviewed scripts. INTEGRITY mode runs against a clean tree for structural and encoding audits. Owner - s3-devops.
 ---
 # VALIDATION GATE - BATTLE DRILL
 
@@ -21,6 +21,46 @@ substitute check that this skill does not prescribe.
 Extraction artifacts (script blocks pulled out for parsing) go to a scratchpad
 directory. Never write them into the repo tree - that dirties the tree and
 breaks mode select.
+
+## EDIT APPLICATION (EDIT MODE, before step 1)
+The gate proves the result. This proves the method. Both are required, and a
+result that cannot say how it was produced is not evidence.
+
+A. **Discrete edits.** Apply and report one change at a time, old text and new
+   text shown. "Applied 6 changes" is not a report; six shown edits is.
+B. **Count after EVERY edit, not once at the end.** `grep -c` the new string and
+   the old string, expected vs actual, before starting the next edit:
+   `new expect 2 / actual 2 - old expect 0 / actual 0`. A mismatch stops the run
+   there. Derive the expectation from the file, never default to 1: the POLICY
+   INTEL panel renders twice byte-identically, so edits inside it correctly
+   match twice.
+C. **Itemized diff before the commit is written.** Show `git diff` hunk by hunk.
+   The operator sees what is actually going in, not a summary of it.
+D. **User-facing wording is Dean's call.** Text a service member reads - benefits,
+   figures, labels, headings, button copy - gets his personal approval before it
+   is applied, however mechanical the edit looks. COMMANDER lane. Mechanical is
+   not the same as minor.
+
+### Scripts are reviewed, not banned
+A byte-level script is sometimes the only correct tool. index.html stores some
+characters as six-character escape TEXT - backslash u 2014, backslash u 2022 -
+not as the glyphs. Editors that normalize escapes rewrite the pattern and break
+the match silently, so python3 over raw bytes is the right instrument. This
+paragraph itself cannot spell those escapes literally without a tool renormalizing
+them, which is the whole problem in one line.
+
+Permitted only when the full script is DISPLAYED BEFORE EXECUTION with every
+operation commented with the approved edit number it implements. An unshown
+script, or an operation mapping to no approved edit, is prohibited. Prescribed
+shape - assert the count, never trust a silent replace:
+
+    # EDIT 3: <approved edit>
+    n = src.count(OLD); print("before", n); assert n == 2
+    src = src.replace(OLD, NEW); print("after", src.count(NEW))
+
+The assert is the point: without it a normalized escape yields a zero-match
+no-op that reports success. An unasserted bulk replace is an unreviewed script
+under another name.
 
 ## EDIT MODE
 1. **Presence check.** For every insertion, grep for a unique string from the
