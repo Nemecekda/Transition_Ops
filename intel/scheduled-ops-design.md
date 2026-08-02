@@ -163,9 +163,10 @@ is empty — see §3.
 
 ## 2. HEADLESS INVOCATION
 
-Proposed shape, quoted not created. `PLACEHOLDER-ACTION-SHA` and
-`PLACEHOLDER-CLI-VERSION` are V-items — pinning to a floating tag makes a
-scheduled job non-reproducible and silently mutable by a third party.
+Proposed shape, quoted not created. Action SHAs and the CLI version are **pinned
+as of 2 AUG 2026** (V-6, V-7 CLOSED) — pinning to a floating tag would make a
+scheduled job non-reproducible and silently mutable by a third party. The one
+remaining placeholder in this block is `retention-days` (V-8, plan-dependent).
 
 ```yaml
 # PROPOSED ONLY — .github/workflows/j1-federal-scan.yml
@@ -191,12 +192,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20       # hard stop; an unbounded agent loop is a spend event
     steps:
-      - uses: actions/checkout@PLACEHOLDER-ACTION-SHA   # V-6: pin to full SHA
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false                    # do not leave a token in .git/config
 
       - name: Install Claude Code
-        run: npm install -g @anthropic-ai/claude-code@PLACEHOLDER-CLI-VERSION  # V-7
+        run: npm install -g @anthropic-ai/claude-code@2.1.220
 
       - name: Assert model tier                         # see section 3
         run: |
@@ -211,12 +212,12 @@ jobs:
         run: |
           claude -p "$(cat .claude/prompts/j1-federal-scan.txt)" \
             --model "$MODEL" \
-            --max-turns 30 \
+            --max-budget-usd 0.50 \
             --output-format json > scan-result.json
 
       - name: Upload evidence
         if: always()
-        uses: actions/upload-artifact@PLACEHOLDER-ACTION-SHA
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: j1-evidence-${{ github.run_id }}
           path: |
@@ -226,10 +227,25 @@ jobs:
 
       - name: Report failure loudly        # a silent cron failure is the classic defect
         if: failure()
-        run: gh issue create --label FLASH --title "J1 FAILED $(date -u +%F)" --body "Run ${{ github.run_id }} failed."
+        run: gh issue create --label FLASH --title "J1 FAILED $(date -u +%F)" --body "Run ${RUN_ID} failed."
         env:
           GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}     # env indirection, not run: interpolation — see V-13
 ```
+
+**Two corrections to this block, both found after the first draft:**
+
+- **`--max-turns` does not exist** on CLI 2.1.220 (V-7). The draft invented it.
+  The real per-run cost control is **`--max-budget-usd`** — "Maximum dollar
+  amount to spend on API calls (only works with `--print`)" — which is a hard
+  dollar cap on the exact headless path this design uses. Strictly better than
+  a turn count: it bounds the thing being budgeted.
+- **The failure step originally interpolated `${{ github.run_id }}` directly
+  inside `run:`** — the precise pattern V-13's proposed rule prohibits. Rewritten
+  to `env:` indirection. `github.run_id` is not attacker-controlled, so this was
+  not exploitable, but it is the shape that becomes an injection the moment
+  someone substitutes fetched content. Caught by force-mod against this
+  document's own draft.
 
 **Three properties worth naming.**
 1. `contents: read` is the whole safety argument. The job cannot write a ref
@@ -325,14 +341,35 @@ table.
 - J6: dormant. **Zero until ship 1.** Its steady-state cost is unestimated
   because the record count and re-verification interval are undecided — V-10.
 
-| Job | Model | Monthly input | Monthly output | $/M in | $/M out | Monthly cost |
-|-----|-------|---------------|----------------|--------|---------|--------------|
-| J1 | Haiku 4.5 | ~990k | ~90k | PLACEHOLDER V-2 | PLACEHOLDER V-2 | PLACEHOLDER |
-| J2 | Sonnet 5 | ~240k | ~32k | PLACEHOLDER V-2 | PLACEHOLDER V-2 | PLACEHOLDER |
-| J4 | Haiku 4.5 | ~40k | ~5k | PLACEHOLDER V-2 | PLACEHOLDER V-2 | PLACEHOLDER |
-| J5 | Haiku 4.5 | ~5k | ~1k | PLACEHOLDER V-2 | PLACEHOLDER V-2 | PLACEHOLDER |
-| J6 | Sonnet 5 | dormant | dormant | — | — | $0 until ship 1 |
-| **Total** | | **~1.28M** | **~128k** | | | **PLACEHOLDER vs $75–100 ceiling** |
+**Prices sourced 2 AUG 2026** (V-2 CLOSED), platform.claude.com models overview:
+Haiku 4.5 **$1 / $5** per MTok; Sonnet 5 **$3 / $15**, with **introductory
+$2 / $10 through 31 AUG 2026**. Both columns are shown because the intro rate
+expires four weeks from now.
+
+| Job | Model | Monthly in | Monthly out | Cost @ intro | Cost @ standard |
+|-----|-------|-----------|-------------|--------------|-----------------|
+| J1 | Haiku 4.5 | ~990k | ~90k | $1.44 | $1.44 |
+| J2 | Sonnet 5 | ~240k | ~32k | $0.80 | $1.20 |
+| J4 | Haiku 4.5 | ~40k | ~5k | $0.07 | $0.07 |
+| J5 | Haiku 4.5 | ~5k | ~1k | $0.01 | $0.01 |
+| J6 | Sonnet 5 | dormant | dormant | $0 | $0 |
+| **Total** | | **~1.28M** | **~128k** | **~$2.32** | **~$2.72** |
+
+**Against the $60 target that is roughly 4%.** Two honest caveats before anyone
+banks that number:
+
+1. **It models only the token volumes estimated above.** A Claude Code agent run
+   re-sends its system prompt and tool schemas every turn, which this table does
+   **not** model. Prompt caching offsets much of that, but the real figure will
+   be higher — treat ~$2.32 as a floor, not a forecast. Even at **10×** the
+   estimate the design lands near $27/month, still inside $60.
+2. **Sonnet's rate rises 50% on 1 SEP 2026** when the intro pricing lapses. That
+   only moves the total by ~$0.40 here because J2 is gated and small, but the
+   same lapse hits any future Sonnet-heavy job — J6 in particular. Re-run this
+   table when J6 activates.
+
+The binding constraint is therefore **not** the $60 target. It is the prepaid
+balance — see the corrected B-1 in §8.2.
 
 **What drives variance, in order:** (1) whether J2's gate actually holds — an
 un-damped churning source converts J2 from 4 runs to 30; (2) page size, since
@@ -1088,6 +1125,13 @@ observed holding a credential broader than its declared `permissions:`.
 "Became Public Law" or "Passed Senate." Both conditions required: enacted-or-
 Senate-passed **and** already cited in the app.
 
+**F6 — CREDIT FLOOR.** Prepaid balance below one month of estimated run rate,
+or below $10, whichever is higher. **APPROVED by Dean 2 AUG 2026** per R4/B-1.
+Rationale: F3 measures consumption against a ceiling and cannot see a low float.
+With auto reload OFF the balance is the binding constraint, so a run can sit at
+20% of target and still fail tomorrow on an empty account — taking every model
+job with it. Checked by J5; see §8.2.
+
 ### D.2 Explicitly ROUTINE — enumerated so it is not re-litigated
 
 A bill introduced. A hearing scheduled. A markup held or noticed. A bill
@@ -1295,22 +1339,26 @@ recorded in the Result column — not an assertion that it was checked.
 | # | Gating? | Status | Owner | Result / evidence |
 |---|---------|--------|-------|-------------------|
 | V-1 | No (urgent anyway) | OPEN | Dean | Netlify dashboard unread. Off the critical path per R1; still a live exposure |
-| V-2 | **YES** | OPEN | s3-devops | Pricing + model IDs unsourced; needs fetch approval. Evaluate against **$60**, not $100 |
+| V-2 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | Sourced from platform.claude.com models overview, accessed 2 AUG 2026. Sonnet 5 `claude-sonnet-5` $3/$15 per MTok (**intro $2/$10 through 31 AUG 2026**); Haiku 4.5 `claude-haiku-4-5-20251001` (alias `claude-haiku-4-5`) $1/$5, 200K context, 64k max output. See §4 |
 | V-3 | **YES** | **CLOSED 2 AUG 2026** | Dean | Verified by Dean directly on the Console billing page. Monthly spend limit **$200,000 default → $100**. Auto reload **OFF**, retained deliberately as a second circuit breaker. Balance **$19.52 prepaid**, card on file. Email notification at **$45** (75% of the $60 operating target). See §8.2 |
 | V-4 | No | OPEN | Dean | GitHub notification email destination unknown |
 | V-5 | No | OPEN | Dean | Twilio + mail vendor costs, separate from the $60 |
-| V-6 | **YES** | OPEN | s3-devops | Action commit SHAs unpinned |
-| V-7 | **YES** | OPEN | s3-devops | CLI version + headless flag surface unconfirmed |
+| V-6 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | `actions/checkout` v7.0.1 → `3d3c42e5aac5ba805825da76410c181273ba90b1`; `actions/upload-artifact` v7.0.1 → `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a`. Both refs resolve to type `commit` — no tag dereference needed. Source: api.github.com git/ref, 2 AUG 2026 |
+| V-7 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | CLI **2.1.220** (local `claude --version`, matches `npm view @anthropic-ai/claude-code version`). Flag surface verified against that build: `-p/--print`, `--model`, `--output-format`, `--permission-mode`, `--allowed-tools`, `--effort`, `--fallback-model`, `--max-budget-usd` all exist. **`--max-turns` does NOT exist** — the §2 draft was wrong; corrected |
 | V-8 | No | OPEN | Dean/s3-devops | Artifact retention ceiling, plan-dependent |
 | V-9 | No | DEFERRED | s3-devops | Churn threshold; tune on two weeks of real data, do not guess |
 | V-10 | No | BLOCKED on ship 1 | s2-intel | J6 steady-state cost; model not implemented |
 | V-11 | **YES** | OPEN | **Dean** | Repo settings per R5 |
 | V-12 | No | OPEN | s3-devops | Only relevant if Option 4 is ever revisited; it is not, per R1 |
-| **V-13** | **YES** | **OPEN** | **Dean** | **NEW, per R1b.** Where W8 lands now that v1.3 is declined. Script-injection path to the runner's API key stays open until it does |
+| **V-13** | **YES** | **DRAFTED, awaiting Dean** | **Dean** | Text drafted by force-mod, staged at `intel/v13-w8-script-injection-rule.md`. Proposes `deploy-discipline` **1.2 → 1.4**, burning 1.3 (R1a declined a text headed "v1.3", so shipping a real v1.3 would make the registry contradict a binding ruling — same burn discipline as a reverted `CACHE_NAME`). Not applied |
+| **V-15** | **YES** | **OPEN** | **Dean** | **NEW, found by force-mod.** `validation-gate` 1.2's structural check is `node --check` / `JSON.parse` — **neither parses YAML**. The first workflow file this project commits would pass a gate that cannot tell whether it parses. Fix is small but touches a HARD GATE, so COMMANDER lane |
 | **V-14** | **YES** | **OPEN** | **Dean** | **NEW, per R4.** F3 FLASH thresholds still reference the retired $100 ceiling and a $15/day figure |
 
-**Standup-gating open count: 6 of 7.** V-3 CLOSED. No workflow file may be
-authored until the remaining six read CLOSED.
+**Standup-gating status, 2 AUG 2026: 4 of 8 open.**
+CLOSED — V-2, V-3, V-6, V-7.
+OPEN — V-11 (Dean, repo settings), V-13 (drafted, awaiting Dean's ruling),
+V-14 (F3 restatement; F6 approved and applied), V-15 (new, YAML gate gap).
+No workflow file may be authored until all four read CLOSED.
 
 ### 8.2 BUDGET INSTRUMENTATION — as verified 2 AUG 2026
 
@@ -1332,8 +1380,16 @@ headroom, not permission.
 **FINDING B-1 — the effective ceiling today is $19.52, not $100.**
 With auto reload OFF, the binding constraint is the prepaid balance, not the
 spend limit. The $100 limit cannot bind before the balance is exhausted, because
-the balance is a fifth of it. Against §4's estimated monthly run rate, $19.52 is
-plausibly under one month of operation.
+the balance is a fifth of it.
+
+> **CORRECTION, 2 AUG 2026 (V-2 closed).** The first draft of this finding said
+> $19.52 was "plausibly under one month of operation." **That was wrong** — it
+> was written before pricing was sourced. At the §4 run rate of ~$2.32–2.72/month
+> the balance covers roughly **seven months**, and even at 10× the estimate it
+> covers two. B-1 stands as a structural finding — balance, not the spend limit,
+> is what actually stops the system — but it is **not** the near-term emergency
+> the original wording implied. The credit floor (F6) is the right control at
+> the right urgency; nothing here needs doing this week.
 
 That is not an argument for turning auto reload on — keeping it off is a sound
 second breaker and Dean retained it deliberately. It is an argument for naming
