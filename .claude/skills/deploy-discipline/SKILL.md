@@ -12,18 +12,40 @@ Treat every merge as a live deployment to serving veterans.
 2. Cache bump check. If the branch changes any precached asset, bump
    `CACHE_NAME` in `sw.js` NOW, before the gate. See STEP 2 DETAIL.
 3. Run the validation-gate skill. Attach evidence.
-4. Open a PR to `main`. Netlify Deploy Previews build the branch — include
-   the preview URL in the PR description.
-5. Preview validation: exercise the changed feature on the preview URL.
-   Confirm service workers and OneSignal remain healthy (previews may limit
-   push behavior — note limitations rather than claiming false failures).
-6. Hand off to Dean: PR link, preview URL, validation evidence, cache-bump
-   line (old value -> new value, or "no precached asset changed"), one-line
-   summary of blast radius. DEAN MERGES. Agents never merge to main.
+4. Stage the branch locally; Dean merges and pushes. Agents stop at the local
+   commit. Do not push, do not open the PR, do not ask for a one-time exception.
+   See PROHIBITED — this is a bright line, not a judgment call.
+5. Local validation: exercise the changed feature locally and confirm the
+   service worker registers and OneSignal initializes. There is no Deploy
+   Preview at this stage — the branch is unpushed. Do not claim preview
+   evidence you cannot have.
+6. Hand off to Dean: branch name, `git log --oneline`, `git diff --stat
+   main..<branch>`, validation evidence, cache-bump line (old value -> new
+   value, or "no precached asset changed"), one-line summary of blast radius,
+   and the PREVIEW CALL (see STEP 6 DETAIL). DEAN MERGES AND PUSHES. Agents
+   never merge to main and never push.
 
 Step 2 comes BEFORE step 3 on purpose. The bump writes a file. Bumping after
 the gate triggers validation-gate FAILURE RESPONSE (a fix writes files, rerun
 the entire gate). Bump first, gate once.
+
+## STEP 6 DETAIL - THE PREVIEW CALL
+
+Agents never push, so no Netlify Deploy Preview exists at handoff. The handoff
+package must therefore carry a recommendation, not a request: state whether the
+diff warrants a pre-merge preview, and why.
+
+- Default NO PREVIEW: doctrine and process ships - `.claude/**`,
+  `skills-registry.md`, `intel/**`, `*.md`. Nothing a service member sees
+  renders from them.
+- Default PREVIEW WARRANTED: anything changing what a service member sees or how
+  the app behaves - `index.html` content or logic, `manifest.json`, the icons,
+  `va-math/`, `vendor/**`, or `sw.js` caching logic.
+
+If Dean wants the preview, HE publishes the branch from GitHub Desktop and
+validates it before merging. Agents still never push - the preview is his lever,
+not a workaround. Make the call plainly, let Dean overrule it, and never omit it:
+a handoff with no preview call is incomplete, and silence reads as "not needed."
 
 ## STEP 2 DETAIL - SERVICE WORKER CACHE BUMP
 
@@ -238,6 +260,10 @@ INTEGRITY MODE does not check the cache number - verify the forward bump here,
 in this skill, and report it separately.
 
 ## PROHIBITED
+- Pushing to `origin` — any branch, any circumstance. Agents never push. Work is
+  staged as local commits; Dean merges and pushes. "Branches but not main" is not
+  the rule and never was: `main` auto-publishes, so a rule that depends on
+  correctly classifying the target every time is one mistake from a deploy.
 - Direct commits to main
 - Force pushes anywhere
 - Merging with a failed or skipped validation gate

@@ -10,7 +10,7 @@ written) · DEPRECATED (superseded — note by what)
 | # | Skill | Owner | Status | Version | Validated | Location |
 |---|-------|-------|--------|---------|-----------|----------|
 | 1 | validation-gate | s3-devops | CODIFIED | 1.1 | 2026-07-31 | .claude/skills/validation-gate/ |
-| 2 | deploy-discipline | s3-devops | CODIFIED | 1.1 | 2026-08-01 | .claude/skills/deploy-discipline/ |
+| 2 | deploy-discipline | s3-devops | CODIFIED | 1.2 | 2026-08-02 | .claude/skills/deploy-discipline/ |
 | 3 | policy-verification | s2-intel | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
@@ -79,3 +79,34 @@ written) · DEPRECATED (superseded — note by what)
   Closes the prior open follow-up on validation-gate R5 cross-skill
   non-interference for the deploy-discipline pair (R5 here); the
   policy-verification pair is covered by R6.
+- 2026-08-02 - deploy-discipline 1.1 -> 1.2. Never-push doctrine. (a) PROHIBITED
+  gains a new first entry: pushing to `origin` is prohibited on any branch in any
+  circumstance; agents stage local commits and Dean merges and pushes. The
+  rationale is recorded in the entry itself - "branches but not main" is a
+  judgment call, `main` auto-publishes, and a rule requiring the agent to
+  classify the target correctly every time is one mistake from a deploy.
+  (b) FORWARD PATH step 4 rewritten from "Open a PR to `main`" (which implied
+  push authority) to staging the branch locally for Dean to merge and push.
+  Driver: the Commander set this as standing doctrine on 2026-08-02 after an
+  agent attempted `git push -u origin <feature-branch>` to package a validated
+  branch for review. That specific push was assessed harmless; the objection was
+  to the rule it implied. Drafted by the Commander, applied by the Orchestrator -
+  NOT routed through force-mod, and no regression cases were written or run.
+  Lane: COMMANDER (deploy pipeline). Owner s3-devops.
+  (c) FORWARD PATH steps 5 and 6 rewritten, because step 4 orphaned them. Both
+  assumed a pushed branch - step 5 directed validation on a Netlify Deploy
+  Preview URL, step 6 required handing over a "PR link, preview URL" - and
+  neither artifact can exist at agent handoff once agents do not push. Step 5 is
+  now local validation, with an explicit bar on claiming preview evidence that
+  cannot exist. Step 6 now requires branch name, `git log --oneline`, diffstat,
+  gate evidence, cache-bump line, blast radius, and a PREVIEW CALL.
+  (d) Adds STEP 6 DETAIL - THE PREVIEW CALL. The handoff must state whether the
+  diff warrants a pre-merge preview and why: default NO for doctrine and process
+  ships (`.claude/**`, `skills-registry.md`, `intel/**`, `*.md`), default YES for
+  anything user-facing (index.html, manifest.json, icons, va-math/, vendor/**,
+  sw.js caching logic). When Dean wants one, HE publishes the branch from GitHub
+  Desktop and validates before merging; agents still never push. Omitting the
+  call is an incomplete handoff - silence reads as "not needed."
+  Validation: the Commander accepted this doctrine as validated by his own
+  review on 2026-08-02. No force-mod regression cases were written or run, by
+  his explicit decision. The prior blocking follow-up on steps 5 and 6 is CLOSED.
