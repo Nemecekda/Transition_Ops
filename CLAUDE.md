@@ -71,3 +71,5 @@ End every working session with a SITREP:
   not live debugging.
 - Voice: direct, mission-framed, joint-force inclusive. No performative
   content, ever (see `brand-voice` skill).
+- Verification records live in `intel/`: every rated benefits/policy claim gets
+  an entry in `intel/verification-log.md`, and staged patches land beside it.
