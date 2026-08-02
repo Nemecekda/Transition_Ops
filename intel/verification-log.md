@@ -80,20 +80,38 @@ tracked in the app.
 
 ## OPEN — BELOW CONFIRMED
 
-### O-2026-001 — H.R. 980 description (flight training / monthly outreach)
+*(None currently open.)*
 
-- **App text:** "H.R. 980 (VR&E Improvement): expanded flight training under
-  VR&E, more counselor access, monthly VA outreach."
-- **Rating:** PROBABLE — partially unsupported.
-- **What checks out:** The bill is real, the stage is right, and "more counselor
-  access" matches. The CRS summary of the introduced version removes the
-  requirement that on-campus VA educational and vocational counseling be
-  delivered by VA counselors.
-- **What does not:** The introduced-version summary says nothing about flight
-  training or monthly VA outreach. The bill passed **as amended** and its title
-  changed from "Modernizing the Veterans On-Campus Experience Act of 2025" to
-  "Veterans Readiness and Employment Improvement Act of 2025," so those
-  provisions may have been added in committee — but that is unconfirmed.
-- **Required to close:** Read the engrossed text (BILLS-119hr980eh) or
-  H. Rept. 119-228 and confirm or strike the two unsupported clauses.
-- **Owner:** s2-intel. **Not yet tasked.**
+---
+
+## CLOSED
+
+### O-2026-001 — H.R. 980 description — CLOSED 2 AUG 2026, one clause was wrong
+
+- **Opened as:** PROBABLE. The CRS summary of the *introduced* text supported
+  "more counselor access" but said nothing about flight training or monthly
+  outreach, and the bill passed **as amended** with a changed title.
+- **Closed by:** reading the engrossed text directly.
+- **Citation of record:** H.R. 980, Engrossed in House (BILLS-119hr980eh),
+  passed 2 FEB 2026 —
+  https://www.congress.gov/bill/119th-congress/house-bill/980/text/eh
+  Accessed 2 AUG 2026 (via browser; congress.gov 403s automated fetch).
+
+| Clause as shipped | Engrossed text | Verdict |
+|---|---|---|
+| "expanded flight training under VR&E" | SEC. 3 — Secretary may approve non-degree flight training within a ch. 31 rehabilitation program, notwithstanding 38 U.S.C. 3680A(b) | CONFIRMED |
+| "more counselor access" | SEC. 2 — strikes the second sentence of 38 U.S.C. 3697B(a), removing the requirement that on-campus counseling be delivered by VA employees | CONFIRMED |
+| "monthly VA outreach" | SEC. 4(a) — adds 38 U.S.C. 3104(f): a dedicated VR&E line in the Education Call Center and regional-office contact details posted online | **UNVERIFIED — no cadence of any kind appears in the bill. "Monthly" was unsupported.** |
+
+- **Also found, and previously omitted from the app:**
+  - SEC. 3(b): the flight-training authority applies to rehabilitation programs
+    approved **on or after 1 AUG 2026** — in effect as of this entry.
+  - SEC. 4(b): new 38 U.S.C. 3105(c)(2) — VA must approve or deny a VR&E program
+    extension request **within 30 days**, with annual reporting for five years.
+- **Stage claim:** "Passed House 402-2 — awaiting Senate" re-confirmed accurate.
+  Unchanged.
+- **Disposition:** bullet rewritten, approved by Dean 2 AUG 2026, applied on
+  branch `s2-hr980-bullet-accuracy`. Both render locations.
+- **Lesson for `policy-verification`:** an introduced-version CRS summary is not
+  evidence about a bill that passed as amended. When actions show "as amended,"
+  the engrossed text is the only citation that settles content.
