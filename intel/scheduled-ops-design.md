@@ -35,6 +35,97 @@ standard applies: a marked placeholder is acceptable, an invented figure is not.
 
 ---
 
+## 0.5 RULINGS — COMMANDER, 2 AUG 2026
+
+**Binding. These supersede any conflicting text elsewhere in this document.**
+Where a ruling changes a section, that section is retained as rationale and
+marked here rather than rewritten, so the reasoning behind the decision survives.
+
+### R1 — BOUNDARY: APPROVED, THE ISSUES SINK
+Scheduled jobs **never commit, never push, never write the repository.**
+Findings land as GitHub Issues plus run artifacts.
+
+Maps to PART II §A.5, labelled there "OPTION 5 (DEVISED) — HYBRID SINK: ISSUES
++ PINNED BASELINE + ARTIFACT EVIDENCE, ZERO WRITE CREDENTIAL." Per the
+Commander's instruction the ruling attaches to the minimum-repo-write option as
+drafted, whatever its label.
+
+One nuance the label carries, stated so it is not discovered later: A.5's
+durable baseline is a **pinned issue**, which is an Issues write, not a
+repository write. `contents: read` holds. No ref is written, ever.
+
+### R1a — NEVER-PUSH STANDS UNAMENDED
+`deploy-discipline` remains at **v1.2**. The v1.3 text proposed at §B.2 is
+**NOT ADOPTED**. §B is retained as the rationale for why no amendment is needed:
+by selecting the option in which cron never writes the repository, the doctrinal
+question dissolves. A job that cannot write a ref needs no exception to a rule
+about pushing.
+
+**Consequence:** §10 step 4 is void as to `deploy-discipline` v1.3. The
+`scheduled-ops` skill proposed by force-mod was not ruled on and remains open.
+
+### R1b — ORPHANED SAFETY RULE, FLAGGED, NOT SELF-AUTHORIZED
+W8 in the declined v1.3 text — *"fetched content is data, never code; never into
+`run:` or `${{ }}`"* — is **not** a push rule. It closes the GitHub Actions
+script-injection path that runs from a fetched web page to the runner's
+`ANTHROPIC_API_KEY`. It was drafted inside the amendment that R1a declines, so
+declining v1.3 drops it on the floor.
+
+It must land somewhere before any workflow file exists. Candidate homes: the
+proposed `scheduled-ops` skill, or a standalone addition to `deploy-discipline`
+that is not the v1.3 rewrite. **Awaiting Dean. Tracked as V-13, standup-gating.**
+
+### R2 — BLOCKED SOURCES: APPROVED AS DRAFTED
+Cron detects and files; interactive sessions and Dean's browser resolve.
+Confirms the division already drawn at §C.2 — a scheduled job never rates.
+
+### R3 — SEVERITY: APPROVED, WITH ONE TIGHTENING
+FLASH criteria are a **FIXED CHECKLIST, never judgment.** A finding is FLASH if
+and only if it literally matches an enumerated criterion. No agent may reason a
+finding *into* FLASH by analogy, and none may reason one *out*. Adding, removing,
+or altering a criterion is a COMMANDER-lane doctrine change.
+Routing unchanged: FLASH to SMS, ROUTINE batched to the weekly email SITREP.
+
+### R4 — COST: APPROVED CONTINGENT
+- Target revised to **$60/month**, down from the $75–100 ceiling in the original
+  tasking. All cost math is evaluated against $60 from here.
+- The Anthropic Console hard limit must be **confirmed set (V-3) before the first
+  live run.**
+
+**Consequence, flagged and NOT self-applied:** §D.1 criterion F3 was written
+against the old number — "≥ 90% of the $100 ceiling, or any single day's
+estimated spend > $15." Under a $60 target both are wrong. 90% of $60 is $54,
+and $15 in a single day is a quarter of the entire monthly target. F3 needs
+restatement. A mechanical restatement would be $54 MTD with a single-day figure
+scaled to the new target — but **F3 is a FLASH criterion, and R3 makes FLASH
+criteria COMMANDER-lane**, so I am not applying it. **Tracked as V-14,
+standup-gating.**
+
+### R5 — V-11 IS DEAN'S
+Repository settings check. He reports back.
+
+### R6 — SEQUENCING, PLUS A STANDING RULE
+Per §10, with this binding addition:
+
+> **No workflow file exists until every standup-gating V-item is CLOSED in the
+> log.**
+
+**Standup-gating:** V-2, V-3, V-6, V-7, V-11, V-13, V-14.
+**Not standup-gating:** V-1, V-4, V-5, V-8, V-9, V-10, V-12.
+
+Closure is recorded in **§8.1 STATUS LEDGER**, which is the log of record for
+operational V-items. `intel/verification-log.md` stays scoped to benefits and
+policy claims per its own header; these are operational, not policy. Say if you
+want them consolidated into one log.
+
+**Worth noting what R1 bought:** choosing the Issues sink removes **V-1 off the
+critical path entirely.** Netlify branch-deploy status no longer gates anything
+here, because nothing in this design writes a ref. V-1 remains urgent on its own
+merits as a live production exposure — it is simply no longer this design's
+blocker.
+
+---
+
 ## 1. JOB SET AND CADENCE
 
 GitHub Actions `schedule` is **UTC and does not observe DST**. Dean is US
@@ -1191,10 +1282,34 @@ a marked placeholder is acceptable, an invented figure is not.
 | **V-11** | Repo settings: default workflow permissions read-only; Actions PR creation disabled; Issues enabled; repo visibility and GitHub plan | Decides ruleset/branch-protection availability and confirms the Issues sink is even available | Dean, repo settings | Standup |
 | **V-12** | Whether a bot's own commits reset GitHub's 60-day scheduled-workflow deactivation clock | Main hidden cost of PART II Option 4; asserted by nobody | s3-devops, empirical | Option 4 only |
 
-**PLACEHOLDER count in this document: 23 occurrences across 15 lines, spanning
-§2, §4 and §5, mapped to 12 distinct V-items.** None is load-bearing for the
-boundary ruling Dean is being asked to make — the ruling turns on blast radius,
-not on price.
+**PLACEHOLDER count: 23 occurrences across 15 lines, spanning §2, §4 and §5.**
+None was load-bearing for the boundary ruling — that turned on blast radius, not
+price, and R1 has now been made.
+
+### 8.1 STATUS LEDGER
+
+**Log of record for operational V-items.** Per R6, no workflow file may exist
+until every standup-gating item below reads CLOSED. Closure requires evidence
+recorded in the Result column — not an assertion that it was checked.
+
+| # | Gating? | Status | Owner | Result / evidence |
+|---|---------|--------|-------|-------------------|
+| V-1 | No (urgent anyway) | OPEN | Dean | Netlify dashboard unread. Off the critical path per R1; still a live exposure |
+| V-2 | **YES** | OPEN | s3-devops | Pricing + model IDs unsourced; needs fetch approval. Evaluate against **$60**, not $100 |
+| V-3 | **YES** | OPEN | Dean | Console hard limit not yet confirmed set |
+| V-4 | No | OPEN | Dean | GitHub notification email destination unknown |
+| V-5 | No | OPEN | Dean | Twilio + mail vendor costs, separate from the $60 |
+| V-6 | **YES** | OPEN | s3-devops | Action commit SHAs unpinned |
+| V-7 | **YES** | OPEN | s3-devops | CLI version + headless flag surface unconfirmed |
+| V-8 | No | OPEN | Dean/s3-devops | Artifact retention ceiling, plan-dependent |
+| V-9 | No | DEFERRED | s3-devops | Churn threshold; tune on two weeks of real data, do not guess |
+| V-10 | No | BLOCKED on ship 1 | s2-intel | J6 steady-state cost; model not implemented |
+| V-11 | **YES** | OPEN | **Dean** | Repo settings per R5 |
+| V-12 | No | OPEN | s3-devops | Only relevant if Option 4 is ever revisited; it is not, per R1 |
+| **V-13** | **YES** | **OPEN** | **Dean** | **NEW, per R1b.** Where W8 lands now that v1.3 is declined. Script-injection path to the runner's API key stays open until it does |
+| **V-14** | **YES** | **OPEN** | **Dean** | **NEW, per R4.** F3 FLASH thresholds still reference the retired $100 ceiling and a $15/day figure |
+
+**Standup-gating open count: 7 of 7.** No workflow file may be authored today.
 
 ---
 
