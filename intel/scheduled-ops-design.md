@@ -1,0 +1,1238 @@
+# SCHEDULED OPERATIONS — BUILD STEP 3 DESIGN
+
+**Status: DESIGN ONLY. AWAITING COMMANDER APPROVAL.**
+No workflow file exists. None may be created before Dean approves a specific
+diff. Every YAML block in this document is a quotation of a proposal, not a file.
+
+Drafted jointly: force-mod owns PART II (write boundary, doctrine amendment,
+blocked-source problem, severity model). s3-devops was tasked with PART I and
+was halted mid-reconnaissance by the Commander; the Orchestrator drafted PART I
+from established ground truth under that order.
+
+**Reconnaissance is halted by order.** No further fetches without Dean's
+explicit approval. Consequently every unit price, every plan-dependent GitHub
+feature, and every Netlify setting in this document is a PLACEHOLDER carrying a
+V-item number in Section 8. Nothing is asserted from memory. The tax-model
+standard applies: a marked placeholder is acceptable, an invented figure is not.
+
+---
+
+## 0. BLUF
+
+- **Findings sink:** GitHub Issues plus a pinned `BASELINE — DO NOT CLOSE` issue
+  holding the source-hash table. The workflow holds **no credential that can
+  write a ref**. See PART II §A.
+- **Doctrine:** never-push survives as a *restatement*, not an exception. No
+  agent chooses a write target at runtime. See PART II §B.
+- **The hard constraint:** in headless CI only ladder tier 1 exists. The sources
+  that matter most are 403-walled and will stay dark. The design meters that
+  darkness rather than hiding it. See PART II §C.
+- **Cost:** structurally bounded by model pinning and an escalate-only-on-diff
+  gate. The arithmetic is laid out in §4; the unit prices are placeholders.
+- **Biggest open risk, and it is live today independent of this design:**
+  branch-deploy status is unverified. Two remote branches may already be serving
+  public URLs. V-1.
+
+---
+
+## 1. JOB SET AND CADENCE
+
+GitHub Actions `schedule` is **UTC and does not observe DST**. Dean is US
+Central. Every local time below therefore drifts one hour between CST and CDT.
+That drift is accepted deliberately rather than papered over; the alternative is
+two cron lines per job and a seasonal edit nobody will remember to make.
+
+| # | Job | Cadence | Cron (UTC) | Local (CST/CDT) | Agent | Model (pinned) | Skill | Writes |
+|---|-----|---------|-----------|-----------------|-------|----------------|-------|--------|
+| J1 | Federal source diff-scan | Daily | `0 9 * * *` | 0300 / 0400 | s2-scanner | `claude-haiku-4-5-20251001` | policy-verification (detect only) | BASELINE issue + diff manifest artifact |
+| J2 | Analysis pass | Weekly, **gated on J1 diff** | `0 12 * * 0` | Sun 0600 / 0700 | s2-intel | `claude-sonnet-5` | policy-verification | Finding issues |
+| J3 | Weekly SITREP send | Weekly | `0 13 * * 1` | Mon 0700 / 0800 | — (no model) | — | — | Email only |
+| J4 | Link-liveness audit | Monthly | `0 11 1 * *` | 1st, 0500 / 0600 | s3-watch-officer | `claude-haiku-4-5-20251001` | — | Finding issues |
+| J5 | Spend check | Monthly | `0 12 28 * *` | 28th, 0600 / 0700 | s3-watch-officer | `claude-haiku-4-5-20251001` | Issue + FLASH on F3 | Issue |
+| J6 | State-tax sweep | **DORMANT** | — | — | s2-intel | `claude-sonnet-5` | policy-verification | Finding issues |
+
+**J3 is deliberately model-free.** The weekly SITREP is assembly and send, not
+inference. It reads issues opened since the last send and formats them. Paying
+for a model to concatenate a list is waste, and a model in that path can
+hallucinate a finding into a report Dean acts on.
+
+**J6 stays dormant until ship 1 merges.** The state-tax sweep depends on two
+things that do not exist yet: the per-jurisdiction `verification` block and the
+diffability contract, both defined in `intel/state-tax-model-design.md`. Its
+workflow file must not be created until that model is implemented. Proposed
+trigger once live: monthly for jurisdictions carrying an active `watch` entry,
+quarterly otherwise, plus an unconditional run when any record's verification
+date ages past the re-verification interval (open question in PART II §E).
+
+**J1 → J2 ordering.** J1 runs daily and writes a diff manifest. J2 runs weekly
+and consumes whatever J1 accumulated. J2 is skipped entirely when the manifest
+is empty — see §3.
+
+---
+
+## 2. HEADLESS INVOCATION
+
+Proposed shape, quoted not created. `PLACEHOLDER-ACTION-SHA` and
+`PLACEHOLDER-CLI-VERSION` are V-items — pinning to a floating tag makes a
+scheduled job non-reproducible and silently mutable by a third party.
+
+```yaml
+# PROPOSED ONLY — .github/workflows/j1-federal-scan.yml
+# DO NOT CREATE WITHOUT COMMANDER APPROVAL OF THIS EXACT DIFF.
+name: J1 federal source diff-scan
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:          # manual re-run for testing; see PART II W-rules
+
+permissions:                  # least privilege, explicit, not inherited
+  contents: read              # CANNOT write a ref. This is the safety property.
+  issues: write               # the findings sink and the baseline
+  actions: read
+
+concurrency:                  # a slow run must never stack on itself
+  group: j1-federal-scan
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20       # hard stop; an unbounded agent loop is a spend event
+    steps:
+      - uses: actions/checkout@PLACEHOLDER-ACTION-SHA   # V-6: pin to full SHA
+        with:
+          persist-credentials: false                    # do not leave a token in .git/config
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code@PLACEHOLDER-CLI-VERSION  # V-7
+
+      - name: Assert model tier                         # see section 3
+        run: |
+          test "${MODEL}" = "claude-haiku-4-5-20251001" || { echo "::error::model tier violation"; exit 1; }
+        env:
+          MODEL: claude-haiku-4-5-20251001
+
+      - name: Run scan
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODEL: claude-haiku-4-5-20251001
+        run: |
+          claude -p "$(cat .claude/prompts/j1-federal-scan.txt)" \
+            --model "$MODEL" \
+            --max-turns 30 \
+            --output-format json > scan-result.json
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@PLACEHOLDER-ACTION-SHA
+        with:
+          name: j1-evidence-${{ github.run_id }}
+          path: |
+            scan-result.json
+            fetched/
+          retention-days: PLACEHOLDER   # V-8: retention ceiling is plan-dependent
+
+      - name: Report failure loudly        # a silent cron failure is the classic defect
+        if: failure()
+        run: gh issue create --label FLASH --title "J1 FAILED $(date -u +%F)" --body "Run ${{ github.run_id }} failed."
+        env:
+          GH_TOKEN: ${{ github.token }}
+```
+
+**Three properties worth naming.**
+1. `contents: read` is the whole safety argument. The job cannot write a ref
+   because it holds no credential that can. That is a structural property, not a
+   policy an agent must remember.
+2. `persist-credentials: false` matters specifically because the default leaves
+   a usable token in `.git/config` for the rest of the job.
+3. `if: failure()` exists because **a job that never reports is
+   indistinguishable from a job that found nothing.** Silence must never be
+   readable as "all clear" — see the dead-man's switch in §5.
+
+---
+
+## 3. MODEL TIERING AND ESCALATE-ONLY-ON-DIFF
+
+### 3.1 Pinning, enforced not conventional
+Agent frontmatter (`model: haiku`) is a *default*, not a guarantee, and a
+scheduled job must not depend on a default. Every workflow passes `--model`
+explicitly and asserts the value in a preceding step (§2). A tier violation
+fails the run rather than silently spending at a higher rate. Opus is not
+reachable from any scheduled job in this design; force-mod runs interactively
+under Dean only.
+
+### 3.2 The baseline — where memory lives
+An ephemeral runner has no memory, and this is the crux of the whole diff
+design. Prior state lives in the pinned `BASELINE — DO NOT CLOSE` issue body as
+JSON, per PART II §A.3. J1 reads it at start, rewrites it at end. Durable,
+unlimited retention, human-readable, human-correctable, and reachable with
+`issues: write` alone — no ref, no push, no Netlify build.
+
+Rejected alternatives and why: `actions/cache` is evicted after 7 days without a
+read and is explicitly not a durability guarantee; artifacts expire and are not
+queryable as state. A scanner whose baseline can vanish will one day report
+UNCHANGED against an empty baseline — the exact silent-failure mode this system
+exists to prevent.
+
+### 3.3 The diff signal
+Per source: fetch → **normalize** → SHA-256 → compare to baseline.
+
+Normalization is load-bearing. Raw-hashing a live page produces a diff every run
+from timestamps, session IDs, nonces, rotating banners, and ad slots, which
+destroys the gate immediately. Normalize by stripping script/style, collapsing
+whitespace, and removing known-volatile selectors before hashing. The
+normalization ruleset is itself versioned in the baseline issue, because
+changing it invalidates every stored hash at once and that must be visible.
+
+### 3.4 The gate
+J2 (Sonnet) runs **only** when J1's accumulated manifest is non-empty:
+
+```yaml
+# PROPOSED ONLY
+- name: Gate on diff
+  id: gate
+  run: |
+    COUNT=$(jq '[.sources[] | select(.changed)] | length' manifest.json)
+    echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+    [ "$COUNT" -gt 0 ] || echo "::notice::no diffs; Sonnet pass skipped"
+- name: Analysis pass
+  if: steps.gate.outputs.count != '0'
+  run: claude -p "$(cat .claude/prompts/j2-analysis.txt)" --model claude-sonnet-5 ...
+```
+
+A week with no changes costs one `jq` invocation and nothing else. That is where
+the money is actually saved.
+
+### 3.5 Churn damping
+A source that diffs on more than **PLACEHOLDER-N of the last 14 runs** (V-9,
+tune after two weeks of real data) is marked `CHURN` in the baseline. A CHURN
+source stops triggering J2 on raw-hash change alone and escalates only on a
+**figure-level** diff — a change to a number, a date, or a dollar amount in the
+normalized text. This prevents one chatty source from buying a Sonnet pass every
+week forever.
+
+---
+
+## 4. COST — ARITHMETIC NOW, PRICES PENDING
+
+**Unit prices are NOT stated.** Reconnaissance is halted, and I will not assert
+per-token pricing or confirm current model IDs from memory — pricing is exactly
+the class of fact the `claude-api` skill exists to source. Every price cell is
+V-2. The arithmetic below is complete, so filling in four numbers completes the
+table.
+
+**Token assumptions — ESTIMATES, stated so they can be challenged:**
+- J1: ~15 federal sources; ~2,000 input tokens each after truncation to the
+  changed region, ~200 output each → **~33k in / ~3k out per run**, ~30 runs/mo
+  → **~990k in / ~90k out per month**, Haiku.
+- J2: gated; assume **4 of 4 weeks fire** (deliberately pessimistic — the gate's
+  whole purpose is that this is often lower) → ~60k in / ~8k out per run →
+  **~240k in / ~32k out per month**, Sonnet.
+- J4: ~1 run, ~40k in / ~5k out, Haiku.
+- J5: ~1 run, negligible, Haiku.
+- J6: dormant. **Zero until ship 1.** Its steady-state cost is unestimated
+  because the record count and re-verification interval are undecided — V-10.
+
+| Job | Model | Monthly input | Monthly output | $/M in | $/M out | Monthly cost |
+|-----|-------|---------------|----------------|--------|---------|--------------|
+| J1 | Haiku 4.5 | ~990k | ~90k | PLACEHOLDER V-2 | PLACEHOLDER V-2 | PLACEHOLDER |
+| J2 | Sonnet 5 | ~240k | ~32k | PLACEHOLDER V-2 | PLACEHOLDER V-2 | PLACEHOLDER |
+| J4 | Haiku 4.5 | ~40k | ~5k | PLACEHOLDER V-2 | PLACEHOLDER V-2 | PLACEHOLDER |
+| J5 | Haiku 4.5 | ~5k | ~1k | PLACEHOLDER V-2 | PLACEHOLDER V-2 | PLACEHOLDER |
+| J6 | Sonnet 5 | dormant | dormant | — | — | $0 until ship 1 |
+| **Total** | | **~1.28M** | **~128k** | | | **PLACEHOLDER vs $75–100 ceiling** |
+
+**What drives variance, in order:** (1) whether J2's gate actually holds — an
+un-damped churning source converts J2 from 4 runs to 30; (2) page size, since
+fetching whole pages instead of changed regions multiplies J1's input by an
+order of magnitude; (3) J6's steady-state once 51 jurisdictions are live; (4)
+retry storms against walled sources, which cost tokens and return nothing.
+
+**Behaviour approaching the ceiling.** J5 computes month-to-date estimate.
+At **75%** → ROUTINE note in the weekly SITREP. At **90%** → FLASH (PART II
+§D.1 F3). At **100%** → the hard limit set by Dean in the Anthropic Console
+stops spend at the vendor. Console-side limits are the only real enforcement;
+everything in this repository is advisory metering and must be described that
+way. Setting that limit is a Dean action, V-3.
+
+---
+
+## 5. NOTIFICATION TRANSPORT
+
+force-mod defines severity CRITERIA in PART II §D. This section is transport only.
+
+### 5.1 ROUTINE — weekly email SITREP
+Destination `dean@veteranbridgesolutions.com`. GitHub Actions has no built-in
+mailer. Options:
+
+| Option | Secrets needed | Cost | Note |
+|---|---|---|---|
+| **GitHub Issues native notification** | none | free | Works day one, zero setup. Delivers to the **GitHub account email**, which may not be `dean@veteranbridgesolutions.com` — V-4. Not a formatted SITREP. |
+| **SMTP action** (e.g. `dawidd6/action-send-mail`) | host, port, user, pass | free w/ existing mailbox | Full control of format. Needs an app password on a real mailbox. |
+| **SendGrid / SES API** | one API key | free tier PLACEHOLDER V-5 | Best deliverability; another vendor account. |
+
+**Recommendation:** ship on Issues-native notification immediately so the system
+is never silent while email is being wired, then add the SMTP action for the
+formatted weekly SITREP. Do not block standup on mail plumbing.
+
+### 5.2 FLASH — SMS via Twilio
+A Twilio REST call from the workflow. **Setup is Dean's to perform — I do not
+create accounts and do not handle credentials.** Steps:
+
+1. Create a Twilio account at twilio.com. Verify Dean's mobile as a caller ID.
+2. Buy an SMS-capable phone number. Cost is Twilio-side, **separate from the
+   $75–100 Anthropic ceiling** — number rental plus per-message. V-5.
+3. From the Twilio Console collect three values: **Account SID**, **Auth
+   Token**, **the purchased From number**.
+4. In GitHub: Settings → Secrets and variables → Actions → New repository
+   secret. Create `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`,
+   `TWILIO_FROM_NUMBER`, `TWILIO_TO_NUMBER`. Paste each value into GitHub
+   directly. **Do not paste any of them into a chat with me, a file, or a
+   commit.**
+5. End-to-end test via `workflow_dispatch` on a test workflow that sends one
+   message. Confirm receipt on the handset before trusting the path.
+
+```yaml
+# PROPOSED ONLY — FLASH send step
+- name: FLASH SMS
+  if: steps.severity.outputs.flash == 'true'
+  run: |
+    curl -sS --fail-with-body -X POST \
+      "https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json" \
+      --data-urlencode "To=${TWILIO_TO_NUMBER}" \
+      --data-urlencode "From=${TWILIO_FROM_NUMBER}" \
+      --data-urlencode "Body=FLASH ${{ steps.severity.outputs.code }}: ${{ steps.severity.outputs.summary }}" \
+      -u "${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}"
+  env:
+    TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+    TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+    TWILIO_FROM_NUMBER: ${{ secrets.TWILIO_FROM_NUMBER }}
+    TWILIO_TO_NUMBER: ${{ secrets.TWILIO_TO_NUMBER }}
+```
+
+`TWILIO_TO_NUMBER` is Dean's personal mobile. It is PII and belongs in secrets,
+never in a workflow file, never in a log line.
+
+### 5.3 When the transport itself fails — the dead-man's switch
+**This is the requirement most alerting systems get wrong.** If the notifier
+fails, the system goes quiet, and quiet is indistinguishable from "nothing to
+report."
+
+- Any send failure (`--fail-with-body` non-zero) opens a FLASH-labelled issue,
+  which triggers GitHub's own notification path. The backup channel is not the
+  channel that just failed.
+- **The weekly SITREP sends every week without exception**, including weeks with
+  nothing to report, stating "NO FINDINGS — N sources scanned, M dark." A
+  missing Monday email is then itself the alarm. Silence becomes diagnostic
+  rather than ambiguous.
+- If two consecutive weekly sends fail, that is an F4-class integrity event.
+
+---
+
+## 6. SECRETS INVENTORY
+
+| Secret | Purpose | Set by | Notes |
+|---|---|---|---|
+| `ANTHROPIC_API_KEY` | Claude Code auth in all model jobs | Dean, repo secrets | Console spend limit is the real ceiling (V-3) |
+| `TWILIO_ACCOUNT_SID` | FLASH SMS | Dean, repo secrets | |
+| `TWILIO_AUTH_TOKEN` | FLASH SMS | Dean, repo secrets | Rotate if ever echoed to a log |
+| `TWILIO_FROM_NUMBER` | FLASH SMS | Dean, repo secrets | |
+| `TWILIO_TO_NUMBER` | FLASH SMS | Dean, repo secrets | PII |
+| `SMTP_*` **or** `SENDGRID_API_KEY` | Weekly SITREP | Dean, repo secrets | Only if §5.1 option 2 or 3 chosen |
+| `GITHUB_TOKEN` | Issues + baseline | built-in | Never a PAT. Declared per workflow as `contents: read, issues: write` |
+
+**No PAT anywhere in this design.** The moment a PAT appears, the structural
+safety argument in PART II §A collapses, because a PAT's scope is not bounded by
+the workflow's `permissions:` block.
+
+Repository default workflow permissions should be set to read-only, and "Allow
+GitHub Actions to create and approve pull requests" disabled. Both are Dean
+actions in repo settings. V-11.
+
+---
+
+# PART II — THE WRITE BOUNDARY AND THE ALERT PATH
+
+Authored by force-mod. Sections A-E below are its draft, incorporated verbatim.
+
+
+## A. THE BOUNDARY — WHAT A SCHEDULED JOB MAY DO WITH FINDINGS
+
+### A.0 The actual question
+
+A runner is ephemeral. It has no local branch to hand anybody, so the v1.2
+handoff model does not apply to it. But "it must therefore push" is a false
+step. A runner has four exits, not one: a ref in a repository, an Actions
+artifact, the GitHub API (issues, comments), and an outbound network call
+(mail, SMS). Only the first touches Netlify. The design problem is to move
+durable findings out of an ephemeral box without using the one exit that can
+publish.
+
+Second constraint, and it is the sharper one: **a change detector needs a
+durable baseline.** Findings-out is half the problem. If the job cannot
+remember what a source looked like yesterday, it either re-reports everything
+every day (noise, then muting) or silently resets its memory and reports
+UNCHANGED against a baseline it just invented. Any option that solves output
+but not baseline is not a solution.
+
+Third constraint, from ground truth 3: commit `21e25e3` on
+`resource-directory-may2026` is titled "Trigger Netlify branch deploy."
+Branch deploys have been active for this site. Until the Netlify dashboard is
+read, **every ref in this repository is presumed to publish a public URL.**
+Treat "it's only a feature branch" as a claim requiring evidence, not a default.
+
+---
+
+### A.1 OPTION 1 — RESTRICTED BRANCH NAMESPACE
+
+The job commits findings to `intel/` and pushes to a reserved prefix, e.g.
+`bot/intel/<date>`. Dean reviews and cherry-picks anything worth keeping.
+
+**Can do.** Everything. Full file series, real diffs, native `intel/` format,
+git history as the baseline. Strictly the most capable option.
+
+**Blast radius.** The largest available. Production is two characters of ref
+string away.
+
+**Netlify interaction.** Direct and adverse. If branch deploys are on, every
+bot push publishes unreviewed, unverified, machine-written intel to a public
+URL under the site's domain. That is a policy-content publication with no human
+in the loop — the exact failure `policy-verification` exists to prevent.
+
+**Controls, and where each one falls short.**
+
+- `permissions: contents: write` — **this is the defect.** The token scope is
+  repository-wide. There is no way to grant "write only refs matching
+  `bot/intel/*`" through the `permissions:` block. The workflow's restraint is
+  a convention inside the file, not an enforced boundary.
+- Repository ruleset restricting ref creation/update — this IS the enforced
+  boundary, and it is the only thing that makes Option 1 defensible. Ruleset
+  and branch-protection availability depends on repository visibility and
+  GitHub plan; on private repositories these are paid features. **Availability
+  is unconfirmed. Do not assume it.**
+- `netlify.toml` with `[context.branch-deploy] ignore = "exit 0"` — cancels
+  branch builds at build time and is version-controlled, which the dashboard
+  setting is not. Real control. Carries its own hazard: a `netlify.toml`
+  `[build]` block **overrides the dashboard build settings**, so it must
+  reproduce the current build command and publish directory exactly or the next
+  production deploy breaks. It cannot be authored from the repo — the values
+  live only in the dashboard.
+- CODEOWNERS — reviewer routing only. Does not stop a push.
+
+**Failure mode.** A malformed ref expression, a compromised third-party action,
+or a future edit that "just parameterizes the branch name" reaches `main`. The
+loud version is a bad deploy. The quiet version is worse: a public branch URL
+serving machine-drafted benefits text that nobody knows is live.
+
+**Verdict.** Reject for initial standup. Revisit only after branch-deploy
+status is confirmed constrained AND a ruleset enforces the namespace. Capability
+is not the binding constraint here; nothing else on this list fails to a deploy.
+
+---
+
+### A.2 OPTION 2 — NO REPO WRITE: NOTIFICATIONS PLUS ARTIFACTS
+
+`permissions: contents: read`. Findings leave as the alert body; raw fetched
+pages and a `digest.json` upload as an Actions artifact for evidence.
+
+**Can do.** Detect, evaluate, alert, and attach proof. Cannot remember.
+
+**Blast radius.** Effectively zero repository-side. The token cannot write a
+ref. Outbound is a mail or SMS call carrying a credential.
+
+**Netlify interaction.** None. No ref is written, so no build is triggered.
+Immune to ground truth 3 by construction — it does not need the dashboard
+question answered before it can run safely.
+
+**Controls.** Explicit `permissions:` block; repository default workflow
+permissions set to read-only; third-party actions pinned to full commit SHA;
+artifact retention set deliberately.
+
+**Failure mode — and it is disqualifying on its own.** No durable baseline.
+Artifacts expire (retention capped at 90 days, shorter by policy, and they are
+not queryable as state). `actions/cache` is evicted after 7 days without a
+read and is explicitly not a durability guarantee. A scanner whose baseline can
+vanish without notice will one day report UNCHANGED against an empty baseline.
+That is the precise failure ground truth 7 warns about, arriving through the
+storage layer instead of the network layer.
+
+Secondary failure: artifacts require an authenticated download from a browser.
+Useless at 0300 from a phone.
+
+**Verdict.** Correct as an *evidence* mechanism. Insufficient as the whole
+answer. Keep the artifact leg; it must be paired with a durable sink.
+
+---
+
+### A.3 OPTION 3 — GITHUB ISSUES AS THE FINDINGS SINK
+
+`permissions: contents: read, issues: write`. Each finding becomes an issue or
+a comment on a rolling daily issue. Labels carry severity and category.
+
+**Can do.** Durable, unlimited-retention, timestamped, full-text searchable,
+API-readable, mobile-readable, and assignable. Issue close/reopen is a native
+state machine for "resolved" and "regressed."
+
+**Blast radius.** Issue spam. That is the entire list. There is no code path
+from `issues: write` to a ref write, a merge, or a Netlify build.
+
+**Netlify interaction.** None. Nothing publishes.
+
+**Controls.** Explicit `permissions:` with `contents: read`; repository default
+workflow permissions read-only; "Allow GitHub Actions to create and approve
+pull requests" disabled; actions pinned by SHA; a hard cap on issues created
+per run (proposed: 5, then one rollup comment) so a scanner bug cannot open
+four hundred issues overnight.
+
+**The baseline solution, and it is the reason this option wins.** One pinned
+issue titled `BASELINE — DO NOT CLOSE` holds the source-hash table as JSON in
+its body. The job reads it at start and rewrites it at end. That is durable,
+versioned (issue edit history is retained), human-readable, human-correctable,
+and **it is reached with `issues: write` alone — no ref, no push, no Netlify
+build, ever.** The amnesia problem is solved without acquiring write access to
+a single byte of the repository.
+
+Size ceiling on an issue body is 65,536 characters. A hash table over a few
+dozen sources is nowhere near it; overflow is handled by sharding into a second
+pinned issue, and the run asserts it fits.
+
+**Notification, free of charge.** Issue creation notifies repository watchers
+by email and by GitHub Mobile push immediately, with no vendor and no secret.
+That is a working ROUTINE channel on day one. FLASH still needs a dedicated
+path (Section D).
+
+**Failure mode.** Volume fatigue if severity discipline slips — governed by the
+anti-noise rules in D. Requires Issues enabled on the repository. And findings
+live in GitHub rather than in `intel/`.
+
+**On that last point: it is a feature, not a gap.** The repository record —
+`intel/verification-log.md` — is the record of *decision*, and a scheduled
+scanner has no authority to make decisions. An issue is a tip. Its promotion
+into `intel/` is done later by an interactive agent under normal
+`deploy-discipline`, with Dean merging. The seam falls exactly where authority
+changes hands.
+
+**Verdict.** Strongest single option. Safe by construction rather than by
+configuration, which is what makes it hold up under a future edit by an agent
+that has not read this document.
+
+---
+
+### A.4 OPTION 4 — SEPARATE INTEL REPOSITORY
+
+Findings live in `Nemecekda/Transition_Ops_Intel`, which no Netlify site is
+connected to.
+
+**Design note that changes its cost profile.** Do not run the workflow in the
+app repository and push across. That requires a write-scoped PAT stored as a
+secret in the app repo, which reintroduces the credential you were trying to
+eliminate. **Run the workflow inside the intel repository**, where its own
+`GITHUB_TOKEN` writes freely and no cross-repo write credential exists at all.
+If it needs app content — an index of outbound links, the shipped dollar
+figures — it reads `raw.githubusercontent.com` if the repo is public, or uses a
+fine-grained PAT scoped **read-only** to the app repo if it is private.
+
+The asymmetry is the point: the credential that can write has no dangerous
+destination, and the credential that touches production has no write bit.
+
+**Can do.** Everything Option 1 can, with none of its blast radius. Full file
+series, real git history, native `intel/` formatting, arbitrary size.
+
+**Blast radius.** Zero against production, conditional on the intel repository
+never being connected to a Netlify site. That condition must be stated as
+standing doctrine, because "just point Netlify at it to preview the reports" is
+exactly the convenient future decision that would silently undo it.
+
+**Netlify interaction.** None, given that condition.
+
+**Failure modes.**
+1. **Scheduled-workflow deactivation.** GitHub disables `schedule` triggers in
+   repositories that go inactive for 60 days. A bot-only repository with no
+   human commits is the population this rule targets. Whether the bot's own
+   commits reset the clock must be verified empirically, not assumed. This
+   risk lands harder on Option 4 than on the app repo, where Dean commits often.
+2. **Split brain.** Two homes for verification records. The moment `intel/` in
+   the app repo and the intel repo disagree, neither is authoritative.
+3. Two repositories, two settings pages, two permission models, for one person.
+
+**Verdict.** The correct destination if intel volume outgrows issues, or if
+findings genuinely need to be a versioned file series. Not the right place to
+start — it costs the most setup and carries the silent-deactivation risk, to
+buy capability that is not yet needed.
+
+---
+
+### A.5 OPTION 5 (DEVISED) — HYBRID SINK: ISSUES + PINNED BASELINE + ARTIFACT EVIDENCE, ZERO WRITE CREDENTIAL
+
+Fuse 2 and 3 and take the strong half of each.
+
+- **Sink:** GitHub Issues, labelled by severity and category.
+- **Memory:** one pinned `BASELINE — DO NOT CLOSE` issue, JSON body, rewritten
+  each run.
+- **Evidence:** `actions/upload-artifact` carrying raw fetched pages, HTTP
+  status codes, and `digest.json`, so any finding can be audited against exactly
+  what the runner saw rather than against what it said it saw.
+- **Notification:** issue creation for ROUTINE; a dedicated FLASH channel per
+  Section D.
+- **Token:** `contents: read`, `issues: write`. Nothing in this repository is
+  writable by any workflow. There is no PAT.
+
+**Why this is the recommendation.** It is the only option on the list whose
+safety does not depend on a setting being correct, a ruleset being available on
+the current plan, a dashboard value being transcribed accurately, or a future
+agent choosing the right branch prefix. The workflow **cannot** write a ref
+because it holds no credential that can. Ground truth 3 becomes irrelevant to
+whether this is safe to run — it stays a live question for the site generally,
+but it stops gating this system.
+
+It also degrades honestly. If the notification vendor fails, findings still
+accumulate in issues. If the artifact expires, the finding text remains. If the
+job fails entirely, the baseline is untouched and the next run resumes.
+
+**Failure mode.** Issue volume. Governed entirely by Section D, which is why
+the severity model is a load-bearing part of this design and not documentation.
+
+---
+
+### A.6 CONSIDERED AND SET ASIDE — NETLIFY SCHEDULED FUNCTIONS
+
+`netlify/functions/` already exists (`jobs.js`, `resume.js`, `navigator.js`),
+so a scheduled Netlify Function will be proposed by someone. It has one real
+advantage: no GitHub token, so the repo-write question never arises.
+
+Set aside, because it trades a repository risk for a worse one: **a scheduled
+function's code ships with the site.** It becomes production code on `main`,
+under the full deploy pipeline, subject to the cache-bump and gate discipline,
+and a defect in it is a production defect on the app service members use. A
+runner that crashes is an alert that did not fire. A production function that
+crashes is a live incident. Moving monitoring *into* the thing being monitored
+also breaks the independence that makes monitoring worth anything. Additionally
+it has no durable store without adding Netlify Blobs, and its logs are in a
+dashboard that is not version-controlled.
+
+Reject. Revisit only for work that must run inside the app's own runtime.
+
+---
+
+### A.7 RANKING AND RECOMMENDATION
+
+| Rank | Option | Verdict |
+|---|---|---|
+| 1 | **5 — Hybrid: Issues sink + pinned baseline + artifacts** | Adopt now |
+| 2 | 4 — Separate intel repo, workflow hosted there | Phase 2, if volume demands |
+| 3 | 3 — Issues alone | Option 5 minus evidence; acceptable fallback |
+| 4 | 2 — Notify + artifacts only | Evidence leg only; not a sink |
+| 5 | 6 — Netlify scheduled function | Rejected, wrong blast radius |
+| 6 | 1 — Push to restricted branch namespace | Rejected for standup |
+
+**Plainly, what I would do.** Stand up Option 5 in the app repository with
+`contents: read` and `issues: write` and no PAT anywhere. Ship one job first —
+uptime and outbound-link liveness, which needs no policy judgment — and prove
+the alert path end to end before the federal source scan is wired to it. Keep
+Option 4 in reserve. Do not build Option 1.
+
+**Independent of all of the above:** the Netlify branch-deploy question is a
+live production exposure right now, today, regardless of whether any workflow
+is ever created. Two existing remote branches may already be publishing public
+URLs. That is a separate finding and should not wait on this design.
+
+**Proposed workflow skeleton — QUOTED, NOT CREATED.** No file is authored until
+the Commander approves it.
+
+```yaml
+# PROPOSED ONLY. This file does not exist and must not be created without
+# the Commander's approval of this exact diff.
+name: intel-daily
+
+on:
+  schedule:
+    - cron: "17 11 * * *"   # UTC. Odd minute on purpose: on-the-hour crons are
+                            # the most delayed and the most silently dropped.
+  workflow_dispatch:        # manual re-run. Inputs deliberately absent — see W2.
+
+permissions:                # W3. Explicit, top level, minimum.
+  contents: read            # checkout only. No ref here is writable.
+  issues: write             # the sink and the baseline
+  actions: read
+
+concurrency:
+  group: intel-daily
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@<full-40-char-sha>   # tags are mutable. Pin SHAs.
+      # Fetch each source to a file under $RUNNER_TEMP.
+      # Fetched bytes are DATA. They never enter a run: block or a ${{ }}
+      # expression — see W8.
+      # Emit digest.json + evidence/*.
+      - uses: actions/upload-artifact@<full-40-char-sha>
+        with:
+          name: intel-evidence
+          retention-days: 30
+      # Post findings and rewrite the pinned BASELINE issue via gh api,
+      # reading every body FROM A FILE, never from an inline expression.
+```
+
+---
+
+## B. DOCTRINE AMENDMENT — deploy-discipline
+
+### B.1 Framing: exception, or restatement?
+
+**Restatement. Not an exception.** Two reasons, and the second is the one that
+matters.
+
+First, the rule's own stated rationale already names its target. v1.2 says the
+hazard is "a rule that depends on correctly classifying the target every time."
+The banned thing is **runtime discretion** — an agent deciding, while working,
+where to write. A workflow file exercises no discretion. Its target is a
+literal string, fixed when the file was authored, reviewed by Dean, and merged
+by Dean. When it runs, it is Dean's reviewed configuration executing, not an
+agent making a call. The rule was never aimed at it.
+
+Second, and decisively: **an exception is a precedent and a restatement is
+not.** Write "cron is an exception" and the next novel case arrives arguing by
+analogy — a `workflow_dispatch` an agent triggers, a one-time backfill, a
+"quick" branch push to generate a preview. Each will be argued as similar in
+kind to the granted exception, and the argument will not be obviously wrong.
+Write instead "no agent chooses a write target at runtime" and every one of
+those cases is settled on the same test, without anyone needing to weigh
+similarity. The restatement is strictly more robust because it converts a
+judgment call into a mechanical check.
+
+Corollary that must be written down or the restatement leaks: a fixed target is
+only fixed if it is *literal*. A workflow that computes its ref from an input,
+an environment variable, a job output, or fetched content has moved the
+decision back to runtime and is prohibited by the same principle it appeared to
+satisfy.
+
+The interactive-agent rule survives verbatim. It gets stronger — it now has a
+stated principle instead of a bare prohibition, and a principle is what an
+agent reasons from correctly when it meets a case the list did not enumerate.
+
+---
+
+### B.2 PROPOSED TEXT — deploy-discipline v1.3
+
+**PROPOSAL. Not applied. COMMANDER lane — deploy pipeline.**
+
+**Amendment 1 — replace the first PROHIBITED entry:**
+
+> - Pushing to `origin` — any branch, any circumstance. Agents never push. Work
+>   is staged as local commits; Dean merges and pushes. "Branches but not main"
+>   is not the rule and never was: `main` auto-publishes, so a rule that depends
+>   on correctly classifying the target every time is one mistake from a deploy.
+>   What this bans is RUNTIME DISCRETION — an agent choosing a write target
+>   while it works. It is not a claim that bytes may never reach `origin` by any
+>   mechanism. A scheduled workflow whose write target is a literal string,
+>   fixed when the file was authored and merged by Dean, exercises no discretion
+>   and is governed by SCHEDULED OPERATIONS below. That section is a narrower
+>   rule, not a loophole. An agent that finds itself reasoning about whether its
+>   own push might qualify has already violated this entry — the test is not
+>   whether the push is safe, it is whether an agent is choosing.
+
+**Amendment 2 — new section, placed immediately before PROHIBITED:**
+
+> ## SCHEDULED OPERATIONS — MACHINE WRITES
+>
+> Interactive agents never push. Scheduled workflows are not agents. A workflow
+> is Dean's reviewed configuration; its authority comes from his merge, not from
+> its own judgment at runtime. These rules keep that true.
+>
+> **W1 — AUTHORING IS COMMANDER LANE.** Every file under `.github/workflows/`
+> is a deploy-pipeline change. No agent creates, edits, renames, or deletes one
+> without Dean's prior approval of the specific diff. Approval of a workflow's
+> purpose is not approval of its text.
+>
+> **W2 — LITERAL TARGETS.** Any ref, repository, or path a workflow writes MUST
+> appear as a literal string in the workflow file. Targets derived from
+> expressions, job outputs, `workflow_dispatch` inputs, environment variables,
+> or fetched content are PROHIBITED. Test: read the file cold and enumerate
+> every destination it can write to. If you cannot enumerate them, it does not
+> ship.
+>
+> **W3 — LEAST TOKEN.** Every workflow declares `permissions:` explicitly at the
+> top level. Omitting the block is a defect even when the repository default is
+> read-only — defaults change, and a workflow must state its own scope. A
+> workflow that does not write code declares `contents: read`. Repository
+> default workflow permissions remain read-only.
+>
+> **W4 — NEVER `main`.** No workflow writes `main`, opens a pull request into
+> `main`, or triggers a Netlify build of `main`, under any event, ever.
+> Production changes come from Dean's merge and from nothing else.
+>
+> **W5 — PUBLISH CHECK.** A workflow may not write any ref in a repository
+> connected to a Netlify site until that site's branch-deploy behavior is
+> confirmed and constrained in version control. Unknown publish behavior is
+> treated as publishing.
+>
+> **W6 — NO SILENT DEATH.** A scheduled job reports every run, including runs
+> that found nothing and runs that failed. A channel that speaks only on bad
+> news cannot be distinguished from a channel that is broken. Absence of an
+> alert is never evidence of absence of a problem.
+>
+> **W7 — NO VERDICTS.** A scheduled job reports observations, never ratings. It
+> may not write CONFIRMED, PROBABLE, BLOCKED, or any other
+> `policy-verification` rating into any artifact. Rating requires the escalation
+> ladder, and CI holds only its lowest rung.
+>
+> **W8 — FETCHED CONTENT IS DATA, NEVER CODE.** Content retrieved from any
+> external source is never interpolated into a `run:` block or a `${{ }}`
+> expression. It reaches artifacts, issue bodies, and alert bodies through files
+> only. A source that can inject a shell command into the runner owns the
+> runner's secrets.
+
+**Amendment 3 — extend PROHIBITED:**
+
+> - Creating or editing any file under `.github/workflows/` without COMMANDER
+>   approval of the specific diff
+> - A workflow write target that is computed rather than literal
+> - A workflow that omits its `permissions:` block
+> - A scheduled job emitting a `policy-verification` rating
+
+Registry treatment: `deploy-discipline` 1.2 → 1.3, owner s3-devops, COMMANDER
+lane, regression cases required before registering. Section D and the sink
+design belong in a new skill (proposed `scheduled-ops`, owner s3-watch-officer)
+rather than swelling `deploy-discipline` further — per the standing skill-size
+split rule, protect the length of the part read during execution.
+
+---
+
+## C. THE BLOCKED-SOURCE PROBLEM
+
+### C.1 State the defect precisely
+
+`policy-verification` v1.1's ladder has three rungs. Tier 2 is the orchestrator's
+Chrome tools; tier 3 is Dean. **Neither exists in a GitHub Actions runner.** CI
+holds tier 1 and nothing else.
+
+The walled roster — congress.gov, DFAS.mil, eCFR.gov, dcsa.mil, esd.whs.mil,
+veterans.house.gov, ftb.ca.gov — is precisely the set of sources that carry
+statute, pay tables, and DoD issuances. A daily federal scan running in CI is
+therefore structurally blind on the highest-consequence sources, permanently,
+by design, and not as a transient failure.
+
+The danger is not that the job fails. It is that the job **succeeds** — exits
+zero, sends a clean digest, and Dean reads a green board as coverage he does not
+have. A scanner that cannot see the sources that matter but reports "no changes
+detected" is worse than no scanner, because it manufactures false assurance and
+suppresses the manual sweep that was the only real control.
+
+### C.2 Control 1 — a scheduled job never rates, and its vocabulary makes that impossible
+
+`policy-verification`'s ratings are verification verdicts. A CI job does not
+verify; it observes. Give it a separate, narrower vocabulary that cannot be
+mistaken for a rating (W7):
+
+| Verdict | Meaning |
+|---|---|
+| `READ` | Fetched, HTTP 2xx, body retrieved |
+| `CHANGED` | `READ` **and** content hash differs from baseline |
+| `UNCHANGED` | `READ` **and** content hash matches baseline |
+| `WALLED` | Access refused — 403, bot interstitial, challenge page |
+| `ERROR` | Timeout, DNS failure, 5xx, malformed response |
+| `NO-BASELINE` | First observation, or baseline lost |
+
+`CHANGED` and `UNCHANGED` are **only** emissible when the source is `READ`.
+There is no path in the vocabulary from "could not see it" to "nothing
+happened." The distinction `policy-verification` v1.1 drew between ACCESS
+failure and EVIDENCE failure is enforced here at the type level rather than by
+analyst discipline, because there is no analyst in the runner.
+
+### C.3 Control 2 — the headline is coverage, never a verdict
+
+Every digest opens with the same line, in the same position:
+
+```
+COVERAGE 6/14 READ · 7 WALLED · 1 ERROR · 0 NO-BASELINE
+```
+
+Rules, binding:
+
+- **The string "no changes detected" is PROHIBITED unless coverage is
+  14/14.** Below full coverage the only permissible summary is the fraction.
+- The run asserts `read + walled + error + no_baseline == total`. If it does not
+  sum, the run emits `RUN INVALID` and that is a finding in its own right.
+- Zero findings is never reported as reassurance. "0 changes across 6 of 14
+  sources" is the honest sentence and it is the required one.
+
+This is the whole anti-silence mechanism: Dean cannot glance at a digest and
+absorb a false green, because the first thing on it is how much of the board was
+dark.
+
+### C.4 Control 3 — the WALLED ROSTER, so expected darkness is not an alarm
+
+Known-walled hosts are declared in the workflow's configuration with their
+expected status. Then:
+
+- **`WALLED` + on roster** = expected. Counts toward dark coverage. **Does not
+  alert.** congress.gov 403s every night; paging on that would mute the channel
+  inside a week.
+- **`WALLED` + NOT on roster** = a source that used to work and stopped. New
+  information. ROUTINE on first occurrence; escalates on persistence per D.
+- **`READ` + on roster** = a wall opened. Genuine state change, genuinely useful
+  — a scan window exists that did not before. ROUTINE.
+- The roster is reviewed quarterly. A roster that only grows is a system going
+  blind on a schedule nobody is watching.
+
+### C.5 Control 4 — DARK LEDGER, which converts an invisible gap into a countdown with a name on it
+
+The job cannot verify walled sources. It can meter their decay and demand the
+human sweep. The weekly SITREP carries a mandatory block:
+
+```
+DARK SOURCES — TIER 2/3 REQUIRED
+host                  backs shipped figure?   last human/browser read   age
+congress.gov          yes (H.R. 980 status)   2026-08-02                 12d
+DFAS.mil              yes (FY26 pay tables)   2026-08-02                 12d
+esd.whs.mil           no                      2026-06-14                 61d  AMBER
+```
+
+Escalation, time-based and predictable:
+
+| Age since last tier-2/3 read | Backs a shipped figure | Action |
+|---|---|---|
+| any | no | Listed weekly. No escalation. |
+| ≤ 60 days | yes | Listed weekly. |
+| 61–89 days | yes | Weekly, AMBER, named with the figure it backs. |
+| ≥ 90 days | yes | Weekly RED **and** a standing issue that stays open until Dean files a tier-3 HUMAN VERIFICATION RECORD. |
+
+**Staleness never FLASHes.** It is predictable by construction — the date is
+known 90 days in advance. A predictable 0300 alarm is the definition of noise,
+and see N4.
+
+This block should be reconciled against the app's `DATA_VERIFIED` stamp so the
+date shown to service members and the date in the ledger cannot drift apart.
+Where that stamp lives and who owns bumping it is an open question for the
+Commander (E7).
+
+### C.6 Control 5 — widen tier 1, which is the only fix that adds actual coverage
+
+Everything above is honest accounting for blindness. This one removes some of
+it. Several walled hosts publish **official machine interfaces from the same
+agency** that are not bot-walled:
+
+- **api.congress.gov** — bill actions, status, text versions. Free API key.
+  Covers the highest-value dark source on the roster.
+- **api.govinfo.gov** — package text including engrossed bills
+  (`BILLS-119hr980eh`). Free API key. This is the exact artifact the
+  AMENDED-BILL RULE requires, reachable without a browser.
+- **federalregister.gov** public JSON API — no key.
+- **ecfr.gov** API — machine access where the HTML front end walls.
+
+Left dark with no known machine interface: DFAS.mil, esd.whs.mil, dcsa.mil,
+veterans.house.gov, ftb.ca.gov. Those stay on the ledger and stay Dean's sweep.
+
+**Proposed `policy-verification` patch — flagged, not drafted here.** Insert a
+rung between tiers 1 and 2:
+
+> **1B. AGENCY MACHINE INTERFACE.** An official API operated by the same agency
+> as the primary source IS that primary source and is admissible as citation of
+> record. Cite the request URL, the access date, and the document identifier the
+> response returns (package ID, bill version code, CFR node). An API response
+> that does not identify the document it describes is not a citation. Any
+> analyst may run this rung. Third-party mirrors, aggregators, and unofficial
+> wrappers are NOT this rung and remain secondary sources.
+
+That is `policy-verification` 1.1 → 1.2, owner s2-intel, **COMMANDER lane**
+(benefits/policy content), regression cases required. It materially converts
+the single most consequential dark source to lit and it makes the
+AMENDED-BILL RULE executable without a browser. Recommend it be taken up as its
+own tasking rather than folded into this one.
+
+### C.7 Does this change the severity model?
+
+Yes, in three specific ways.
+
+1. It introduces a third state that is neither finding nor non-finding: **DARK**.
+   Severity rules that assume every source resolves to changed-or-unchanged are
+   wrong and would either spam or lie.
+2. Darkness escalates on **elapsed time**, not on events. That is a different
+   trigger shape from every other rule in D, and it is why staleness routes to
+   the weekly and never to SMS.
+3. It makes "0 findings" permanently unreportable as reassurance. The reassuring
+   number is the coverage fraction. That constraint propagates into the digest
+   format, which is why D's ROUTINE template leads with COVERAGE.
+
+---
+
+## D. SEVERITY MODEL — FLASH AND ROUTINE
+
+Two tiers. Hard.
+
+**FLASH** — dedicated alert channel, any hour, expects to wake him.
+**ROUTINE** — accumulates; one weekly email SITREP at a fixed time.
+
+There is no third tier and none may be added. A "FLASH but hold until morning"
+category is ROUTINE wearing a costume, and inventing it is how a two-state model
+rots into a five-state model nobody trusts.
+
+### D.1 FLASH — objective criteria, any one sufficient
+
+**F1 — PRODUCTION DOWN.** `transitionops.org` returns non-2xx, or fails to
+return a body, on **three consecutive probes at least five minutes apart**.
+Single-probe failures are network weather and never FLASH.
+
+**F2 — SHIPPED FIGURE CONTRADICTED.** A source on the citation-of-record list
+was `READ` this run and states a value that differs from a figure currently
+present in `index.html`. All three conditions required: the fetch succeeded, the
+source is a citation of record, and the figure is live in the app. This is the
+service-member-gets-wrong-information case and it is the reason the system
+exists.
+
+**F3 — SPEND.** Estimated month-to-date spend ≥ 90% of the $100 ceiling, or any
+single day's estimated spend > $15. The Watch Officer's existing 75% flag stays
+ROUTINE — it is a heads-up, not an emergency.
+
+**F4 — INTEGRITY.** Any write to any ref that Dean did not perform; any push to
+`main` not attributable to Dean; a secret-scanning alert; a workflow run
+observed holding a credential broader than its declared `permissions:`.
+
+**F5 — ENACTMENT.** A monitored bill referenced in `index.html` reaches
+"Became Public Law" or "Passed Senate." Both conditions required: enacted-or-
+Senate-passed **and** already cited in the app.
+
+### D.2 Explicitly ROUTINE — enumerated so it is not re-litigated
+
+A bill introduced. A hearing scheduled. A markup held or noticed. A bill
+reported out of committee. A source's page layout or wording changing without a
+figure changing. A dead outbound link. A rostered walled source still walled. A
+single failed job run. Spend at 75%. A new resource candidate found. A dark
+source aging past 60 or 90 days. A wall opening.
+
+Note what F5 excludes: introduction, referral, hearing, markup, and committee
+reporting are all ROUTINE. Under `policy-verification`'s AMENDED-BILL RULE, a
+pre-passage bill version is not evidence about what will become law. Waking the
+Commander over a bill that will be amended eleven more times is noise with a
+serious face on it.
+
+### D.3 ANTI-NOISE RULES — binding, not advisory
+
+An alerting system that cries wolf gets muted, and a muted alarm is worse than
+no alarm, because a muted alarm still looks like coverage on paper.
+
+**N1 — FLASH BUDGET.** Maximum **2 FLASH per rolling 7 days**. The third and
+beyond inside that window are downgraded to ROUTINE and the weekly header reads
+`FLASH BUDGET EXCEEDED — n downgraded`. If the budget is hit twice in a quarter,
+the criteria are wrong. That is a force-mod patch trigger, not a reason to raise
+the budget.
+
+**N2 — DEDUPE.** An identical finding key (rule ID + source host + subject) does
+not re-FLASH for 72 hours. A state transition — resolved, then broken again —
+resets the clock. A condition that persists is not new information.
+
+**N3 — CONFIRM BEFORE WAKING.** No FLASH from a single observation. Every rule
+in D.1 requires either N consecutive confirming observations (F1) or a fetch
+that demonstrably succeeded (F2, F5). Transient failure never wakes anybody.
+
+**N4 — NO FLASH FOR ABSENCE.** Inability to check is never FLASH. The walled
+roster guarantees daily unreachability; treating that as an emergency destroys
+the channel in under a week. Coverage gaps escalate on the schedule in C.5, in
+the weekly, in daylight.
+
+**N5 — TWO TIERS, HARD.** If a condition does not justify 0300, it is not
+FLASH. Do not create a middle tier. Do not add quiet hours to FLASH — quiet
+hours are a confession that the criteria are wrong, applied at the wrong layer.
+
+**N6 — CANARY, because a dead channel is indistinguishable from a quiet week.**
+On a fixed monthly date, a test message fires down the FLASH path with the
+subject `FLASH CHANNEL TEST`. It does not count against N1. If Dean does not
+receive it, the channel is dead and every silent night since that point carries
+no information. The weekly ROUTINE carries a channel-health block:
+
+```
+CHANNEL HEALTH
+last FLASH sent      2026-07-19 (F1, resolved 41m)
+last canary          2026-08-01  RECEIVED
+daily runs this week 6 / 7  ← MISSED RUN 2026-07-30
+```
+
+**The missed-run count is not decoration.** GitHub Actions drops and delays
+scheduled runs under load, and disables `schedule` triggers entirely in
+repositories inactive for 60 days. A job that has quietly stopped running looks
+exactly like a job reporting good news. The weekly asserts the expected count
+and any shortfall is itself a finding.
+
+### D.4 Delivery paths
+
+**ROUTINE** — one weekly email, fixed send window (proposed Monday 0700 local;
+cron is UTC, so the UTC value must be chosen deliberately and re-checked at DST
+transitions, or accept a one-hour seasonal drift and say so). Free fallback
+that works on day one with no vendor and no secret: GitHub emails repository
+watchers on issue creation, so the Issues sink is already a working ROUTINE
+channel.
+
+**FLASH** — needs a path that penetrates Do Not Disturb. Options, with honest
+costs:
+
+| Path | Delivers | Cost | Risk |
+|---|---|---|---|
+| **Pushover, Emergency priority** | Phone push that repeats until acknowledged, with an ACK receipt back to the job | ~$5 one-time per platform | Not SMS. Requires the app installed. |
+| **Twilio SMS** | True SMS with delivery status callbacks | ~$1.15/mo number + per-message; **US A2P 10DLC brand and campaign registration required**, days-to-weeks of friction and registration fees | Recurring spend, which is COMMANDER lane; onboarding delay |
+| **Carrier email-to-SMS gateway** | SMS, via `number@vtext.com` and similar | Free | **Fails silently.** Carriers have been deprecating these. A gateway that stops delivering is exactly the failure mode N6 exists to catch, and it is the one path that gives no delivery signal at all. |
+| **GitHub Mobile push** | Notification | Free, already authenticated | No severity routing, does not break DND |
+
+Recommendation: **Pushover Emergency as the primary FLASH path plus a
+simultaneous email.** The acknowledgment receipt is the deciding feature — it is
+the only listed option where the job learns whether the human actually got it,
+which is what makes N6 measurable rather than ceremonial. If the Commander
+requires literal SMS, Twilio, and budget the 10DLC onboarding as real calendar
+time. The carrier gateway may serve as a secondary duplicate, never as the sole
+FLASH path.
+
+**Do not route operator alerts through OneSignal.** It is the production push
+channel to service members. A misconfigured segment sends an internal ops alert
+to every user of the app. That is a user-facing incident caused by the
+monitoring system, and it is not a hypothetical risk — it is the default failure
+mode of reusing a broadcast channel for narrowcast traffic.
+
+### D.5 ROUTINE weekly SITREP — required shape
+
+Mirrors the standing SITREP format so it reads without translation.
+
+```
+TRANSITION OPS — WEEKLY WATCH SITREP
+COVERAGE 42/98 READ · 49 WALLED · 6 ERROR · 1 NO-BASELINE   (7 daily runs, 6 completed)
+
+CHANGES          findings this week, by severity, with issue links
+DARK SOURCES     per C.5 — the ledger, with ages and AMBER/RED
+WATCH            open items carried forward
+CHANNEL HEALTH   per N6
+BURN             estimated spend MTD vs the $100 ceiling
+```
+
+---
+
+## E. OPEN QUESTIONS FOR THE COMMANDER
+
+These are decisions, not research tasks. Each one changes the design.
+
+**E1 — NETLIFY BRANCH DEPLOYS.** In the Netlify dashboard: are branch deploys
+set to all branches, individual branches, or none? Are Deploy Previews on? Is
+password protection available on this plan? Commit `21e25e3` is direct evidence
+branch deploys have been used. **This is a live production exposure today,
+independent of any workflow** — two remote branches may currently be serving
+public URLs. Blocks Option 1 entirely; the recommended Option 5 does not depend
+on it, but the answer is needed regardless.
+
+**E2 — `netlify.toml`.** Add one, or leave configuration in the dashboard? It is
+the only version-controlled control over branch-deploy behavior. It also
+**overrides dashboard build settings**, so it must reproduce the current build
+command and publish directory exactly — values that exist only in the dashboard
+and that only you can read. COMMANDER lane, deploy pipeline.
+
+**E3 — REPOSITORY VISIBILITY AND PLAN.** Public or private, and which GitHub
+plan? Determines whether rulesets and branch protection are available (they are
+paid features on private repositories) and what artifact retention ceiling
+applies.
+
+**E4 — FLASH CHANNEL.** Pushover Emergency (ACK receipt, ~$5 one-time, not SMS),
+Twilio (true SMS, recurring spend, 10DLC registration friction), or carrier
+gateway (free, silent-failure risk)? Is any recurring spend authorized against
+the $100 ceiling?
+
+**E5 — ALERT ADDRESSES.** Confirm `dean.nemecek01@gmail.com` as the ops
+destination, or split ops mail from personal. Confirm the phone number if SMS.
+Is there a second recipient for continuity when you are unavailable, or is a
+missed FLASH simply a missed FLASH?
+
+**E6 — AGENCY APIs.** Authorize obtaining free api.congress.gov and
+api.govinfo.gov keys, and installing them as repository secrets. Separately and
+more importantly: **do you accept an agency's own API as a tier-1 citation of
+record** (the proposed `policy-verification` 1B rung, C.6)? That is a
+benefits-content decision, COMMANDER lane, and it is the single change that most
+reduces CI blindness.
+
+**E7 — DARK-SOURCE CADENCE AND `DATA_VERIFIED`.** Is 90 days the right staleness
+threshold for a walled source backing a shipped figure? And should the DARK
+LEDGER drive the app's `DATA_VERIFIED` stamp, so the date service members see
+cannot drift from the date the ledger holds? If yes, who bumps it.
+
+**E8 — FLASH THRESHOLDS.** Confirm or adjust: 90% of ceiling and $15/day (F3);
+"Passed Senate" as a FLASH bar, or restrict F5 to "Became Public Law" only; three
+probes five minutes apart for production-down (F1).
+
+**E9 — SCOPE OF THE FIRST JOB.** Recommendation is to stand up uptime and
+outbound-link liveness first — no policy judgment required — and prove the alert
+path end to end before wiring the federal source scan to it. Confirm, or direct
+otherwise.
+
+**E10 — OWNERSHIP AND REGISTRY.** Proposed: s3-devops owns the workflow file,
+s3-watch-officer owns the new `scheduled-ops` skill, force-mod owns the
+`deploy-discipline` 1.3 amendment. Registry entries and regression cases to
+follow your approval, not precede it.
+---
+
+# PART III — VERIFICATION ITEMS AND SEQUENCING
+
+## 8. VERIFICATION ITEMS
+
+Every unverified fact in this document, itemized. Reconnaissance was halted by
+order mid-draft; nothing below was guessed to fill a gap. Tax-model standard:
+a marked placeholder is acceptable, an invented figure is not.
+
+| # | Item | Why it matters | Owner | Blocks |
+|---|------|----------------|-------|--------|
+| **V-1** | **Netlify branch-deploy status for `transitionops.org`.** Are branch deploys enabled? Are `apr2026-policy-refresh` and `resource-directory-may2026` serving public URLs right now? | **Live production exposure today, independent of this design.** Also decides whether PART II Option 1 is ever revisitable. | Dean, Netlify dashboard | Nothing here — but should not wait on this design |
+| **V-2** | Current per-token pricing and confirmed model IDs for Haiku 4.5 and Sonnet 5 | Completes §4. Four numbers finish the cost table | s3-devops via `claude-api` skill | Cost sign-off |
+| **V-3** | Hard monthly spend limit set in Anthropic Console | The only real enforcement; repo-side metering is advisory | Dean, Console | Standup |
+| **V-4** | Which email address GitHub Issues notifications actually reach | Decides whether Issues-native is sufficient for ROUTINE or SMTP is required | Dean, GitHub notification settings | §5.1 choice |
+| **V-5** | Twilio number rental + per-message cost; SendGrid/SES free-tier limits | Separate from the Anthropic ceiling; Dean's total monthly spend is the sum | Dean at signup | Budget total |
+| **V-6** | Full commit SHAs for `actions/checkout`, `actions/upload-artifact` | Floating tags make a scheduled job non-reproducible and third-party mutable | s3-devops | Workflow authoring |
+| **V-7** | Pinned Claude Code CLI version and its headless flag surface (`-p`, `--model`, `--max-turns`, `--output-format`) | §2 YAML assumes a flag set that must be confirmed against the pinned version | s3-devops | Workflow authoring |
+| **V-8** | Actions artifact retention ceiling on this repo's plan | §2 sets `retention-days` | Dean/s3-devops | Minor |
+| **V-9** | Churn threshold N over 14 runs | §3.5 damping; tune on two weeks of real data, do not guess up front | s3-devops after standup | Post-standup |
+| **V-10** | J6 steady-state token cost | Depends on record count and re-verification interval, both undecided in the tax model | s2-intel after ship 1 | J6 activation |
+| **V-11** | Repo settings: default workflow permissions read-only; Actions PR creation disabled; Issues enabled; repo visibility and GitHub plan | Decides ruleset/branch-protection availability and confirms the Issues sink is even available | Dean, repo settings | Standup |
+| **V-12** | Whether a bot's own commits reset GitHub's 60-day scheduled-workflow deactivation clock | Main hidden cost of PART II Option 4; asserted by nobody | s3-devops, empirical | Option 4 only |
+
+**PLACEHOLDER count in this document: 23 occurrences across 15 lines, spanning
+§2, §4 and §5, mapped to 12 distinct V-items.** None is load-bearing for the
+boundary ruling Dean is being asked to make — the ruling turns on blast radius,
+not on price.
+
+---
+
+## 9. WHAT DEAN IS ACTUALLY BEING ASKED
+
+Three rulings. Everything else is downstream.
+
+1. **The boundary.** Approve the findings sink. force-mod recommends PART II
+   Option 5 — Issues + pinned baseline + artifact evidence, `contents: read`,
+   no PAT, no ref write possible. Alternatives ranked in PART II §A.7.
+2. **The doctrine framing.** Restatement or exception? force-mod argues
+   restatement — "no agent chooses a write target at runtime" — because an
+   exception is a precedent that invites argument-by-analogy from the next case.
+   Proposed `deploy-discipline` v1.3 text is in PART II §B.2.
+3. **Scope of the first standup.** Recommend J1 + J3 + the baseline issue only.
+   Prove the loop end to end — detect, remember, report, and notice its own
+   failure — before adding J2, J4, J5. J6 stays dormant regardless.
+
+Plus one that is not this design's to decide but should not wait: **V-1**.
+
+---
+
+## 10. SEQUENCING, ON APPROVAL
+
+1. Dean rules on §9 items 1–3 and answers PART II §E.
+2. Dean sets V-3 (Console limit) and V-11 (repo settings). Nothing runs first.
+3. s3-devops closes V-2, V-6, V-7 — the only remaining fetch-dependent items —
+   under explicit fetch approval.
+4. `deploy-discipline` v1.3 and the proposed `scheduled-ops` skill are drafted
+   and gated as doctrine ships. COMMANDER lane.
+5. Workflow files authored for the approved standup scope only, on one branch,
+   validation-gate EDIT MODE, staged local. Dean merges and pushes.
+6. First run observed under `workflow_dispatch` before any `schedule` line is
+   allowed to fire unattended.
+7. Two weeks of real data, then tune V-9 and revisit J2 gate assumptions.
+
+**Note on step 5, and it is the reason PART II §B matters:** authoring these
+files is itself the first act governed by the amended doctrine. Under v1.2 as
+written, an agent cannot hand Dean a workflow that pushes, because an agent
+cannot push at all. The doctrine has to land before or with the workflows, not
+after them.
