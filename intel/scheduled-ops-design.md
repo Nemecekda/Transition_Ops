@@ -391,8 +391,28 @@ way. Setting that limit is a Dean action, V-3.
 force-mod defines severity CRITERIA in PART II §D. This section is transport only.
 
 ### 5.1 ROUTINE — weekly email SITREP
-Destination `dean@veteranbridgesolutions.com`. GitHub Actions has no built-in
-mailer. Options:
+**Destination: `dean@veteranbridgesolutions.com`** (primary).
+**Fallback: `dean.nemecek01@gmail.com`.** Ruled by Dean 3 AUG 2026, amending the
+earlier same-day ruling below.
+
+**Evidence:** GitHub's address-verification email was delivered to
+`dean@veteranbridgesolutions.com` and confirmed by Dean on 3 AUG 2026. That
+delivery *is* the inbound-mail proof the earlier ruling required, so the
+condition it set is satisfied rather than waived. GitHub's default notification
+email is now set to the business address.
+
+The evidence is well matched to the claim, which is what makes it sufficient:
+the question was whether **GitHub** can deliver to that domain, and the proof is
+a **GitHub-sent** message arriving there. It does not generalise to arbitrary
+senders — an SMTP-action or SendGrid path (options 2 and 3 below) would be a
+different sender and is not covered by this evidence.
+
+**Superseded, retained per the correction standard:** the earlier 3 AUG ruling
+made Gmail the ops destination "until business-domain inbound mail is proven."
+That condition has now been met. Gmail drops to fallback; it is not removed,
+because a single-destination alert path has no continuity if the primary fails.
+
+GitHub Actions has no built-in mailer. Options:
 
 | Option | Secrets needed | Cost | Note |
 |---|---|---|---|
@@ -410,7 +430,7 @@ create accounts and do not handle credentials.** Steps:
 
 1. Create a Twilio account at twilio.com. Verify Dean's mobile as a caller ID.
 2. Buy an SMS-capable phone number. Cost is Twilio-side, **separate from the
-   $75–100 Anthropic ceiling** — number rental plus per-message. V-5.
+   $60 Anthropic target (R4)** — number rental plus per-message. V-5.
 3. From the Twilio Console collect three values: **Account SID**, **Auth
    Token**, **the purchased From number**.
 4. In GitHub: Settings → Secrets and variables → Actions → New repository
@@ -1275,6 +1295,36 @@ gateway (free, silent-failure risk)? Note Twilio spend is **separate from the
 $60 Anthropic target** (V-5) — is any recurring vendor spend authorized, and
 against what budget?
 
+> **RULED 3 AUG 2026 (SUPERSEDED SAME DAY — retained, see below):**
+> `dean.nemecek01@gmail.com` is the ops destination until business-domain
+> inbound mail is proven. `dean@veteranbridgesolutions.com` is superseded for
+> ops traffic and must not be used until it is demonstrated to receive mail.
+>
+> **AMENDED 3 AUG 2026 — the condition above was met, not waived.** GitHub's
+> address-verification email was delivered to `dean@veteranbridgesolutions.com`
+> and confirmed by Dean; that delivery is itself the inbound-mail proof the
+> ruling demanded. GitHub's default notification email is now the business
+> address.
+>
+> **Standing ruling: `dean@veteranbridgesolutions.com` is the ops destination.
+> `dean.nemecek01@gmail.com` is the fallback.** Gmail is retained rather than
+> removed — a single-destination alert path has no continuity if the primary
+> fails, which is the same continuity gap this question already raises below.
+>
+> Scope of the evidence: it proves **GitHub** can deliver to that domain. It does
+> not cover a different sender, so an SMTP-action or SendGrid path (§5.1 options
+> 2 and 3) remains unproven for that address.
+>
+> **Record gap:** the exact confirmation time was not supplied — the report read
+> "confirmed at [time]" with the placeholder unfilled. Recorded at date
+> granularity, which matches the `HUMAN-VERIFIED` record format used elsewhere
+> (verifier, date, what was read). No timestamp has been invented. Fill it in if
+> you want minute-level precision in the record.
+>
+> The continuity question below (a second recipient for when Dean is
+> unavailable) remains open, and the fallback address does not close it —
+> a fallback inbox Dean also owns is not a second person.
+
 **E5 — ALERT ADDRESSES.** Confirm `dean.nemecek01@gmail.com` as the ops
 destination, or split ops mail from personal. Confirm the phone number if SMS.
 Is there a second recipient for continuity when you are unavailable, or is a
@@ -1345,7 +1395,7 @@ recorded in the Result column — not an assertion that it was checked.
 | V-1 | No (urgent anyway) | OPEN | Dean | Netlify dashboard unread. Off the critical path per R1; still a live exposure |
 | V-2 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | Sourced from platform.claude.com models overview, accessed 2 AUG 2026. Sonnet 5 `claude-sonnet-5` $3/$15 per MTok (**intro $2/$10 through 31 AUG 2026**); Haiku 4.5 `claude-haiku-4-5-20251001` (alias `claude-haiku-4-5`) $1/$5, 200K context, 64k max output. See §4 |
 | V-3 | **YES** | **CLOSED 2 AUG 2026** | Dean | Verified by Dean directly on the Console billing page. Monthly spend limit **$200,000 default → $100**. Auto reload **OFF**, retained deliberately as a second circuit breaker. Balance **$19.52 prepaid**, card on file. Email notification at **$45** (75% of the $60 operating target). See §8.2 |
-| V-4 | No | OPEN | Dean | GitHub notification email destination unknown |
+| V-4 | No | **FIX APPLIED 3 AUG 2026 — PROOF PENDING** | Dean | **Finding:** Issue #1 generated no notification. Repo watch was at the default **Participating and @mentions**, and a bot-filed issue does not qualify — Dean is not a participant in something the runner opened. **Fix:** watch set to **All activity**. Destination amended same day: `dean@veteranbridgesolutions.com` (primary, verified by GitHub's own verification email arriving there), `dean.nemecek01@gmail.com` (fallback). **Not closed:** the setting is changed but the path is unproven, and the planned live-fire will not prove it — see §8.6 |
 | V-5 | No | OPEN | Dean | Twilio + mail vendor costs, separate from the $60 |
 | V-6 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | `actions/checkout` v7.0.1 → `3d3c42e5aac5ba805825da76410c181273ba90b1`; `actions/upload-artifact` v7.0.1 → `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a`. Both refs resolve to type `commit` — no tag dereference needed. Source: api.github.com git/ref, 2 AUG 2026 |
 | V-7 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | CLI **2.1.220** (local `claude --version`, matches `npm view @anthropic-ai/claude-code version`). Flag surface verified against that build: `-p/--print`, `--model`, `--output-format`, `--permission-mode`, `--allowed-tools`, `--effort`, `--fallback-model`, `--max-budget-usd` all exist. **`--max-turns` does NOT exist** — the §2 draft was wrong; corrected |
@@ -1475,6 +1525,70 @@ Nothing currently blocked by this. V-2, V-6 and V-7 are reconnaissance items
 needing no key. The key is required only for the first live run, at which point
 it goes directly into GitHub repository secrets as `ANTHROPIC_API_KEY` — pasted
 by Dean into GitHub, never into a chat, a file, or a commit.
+
+---
+
+### 8.6 NOTIFICATION PATH — V-4 FINDING, 3 AUG 2026
+
+**What happened.** J1's manual dispatch created Issue #1 successfully. **No
+notification was generated.** Repo watch sat at GitHub's default, *Participating
+and @mentions*, and a bot-filed issue does not qualify — Dean is not a
+participant in something the runner opened, and the runner cannot @mention him
+into one. Fixed by setting watch to **All activity**. Destination was first
+ruled to Gmail, then amended the same day to
+`dean@veteranbridgesolutions.com` once GitHub's verification email proved
+inbound delivery to that domain; Gmail is retained as fallback. See E5.
+
+**Why this matters beyond the setting.** §5.1 rated GitHub Issues native
+notification as *"works day one, zero setup."* **That was wrong.** It carried an
+unstated prerequisite, and the prerequisite failed silently. The issue was filed
+correctly, the job succeeded, and the channel was dead — which is precisely the
+class of failure this design exists to prevent, occurring on the very first
+issue the system ever produced. §5.1's table is left as written with this
+correction attached, because the mis-rating is part of the record.
+
+#### THE PLANNED LIVE-FIRE WILL NOT PROVE THIS — flagged before the run, not after
+
+Dean's stated proof is *"tomorrow's scheduled run's baseline update must generate
+email."* It will not, for a mechanical reason:
+
+Issue #1 already exists, so `BASELINE_ISSUE` is non-empty and J1 takes the
+`gh issue edit` branch, not `gh issue create`. **GitHub's notification model
+fires on issue creation, comments, state changes, assignment, and mentions — not
+on body edits.** A baseline update rewrites the body of an existing issue and is
+expected to be silent. If tomorrow produces no email, that is the *expected*
+result of an edit and says nothing about whether the watch fix worked. Reading it
+as "still broken" would be a false negative.
+
+**A second, larger gap found while checking this.** J1 as authored **files no
+findings issues at all.** Its only issue-creating paths are the first-run
+baseline creation (already spent on Issue #1) and the `if: failure()` FLASH
+report. Scan output goes to `out/scan-result.json` inside an artifact and stops
+there. So the ROUTINE notification channel currently has **no producer** — there
+is no recurring event that would notify Dean even with the watch fixed. That was
+arguably outside "author J1 per the pinned template," since the template did not
+include a findings-filing step, but it means the channel cannot be exercised by
+normal operation today.
+
+**Options for an actual live-fire — Dean's ruling required, nothing applied:**
+
+| # | Approach | Proves it? | Cost |
+|---|---|---|---|
+| A | Add a findings-filing step to J1 so a real diff creates an issue | Yes, and it closes the producer gap | A change to a live workflow, COMMANDER lane |
+| B | One-off: temporarily have the next `workflow_dispatch` create a throwaway test issue, then close and delete it | Yes — bot-created, same path as the real thing | Small, reversible, but a deliberate test artifact in the repo |
+| C | Dean opens an issue himself | **No.** GitHub does not notify you about your own actions — this false-negatives too | Zero, and misleading |
+| D | Wait for the failure path to fire naturally | Yes, but only on a failure, and it may not come for weeks | Zero, unbounded latency |
+
+**Recommendation: B now, A next.** B proves the channel cheaply and immediately;
+A is the real fix and belongs in the next J1 increment alongside the findings
+format. Option C is listed only so it is not tried — self-generated activity
+never notifies, and it would produce a second false negative on top of the first.
+
+**Cross-reference W-1.** W-1 rates the §5.3 dead-man's switch as covering the
+60-day deactivation risk because "a missing Monday email is itself the alarm."
+That rating **depends on the email path being proven**. An unproven channel makes
+absence-of-email meaningless as a signal. Until V-4 closes on live-fire evidence,
+W-1's detection claim is provisional.
 
 ---
 
