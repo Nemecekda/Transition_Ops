@@ -1,0 +1,20 @@
+# J5 prepaid balance record. Format: balance_usd|as_of_date(YYYY-MM-DD)
+#
+# WHY THIS FILE EXISTS. Nothing in the Anthropic Console is machine-readable
+# without a credential this project deliberately does not put in a runner. The
+# prepaid balance is therefore the one input J5 cannot observe for itself.
+# Rather than drop F6 (CREDIT FLOOR) or pretend to measure it, the balance is
+# an AUTHORED LITERAL that Dean maintains, exactly like .github/j1-sources.txt:
+# reviewed, merged, and visible in a diff.
+#
+# J5 does NOT trust this number indefinitely. It subtracts estimated spend since
+# as_of_date to derive a current balance, and it reports the derivation and the
+# age openly. Past the staleness limit it stops asserting a balance at all and
+# says so — a stale number presented as current is worse than no number.
+#
+# HOW TO UPDATE: read the balance in the Console, put it here with today's date,
+# commit. One line, one diff, one review.
+#
+# Blank lines and lines beginning with # are ignored. First data line wins.
+
+19.52|2026-08-02
