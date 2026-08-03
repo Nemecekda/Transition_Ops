@@ -1,0 +1,114 @@
+# J3 — weekly SITREP. Assembly and send only.
+#
+# DELIBERATELY MODEL-FREE. There is no ANTHROPIC_API_KEY in this job and no
+# claude invocation. Two reasons, both load-bearing:
+#   1. Paying a model to concatenate a list is waste.
+#   2. W-1: this job is the dead-man's switch. It must keep firing when the
+#      Anthropic balance is exhausted and every model job has stopped. A model
+#      in this path would kill the alarm at exactly the moment it is needed.
+# Do not "improve" this job by adding a model to it.
+#
+# It files a SITREP issue rather than sending mail. No SMTP secret exists yet
+# (V-5), and issue creation notifies through the watch path fixed on 3 AUG.
+# When SMTP is wired, mail becomes an ADDITIONAL leg — never a replacement,
+# because the issue is also the durable record.
+name: J3 weekly SITREP
+
+on:
+  schedule:
+    - cron: '0 13 * * 1'      # Mondays 13:00 UTC = 07:00 CST / 08:00 CDT. Actions cron is UTC; no DST.
+  workflow_dispatch:
+
+permissions:
+  contents: read              # cannot write a ref
+  issues: write               # the SITREP itself, and reading the week's findings
+
+concurrency:
+  group: j3-weekly-sitrep
+  cancel-in-progress: false
+
+jobs:
+  sitrep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      BASELINE_TITLE: 'BASELINE — DO NOT CLOSE'
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Issue bodies can quote fetched pages, so they are untrusted text. They
+      # are handled as JSON and written to files — never interpolated into a
+      # command argument. deploy-discipline v1.4 applies to repo-resident
+      # untrusted content exactly as it does to freshly fetched content.
+      - name: Gather the week
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p out
+          SINCE=$(date -u -d '7 days ago' +%F)
+          echo "window opens $SINCE"
+          echo "$SINCE" > out/since.txt
+          gh issue list --state all --limit 200 \
+            --search "created:>=$SINCE" \
+            --json number,title,labels,createdAt,state \
+            > out/week.json
+          jq --arg t "$BASELINE_TITLE" '[.[] | select(.title != $t)]' out/week.json > out/findings.json
+          jq 'length' out/findings.json
+
+      - name: Compose SITREP
+        run: |
+          SINCE=$(cat out/since.txt)
+          TOTAL=$(jq 'length' out/findings.json)
+          FLASH=$(jq '[.[] | select(.labels[]?.name == "FLASH")] | length' out/findings.json)
+          {
+            printf 'TRANSITION OPS — WEEKLY WATCH SITREP\n'
+            printf 'Window: %s to %s\n\n' "$SINCE" "$(date -u +%F)"
+            printf 'CHANGES\n'
+            if [ "$TOTAL" -eq 0 ]; then
+              printf '  NO FINDINGS this week.\n'
+            else
+              printf '  %s issue(s) filed, %s FLASH.\n\n' "$TOTAL" "$FLASH"
+              jq -r '.[] | "  - #\(.number) [\(.state)] \(.title)"' out/findings.json
+            fi
+            printf '\nCHANNEL HEALTH\n'
+            printf '  This SITREP arriving IS the channel test. A missing Monday\n'
+            printf '  SITREP is itself the alarm — see W-1 and section 5.3.\n'
+            printf '\nCOVERAGE / DARK SOURCES / BURN\n'
+            printf '  Not yet instrumented. J1 does not emit a coverage line and\n'
+            printf '  J5 does not exist. Stated as a gap rather than omitted, so an\n'
+            printf '  empty section is never read as a clean report.\n'
+            printf '\nWATCH\n'
+            printf '  Open items live in intel/scheduled-ops-design.md section 8.\n'
+          } > out/sitrep.md
+          cat out/sitrep.md
+
+      # Sends EVERY week, including weeks with nothing to report. That is the
+      # entire point: silence must be diagnostic, not ambiguous.
+      - name: File SITREP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "SITREP $(date -u +%F)" \
+            --body-file out/sitrep.md
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: j3-evidence-${{ github.run_id }}
+          path: out/
+          retention-days: 30
+
+      - name: Report failure loudly
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          printf 'J3 failed. Run %s. The weekly SITREP did not go out.\n' "$RUN_ID" > out/failure.md
+          gh issue create --label FLASH --title "J3 FAILED $(date -u +%F)" --body-file out/failure.md
