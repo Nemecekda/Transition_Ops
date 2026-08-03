@@ -1353,7 +1353,7 @@ recorded in the Result column — not an assertion that it was checked.
 | V-9 | No | DEFERRED | s3-devops | Churn threshold; tune on two weeks of real data, do not guess |
 | V-10 | No | BLOCKED on ship 1 | s2-intel | J6 steady-state cost; model not implemented |
 | V-11 | **YES** | **CLOSED 3 AUG 2026** | **Dean** | Verified by Dean directly in repo settings: default workflow permissions **read-only**, "Allow GitHub Actions to create and approve pull requests" **unchecked**, Issues **enabled**. The Issues sink (R1) is therefore available and the token default is least-privilege |
-| V-12 | No | OPEN | s3-devops | Only relevant if Option 4 is ever revisited; it is not, per R1 |
+| V-12 | No | **OPEN — RESCOPED 3 AUG 2026** | s3-devops | **The earlier note ("only relevant if Option 4 is ever revisited") is withdrawn.** It scoped this to the separate-intel-repo option, which R1 rejected — but the 60-day deactivation mechanism applies to any repo carrying a `schedule` trigger, and J1 is now live on `main` here. The open question is unchanged and now load-bearing: does the Issue activity J1 generates reset the clock, or only commits? See **W-1** in §8.5 |
 | **V-13** | **YES** | **CLOSED 3 AUG 2026** | Dean | APPROVED as drafted with two corrections, both applied: safe example now uses `--max-budget-usd` (per V-7, `--max-turns` does not exist), and the tool flag is `--allowed-tools` — **verified on CLI 2.1.220, where `--allowedTools` and `--allowed-tools` are accepted aliases**; kebab-case chosen for consistency. `deploy-discipline` **1.2 → 1.4**, integer 1.3 burned |
 | **V-14** | **YES** | **CLOSED 3 AUG 2026** | Dean | F3 restated on the $60 basis: FLASH at **$54** month-to-date (90%) or any single day over **$6**. F6 credit floor already applied 2 AUG |
 | **V-15** | **YES** | **CLOSED 3 AUG 2026** | Dean / Orchestrator | `validation-gate` **1.2 → 1.3** applied. Regression cases **Y1–Y5 EXECUTED, not merely specified** — see §8.4. force-mod argued this item must close on execution rather than on the text landing, because it is the gate standing between this repo and its first workflow commit. Agreed and done |
@@ -1475,6 +1475,51 @@ Nothing currently blocked by this. V-2, V-6 and V-7 are reconnaissance items
 needing no key. The key is required only for the first live run, at which point
 it goes directly into GitHub repository secrets as `ANTHROPIC_API_KEY` — pasted
 by Dean into GitHub, never into a chat, a file, or a commit.
+
+---
+
+### 8.5 WATCH ITEMS
+
+Standing hazards that are not V-items: nothing to verify and close, only
+something to keep watching. Added 3 AUG 2026.
+
+#### W-1 — GITHUB DISABLES SCHEDULED WORKFLOWS AFTER ~60 DAYS OF REPOSITORY INACTIVITY
+
+**Cross-reference: V-12.** GitHub disables `schedule` triggers in repositories
+that go inactive for roughly 60 days. J1 is live on `main` as of 3 AUG 2026, so
+this now applies to **this** repository — not to a hypothetical one.
+
+**The tension worth naming.** Ruling R1 makes J1 deliberately never commit; that
+is the safety property, and it is structural — the job holds no credential that
+can write a ref. But "never commits" is precisely the condition that lets the
+inactivity clock run. **The safety property and the liveness property pull
+against each other**, and nothing in this design resolves that. It is accepted,
+watched, and written down here so a future reader does not rediscover it as a
+surprise.
+
+J1 writes GitHub Issues, not commits. Whether Issue activity resets the clock is
+exactly what V-12 asks — and V-12 is no longer hypothetical or Option-4-only.
+
+**Detection, honestly rated.** The §5.3 dead-man's switch does cover this, but
+weakly. If GitHub disables scheduled workflows, it disables **all** of them — J3,
+the weekly SITREP, dies with J1. No Monday email arrives, and per §5.3 a missing
+Monday email is itself the alarm. So the failure is detectable. But:
+
+- Latency is up to **seven days**.
+- It depends on Dean noticing a **non-event**, which is the weakest kind of
+  alarm there is.
+- Every model job is dark for that entire window.
+
+**Mitigations, none chosen.** Dean's merge cadence has kept the repo active well
+inside 60 days and probably will continue to. GitHub also emails before
+disabling. A deliberate periodic commit would reset the clock, but agents cannot
+push (deploy-discipline 1.4 PROHIBITED), so that would be a Dean action, not an
+automated one. Doing nothing and relying on the weekly SITREP is a legitimate
+choice given the merge cadence — it is just a choice, and this entry exists so it
+is made rather than defaulted into.
+
+**Review trigger:** any stretch where Dean expects to be away from the repo for
+more than a month — deployment, extended travel, a quiet period between ships.
 
 ---
 
