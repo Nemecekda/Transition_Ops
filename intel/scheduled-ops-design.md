@@ -120,6 +120,63 @@ operational V-items. `intel/verification-log.md` stays scoped to benefits and
 policy claims per its own header; these are operational, not policy. Say if you
 want them consolidated into one log.
 
+### R7 — J2 MAY CORRELATE, NEVER RATE; AND ITS FLASH POWER SHIPS WITH ITS GOVERNORS
+**COMMANDER, 3 AUG 2026.** Resolves the tension between §C.2 ("a scheduled job
+never rates, and its vocabulary makes that impossible") and the §1 roster, which
+gives J2 the `policy-verification` skill and a Finding-issues output.
+
+The two were never in conflict. §C.2's six words are an **observation** vocabulary
+about a *fetch*. `policy-verification`'s CONFIRMED / PROBABLE / BLOCKED /
+UNVERIFIED are **verdicts** about a *claim*, and a verdict is a ship license.
+Between them sits a third thing neither section named — **description without
+adjudication** — which J1 already performs under Haiku (`what_changed`,
+`quoted_excerpt`) without breaching §C.2.
+
+The ban on rating is **structural, not stylistic**: `policy-verification` line 63
+holds that a claim may be rated below CONFIRMED only after ladder tiers 1–3 fail,
+and CI has only tier 1. Every rating a runner could emit is premature by
+construction. That is why it is enforced at the type level (W7) rather than left
+to analyst discipline — there is no analyst in the runner.
+
+**J2 emits, and only these four:**
+
+| Verdict | Meaning |
+|---|---|
+| `CORRELATED` | Changed source names a figure also live in `index.html`; both sides quoted, values agree |
+| `NO-APP-EXPOSURE` | Changed source touches nothing the app currently claims |
+| `DIVERGENT` | Correlated **and** the values differ — the §D.1 F2 trigger, and the only J2 output that can reach FLASH |
+| `NEEDS-LADDER` | Not settleable at rung 1; routes to Dean's desk. **Replaces** what would have been a rating. Not `BLOCKED` — that is a rating, and per `policy-verification` line 47 it is not a resting state |
+
+**Reserved to interactive sessions and the Commander's desk:** all four rating
+words; AMENDED-BILL adjudication (J2 may *report* the trigger — "as amended" in
+actions, or a changed title — but never conclude what a bill does); ship/no-ship
+recommendations; user-facing copy; writes to `intel/verification-log.md`;
+`DATA_VERIFIED` bumps; HUMAN VERIFICATION RECORDs.
+
+**The verbatim bar on DIVERGENT.** A DIVERGENT finding requires the source's own
+words *and* the app's own words, quoted exactly, with the `index.html` line
+number — and the workflow **checks the app-side quote against the actual file**.
+If either side cannot be quoted verbatim, the finding is `NEEDS-LADDER`. This is
+the control that would have caught the H.R. 980 failure of record: nobody lied
+there, somebody paraphrased.
+
+**Why J2 exists at all:** J1 diffs sources against a hash table and never reads
+the app. J2 is the only job that sees both sides, which is the entire reason it
+costs Sonnet money. Without it §D.1 **F2 is unimplemented** and the FLASH
+criterion that is "the reason the system exists" is decorative.
+
+**Condition attached by the Commander:** J2 is the first job able to FLASH on
+**content** rather than on its own failure. The §D.3 **N1 (2 FLASH per rolling 7
+days) and N2 (72h dedupe) governors therefore ship in the same merge as the
+FLASH power**, or J2's cron stays off. A manual test-fire may precede the
+governors; the schedule may not. Governors are enforced in the shell, never by
+the model — a model that can talk itself past its own rate limiter is not rate
+limited. **Tracked as V-16.**
+
+**Budget:** `--max-budget-usd 3.00` per run. Arithmetic at §4 and in the workflow
+header. Hard stop, not advisory: exceeding it fails the run and fires the FLASH
+failure reporter.
+
 **Worth noting what R1 bought:** choosing the Issues sink removes **V-1 off the
 critical path entirely.** Netlify branch-deploy status no longer gates anything
 here, because nothing in this design writes a ref. V-1 remains urgent on its own
@@ -1419,11 +1476,43 @@ recorded in the Result column — not an assertion that it was checked.
 | **V-14** | **YES** | **CLOSED 3 AUG 2026** | Dean | F3 restated on the $60 basis: FLASH at **$54** month-to-date (90%) or any single day over **$6**. F6 credit floor already applied 2 AUG |
 | **V-15** | **YES** | **CLOSED 3 AUG 2026** | Dean / Orchestrator | `validation-gate` **1.2 → 1.3** applied. Regression cases **Y1–Y5 EXECUTED, not merely specified** — see §8.4. force-mod argued this item must close on execution rather than on the text landing, because it is the gate standing between this repo and its first workflow commit. Agreed and done |
 
+| **V-16** | **YES — for J2's schedule only** | **CLOSED 3 AUG 2026 — GOVERNORS IMPLEMENTED AND REGRESSION-TESTED** | Orchestrator | Raised as the gap that J2's FLASH power would otherwise open: §D.3 **N1 and N2 existed as doctrine with no implementation anywhere** — J1 and J3 FLASH only on their own failure, so no job had ever exercised them. Commander condition, 3 AUG 2026: governors ship in J2's merge or J2's cron stays off. **Implemented in `.github/workflows/j2-weekly-analysis.yml`, step "Apply governors", in shell/python — never model-side.** N1 counts FLASH issues system-wide (not per job) in a rolling 7-day window from the Issues API, so the FLASH issues *are* the ledger and no new state store exists. N2 keys on `F2\|<source-id>\|L<line>` carried in the issue title, suppresses only on a still-**OPEN** match inside 72h — a CLOSED match means the condition was resolved and has recurred, which per N2 resets the clock. **Regression Y1–Y7 executed 3 AUG 2026, 7/7 pass — see §8.9** |
+
 **Standup-gating status, 3 AUG 2026: 0 of 8 open. ALL CLOSED.**
 V-2, V-3, V-6, V-7 closed 2 AUG. V-11, V-13, V-14, V-15 closed 3 AUG.
 
 **R6 is therefore satisfied and the authoring ban lifts.** J1 may be authored,
 on a branch, gated, staged, and merged by Dean — in that order and no other.
+
+### 8.9 V-16 REGRESSION EVIDENCE — J2 GOVERNORS, Y1–Y7 EXECUTED 3 AUG 2026
+
+Run against the **actual governor code extracted from the workflow**, not a
+reimplementation of it. Synthetic inputs; the logic under test is the shipped
+logic. Harness and fixtures are session scratch, deliberately not committed —
+the evidence that matters is the result table and it lives here.
+
+| # | Case | Expected | Result |
+|---|------|----------|--------|
+| Y1 | Clean DIVERGENT, both sides verbatim, budget free | label FLASH | **PASS** |
+| Y2 | DIVERGENT whose `app_excerpt` is **not present at the cited line** (model paraphrased) | demoted to NEEDS-LADDER | **PASS** |
+| Y3 | Model emits the rating word `CONFIRMED` | vocabulary violation, demoted, surfaced | **PASS** |
+| Y4 | N1 budget already spent (2 FLASH in window) | DIVERGENT downgraded to ROUTINE, header reads FLASH BUDGET EXCEEDED | **PASS** |
+| Y5 | N2 — identical finding key **OPEN** inside 72h | suppressed to ROUTINE | **PASS** |
+| Y6 | N2 — identical finding key **CLOSED** inside 72h | **not** suppressed; clock reset per N2 | **PASS** |
+| Y7 | Model output unparseable | zero findings, parse failure reported, nothing inferred | **PASS** |
+
+**7 of 7 pass.** Y2 is the H.R. 980 control and the reason the verbatim bar
+exists. Y6 is the one most likely to be got wrong by a naive dedupe: a condition
+that was fixed and broke again is new information and must be allowed to FLASH.
+
+Additionally verified end to end: the assembled issue title
+`J2 DIVERGENT federal-register-dod L4100 2026-08-03 [k:F2|federal-register-dod|L4100]`
+passes the shell-side character whitelist, carries the N2 dedupe key, and
+contains no model prose — model free text reaches the body file only.
+
+**Not run, and stated rather than omitted:** `shellcheck` is not installed on
+this machine, so the shell steps have not been statically analysed. The four
+embedded Python blocks compile (`py_compile`, 4/4) and the workflow YAML parses.
 
 ### 8.4 V-15 REGRESSION EVIDENCE — Y1–Y5 EXECUTED 3 AUG 2026
 
