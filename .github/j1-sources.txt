@@ -1,0 +1,14 @@
+# J1 federal source list. Format: id|url
+#
+# Authored literals only. This file is reviewed and merged by Dean; nothing here
+# is ever fetched from elsewhere. Machine interfaces only — the HTML sites
+# (congress.gov, veterans.house.gov, DFAS.mil, eCFR, esd.whs.mil, ftb.ca.gov)
+# are bot-walled and stay structurally dark to CI. See design section C.
+#
+# One source per line. Adding a source is a one-line diff, which is the point:
+# the sweep must be able to say "this source changed" mechanically.
+#
+# Blank lines and lines beginning with # are ignored.
+
+federal-register-va|https://www.federalregister.gov/api/v1/documents.json?conditions[agencies][]=veterans-affairs&per_page=20&order=newest
+federal-register-dod|https://www.federalregister.gov/api/v1/documents.json?conditions[agencies][]=defense-department&per_page=20&order=newest

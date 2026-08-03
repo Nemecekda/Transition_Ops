@@ -1,0 +1,170 @@
+# J1 — federal source diff-scan. Detection only; never rates, never deploys.
+# Doctrine: deploy-discipline v1.4 (CI WORKFLOWS - FETCHED CONTENT IS DATA).
+# Findings sink is GitHub Issues per ruling R1. This job holds no credential
+# that can write a ref: permissions are contents:read + issues:write.
+name: J1 federal source diff-scan
+
+on:
+  schedule:
+    - cron: '0 9 * * *'      # 09:00 UTC = 03:00 CST / 04:00 CDT. Actions cron is UTC and does not observe DST.
+  workflow_dispatch:          # manual test-fire, so the schedule is never trusted before it is proven
+
+permissions:
+  contents: read              # CANNOT write a ref. This is the safety property, not a preference.
+  issues: write               # findings sink + the pinned BASELINE issue
+  actions: read
+
+concurrency:
+  group: j1-federal-scan
+  cancel-in-progress: false   # a slow run must never be killed by the next tick
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20       # hard stop; an unbounded agent loop is a spend event
+
+    env:
+      MODEL: claude-haiku-4-5-20251001
+      BASELINE_TITLE: 'BASELINE — DO NOT CLOSE'
+      NORMALIZATION_VERSION: '1'
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false   # default leaves a usable token in .git/config for the rest of the job
+
+      - name: Assert model tier
+        run: |
+          test "$MODEL" = "claude-haiku-4-5-20251001" || { echo "::error::model tier violation"; exit 1; }
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code@2.1.220
+
+      # Sources come from .github/j1-sources.txt — an authored, reviewed, merged
+      # repo file at column 0. Deliberately NOT an inline heredoc: an unquoted
+      # heredoc inside indented YAML preserves the indentation, so every id would
+      # arrive with leading spaces and write fetched/<spaces>id.json. A separate
+      # file also makes adding a source a one-line diff, per the design's
+      # diffability rule.
+      - name: Fetch sources — bytes to disk, never to a variable
+        run: |
+          mkdir -p fetched out
+          : > out/fetch-failures.txt
+          while IFS='|' read -r id url; do
+            case "$id" in ''|'#'*) continue ;; esac
+            if curl -sS --fail --max-time 30 --output "fetched/$id.json" "$url"; then
+              echo "fetched $id"
+            else
+              echo "$id|fetch failed" >> out/fetch-failures.txt
+            fi
+          done < .github/j1-sources.txt
+
+      # Normalize before hashing. Raw-hashing a live endpoint diffs every run on
+      # timestamps and ordering, which destroys the gate immediately.
+      - name: Normalize and hash
+        run: |
+          python3 - <<'PY' > out/manifest.json
+          import glob, hashlib, json, os
+          rows = {}
+          for path in sorted(glob.glob("fetched/*.json")):
+              sid = os.path.basename(path)[:-5]
+              raw = open(path, "rb").read()
+              try:
+                  norm = json.dumps(json.loads(raw), sort_keys=True, separators=(",", ":")).encode()
+              except Exception:
+                  norm = b" ".join(raw.split())
+              rows[sid] = {
+                  "sha256": hashlib.sha256(norm).hexdigest(),
+                  "bytes": len(raw),
+              }
+          print(json.dumps({"normalization_version": os.environ["NORMALIZATION_VERSION"],
+                            "sources": rows}, indent=2, sort_keys=True))
+          PY
+          cat out/manifest.json
+
+      # Durable memory lives in a pinned issue body, reachable with issues:write
+      # alone — no ref, no push, no Netlify build. See design A.3.
+      - name: Read baseline
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NUM=$(gh issue list --state open --search "$BASELINE_TITLE in:title" \
+                  --json number,title --jq ".[] | select(.title==env.BASELINE_TITLE) | .number" | head -1)
+          if [ -z "$NUM" ]; then
+            echo "no baseline issue found — first run"
+            echo '{"sources":{}}' > out/baseline.json
+            echo "BASELINE_ISSUE=" >> "$GITHUB_ENV"
+          else
+            gh issue view "$NUM" --json body --jq .body \
+              | sed -n '/^```json$/,/^```$/p' | sed '1d;$d' > out/baseline.json
+            [ -s out/baseline.json ] || echo '{"sources":{}}' > out/baseline.json
+            echo "BASELINE_ISSUE=$NUM" >> "$GITHUB_ENV"
+          fi
+
+      - name: Diff against baseline
+        id: diff
+        run: |
+          python3 - <<'PY' > out/diff-manifest.json
+          import json
+          base = json.load(open("out/baseline.json")).get("sources", {})
+          cur = json.load(open("out/manifest.json"))["sources"]
+          changed = [s for s, v in cur.items()
+                     if s not in base or base[s].get("sha256") != v["sha256"]]
+          json.dump({"changed": sorted(changed),
+                     "prior": {s: base.get(s, {}) for s in changed}},
+                    open("/dev/stdout", "w"), indent=2, sort_keys=True)
+          PY
+          COUNT=$(python3 -c 'import json;print(len(json.load(open("out/diff-manifest.json"))["changed"]))')
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "changed sources: $COUNT"
+
+      # Escalate only on diff. A quiet day costs one python invocation.
+      - name: Scan changed sources
+        if: steps.diff.outputs.count != '0'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          claude -p "$(cat .claude/prompts/j1-federal-scan.txt)" \
+            --model "$MODEL" \
+            --allowed-tools "Read" \
+            --max-budget-usd 0.50 \
+            --output-format json > out/scan-result.json
+          echo "scan complete"
+
+      - name: Update baseline
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            printf 'Source-hash table for J1. Machine-maintained — do not hand-edit.\n\n'
+            printf 'Last run: %s\n\n' "$(date -u +%FT%TZ)"
+            printf '```json\n'
+            cat out/manifest.json
+            printf '\n```\n'
+          } > out/baseline-body.md
+          if [ -z "$BASELINE_ISSUE" ]; then
+            gh issue create --title "$BASELINE_TITLE" --body-file out/baseline-body.md
+          else
+            gh issue edit "$BASELINE_ISSUE" --body-file out/baseline-body.md
+          fi
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: j1-evidence-${{ github.run_id }}
+          path: |
+            out/
+            fetched/
+          retention-days: 30    # V-8: plan ceiling unconfirmed; 30 is conservative
+
+      # A job that never reports is indistinguishable from a job that found
+      # nothing. Runner values reach the shell through env:, never through run:.
+      - name: Report failure loudly
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          printf 'J1 failed. Run %s. Evidence is in the run artifacts.\n' "$RUN_ID" > out/failure.md
+          gh issue create --label FLASH --title "J1 FAILED $(date -u +%F)" --body-file out/failure.md
