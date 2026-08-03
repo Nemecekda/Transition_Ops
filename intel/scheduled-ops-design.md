@@ -29,9 +29,11 @@ standard applies: a marked placeholder is acceptable, an invented figure is not.
   darkness rather than hiding it. See PART II §C.
 - **Cost:** structurally bounded by model pinning and an escalate-only-on-diff
   gate. The arithmetic is laid out in §4; the unit prices are placeholders.
-- **Biggest open risk, and it is live today independent of this design:**
+- ~~**Biggest open risk, and it is live today independent of this design:**
   branch-deploy status is unverified. Two remote branches may already be serving
-  public URLs. V-1.
+  public URLs.~~ **WITHDRAWN 3 AUG 2026 — this risk did not exist.** V-1 CLOSED
+  on Dean's review of the Netlify deploy history: Production/main builds only,
+  zero branch deploys ever fired, setting confirmed `[None]`. See §8.7.
 
 ---
 
@@ -1270,6 +1272,15 @@ BURN             estimated spend MTD vs the $60 target (ROUTINE at $45 / 75%)
 
 These are decisions, not research tasks. Each one changes the design.
 
+> **ANSWERED 3 AUG 2026 — V-1 CLOSED, and the premise was wrong.** Branch
+> deploys are `[None]`; the deploy history shows Production/main builds only and
+> zero branch deploys ever fired. The "live production exposure" asserted below
+> **never existed**. Commit `21e25e3` evidenced an author's *intent* to trigger a
+> branch deploy, not that branch deploys were enabled — the attempt produced no
+> build. Question retained per the correction standard; see §8.7 for the full
+> correction. Deploy Previews and plan-level password protection remain
+> unconfirmed but are now idle curiosities rather than risks.
+
 **E1 — NETLIFY BRANCH DEPLOYS.** In the Netlify dashboard: are branch deploys
 set to all branches, individual branches, or none? Are Deploy Previews on? Is
 password protection available on this plan? Commit `21e25e3` is direct evidence
@@ -1392,7 +1403,7 @@ recorded in the Result column — not an assertion that it was checked.
 
 | # | Gating? | Status | Owner | Result / evidence |
 |---|---------|--------|-------|-------------------|
-| V-1 | No (urgent anyway) | OPEN | Dean | Netlify dashboard unread. Off the critical path per R1; still a live exposure |
+| V-1 | No | **CLOSED 3 AUG 2026 — NO EXPOSURE EXISTED** | Dean | Deploy history reviewed 3 AUG 2026: **Production/main builds only, zero branch deploys ever fired** despite branches pushed to origin; setting confirms branch deploys `[None]`. The exposure this item asserted was never real. Setting and behavioural record agree, which is stronger than either alone. See §8.7 |
 | V-2 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | Sourced from platform.claude.com models overview, accessed 2 AUG 2026. Sonnet 5 `claude-sonnet-5` $3/$15 per MTok (**intro $2/$10 through 31 AUG 2026**); Haiku 4.5 `claude-haiku-4-5-20251001` (alias `claude-haiku-4-5`) $1/$5, 200K context, 64k max output. See §4 |
 | V-3 | **YES** | **CLOSED 2 AUG 2026** | Dean | Verified by Dean directly on the Console billing page. Monthly spend limit **$200,000 default → $100**. Auto reload **OFF**, retained deliberately as a second circuit breaker. Balance **$19.52 prepaid**, card on file. Email notification at **$45** (75% of the $60 operating target). See §8.2 |
 | V-4 | No | **FIX APPLIED 3 AUG 2026 — PROOF PENDING** | Dean | **Finding:** Issue #1 generated no notification. Repo watch was at the default **Participating and @mentions**, and a bot-filed issue does not qualify — Dean is not a participant in something the runner opened. **Fix:** watch set to **All activity**. Destination amended same day: `dean@veteranbridgesolutions.com` (primary, verified by GitHub's own verification email arriving there), `dean.nemecek01@gmail.com` (fallback). **Not closed:** the setting is changed but the path is unproven, and the planned live-fire will not prove it — see §8.6 |
@@ -1525,6 +1536,70 @@ Nothing currently blocked by this. V-2, V-6 and V-7 are reconnaissance items
 needing no key. The key is required only for the first live run, at which point
 it goes directly into GitHub repository secrets as `ANTHROPIC_API_KEY` — pasted
 by Dean into GitHub, never into a chat, a file, or a commit.
+
+---
+
+### 8.7 V-1 CLOSED — THE EXPOSURE DID NOT EXIST, 3 AUG 2026
+
+**Evidence (Dean, direct review, 3 AUG 2026).** Netlify deploy history shows
+**Production/main builds only. Zero branch deploys have ever fired**, despite
+branches having been pushed to origin. The dashboard setting confirms branch
+deploys are **`[None]`**.
+
+**This is stronger evidence than a setting alone.** The configuration says
+branch deploys are off, and the behavioural record says none ever ran even when
+branches existed to trigger them. Setting and history agree. A setting can be
+misread or recently changed; a deploy history covering the period when those
+branches were pushed cannot be. Together they close the question rather than
+merely answering it.
+
+#### CORRECTION — I asserted an exposure that never existed
+
+I raised V-1 across several SITREPs as *"a live production exposure today"* and
+wrote that `apr2026-policy-refresh` and `resource-directory-may2026` **"may
+currently be serving public URLs."** **That was wrong, and it was the strongest
+claim in the document.**
+
+The inference came from commit `21e25e3`, titled *"Trigger Netlify branch
+deploy."* I read a commit title as evidence that branch deploys were **enabled**.
+It is only evidence that someone once **intended** to trigger one — the deploy
+history now shows the attempt never produced a build. A commit message records
+what an author meant to happen, not what the platform did. I treated authorial
+intent as platform state.
+
+The error was compounded by being unfalsifiable from where I sat: `netlify.toml`
+does not exist in the repo, the Netlify MCP tool was unavailable, and I said so
+each time. Flagging an unverifiable risk is legitimate. Repeatedly escalating it
+as *live* while unable to test it was not proportionate, and it consumed
+attention that had a real cost — V-1 was carried as urgent through four
+SITREPs.
+
+Per the correction standard the original wording is struck rather than deleted:
+see the withdrawn BLUF bullet in §0 and the E1 open question in PART II §E.
+
+#### THIS DOES NOT REOPEN OPTION 1
+
+Anticipating the obvious next question. PART II §A.1 rejected the restricted
+branch-namespace option for **two** independent reasons:
+
+1. **`permissions:` cannot scope writes to a ref prefix.** The token grant is
+   repository-wide, so the workflow's restraint is a convention inside the file
+   rather than an enforced boundary. The only real enforcement is a repository
+   ruleset, whose availability on this plan is still unconfirmed.
+2. Netlify branch deploys might publish unreviewed content.
+
+**V-1 removes reason 2 only.** Reason 1 was the decisive one and is untouched.
+Option 1 stays rejected, R1 stands, and J1 is already live on the Issues sink —
+nothing here is reopened. Recorded explicitly so a future reader does not treat
+"V-1 closed" as grounds to revisit a settled ruling.
+
+**One control worth keeping in view.** §A.1 noted that a `netlify.toml` with
+`[context.branch-deploy] ignore = "exit 0"` would be the only
+**version-controlled** control over branch-deploy behaviour. Today's state is
+correct but lives entirely in the dashboard, where it is invisible to review and
+changeable without a diff. Not a recommendation — the risk is now known to be
+nil — but if branch deploys are ever turned on, that file is how it should be
+governed.
 
 ---
 
