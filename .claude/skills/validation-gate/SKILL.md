@@ -85,9 +85,55 @@ under another name.
      `node -e 'JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));console.log("JSON OK")' "$T/jsonld.json"`
    - Standalone files: `node --check` on sw.js, OneSignalSDKWorker.js,
      netlify/functions/*.js. `JSON.parse` on manifest.json.
+   - YAML files (`.yml` / `.yaml`, anywhere in the repo, `.github/workflows/**`
+     in particular): parse with Ruby. Ruby ships with macOS and its YAML parser
+     is Psych, in-tree, offline, deterministic:
+     `ruby -ryaml -e 'ARGV.each{|f| YAML.parse_stream(File.read(f)); puts "YAML OK #{f} #{File.size(f)} bytes"}' .github/workflows/*.yml`
+     Pass every changed YAML path as an argument. PASS = one `YAML OK` line per
+     file and exit 0. FAIL = `Psych::SyntaxError` naming line, column, and
+     problem, and exit 1; report it verbatim, do not paraphrase it. One bad file
+     among several fails the whole invocation (verified).
+     `parse_stream` builds the node tree for every document without resolving
+     aliases or constructing objects - it answers parseability and nothing else.
+     It is also why multi-document files are covered: `YAML.load` returns only
+     the first document and would silently skip the rest.
+   - DO NOT PIPE THIS COMMAND. `ruby ... | head` makes `$?` report `head`, not
+     Ruby, so a `Psych::SyntaxError` prints and the step still exits 0. Run it
+     unpiped and check the exit code, or capture to a file and inspect. This is
+     the same silent-green failure mode step 6 exists to prevent, and it has
+     bitten this gate before.
+   - PROHIBITED for this bullet: `npx js-yaml` or any other network-fetched
+     parser. `js-yaml` is not on PATH; `npx` would fetch over the network. A gate
+     step must be deterministic and offline. Do not "improve" this step by
+     reaching for npx. PyYAML is also unavailable - `python3` is 3.9.6 and
+     `import yaml` raises ImportError. Ruby is the prescribed parser.
+   - SCOPE - parseability only. Do NOT assert workflow semantics here (that
+     `on:` exists, that `jobs:` is non-empty, that a runner label is valid).
+     Step 4 asks the same question of YAML that it asks of JS and JSON: does the
+     file parse. Semantic linting is a different tool and a different decision.
+     A workflow that parses cleanly and does the wrong thing is a PASS at this
+     gate and a defect somewhere else.
+   - YAML 1.1 TRAP - the bare token `on` parses as boolean `true`, not the
+     string `"on"`. Verified on Psych 3.1.0: a workflow's top-level keys come
+     back as `["name", true, "jobs"]`. Structural parse is unaffected; this is
+     why the prescribed check is a parse and not an assertion. Any assertion
+     written against a key literally named `on` will fail confusingly. Do not
+     quote keys in a workflow file to make such an assertion pass - the file was
+     never broken, the assertion was.
+   - FALLBACK (no Ruby available): scan the changed YAML for tab characters -
+     `grep -n -e $'\t' FILE` - and require zero, since YAML forbids tabs in
+     indentation; confirm every top-level key sits at column 0 and every nested
+     line is space-indented. Label it FALLBACK in the evidence. This detects the
+     single most common YAML defect and proves nothing about structure beyond
+     it; a tab-free file can be malformed in a dozen other ways. Fallback is
+     weaker evidence and never PASS-equivalent for a structural change.
    - Record the block inventory (count, line ranges, sizes). At dd4e1f0 that is
-     4 inline blocks (1 JSON-LD + 3 JS) plus 3 src-only tags. An inventory
-     change the diff does not explain is a full stop.
+     4 inline blocks (1 JSON-LD + 3 JS) plus 3 src-only tags. Record the YAML
+     inventory alongside it: every tracked `.yml` / `.yaml` path with its byte
+     size and document count. At 87d9f48 that set is EMPTY - confirmed with
+     `git ls-files '*.yml' '*.yaml'`, which returns zero files; the first
+     `.github/workflows/*.yml` is the first entry and must be stated as such. An
+     inventory change the diff does not explain is a full stop, YAML included.
    - APPLICABILITY: the app calls `React.createElement` directly and loads no
      Babel, so inline blocks are parseable JS as-is. If raw JSX is ever
      introduced, `node --check` will report a syntax error that is not a real
@@ -116,7 +162,12 @@ Scope: file integrity only. INTEGRITY MODE NEVER CERTIFIES AN EDIT.
 3I. Encoding: literal PASS/FAIL, whole file. Curly quotes and U+00A0 zero.
     Record em/en dash counts as a fingerprint; nonzero is expected and fine.
 4I. Structural: literal PASS/FAIL. Step 4 primary parse run over every inline
-    block and every tracked .js / .json file.
+    block, every tracked .js / .json file, and every tracked .yml / .yaml file.
+    In INTEGRITY MODE the YAML argument list is the full tracked set, not a diff
+    subset. Record the YAML inventory as a fingerprint - path, byte size,
+    document count. An empty set is a valid fingerprint and must be reported as
+    `YAML: 0 tracked files`, never omitted; a set that grows without a
+    corresponding commit is a full stop.
 5I. Untouched-region: **N/A** (no diff to scope). SUBSTITUTE - cleanliness
     proof: `git status --porcelain` empty, `git diff HEAD --stat` empty, and
     `git rev-parse HEAD` recorded in the evidence. Any output means the tree is

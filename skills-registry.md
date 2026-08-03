@@ -9,8 +9,8 @@ written) · DEPRECATED (superseded — note by what)
 
 | # | Skill | Owner | Status | Version | Validated | Location |
 |---|-------|-------|--------|---------|-----------|----------|
-| 1 | validation-gate | s3-devops | CODIFIED | 1.2 | 2026-08-02 | .claude/skills/validation-gate/ |
-| 2 | deploy-discipline | s3-devops | CODIFIED | 1.2 | 2026-08-02 | .claude/skills/deploy-discipline/ |
+| 1 | validation-gate | s3-devops | CODIFIED | 1.3 | 2026-08-03 | .claude/skills/validation-gate/ |
+| 2 | deploy-discipline | s3-devops | CODIFIED | 1.4 | 2026-08-03 | .claude/skills/deploy-discipline/ (1.3 BURNED - see change log) |
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
@@ -168,3 +168,58 @@ written) · DEPRECATED (superseded — note by what)
   inside the doctrine while writing it and corrected on read-back.
   Regression spec 1-6 specified, NOT executed.
   Lane: COMMANDER (hard gate + user-facing wording approval). Owner s3-devops.
+- 2026-08-03 - deploy-discipline 1.2 -> 1.4. **Integer 1.3 is BURNED, permanently
+  and deliberately.** Ruling R1a (recorded in intel/scheduled-ops-design.md)
+  declined a proposal headed "PROPOSED TEXT - deploy-discipline v1.3", and that
+  heading remains in the repo as retained rationale. Shipping a real v1.3 would
+  make this registry read "1.3 CODIFIED" against a binding ruling reading "v1.3
+  is NOT ADOPTED" - unresolvable from the artifacts alone by anyone reading them
+  later. This is the same discipline the skill already applies to a reverted
+  CACHE_NAME: a number that would be ambiguous in the field is never reused.
+  Content: adds section CI WORKFLOWS - FETCHED CONTENT IS DATA, NEVER CODE,
+  placed immediately before PROHIBITED rather than in FORWARD PATH, because
+  FORWARD PATH is read on every ship and this fires on a rare one. The rule:
+  externally retrieved content is never interpolated into a `run:` block or a
+  `${{ }}` expression that reaches a shell; it moves through files only. Carries
+  a mechanical test (substitute the worst attacker string for every `${{ }}`; if
+  the result can be two commands it fails), a DO NOT example with three labelled
+  defects, a DO example, and an explicit "what this does NOT ban" section so the
+  rule is applied rather than resented. PROHIBITED gains three entries.
+  The load-bearing technical point: `${{ }}` in `env:` yields a value, `${{ }}`
+  in `run:` yields code substituted before any shell starts - quoting cannot fix
+  the unsafe form. Frontmatter description extended to name .github/workflows/
+  so the skill is actually loaded by an agent about to author CI.
+  Driver: ruling R1b. W8 was drafted inside the declined v1.3 and would otherwise
+  have been lost; it is not a push rule, it closes the script-injection path from
+  a fetched page to the runner's ANTHROPIC_API_KEY.
+  Drafted by force-mod. Applied with two Commander corrections: `--max-turns`
+  replaced by `--max-budget-usd` (the former does not exist on CLI 2.1.220), and
+  `--allowed-tools` verified as a valid alias of `--allowedTools` on that build.
+  Regression spec D1-D5 specified, NOT executed.
+  Lane: COMMANDER (deploy pipeline + security control). Owner s3-devops.
+- 2026-08-03 - validation-gate 1.2 -> 1.3. Adds YAML structural parsing to step 4
+  and 4I. Driver: the skill's structural check was `node --check` and JSON.parse,
+  neither of which parses YAML, and this repo was about to commit its first
+  .github/workflows/*.yml - the gate would have reported a clean structural PASS
+  on a file it never parsed, which is the exact silent-green failure the skill
+  exists to prevent. Prescribes `ruby -ryaml -e '...YAML.parse_stream...'`:
+  Psych is in-tree, offline and deterministic, `parse_stream` covers
+  multi-document files that `YAML.load` would silently truncate to the first doc,
+  and PyYAML is unavailable here (python3 3.9.6, no yaml module). Explicitly
+  PROHIBITS npx js-yaml - a gate step must not fetch over the network. Scope is
+  parseability only, matching how step 4 already treats JS and JSON; semantic
+  workflow linting is a separate skill and a separate decision, flagged to Dean
+  and not bolted on. Records the YAML 1.1 trap (bare `on` parses as boolean
+  true - verified, a workflow's top-level keys come back as ["name", true,
+  "jobs"]) and a labelled no-Ruby FALLBACK. Block inventory now records the YAML
+  set; the empty set is a valid fingerprint that must be reported, never omitted.
+  Also adds DO NOT PIPE THIS COMMAND: `ruby ... | head` makes $? report head, so
+  a Psych::SyntaxError prints while the step still exits 0. Found by executing
+  the cases, not by reading them.
+  Drafted by force-mod. Regression cases Y1-Y5 **EXECUTED**, evidence in
+  intel/scheduled-ops-design.md section 8.4 - including the deliberate
+  scope-boundary case (valid YAML, semantically garbage, must PASS). force-mod
+  argued this item must close on execution rather than on the text landing,
+  because it is the gate standing between this repo and its first workflow
+  commit; that argument was accepted.
+  Lane: COMMANDER (hard gate). Owner s3-devops.

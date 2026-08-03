@@ -1113,9 +1113,12 @@ source is a citation of record, and the figure is live in the app. This is the
 service-member-gets-wrong-information case and it is the reason the system
 exists.
 
-**F3 — SPEND.** Estimated month-to-date spend ≥ 90% of the $100 ceiling, or any
-single day's estimated spend > $15. The Watch Officer's existing 75% flag stays
-ROUTINE — it is a heads-up, not an emergency.
+**F3 — SPEND.** Estimated month-to-date spend ≥ **$54** (90% of the $60 target),
+or any single day's estimated spend > **$6**. **Restated on the $60 basis by
+Dean 3 AUG 2026 (V-14 CLOSED).** The retired "$100 ceiling / $15 per day"
+figures were written against the original $75–100 target and are void. The 75%
+threshold ($45, which is also the Console email notification) stays ROUTINE — it
+is a heads-up, not an emergency.
 
 **F4 — INTEGRITY.** Any write to any ref that Dean did not perform; any push to
 `main` not attributable to Dean; a secret-scanning alert; a workflow run
@@ -1238,7 +1241,7 @@ CHANGES          findings this week, by severity, with issue links
 DARK SOURCES     per C.5 — the ledger, with ages and AMBER/RED
 WATCH            open items carried forward
 CHANNEL HEALTH   per N6
-BURN             estimated spend MTD vs the $100 ceiling
+BURN             estimated spend MTD vs the $60 target (ROUTINE at $45 / 75%)
 ```
 
 ---
@@ -1268,8 +1271,9 @@ applies.
 
 **E4 — FLASH CHANNEL.** Pushover Emergency (ACK receipt, ~$5 one-time, not SMS),
 Twilio (true SMS, recurring spend, 10DLC registration friction), or carrier
-gateway (free, silent-failure risk)? Is any recurring spend authorized against
-the $100 ceiling?
+gateway (free, silent-failure risk)? Note Twilio spend is **separate from the
+$60 Anthropic target** (V-5) — is any recurring vendor spend authorized, and
+against what budget?
 
 **E5 — ALERT ADDRESSES.** Confirm `dean.nemecek01@gmail.com` as the ops
 destination, or split ops mail from personal. Confirm the phone number if SMS.
@@ -1348,17 +1352,49 @@ recorded in the Result column — not an assertion that it was checked.
 | V-8 | No | OPEN | Dean/s3-devops | Artifact retention ceiling, plan-dependent |
 | V-9 | No | DEFERRED | s3-devops | Churn threshold; tune on two weeks of real data, do not guess |
 | V-10 | No | BLOCKED on ship 1 | s2-intel | J6 steady-state cost; model not implemented |
-| V-11 | **YES** | OPEN | **Dean** | Repo settings per R5 |
+| V-11 | **YES** | **CLOSED 3 AUG 2026** | **Dean** | Verified by Dean directly in repo settings: default workflow permissions **read-only**, "Allow GitHub Actions to create and approve pull requests" **unchecked**, Issues **enabled**. The Issues sink (R1) is therefore available and the token default is least-privilege |
 | V-12 | No | OPEN | s3-devops | Only relevant if Option 4 is ever revisited; it is not, per R1 |
-| **V-13** | **YES** | **DRAFTED, awaiting Dean** | **Dean** | Text drafted by force-mod, staged at `intel/v13-w8-script-injection-rule.md`. Proposes `deploy-discipline` **1.2 → 1.4**, burning 1.3 (R1a declined a text headed "v1.3", so shipping a real v1.3 would make the registry contradict a binding ruling — same burn discipline as a reverted `CACHE_NAME`). Not applied |
-| **V-15** | **YES** | **OPEN** | **Dean** | **NEW, found by force-mod.** `validation-gate` 1.2's structural check is `node --check` / `JSON.parse` — **neither parses YAML**. The first workflow file this project commits would pass a gate that cannot tell whether it parses. Fix is small but touches a HARD GATE, so COMMANDER lane |
-| **V-14** | **YES** | **OPEN** | **Dean** | **NEW, per R4.** F3 FLASH thresholds still reference the retired $100 ceiling and a $15/day figure |
+| **V-13** | **YES** | **CLOSED 3 AUG 2026** | Dean | APPROVED as drafted with two corrections, both applied: safe example now uses `--max-budget-usd` (per V-7, `--max-turns` does not exist), and the tool flag is `--allowed-tools` — **verified on CLI 2.1.220, where `--allowedTools` and `--allowed-tools` are accepted aliases**; kebab-case chosen for consistency. `deploy-discipline` **1.2 → 1.4**, integer 1.3 burned |
+| **V-14** | **YES** | **CLOSED 3 AUG 2026** | Dean | F3 restated on the $60 basis: FLASH at **$54** month-to-date (90%) or any single day over **$6**. F6 credit floor already applied 2 AUG |
+| **V-15** | **YES** | **CLOSED 3 AUG 2026** | Dean / Orchestrator | `validation-gate` **1.2 → 1.3** applied. Regression cases **Y1–Y5 EXECUTED, not merely specified** — see §8.4. force-mod argued this item must close on execution rather than on the text landing, because it is the gate standing between this repo and its first workflow commit. Agreed and done |
 
-**Standup-gating status, 2 AUG 2026: 4 of 8 open.**
-CLOSED — V-2, V-3, V-6, V-7.
-OPEN — V-11 (Dean, repo settings), V-13 (drafted, awaiting Dean's ruling),
-V-14 (F3 restatement; F6 approved and applied), V-15 (new, YAML gate gap).
-No workflow file may be authored until all four read CLOSED.
+**Standup-gating status, 3 AUG 2026: 0 of 8 open. ALL CLOSED.**
+V-2, V-3, V-6, V-7 closed 2 AUG. V-11, V-13, V-14, V-15 closed 3 AUG.
+
+**R6 is therefore satisfied and the authoring ban lifts.** J1 may be authored,
+on a branch, gated, staged, and merged by Dean — in that order and no other.
+
+### 8.4 V-15 REGRESSION EVIDENCE — Y1–Y5 EXECUTED 3 AUG 2026
+
+Run against Psych 3.1.0 / Ruby 2.6.10 with the prescribed command.
+
+| Case | Fixture | Expected | Actual | Verdict |
+|---|---|---|---|---|
+| Y1 | Valid workflow YAML | PASS | `YAML OK`, exit 0 | PASS |
+| Y2 | **Valid YAML, semantically garbage** (`runs-on: ubuntu-latest-does-not-exist`, `actions/checkout@v999`) | **PASS** — proves the scope boundary is deliberate | `YAML OK`, exit 0 | PASS |
+| Y3 | Malformed (unclosed flow sequence) | FAIL | `Psych::SyntaxError ... line 5 column 8`, exit 1 | PASS |
+| Y4 | Tab in indentation | FAIL | `Psych::SyntaxError ... line 3 column 1`, exit 1 | PASS |
+| Y5 | Multi-document | PASS, both docs seen | `parse_stream` → 2 docs; `YAML.load` → 1 | PASS |
+
+Two facts established by execution that the draft could only assert:
+
+- **The YAML 1.1 trap is real.** A workflow's top-level keys parse as
+  `["name", true, "jobs"]` — the bare token `on` really does become boolean
+  `true`. Recorded in the skill so nobody burns a run on it.
+- **A mixed invocation fails correctly.** One malformed file passed alongside a
+  valid one exits 1, so the step cannot half-pass.
+
+**Defect found while executing, now written into the skill:** piping the parse
+command (`ruby ... | head`) makes `$?` report the pipe's last command, so a
+`Psych::SyntaxError` prints and the step still exits 0. Caught because the first
+harness did exactly that and showed `exit=0` on the two cases that must fail.
+The command is correct; the invocation pattern is the hazard, and step 4 now
+says so explicitly.
+
+**Baseline confirmed authoritatively.** force-mod flagged its "repo tracks zero
+YAML" claim as a glob observation. `git ls-files '*.yml' '*.yaml'` returns zero
+files at `87d9f48` — the claim holds, and the skill now cites the command rather
+than the observation.
 
 ### 8.2 BUDGET INSTRUMENTATION — as verified 2 AUG 2026
 
