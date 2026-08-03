@@ -58,12 +58,25 @@ jobs:
           : > out/fetch-failures.txt
           while IFS='|' read -r id url; do
             case "$id" in ''|'#'*) continue ;; esac
-            if curl -sS --fail --max-time 30 --output "fetched/$id.json" "$url"; then
-              echo "fetched $id"
+            # --globoff is REQUIRED, not optional. curl treats [ and ] as glob
+            # metacharacters, and every Federal Register query carries literal
+            # brackets (conditions[agencies][]). Without it curl never makes a
+            # request at all: "curl: (3) bad range in URL position 66". This
+            # silently produced zero bytes across three flights.
+            if err=$(curl -sS --fail --globoff --max-time 30 \
+                       --output "fetched/$id.json" "$url" 2>&1); then
+              echo "fetched $id ($(wc -c < "fetched/$id.json" | tr -d ' ') bytes)"
             else
-              echo "$id|fetch failed" >> out/fetch-failures.txt
+              rc=$?
+              # Record WHY. The previous version logged only "fetch failed",
+              # which is why three runs burned before the cause was visible.
+              # The reason now rides into the FLASH body via the guard.
+              printf '%s|exit=%s|%s\n' "$id" "$rc" "$err" >> out/fetch-failures.txt
+              echo "::warning::fetch failed for $id (exit $rc): $err"
+              rm -f "fetched/$id.json"
             fi
           done < .github/j1-sources.txt
+          echo "--- fetch failures ---"; cat out/fetch-failures.txt
 
       # Normalize before hashing. Raw-hashing a live endpoint diffs every run on
       # timestamps and ordering, which destroys the gate immediately.

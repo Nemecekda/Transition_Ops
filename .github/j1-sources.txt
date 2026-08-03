@@ -10,5 +10,5 @@
 #
 # Blank lines and lines beginning with # are ignored.
 
-federal-register-va|https://www.federalregister.gov/api/v1/documents.json?conditions[agencies][]=veterans-affairs&per_page=20&order=newest
+federal-register-va|https://www.federalregister.gov/api/v1/documents.json?conditions[agencies][]=veterans-affairs-department&per_page=20&order=newest
 federal-register-dod|https://www.federalregister.gov/api/v1/documents.json?conditions[agencies][]=defense-department&per_page=20&order=newest
