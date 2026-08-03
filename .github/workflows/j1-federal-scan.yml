@@ -27,6 +27,12 @@ jobs:
       MODEL: claude-haiku-4-5-20251001
       BASELINE_TITLE: 'BASELINE — DO NOT CLOSE'
       NORMALIZATION_VERSION: '1'
+      # PINNED baseline issue number. An in-file constant, not a repo variable:
+      # this is version-controlled, reviewable, and changes with a diff. A repo
+      # variable lives in the dashboard where it is invisible to review and can
+      # change without a trace - the same objection raised against dashboard-only
+      # Netlify config. Changing this is a deliberate, reviewed edit.
+      BASELINE_ISSUE: '1'
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
@@ -84,22 +90,39 @@ jobs:
 
       # Durable memory lives in a pinned issue body, reachable with issues:write
       # alone — no ref, no push, no Netlify build. See design A.3.
+      #
+      # NO DISCOVERY, NO CREATE PATH. The previous version searched for the
+      # baseline by title and treated an empty result as "first run" - which is
+      # indistinguishable from a lookup that FAILED. One transient API error
+      # therefore caused the workflow to invent a second baseline (#2). Retrying
+      # a search would only narrow that window; pinning removes it. This job can
+      # no longer create a baseline issue at all. Bootstrapping one is a
+      # deliberate human action, documented in the runbook.
       - name: Read baseline
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          NUM=$(gh issue list --state open --search "$BASELINE_TITLE in:title" \
-                  --json number,title --jq ".[] | select(.title==env.BASELINE_TITLE) | .number" | head -1)
-          if [ -z "$NUM" ]; then
-            echo "no baseline issue found — first run"
-            echo '{"sources":{}}' > out/baseline.json
-            echo "BASELINE_ISSUE=" >> "$GITHUB_ENV"
-          else
-            gh issue view "$NUM" --json body --jq .body \
-              | sed -n '/^```json$/,/^```$/p' | sed '1d;$d' > out/baseline.json
-            [ -s out/baseline.json ] || echo '{"sources":{}}' > out/baseline.json
-            echo "BASELINE_ISSUE=$NUM" >> "$GITHUB_ENV"
+          if ! gh issue view "$BASELINE_ISSUE" --json number,title,state > out/baseline-meta.json; then
+            echo "::error::baseline issue #$BASELINE_ISSUE could not be read. NOT assuming first run."
+            exit 1
           fi
+          TITLE=$(jq -r .title out/baseline-meta.json)
+          STATE=$(jq -r .state out/baseline-meta.json)
+          if [ "$TITLE" != "$BASELINE_TITLE" ]; then
+            echo "::error::issue #$BASELINE_ISSUE is titled '$TITLE', expected '$BASELINE_TITLE'. Refusing to use it as the baseline."
+            exit 1
+          fi
+          if [ "$STATE" != "OPEN" ]; then
+            echo "::error::baseline issue #$BASELINE_ISSUE is $STATE. Refusing to proceed."
+            exit 1
+          fi
+          gh issue view "$BASELINE_ISSUE" --json body --jq .body \
+            | sed -n '/^```json$/,/^```$/p' | sed '1d;$d' > out/baseline.json
+          if ! python3 -c 'import json;json.load(open("out/baseline.json"))' 2>/dev/null; then
+            echo "::error::baseline body is not valid JSON. Refusing to diff against an unreadable baseline."
+            exit 1
+          fi
+          python3 -c 'import json;print("baseline sources:", len(json.load(open("out/baseline.json")).get("sources",{})))'
 
       - name: Diff against baseline
         id: diff
@@ -182,10 +205,40 @@ jobs:
             --title "J1 findings $(date -u +%F)" \
             --body-file out/findings-issue.md
 
-      - name: Update baseline
+      # GUARDED WRITE. Memory is harder to rebuild than a run is to repeat, so
+      # this step refuses to degrade the baseline. A run that fetched fewer
+      # sources than j1-sources.txt defines does NOT get to overwrite a good
+      # table with a worse one - it fails and reports instead. Without this, one
+      # bad network day writes sources:{} and the next run treats every source
+      # as new: silent memory loss plus an unbudgeted full scan.
+      - name: Guarded baseline update
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          EXPECTED=$(grep -vcE '^[[:space:]]*#|^[[:space:]]*$' .github/j1-sources.txt)
+          ACTUAL=$(python3 -c 'import json;print(len(json.load(open("out/manifest.json"))["sources"]))')
+          PRIOR=$(python3 -c 'import json;print(len(json.load(open("out/baseline.json")).get("sources",{})))')
+          echo "expected=$EXPECTED actual=$ACTUAL prior=$PRIOR"
+
+          if [ "$ACTUAL" -eq 0 ]; then
+            printf 'J1 refused to write an EMPTY baseline.\n\n' > out/guard-failure.md
+            printf 'Manifest contained zero sources, prior baseline held %s.\n' "$PRIOR" >> out/guard-failure.md
+            printf 'Every fetch failed this run. Memory preserved; nothing overwritten.\n\n' >> out/guard-failure.md
+            cat out/fetch-failures.txt >> out/guard-failure.md 2>/dev/null || true
+            echo "::error::refusing to write an empty baseline over $PRIOR existing sources"
+            exit 1
+          fi
+
+          if [ "$ACTUAL" -lt "$EXPECTED" ]; then
+            printf 'J1 refused to write a DEGRADED baseline.\n\n' > out/guard-failure.md
+            printf 'j1-sources.txt defines %s source(s); only %s fetched. Prior baseline held %s.\n' \
+              "$EXPECTED" "$ACTUAL" "$PRIOR" >> out/guard-failure.md
+            printf 'Memory preserved; nothing overwritten. Fix the source(s) and re-run.\n\n' >> out/guard-failure.md
+            cat out/fetch-failures.txt >> out/guard-failure.md 2>/dev/null || true
+            echo "::error::refusing to write $ACTUAL sources when $EXPECTED are defined"
+            exit 1
+          fi
+
           {
             printf 'Source-hash table for J1. Machine-maintained — do not hand-edit.\n\n'
             printf 'Last run: %s\n\n' "$(date -u +%FT%TZ)"
@@ -193,11 +246,8 @@ jobs:
             cat out/manifest.json
             printf '\n```\n'
           } > out/baseline-body.md
-          if [ -z "$BASELINE_ISSUE" ]; then
-            gh issue create --title "$BASELINE_TITLE" --body-file out/baseline-body.md
-          else
-            gh issue edit "$BASELINE_ISSUE" --body-file out/baseline-body.md
-          fi
+          gh issue edit "$BASELINE_ISSUE" --body-file out/baseline-body.md
+          echo "baseline #$BASELINE_ISSUE updated with $ACTUAL sources"
 
       - name: Upload evidence
         if: always()
@@ -217,5 +267,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          printf 'J1 failed. Run %s. Evidence is in the run artifacts.\n' "$RUN_ID" > out/failure.md
-          gh issue create --label FLASH --title "J1 FAILED $(date -u +%F)" --body-file out/failure.md
+          mkdir -p out
+          printf 'J1 failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" > out/failure.md
+          # A guard refusal writes its reason here. Folding it into the single
+          # FLASH keeps one issue per event rather than two competing ones.
+          if [ -f out/guard-failure.md ]; then
+            printf -- '---\n\n' >> out/failure.md
+            cat out/guard-failure.md >> out/failure.md
+          fi
+          gh issue create --label FLASH --title "J1 FAILED $(date -u +%F)" --body-file out/failure.md \
+          || gh issue create --title "J1 FAILED $(date -u +%F)" --body-file out/failure.md

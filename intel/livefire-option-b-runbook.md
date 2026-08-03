@@ -6,9 +6,63 @@
 2. **The notification path works** — a *bot-created* issue reaches
    `dean@veteranbridgesolutions.com`.
 
-**Status:** ready to execute. **Prerequisite: `ops/j1-findings-filing` must be
-merged first.** See the ordering note below — this is the one thing that changed
-from the original plan.
+**Status:** BLOCKED on pre-flight baseline repair. Two prerequisites must merge
+first — `ops/j1-findings-filing` (so an issue is filed at all) and
+`ops/j1-baseline-hardening` (so the baseline lookup is deterministic). Both are
+staged. See PRE-FLIGHT and ORDERING below.
+
+---
+
+## PRE-FLIGHT — BASELINE REPAIR (added 3 AUG 2026, do this first)
+
+A pre-flight check found **two** baseline issues, #1 and #2, with **#2 empty**
+(`sources: {}`). Diagnosis and fix are on `ops/j1-baseline-hardening`. The
+flight cannot proceed until the baseline is repaired, because with two open
+baselines the old lookup picked one non-deterministically — a coin-flip test
+result proves nothing.
+
+### Disposition — one canonical baseline
+
+**#1 survives as canonical. #2 is closed.** The fix pins the baseline to
+**issue #1** as an in-file constant (`BASELINE_ISSUE: '1'`), so #1 must be the
+one that remains open and correctly populated.
+
+**Before closing anything, confirm #1 is healthy.** Its fenced JSON must contain
+**both** sources — `federal-register-va` and `federal-register-dod` — each with a
+64-character `sha256`. If #1 is *also* degraded, stop and say so; the pin target
+changes and the bootstrap path below applies instead.
+
+**Close #2 with this comment.** The title says DO NOT CLOSE; this is the
+documented exception Dean authorised, and the comment is what makes it
+documented rather than arbitrary:
+
+```
+Closed by Commander order, 3 AUG 2026.
+
+This issue is a DUPLICATE baseline, created by a defect in J1's baseline
+lookup. The lookup searched by title and treated an empty result as "no
+baseline exists" — which is indistinguishable from a lookup that FAILED. One
+transient API error caused the workflow to invent this second baseline.
+
+Its source table is empty ({}), because the same run also failed to fetch
+either source. It never held valid state and nothing is lost by closing it.
+
+#1 is the canonical baseline. J1 is now PINNED to #1 by number and can no
+longer create a baseline issue at all — see ops/j1-baseline-hardening.
+
+Retained rather than deleted, as the evidence for that defect.
+```
+
+**Do not delete #2.** It is the evidence.
+
+### If #1 turns out to be degraded too
+
+Then there is no healthy baseline and one must be bootstrapped by hand — the
+workflow can no longer create one, deliberately. Edit #1's body to contain a
+fenced ```json block holding exactly `{"normalization_version": "1", "sources":
+{}}`, then run J1 once. The guard will **refuse** to write over it and file a
+FLASH, which is correct: it proves the guard works. Then fix whatever broke the
+fetch, and re-run — the first run with both sources fetched populates it.
 
 ---
 
@@ -26,16 +80,39 @@ half had failed.
 That gap is exactly what Option A closes. So the order is:
 
 ```
-1. Merge ops/j3-weekly-sitrep        (J3, independent)
-2. Merge ops/j1-findings-filing      (Option A — REQUIRED for step 4 below)
-3. Corrupt one hash in the BASELINE issue body   ← the edit is in the next section
-4. Actions -> J1 federal source diff-scan -> Run workflow (workflow_dispatch)
-5. Observe
+1. Confirm #1 healthy, close #2          (pre-flight section above)
+2. Merge ops/j3-weekly-sitrep            (J3, independent)
+3. Merge ops/j1-findings-filing          (Option A — REQUIRED for the issue to be filed)
+4. Merge ops/j1-baseline-hardening       (pinned lookup + guarded write — REQUIRED before any dispatch)
+5. Corrupt one hash in #1                ← the edit is in the next section
+6. Actions -> J1 federal source diff-scan -> Run workflow (workflow_dispatch)
+7. Observe
 ```
 
-Running step 4 before step 2 proves the scan only, and files no issue.
+Dispatching (step 6) before the findings merge (step 3) proves the scan only and
+files no issue. Dispatching before the hardening merge (step 4) risks the
+non-deterministic lookup picking the wrong baseline — a coin-flip result.
 
 ---
+
+## MY CALL: CORRUPT ANYWAY, DO NOT RELY ON A NATURAL DIFF
+
+Dean asked whether the repaired baseline makes a natural diff sufficient.
+**No — corrupt anyway.** Three reasons:
+
+1. **A natural diff is likely but not guaranteed.** The Federal Register
+   endpoints return the newest 20 documents and do change often, but "often" is
+   not "on demand." If no diff appears, the scan is skipped and the flight
+   proves nothing — and you dispatch again tomorrow having learned nothing.
+2. **The corruption tests a different thing, and the better thing.** A natural
+   diff and a corrupted hash both produce `count >= 1`, but only the corruption
+   proves detection against *known prior state you chose*. If the run reports
+   exactly the source you corrupted, the compare logic is confirmed end to end.
+3. **It costs nothing and self-heals.** The guarded write rewrites the baseline
+   with real hashes at the end of the same flight.
+
+**If the count comes back 2 instead of 1, that is a natural diff riding along.**
+Not a problem, not a failure — note it and read the scan output for both.
 
 ## THE CORRUPTION EDIT
 
