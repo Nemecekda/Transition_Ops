@@ -1484,6 +1484,12 @@ V-2, V-3, V-6, V-7 closed 2 AUG. V-11, V-13, V-14, V-15 closed 3 AUG.
 **R6 is therefore satisfied and the authoring ban lifts.** J1 may be authored,
 on a branch, gated, staged, and merged by Dean — in that order and no other.
 
+**JOB STATUS, 3 AUG 2026.** J1 **LIVE** (run #4 green, §8.8). J3 **LIVE**
+(model-free dead-man's switch). **J2 LIVE AND COMPLETE** — run #3 green with the
+sandbox proven in flight, first Sonnet telemetry recorded at **§8.11**. J4, J5
+not authored. J6 dormant pending ship 1. **Three of six jobs are running, and
+§D.1 F2 has an implementation for the first time.**
+
 ### 8.9 V-16 REGRESSION EVIDENCE — J2 GOVERNORS, Y1–Y7 EXECUTED 3 AUG 2026
 
 Run against the **actual governor code extracted from the workflow**, not a
@@ -1897,6 +1903,74 @@ witness.
 
 ---
 
+### 8.11 J2 BUILD COMPLETE — FIRST SONNET TELEMETRY, RUN #3 GREEN, 3 AUG 2026
+
+**Verified by Dean directly** on the run page and the run artifact for J2 #3.
+Same closure standard as V-1, V-3 and V-11: the Commander read the primary
+record himself. The figures below are his, not inferred here.
+
+#### The overage, and why the first fix was the wrong layer
+
+J2 #2 concluded `success` but tripped the >150k input-token instrumentation.
+Root cause, visible in the run log: **`--allowed-tools "Read"` grants
+whole-workspace read.** The prompt's DO-NOT-READ-`index.html` rule was
+**request-level** while the tool permission was **allow-level**, so the model
+read the 803 KB file whole exactly as the instrumentation was built to detect.
+
+The instrumentation worked. The control did not exist. Those are different
+things and §8.10's lesson repeats here in a new costume: *a rule stated to a
+model is not a control*. `--max-budget-usd` bounded the damage and the warning
+surfaced it, but nothing prevented it.
+
+**Fix, per Dean: enforce at the tool/filesystem layer, not the prompt layer.**
+The prompt rule stays as belt; the filesystem became suspenders. The analysis
+step now runs against only its declared inputs, so the app source is not merely
+forbidden — it is **absent**. Positive control, not negative: the sandbox admits
+what is allowed rather than removing one known file, which also covers
+`vendor/`, `intel/`, and `.claude/` without enumerating them.
+
+#### Run #3 telemetry — the first real Sonnet numbers this project has
+
+| Measure | Value |
+|---|---|
+| Total run | **45 s** |
+| Analysis pass | **28 s** — against **70 s** unsandboxed, a **60% reduction** |
+| Token warning | **did not fire** — grep-first discipline held |
+| `total_cost_usd` | **$0.19762445** (from the run artifact) |
+
+**Arithmetic against the design.**
+
+- vs the §4 estimate of **$0.30/run**: actual is **66% of estimate**, 34% under.
+- vs the **$3.00** cap: actual is **6.6% of cap**; the cap carries **15.2×**
+  headroom over observed. The 10× multiplier borrowed from J1 was, if anything,
+  conservative — and it should stay that way until more than one run exists.
+- Monthly at weekly cadence: **4 × $0.1976 ≈ $0.79**. Five-Sunday month: **$0.99**.
+- Against the **$60** target: **~1.3%**. Added to J1's ~$1.44/mo, scheduled ops
+  runs at roughly **$2.23/month all-in**.
+
+**One caveat that must not be lost.** This run priced at Sonnet 5's **intro rate
+($2/$10 per MTok), which lapses 31 AUG 2026.** Standard rates are $3/$15 — a
+flat **1.5×** on both columns. Projected from observed:
+
+> $0.19762445 × 1.5 = **$0.2964/run** from 1 SEP 2026 → **~$1.19/month**.
+
+Note what that lands on: **$0.296 against a $0.30 estimate.** §4's arithmetic was
+essentially exact at standard rates, and the apparent 34% "saving" is the intro
+discount, not a modelling win. Do not re-baseline the cap on the intro number.
+
+#### Status
+
+**J2 BUILD IS COMPLETE.** Authored, gated, staged, merged, and proven in flight
+across three runs: #1 startup failure (§8.10, fixed), #2 success with the
+token overage (root-caused above, fixed), **#3 green with the sandbox proven in
+flight.** Section D.1 **F2 is now implemented** — the criterion that is "the
+reason the system exists" has a job behind it for the first time.
+
+Remaining J2 watch item: the governors have never fired in production. Y1–Y7
+prove the logic (§8.9); no live DIVERGENT finding has yet exercised N1 or N2
+against real issues. That is expected — a clean week is the common case — but
+until it happens the FLASH path is proven only by regression, not in flight.
+
 ### 8.10 J2 STARTUP FAILURE — DEFECT RECORD, 3 AUG 2026
 
 **J2 failed GitHub's workflow validation on first push. Startup failure, zero
@@ -1944,7 +2018,7 @@ no comment exemption. See W-2 for the tool question this raises.
 Standing hazards that are not V-items: nothing to verify and close, only
 something to keep watching. Added 3 AUG 2026.
 
-#### W-2 — GITHUB'S SCHEMA LAYER IS UNCHECKED LOCALLY; EVALUATE `actionlint`
+#### W-2 — GITHUB'S SCHEMA LAYER IS UNCHECKED LOCALLY; `actionlint` ADOPTED
 
 **Raised by Dean 3 AUG 2026 after the J2 startup failure (§8.10).**
 
@@ -1977,9 +2051,18 @@ validate workflows puts the check downstream of the very push it exists to
 prevent, and spends Actions minutes to learn what a local binary answers in
 milliseconds. This belongs in `validation-gate` EDIT mode, run before staging.
 
-**Status: OPEN — for the gate backlog.** Adoption changes `validation-gate`, and
-a change to the gate is COMMANDER lane regardless of how mechanical it looks —
-classify by blast radius, not by file type. Owner s3-devops, awaiting Dean.
+**Status: APPROVED — COMMANDER, 3 AUG 2026.** `actionlint` is adopted into
+`validation-gate` **EDIT mode**, **hash-pinned per the V-6 discipline** — the
+binary's version and hash are recorded and pinned exactly as action SHAs are, so
+a linter cannot silently change behaviour underneath the gate. Adoption confirmed
+as a local gate, **not** a CI job, per the reasoning above.
+
+**Tasking: force-mod drafts the package to Dean's desk next session.** Scope:
+the `validation-gate` 1.3 → 1.4 patch text, the pinned version and hash, the
+install path, where in EDIT mode the check sits relative to the existing YAML
+parse, and regression cases — including a case that reproduces §8.10's empty
+expression and must FAIL the gate. Registry entry updates on Dean's approval of
+that package, not on this ruling.
 
 #### W-1 — GITHUB DISABLES SCHEDULED WORKFLOWS AFTER ~60 DAYS OF REPOSITORY INACTIVITY
 
