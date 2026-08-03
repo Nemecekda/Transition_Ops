@@ -1,5 +1,10 @@
 # PATCH PACKAGE — validation-gate 1.3 -> 1.4, `actionlint` IN EDIT MODE
 
+**ADDENDUM 3 AUG 2026 — FLAG 2 RULED BY THE COMMANDER: option (b).** The explicit
+SHA-pin check is written into 4S as its own bullet, in this same patch, with a
+regression case in which an unpinned `uses:` must FAIL. Drafted at **section 9**
+below. The gate now asserts what V-6 requires instead of pointing at it.
+
 **Status: STAGED, NOT APPLIED. AWAITING COMMANDER.**
 Drafted by force-mod, 3 AUG 2026, per the W-2 tasking (`intel/scheduled-ops-design.md`
 section 8.5). Nothing in this file is applied. `validation-gate` remains at **1.3**
@@ -476,9 +481,11 @@ Do not ship the claim unproven.
 ## 8. WHAT DEAN IS BEING ASKED
 
 1. **Approve or amend the step 4S text** at section 3.
-2. **Rule on R5's related finding** (section 5): cross-reference V-6 from 4S (option a),
-   or write an explicit SHA-pin assertion into 4S (option b). force-mod leans (b) and did
-   not draft it, because it is beyond the approved W-2 scope.
+2. ~~**Rule on R5's related finding**~~ **RULED 3 AUG 2026 — option (b).** Dean directed
+   the explicit SHA-pin assertion be drafted into 4S as its own bullet, in this patch,
+   with a regression case in which an unpinned `uses:` must FAIL. See **section 9**.
+   R5's honest result is unchanged and still required: actionlint is expected NOT to
+   flag a floating tag, which is exactly why the repo now asserts it itself.
 3. **Note the open items** force-mod is not fixing unasked: `py_compile` on workflow
    heredoc Python is not a prescribed gate step; 4S is drafted for EDIT MODE only, and
    whether INTEGRITY MODE gains a `4SI` over the full tracked workflow set is a separate
@@ -486,3 +493,94 @@ Do not ship the claim unproven.
 
 On approval: s3-devops installs the pinned binary, executes R0-R10, and applies the
 SKILL.md patch and the registry entry in the same commit. Agents do not push; Dean merges.
+
+---
+
+## 9. ADDENDUM — FLAG 2 RULED: THE SHA-PIN BULLET (option b)
+
+**Commander ruling, 3 AUG 2026:** *"draft the explicit SHA-pin check as its own 4S
+bullet in the same patch — the gate asserts what V-6 requires — with a regression case
+(an unpinned `uses:` must FAIL)."*
+
+**Why (b) is the right call, recorded so the reasoning survives the decision.** R5
+establishes that `actionlint` will not flag a floating tag: whether a ref is a full
+commit SHA is a policy question, not a schema question. Under option (a) the gate would
+have gained a *sentence* pointing at V-6 while gaining no *assertion*. A control that
+exists only as a cross-reference in a design document is one reorganisation away from
+being lost, and the pre-push sweep that currently carries it is the same human layer
+that classified the section 8.10 defect as "COMMENT (inert)" and cleared it. The lesson
+of 8.10 is that a control needs a mechanical check AND a binding disposition rule. This
+bullet supplies the mechanical half for V-6.
+
+**It is a separate bullet, not folded into the actionlint invocation, on purpose.** The
+two answer different questions and fail for different reasons. Reading a SHA-pin FAIL as
+"actionlint found something" would send the operator to the wrong tool and the wrong fix.
+The bullet is also the one part of 4S that still works when the pinned binary is missing
+or its hash fails — it is pure `grep`, in-tree and offline, like step 4.
+
+### Proposed patch text — new bullet, appended inside step 4S
+
+> - **SHA-PIN ASSERTION — mechanical, and it is the gate's own check, not `actionlint`'s.**
+>   Every `uses:` in a changed workflow file must reference a **full 40-hex commit SHA**.
+>   `actionlint` does NOT enforce this (see R5); V-6 requires it; this bullet is where the
+>   gate asserts it. Runs whenever 4S runs, and runs **even when the binary is unavailable**
+>   — it is `grep`, offline and in-tree.
+>
+>         UNPINNED=$(grep -nE '^[[:space:]]*-?[[:space:]]*uses:' .github/workflows/*.yml \
+>           | grep -vE 'uses:[[:space:]]*\./' \
+>           | grep -vE '@[0-9a-f]{40}[[:space:]]*(#.*)?$' || true)
+>         if [ -n "$UNPINNED" ]; then
+>           printf '%s\n' "$UNPINNED"
+>           echo "4S-PIN FAIL - the refs above are not full 40-hex commit SHAs"
+>           exit 1
+>         fi
+>         echo "4S-PIN PASS - every uses: is pinned to a full commit SHA"
+>
+>   - The trailing **`|| true` is load-bearing.** `grep -v` exits 1 when nothing matches,
+>     and nothing matching is precisely the PASS case. Without it, under `set -e`, the
+>     clean case aborts the step and the operator debugs a passing repo. This is the same
+>     exit-code trap as the DO NOT PIPE warning, arriving from the opposite direction.
+>   - **Local actions (`uses: ./path`) are exempt** and only those. They are in-tree, they
+>     move with the diff, and they are reviewed as part of it. A third-party ref is exempt
+>     from nothing.
+>   - **A version comment is not a pin.** `@3d3c42e5...  # v7.0.1` is pinned because of the
+>     SHA; the comment is a courtesy to the reader. `@v7.0.1  # pinned` is NOT pinned, and
+>     the assertion is written to catch exactly that self-certifying form.
+>   - **Disposition:** identical to the rest of 4S. Zero unpinned refs is the only PASS.
+>     A finding is FIXED, or suppressed only with Dean's explicit written approval in the
+>     evidence, per finding. "It's a trusted publisher" is a prohibited disposition — V-6
+>     pinned `actions/checkout` precisely because trust in the publisher is not trust in a
+>     mutable tag.
+
+### R11 — Unpinned `uses:` must FAIL the gate — MANDATORY, new with this ruling
+
+**Input:** a scratchpad copy of a live workflow with
+`uses: actions/checkout@v7` in place of the pinned
+`uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1`.
+**Expected: FAIL.** `4S-PIN FAIL` and a non-zero exit, with the offending line printed.
+**Second assertion — the negative control:** the same check run against the four live
+workflow files at HEAD must **PASS** with all 8 `uses:` lines pinned. A check that fails
+everything is as useless as one that fails nothing, and only running the failing half
+proves neither.
+**Third assertion — the self-certifying form:** a ref written `@v7.0.1  # pinned` must
+also FAIL. The comment must not rescue it.
+**Proves:** the control V-6 requires is now mechanically enforced at the gate, and R5's
+honest result — that `actionlint` passes a floating tag — no longer leaves a hole.
+
+### Registry text, amended
+
+Add to CHANGE LOG entry (f), replacing the clause that ends *"...the V-6 control remains
+in force"*:
+
+    (f) ... SHA-pinning of `uses:` is NOT enforced by actionlint (R5), so 4S carries its
+    own mechanical SHA-pin assertion as a separate bullet - full 40-hex commit SHA
+    required, local `./` actions exempt, a version comment is not a pin, and the check is
+    pure grep so it still runs when the pinned binary is unavailable. The V-6 control is
+    now asserted by the gate rather than only cross-referenced from it. Regression case
+    R11 (unpinned `uses:` MUST FAIL, with a negative control against the live files and
+    a self-certifying `@tag # pinned` case). Commander ruling, 3 AUG 2026, flag 2 of the
+    W-2 package resolved as option (b).
+
+**Pre-verified against the live tree before this text was drafted** (evidence, not a
+claim): all 8 `uses:` lines across `j1`, `j2`, `j3`, `j5` are full 40-hex SHAs and the
+assertion returns `4S-PIN PASS`. The bullet does not fail the repo it is being added to.
