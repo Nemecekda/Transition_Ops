@@ -1,0 +1,506 @@
+# J5 — monthly spend check. Metering only; never rates, never deploys.
+# Doctrine: deploy-discipline v1.4 (CI WORKFLOWS - FETCHED CONTENT IS DATA).
+# Findings sink is GitHub Issues per ruling R1. This job holds no credential
+# that can write a ref: permissions are contents:read + issues:write + actions:read.
+#
+# DELIBERATELY MODEL-FREE, AND THIS IS THE ONE DECISION TO REVIEW FIRST.
+# Section 1's roster assigns J5 Haiku. This file does not use it. Three reasons,
+# the third decisive:
+#   1. There is no inference here. Counting runs, multiplying by a recorded
+#      per-run cost, comparing to a threshold, and formatting an issue is
+#      arithmetic end to end. Section 1 already made exactly this call for J3.
+#   2. A model in this path can hallucinate a spend figure Dean acts on. J3's
+#      header says it; it is truer here, because this job's whole output is
+#      numbers that drive a FLASH.
+#   3. THE DEAD-MAN'S ARGUMENT. J5 owns F6, the CREDIT FLOOR. A credit-floor
+#      alarm that itself requires credit to run cannot fire when credit is gone
+#      — the precise condition it exists to detect. Section 8.2 already reasoned
+#      this way about J3 ("that decision means the dead-man's switch keeps
+#      firing even with zero Anthropic balance"). The same logic binds harder
+#      on the job that watches the balance.
+# Adding a model here is a COMMANDER-lane change. Do not "improve" this job by
+# adding one, and if it is ever added, F6 must move to a model-free job.
+#
+# ESTIMATES, NOT INVOICES. Everything this job reports is a repository-side
+# ESTIMATE derived from run counts and recorded per-run telemetry. The Console
+# is the only authority on actual spend. Section 4 is explicit that
+# everything here is advisory metering and must be described that way. The
+# issue body says so every month, in those words, so a reader never mistakes
+# this for a bill.
+name: J5 monthly spend check
+
+on:
+  schedule:
+    - cron: '0 12 28 * *'     # 28th, 12:00 UTC = 06:00 CST / 07:00 CDT. Actions cron is UTC and does not observe DST.
+  workflow_dispatch:          # manual test-fire, so the schedule is never trusted before it is proven
+
+permissions:
+  contents: read              # CANNOT write a ref. This is the safety property, not a preference.
+  issues: write               # the status issue, and reading the month's firing signals
+  actions: read               # run counts — the only reason this job needs more than J3 does
+
+concurrency:
+  group: j5-spend-check
+  cancel-in-progress: false
+
+jobs:
+  spend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      # --- doctrine values. Changing any of these is COMMANDER lane (R3/R4). ---
+      TARGET_USD: '60'          # R4 operating target
+      ROUTINE_USD: '45'         # 75% of target — heads-up, not emergency (D.1 F3)
+      F3_MTD_USD: '54'          # 90% of target — FLASH (D.1 F3, restated on $60 basis, V-14)
+      F3_DAY_USD: '6'           # single-day estimate above this — FLASH (D.1 F3)
+      F6_FLOOR_MIN_USD: '10'    # F6 credit floor: below one month's run rate OR this, whichever is HIGHER
+      # --- recorded per-run telemetry. Measured, not guessed. ---
+      # J1: cost of a run in which the scan step actually fired. A J1 run with no
+      #     diff spends nothing, which is the entire point of the gate.
+      COST_J1_FIRING: '0.065'
+      # J2: measured on run #3, 3 AUG 2026, at Sonnet 5 INTRO pricing. See 8.11.
+      COST_J2_FIRING: '0.198'
+      # J3 and J5 are model-free by design. Zero is a fact here, not an estimate.
+      COST_J3: '0'
+      COST_J5: '0'
+      # Sonnet 5 intro pricing ($2/$10 per MTok) lapses 31 AUG 2026; standard
+      # ($3/$15) is a flat 1.5x on both columns. J2's recorded figure is an INTRO
+      # figure, so from 1 SEP it understates by 1.5x unless re-measured. This job
+      # applies the multiplier itself rather than waiting for someone to remember.
+      SONNET_STANDARD_FROM: '2026-09-01'
+      SONNET_STANDARD_MULT: '1.5'
+      # --- staleness limit on the authored balance record ---
+      BALANCE_STALE_DAYS: '45'
+      # --- D.3 governors, same values and same meaning as J2 ---
+      FLASH_BUDGET: '2'
+      FLASH_WINDOW_DAYS: '7'
+      DEDUPE_WINDOW_HOURS: '72'
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false   # default leaves a usable token in .git/config for the rest of the job
+
+      # Armor for the model-free property. If someone later adds an API key to
+      # this job, that is a doctrine change and it should fail loudly here rather
+      # than quietly start spending inside the job that measures spending.
+      - name: Assert model-free
+        run: |
+          # Asserts the property the header claims, against this file as merged.
+          # Two independent checks, both mechanical.
+          SELF=.github/workflows/j5-spend-check.yml
+          if grep -nE '^[[:space:]]*(claude|npx[[:space:]].*claude-code)([[:space:]]|$)' "$SELF"; then
+            echo "::error::J5 must remain model-free (see header). A model invocation was found."
+            exit 1
+          fi
+          # Any secret reference at all. Written so the pattern does not match
+          # its own source line - the backslash breaks the literal.
+          if grep -n 'secrets\.' "$SELF"; then
+            echo "::error::J5 must hold no secret. A secrets reference was found."
+            exit 1
+          fi
+          echo "model-free assertion passed: no model invocation, no secret reference"
+
+      - name: Ensure labels exist
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing=$(gh label list --limit 200 --json name --jq '.[].name' || true)
+          for L in FLASH ROUTINE; do
+            if printf '%s\n' "$existing" | grep -qx "$L"; then
+              echo "label $L present"
+            else
+              gh label create "$L" --description "Transition OPS scheduled ops" || \
+                echo "::warning::could not create label $L; issue filing will fall back to no label"
+            fi
+          done
+
+      # Run counts answer "did the jobs run at all" — the missed-run signal from
+      # D.3 N6. They do NOT answer "did a run spend money", because J1 and J2
+      # both gate their model step on a diff. Firing signals come from issues.
+      - name: Gather run counts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p out
+          MONTH_START=$(date -u +%Y-%m-01)
+          echo "$MONTH_START" > out/month-start.txt
+          echo "month window opens $MONTH_START"
+          for W in j1-federal-scan j2-weekly-analysis j3-weekly-sitrep j5-spend-check; do
+            gh run list --workflow "$W.yml" --limit 200 \
+              --json databaseId,createdAt,conclusion,status \
+              > "out/runs-$W.json" 2>/dev/null || echo '[]' > "out/runs-$W.json"
+            echo "  $W: $(jq 'length' "out/runs-$W.json") run record(s) returned"
+          done
+
+      # THE FIRING SIGNAL, and it is exact rather than inferred. J1 files a
+      # "J1 findings" issue under the SAME `if` condition that runs its scan
+      # step, and J2 files its digest under the same condition that runs its
+      # analysis pass. So a findings issue exists if and only if the model
+      # step ran. Counting issues therefore counts model invocations without
+      # needing to parse run logs or trust a heuristic.
+      - name: Gather firing signals
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          MONTH_START=$(cat out/month-start.txt)
+          gh issue list --state all --limit 300 \
+            --search "created:>=$MONTH_START" \
+            --json number,title,createdAt,labels,state \
+            > out/month-issues.json
+          echo "issues this month: $(jq 'length' out/month-issues.json)"
+
+      - name: Fetch FLASH history for governors
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          FLASH_SINCE=$(date -u -d "$FLASH_WINDOW_DAYS days ago" +%F)
+          DEDUPE_SINCE=$(date -u -d "$DEDUPE_WINDOW_HOURS hours ago" +%FT%TZ)
+          echo "N1 window opens $FLASH_SINCE ; N2 window opens $DEDUPE_SINCE"
+          gh issue list --state all --limit 100 --label FLASH \
+            --search "created:>=$FLASH_SINCE" \
+            --json number,title,state,createdAt \
+            > out/flash-window.json
+          echo "$DEDUPE_SINCE" > out/dedupe-since.txt
+          echo "FLASH issues in N1 window: $(jq 'length' out/flash-window.json)"
+
+      # ==================================================================
+      # THE COMPUTATION AND THE GOVERNORS. Deterministic python, no model.
+      # Same governor semantics as J2: N2 dedupe first (a suppressed duplicate
+      # must not consume budget), then N1 budget.
+      # ==================================================================
+      - name: Compute spend and apply governors
+        run: |
+          RUN_DATE=$(date -u +%F); export RUN_DATE
+          python3 - <<'PY'
+          import json, os, datetime, re, glob
+
+          F = lambda k: float(os.environ[k])
+          today   = datetime.date.fromisoformat(os.environ["RUN_DATE"])
+          m_start = datetime.date.fromisoformat(open("out/month-start.txt").read().strip())
+          notes   = []
+          def note(s):
+              notes.append(s); print(f"::warning::{s}")
+
+          issues = json.load(open("out/month-issues.json"))
+          def d_of(i):
+              try:
+                  return datetime.date.fromisoformat(str(i["createdAt"])[:10])
+              except Exception:
+                  return None
+
+          # ---- Sonnet intro->standard multiplier, applied per event date ------
+          std_from = datetime.date.fromisoformat(os.environ["SONNET_STANDARD_FROM"])
+          mult     = F("SONNET_STANDARD_MULT")
+          def j2_cost(on_date):
+              base = F("COST_J2_FIRING")
+              return base * mult if on_date >= std_from else base
+
+          # ---- firing events -> daily spend ----------------------------------
+          daily = {}
+          events = []
+          for i in issues:
+              t = str(i.get("title", "")); dt = d_of(i)
+              if dt is None or dt < m_start:
+                  continue
+              if t.startswith("J1 findings"):
+                  c = F("COST_J1_FIRING"); who = "J1"
+              elif t.startswith("J2 analysis"):
+                  c = j2_cost(dt);         who = "J2"
+              else:
+                  continue
+              daily[dt] = daily.get(dt, 0.0) + c
+              events.append({"date": dt.isoformat(), "job": who, "usd": round(c, 6)})
+
+          mtd      = round(sum(daily.values()), 6)
+          peak_day, peak_usd = (None, 0.0)
+          for d_, v in sorted(daily.items()):
+              if v > peak_usd:
+                  peak_day, peak_usd = d_, v
+          peak_usd = round(peak_usd, 6)
+
+          # ---- run counts and the missed-run signal (D.3 N6) ------------------
+          runs = {}
+          for p in glob.glob("out/runs-*.json"):
+              w = os.path.basename(p)[5:-5]
+              try:
+                  rows = json.load(open(p))
+              except Exception:
+                  rows = []
+              inmonth = [r for r in rows
+                         if str(r.get("createdAt", ""))[:10] >= m_start.isoformat()]
+              runs[w] = {"count": len(inmonth),
+                         "failed": len([r for r in inmonth
+                                        if str(r.get("conclusion", "")).lower() == "failure"])}
+          elapsed = (today - m_start).days + 1
+          expected_j1 = elapsed                      # J1 is daily
+          j1_actual   = runs.get("j1-federal-scan", {}).get("count", 0)
+          missed_j1   = max(0, expected_j1 - j1_actual)
+
+          # ---- F6 credit floor, from the authored balance record --------------
+          bal, as_of, bal_err = None, None, None
+          try:
+              for ln in open(".github/j5-balance.txt"):
+                  ln = ln.strip()
+                  if not ln or ln.startswith("#"):
+                      continue
+                  raw_b, _, raw_d = ln.partition("|")
+                  bal   = float(raw_b.strip())
+                  as_of = datetime.date.fromisoformat(raw_d.strip())
+                  break
+              if bal is None:
+                  bal_err = "balance record contained no data line"
+          except Exception as e:
+              bal_err = f"balance record unreadable: {e}"
+          if bal_err:
+              note(bal_err + " — F6 cannot be evaluated this run")
+
+          age_days = (today - as_of).days if as_of else None
+          stale    = age_days is not None and age_days > F("BALANCE_STALE_DAYS")
+
+          # Run rate: prefer this month's observed spend annualised to a month;
+          # fall back to MTD itself early in the month when it is not meaningful.
+          run_rate = round(mtd / elapsed * 30, 4) if elapsed >= 7 else max(mtd, 0.0)
+          floor    = max(F("F6_FLOOR_MIN_USD"), run_rate)
+
+          derived_bal, f6_evaluable = None, False
+          if bal is not None and as_of is not None and not stale:
+              # Spend since as_of, from the same event list. Honest about scope:
+              # this only counts THIS repository's scheduled jobs.
+              since = round(sum(c for d_, c in daily.items() if d_ >= as_of), 6)
+              derived_bal = round(bal - since, 6)
+              f6_evaluable = True
+          elif stale:
+              note(f"balance record is {age_days}d old (limit {int(F('BALANCE_STALE_DAYS'))}d). "
+                   f"F6 NOT evaluated — a stale balance asserted as current is worse than none. "
+                   f"Refresh .github/j5-balance.txt.")
+
+          # ---- criteria, fixed checklist, never judgment (R3) -----------------
+          breaches = []
+          if mtd >= F("F3_MTD_USD"):
+              breaches.append({"code": "F3-MTD", "key": f"F3-MTD|{today:%Y-%m}",
+                               "text": f"Estimated month-to-date spend ${mtd:.4f} is at or above "
+                                       f"${F('F3_MTD_USD'):.2f} (90% of the ${F('TARGET_USD'):.0f} target)."})
+          if peak_usd > F("F3_DAY_USD"):
+              breaches.append({"code": "F3-DAY", "key": f"F3-DAY|{peak_day}",
+                               "text": f"Estimated single-day spend on {peak_day} was ${peak_usd:.4f}, "
+                                       f"above the ${F('F3_DAY_USD'):.2f} single-day threshold."})
+          if f6_evaluable and derived_bal is not None and derived_bal < floor:
+              breaches.append({"code": "F6", "key": f"F6|{today:%Y-%m}",
+                               "text": f"Derived prepaid balance ${derived_bal:.2f} is below the credit "
+                                       f"floor ${floor:.2f} (max of ${F('F6_FLOOR_MIN_USD'):.0f} and the "
+                                       f"estimated monthly run rate ${run_rate:.2f})."})
+
+          routine_note = (mtd >= F("ROUTINE_USD") and mtd < F("F3_MTD_USD"))
+
+          # ---- N2 dedupe (72h, OPEN matches only), then N1 budget -------------
+          hist = json.load(open("out/flash-window.json"))
+          def parse(ts):
+              try:
+                  return datetime.datetime.fromisoformat(str(ts).replace("Z", "+00:00"))
+              except Exception:
+                  return None
+          cutoff = parse(open("out/dedupe-since.txt").read().strip())
+
+          def dup_of(key):
+              for i in hist:
+                  if key not in str(i.get("title", "")):
+                      continue
+                  ts = parse(i.get("createdAt"))
+                  if cutoff and ts and ts < cutoff:
+                      continue
+                  if str(i.get("state", "")).upper() == "OPEN":
+                      return int(i["number"])
+              return None
+
+          budget    = int(os.environ["FLASH_BUDGET"])
+          used      = len(hist)
+          remaining = max(0, budget - used)
+          print(f"N1: {used} FLASH already in window, budget {budget}, remaining {remaining}")
+
+          n1_down = 0
+          for b in sorted(breaches, key=lambda x: x["code"]):
+              d = dup_of(b["key"])
+              if d is not None:
+                  b["label"] = "ROUTINE"
+                  b["governor"] = (f"N2 DEDUPE: identical criterion already open as issue #{d} within "
+                                   f"{int(F('DEDUPE_WINDOW_HOURS'))}h; a persisting condition is not new "
+                                   f"information. Filed ROUTINE.")
+              elif remaining > 0:
+                  remaining -= 1
+                  b["label"] = "FLASH"; b["governor"] = ""
+              else:
+                  n1_down += 1
+                  b["label"] = "ROUTINE"
+                  b["governor"] = (f"N1 FLASH BUDGET EXCEEDED: {budget} FLASH already sent in the last "
+                                   f"{int(F('FLASH_WINDOW_DAYS'))} days. Downgraded to ROUTINE per D.3 N1. "
+                                   f"Hitting this budget twice in a quarter is a force-mod patch trigger, "
+                                   f"NOT a reason to raise the budget.")
+
+          state = {"mtd": mtd, "peak_day": peak_day.isoformat() if peak_day else None,
+                   "peak_usd": peak_usd, "elapsed_days": elapsed, "events": events,
+                   "runs": runs, "missed_j1": missed_j1, "expected_j1": expected_j1,
+                   "balance_recorded": bal, "balance_as_of": as_of.isoformat() if as_of else None,
+                   "balance_age_days": age_days, "balance_stale": stale,
+                   "derived_balance": derived_bal, "f6_evaluable": f6_evaluable,
+                   "run_rate": run_rate, "floor": floor,
+                   "breaches": breaches, "routine_note": routine_note,
+                   "n1_used": used, "n1_budget": budget, "n1_downgraded": n1_down,
+                   "notes": notes}
+          json.dump(state, open("out/spend.json", "w"), indent=2, default=str)
+
+          # ---- FLASH bodies + constrained titles ------------------------------
+          TITLE_RE = re.compile(r"^[A-Za-z0-9 ._|:\[\]-]{1,240}$")
+          os.makedirs("out/file", exist_ok=True)
+          n = 0
+          for b in breaches:
+              if b["label"] != "FLASH":
+                  continue
+              n += 1
+              title = f"J5 {b['code']} spend breach {today.isoformat()} [k:{b['key']}]"
+              if not TITLE_RE.match(title):
+                  note(f"assembled title failed the whitelist and was replaced: {title!r}")
+                  title = f"J5 spend breach {today.isoformat()}"
+              d = f"out/file/{n:03d}"
+              os.makedirs(d, exist_ok=True)
+              open(f"{d}/title", "w").write(title)
+              with open(f"{d}/body", "w") as fh:
+                  fh.write(f"J5 spend check. FLASH criterion **{b['code']}** matched.\n\n")
+                  fh.write(b["text"] + "\n\n")
+                  fh.write("ESTIMATE, NOT AN INVOICE. This figure is derived in-repository from run\n"
+                           "counts and recorded per-run telemetry. The Anthropic Console is the only\n"
+                           "authority on actual spend, and Console-side limits are the only real\n"
+                           "enforcement — everything here is advisory metering (design section 4).\n\n")
+                  fh.write(f"Estimated MTD: ${mtd:.4f} of ${F('TARGET_USD'):.0f} target\n")
+                  fh.write(f"Peak day: {peak_day} at ${peak_usd:.4f}\n")
+                  if f6_evaluable:
+                      fh.write(f"Derived balance: ${derived_bal:.2f} (recorded ${bal:.2f} "
+                               f"as of {as_of}, age {age_days}d)\n")
+                  fh.write(f"\nGovernor notes: {b['governor'] or 'none - clean FLASH'}\n")
+          open("out/flash-count.txt", "w").write(str(n))
+          print(f"MTD ${mtd:.4f} | peak {peak_day} ${peak_usd:.4f} | breaches {len(breaches)} | FLASH {n}")
+          PY
+
+      - name: File FLASH breaches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          COUNT=$(cat out/flash-count.txt 2>/dev/null || echo 0)
+          if [ "$COUNT" -eq 0 ]; then
+            echo "no FLASH breaches this run"
+            exit 0
+          fi
+          for d in out/file/*/; do
+            TITLE=$(cat "$d/title")
+            if printf '%s' "$TITLE" | LC_ALL=C tr -d 'A-Za-z0-9 ._|:[]-' | grep -q .; then
+              echo "::error::title failed the shell-side whitelist; refusing to file"
+              exit 1
+            fi
+            gh issue create --label FLASH --title "$TITLE" --body-file "$d/body" \
+            || gh issue create --title "$TITLE" --body-file "$d/body"
+          done
+
+      # Files EVERY month, including clean months. Silence must be diagnostic,
+      # not ambiguous — same reasoning as J3's unconditional send.
+      - name: File monthly status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          s = json.load(open("out/spend.json"))
+          t = float(os.environ["TARGET_USD"])
+          with open("out/status.md", "w") as fh:
+              fh.write(f"J5 monthly spend check. Run {os.environ['RUN_ID']}.\n\n")
+              fh.write("ESTIMATE, NOT AN INVOICE. Derived in-repository from run counts and recorded\n"
+                       "per-run telemetry. The Anthropic Console is the only authority on actual\n"
+                       "spend; Console-side limits are the only real enforcement. Everything here is\n"
+                       "advisory metering (design section 4).\n\n")
+              pct = (s['mtd'] / t * 100) if t else 0
+              fh.write(f"BURN  ${s['mtd']:.4f} estimated MTD of ${t:.0f} target ({pct:.1f}%) "
+                       f"over {s['elapsed_days']} day(s)\n")
+              fh.write(f"      peak day {s['peak_day']} at ${s['peak_usd']:.4f} "
+                       f"(single-day FLASH line ${float(os.environ['F3_DAY_USD']):.2f})\n\n")
+              if s["routine_note"]:
+                  fh.write(f"**ROUTINE THRESHOLD CROSSED** — estimated MTD is at or above "
+                           f"${float(os.environ['ROUTINE_USD']):.0f} (75% of target). Heads-up, not an "
+                           f"emergency; the FLASH line is ${float(os.environ['F3_MTD_USD']):.0f}.\n\n")
+              fh.write("CREDIT FLOOR (F6)\n")
+              if s["f6_evaluable"]:
+                  fh.write(f"  recorded ${s['balance_recorded']:.2f} as of {s['balance_as_of']} "
+                           f"({s['balance_age_days']}d old)\n")
+                  fh.write(f"  derived  ${s['derived_balance']:.2f}  floor ${s['floor']:.2f} "
+                           f"(max of $10 and run rate ${s['run_rate']:.2f})\n")
+                  fh.write(f"  scope caveat: derivation counts THIS repository's scheduled jobs only.\n")
+              else:
+                  fh.write("  **NOT EVALUATED THIS RUN.** See control notes below. F6 is not being\n"
+                           "  reported as satisfied — it is being reported as unmeasured.\n")
+              fh.write("\nJOB ACTIVITY\n")
+              for w, r in sorted(s["runs"].items()):
+                  fh.write(f"  {w:24s} {r['count']:3d} run(s), {r['failed']} failed\n")
+              if s["missed_j1"]:
+                  fh.write(f"  **MISSED J1 RUNS: {s['missed_j1']}** of {s['expected_j1']} expected. "
+                           f"GitHub drops scheduled runs under load and disables schedules in repos\n"
+                           f"  inactive 60 days. A job that stopped running looks exactly like a job\n"
+                           f"  reporting good news — see W-1.\n")
+              fh.write(f"\nGOVERNORS  N1: {s['n1_used']}/{s['n1_budget']} FLASH used in window")
+              if s["n1_downgraded"]:
+                  fh.write(f" — **FLASH BUDGET EXCEEDED — {s['n1_downgraded']} downgraded**")
+              fh.write("\n\n")
+              if s["breaches"]:
+                  fh.write("CRITERIA MATCHED\n")
+                  for b in s["breaches"]:
+                      fh.write(f"  - [{b['label']}] {b['code']}: {b['text']}\n")
+                      if b["governor"]:
+                          fh.write(f"      governor: {b['governor']}\n")
+                  fh.write("\n")
+              else:
+                  fh.write("No spend criterion matched this month.\n\n")
+              if s["notes"]:
+                  fh.write("CONTROL NOTES — read these first\n")
+                  for x in s["notes"]:
+                      fh.write(f"  - {x}\n")
+                  fh.write("\n")
+              if s["events"]:
+                  fh.write("FIRING EVENTS (model invocations inferred from findings issues)\n")
+                  for e in s["events"]:
+                      fh.write(f"  {e['date']}  {e['job']}  ${e['usd']:.4f}\n")
+          PY
+          gh issue create --label ROUTINE \
+            --title "J5 spend check $(date -u +%F)" \
+            --body-file out/status.md \
+          || gh issue create \
+            --title "J5 spend check $(date -u +%F)" \
+            --body-file out/status.md
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: j5-evidence-${{ github.run_id }}
+          path: out/
+          retention-days: 30    # V-8: plan ceiling unconfirmed; 30 is conservative
+
+      - name: Report failure loudly
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          mkdir -p out
+          printf 'J5 failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" > out/failure.md
+          printf 'The monthly spend check did not complete. F3 and F6 went unevaluated\n' >> out/failure.md
+          printf 'this month — spend is UNMETERED until this is fixed or re-run.\n\n' >> out/failure.md
+          if [ -f out/spend.json ]; then
+            printf -- '---\n\nPartial state was computed before the failure:\n' >> out/failure.md
+            jq -r '"  estimated MTD: $" + (.mtd|tostring) + "\n  peak day: " + ((.peak_day//"none")|tostring)' \
+              out/spend.json >> out/failure.md 2>/dev/null || true
+            jq -r '.notes[]? | "  - " + .' out/spend.json >> out/failure.md 2>/dev/null || true
+          else
+            printf -- '---\n\nNo spend state was computed.\n' >> out/failure.md
+          fi
+          gh issue create --label FLASH --title "J5 FAILED $(date -u +%F)" --body-file out/failure.md \
+          || gh issue create --title "J5 FAILED $(date -u +%F)" --body-file out/failure.md
