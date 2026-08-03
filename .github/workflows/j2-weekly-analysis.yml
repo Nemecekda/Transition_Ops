@@ -517,8 +517,16 @@ jobs:
             TITLE=$(cat "$d/title")
             # Belt and braces: the title was whitelist-built in python, and it is
             # re-checked here mechanically before it becomes an argument. A quoted
-            # shell variable is not re-parsed as syntax, unlike a ${{ }} expansion
-            # — but this control does not depend on that being remembered.
+            # shell variable is not re-parsed as syntax, unlike an Actions
+            # expression expansion — but this control does not depend on that
+            # being remembered.
+            #
+            # DO NOT write an Actions expression here, even inside a comment,
+            # even an empty one. Actions substitutes expressions textually
+            # BEFORE any shell exists, so a leading # protects nothing. An empty
+            # expression is a parse error and fails the whole workflow at
+            # startup with zero steps run. That is exactly how this file broke
+            # on its first push. Refer to the mechanism in prose; never spell it.
             # tr, not a regex bracket expression: `[` and `]` are literal in a tr
             # SET, where inside `[...]` they need escaping games that are easy to
             # get wrong. The previous form used a regex bracket class holding a

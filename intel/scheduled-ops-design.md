@@ -1897,10 +1897,89 @@ witness.
 
 ---
 
+### 8.10 J2 STARTUP FAILURE — DEFECT RECORD, 3 AUG 2026
+
+**J2 failed GitHub's workflow validation on first push. Startup failure, zero
+steps executed.** Not a runtime bug; the file never became a runnable workflow.
+
+**The defect.** A shell comment inside a `run:` block contained an Actions
+expression with an empty body. GitHub substitutes expressions **textually, before
+any shell exists**, so the leading `#` protected nothing — the parser saw an
+empty expression and rejected the file.
+
+**Why every local gate missed it.** The YAML was valid, so `psych` parsed it. The
+Python blocks compiled. The governor regression passed 7/7. **None of those
+layers evaluate Actions expression syntax**, because none of them is GitHub's
+schema. The local gate proved the file was well-formed YAML containing
+well-formed Python — which it was, and which was never the question.
+
+**The compounding error, recorded because it is the reusable lesson.** The
+pre-push sweep *did* flag this exact line. It was classified **"COMMENT
+(inert)"** and cleared. That classification was wrong, and it was wrong for the
+reason `deploy-discipline` v1.4 already states in writing: *"`${{ }}` is textual
+substitution into the script body performed BEFORE any shell sees it."* The
+scanner found the defect and the analyst reasoned it away using a shell mental
+model on a pre-shell mechanism. **A gate that surfaces a hit is only as good as
+the rule for dispositioning it** — "it's in a comment" is not a valid
+disposition for anything Actions interpolates.
+
+Sharper still: the broken line was the comment *explaining that very mechanism*.
+The text describing the hazard was destroyed by the hazard it described.
+
+**Blast radius.** J2 only. J1 and J3 were checked and carry zero empty
+expressions; both remain live and unaffected.
+
+**Fix.** The comment refers to the mechanism in prose and no longer spells an
+expression, with an inline prohibition against reintroducing one. Re-gated:
+0 empty expressions across all three workflows, all 10 remaining expressions
+non-empty and well-formed, YAML parses, 4/4 Python blocks compile, governor
+regression Y1–Y7 still 7/7.
+
+**New standing gate, effective immediately.** Every workflow file is scanned for
+empty and malformed Actions expressions before staging — comments included, with
+no comment exemption. See W-2 for the tool question this raises.
+
 ### 8.5 WATCH ITEMS
 
 Standing hazards that are not V-items: nothing to verify and close, only
 something to keep watching. Added 3 AUG 2026.
+
+#### W-2 — GITHUB'S SCHEMA LAYER IS UNCHECKED LOCALLY; EVALUATE `actionlint`
+
+**Raised by Dean 3 AUG 2026 after the J2 startup failure (§8.10).**
+
+The local validation stack has a structural blind spot: it can prove a workflow
+is valid YAML and that its embedded code compiles, but **nothing on this machine
+evaluates GitHub's own workflow schema or its expression grammar.** That entire
+class of defect is currently caught only by pushing and watching a run fail —
+which is the most expensive possible place to catch it, and on a scheduled job
+it can mean a silent week.
+
+The ad-hoc expression scan added in §8.10 closes the *one* case that bit us. It
+does not close the class. Defects it would still miss: unknown or misspelled
+`with:` keys, invalid `needs:` references, bad `runs-on` labels, context access
+that is invalid for the trigger (`github.event.pull_request` on a `schedule`
+run), malformed `cron`, deprecated syntax, and shell defects inside `run:`
+blocks.
+
+**`actionlint` evaluated — recommend adoption, as a local gate only.**
+
+| Consideration | Assessment |
+|---|---|
+| Coverage | Validates the workflow schema, expression syntax and context validity, `cron` fields, and action inputs. Directly covers §8.10's defect and the class around it |
+| Shell coverage | Bundles `shellcheck` for `run:` blocks — which also closes the gap §8.9 recorded as *not run*. Two gaps, one tool |
+| Install | Single static Go binary, no runtime. `brew install actionlint`, or a pinned release binary |
+| Cost | Zero. Free, open source, runs offline |
+| Risk | It is a third-party binary in the validation path. Pin the version and record its hash, exactly as action SHAs are pinned per V-6 — a linter that silently changes behaviour is the same class of problem as a floating tag |
+
+**Deliberately NOT proposed as a CI job.** Adding a workflow whose purpose is to
+validate workflows puts the check downstream of the very push it exists to
+prevent, and spends Actions minutes to learn what a local binary answers in
+milliseconds. This belongs in `validation-gate` EDIT mode, run before staging.
+
+**Status: OPEN — for the gate backlog.** Adoption changes `validation-gate`, and
+a change to the gate is COMMANDER lane regardless of how mechanical it looks —
+classify by blast radius, not by file type. Owner s3-devops, awaiting Dean.
 
 #### W-1 — GITHUB DISABLES SCHEDULED WORKFLOWS AFTER ~60 DAYS OF REPOSITORY INACTIVITY
 
