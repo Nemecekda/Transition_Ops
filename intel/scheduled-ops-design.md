@@ -1406,7 +1406,7 @@ recorded in the Result column — not an assertion that it was checked.
 | V-1 | No | **CLOSED 3 AUG 2026 — NO EXPOSURE EXISTED** | Dean | Deploy history reviewed 3 AUG 2026: **Production/main builds only, zero branch deploys ever fired** despite branches pushed to origin; setting confirms branch deploys `[None]`. The exposure this item asserted was never real. Setting and behavioural record agree, which is stronger than either alone. See §8.7 |
 | V-2 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | Sourced from platform.claude.com models overview, accessed 2 AUG 2026. Sonnet 5 `claude-sonnet-5` $3/$15 per MTok (**intro $2/$10 through 31 AUG 2026**); Haiku 4.5 `claude-haiku-4-5-20251001` (alias `claude-haiku-4-5`) $1/$5, 200K context, 64k max output. See §4 |
 | V-3 | **YES** | **CLOSED 2 AUG 2026** | Dean | Verified by Dean directly on the Console billing page. Monthly spend limit **$200,000 default → $100**. Auto reload **OFF**, retained deliberately as a second circuit breaker. Balance **$19.52 prepaid**, card on file. Email notification at **$45** (75% of the $60 operating target). See §8.2 |
-| V-4 | No | **EMAIL LEG ONLY — 3 AUG 2026** | Dean | **Live-fire run #4 proved the bot-created-issue path** (findings #6, ROUTINE); run #3 proved the FLASH path (#5). The only unproven leg is whether those issues generated mail — per §8.8/§8.6, #6 is the witness, not tomorrow's cron, which emails only if a diff happens to occur. *Original finding, retained:* Issue #1 generated no notification; repo watch sat at the default Participating and @mentions, which a bot-filed issue does not satisfy. Fix: watch set to All activity; destination amended same day to `dean@veteranbridgesolutions.com` (primary), `dean.nemecek01@gmail.com` (fallback). |
+| V-4 | No | **CLOSED 3 AUG 2026 — LIVE-FIRE PROVEN** | Dean | **Live-fire run #4 proved the bot-created-issue path** (findings #6, ROUTINE); run #3 proved the FLASH path (#5). The only unproven leg is whether those issues generated mail — per §8.8/§8.6, #6 is the witness, not tomorrow's cron, which emails only if a diff happens to occur. *Original finding, retained:* Issue #1 generated no notification; repo watch sat at the default Participating and @mentions, which a bot-filed issue does not satisfy. Fix: watch set to All activity; destination amended same day to `dean@veteranbridgesolutions.com` (primary), `dean.nemecek01@gmail.com` (fallback). |
 | V-5 | No | OPEN | Dean | Twilio + mail vendor costs, separate from the $60 |
 | V-6 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | `actions/checkout` v7.0.1 → `3d3c42e5aac5ba805825da76410c181273ba90b1`; `actions/upload-artifact` v7.0.1 → `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a`. Both refs resolve to type `commit` — no tag dereference needed. Source: api.github.com git/ref, 2 AUG 2026 |
 | V-7 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | CLI **2.1.220** (local `claude --version`, matches `npm view @anthropic-ai/claude-code version`). Flag surface verified against that build: `-p/--print`, `--model`, `--output-format`, `--permission-mode`, `--allowed-tools`, `--effort`, `--fallback-model`, `--max-budget-usd` all exist. **`--max-turns` does NOT exist** — the §2 draft was wrong; corrected |
@@ -1615,7 +1615,7 @@ governed.
 | Instruction-source boundary | `contains_instruction_like_text: false` on both sources | **PROVEN** (see caveat) |
 | ROUTINE producer | **Issue #6**, ROUTINE label, first intelligence product | **PROVEN** |
 | Guard / failure path | Run #3: guard refused, **FLASH #5** filed with reason folded in | **PROVEN** |
-| Email leg | — | **STILL UNPROVEN** |
+| Email leg | **5 notification emails delivered** to `dean@veteranbridgesolutions.com`, incl. "J1 findings 2026-08-03 (Issue #6)" at 08:49 with the full findings body, plus FLASH and SITREP traffic | **PROVEN 3 AUG 2026** |
 
 **First intelligence product.** Issue #6 carries the Dole Act §403 homeless-veteran
 implementation plan and the Veterans Choice rescission. The system produced
@@ -1654,6 +1654,42 @@ many sources as `j1-sources.txt` defines. A green run means the guard passed wit
 `actual >= 2`, and the write targets pinned issue #1. **#1 therefore holds two
 real hashes** — inferred from the workflow's own control flow, not from the
 unfilled bracket.
+
+#### EVERY LEG IN THE TABLE ABOVE IS NOW PROVEN BY LIVE FIRE — 3 AUG 2026
+
+With the email leg closed, every row in the §8.8 table reads PROVEN. Secret to
+runner, headless model execution, cost cap, prompt and JSON contract, ROUTINE
+producer, guard and failure path, and notification delivery have all executed for
+real and been observed. **The system works end to end.**
+
+Two honest qualifications on "every leg," both already recorded above and neither
+a reason to withhold the claim:
+
+- **The instruction-boundary pass remains weak** (§8.8 item 2). It is proven
+  *wired*, not proven *load-bearing under attack*, because no injection-shaped
+  page was in the sample. Upgrading that needs an adversarial input, not another
+  clean run.
+- **The true-diff path is still unexecuted** (§8.8 item 1) — see below.
+
+#### SCHEDULED FOR 4 AUG 09:00 UTC — THE LAST UNTESTED PATH
+
+Dean is planting the corruption in #1 so the scheduled run exercises
+change-detection against a **populated** baseline. Worth naming what that flight
+actually covers, because it is two things, not one:
+
+1. **The true diff path.** Every run so far compared against an empty or absent
+   baseline — the first-run path, where everything is new. Comparing a real hash
+   against a *different* real hash has never executed.
+2. **The scheduled trigger itself.** Run #4 was a `workflow_dispatch`. Manual
+   dispatch proves the *job*; it does not prove the *trigger*, which is a
+   different code path. Tomorrow is the first time the cron is the thing under
+   test.
+
+**Expected: `changed sources: 1`** — exactly the corrupted source — and a findings
+issue naming it. A count of 2 means a natural diff rode along, which is fine.
+A count of 0 means the corruption did not land in the fenced JSON block. A job
+that never runs at all is the interesting failure, and points at the trigger
+rather than the logic.
 
 #### FIRST REAL COST TELEMETRY — against the §4 estimate
 
@@ -1730,6 +1766,27 @@ That rating **depends on the email path being proven**. An unproven channel make
 absence-of-email meaningless as a signal. Until V-4 closes on live-fire evidence,
 W-1's detection claim is provisional.
 
+**RESOLVED 3 AUG 2026 — W-1 detection rating upgraded to CONFIRMED.** Five
+GitHub notification emails were delivered to `dean@veteranbridgesolutions.com`,
+including "J1 findings 2026-08-03 (Issue #6)" at 08:49 carrying the full findings
+body, plus FLASH and SITREP traffic. The email path is proven end to end, so
+**absence of email is now a trustworthy signal** and the §5.3 dead-man's switch
+does what W-1 relies on it to do. V-4 CLOSED.
+
+**One precision point, because it protects a future decision.** The report frames
+this as disproving "own-activity suppression" for bot-created issues. Strictly,
+that theory was never applied to bot-created issues: Issue #1's silence was
+diagnosed as a **watch-level** problem — the default *Participating and @mentions*
+does not cover an issue a runner opened — and that diagnosis is now **confirmed**,
+not overturned. Own-activity suppression was raised only against **Option C, where
+Dean opens an issue himself**, and `github-actions[bot]` is a different actor
+entirely.
+
+**So Option C's warning still stands and is still untested.** Nobody should read
+this result as licence to prove a future notification question by filing an issue
+by hand — that path remains capable of false-negating for a different reason than
+the one just cleared.
+
 **UPDATED 3 AUG 2026 — the witness is #6, not tomorrow's cron.** The email leg is
 still the only unproven leg, but the plan to prove it via tomorrow's 09:00 UTC run
 is unreliable:
@@ -1772,6 +1829,12 @@ surprise.
 
 J1 writes GitHub Issues, not commits. Whether Issue activity resets the clock is
 exactly what V-12 asks — and V-12 is no longer hypothetical or Option-4-only.
+
+**Detection rating: CONFIRMED as of 3 AUG 2026** (was provisional). V-4 closed on
+live-fire evidence — five notification emails delivered, including the findings
+issue for run #4. The email path is proven, so absence of email is a trustworthy
+signal and the reasoning below now rests on demonstrated behaviour rather than an
+assumption.
 
 **Detection, honestly rated.** The §5.3 dead-man's switch does cover this, but
 weakly. If GitHub disables scheduled workflows, it disables **all** of them — J3,
