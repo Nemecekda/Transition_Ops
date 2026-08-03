@@ -6,7 +6,23 @@
 2. **The notification path works** — a *bot-created* issue reaches
    `dean@veteranbridgesolutions.com`.
 
-**Status:** BLOCKED on pre-flight baseline repair. Two prerequisites must merge
+**Status: COMPLETE — run #4 green, 3 AUG 2026.** Outcome recorded in
+§8.8 of `intel/scheduled-ops-design.md`. Retained as the record of how the flight
+was designed and what it took to get there: **four runs, three defects.**
+
+| Run | Outcome |
+|---|---|
+| #1–#2 | Zero bytes fetched; duplicate baselines #1 and #2 created |
+| #3 | **Guard fired correctly** — refused an empty baseline, FLASH #5 filed with the reason folded in. The failure path proved itself before the success path did. |
+| #4 | **Green, 50s.** Haiku, 7 turns, $0.065 of a $0.50 cap. Coverage 2/2/2/0. Findings issue #6 filed, ROUTINE — the first intelligence product. |
+
+Three defects were found and fixed along the way, none of them the one the
+flight was designed to test: a duplicate-baseline lookup that read a failed
+query as "first run", curl globbing on the literal brackets in the source URLs,
+and an invalid Federal Register agency slug. The live-fire earned its keep by
+finding the things nobody had thought to look for.
+
+**Superseded status line, retained:** BLOCKED on pre-flight baseline repair. Two prerequisites must merge
 first — `ops/j1-findings-filing` (so an issue is filed at all) and
 `ops/j1-baseline-hardening` (so the baseline lookup is deterministic). Both are
 staged. See PRE-FLIGHT and ORDERING below.

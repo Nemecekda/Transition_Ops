@@ -1406,7 +1406,7 @@ recorded in the Result column — not an assertion that it was checked.
 | V-1 | No | **CLOSED 3 AUG 2026 — NO EXPOSURE EXISTED** | Dean | Deploy history reviewed 3 AUG 2026: **Production/main builds only, zero branch deploys ever fired** despite branches pushed to origin; setting confirms branch deploys `[None]`. The exposure this item asserted was never real. Setting and behavioural record agree, which is stronger than either alone. See §8.7 |
 | V-2 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | Sourced from platform.claude.com models overview, accessed 2 AUG 2026. Sonnet 5 `claude-sonnet-5` $3/$15 per MTok (**intro $2/$10 through 31 AUG 2026**); Haiku 4.5 `claude-haiku-4-5-20251001` (alias `claude-haiku-4-5`) $1/$5, 200K context, 64k max output. See §4 |
 | V-3 | **YES** | **CLOSED 2 AUG 2026** | Dean | Verified by Dean directly on the Console billing page. Monthly spend limit **$200,000 default → $100**. Auto reload **OFF**, retained deliberately as a second circuit breaker. Balance **$19.52 prepaid**, card on file. Email notification at **$45** (75% of the $60 operating target). See §8.2 |
-| V-4 | No | **FIX APPLIED 3 AUG 2026 — PROOF PENDING** | Dean | **Finding:** Issue #1 generated no notification. Repo watch was at the default **Participating and @mentions**, and a bot-filed issue does not qualify — Dean is not a participant in something the runner opened. **Fix:** watch set to **All activity**. Destination amended same day: `dean@veteranbridgesolutions.com` (primary, verified by GitHub's own verification email arriving there), `dean.nemecek01@gmail.com` (fallback). **Not closed:** the setting is changed but the path is unproven, and the planned live-fire will not prove it — see §8.6 |
+| V-4 | No | **EMAIL LEG ONLY — 3 AUG 2026** | Dean | **Live-fire run #4 proved the bot-created-issue path** (findings #6, ROUTINE); run #3 proved the FLASH path (#5). The only unproven leg is whether those issues generated mail — per §8.8/§8.6, #6 is the witness, not tomorrow's cron, which emails only if a diff happens to occur. *Original finding, retained:* Issue #1 generated no notification; repo watch sat at the default Participating and @mentions, which a bot-filed issue does not satisfy. Fix: watch set to All activity; destination amended same day to `dean@veteranbridgesolutions.com` (primary), `dean.nemecek01@gmail.com` (fallback). |
 | V-5 | No | OPEN | Dean | Twilio + mail vendor costs, separate from the $60 |
 | V-6 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | `actions/checkout` v7.0.1 → `3d3c42e5aac5ba805825da76410c181273ba90b1`; `actions/upload-artifact` v7.0.1 → `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a`. Both refs resolve to type `commit` — no tag dereference needed. Source: api.github.com git/ref, 2 AUG 2026 |
 | V-7 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | CLI **2.1.220** (local `claude --version`, matches `npm view @anthropic-ai/claude-code version`). Flag surface verified against that build: `-p/--print`, `--model`, `--output-format`, `--permission-mode`, `--allowed-tools`, `--effort`, `--fallback-model`, `--max-budget-usd` all exist. **`--max-turns` does NOT exist** — the §2 draft was wrong; corrected |
@@ -1603,6 +1603,68 @@ governed.
 
 ---
 
+### 8.8 LIVE-FIRE OUTCOME — RUN #4 GREEN, 3 AUG 2026
+
+**Run #4: green, 50 seconds.** The first end-to-end success.
+
+| Leg | Evidence | Verdict |
+|---|---|---|
+| Secret → runner → headless `claude` | Haiku, 7 turns | **PROVEN** |
+| Cost cap | **$0.065** against the `--max-budget-usd 0.50` cap | **PROVEN** |
+| Prompt + JSON contract | coverage `2/2/2/0`, schema honoured | **PROVEN** |
+| Instruction-source boundary | `contains_instruction_like_text: false` on both sources | **PROVEN** (see caveat) |
+| ROUTINE producer | **Issue #6**, ROUTINE label, first intelligence product | **PROVEN** |
+| Guard / failure path | Run #3: guard refused, **FLASH #5** filed with reason folded in | **PROVEN** |
+| Email leg | — | **STILL UNPROVEN** |
+
+**First intelligence product.** Issue #6 carries the Dole Act §403 homeless-veteran
+implementation plan and the Veterans Choice rescission. The system produced
+something a service member's caseworker would want to know. That is the point of
+all of this.
+
+**§8.6 PRODUCER GAP: CLOSED.** Option A shipped and fired. The ROUTINE channel
+now has a recurring bot-created-issue producer, evidenced by #6.
+
+#### WHAT RUN #4 DID NOT PROVE — read before drawing conclusions
+
+**1. Change detection against a populated baseline is still untested.**
+Coverage reported **2 changed of 2**. Two readings fit:
+- **(a)** #1 was empty going in, so both sources registered as new — the
+  **first-run** path, not the diff path.
+- **(b)** #1 held two real hashes, one was corrupted, and a natural diff supplied
+  the second.
+
+Given runs #1–#3 all fetched zero bytes, **(a) is much the likelier**: there was
+never a successful fetch to populate #1 with. If so, run #4 exercised
+"everything is new" — the same code path as a first run — and the compare logic
+against known prior hashes has still never executed. **Tomorrow's 09:00 UTC cron
+is the first genuine test of it.**
+
+**2. The instruction-boundary result is a weak pass, not a strong one.** Both
+sources returned `false`, which is the correct answer for two benign Federal
+Register feeds. It confirms the field is wired and the model answers it. It does
+**not** demonstrate the boundary holds against a page that actually contains
+injection-shaped text, because no such page was in the sample.
+
+**3. Issue #1's post-run contents were not independently confirmed** — the
+report's `[confirm after checking]` bracket arrived unfilled, so nothing is
+asserted from it. **But run #4's green status is itself strong evidence:** the
+guarded write refuses and fails the job unless the manifest holds at least as
+many sources as `j1-sources.txt` defines. A green run means the guard passed with
+`actual >= 2`, and the write targets pinned issue #1. **#1 therefore holds two
+real hashes** — inferred from the workflow's own control flow, not from the
+unfilled bracket.
+
+#### FIRST REAL COST TELEMETRY — against the §4 estimate
+
+$0.065 for one scan-firing run. If a diff occurs daily, J1 costs ≈ **$1.95/month**
+against the §4 estimate of $1.44 for the whole job. Same order of magnitude, mildly
+above — and §4 explicitly called itself a floor because it did not model Claude
+Code's per-turn system-prompt and tool-schema overhead. First evidence the cost
+model is sound in shape. Nowhere near the $60 target.
+
+---
+
 ### 8.6 NOTIFICATION PATH — V-4 FINDING, 3 AUG 2026
 
 **What happened.** J1's manual dispatch created Issue #1 successfully. **No
@@ -1640,6 +1702,9 @@ findings issues at all.** Its only issue-creating paths are the first-run
 baseline creation (already spent on Issue #1) and the `if: failure()` FLASH
 report. Scan output goes to `out/scan-result.json` inside an artifact and stops
 there. So the ROUTINE notification channel currently has **no producer** — there
+> **CLOSED 3 AUG 2026.** Option A shipped; run #4 filed findings issue #6 with
+> the ROUTINE label. The channel has a producer. See §8.8.
+
 is no recurring event that would notify Dean even with the watch fixed. That was
 arguably outside "author J1 per the pinned template," since the template did not
 include a findings-filing step, but it means the channel cannot be exercised by
@@ -1664,6 +1729,25 @@ never notifies, and it would produce a second false negative on top of the first
 That rating **depends on the email path being proven**. An unproven channel makes
 absence-of-email meaningless as a signal. Until V-4 closes on live-fire evidence,
 W-1's detection claim is provisional.
+
+**UPDATED 3 AUG 2026 — the witness is #6, not tomorrow's cron.** The email leg is
+still the only unproven leg, but the plan to prove it via tomorrow's 09:00 UTC run
+is unreliable:
+
+- **J1 only files an issue when a diff occurs.** With #1 now holding real hashes,
+  tomorrow emails only if the Federal Register actually publishes something in the
+  intervening ~19 hours. Likely on a business day, not guaranteed. **No diff means
+  no issue, means no email — which would look identical to a broken email leg.**
+- **J3 cannot cover for it.** Its cron is Mondays 13:00 UTC; that slot passed at
+  13:00 today, so the first SITREP fires **10 AUG**, a week out.
+- **Issue #6 already is a bot-created issue.** If it generated mail to
+  `dean@veteranbridgesolutions.com`, the email leg is proven *now* and W-1 can be
+  upgraded today. If it did not, that is the finding — and it is a finding we
+  already have in hand rather than one waiting on a coin flip.
+
+**Recommended: check whether #6 (and FLASH #5) produced email, and close V-4 on
+that.** Tomorrow's cron is then a useful second data point rather than the sole
+witness.
 
 ---
 
