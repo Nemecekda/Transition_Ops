@@ -366,7 +366,13 @@ jobs:
               d = f"out/file/{n:03d}"
               os.makedirs(d, exist_ok=True)
               open(f"{d}/title", "w").write(title)
+              # The criterion code rides into the ACTING ON THIS order. It comes
+              # from the fixed checklist above, never from prose, so it needs no
+              # sanitizing - but it is written to a file rather than rebuilt in
+              # the shell so the order and the body can never disagree.
+              open(f"{d}/code", "w").write(b["code"])
               with open(f"{d}/body", "w") as fh:
+                  fh.write(f"1 item may need your eyes: spend criterion {b['code']} matched.\n\n")
                   fh.write(f"J5 spend check. FLASH criterion **{b['code']}** matched.\n\n")
                   fh.write(b["text"] + "\n\n")
                   fh.write("ESTIMATE, NOT AN INVOICE. This figure is derived in-repository from run\n"
@@ -398,8 +404,29 @@ jobs:
               echo "::error::title failed the shell-side whitelist; refusing to file"
               exit 1
             fi
-            gh issue create --label FLASH --title "$TITLE" --body-file "$d/body" \
-            || gh issue create --title "$TITLE" --body-file "$d/body"
+            # The ACTING ON THIS footer must carry THIS issue's number, and that
+            # number does not exist until the issue does. Create, read the number
+            # back off the URL gh prints, then edit the footer in. A failed edit
+            # degrades to an issue without a footer - it never fails the run,
+            # because the FLASH itself was filed and that is the alarm.
+            URL=$(gh issue create --label FLASH --title "$TITLE" --body-file "$d/body") \
+            || URL=$(gh issue create --title "$TITLE" --body-file "$d/body")
+            N="${URL##*/}"
+            case "$N" in
+              ''|*[!0-9]*)
+                echo "::warning::could not read an issue number from '$URL'; ACTING ON THIS footer not appended" ;;
+              *)
+                CODE=$(cat "$d/code")
+                { cat "$d/body"
+                  printf '\n---\n\n## ACTING ON THIS\n\n'
+                  printf 'An order for you to paste into an interactive session. The machine does not run it and ships nothing.\n\n'
+                  printf '```text\n'
+                  printf 'URGENT — spend session from machine metering. Source: issue #%s, criterion: %s. s3-watch-officer: reconcile this repository-side estimate against the Console, report the actual figure, and state what drove it. Any cap, throttle, or schedule change comes to me as a proposal. I decide.\n' "$N" "$CODE"
+                  printf '```\n'
+                } > "$d/body-final"
+                gh issue edit "$N" --body-file "$d/body-final" \
+                  || echo "::warning::footer edit failed for #$N; the issue is filed without it" ;;
+            esac
           done
 
       # Files EVERY month, including clean months. Silence must be diagnostic,
@@ -413,7 +440,43 @@ jobs:
           import json, os
           s = json.load(open("out/spend.json"))
           t = float(os.environ["TARGET_USD"])
+
+          # BLUF inputs. IN BOUNDS means all four of: no criterion matched, no
+          # control note, no missed runs, and estimated MTD below the 75%
+          # heads-up line. Anything else gets counted into the first line rather
+          # than buried in a section - an unmeasured F6 and a missed J1 run both
+          # look exactly like good news if they are not said out loud.
+          labels = []
+          for b in s["breaches"]:
+              labels.append(f"{b['code']} ({b['label']})")
+          if s["routine_note"]:
+              labels.append("75% heads-up line crossed")
+          if s["missed_j1"]:
+              labels.append(f"{s['missed_j1']} missed J1 run(s)")
+          if s["notes"]:
+              labels.append(f"{len(s['notes'])} control note(s)")
+          n_eyes = (len(s["breaches"]) + len(s["notes"])
+                    + (1 if s["missed_j1"] else 0)
+                    + (1 if s["routine_note"] else 0))
+
+          # A matched criterion is a spend question for the watch officer. A
+          # control note or a missed run is a machine question for devops.
+          # Naming the wrong section is not a small error - it sends Dean into
+          # the wrong session.
+          if s["breaches"]:
+              footer_class = "spend"
+          elif s["notes"] or s["missed_j1"]:
+              footer_class = "repair"
+          else:
+              footer_class = "quiet"
+          open("out/status-footer-class.txt", "w").write(footer_class)
+
           with open("out/status.md", "w") as fh:
+              if n_eyes == 0:
+                  fh.write(f"NO ACTION NEEDED — informational: estimated spend is in bounds at "
+                           f"${s['mtd']:.2f} of the ${t:.0f} target and no criterion matched.\n\n")
+              else:
+                  fh.write(f"{n_eyes} item(s) may need your eyes: {', '.join(labels)}.\n\n")
               fh.write(f"J5 monthly spend check. Run {os.environ['RUN_ID']}.\n\n")
               fh.write("ESTIMATE, NOT AN INVOICE. Derived in-repository from run counts and recorded\n"
                        "per-run telemetry. The Anthropic Console is the only authority on actual\n"
@@ -469,12 +532,41 @@ jobs:
                   for e in s["events"]:
                       fh.write(f"  {e['date']}  {e['job']}  ${e['usd']:.4f}\n")
           PY
-          gh issue create --label ROUTINE \
+          URL=$(gh issue create --label ROUTINE \
             --title "J5 spend check $(date -u +%F)" \
-            --body-file out/status.md \
-          || gh issue create \
+            --body-file out/status.md) \
+          || URL=$(gh issue create \
             --title "J5 spend check $(date -u +%F)" \
-            --body-file out/status.md
+            --body-file out/status.md)
+          N="${URL##*/}"
+          case "$N" in
+            ''|*[!0-9]*)
+              echo "::warning::could not read an issue number from '$URL'; ACTING ON THIS footer not appended" ;;
+            *)
+              CLASS=$(cat out/status-footer-class.txt)
+              { cat out/status.md
+                printf '\n---\n\n## ACTING ON THIS\n\n'
+                case "$CLASS" in
+                  spend)
+                    printf 'An order for you to paste into an interactive session. The machine does not run it and ships nothing.\n\n'
+                    printf '```text\n'
+                    printf 'Spend session from machine metering. Source: issue #%s, criteria: as listed in the issue. s3-watch-officer: reconcile this repository-side estimate against the Console, report the actual figure, and state what drove it. Any cap, throttle, or schedule change comes to me as a proposal. I decide.\n' "$N"
+                    printf '```\n'
+                    ;;
+                  repair)
+                    printf 'An order for you to paste into an interactive session. The machine does not run it and ships nothing.\n\n'
+                    printf '```text\n'
+                    printf 'Machine health session from the monthly meter. Source: issue #%s, job: J5. s3-devops: read the control notes and missed-run count in this issue against the run evidence, diagnose, and propose the fix on a branch; gate it and stage on my approval. I merge.\n' "$N"
+                    printf '```\n'
+                    ;;
+                  *)
+                    printf 'No session required. To act on anything here anyway: open the terminal and cite this issue number (#%s).\n' "$N"
+                    ;;
+                esac
+              } > out/status-final.md
+              gh issue edit "$N" --body-file out/status-final.md \
+                || echo "::warning::footer edit failed for #$N; the issue is filed without it" ;;
+          esac
 
       - name: Upload evidence
         if: always()
@@ -491,7 +583,8 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           mkdir -p out
-          printf 'J5 failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" > out/failure.md
+          printf '1 item may need your eyes: J5 failed, so spend is unmetered until it is fixed or re-run.\n\n' > out/failure.md
+          printf 'J5 failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" >> out/failure.md
           printf 'The monthly spend check did not complete. F3 and F6 went unevaluated\n' >> out/failure.md
           printf 'this month — spend is UNMETERED until this is fixed or re-run.\n\n' >> out/failure.md
           if [ -f out/spend.json ]; then
@@ -502,5 +595,20 @@ jobs:
           else
             printf -- '---\n\nNo spend state was computed.\n' >> out/failure.md
           fi
-          gh issue create --label FLASH --title "J5 FAILED $(date -u +%F)" --body-file out/failure.md \
-          || gh issue create --title "J5 FAILED $(date -u +%F)" --body-file out/failure.md
+          URL=$(gh issue create --label FLASH --title "J5 FAILED $(date -u +%F)" --body-file out/failure.md) \
+          || URL=$(gh issue create --title "J5 FAILED $(date -u +%F)" --body-file out/failure.md)
+          N="${URL##*/}"
+          case "$N" in
+            ''|*[!0-9]*)
+              echo "::warning::could not read an issue number from '$URL'; ACTING ON THIS footer not appended" ;;
+            *)
+              { cat out/failure.md
+                printf '\n---\n\n## ACTING ON THIS\n\n'
+                printf 'An order for you to paste into an interactive session. The machine does not run it and ships nothing.\n\n'
+                printf '```text\n'
+                printf 'URGENT — machine failure session. Source: issue #%s, job: J5. s3-devops: read the run evidence, diagnose the failure, and propose the fix on a branch; gate it and stage on my approval. I merge.\n' "$N"
+                printf '```\n'
+              } > out/failure-final.md
+              gh issue edit "$N" --body-file out/failure-final.md \
+                || echo "::warning::footer edit failed for #$N; the issue is filed without it" ;;
+          esac

@@ -198,6 +198,11 @@ jobs:
         run: |
           COUNT=$(cat out/diff-count.txt)
           {
+            # BLUF, first line, one sentence, so the mail preview answers "read
+            # on?" without opening it. J1 is detection only: it never rates and
+            # never proposes an app change, so a J1 finding is never itself a
+            # task for Dean. Correlation against the app is J2's job on Sunday.
+            printf 'NO ACTION NEEDED — informational: J1 detected changes in %s source(s), nothing here is rated, and correlation against the app is J2 work.\n\n' "$COUNT"
             printf 'J1 detected changes in %s source(s) on %s.\n\n' "$COUNT" "$(date -u +%F)"
             printf 'DETECTION ONLY. Nothing here is rated. Rating is s2-intel work in an\n'
             printf 'interactive session, where the policy-verification escalation ladder\n'
@@ -211,12 +216,29 @@ jobs:
             cat out/scan-result.json
             printf '\n```\n'
           } > out/findings-issue.md
-          gh issue create --label ROUTINE \
+          # The ACTING ON THIS footer must carry THIS issue's number, and that
+          # number does not exist until the issue does. So: create, read the
+          # number back off the URL gh prints, then edit the footer in. A failed
+          # edit degrades to an issue without a footer - it never fails the run
+          # and never fires a FLASH, because the finding itself was filed.
+          URL=$(gh issue create --label ROUTINE \
             --title "J1 findings $(date -u +%F)" \
-            --body-file out/findings-issue.md \
-          || gh issue create \
+            --body-file out/findings-issue.md) \
+          || URL=$(gh issue create \
             --title "J1 findings $(date -u +%F)" \
-            --body-file out/findings-issue.md
+            --body-file out/findings-issue.md)
+          N="${URL##*/}"
+          case "$N" in
+            ''|*[!0-9]*)
+              echo "::warning::could not read an issue number from '$URL'; ACTING ON THIS footer not appended" ;;
+            *)
+              { cat out/findings-issue.md
+                printf '\n---\n\n## ACTING ON THIS\n\n'
+                printf 'No session required. To act on anything here anyway: open the terminal and cite this issue number (#%s).\n' "$N"
+              } > out/findings-final.md
+              gh issue edit "$N" --body-file out/findings-final.md \
+                || echo "::warning::footer edit failed for #$N; the issue is filed without it" ;;
+          esac
 
       # GUARDED WRITE. Memory is harder to rebuild than a run is to repeat, so
       # this step refuses to degrade the baseline. A run that fetched fewer
@@ -281,12 +303,28 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           mkdir -p out
-          printf 'J1 failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" > out/failure.md
+          printf '1 item may need your eyes: J1 failed, so federal sources went unscanned this run.\n\n' > out/failure.md
+          printf 'J1 failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" >> out/failure.md
           # A guard refusal writes its reason here. Folding it into the single
           # FLASH keeps one issue per event rather than two competing ones.
           if [ -f out/guard-failure.md ]; then
             printf -- '---\n\n' >> out/failure.md
             cat out/guard-failure.md >> out/failure.md
           fi
-          gh issue create --label FLASH --title "J1 FAILED $(date -u +%F)" --body-file out/failure.md \
-          || gh issue create --title "J1 FAILED $(date -u +%F)" --body-file out/failure.md
+          URL=$(gh issue create --label FLASH --title "J1 FAILED $(date -u +%F)" --body-file out/failure.md) \
+          || URL=$(gh issue create --title "J1 FAILED $(date -u +%F)" --body-file out/failure.md)
+          N="${URL##*/}"
+          case "$N" in
+            ''|*[!0-9]*)
+              echo "::warning::could not read an issue number from '$URL'; ACTING ON THIS footer not appended" ;;
+            *)
+              { cat out/failure.md
+                printf '\n---\n\n## ACTING ON THIS\n\n'
+                printf 'An order for you to paste into an interactive session. The machine does not run it and ships nothing.\n\n'
+                printf '```text\n'
+                printf 'URGENT — machine failure session. Source: issue #%s, job: J1. s3-devops: read the run evidence, diagnose the failure, and propose the fix on a branch; gate it and stage on my approval. I merge.\n' "$N"
+                printf '```\n'
+              } > out/failure-final.md
+              gh issue edit "$N" --body-file out/failure-final.md \
+                || echo "::warning::footer edit failed for #$N; the issue is filed without it" ;;
+          esac
