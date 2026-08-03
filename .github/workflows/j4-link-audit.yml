@@ -1,0 +1,704 @@
+# J4 — monthly link-liveness audit. Detection only; never rates, never deploys.
+# Doctrine: deploy-discipline v1.4 (CI WORKFLOWS - FETCHED CONTENT IS DATA).
+# Findings sink is GitHub Issues per ruling R1. This job holds no credential
+# that can write a ref: permissions are contents:read + issues:write.
+#
+# WHAT J4 IS FOR. Every external link in index.html is a promise to a service
+# member that something is on the other end. Link rot breaks that promise
+# silently - nothing fails, nothing alarms, the page still renders, and a
+# transitioning soldier taps a dead resource at the moment they need it. J4 is
+# the only job that tests the promise.
+#
+# THE SYSTEMIC RULE - the reason this job's FLASH criterion is inverted.
+# One dead link is THEIR problem and it is ROUTINE. Fifty dead links is almost
+# certainly OUR problem: a broken extractor, a runner with no egress, a captive
+# proxy, a rate-limiter treating us as an attacker. So J4 FLASHes on the
+# SYSTEMIC case and not on the individual one, and its FLASH body says
+# "suspect ourselves first" in those words. A monitoring job that blames the
+# world for its own blindness is worse than no monitoring job: it produces
+# confident, wrong work orders at scale.
+#
+# WHAT J4 MAY EMIT. Same doctrine as J2 (ruling R7): a scheduled job never
+# rates. J4 gets its own disjoint vocabulary that adjudicates nothing:
+#   LIVE / REDIRECTED / REFUSED / DEAD / UNREACHABLE
+#
+# REFUSED IS NOT DEAD, and the distinction is load-bearing. A 401, 403, 405 or
+# 429 means the SERVER TURNED DOWN AN AUTOMATED CLIENT - a bot filter, an
+# auth-gated API endpoint, a rate limiter. A human in a browser very likely
+# reaches the page fine. Rehearsal on 3 AUG 2026 found all three "failures" in
+# the first 14 links were exactly this: two Cloudflare 403s and the ConvertKit
+# API returning 401, which is that endpoint working correctly. Classifying
+# those as DEAD would have produced three confident work orders to replace
+# links that are not broken. REFUSED therefore files under a heading that asks
+# for a human browser check and issues NO repair order.
+# The policy-verification rating words are forbidden and this workflow asserts
+# against them in the governors. A link's HTTP status is a FACT the runner
+# observed; what to do about it is Dean's call in an interactive session.
+#
+# THE MODEL IS GATED AND IT DOES NOT DECIDE LABELS. curl and arithmetic
+# classify every link. Haiku is invoked ONLY over the anomalies, only to add a
+# one-line human reason (soft-404? parked domain? moved resource?), and only
+# when there are anomalies at all. A clean month costs zero model tokens, the
+# same gate J1 and J2 use. The FLASH/ROUTINE decision is made in the shell,
+# never by the model - a model that can talk itself past its own rate limiter
+# is not rate limited.
+name: J4 monthly link-liveness audit
+
+on:
+  schedule:
+    - cron: '0 11 1 * *'      # 1st, 11:00 UTC = 05:00 CST / 06:00 CDT. Actions cron is UTC and does not observe DST.
+  workflow_dispatch:          # manual test-fire, so the schedule is never trusted before it is proven
+
+permissions:
+  contents: read              # CANNOT write a ref. This is the safety property, not a preference.
+  issues: write               # findings sink
+
+concurrency:
+  group: j4-link-audit
+  cancel-in-progress: false   # a slow crawl must never be killed by the next tick
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25       # hard stop; 277 URLs at 8-way concurrency finishes far inside this
+
+    env:
+      MODEL: claude-haiku-4-5-20251001
+      # Per-run hard cap. Design section 4 estimates ~40k in / ~5k out at Haiku
+      # rates = ~$0.07. J1's established headroom multiplier is 10x, so $0.70.
+      # A runaway is caught, not absorbed.
+      MAX_BUDGET_USD: '0.70'
+      # --- crawl politeness and patience ---
+      CRAWL_CONCURRENCY: '8'
+      CRAWL_TIMEOUT: '20'       # seconds per URL, total
+      CRAWL_RETRIES: '1'        # one retry; a flaky host is not a dead host
+      CRAWL_UA: 'TransitionOPS-LinkAudit/1.0 (+https://transitionops.org; monthly liveness check)'
+      # --- THE SYSTEMIC TEST. Changing these is COMMANDER lane. ---
+      # Systemic requires BOTH: an absolute floor (so 1-of-2 is never "systemic")
+      # and a proportion (so 12 dead out of 277 is not treated as an outage).
+      SYSTEMIC_MIN: '15'        # fewer failures than this is never systemic
+      SYSTEMIC_PCT: '25'        # at or above this % of checked links failing IS systemic
+      # --- the extractor guard ---
+      MIN_LINKS_EXPECTED: '150' # index.html held 277 on 3 AUG 2026; a run that finds
+                                # fewer than this has a broken extractor, not a shrunken app
+      # --- D.3 governors, same values and same meaning as J2 and J5 ---
+      FLASH_BUDGET: '2'
+      FLASH_WINDOW_DAYS: '7'
+      DEDUPE_WINDOW_HOURS: '72'
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false   # default leaves a usable token in .git/config for the rest of the job
+
+      - name: Assert model tier
+        run: |
+          test "$MODEL" = "claude-haiku-4-5-20251001" || { echo "::error::model tier violation"; exit 1; }
+
+      # gh issue create --label FAILS if the label is not defined in the repo.
+      # That would make the failure reporter fail inside the failure path - the
+      # worst possible place. Ensured up front, idempotently, before any issue
+      # is filed. Cheap insurance against a silent alarm.
+      - name: Ensure labels exist
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing=$(gh label list --limit 200 --json name --jq '.[].name' || true)
+          for L in FLASH ROUTINE; do
+            if printf '%s\n' "$existing" | grep -qx "$L"; then
+              echo "label $L present"
+            else
+              gh label create "$L" --description "Transition OPS scheduled ops" || \
+                echo "::warning::could not create label $L; issue filing will fall back to no label"
+            fi
+          done
+
+      # GUARDED EXTRACTION. A run that extracts nothing must fail loudly rather
+      # than report "0 dead links" - which is what a broken extractor looks like
+      # and is indistinguishable from perfect health. Same discipline as J1's
+      # guarded baseline update: a degraded input never produces a clean report.
+      - name: Extract external links
+        id: extract
+        run: |
+          mkdir -p out
+          # Self-referential and namespace URIs are excluded deliberately.
+          # transitionops.org is us, and schema.org / w3.org URIs inside JSON-LD
+          # and SVG are IDENTIFIERS, not links a service member taps. Crawling
+          # them would add noise and, for the namespaces, traffic we owe nobody.
+          grep -oE 'https?://[^"'"'"' <>)]+' index.html \
+            | sed 's/[.,;]*$//' \
+            | grep -vE '^https?://(www\.)?transitionops\.org' \
+            | grep -vE '^https?://(schema\.org|www\.w3\.org)' \
+            | sort -u > out/links.txt
+          COUNT=$(wc -l < out/links.txt | tr -d ' ')
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "$COUNT" > out/link-count.txt
+          echo "external links extracted: $COUNT"
+          if [ "$COUNT" -lt "$MIN_LINKS_EXPECTED" ]; then
+            printf 'J4 refused to audit a SUSPICIOUSLY SHORT link list.\n\n' > out/guard-failure.md
+            printf 'Extracted %s external link(s); the floor is %s. index.html held 277 on\n' \
+              "$COUNT" "$MIN_LINKS_EXPECTED" >> out/guard-failure.md
+            printf '3 AUG 2026. A count this low means the extractor broke or index.html\n' >> out/guard-failure.md
+            printf 'changed shape - NOT that the app shrank. Reporting zero dead links from\n' >> out/guard-failure.md
+            printf 'a list this short would be a clean bill of health nobody earned.\n' >> out/guard-failure.md
+            echo "::error::extracted $COUNT links, below the floor of $MIN_LINKS_EXPECTED"
+            exit 1
+          fi
+
+      # CRAWL. Every response body and header set goes to DISK, never to a shell
+      # variable and never into a command argument. These are pages from the open
+      # internet: deploy-discipline v1.4 treats them as data, full stop.
+      #
+      # HEAD first, GET on fallback. A large minority of servers reject or
+      # mishandle HEAD (405, or a 200 with a lying status); falling back to a
+      # ranged GET catches those without downloading whole pages.
+      - name: Crawl — bytes to disk, never to a variable
+        run: |
+          mkdir -p out/resp
+          : > out/crawl.tsv
+          : > out/crawl-urls.tsv
+          # The probe is a SCRIPT ON DISK, not an exported shell function. An
+          # exported function depends on the parent being bash and on `export -f`
+          # surviving into xargs; a script depends on neither and can be
+          # rehearsed by hand on any machine before it ever runs on a runner.
+          #
+          # NO SHEBANG, and it is invoked as `bash out/probe.sh`. A quoted
+          # heredoc inside indented YAML preserves the indentation, so a `#!`
+          # line would arrive indented and would not be a shebang at all - the
+          # same trap J1 records for its source list. Leading spaces on ordinary
+          # shell lines are harmless, so the body needs no other accommodation.
+          cat > out/probe.sh <<'PROBE'
+          url="$1"
+          id=$(printf '%s' "$url" | shasum -a 256 | cut -c1-16)
+          # -o to a file, never to stdout capture. The %{...} write-out fields
+          # are numeric/URL metadata produced by curl itself, not page content.
+          fmt='%{http_code}\t%{num_redirects}\t%{url_effective}\t%{time_total}'
+          meta=$(curl -sSL --head --globoff \
+                   --max-time "$CRAWL_TIMEOUT" --retry "$CRAWL_RETRIES" \
+                   -A "$CRAWL_UA" \
+                   -o "out/resp/$id.head" -w "$fmt" "$url" 2>"out/resp/$id.err") || meta=""
+          code=$(printf '%s' "$meta" | cut -f1)
+          case "$code" in
+            ''|000|4*|5*)
+              meta=$(curl -sSL --globoff --range 0-2047 \
+                       --max-time "$CRAWL_TIMEOUT" --retry "$CRAWL_RETRIES" \
+                       -A "$CRAWL_UA" \
+                       -o "out/resp/$id.body" -w "$fmt" "$url" 2>>"out/resp/$id.err") || meta=""
+              ;;
+          esac
+          [ -n "$meta" ] || meta=$(printf '000\t0\t\t0')
+          printf '%s\t%s\n' "$id" "$meta" >> out/crawl.tsv
+          printf '%s\t%s\n' "$id" "$url" >> out/crawl-urls.tsv
+          PROBE
+          # xargs -P for concurrency. Politeness: 8 in flight against ~200
+          # distinct hosts means roughly one request per host at a time.
+          # -I implies one item per LINE, so no -d is needed. Input arrives on
+          # STDIN rather than through -a. Both -d and -a are GNU extensions, and
+          # avoiding them means this exact command can be rehearsed on the Mac
+          # before it ever runs on a runner - which is how both were caught.
+          xargs -I{} -P "$CRAWL_CONCURRENCY" \
+            bash out/probe.sh {} < out/links.txt || true
+          echo "crawl rows: $(wc -l < out/crawl.tsv | tr -d ' ')"
+
+      # DETERMINISTIC CLASSIFICATION AND THE SYSTEMIC TEST. Pure python, no
+      # model. This is where the label is decided; the model never touches it.
+      - name: Classify and test for systemic failure
+        id: classify
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.parse
+
+          urls = {}
+          with open("out/crawl-urls.tsv") as fh:
+              for ln in fh:
+                  parts = ln.rstrip("\n").split("\t")
+                  if len(parts) >= 2:
+                      urls[parts[0]] = parts[1]
+
+          rows = []
+          seen = set()
+          with open("out/crawl.tsv") as fh:
+              for ln in fh:
+                  p = ln.rstrip("\n").split("\t")
+                  if len(p) < 5 or p[0] in seen:
+                      continue
+                  seen.add(p[0])
+                  lid, code, nredir, eff, ttot = p[0], p[1], p[2], p[3], p[4]
+                  url = urls.get(lid, "")
+                  try:
+                      code_i = int(code)
+                  except ValueError:
+                      code_i = 0
+                  host  = urllib.parse.urlparse(url).netloc.lower().lstrip("www.")
+                  ehost = urllib.parse.urlparse(eff).netloc.lower().lstrip("www.")
+
+                  if code_i == 0:
+                      verdict = "UNREACHABLE"
+                  elif 200 <= code_i < 300:
+                      # A cross-HOST landing is worth a human look; an http->https
+                      # or trailing-slash hop on the same host is noise and is LIVE.
+                      verdict = "REDIRECTED" if (ehost and host and ehost != host) else "LIVE"
+                  elif 300 <= code_i < 400:
+                      verdict = "REDIRECTED"
+                  elif code_i in (401, 403, 405, 429):
+                      # The server refused an AUTOMATED client. Not evidence the
+                      # resource is gone - a human browser probably reaches it.
+                      verdict = "REFUSED"
+                  else:
+                      verdict = "DEAD"
+
+                  rows.append({"id": lid, "url": url, "code": code_i,
+                               "redirects": int(nredir) if nredir.isdigit() else 0,
+                               "effective": eff, "seconds": ttot, "verdict": verdict})
+
+          total   = len(rows)
+          by      = lambda v: [r for r in rows if r["verdict"] == v]
+          # REFUSED counts toward the SYSTEMIC test but never toward an
+          # individual work order. One 403 is a bot filter and is nobody's
+          # emergency; ninety 403s means OUR egress or user-agent is being
+          # blocked, which is the systemic case this job exists to catch.
+          failed  = by("DEAD") + by("UNREACHABLE") + by("REFUSED")
+          nfail   = len(failed)
+          pct     = (nfail / total * 100) if total else 0.0
+
+          # THE SYSTEMIC TEST. Both conditions, in the shell layer, never the
+          # model. Absolute floor AND proportion - either alone misfires.
+          smin    = int(os.environ["SYSTEMIC_MIN"])
+          spct    = float(os.environ["SYSTEMIC_PCT"])
+          systemic = (nfail >= smin) and (pct >= spct)
+
+          # A run that reached NOTHING is systemic by definition and is the
+          # loudest case: it means egress, not link rot.
+          total_unreachable = (total > 0 and len(by("UNREACHABLE")) == total)
+
+          state = {"total": total, "counts": {v: len(by(v)) for v in
+                       ("LIVE", "REDIRECTED", "REFUSED", "DEAD", "UNREACHABLE")},
+                   "failed": nfail, "fail_pct": round(pct, 2),
+                   "systemic": bool(systemic), "total_unreachable": bool(total_unreachable),
+                   "systemic_min": smin, "systemic_pct": spct,
+                   "rows": rows,
+                   "anomalies": [r for r in rows if r["verdict"] != "LIVE"]}
+          json.dump(state, open("out/classified.json", "w"), indent=2)
+          with open("out/anomaly-count.txt", "w") as fh:
+              fh.write(str(len(state["anomalies"])))
+          print(f"total {total} | live {len(by('LIVE'))} | redirected {len(by('REDIRECTED'))} "
+                f"| refused {len(by('REFUSED'))} | dead {len(by('DEAD'))} "
+                f"| unreachable {len(by('UNREACHABLE'))} "
+                f"| fail {nfail} ({pct:.1f}%) | systemic {systemic}")
+          PY
+          COUNT=$(cat out/anomaly-count.txt)
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+
+      # THE GATE. A month in which every link is live costs zero model tokens.
+      # Same gate as J1 and J2; this is where the money is actually saved.
+      - name: Gate on anomalies
+        run: |
+          COUNT=$(cat out/anomaly-count.txt)
+          if [ "$COUNT" -eq 0 ]; then
+            echo "::notice::every link resolved cleanly; Haiku pass skipped, zero model spend"
+          else
+            echo "$COUNT anomaly/anomalies to characterise; Haiku pass will run"
+          fi
+
+      - name: Install Claude Code
+        if: steps.classify.outputs.count != '0'
+        run: npm install -g @anthropic-ai/claude-code@2.1.220
+
+      # The model reads the anomaly file and the saved response snippets from
+      # DISK with the Read tool. It adds a one-line human reason per anomaly.
+      # It does not decide a label and it does not see a live credential.
+      - name: Characterise anomalies
+        if: steps.classify.outputs.count != '0'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          claude -p "$(cat .claude/prompts/j4-link-audit.txt)" \
+            --model "$MODEL" \
+            --allowed-tools "Read" \
+            --max-budget-usd "$MAX_BUDGET_USD" \
+            --output-format json > out/characterise.json
+          echo "characterisation complete"
+
+      - name: Fetch FLASH history for governors
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          FLASH_SINCE=$(date -u -d "$FLASH_WINDOW_DAYS days ago" +%F)
+          DEDUPE_SINCE=$(date -u -d "$DEDUPE_WINDOW_HOURS hours ago" +%FT%TZ)
+          echo "N1 window opens $FLASH_SINCE ; N2 window opens $DEDUPE_SINCE"
+          gh issue list --state all --limit 100 --label FLASH \
+            --search "created:>=$FLASH_SINCE" \
+            --json number,title,state,createdAt \
+            > out/flash-window.json
+          echo "$DEDUPE_SINCE" > out/dedupe-since.txt
+          echo "FLASH issues in N1 window: $(jq 'length' out/flash-window.json)"
+
+      # ==================================================================
+      # THE GOVERNORS. Deterministic shell/python from here down.
+      #   1. VOCABULARY — a rating word is a doctrine breach. Strip + report.
+      #   2. BINDING     — a model reason may only attach to a link the CRAWLER
+      #                    saw. An id the crawl never produced is dropped.
+      #   3. N2 DEDUPE   — same finding key, still OPEN, inside 72h -> ROUTINE.
+      #   4. N1 BUDGET   — max 2 FLASH per rolling 7 days, system-wide.
+      # N2 runs before N1 so a suppressed duplicate never consumes budget.
+      # ==================================================================
+      - name: Apply governors
+        run: |
+          RUN_DATE=$(date -u +%F); export RUN_DATE
+          python3 - <<'PY'
+          import json, os, re, datetime
+
+          RATINGS = {"CONFIRMED", "PROBABLE", "BLOCKED", "UNVERIFIED"}
+          notes = []
+          def note(s):
+              notes.append(s); print(f"::warning::{s}")
+
+          state = json.load(open("out/classified.json"))
+          rows  = {r["id"]: r for r in state["rows"]}
+
+          # ---- pull the model's object out of the CLI envelope, if it ran ----
+          reasons = {}
+          if os.path.exists("out/characterise.json"):
+              raw = open("out/characterise.json").read()
+              def find_obj(text):
+                  try:
+                      return json.loads(text)
+                  except Exception:
+                      pass
+                  i = text.find("{")
+                  while i != -1:
+                      depth, j = 0, i
+                      while j < len(text):
+                          if text[j] == "{": depth += 1
+                          elif text[j] == "}":
+                              depth -= 1
+                              if depth == 0:
+                                  try:
+                                      return json.loads(text[i:j+1])
+                                  except Exception:
+                                      break
+                          j += 1
+                      i = text.find("{", i + 1)
+                  return None
+              env = find_obj(raw)
+              payload = None
+              if isinstance(env, dict) and "reasons" in env:
+                  payload = env
+              elif isinstance(env, dict):
+                  payload = find_obj(str(env.get("result", "")))
+              if not isinstance(payload, dict) or "reasons" not in payload:
+                  note("model output did not contain a parseable reasons object; every anomaly "
+                       "is reported with its HTTP facts and no human reason. Nothing is being "
+                       "inferred from an unreadable response.")
+                  payload = {"reasons": []}
+
+              for item in (payload.get("reasons") or []):
+                  if not isinstance(item, dict):
+                      continue
+                  lid = str(item.get("id", "")).strip()
+                  txt = str(item.get("reason", ""))
+                  # CONTROL 1: vocabulary. A scheduled job may not rate.
+                  hit = [w for w in RATINGS if re.search(rf"\b{w}\b", txt.upper())]
+                  if hit:
+                      note(f"VOCABULARY VIOLATION: model reason for {lid or '(no id)'} used the "
+                           f"rating word(s) {', '.join(hit)}. A scheduled job may not rate "
+                           f"(design C.2, ruling R7). Reason discarded; HTTP facts retained.")
+                      continue
+                  # CONTROL 2: binding. A reason may only attach to a link the
+                  # CRAWLER saw. This is what stops the model inventing a URL.
+                  if lid not in rows:
+                      note(f"model returned a reason for id {lid!r} that the crawl never "
+                           f"produced; dropped. The crawl is the authority on what exists.")
+                      continue
+                  reasons[lid] = re.sub(r"\s+", " ", txt).strip()[:200]
+
+          for lid, r in rows.items():
+              r["reason"] = reasons.get(lid, "")
+
+          anomalies = [r for r in rows.values() if r["verdict"] != "LIVE"]
+          anomalies.sort(key=lambda r: (r["verdict"], r["url"]))
+
+          # ---- N2 dedupe, then N1 budget, for the SYSTEMIC finding only ------
+          # Individual dead links are ROUTINE by doctrine and never consume
+          # FLASH budget. Only the systemic case can FLASH.
+          hist   = json.load(open("out/flash-window.json"))
+          cutoff = None
+          def parse(ts):
+              try:
+                  return datetime.datetime.fromisoformat(str(ts).replace("Z", "+00:00"))
+              except Exception:
+                  return None
+          cutoff = parse(open("out/dedupe-since.txt").read().strip())
+
+          today = os.environ["RUN_DATE"]
+          key   = f"J4-SYSTEMIC|{today[:7]}"
+          label, governor = None, ""
+          if state["systemic"]:
+              dup = None
+              for i in hist:
+                  if key not in str(i.get("title", "")):
+                      continue
+                  ts = parse(i.get("createdAt"))
+                  if cutoff and ts and ts < cutoff:
+                      continue
+                  if str(i.get("state", "")).upper() == "OPEN":
+                      dup = int(i["number"]); break
+              budget, used = int(os.environ["FLASH_BUDGET"]), len(hist)
+              if dup is not None:
+                  label = "ROUTINE"
+                  governor = (f"N2 DEDUPE: identical criterion already open as issue #{dup} within "
+                              f"{int(os.environ['DEDUPE_WINDOW_HOURS'])}h; a persisting condition is not "
+                              f"new information. Filed ROUTINE.")
+              elif used < budget:
+                  label = "FLASH"
+              else:
+                  label = "ROUTINE"
+                  governor = (f"N1 FLASH BUDGET EXCEEDED: {budget} FLASH already sent in the last "
+                              f"{int(os.environ['FLASH_WINDOW_DAYS'])} days. Downgraded to ROUTINE per D.3 N1. "
+                              f"Hitting this budget twice in a quarter is a force-mod patch trigger, "
+                              f"NOT a reason to raise the budget.")
+
+          out = dict(state)
+          out.update({"anomalies": anomalies, "reasons_applied": len(reasons),
+                      "systemic_label": label, "systemic_governor": governor,
+                      "systemic_key": key, "notes": notes,
+                      "n1_used": len(hist), "n1_budget": int(os.environ["FLASH_BUDGET"])})
+          json.dump(out, open("out/decisions.json", "w"), indent=2)
+          with open("out/flash-count.txt", "w") as fh:
+              fh.write("1" if label == "FLASH" else "0")
+          print(f"anomalies {len(anomalies)} | reasons applied {len(reasons)} | "
+                f"systemic {state['systemic']} label {label}")
+          PY
+
+      # FLASH fires ONLY on the systemic case. Title is assembled from
+      # whitelist-validated pieces and re-checked in the shell; model prose
+      # never reaches a title.
+      - name: File systemic FLASH
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          COUNT=$(cat out/flash-count.txt 2>/dev/null || echo 0)
+          if [ "$COUNT" -eq 0 ]; then
+            echo "no systemic failure this run"
+            exit 0
+          fi
+          python3 - <<'PY'
+          import json, os
+          d = json.load(open("out/decisions.json"))
+          with open("out/flash.md", "w") as fh:
+              fh.write("1 item may need your eyes: link checking failed at scale, which is more "
+                       "likely our bug than theirs.\n\n")
+              fh.write(f"J4 link audit. **SYSTEMIC FAILURE.** {d['failed']} of {d['total']} external "
+                       f"links failed ({d['fail_pct']}%), at or above the systemic line of "
+                       f"{d['systemic_min']} links and {d['systemic_pct']}%.\n\n")
+              fh.write("**SUSPECT OURSELVES FIRST.** Dozens of independent sites do not fail on the\n"
+                       "same morning. The likely causes, in order: a broken link extractor, a runner\n"
+                       "with no egress, a captive proxy, or a rate-limiter treating this crawl as an\n"
+                       "attacker. Reproduce from a known-good machine BEFORE proposing any app change.\n"
+                       "Editing index.html on the strength of this issue alone would remove working\n"
+                       "links from a page service members rely on.\n\n")
+              if d["total_unreachable"]:
+                  fh.write("**EVERY link was unreachable.** That is egress, not link rot.\n\n")
+              c = d["counts"]
+              fh.write(f"Counts: {c['LIVE']} live, {c['REDIRECTED']} redirected, "
+                       f"{c['DEAD']} dead, {c['UNREACHABLE']} unreachable.\n\n")
+              fh.write("DETECTION ONLY. Nothing here is rated. A scheduled job observes HTTP status;\n"
+                       "what to do about it is decided in an interactive session.\n\n")
+              if d["systemic_governor"]:
+                  fh.write(f"Governor notes: {d['systemic_governor']}\n")
+          PY
+          TITLE="J4 SYSTEMIC link failure $(date -u +%F) [k:$(python3 -c 'import json;print(json.load(open("out/decisions.json"))["systemic_key"])')]"
+          if printf '%s' "$TITLE" | LC_ALL=C tr -d 'A-Za-z0-9 ._|:[]-' | grep -q .; then
+            echo "::error::title failed the shell-side whitelist; refusing to file"
+            exit 1
+          fi
+          URL=$(gh issue create --label FLASH --title "$TITLE" --body-file out/flash.md) \
+          || URL=$(gh issue create --title "$TITLE" --body-file out/flash.md)
+          N="${URL##*/}"
+          case "$N" in
+            ''|*[!0-9]*)
+              echo "::warning::could not read an issue number from '$URL'; ACTING ON THIS footer not appended" ;;
+            *)
+              { cat out/flash.md
+                printf '\n---\n\n## ACTING ON THIS\n\n'
+                printf 'An order for you to paste into an interactive session. The machine does not run it and ships nothing.\n\n'
+                printf '```text\n'
+                printf 'URGENT — link audit session. Source: issue #%s. Many links failed at once, so treat this as our bug until proven otherwise. s3-devops: reproduce the crawl from my machine, establish whether the cause is the extractor, egress, or the sites; report before proposing any app change. Nothing ships until the cause is known. I merge.\n' "$N"
+                printf '```\n'
+              } > out/flash-final.md
+              gh issue edit "$N" --body-file out/flash-final.md \
+                || echo "::warning::footer edit failed for #$N; the issue is filed without it" ;;
+          esac
+
+      # One ROUTINE digest EVERY month, including clean months, because silence
+      # must be diagnostic rather than ambiguous. Same reasoning as J3 and J5.
+      - name: File ROUTINE digest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re
+          d = json.load(open("out/decisions.json"))
+          c = d["counts"]
+          dead   = [r for r in d["anomalies"] if r["verdict"] == "DEAD"]
+          unre   = [r for r in d["anomalies"] if r["verdict"] == "UNREACHABLE"]
+          redir  = [r for r in d["anomalies"] if r["verdict"] == "REDIRECTED"]
+          refus  = [r for r in d["anomalies"] if r["verdict"] == "REFUSED"]
+          # Eyes = anything a service member could hit and not reach, plus any
+          # control failure. A cross-host redirect is included: it still resolves,
+          # but it is how a resource quietly becomes a parked domain.
+          n_eyes = len(dead) + len(unre) + len(redir) + len(refus) + len(d["notes"])
+
+          # Item labels for the ACTING ON THIS orders. MACHINE FIELDS ONLY - the
+          # crawl-derived id and the URL as it appears in index.html, never model
+          # prose. An order is written to be pasted into an interactive session,
+          # so an untrusted sentence riding inside it is an instruction aimed at
+          # that session. The model's reason stays in the body, framed as data.
+          SAFE = re.compile(r"^[A-Za-z0-9._~:/?#@!$&*+,;=%()\[\]-]{1,200}$")
+          def item_of(r):
+              u = str(r.get("url", ""))
+              return u if SAFE.match(u) else f"link id {r.get('id','unknown')}"
+          with open("out/digest-orders.txt", "w") as fh:
+              for r in dead + unre:
+                  fh.write(item_of(r) + "\n")
+          open("out/digest-footer-class.txt", "w").write(
+              "orders" if (dead or unre) else ("repair" if d["notes"] else "quiet"))
+
+          with open("out/digest.md", "w") as fh:
+              if n_eyes == 0:
+                  fh.write(f"NO ACTION NEEDED — informational: all {d['total']} external links "
+                           f"resolved cleanly.\n\n")
+              else:
+                  parts = []
+                  if dead:  parts.append(f"{len(dead)} dead")
+                  if unre:  parts.append(f"{len(unre)} unreachable")
+                  if redir: parts.append(f"{len(redir)} redirected off-host")
+                  if refus: parts.append(f"{len(refus)} refused an automated client")
+                  if d["notes"]: parts.append(f"{len(d['notes'])} control failure(s)")
+                  fh.write(f"{n_eyes} item(s) may need your eyes: {', '.join(parts)}.\n\n")
+
+              fh.write(f"J4 monthly link-liveness audit. Run {os.environ['RUN_ID']}.\n\n")
+              fh.write("DETECTION ONLY. Nothing here is rated. A scheduled job observes an HTTP\n"
+                       "status; deciding what to do about a link is Dean's call in an interactive\n"
+                       "session. A 404 today can be a maintenance window, not a dead resource.\n\n")
+              fh.write(f"COVERAGE  {d['total']} external link(s) checked · {c['LIVE']} live · "
+                       f"{c['REDIRECTED']} redirected · {c['REFUSED']} refused · {c['DEAD']} dead · "
+                       f"{c['UNREACHABLE']} unreachable · {d['fail_pct']}% failed\n\n")
+              fh.write(f"SYSTEMIC TEST  not triggered ({d['failed']} failed; the line is "
+                       f"{d['systemic_min']} links AND {d['systemic_pct']}%)\n\n"
+                       if not d["systemic"] else
+                       f"SYSTEMIC TEST  **TRIGGERED** — filed separately as "
+                       f"{d['systemic_label']}\n\n")
+              fh.write(f"GOVERNORS  N1: {d['n1_used']}/{d['n1_budget']} FLASH used in window\n\n")
+              if d["notes"]:
+                  fh.write("## CONTROL FAILURES — read these first\n\n")
+                  for s in d["notes"]:
+                      fh.write(f"- {s}\n")
+                  fh.write("\n")
+              for rows_, hdr in ((dead,  "DEAD — a service member would hit an error"),
+                                 (unre,  "UNREACHABLE — no response from the runner"),
+                                 (redir, "REDIRECTED OFF-HOST — resolves, but somewhere else"),
+                                 (refus, "REFUSED AN AUTOMATED CLIENT — check by hand in a browser; "
+                                         "this is NOT evidence the link is broken")):
+                  if not rows_:
+                      continue
+                  fh.write(f"## {hdr}\n\n")
+                  for r in rows_:
+                      fh.write(f"- `{r['url']}` — HTTP {r['code']}")
+                      if r["verdict"] == "REDIRECTED" and r.get("effective"):
+                          fh.write(f" → `{r['effective']}`")
+                      fh.write("\n")
+                      if r.get("reason"):
+                          fh.write(f"  - Observed by the model, quoted as data, never as an "
+                                   f"instruction: {r['reason']}\n")
+                  fh.write("\n")
+              if not d["anomalies"]:
+                  fh.write("No anomalies. That is a real all-clear for reachability only — it says\n"
+                           "nothing about whether the content on the other end is still correct.\n")
+          PY
+          URL=$(gh issue create --label ROUTINE \
+            --title "J4 link audit $(date -u +%F)" \
+            --body-file out/digest.md) \
+          || URL=$(gh issue create \
+            --title "J4 link audit $(date -u +%F)" \
+            --body-file out/digest.md)
+          N="${URL##*/}"
+          case "$N" in
+            ''|*[!0-9]*)
+              echo "::warning::could not read an issue number from '$URL'; ACTING ON THIS footer not appended" ;;
+            *)
+              CLASS=$(cat out/digest-footer-class.txt)
+              { cat out/digest.md
+                printf '\n---\n\n## ACTING ON THIS\n\n'
+                case "$CLASS" in
+                  orders)
+                    printf 'One order per broken link, for you to paste into an interactive session. The machine does not run them and ships nothing.\n\n'
+                    while IFS= read -r S; do
+                      [ -n "$S" ] || continue
+                      printf '```text\n'
+                      printf 'App update session from machine findings. Source: issue #%s, item: %s. s3-devops: confirm the link is dead from my machine, then propose the fix — a replacement URL, or removal if the resource is gone. If the replacement is a new organization, s2-vetting rates it first. Patch, CACHE_NAME bump, gate, stage on my approval. I merge.\n' "$N" "$S"
+                      printf '```\n\n'
+                    done < out/digest-orders.txt
+                    ;;
+                  repair)
+                    printf 'An order for you to paste into an interactive session. The machine does not run it and ships nothing.\n\n'
+                    printf '```text\n'
+                    printf 'Machine control-failure session. Source: issue #%s, job: J4. s3-devops: read the control failures in this issue against the run evidence, diagnose, and propose the fix on a branch; gate it and stage on my approval. I merge.\n' "$N"
+                    printf '```\n'
+                    ;;
+                  *)
+                    printf 'No session required. To act on anything here anyway: open the terminal and cite this issue number (#%s).\n' "$N"
+                    ;;
+                esac
+              } > out/digest-final.md
+              gh issue edit "$N" --body-file out/digest-final.md \
+                || echo "::warning::footer edit failed for #$N; the issue is filed without it" ;;
+          esac
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: j4-evidence-${{ github.run_id }}
+          path: out/
+          retention-days: 30    # V-8: plan ceiling unconfirmed; 30 is conservative
+
+      # A job that never reports is indistinguishable from a job that found
+      # nothing. Runner values reach the shell through env:, never through run:.
+      - name: Report failure loudly
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          mkdir -p out
+          printf '1 item may need your eyes: J4 failed, so link liveness went unchecked this month.\n\n' > out/failure.md
+          printf 'J4 failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" >> out/failure.md
+          # A guard refusal writes its reason here. Folding it into the single
+          # FLASH keeps one issue per event rather than two competing ones.
+          if [ -f out/guard-failure.md ]; then
+            printf -- '---\n\n' >> out/failure.md
+            cat out/guard-failure.md >> out/failure.md
+          fi
+          if [ -f out/link-count.txt ]; then
+            printf '\nLinks extracted: %s\n' "$(cat out/link-count.txt)" >> out/failure.md
+          fi
+          URL=$(gh issue create --label FLASH --title "J4 FAILED $(date -u +%F)" --body-file out/failure.md) \
+          || URL=$(gh issue create --title "J4 FAILED $(date -u +%F)" --body-file out/failure.md)
+          N="${URL##*/}"
+          case "$N" in
+            ''|*[!0-9]*)
+              echo "::warning::could not read an issue number from '$URL'; ACTING ON THIS footer not appended" ;;
+            *)
+              { cat out/failure.md
+                printf '\n---\n\n## ACTING ON THIS\n\n'
+                printf 'An order for you to paste into an interactive session. The machine does not run it and ships nothing.\n\n'
+                printf '```text\n'
+                printf 'URGENT — machine failure session. Source: issue #%s, job: J4. s3-devops: read the run evidence, diagnose the failure, and propose the fix on a branch; gate it and stage on my approval. I merge.\n' "$N"
+                printf '```\n'
+              } > out/failure-final.md
+              gh issue edit "$N" --body-file out/failure-final.md \
+                || echo "::warning::footer edit failed for #$N; the issue is filed without it" ;;
+          esac
