@@ -1463,7 +1463,7 @@ recorded in the Result column — not an assertion that it was checked.
 | V-1 | No | **CLOSED 3 AUG 2026 — NO EXPOSURE EXISTED** | Dean | Deploy history reviewed 3 AUG 2026: **Production/main builds only, zero branch deploys ever fired** despite branches pushed to origin; setting confirms branch deploys `[None]`. The exposure this item asserted was never real. Setting and behavioural record agree, which is stronger than either alone. See §8.7 |
 | V-2 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | Sourced from platform.claude.com models overview, accessed 2 AUG 2026. Sonnet 5 `claude-sonnet-5` $3/$15 per MTok (**intro $2/$10 through 31 AUG 2026**); Haiku 4.5 `claude-haiku-4-5-20251001` (alias `claude-haiku-4-5`) $1/$5, 200K context, 64k max output. See §4 |
 | V-3 | **YES** | **CLOSED 2 AUG 2026** | Dean | Verified by Dean directly on the Console billing page. Monthly spend limit **$200,000 default → $100**. Auto reload **OFF**, retained deliberately as a second circuit breaker. Balance **$19.52 prepaid**, card on file. Email notification at **$45** (75% of the $60 operating target). See §8.2 |
-| V-4 | No | **CLOSED 3 AUG 2026 — LIVE-FIRE PROVEN** | Dean | **Live-fire run #4 proved the bot-created-issue path** (findings #6, ROUTINE); run #3 proved the FLASH path (#5). The only unproven leg is whether those issues generated mail — per §8.8/§8.6, #6 is the witness, not tomorrow's cron, which emails only if a diff happens to occur. *Original finding, retained:* Issue #1 generated no notification; repo watch sat at the default Participating and @mentions, which a bot-filed issue does not satisfy. Fix: watch set to All activity; destination amended same day to `dean@veteranbridgesolutions.com` (primary), `dean.nemecek01@gmail.com` (fallback). |
+| V-4 | No | **CLOSED 3 AUG 2026 — LIVE-FIRE PROVEN** | Dean | **Live-fire run #4 proved the bot-created-issue path** (findings #6, ROUTINE); run #3 proved the FLASH path (#5). The only unproven leg was whether those issues generated mail — **closed the same day: five emails delivered, incl. the #6 findings mail at 08:49.** The cron was never needed as the witness; it fired 4 AUG and filed #11 as a second data point regardless (§8.12). *Original finding, retained:* Issue #1 generated no notification; repo watch sat at the default Participating and @mentions, which a bot-filed issue does not satisfy. Fix: watch set to All activity; destination amended same day to `dean@veteranbridgesolutions.com` (primary), `dean.nemecek01@gmail.com` (fallback). |
 | V-5 | No | OPEN | Dean | Twilio + mail vendor costs, separate from the $60 |
 | V-6 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | `actions/checkout` v7.0.1 → `3d3c42e5aac5ba805825da76410c181273ba90b1`; `actions/upload-artifact` v7.0.1 → `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a`. Both refs resolve to type `commit` — no tag dereference needed. Source: api.github.com git/ref, 2 AUG 2026 |
 | V-7 | **YES** | **CLOSED 2 AUG 2026** | Orchestrator | CLI **2.1.220** (local `claude --version`, matches `npm view @anthropic-ai/claude-code version`). Flag surface verified against that build: `-p/--print`, `--model`, `--output-format`, `--permission-mode`, `--allowed-tools`, `--effort`, `--fallback-model`, `--max-budget-usd` all exist. **`--max-turns` does NOT exist** — the §2 draft was wrong; corrected |
@@ -1484,7 +1484,9 @@ V-2, V-3, V-6, V-7 closed 2 AUG. V-11, V-13, V-14, V-15 closed 3 AUG.
 **R6 is therefore satisfied and the authoring ban lifts.** J1 may be authored,
 on a branch, gated, staged, and merged by Dean — in that order and no other.
 
-**JOB STATUS, 3 AUG 2026.** J1 **LIVE** (run #4 green, §8.8). J3 **LIVE**
+**JOB STATUS, 3 AUG 2026** (J1 line updated 4 AUG). J1 **LIVE AND SELF-FIRING** —
+run #4 green by dispatch, **run #5 green on the cron, 4 AUG, diff path executed**
+(§8.8, §8.12). J3 **LIVE**
 (model-free dead-man's switch). **J2 LIVE AND COMPLETE** — run #3 green with the
 sandbox proven in flight, first Sonnet telemetry recorded at **§8.11**. J4, J5
 not authored. J6 dormant pending ship 1. **Three of six jobs are running, and
@@ -1698,7 +1700,7 @@ governed.
 
 ---
 
-### 8.8 LIVE-FIRE OUTCOME — RUN #4 GREEN, 3 AUG 2026
+### 8.8 LIVE-FIRE OUTCOME — RUN #4 GREEN 3 AUG 2026; RUN #5 SCHEDULED-TRIGGER GREEN 4 AUG 2026
 
 **Run #4: green, 50 seconds.** The first end-to-end success.
 
@@ -1711,6 +1713,8 @@ governed.
 | ROUTINE producer | **Issue #6**, ROUTINE label, first intelligence product | **PROVEN** |
 | Guard / failure path | Run #3: guard refused, **FLASH #5** filed with reason folded in | **PROVEN** |
 | Email leg | **5 notification emails delivered** to `dean@veteranbridgesolutions.com`, incl. "J1 findings 2026-08-03 (Issue #6)" at 08:49 with the full findings body, plus FLASH and SITREP traffic | **PROVEN 3 AUG 2026** |
+| Scheduled trigger | Run **30904317784**, `event: schedule`, green — the cron is the thing that fired, not a dispatch | **PROVEN 4 AUG 2026** |
+| Diff against a populated baseline | Same run: `sources_changed: 1` of 2. `federal-register-va` compared **equal** to a real prior hash and was excluded | **PROVEN 4 AUG 2026** |
 
 **First intelligence product.** Issue #6 carries the Dole Act §403 homeless-veteran
 implementation plan and the Veterans Choice rescission. The system produced
@@ -1735,6 +1739,10 @@ never a successful fetch to populate #1 with. If so, run #4 exercised
 against known prior hashes has still never executed. **Tomorrow's 09:00 UTC cron
 is the first genuine test of it.**
 
+> **CLOSED 4 AUG 2026 — EXECUTED.** That cron fired and the compare logic ran
+> against a populated #1, returning `sources_changed: 1` of 2. **Reading (a) was
+> the correct one** — run #4 was the first-run path, as suspected here. See §8.12.
+
 **2. The instruction-boundary result is a weak pass, not a strong one.** Both
 sources returned `false`, which is the correct answer for two benign Federal
 Register feeds. It confirms the field is wired and the model answers it. It does
@@ -1749,6 +1757,12 @@ many sources as `j1-sources.txt` defines. A green run means the guard passed wit
 `actual >= 2`, and the write targets pinned issue #1. **#1 therefore holds two
 real hashes** — inferred from the workflow's own control flow, not from the
 unfilled bracket.
+
+> **CLOSED 4 AUG 2026 — NO LONGER INFERRED.** Issue #1 was read directly via the
+> GitHub REST API on 4 AUG 2026: `normalization_version: "1"`, two source
+> entries, `federal-register-dod` 35762 bytes and `federal-register-va` 31229
+> bytes, both carrying full sha256 values, `Last run: 2026-08-04T11:19:52Z`. The
+> control-flow inference above was correct and is now superseded by observation.
 
 #### EVERY LEG IN THE TABLE ABOVE IS NOW PROVEN BY LIVE FIRE — 3 AUG 2026
 
@@ -1765,8 +1779,9 @@ a reason to withhold the claim:
   page was in the sample. Upgrading that needs an adversarial input, not another
   clean run.
 - **The true-diff path is still unexecuted** (§8.8 item 1) — see below.
+  **EXECUTED 4 AUG 2026; this qualification is withdrawn. See §8.12.**
 
-#### SCHEDULED FOR 4 AUG 09:00 UTC — THE LAST UNTESTED PATH
+#### SCHEDULED FOR 4 AUG 09:00 UTC — THE LAST UNTESTED PATH (**FLOWN 4 AUG 2026 — see §8.12**)
 
 Dean is planting the corruption in #1 so the scheduled run exercises
 change-detection against a **populated** baseline. Worth naming what that flight
@@ -1793,6 +1808,68 @@ against the §4 estimate of $1.44 for the whole job. Same order of magnitude, mi
 above — and §4 explicitly called itself a floor because it did not model Claude
 Code's per-turn system-prompt and tool-schema overhead. First evidence the cost
 model is sound in shape. Nowhere near the $60 target.
+
+---
+
+### 8.12 RUN #5 — THE DIFF PATH AND THE CRON, BOTH FLOWN, 4 AUG 2026
+
+**Run 30904317784: `event: schedule`, green.** The last untested path in §8.8
+executed. Verified 4 AUG 2026 by the Orchestrator against the GitHub REST API —
+the run record, issue #11, and baseline issue #1 read directly, not reported
+secondhand. `gh` is not installed on this machine; the API was read over HTTPS.
+
+| Claim | Evidence | Verdict |
+|---|---|---|
+| The cron is the trigger | `"event": "schedule"`, `run_attempt: 1`, `head_branch: main`, conclusion `success` | **PROVEN** |
+| Compare against a populated baseline | `sources_total: 2`, `sources_fetched: 2`, `sources_changed: 1`, `sources_failed: []` | **PROVEN** |
+| The compare-EQUAL branch | `federal-register-va` held a real prior hash, matched, and was excluded from `changed` | **PROVEN** |
+| Findings names the expected source | `"id": "federal-register-dod"` — the corrupted one | **PROVEN** |
+| BLUF renders as line 1 | `NO ACTION NEEDED — informational: J1 detected changes in 1 source(s) ...` | **PROVEN** |
+| ACTING ON THIS footer, self-numbered | Footer present, resolved to `(#11)`; no `::warning::` fallback fired | **PROVEN** |
+| Guarded baseline update | #1 rewritten, `Last run: 2026-08-04T11:19:52Z`, both sources present with sha256 | **PROVEN** |
+
+**Why the compare-equal branch is the load-bearing evidence.** A first-run pass
+returns everything as new — that is what run #4 did, and it exercises no
+comparison at all. Run #5 returned a **mixed** result: one source differed, one
+matched and was dropped. `base[s].get("sha256") != v["sha256"]` therefore
+evaluated both ways for the first time. That is the diff path, executed.
+
+#### WHAT RUN #5 DID NOT PROVE — read before drawing conclusions
+
+**1. The planted corruption is not isolable as the cause of the DoD diff.** The
+Federal Register DoD feed **also changed naturally that morning** — the scanner
+reports 35,060 to 35,762 bytes and a newest entry published 2026-08-04. Either
+the corruption or the genuine update, alone, produces `changed: 1` on that
+source. GitHub does not expose issue-body edit history to an unauthenticated
+read, so #1's pre-run state could not be observed. **The corruption experiment
+is confounded; the diff path is proven anyway**, because `federal-register-va`
+carries that proof independently and does not depend on what was planted.
+
+**2. The instruction-boundary pass is still weak** (§8.8 item 2, unchanged).
+Run #5 returned `contains_instruction_like_text: false` on a benign Federal
+Register feed — a second clean sample, not an adversarial one. Upgrading this
+still needs an injection-shaped page. **This item stays open.**
+
+#### CRON LATENCY — A NEW OBSERVATION, NOT A FAILURE
+
+J1's cron is `0 9 * * *`. The run started **11:19:10Z — 2h19m late.** This is
+not isolated: J3's 3 AUG scheduled run (`0 13 * * 1`) started **15:48:56Z, 2h49m
+late.** Two scheduled runs, two delays near 2.5 hours. GitHub does not guarantee
+cron punctuality and sheds scheduled load under contention, so this is expected
+platform behaviour rather than a defect.
+
+**It does bear on two things already written down.** §5.3's dead-man's switch
+reads a missing Monday email as the alarm — that reading needs a tolerance of
+hours, not minutes, or a late SITREP will be misread as a dead system. And the
+`0 9 * * *` comment describing the run as 04:00 CDT is accurate about intent and
+wrong about observed behaviour. **Recommend a W-3 watch item; not drafted, since
+adding one is a design change and this entry is an evidence record.**
+
+#### COST — SECOND DATA POINT
+
+**$0.0596** for run #5 against $0.065 for run #4. Two scan-firing runs within
+10% of each other, both far under the `--max-budget-usd 0.50` cap. The §4 cost
+model holds shape at n=2.
 
 ---
 
@@ -1892,6 +1969,9 @@ is unreliable:
   no issue, means no email — which would look identical to a broken email leg.**
 - **J3 cannot cover for it.** Its cron is Mondays 13:00 UTC; that slot passed at
   13:00 today, so the first SITREP fires **10 AUG**, a week out.
+  **WRONG — CORRECTED 4 AUG 2026.** The slot had *not* passed. GitHub fired J3's
+  cron **2h49m late**, at 15:48:56Z on 3 AUG, and the run went green. The error
+  was assuming a scheduled run either fires on time or not at all. See §8.12.
 - **Issue #6 already is a bot-created issue.** If it generated mail to
   `dean@veteranbridgesolutions.com`, the email leg is proven *now* and W-1 can be
   upgraded today. If it did not, that is the finding — and it is a finding we
@@ -1900,6 +1980,14 @@ is unreliable:
 **Recommended: check whether #6 (and FLASH #5) produced email, and close V-4 on
 that.** Tomorrow's cron is then a useful second data point rather than the sole
 witness.
+
+> **RESOLVED 4 AUG 2026 — and the coin flip landed heads.** V-4 closed on #6 as
+> recommended, so nothing rested on the cron. The cron then produced a diff
+> anyway: the DoD feed published on 4 AUG, J1 filed **findings issue #11**
+> (ROUTINE, `github-actions[bot]`, 11:19:50Z), and the second data point exists.
+> **The one leg still unwitnessed is whether #11 itself generated mail** — that
+> is Dean's inbox to check, not something the API record can answer. V-4 does not
+> reopen either way; #6 already closed it.
 
 ---
 
