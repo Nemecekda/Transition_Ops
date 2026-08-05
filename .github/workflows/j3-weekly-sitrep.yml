@@ -22,6 +22,11 @@ on:
 permissions:
   contents: read              # cannot write a ref
   issues: write               # the SITREP itself, and reading the week's findings
+  actions: read               # count scheduled runs for CHANNEL HEALTH. READ-ONLY:
+                              # cannot cancel, re-run, dispatch, disable, or delete
+                              # runs/logs/artifacts -- those need actions: write.
+                              # Granted by Dean 5 AUG 2026. R1 holds: contents: read
+                              # is unchanged, so no ref can be written.
 
 concurrency:
   group: j3-weekly-sitrep
