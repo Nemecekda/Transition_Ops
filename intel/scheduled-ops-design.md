@@ -265,6 +265,110 @@ anti-noise governors get *more* load-bearing as volume rises, not less.
 
 ---
 
+## 0.65 THE MOBILE LANE — COMMANDER RULING, 5 AUG 2026
+
+**AUTHORIZED. Standing lane definition.** Cloud sessions may run against this
+repository for **verification, analysis, and documentation work**.
+
+### 0.65.1 What the lane permits
+
+| | |
+|---|---|
+| **Permitted work** | Verification, analysis, documentation. Reading, research, drafting, gating. |
+| **Push rights** | **Branches only, from cloud sandboxes.** |
+| **`main`** | **Never.** No agent pushes `main` from any environment, ever. |
+| **Merge authority** | **Unchanged — Dean's, exercised via GitHub mobile.** The lane changes who may create a remote branch. It changes nothing about who merges. |
+| **Secrets-requiring work** | **Desk-only.** Does not enter this lane. |
+
+### 0.65.2 The standing-up condition
+
+**The first mobile session must verify that the validation gate actually runs in
+the sandbox, and report the result.** Until that report exists,
+**mobile-staged branches re-gate on the Mac before merge.**
+
+That condition is not ceremony. `validation-gate` 1.4 now depends on tools the
+sandbox may not have: **step 4** needs Ruby with Psych, **step 4S** needs the
+pinned `actionlint` binary at `~/.local/bin/actionlint` — installed on the Mac,
+almost certainly absent from a fresh sandbox — and step 4 needs `node`. A gate
+that silently degrades to its FALLBACK path in a new environment produces
+**weaker evidence wearing the same word**, which is the failure mode the skill's
+own labelling rules exist to prevent. The first mobile session reports, per step
+6, which steps ran as prescribed and which fell back.
+
+### 0.65.3 This amends never-push, and the amendment is narrow
+
+`deploy-discipline` **PROHIBITED** currently reads:
+
+> "Pushing to `origin` — any branch, any circumstance. Agents never push… **'Branches but not main' is not the rule and never was:** `main` auto-publishes, so a rule that depends on correctly classifying the target every time is one mistake from a deploy."
+
+**The Commander has ruled that carve-out in, scoped to cloud sandboxes.** The
+clause's stated reasoning is the thing that must be answered, so it is answered
+here rather than deleted:
+
+**The risk named is misclassification** — pushing `main` while meaning to push a
+branch. A rule that depends on getting the target right every time is discipline,
+and discipline is the weaker control. **The structural answer is branch
+protection on `main`.** With `main` protected against direct pushes, a
+misclassified push is **rejected by the server**, not caught by agent care. That
+converts the ruling from "trust the classification" to "the classification cannot
+be got wrong," which is the same substitution R1 already made for scheduled jobs
+when it removed the ref-write credential entirely.
+
+**PRECONDITION — CURRENT STATE, 5 AUG 2026: PARTIALLY MET, DELIBERATELY.**
+
+Dean enabled ruleset **"main protection"** on `main`: **restrict deletions** and
+**block force pushes**. The **pull-request requirement is deliberately NOT
+enabled** — it would break the GitHub Desktop merge-and-push rhythm the whole
+workflow runs on. **Ruled: the misclassification risk stays governed by the
+never-push rule until the mobile lane carries real traffic.**
+
+**Read what that does and does not buy, because "branch protection is active" is
+easy to over-read.**
+
+*It does not close the misclassification hole.* Neither enabled rule blocks an
+ordinary push to `main`. Without the PR requirement, `git push origin main`
+still succeeds. The structural substitution proposed above is **not** in place,
+and discipline remains the operative control — as the Commander has explicitly
+ruled, with the cost named.
+
+*What it does buy is worth more than it first appears:* it converts an
+irreversible mistake into a **recoverable** one. Deletion is blocked, and history
+cannot be rewritten. So a wrong-target push lands as an ordinary commit that is
+**visible in history and revertible** — which is precisely what the standing
+rollback discipline depends on (*"production problems get `git revert` within
+seconds, not live debugging"*). The ruleset does not stop the error; it
+guarantees the remedy always works and can never be covered up.
+
+**Standing review trigger:** revisit when the mobile lane carries real traffic,
+per the ruling. If a PR requirement is ever judged too costly, the equivalent
+structural control is a sandbox credential that cannot write `main` at all —
+push rights scoped to non-default branches — which achieves R1's substitution
+without touching Dean's Desktop rhythm.
+
+**What is NOT amended.** R1 and R1a stand untouched. **Scheduled jobs still hold
+no credential that can write a ref** and still reach the repository only through
+the Issues sink with `contents: read`. This lane governs **interactive cloud
+sessions with the Commander present**, which is a different actor with a
+different failure mode. Do not read this section as loosening anything about CI.
+
+**Live contradiction, and it fails safe.** Until `deploy-discipline` is patched,
+its PROHIBITED list still forbids by name what this lane permits. An agent
+reading the skill will therefore **decline to push** — the conservative outcome,
+costing only mobile-lane convenience and risking nothing. The patch is proposed,
+not applied: amending a skill is versioned, registry-tracked, and
+regression-gated work, and this ruling ordered a lane definition rather than a
+skill revision. **Flagged for a separate ruling.**
+
+### 0.65.4 Re-gate discipline until verified
+
+A branch pushed from a sandbox before the gate is verified there is **staged
+evidence, not gated evidence.** It re-runs the full gate on the Mac before merge,
+and the mobile run is reported as what it was. `GATE PASS` claimed from an
+unverified environment is the same defect class as a piped exit code: a true
+statement about the wrong thing.
+
+---
+
 ## 0.7 PROPOSED SOURCE EXPANSION — AWAITING COMMANDER RULING, 5 AUG 2026
 
 **Nothing here is enrolled.** `.github/j1-sources.txt` is unchanged at two
