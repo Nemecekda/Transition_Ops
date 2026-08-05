@@ -62,6 +62,44 @@ jobs:
             '[.[] | select(.title != $t and .title != $c)]' out/week.json > out/findings.json
           jq 'length' out/findings.json
 
+          # --- N7: ROUTINE ARRIVAL RATE, PER PRODUCER (design D.3) ---------
+          # Counts ISSUES, which are already the ledger -- the same pattern N1
+          # uses for FLASH. No new state store, and no actions: read needed:
+          # this reads issues, which J3 already reads. Two 7-day buckets are
+          # derived from ONE 14-day query so "2 consecutive weeks" is stateless
+          # across runs and cannot drift if a run is missed.
+          #
+          # THRESHOLDS ARE JUDGMENT, NOT DERIVED. >5 ROUTINE issues per 7 days
+          # in BOTH buckets trips. 5/wk sits just above J1's realistic rate and
+          # just below daily; 2 consecutive weeks mirrors N3's confirm-before-
+          # waking, because one busy week is weather. DUE FOR TUNING AFTER 60
+          # DAYS of real arrival data.
+          #
+          # It NAMES the condition and never suppresses. Nothing is filtered,
+          # dropped, or downgraded here -- a governor that silently drops
+          # ROUTINE traffic reintroduces the failure this design exists to
+          # prevent.
+          N7_SINCE=$(date -u -d '14 days ago' +%F)
+          N7_BOUNDARY=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          gh issue list --state all --limit 400 \
+            --search "created:>=$N7_SINCE" \
+            --json title,labels,createdAt \
+            > out/n7-window.json
+          jq -r --arg t "$BASELINE_TITLE" --arg c "$ROUTINE_CANARY_TITLE" --arg b "$N7_BOUNDARY" '
+            [ .[]
+              | select(.title != $t and .title != $c)
+              | select(any(.labels[]?; .name == "ROUTINE"))
+              | { producer: (if (.title | test("^J[0-9]")) then .title[0:2] else "other" end),
+                  recent:   (.createdAt >= $b) } ]
+            | group_by(.producer)
+            | map({ producer: .[0].producer,
+                    recent:   ([ .[] | select(.recent) ]       | length),
+                    prior:    ([ .[] | select(.recent | not) ] | length) })
+            | map(select(.recent > 5 and .prior > 5))
+            | .[] | "\(.producer) \(.recent)"
+          ' out/n7-window.json > out/n7-trips.txt || true
+          echo "N7 producers tripping: $(wc -l < out/n7-trips.txt | tr -d " ")"
+
           # --- CHANNEL HEALTH: expected-vs-observed scheduled run counts ---
           # R1 holds: permissions: grants no actions: read (COMMANDER lane,
           # reserved separately). Every call below degrades to NA on
@@ -196,6 +234,17 @@ jobs:
               printf '  %s issue(s) filed, %s FLASH.\n\n' "$TOTAL" "$FLASH"
               jq -r '.[] | "  - #\(.number) [\(.state)] \(.title)"' out/findings.json
             fi
+            # N7 header line. Renders and stops: it does NOT touch BLUF_ITEMS,
+            # because its subject is a RATE, not a finding. Rate-watching is
+            # force-mod review work, not a 0300 problem. See design D.3 N7.
+            if [ -s out/n7-trips.txt ]; then
+              while read -r N7_PROD N7_N; do
+                [ -n "$N7_PROD" ] || continue
+                printf 'ROUTINE ARRIVAL HIGH — %s %s/wk — force-mod review\n' "$N7_PROD" "$N7_N"
+              done < out/n7-trips.txt
+              printf '\n'
+            fi
+
             printf '\nCHANNEL HEALTH\n'
             if [ "$J1_OBSERVED" = "NA" ]; then
               printf '  J1 scheduled runs this window   NOT INSTRUMENTED — actions: read not granted\n'

@@ -1825,6 +1825,50 @@ repositories inactive for 60 days. A job that has quietly stopped running looks
 exactly like a job reporting good news. The weekly asserts the expected count
 and any shortfall is itself a finding.
 
+**N7 — ROUTINE ARRIVAL RATE, PER PRODUCER.** N1 through N6 all protect the FLASH
+channel. **Nothing governs ROUTINE**, and ROUTINE is the channel that carries
+every finding the fleet produces. If a single producer files more than **5
+ROUTINE issues in a rolling 7 days for 2 consecutive weeks**, the next SITREP
+header reads:
+
+```
+ROUTINE ARRIVAL HIGH — <producer> n/wk — force-mod review
+```
+
+**The response is a REVIEW, never automatic suppression.** This is the binding
+half of the rule. A governor that silently drops ROUTINE traffic reintroduces
+the exact silent-failure mode this design exists to prevent — a muted alarm that
+still looks like coverage on paper. The correct fix to a high arrival rate may be
+tiering the source, splitting the channel, tuning the churn threshold, or
+accepting the rate as the honest cost of the coverage. **N7 names the condition;
+it does not decide the remedy, and it never suppresses.**
+
+**Both numbers are JUDGMENT, not derived.** There was zero arrival data when they
+were written — the fleet held n=2 scan-firing runs. **5/week** sits just above
+J1's realistic rate and just below daily, so it trips when and only when a
+producer crosses into daily traffic. **2 consecutive weeks** mirrors N3's
+confirm-before-waking: one busy week is weather. **Due for tuning after 60 days
+of real arrival data**, on the V-9 pattern — do not guess earlier and do not
+leave them unexamined later.
+
+**Why it does not escalate.** N7 renders a header line and stops. It does not
+promote the BLUF to the eyes count, because its subject is a *rate*, not a
+finding, and rate-watching is force-mod's review work rather than the
+Commander's 0300 problem. Adding eyes-pressure to solve a noise problem would be
+the disease presenting as the cure.
+
+**Two properties this governor does not have, stated so nobody assumes them.** It
+cannot see whether Dean *read* anything — GitHub exposes no read state to a
+workflow, so habituation itself remains unmeasurable (§F0.1 property 2, applied
+one channel over). And it counts issues, not attention. It is a proxy, and a
+coarse one.
+
+**Interlock with §0.7.5:** force-mod's analysis predicted that enrolling
+`federal-register-presdocu` before the V-9 churn threshold is tuned would trip
+N7 inside two weeks. That is the alarm working as designed — **but only if the
+alarm exists**, which is why N7 is a hard precondition for that enrollment
+rather than a nice-to-have beside it.
+
 ### D.4 Delivery paths
 
 **ROUTINE** — one weekly email, fixed send window (proposed Monday 0700 local;
