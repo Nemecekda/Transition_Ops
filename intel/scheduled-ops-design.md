@@ -2296,9 +2296,26 @@ NEEDS-LADDER — never to CORRELATED.**
 **A dependency follows, and it is real work rather than a ruling.** J2 currently
 routes only DIVERGENT, NEEDS-LADDER, and control failures to Dean's eyes;
 `.github/workflows/j2-weekly-analysis.yml` treats CORRELATED and NO-APP-EXPOSURE
-as "the machine agreeing with itself." **NO-APP-EXPOSURE is therefore discarded
-today, so the highest-value push class is invisible to the digest.** Surfacing it
-is a J2 workflow change, COMMANDER lane, not folded into this ruling.
+as "the machine agreeing with itself." ~~**NO-APP-EXPOSURE is therefore discarded
+today, so the highest-value push class is invisible to the digest.**~~
+
+> **CORRECTED 5 AUG 2026 — that sentence was wrong, and it was mine.** I asserted
+> it from the BLUF routing code without reading the digest writer. NO-APP-EXPOSURE
+> was **never discarded**: it was already counted in the COVERAGE line and already
+> rendered as its own digest section carrying `subject` and quoted source
+> material. It was excluded from the **eyes count**, which is a different and much
+> narrower thing.
+>
+> **The real gap was discrimination, not visibility** — inside that section
+> nothing distinguished a brand-new program from routine federal paperwork, and at
+> five enrolled sources it becomes unskimmable. Fixed by the WORTH A LOOK /
+> ROUTINE CHURN split on a both-conditions text-shape filter. Ruled and
+> implemented the same day.
+>
+> Recorded rather than quietly edited, because a ruling was made on the wrong
+> premise. The lesson is the §0.8 lesson arriving from the other direction:
+> **reading one code path and generalising to the file is how a confident false
+> claim gets written down.**
 
 **3. G5 added — the deep link must be proven to resolve.** The tasking requires
 the draft to carry a deep-link target. Verifying that requirement surfaced a live

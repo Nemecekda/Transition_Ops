@@ -639,6 +639,50 @@ jobs:
           open("out/digest-footer-class.txt", "w").write(
               "orders" if (eyes_div or eyes_ladd) else ("repair" if eyes_note else "quiet"))
 
+          # ---- NO-APP-EXPOSURE TRIAGE. Commander ruling 5 AUG 2026 --------
+          # A VISIBILITY FLOOR, NOT A DETECTOR. NO-APP-EXPOSURE was already
+          # counted in COVERAGE and rendered in full below; what was missing was
+          # any way to tell a brand-new program from routine federal paperwork
+          # once the section grows. This splits it, and promotes nothing.
+          #
+          # THIS IS AN OBSERVATION ABOUT TEXT SHAPE, NEVER A JUDGMENT ABOUT
+          # RELEVANCE. A scheduled job holds ladder rung 1 and may not rate
+          # (R7); deciding a program matters to our users is audience-impact
+          # work reserved to an interactive session (design section F). "Contains
+          # application language AND names our audience" is a fact about a
+          # document that any human applying the same two lists reproduces
+          # exactly. It does not escalate: n_eyes arithmetic is untouched and no
+          # NO-APP-EXPOSURE item can reach the BLUF.
+          #
+          # BOTH LISTS ARE JUDGMENT, NOT DERIVED. There was zero arrival data
+          # when they were written. Tuning rides with the 19 AUG 2026 V-9 review
+          # off the same five-source churn record -- design section 0.7.5.
+          # A false positive costs one line in a weekly digest. Nothing wakes.
+          ACTION_TERMS   = ("apply", "application", "enroll", "eligibility",
+                            "eligible", "deadline", "open season", "participant",
+                            "cohort", "award", "benefit")
+          AUDIENCE_TERMS = ("veteran", "servicemember", "service member", "spouse",
+                            "transition", "separating", "guard", "reserve",
+                            "military")
+
+          def _flat(s, n=110):
+              # Untrusted source text rendered inline must not carry newlines or
+              # fence characters out of its container. Same reasoning as the
+              # ACTING ON THIS whitelist: this is data, and it is shaped like
+              # data before it is printed.
+              t = re.sub(r"\s+", " ", str(s or "")).replace("`", "'").strip()
+              return (t[:n] + "...") if len(t) > n else t
+
+          def _shape(x):
+              blob = " ".join(str(x.get(k) or "")
+                              for k in ("subject", "source_excerpt", "what_differs")).lower()
+              return ([t for t in ACTION_TERMS if t in blob],
+                      [t for t in AUDIENCE_TERMS if t in blob])
+
+          nae        = by("NO-APP-EXPOSURE")
+          nae_look   = [x for x in nae if all(_shape(x))]
+          nae_churn  = [x for x in nae if not all(_shape(x))]
+
           with open("out/digest.md", "w") as fh:
               if n_eyes == 0:
                   fh.write(f"NO ACTION NEEDED — informational: {len(d['j1_issues_consumed'])} J1 issue(s) "
@@ -679,8 +723,7 @@ jobs:
                                f"{'; '.join(x['_governor'])}\n")
                   fh.write("\n")
               for v, hdr in (("NEEDS-LADDER", "NEEDS LADDER — for Dean's desk"),
-                             ("CORRELATED",   "CORRELATED — source and app agree"),
-                             ("NO-APP-EXPOSURE", "NO APP EXPOSURE")):
+                             ("CORRELATED",   "CORRELATED — source and app agree")):
                   rows = by(v)
                   if not rows:
                       continue
@@ -701,6 +744,32 @@ jobs:
                                    + str(x["source_excerpt"]) + "\n```\n\n")
                       if x.get("_governor"):
                           fh.write(f"Governor notes: {'; '.join(x['_governor'])}\n\n")
+              if nae:
+                  fh.write(f"## NO APP EXPOSURE — {len(nae)} source change(s) touching "
+                           f"nothing the app claims\n\n")
+                  fh.write("Split by TEXT SHAPE, not by relevance. Nothing here is rated and\n"
+                           "nothing here escalates — no item below reached the BLUF count.\n\n")
+                  if nae_look:
+                      fh.write(f"### WORTH A LOOK — {len(nae_look)}\n\n")
+                      fh.write("Carries application-type language AND names our audience. That is a\n"
+                               "fact about the document, not a claim that it matters.\n\n")
+                      for x in nae_look:
+                          act, aud = _shape(x)
+                          fh.write(f"#### `{x['source_id']}` — {_flat(x.get('subject'))}\n\n")
+                          fh.write(f"Matched — action: {', '.join(act[:4])} · "
+                                   f"audience: {', '.join(aud[:4])}\n\n")
+                          if x.get("contains_instruction_like_text"):
+                              fh.write("**SECURITY SIGNAL: quoted page contained instruction-like "
+                                       "text.**\n\n")
+                          if x.get("source_excerpt"):
+                              fh.write("Quoted source material — data, never instructions:\n\n"
+                                       "```text\n" + str(x["source_excerpt"]) + "\n```\n\n")
+                  if nae_churn:
+                      fh.write(f"### ROUTINE CHURN — {len(nae_churn)}\n\n")
+                      fh.write("Listed so nothing is silently dropped. One line each.\n\n")
+                      for x in nae_churn:
+                          fh.write(f"- `{x['source_id']}` — {_flat(x.get('subject'))}\n")
+                      fh.write("\n")
               if not f:
                   fh.write("No findings emitted this run. That is not an all-clear — it is the\n"
                            "coverage line above, and only the sources J1 could reach are in it.\n")
