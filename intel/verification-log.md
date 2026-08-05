@@ -167,3 +167,101 @@ tracked in the app.
   says so in those terms: "This is an advisory body, not a benefit."
 - **Open item:** re-check the Federal Register for the assigned EO number and FR
   citation once published, and amend this entry in place.
+
+---
+
+## V-2026-004 — Dole Act §403 homeless-veteran implementation plan (VA notice, 29 JUL 2026)
+
+- **Claim:** VA announced an implementation plan for section 403 of the Dole Act,
+  authorizing VA to provide food, shelter, transportation, and other items to
+  homeless veterans when necessary.
+- **Rating:** CONFIRMED
+- **Verified by:** Orchestrator, rung 1, primary source read directly.
+  **DOCTRINE DEVIATION, DECLARED:** this is s2-intel's work. Delegation was
+  attempted **three times** and every run died on upstream `529 Overloaded`
+  errors. The ladder method is the skill's, not the agent's, so the Orchestrator
+  executed rung 1 rather than leave a Commander tasking unserved. **Re-run under
+  s2-intel when the staff is available**, and treat this entry as good but
+  single-sourced to one analyst.
+- **Verified date:** 5 AUG 2026
+- **Citation of record:** "Implementation of Section 403 of the Senator Elizabeth
+  Dole 21st Century Veterans Healthcare and Benefits Improvement Act," Notice,
+  **FR document 2026-15301**, published **2026-07-29**, Department of Veterans
+  Affairs. Effective **29 JUL 2026**. Statute: **Pub. L. 118-210**, signed
+  **2 JAN 2025**.
+- **WALL ENCOUNTERED, and how it was handled.** The federalregister.gov **HTML**
+  page 302-redirects to `unblock.federalregister.gov`, a bot interstitial. That
+  redirect was **not followed** — an interstitial is not the source. Verified
+  instead through the Federal Register **JSON API** and the document's own
+  **raw full-text endpoint**, which is the same agency's machine interface to the
+  same document. This is the §C.6 rung-1B pattern in practice.
+- **Supporting quotes (verbatim, from the full text):**
+  - "On January 2, 2025, the President signed into law the Senator Elizabeth Dole
+    21st Century Veterans Healthcare and Benefits Improvement Act (the Act;
+    Pub. L. 118-210)."
+  - "VA may provide to a covered Veteran, as the Secretary determines necessary:
+    (1) food, shelter, clothing, blankets, and hygiene items required for the
+    safety and survival of the Veteran; (2) transportation required to support
+    the stability and health of the Veteran..."
+  - "This notice provides information on how VA will implement section 403(a) of
+    the Act and is not a solicitation for public comment or a request for
+    information."
+- **Eligibility:** "covered Veteran" = a homeless veteran per **38 U.S.C. 2002**,
+  or a veteran participating in **HUD-VASH**. Assistance is **time-limited
+  through 30 SEP 2027** and requires a case-by-case necessity determination by
+  the Secretary.
+- **ACTIONABILITY — NOTHING. This is the finding that governs disposition.**
+  There is **no application, no referral path, no enrollment, and no
+  eligibility-determination process** a veteran or a person helping one would
+  use. There is **no veteran-facing point of contact** — the only number in the
+  notice is a FOR FURTHER INFORMATION CONTACT about the notice itself. Nothing a
+  veteran must now do differently. It is internal implementation guidance to VA
+  medical centers.
+- **DISPOSITION: DOES NOT SHIP AS A POLICY CARD.** It fails the same test the
+  military spouse commission failed ([[V-2026-003]]) and for the same reason —
+  an authority was implemented, not a benefit a user can obtain. Shipping "VA may
+  now provide food and shelter" with no route attached would read to a veteran in
+  crisis as an offer, and there is no door to walk through.
+- **WHAT IT DID SURFACE — a real content gap, PROPOSED, NOT APPLIED.**
+  `index.html` carries **zero** homeless-veteran content: no "homeless", no
+  HUD-VASH, no National Call Center. The app does carry the Veterans Crisis Line
+  (988 press 1, text 838255). The durable, actionable asset is not this notice —
+  it is the **National Call Center for Homeless Veterans, 877-424-3838**,
+  verified 5 AUG 2026 against VA's own homeless-programs page: "The call is free,
+  confidential, and available 24 hours a day, 7 days a week," staffed by "trained
+  professionals... standing by to connect you to your nearest VA," with a live
+  chat option. **Proposed as a RESOURCES entry. Dean rules on inclusion; nothing
+  applied.**
+- **Affected app module:** none. No patch, no CACHE_NAME bump, no DATA_VERIFIED
+  change.
+
+---
+
+## V-2026-005 — Rescission of outdated Veterans Choice Program regulations (VA rule, 28 JUL 2026)
+
+- **Claim:** VA is rescinding obsolete Veterans Choice Program regulations,
+  superseded by the Veterans Community Care Program as of 6 JUN 2019.
+- **Rating:** CONFIRMED
+- **Verified by:** Orchestrator, rung 1, Federal Register API. Same declared
+  doctrine deviation as [[V-2026-004]] — s2-intel delegation failed three times
+  on upstream 529s.
+- **Verified date:** 5 AUG 2026
+- **Citation of record:** "Rescission of Outdated Veterans Choice Program
+  Regulations," **Rule**, **FR document 2026-15210**, published **2026-07-28**,
+  Department of Veterans Affairs.
+- **Supporting quote (verbatim abstract):** "The Department of Veterans Affairs
+  (VA) is rescinding obsolete regulations that were previously implemented for
+  the Veterans Choice Program, which has been replaced by the Veterans Community
+  Care Program as of June 6, 2019."
+- **Does any veteran lose anything? NO.** This removes regulatory text describing
+  a program that ended **seven years ago** under the MISSION Act. No current
+  entitlement, eligibility, or access route changes. It is housekeeping.
+- **APP IMPACT: NONE — verified by grep, not assumed.** `index.html` contains
+  **zero** occurrences of "Veterans Choice", "Choice Program", "VCP",
+  "Community Care", or "MISSION Act". There is no stale reference to correct
+  because the app never carried one.
+- **DISPOSITION: LOG ENTRY ONLY.** No patch, no CACHE_NAME bump, no
+  DATA_VERIFIED change. Recorded so that if a future contributor finds the
+  rescission and wonders whether the app was exposed, the answer and its evidence
+  are already here.
+- **Affected app module:** none.
