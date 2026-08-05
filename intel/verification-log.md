@@ -115,3 +115,55 @@ tracked in the app.
 - **Lesson for `policy-verification`:** an introduced-version CRS summary is not
   evidence about a bill that passed as amended. When actions show "as amended,"
   the engrossed text is the only citation that settles content.
+
+---
+
+## V-2026-003 — President's Military Spouse Commission, EO signed 3 AUG 2026
+
+- **Claim:** A presidential commission on military spouses was established
+  recently, reporting directly to the President.
+- **Rating:** CONFIRMED
+- **Verified by:** s2-intel (rung 1, direct read, no wall). **Independently
+  re-read by the Orchestrator the same day** against the same primary document.
+- **Verified date:** 5 AUG 2026
+- **Citation of record:** Executive Order, "Establishing the President's
+  Military Spouse Commission," signed 3 AUG 2026 —
+  https://www.whitehouse.gov/presidential-actions/2026/08/establishing-the-presidents-military-spouse-commission-af64/
+- **Supporting quotes (verbatim, from the primary text):**
+  - Sec. 2: "There is hereby established the President's Military Spouse
+    Commission (Commission)."
+  - Sec. 3: "The Commission shall advise and assist the President on policies
+    that affect military spouses and families."
+  - Sec. 3: "developing policies that address challenges faced by military
+    spouses in key areas such as housing, employment, healthcare, education, and
+    deployment-related support"
+  - Sec. 3: provides "the President with a report on the matters described in
+    this section at the end of each fiscal year."
+  - Sec. 4: "The Department of War shall provide such funding and administrative
+    and technical support as the Commission may require."
+  - Sec. 4: "The Commission shall terminate 2 years from the date of this order,
+    unless extended by the President."
+- **"Direct access to POTUS" — CONFIRMED, with a distinction that must not be
+  blurred.** The advisory line runs to the President directly: Sec. 3 says
+  advise and assist *the President*, and the annual report goes *to the
+  President*. The Department of War is the **administrative host** — funding,
+  staff, technical support. Reporting line and administrative housing are two
+  different things and both are true.
+- **Discrepancy noted between the two reads.** s2-intel reported membership
+  including the Secretary of Homeland Security and Coast Guard leadership; the
+  Orchestrator's read returned the Chairman of the Joint Chiefs, service chiefs,
+  and senior enlisted advisors. **Only the Chair is asserted in shipped copy** —
+  the spouse of the Secretary of War — which both reads agree on. The full
+  membership roster is **not** shipped and is not settled at rung 1.
+- **Federal Register status:** **Not yet published as of 5 AUG 2026**; zero
+  matching entries on the FR API. No EO number is assigned in the
+  whitehouse.gov text. Normal publication lag at two days, not a defect.
+- **Affected app module:** 2026 POLICY INTEL card — new entry inserted at
+  index.html:13297 and the duplicate render at 13527. **STAGED on branch
+  `ops/coverage-charter`, NOT MERGED.** Cache bumped v105 → v106.
+- **Actionability — stated plainly because the copy depends on it.** NOTHING is
+  actionable for a spouse today. No application, no funding, no eligibility
+  change, no program stood up. The order creates an advisory body. Shipped copy
+  says so in those terms: "This is an advisory body, not a benefit."
+- **Open item:** re-check the Federal Register for the assigned EO number and FR
+  citation once published, and amend this entry in place.

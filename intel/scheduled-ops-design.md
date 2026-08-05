@@ -185,6 +185,232 @@ blocker.
 
 ---
 
+## 0.6 COVERAGE CHARTER — COMMANDER, 5 AUG 2026
+
+**Standing doctrine. Binding on every source decision from this date forward.**
+
+### The aim
+
+Transition OPS is to be the **FIRST LINE of awareness** for every new policy
+materially affecting transitioning service members and their families. Not a
+mirror of what the advocacy press already covered. The origination point.
+
+**Core value: IMPACT.** A source earns its place by changing what a service
+member does, not by adding a row to a coverage table.
+
+**The fleet's sector of fire grows to match the mission — deliberately, and
+source by source.** Every addition is a one-line diff to `.github/j1-sources.txt`
+that the Commander rules on individually. There is no bulk enrollment.
+
+### The audience, stated so it can be applied
+
+Transitioning service members of all branches, **Guard and Reserve**, and
+**military spouses and families**. Sources are judged against that population,
+not against "veterans" as a category. A feed rich in general veteran news and
+thin on separation, relocation, licensure, hiring, and family benefits scores
+poorly here regardless of how official its publisher is.
+
+### The three tests — every source, no exceptions
+
+1. **Complexity.** What does it add to a system that must stay comprehensible?
+2. **Maintenance.** Who notices when it silently breaks, and how?
+3. **Genuine user need.** What does a service member do differently because we
+   caught this?
+
+A source failing any one test is declined. Recording *why* it was declined is
+mandatory, so it is assessed once rather than re-litigated every quarter.
+
+### The governing constraint
+
+**Coverage growth never outpaces verification capacity.** J1 detects; it does
+not verify. Every detection that touches a benefits, policy, or dollar figure
+still lands on a human at rung 2 or 3 of the `policy-verification` ladder, and
+that human is Dean. Doubling intake without doubling that capacity does not
+double awareness — it manufactures a backlog and calls it coverage.
+
+**Being first with something WRONG is the one outcome worse than being second.**
+Where speed and accuracy conflict in this system, accuracy wins, and it is not a
+close call. Wrong transition information causes direct harm to service members.
+
+### The live-verification rule — the slug lesson
+
+**No URL enters `j1-sources.txt` until it has been fetched live and its response
+observed.** Status code, content type, body size, and the newest item's own
+timestamp are recorded in the assessment before the Commander rules.
+
+This is not ceremony. J1 shipped a defect from a Federal Register agency slug
+that was plausible, well-formed, and wrong — it returned a body, so nothing
+failed loudly, and the source was structurally dark while appearing green. A
+source that cannot be shown to have returned real content is **UNVERIFIED** and
+is not eligible for any tier.
+
+### The tier model
+
+| Tier | Meaning |
+|---|---|
+| **Tier 1 — ADD NOW** | High signal, transition-central, verified live. Enters the scan on the Commander's ruling. |
+| **Tier 2 — OBSERVE 30 DAYS** | Plausible value, unproven churn or signal ratio. Assessed against real behaviour before it costs anything, then re-ruled. |
+| **Tier 3 — ASSESSED AND DEFERRED** | Declined, **with the reason recorded.** Deferred is a decision, not a backlog. |
+
+A tier-2 source that reaches its 30-day mark without an assessment does not get
+promoted by default. Silence is not consent; it is an unfinished assessment.
+
+### What this charter does not change
+
+Never-push (R1a). The Issues sink and `contents: read` (R1). J2 correlates and
+never rates (R7). The two-tier severity model and its N1–N6 governors (§D). The
+walled roster and the dark ledger (§C.4, §C.5). **Growth in intake is not a
+licence to relax any control that exists to keep intake honest** — and the
+anti-noise governors get *more* load-bearing as volume rises, not less.
+
+---
+
+## 0.7 PROPOSED SOURCE EXPANSION — AWAITING COMMANDER RULING, 5 AUG 2026
+
+**Nothing here is enrolled.** `.github/j1-sources.txt` is unchanged at two
+sources. Evidence and live-verification records are in
+`intel/coverage-charter-landscape.md`. Dean rules per source.
+
+### 0.7.1 The tiers
+
+**TIER 1 — ADD NOW.** High signal, low churn, compact JSON, no new governor
+required. These three barely move the daily email, because most days they
+hash-match and produce nothing.
+
+| ID | Why |
+|---|---|
+| `federal-register-opm` | Regulatory text on RIF appeals, probationary/trial-period appeals, suitability appeals — the family containing veterans' preference, VRA, Schedule A. 4 of 8 sampled items on-mission in one week. |
+| `federal-register-dolvets` | 153 documents total, silent since 2026-03-10. Near-zero noise, high relevance when it fires. Slug is `veterans-employment-and-training-service` — **not** the general ETA slug, which was tested and rejected. |
+| `ecfr-title-versioner` | Cheapest source in the set. Reports *that* Title 38/5/37 was amended, never *what* — a trip-wire for program amendment and termination, which nothing else in the fleet detects. |
+
+**TIER 1-CONDITIONAL — mission-central, but it churns daily.**
+
+| ID | Why | Condition |
+|---|---|---|
+| `federal-register-presdocu` | This is the charter's thesis in one feed: presidential action is where transition policy originates, and it is the day-zero capture point. It is where the 3 AUG military spouse commission EO appears first. Peak value 1–3 items/month, very high each. | The body changes most days regardless of relevance. **Enroll only with the §3.5 churn-damping threshold (V-9) tuned in the same merge**, or accept a guaranteed-daily J1 email through a stated 14-day tuning window. |
+
+**TIER 2 — OBSERVE 30 DAYS.**
+
+| ID | What the observation must answer |
+|---|---|
+| `federal-register-veteran-term` | Closes a real gap — a veteran-relevant clause inside an HHS or TSA rule is invisible to every single-agency feed. But it overlaps the VA and OPM feeds and carries keyword noise. Measure the **de-duplicated** hit rate before paying for it. |
+| `va-news-rss` | 10–20% names a program or benefit change; the rest is features and wellness series. Its unique value is administrative launches that never generate a Federal Register notice. Measure whether that value survives the noise. |
+
+**TIER 3 — ASSESSED AND DEFERRED, with reasons.**
+
+| Source | Reason declined |
+|---|---|
+| `war-gov-press-rss` | **Echo, not origination.** ~12% audience-relevant, and the one relevant item sampled was the spouse EO, which `presdocu` carries first. Fails test 3 — the need is already served upstream. |
+| FR general `labor-department` | Near-zero audience signal; H-2A/H-2B wage rules, WIOA allotments, Job Corps. Fails test 3. |
+| DFAS.mil, congress.gov direct, dol.gov RSS | **403 at rung 1.** Declined on reachability, not merit. Stay on the walled roster and the dark ledger per §C.4/§C.5. |
+
+**NOT DEFERRED — A DECISION IS OWED.** `api.congress.gov` and
+`api.govinfo.gov` are live, correctly-formed APIs behind free registered keys.
+They are the highest-value blocked candidates in the set: they close
+bill-text-at-origination, which is the exact gap behind the H.R. 980 failure of
+record, and they make the AMENDED-BILL RULE executable without a browser. This
+is not a merit question — it is whether the program holds an API credential,
+deliberately deferred at §8.3. **COMMANDER lane. See §0.7.4.**
+
+### 0.7.2 Cost — and a correction to the analyst's arithmetic
+
+s2-intel projected **$7.46/month** at 8 sources by dividing observed run cost by
+source count. **That overstates it roughly threefold**, because it treats a
+per-run fixed cost as if it were marginal.
+
+Recorded telemetry: run #4 **$0.065**, run #5 **$0.0596**, both at 2 sources.
+The §4 model puts a source at ~2,000 input / ~200 output tokens after
+truncation, which at Haiku 4.5 ($1/$5 per MTok) is **~$0.003 per source per
+scan**. Two sources is therefore ~$0.006 of marginal cost inside a ~$0.062 run —
+**roughly 90% of J1's cost is fixed per-run overhead** (system prompt, tool
+schemas, agent turns, baseline read and write), not per-source.
+
+| Sources | Per run | Per month (30 runs) |
+|---|---|---|
+| 2 (today) | ~$0.062 | ~$1.87 |
+| 5 (Tier 1 + conditional) | ~$0.071 | ~$2.13 |
+| 8 (through Tier 2) | ~$0.080 | ~$2.40 |
+| 15 (the §4 assumption) | ~$0.101 | ~$3.03 |
+
+**A source costs about nine cents a month.** Against a $60 target, cost is not a
+constraint on this decision and should not be argued as one in either direction.
+
+Two caveats that keep this honest. The arithmetic holds **only while bodies stay
+compact JSON and truncation works** — the RSS candidates are larger, and any
+HTML source breaks the model by an order of magnitude (§4's stated variance
+driver #2). And it models token volume only, not the re-sent system prompt, so
+treat it as a floor.
+
+**The real conclusion: token spend is not the limiter. Triage and human
+verification throughput is.** That is the §0.6 constraint, and it is the only
+argument that should decide this expansion.
+
+### 0.7.3 Alarm budget — does N1 hold?
+
+**Yes. N1 does not need revisiting at the proposed intake rate**, and the reason
+is structural rather than lucky.
+
+**Added sources load detection, not alarm.** J1 cannot FLASH on content at all —
+it files findings and never rates (§C.2, R7). The only content-driven FLASH is
+**F2**, which requires all three of: the source is on the **citation-of-record**
+list, the fetch succeeded, and the figure is **live in `index.html`**. Every
+source proposed here is a *detection* feed; none is a citation of record backing
+a shipped figure. **F5** likewise requires a monitored bill already cited in the
+app, and nothing proposed here carries bill actions. So six new sources add
+approximately **zero** FLASH pressure against the 2-per-7-days budget.
+
+**Where the load actually lands is ROUTINE, and ROUTINE has no governor.** Every
+rule N1 through N6 protects the FLASH channel. Nothing rate-limits the daily
+findings email. Two things keep that from being alarming:
+
+1. **Volume is bounded by construction.** J1 files **one** findings issue per
+   run, listing all changed sources. The ceiling is one email per day no matter
+   how many sources are enrolled. Expansion changes the *content* of that email,
+   not its count.
+2. **The BLUF triage works, and it is proven.** Run #5's issue #11 opened with
+   `NO ACTION NEEDED — informational: J1 detected changes in 1 source(s)`. Line
+   one carries the decision. That control was verified in live fire, not assumed.
+
+**The residual risk is habituation, not volume.** Today J1 emails only when
+something changed, so an email means something. Adding daily-churning feeds
+(`presdocu`, both RSS candidates) makes the email arrive *every* day and almost
+always say NO ACTION NEEDED — which trains the Commander not to open it. That is
+the muted-alarm failure in §D.3's own words, one channel down from where the
+governors are pointed.
+
+**This is why the tiering above is shaped the way it is.** All three Tier 1
+sources are low-churn: they mostly hash-match, the email stays intermittent, and
+its arrival keeps meaning something. Every daily-churning candidate is held at
+Tier 1-CONDITIONAL or Tier 2 behind observation. The alarm analysis produced the
+tiers; the tiers were not chosen first and justified afterward.
+
+**J2's correlation layer holds, with one live dependency.** J2 is gated on a
+non-empty J1 manifest, and §4 already assumed the pessimistic 4-of-4-weeks case,
+so there is no cost surprise. But **§3.5 churn damping is still
+`PLACEHOLDER-N` — V-9, untuned.** Until a threshold is set, a chatty source
+escalates on raw-hash change forever and buys a Sonnet pass every week. That is
+the sequencing dependency behind `presdocu`'s condition, and it is the one piece
+of this expansion that requires work rather than a ruling.
+
+**The trigger that would change this answer:** ruling YES on the congress.gov
+key. Bill actions feed **F5**, which is a genuine FLASH criterion, and enactment
+events cluster around session calendars rather than arriving smoothly.
+**Re-run this analysis before that key is enrolled, not after.**
+
+### 0.7.4 What is actually being asked
+
+1. **Rule on Tier 1** — three sources, `+$0.009/run`, no governor changes, no
+   new triage load. Recommend APPROVE.
+2. **Rule on `presdocu`** — approve with V-9 tuned in the same merge, approve
+   with a stated 14-day daily-email window, or hold to Tier 2.
+3. **Rule on the api.congress.gov key** — the largest coverage gap in the fleet,
+   and a program dependency change. Recommend a separate tasking, not a fold-in.
+4. **Note the war.gov redirect** — `index.html` carries 2 `defense.gov` links
+   (lines 2604, 2610) that resolve only via a 301. Routed to J4 link-liveness;
+   not fixed inside an unrelated ship.
+
+---
+
 ## 1. JOB SET AND CADENCE
 
 GitHub Actions `schedule` is **UTC and does not observe DST**. Dean is US
@@ -1834,6 +2060,27 @@ comparison at all. Run #5 returned a **mixed** result: one source differed, one
 matched and was dropped. `base[s].get("sha256") != v["sha256"]` therefore
 evaluated both ways for the first time. That is the diff path, executed.
 
+#### THE MAIL LEG — WITNESSED END TO END, 5 AUG 2026
+
+**Dean confirms issue #11's notification email reached his inbox at ~06:19 local
+(CDT), 4 AUG 2026.** The API records J1 filing #11 at **11:19:50Z** — 06:19:50
+CDT. Observed arrival and recorded creation fall in the same minute, so the mail
+fired on issue creation with no meaningful lag.
+
+This closes the last open leg named in §8.6: *"the one leg still unwitnessed is
+whether #11 itself generated mail."* It is witnessed. **The scheduled path is now
+proven end to end** — cron fires, sources fetch, diff computes against a
+populated baseline, findings issue files, email lands in the Commander's inbox.
+Every link observed rather than inferred, and the human leg confirmed by the
+human.
+
+Two limits on what this proves, stated so it is not over-read. It exercises the
+**ROUTINE** path only — GitHub's watcher notification, the free day-one channel
+of §D.4. It says nothing about **FLASH**, which still has no transport built
+(§5.2 remains PROPOSED). And it is one observation, not a rate: N6's canary
+exists precisely because a single delivered message does not establish a channel
+that keeps delivering.
+
 #### WHAT RUN #5 DID NOT PROVE — read before drawing conclusions
 
 **1. The planted corruption is not isolable as the cause of the DoD diff.** The
@@ -1988,6 +2235,7 @@ witness.
 > **The one leg still unwitnessed is whether #11 itself generated mail** — that
 > is Dean's inbox to check, not something the API record can answer. V-4 does not
 > reopen either way; #6 already closed it.
+> **CHECKED AND CLOSED 5 AUG 2026 — Dean received it, ~06:19 CDT. See §8.12.**
 
 ---
 
