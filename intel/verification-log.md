@@ -265,3 +265,101 @@ tracked in the app.
   rescission and wonders whether the app was exposed, the answer and its evidence
   are already here.
 - **Affected app module:** none.
+
+---
+
+## V-2026-006 — VET TEC 2.0 core terms (Dole Act §212 / 38 U.S.C. §3699C)
+
+- **Claim:** VET TEC 2.0 is authorized under the Dole Act (Pub. L. 118-210, §212,
+  codified 38 U.S.C. §3699C); capped at 4,000 participants per fiscal year;
+  covers tuition and fees, housing allowance, and books; charges GI Bill or DEA
+  entitlement 1:1; uses VA Form 22-10297; and is **open for applications now**.
+- **Rating:** CONFIRMED
+- **Verified by:** s2-intel at rung 1, no wall. **Independently re-read by the
+  Orchestrator the same day** against VA's own program page.
+- **Verified date:** 5 AUG 2026
+- **Citation of record:** 38 U.S.C. §3699C via uscode.house.gov;
+  https://www.va.gov/education/other-va-education-benefits/vet-tec-2/ (page
+  last-updated 5 AUG 2026); Federal Register doc 2025-22954 (VA PRA notice).
+- **Supporting quotes (verbatim, VA.gov, 5 AUG 2026):**
+  - *"You can apply online right now"* — with a live counter reading
+    **"3,332 remaining openings"** of 4,000. Roughly 668 slots already consumed.
+  - *"Tuition and fees (we pay your school directly)"*; *"Money for housing
+    during your training"*; *"Books and supplies"*.
+  - *"If you have remaining entitlement under Survivors' and Dependents'
+    Educational Assistance (DEA), Montgomery GI Bill Active Duty, or the
+    Post-9/11 GI Bill, we'll charge 1 month of entitlement for every 1 month of
+    full-time training."*
+  - Statute, §3699C(c): *"Not more than 4,000 covered individuals may participate
+    in the program under this section in any fiscal year."*
+- **THIS IS NOT THE SPOUSE-CARD CASE, and the distinction is the point.**
+  [[V-2026-003]] and [[V-2026-004]] were authorities with no door to walk
+  through. VET TEC 2.0 has a live application, a form number, and a decrementing
+  counter. It is genuinely available, so the app may describe it as available.
+  The defects below were **precision**, not false actionability.
+- **Affected app module:** ACTION card (index.html:1069-1070), Career Paths
+  (1898-1900, 1906, 2109), WHATS_NEW (2616), 6-month reminder `r-6-vettec`
+  (2871), POLICY INTEL card (13311-13312 and byte-identical duplicate
+  13541-13542).
+
+---
+
+## V-2026-007 — VET TEC defects found and corrected, 5 AUG 2026
+
+This entry exists because **the app shipped these claims with no record at all.**
+The gap surfaced as an incidental during the §F build and was chased here.
+
+- **Rating summary:** three defects WRONG, one UNVERIFIED, all corrected.
+- **Verified by:** s2-intel rung 1; Orchestrator independently re-read VA.gov and
+  **corrected two proposed fixes that were themselves wrong** (see below).
+- **Verified date:** 5 AUG 2026
+
+**(a) The original VET TEC was described as current — WRONG, and it was the
+costliest defect.** The original pilot **ended in 2024** and **did not charge
+entitlement** (CRS R48588; GAO-25-106876: *"After the pilot ended in 2024,
+Congress enacted a new program"*). Four app sites still described it in the
+present tense as *"fully covered by VA"* and *"covers tuition + monthly housing
+stipend"*, with no cap and no entitlement charge — while the POLICY INTEL card
+correctly said entitlement is charged 1:1. **The app contradicted itself about
+whether using VET TEC costs GI Bill months.** A veteran reading the Career Paths
+module could have enrolled believing their entitlement was untouched. Corrected
+at 1898, 1900, 1906, 2109.
+
+**(b) The linked URL served content contradicting the sentence that cited it.**
+index.html:1900 pointed at `.../vettec-high-tech-program/`, which now resolves to
+VET TEC 2.0 content stating *"This new program has different eligibility
+requirements and entitlement rules from the program we offered before."* Repointed
+to the vet-tec-2 URL.
+
+**(c) The fields-of-study list was WRONG at four sites.** The app listed
+*"cyber, software, cloud, and IT"* / *"cybersecurity, cloud computing, IT"*.
+VA's actual list, verbatim: **"Computer programming / Computer software / Data
+processing / Information sciences / Media application."** Only *data processing*
+matched. Cybersecurity, cloud computing, and IT appear in **neither** the statute
+(§3699C(h)(2)) nor VA.gov. Corrected at 1070, 2871, and both card renders.
+Line 2109's *"covers cloud/DevOps bootcamps"* was likewise unsupportable and now
+points the reader at VA's approved-provider list instead of asserting coverage.
+
+**(d) The exact application-open date is UNVERIFIED at rung 1 — marked, not
+softened.** VA's own provider FAQ says only *"once it is available this June"*;
+no primary source states the day. Only secondary blogs give the 15th. Every site
+now reads **"JUN 2026"**. The month and the currently-open status are separately
+CONFIRMED. **Open item:** a tier-3 human check of VA's page history or the
+GovDelivery announcement would restore the exact day.
+
+**(e) TWO CORRECTIONS TO THE ANALYST'S OWN PROPOSALS, recorded because both would
+have shipped new errors.**
+  1. s2-intel proposed fixing the card's eligibility by swapping AND to OR:
+     *"veterans under 62 with 36+ months active duty, OR service members within
+     180 days."* That reads as though a service member skips the 36-month and age
+     tests. **VA.gov's operative test is:** *"1 of these must be true"* — veteran
+     discharged other than dishonorable, **or** active-duty within 180 days of
+     separating — *"And you must meet both of these requirements"* — 36+ months
+     active duty **and** under 62 at approval. **Both conditions apply to both
+     paths.** Shipped wording reflects that.
+  2. s2-intel proposed keeping *"covers cloud/DevOps bootcamps"* and merely adding
+     the entitlement charge. Cloud/DevOps is not in VA's field list, so the
+     coverage claim itself was unsupported. Rewritten rather than annotated.
+- **Disposition:** all corrections applied on branch `ops/vettec-accuracy`,
+  CACHE_NAME v109 → v110. **DATA_VERIFIED held at 1 AUG** — this verified one
+  program's claims, not the dataset. COMMANDER lane; staged, not merged.
