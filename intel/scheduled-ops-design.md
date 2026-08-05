@@ -2106,6 +2106,23 @@ installation-specific, and single-MOS findings are card-only until segmentation
 exists. Spending fifty states' attention on one state's change is the clearest
 form of the failure this section prevents.
 
+> **CONFIRMED 5 AUG 2026 — the segment branch of G4 is currently UNREACHABLE, and
+> that is a fact about our own code, not an unverified platform question.**
+> `index.html` initialises OneSignal with `appId`,
+> `allowLocalhostAsSecureOrigin`, `serviceWorkerPath`, and `serviceWorkerParam`
+> — **no tags, no user properties, no external IDs.** Nothing is collected that a
+> segment could be built on, so no segment can match a subpopulation today.
+>
+> **Every push is therefore all-subscribers or nothing.** G4's second limb is
+> dead text until tagging exists, and its exclusions are not a policy preference
+> — they describe what the integration can physically do.
+>
+> Verified by reading our own repository, which is why it closes while the
+> OneSignal platform questions in V-17 stay open. **Also confirmed: we are
+> WEB PUSH ONLY** (`OneSignalSDK.page.js` / `OneSignalSDK.sw.js`), so web-push
+> behaviour is the binding case and native iOS/Android limits are irrelevant
+> unless we ship native apps.
+
 **G5 — THE DEEP LINK RESOLVES.** *(Orchestrator addition, §F8 item 3.)* The
 `tool=` target is on the app's `validTabs` list **and** round-trips through
 `sw.js`'s notification-tap handler. Verified by test, not by reading.
@@ -2181,10 +2198,24 @@ still-open, still-rivalrous window is new information to a user who never heard
 of it.
 
 **X5 — CANNOT BE WRITTEN HONESTLY IN THE SPACE.** The notification cannot be
-written to `brand-voice` standard inside the platform's character limits without
-overstating, implying urgency the facts do not carry, or dropping a qualifier
-that changes what a reader would do. **If the honest version does not fit, it is
-not a push.** pao-content owns this and may veto unilaterally.
+written to `brand-voice` standard inside **the §F5 budget — 50 characters of
+title, 120 of body** — without overstating, implying urgency the facts do not
+carry, or dropping a qualifier that changes what a reader would do. **If the
+honest version does not fit, it is not a push.** pao-content owns this and may
+veto unilaterally.
+
+> **CORRECTED 5 AUG 2026 — this clause used to say "the platform's character
+> limits," which conflated two different constraints.** The 50/120 budget is
+> **ours**, set by the Commander when §F was tasked. It is a house editorial
+> standard and it binds regardless of what OneSignal permits — a push that needs
+> 200 characters to be honest is not a push, even on a platform that would carry
+> 200 characters.
+>
+> **OneSignal's actual limit is a separate, still-UNVERIFIED number (V-17).**
+> When it is known it becomes a *ceiling*, not a licence: if the platform is
+> tighter than 50/120 the budget drops to meet it; if looser, the budget does not
+> move. **X5 is therefore operable today** — it tests against a number we already
+> hold — which is why it is no longer marked provisional in full.
 
 ### F4 — EXPLICITLY NOT PUSH-WORTHY, ENUMERATED SO IT IS NOT RE-LITIGATED
 
@@ -2252,10 +2283,25 @@ to raise the budget. P4 corrections are exempt.
 deadline. No reminders, no "last chance," no anniversaries — the timeline engine
 owns reminders. Sole exception: a P4 correction to a push already sent.
 
-**U3 — SEND WINDOW.** Recommended 1000–1600 US Central, Tuesday–Thursday. No
-weekend or federal-holiday send unless a P3 date falls inside it. This is a
-coarse instrument that treats CONUS reasonably and OCONUS badly; per-timezone
-delivery availability is **UNVERIFIED (V-17)** and must not be assumed.
+**U3 — SEND WINDOW. STILL PROVISIONAL, and the gap is named.** Recommended
+1000–1600 US Central, Tuesday–Thursday. No weekend or federal-holiday send
+unless a P3 date falls inside it. This is a coarse instrument that treats CONUS
+reasonably and **OCONUS badly** — a 1400 Central send lands in the middle of the
+night in Germany, Korea, and Japan, where a meaningful share of transitioning
+members are stationed.
+
+> **UNVERIFIED, and it stayed that way deliberately on 5 AUG 2026.** Whether
+> per-timezone delivery is available to us is **not answerable from public
+> documentation** — it depends on our plan tier and on whether subscriber
+> timezone data exists in our account. A documentation-fetch attempt was made,
+> produced nothing citable, and was **halted by the Commander as the slug lesson
+> repeating as a search pattern**: constructed URLs are not a source, and
+> iterating on them manufactures the appearance of research without producing
+> evidence.
+>
+> **U3 therefore remains a blunt CONUS-shaped instrument and must be described
+> that way when a push is proposed.** It is not "the send window"; it is the send
+> window we can currently justify. Closing this is the tier-3 task in **V-17**.
 
 **U4 — THE CARD IS CHECKED AGAINST THE PUSH, VERBATIM.** Before handoff, title
 and body are checked word-for-word against the live card text in `index.html`
@@ -2439,7 +2485,7 @@ recorded in the Result column — not an assertion that it was checked.
 
 | **V-16** | **YES — for J2's schedule only** | **CLOSED 3 AUG 2026 — GOVERNORS IMPLEMENTED AND REGRESSION-TESTED** | Orchestrator | Raised as the gap that J2's FLASH power would otherwise open: §D.3 **N1 and N2 existed as doctrine with no implementation anywhere** — J1 and J3 FLASH only on their own failure, so no job had ever exercised them. Commander condition, 3 AUG 2026: governors ship in J2's merge or J2's cron stays off. **Implemented in `.github/workflows/j2-weekly-analysis.yml`, step "Apply governors", in shell/python — never model-side.** N1 counts FLASH issues system-wide (not per job) in a rolling 7-day window from the Issues API, so the FLASH issues *are* the ledger and no new state store exists. N2 keys on `F2\|<source-id>\|L<line>` carried in the issue title, suppresses only on a still-**OPEN** match inside 72h — a CLOSED match means the condition was resolved and has recurred, which per N2 resets the clock. **Regression Y1–Y7 executed 3 AUG 2026, 7/7 pass — see §8.9** |
 
-| **V-17** | No | **OPEN — raised 5 AUG 2026** | s3-watch-officer | **OneSignal capability facts, none of which this repo has verified.** Title and body character limits; per-timezone delivery availability; segment availability and how a segment's size is read; delivery, open, and opt-out telemetry export. §F's U3 and X5 both depend on these. Per the §0.6 live-verification rule they are **not asserted from memory** — U3's send window and X5's character budget stay provisional until this closes. Owner is `push-ops` (registry #7), mechanics only |
+| **V-17** | No | **OPEN — NARROWED 5 AUG 2026. Rung-1 exhausted; tier-3 task issued to Dean, below** | Dean (tier 3) | **RUNG 1 IS EXHAUSTED AND THE ATTEMPT IS THE FINDING.** A documentation sweep produced **zero citable pages** across ~12 fetches, most against **constructed URLs**, and was halted by the Commander. Recorded plainly: *these facts are not reachable at rung 1 through documentation fetching.* The cause was partly mine — the tasking named three unverified candidate hostnames, which is asserting a URL from memory and then sending someone to verify facts at it. **Constructed URLs are not a source, and iterating on them manufactures the appearance of research.** **CLOSED PORTION:** the segment question is answered from our own code — we collect **no tags**, so G4's segment branch is structurally unreachable and every push is all-subscribers or nothing; and we are **web push only**, so native limits are moot. **STILL OPEN — all account/plan-dependent, which is why no public page can settle them:** (1) title/body character limits for web push; (2) per-timezone delivery availability and requirements; (3) whether segment sizes display **pre-send**; (4) delivery/open/opt-out telemetry and export granularity. **TIER-3 TASK, ~5 minutes in the OneSignal dashboard — see §8.5a for the exact screens and what to read back.** *Original framing, retained:* Title and body character limits; per-timezone delivery availability; segment availability and how a segment's size is read; delivery, open, and opt-out telemetry export. §F's U3 and X5 both depend on these. Per the §0.6 live-verification rule they are **not asserted from memory** — U3's send window and X5's character budget stay provisional until this closes. Owner is `push-ops` (registry #7), mechanics only |
 | **V-18** | No | **OPEN — raised 5 AUG 2026** | force-mod | **§F U5 threshold, deliberately unset at n = 0.** Record delivered count, open rate, and opt-out delta at 72 hours for the first three pushes ever sent, then set the criteria-review trigger from the observed baseline. **No percentage may be invented before that data exists** — a plausible, well-formed, wrong number here is the §0.6 slug lesson repeated on the user channel |
 | **V-19** | No | **CLOSED 5 AUG 2026 — FIXED, REGRESSION 14/14. STAGED on `ops/v19-deeplink-fix`, awaiting merge** | Dean / Orchestrator | **RULED by Dean 5 AUG 2026: apply as its own small ship — a defect repair, not a feature.** Fix applied (`[a-z]` → `[a-z0-9]`), cache **v106 → v107**, full gate PASS, regression evidence at **§8.13**. *Original finding:* **`sw.js` deep-link regex drops digits.** The notification-tap handler extracts `tool=` with `/tool=([a-z]+)/`; the app's `validTabs` contains **`dd214`**. Tested across all 14 tabs: 13 round-trip, **`dd214` captures `"dd"`, fails validation, and silently falls back to `dashboard`.** Confined to the iOS cold-launch intent path — which is the push path, making it load-bearing for §F. One-character fix (`[a-z]` → `[a-z0-9]`). **NOT APPLIED:** it changes notification routing for every user, COMMANDER lane by blast radius, and it sits outside the tasking that found it. §F's **G5** gate exists so this class of defect cannot reach a send again |
 
@@ -3256,6 +3302,60 @@ regression Y1–Y7 still 7/7.
 **New standing gate, effective immediately.** Every workflow file is scanned for
 empty and malformed Actions expressions before staging — comments included, with
 no comment exemption. See W-2 for the tool question this raises.
+
+### 8.5a TIER-3 TASK — ONESIGNAL DASHBOARD, V-17 CLOSURE. DEAN, ~5 MINUTES
+
+**Why this is tier 3 and not another fetch.** Three of the four open questions
+are **account- and plan-dependent**. No public documentation can state whether
+per-timezone delivery is available *to us*, what segments *our* account holds, or
+what *our* plan exports. Rung 1 cannot answer them in principle — which is why
+~12 fetches produced nothing and why more would not have helped. **Five minutes
+of the Commander's eyes closes what documentation structurally could not.**
+
+**Read back the answers and V-17 closes on them. Anything the dashboard does not
+show stays open — do not infer.**
+
+**1 — COMPOSE SCREEN** (start a new push; **do not send**)
+- Type into **Title** and **Message**. Is there a **character counter**? At what
+  number does it warn, truncate, or stop accepting input?
+- Does it show a **per-platform preview** (iOS / Android / web), and do they
+  truncate at different points? We are web push, so the **web** preview is the
+  binding one.
+- **Read back:** the title limit, the body limit, and whether each is a hard stop
+  or a soft warning. *(Note: this sets a CEILING, not our budget. §F5's 50/120 is
+  ours and does not rise if the platform allows more — see X5.)*
+
+**2 — DELIVERY SCHEDULING** (same screen, the schedule/delivery section)
+- What options appear? Immediate · specific date-time · **per-recipient
+  timezone** · **intelligent/optimised delivery**?
+- Is any option greyed out, badged, or marked as requiring an upgrade?
+- **Read back:** the exact option names, and whether per-timezone is available to
+  us or plan-gated. **This is what U3 needs.**
+
+**3 — AUDIENCE → SEGMENTS**
+- What segments exist? Expect essentially one ("Subscribed Users" or similar) —
+  we collect no tags, so there is nothing to segment on.
+- **Does each segment display a subscriber COUNT, and is it visible BEFORE
+  sending?** That is precisely what G4 requires.
+- **Read back:** the segment list, whether counts show pre-send, and the current
+  subscriber total. *(A total is also useful on its own — we have never recorded
+  how many people this channel actually reaches.)*
+
+**4 — ANALYTICS / MESSAGE REPORTS**
+- Open a past message report, or the analytics/delivery area if none exists.
+- What is reported — **sent, delivered, clicked/opened**? Is
+  **unsubscribe/opt-out** reported at all?
+- Is there a **CSV/export** control, and is data **per-message** or only
+  aggregate?
+- **Read back:** which of delivered / open / opt-out exist, the export format if
+  any, and the granularity. **This is what U5 needs before its threshold can ever
+  be set** — U5 is deliberately unset at n=0 and must be derived from real data,
+  never invented.
+
+**Standing caution:** report what the screens **show**. If a control is absent,
+that is the finding. An absent opt-out metric means U5 cannot be built as
+written, and it is better to learn that from the dashboard than to discover it
+after a send.
 
 ### 8.5 WATCH ITEMS
 
