@@ -4244,12 +4244,16 @@ function App() {
     } catch (e) {}
   }, []);
   const renderNavText = function(text) {
-    var MAP = { "CRITICAL WINDOWS": "critical", "VA PAY": "vapay", "MONEY BASICS": "vapay", "CAREER": "pathway", "RESOURCES": "resources", "TIMELINE": "timeline", "GUARD/RESERVE": "timeline", "VET HUB": "vethub" };
-    var parts = text.split(/(\[[A-Z \/]+\]|\*\*[^*]+\*\*)/);
+    // Every one of the 14 tabs is reachable, per the Commander's principle: we never
+    // send a user looking for something we can link them to. Keep in lockstep with the
+    // TOOL MANIFEST live-token list in netlify/functions/navigator.js — the drift
+    // regression reads both files and fails if they disagree.
+    var MAP = { "DASHBOARD": "dashboard", "VA MATH": "vamath", "VA PAY": "vapay", "MONEY BASICS": "vapay", "CAREER": "pathway", "RESOURCES": "resources", "TAX INTEL": "taxes", "TIMELINE": "timeline", "GUARD/RESERVE": "timeline", "CRITICAL WINDOWS": "critical", "REMINDERS": "reminders", "READINESS": "readiness", "VET HUB": "vethub", "DD214": "dd214", "FINAL PCS": "finalpcs", "NAVIGATOR": "navigator" };
+    var parts = text.split(/(\[[A-Z0-9 \/]+\]|\*\*[^*]+\*\*)/);
     return parts.map(function(p, i) {
       var b = p.match(/^\*\*([^*]+)\*\*$/);
       if (b) return React.createElement("strong", { key: i, style: { color: C.goldBright } }, b[1]);
-      var m = p.match(/^\[([A-Z \/]+)\]$/);
+      var m = p.match(/^\[([A-Z0-9 \/]+)\]$/);
       if (m && MAP[m[1].trim()]) {
         return React.createElement("span", { key: i, onClick: function(){ setActiveTab(MAP[m[1].trim()]); window.scrollTo(0,0); }, style: { color: C.goldBright, fontFamily: "'Courier Prime', monospace", fontSize: 12, cursor: "pointer", borderBottom: "1px dotted " + C.gold } }, "[" + m[1] + " \u2197]");
       }
