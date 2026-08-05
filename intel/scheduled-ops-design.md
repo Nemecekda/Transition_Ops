@@ -551,6 +551,75 @@ events cluster around session calendars rather than arriving smoothly.
    (lines 2604, 2610) that resolve only via a 301. Routed to J4 link-liveness;
    not fixed inside an unrelated ship.
 
+### 0.7.5 `presdocu` HELD — COMMANDER RULING, 5 AUG 2026. REVIEW **19 AUG 2026**
+
+**Ruled: option (c). `federal-register-presdocu` is NOT enrolled and will not be
+until V-9 is tuned from observation.**
+
+| | |
+|---|---|
+| **Review date** | **19 AUG 2026** — ~14 days of five-source churn data |
+| **What happens then** | Tune V-9 from observed per-source diff rates, then enroll `presdocu` **in the same ship** |
+| **Hard precondition** | **N7 written into §D.3 first** — see below |
+
+**Why the third option was the only honest one.** The choice was framed as
+enroll-now-and-accept-a-daily-email-window versus tune-V-9-in-the-same-ship. The
+second does not survive contact with V-9's own terms: it says *"tune on two weeks
+of real data, do not guess,"* and the fleet held **n=2** scan-firing runs, both
+against the old two-source set. There was no churn data for any source. "Tune it
+in the same ship" would have meant inventing a threshold — the precise failure
+the §0.6 slug lesson records, applied to a number instead of a URL.
+
+**Today's enrollment is what makes 19 AUG possible.** Five sources scanning daily
+produce exactly the per-source diff rates V-9 needs — OPM's especially, as the
+closest available proxy for how a Federal Register feed really churns. The wait
+is not idle; it is the measurement.
+
+#### THE COVERAGE COST — STATED, ACCEPTED, NOT AN OVERSIGHT
+
+**Until 19 AUG, a presidential action reaches us second.** `presdocu` is the
+Coverage Charter's thesis in one feed: the day-zero capture point for executive
+orders, proclamations, and the establishment of bodies. It is where the 3 AUG
+military spouse commission EO surfaced first, ahead of every echo.
+
+For roughly two weeks we will learn about an EO from a downstream source, or from
+Dean, rather than from the scan. **That is a known, accepted gap and it is
+recorded here so nobody later reads it as something the fleet missed.** If an EO
+lands in that window and we are late to it, the answer is "we chose this, on
+5 AUG, for these reasons" — not an investigation.
+
+The charter's own constraint is what makes the trade correct: *coverage growth
+never outpaces verification capacity*. Enrolling the chattiest source into a
+fleet with neither churn damping nor an arrival-rate trigger is that constraint
+being violated, not served.
+
+#### N7 IS QUEUED, AND IT GATES ENROLLMENT
+
+**N7 — ROUTINE ARRIVAL RATE, PER PRODUCER** was **ruled and approved** in the
+daily-ops-pulse decision and has **not been written into §D.3.** It does not
+exist in this document. It must exist **before** `presdocu` enrolls, so the
+arrival-rate trigger is in place before the source most likely to trip it.
+
+Its substance as ruled: if a single producer files more than **5 ROUTINE issues
+in a rolling 7 days for 2 consecutive weeks**, the weekly SITREP header reads
+`ROUTINE ARRIVAL HIGH — <producer> n/wk — force-mod review`. The response is a
+**review**, never an automatic suppression — a governor that silently drops
+ROUTINE traffic reintroduces the silent-failure mode the design exists to
+prevent. **Both numbers are judgment, not derived**, and are themselves due for
+tuning after 60 days of real arrival data.
+
+Note the interlock: force-mod's analysis predicted that enrolling `presdocu`
+without a tuned churn threshold would **trip N7 inside two weeks.** That is the
+alarm working as designed — but only if N7 exists to trip. Shipping the source
+before the governor would mean the one predicted failure has nothing watching
+for it.
+
+**Sequence, in order, none of it optional:**
+
+1. **N7 written into §D.3** — ruled, drafted, awaiting application.
+2. **19 AUG: tune V-9** from the five-source churn record.
+3. **Enroll `presdocu`** in the same ship as the V-9 tuning.
+
 ---
 
 ## 1. JOB SET AND CADENCE
