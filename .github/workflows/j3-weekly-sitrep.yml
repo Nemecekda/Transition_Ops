@@ -34,6 +34,7 @@ jobs:
 
     env:
       BASELINE_TITLE: 'BASELINE — DO NOT CLOSE'
+      ROUTINE_CANARY_TITLE: 'ROUTINE CHANNEL TEST'
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
@@ -47,6 +48,7 @@ jobs:
       - name: Gather the week
         env:
           GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
         run: |
           mkdir -p out
           SINCE=$(date -u -d '7 days ago' +%F)
@@ -56,23 +58,134 @@ jobs:
             --search "created:>=$SINCE" \
             --json number,title,labels,createdAt,state \
             > out/week.json
-          jq --arg t "$BASELINE_TITLE" '[.[] | select(.title != $t)]' out/week.json > out/findings.json
+          jq --arg t "$BASELINE_TITLE" --arg c "$ROUTINE_CANARY_TITLE" \
+            '[.[] | select(.title != $t and .title != $c)]' out/week.json > out/findings.json
           jq 'length' out/findings.json
+
+          # --- CHANNEL HEALTH: expected-vs-observed scheduled run counts ---
+          # R1 holds: permissions: grants no actions: read (COMMANDER lane,
+          # reserved separately). Every call below degrades to NA on
+          # 403/404 and NEVER fails the step — the SITREP arriving is still
+          # the channel test even when this block cannot instrument it.
+          #
+          # JUDGMENT (n=2, section 8.12): widen the run-count query window 6h
+          # behind SINCE so J3's own observed lateness (up to 2h49m; 6h = 2x
+          # worst observed, rounded up) never clips a punctual run off the
+          # window's edge and misreports a real 7/7 as 6/7. Expected counts
+          # are fixed by cadence (J1 daily = 7, J2 weekly = 1), never derived
+          # from the widened window, so widening can only over-count, never
+          # manufacture a phantom shortfall. Re-derive after 30 days.
+          QSTART=$(date -u -d "$SINCE 00:00:00 -6 hours" +%Y-%m-%dT%H:%M:%SZ)
+
+          fetch_runs() {
+            # $1 = workflow file  $2 = output json path
+            gh api "repos/${REPO}/actions/workflows/$1/runs?event=schedule&created=>=${QSTART}" \
+              > "$2" 2>out/gh-api-err.txt
+          }
+
+          if fetch_runs "j1-federal-scan.yml" out/j1-runs.json; then
+            J1_OBSERVED=$(jq '.workflow_runs | length' out/j1-runs.json)
+          else
+            J1_OBSERVED=NA
+          fi
+          echo "$J1_OBSERVED" > out/j1-observed.txt
+
+          if fetch_runs "j2-weekly-analysis.yml" out/j2-runs.json; then
+            J2_OBSERVED=$(jq '.workflow_runs | length' out/j2-runs.json)
+          else
+            J2_OBSERVED=NA
+          fi
+          echo "$J2_OBSERVED" > out/j2-observed.txt
+
+          # Two consecutive calendar days with zero J1 scheduled runs,
+          # independent of the total-count shortfall test.
+          J1_GAP=NA
+          if [ "$J1_OBSERVED" != "NA" ]; then
+            RUN_DATES=$(jq -r '.workflow_runs[].created_at[0:10]' out/j1-runs.json | sort -u)
+            J1_GAP=false
+            PREV_ZERO=false
+            for i in 0 1 2 3 4 5 6; do
+              D=$(date -u -d "$SINCE +$i days" +%F)
+              if printf '%s\n' "$RUN_DATES" | grep -qx "$D"; then
+                THIS_ZERO=false
+              else
+                THIS_ZERO=true
+              fi
+              if [ "$THIS_ZERO" = true ] && [ "$PREV_ZERO" = true ]; then
+                J1_GAP=true
+              fi
+              PREV_ZERO=$THIS_ZERO
+            done
+          fi
+          echo "$J1_GAP" > out/j1-gap.txt
+
+          # N6a: last ROUTINE canary on record, for the CHANNEL HEALTH line.
+          # A read of prior state only — filing (if due this run) happens in
+          # the later "File ROUTINE canary" step.
+          gh issue list --state all --limit 50 \
+            --search "\"$ROUTINE_CANARY_TITLE\" in:title" \
+            --json title,createdAt \
+            > out/canary-search.json || echo '[]' > out/canary-search.json
+          jq --arg c "$ROUTINE_CANARY_TITLE" \
+            '[.[] | select(.title == $c)] | sort_by(.createdAt) | last' \
+            out/canary-search.json > out/last-canary.json
+          cat out/last-canary.json
 
       - name: Compose SITREP
         run: |
           SINCE=$(cat out/since.txt)
           TOTAL=$(jq 'length' out/findings.json)
           FLASH=$(jq '[.[] | select(.labels[]?.name == "FLASH")] | length' out/findings.json)
+
+          J1_OBSERVED=$(cat out/j1-observed.txt)
+          J2_OBSERVED=$(cat out/j2-observed.txt)
+          J1_GAP=$(cat out/j1-gap.txt)
+
+          LAST_CANARY_DATE=$(jq -r 'if . == null then "" else (.createdAt // "" | .[0:10]) end' out/last-canary.json)
+          if [ -z "$LAST_CANARY_DATE" ]; then
+            LAST_CANARY_LINE="NONE FILED YET"
+          else
+            LAST_CANARY_LINE="$LAST_CANARY_DATE  FILED"
+          fi
+
+          # Escalation thresholds are JUDGMENT, from n=2 observations
+          # (section 8.12): a shortfall of one is reported, not escalated. A
+          # shortfall of two or more, or two consecutive zero-run J1 days,
+          # promotes the BLUF. Re-derive after 30 days.
+          BLUF_ITEMS=$FLASH
+          CHANNEL_NOTE=""
+          if [ "$J1_OBSERVED" != "NA" ]; then
+            J1_SHORT=$((7 - J1_OBSERVED))
+            if [ "$J1_SHORT" -ge 2 ]; then
+              BLUF_ITEMS=$((BLUF_ITEMS + 1))
+              CHANNEL_NOTE="${CHANNEL_NOTE}J1 scheduled runs short this window (7 expected / ${J1_OBSERVED} observed). "
+            fi
+          fi
+          if [ "$J2_OBSERVED" != "NA" ]; then
+            J2_SHORT=$((1 - J2_OBSERVED))
+            if [ "$J2_SHORT" -ge 2 ]; then
+              BLUF_ITEMS=$((BLUF_ITEMS + 1))
+              CHANNEL_NOTE="${CHANNEL_NOTE}J2 scheduled runs short this window (1 expected / ${J2_OBSERVED} observed). "
+            fi
+          fi
+          if [ "$J1_GAP" = "true" ]; then
+            BLUF_ITEMS=$((BLUF_ITEMS + 1))
+            CHANNEL_NOTE="${CHANNEL_NOTE}J1 had two consecutive zero-run days this window. "
+          fi
+
           {
             # BLUF, first line, one sentence, so the mail preview answers
             # "read on?" without opening it. J3 assembles; it never originates
             # work. Anything that needs a session carries its own order in its
             # own issue, so this line points at them rather than tasking.
-            if [ "$FLASH" -eq 0 ]; then
+            if [ "$BLUF_ITEMS" -eq 0 ]; then
               printf 'NO ACTION NEEDED — informational: %s issue(s) filed this week, none FLASH.\n\n' "$TOTAL"
             else
-              printf '%s item(s) may need your eyes: %s FLASH issue(s) filed this week, listed below, each carrying its own order.\n\n' "$FLASH" "$FLASH"
+              printf '%s item(s) may need your eyes: ' "$BLUF_ITEMS"
+              if [ "$FLASH" -gt 0 ]; then
+                printf '%s FLASH issue(s) filed this week, listed below, each carrying its own order. ' "$FLASH"
+              fi
+              printf '%s\n\n' "$CHANNEL_NOTE"
             fi
             printf 'TRANSITION OPS — WEEKLY WATCH SITREP\n'
             printf 'Window: %s to %s\n\n' "$SINCE" "$(date -u +%F)"
@@ -84,8 +197,20 @@ jobs:
               jq -r '.[] | "  - #\(.number) [\(.state)] \(.title)"' out/findings.json
             fi
             printf '\nCHANNEL HEALTH\n'
-            printf '  This SITREP arriving IS the channel test. A missing Monday\n'
-            printf '  SITREP is itself the alarm — see W-1 and section 5.3.\n'
+            if [ "$J1_OBSERVED" = "NA" ]; then
+              printf '  J1 scheduled runs this window   NOT INSTRUMENTED — actions: read not granted\n'
+            else
+              printf '  J1 scheduled runs this window   7 expected / %s observed\n' "$J1_OBSERVED"
+            fi
+            if [ "$J2_OBSERVED" = "NA" ]; then
+              printf '  J2 scheduled runs this window   NOT INSTRUMENTED — actions: read not granted\n'
+            else
+              printf '  J2 scheduled runs this window   1 expected / %s observed\n' "$J2_OBSERVED"
+            fi
+            if [ "$J1_GAP" = "true" ]; then
+              printf '  J1 two consecutive zero-run days observed this window\n'
+            fi
+            printf '  Last ROUTINE canary             %s\n' "$LAST_CANARY_LINE"
             printf '\nCOVERAGE / DARK SOURCES / BURN\n'
             printf '  Not yet instrumented. J1 does not emit a coverage line and\n'
             printf '  J5 does not exist. Stated as a gap rather than omitted, so an\n'
@@ -121,6 +246,30 @@ jobs:
               gh issue edit "$N" --body-file out/sitrep-final.md \
                 || echo "::warning::footer edit failed for #$N; the issue is filed without it" ;;
           esac
+
+      # N6a — the monthly ROUTINE canary. ROUTINE has no canary today and the
+      # mail leg is proven by exactly one observation (section 8.12). Does
+      # NOT count against N7 (the arrival-rate trigger); excluded from this
+      # SITREP's own totals by title, the same way BASELINE_TITLE is.
+      - name: File ROUTINE canary (N6a, monthly)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # JUDGMENT — "fixed monthly date" not pinned further by the
+          # tasking. day-of-month <= 7 guarantees exactly one of J3's weekly
+          # Monday runs lands in this window each month, regardless of which
+          # weekday the 1st falls on. Re-derive if J3's cadence ever changes.
+          DOM=$(date -u +%-d)
+          if [ "$DOM" -gt 7 ]; then
+            echo "ROUTINE canary not due this run (day of month $DOM > 7)"
+            exit 0
+          fi
+          printf 'Monthly ROUTINE channel canary, per N6a (intel/scheduled-ops-design.md section D.3).\n\n' > out/canary.md
+          printf 'This issue arriving, and the notification email it generates, IS the test.\n' >> out/canary.md
+          printf 'No action required unless it does not arrive.\n\n' >> out/canary.md
+          printf 'Does not count against N7 and is excluded from the weekly SITREP total by\n' >> out/canary.md
+          printf 'title match, the same way the baseline issue is.\n' >> out/canary.md
+          gh issue create --title "$ROUTINE_CANARY_TITLE" --body-file out/canary.md
 
       - name: Upload evidence
         if: always()
