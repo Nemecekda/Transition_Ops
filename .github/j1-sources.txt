@@ -5,6 +5,11 @@
 # (congress.gov, veterans.house.gov, DFAS.mil, eCFR, esd.whs.mil, ftb.ca.gov)
 # are bot-walled and stay structurally dark to CI. See design section C.
 #
+# eCFR appears on that walled list as an HTML FRONT END. Its api/versioner
+# surface is a different thing and is reachable — that distinction is the
+# section C.6 "agency machine interface" pattern, and it is why
+# ecfr-title-versioner can be enrolled below while eCFR stays walled above.
+#
 # One source per line. Adding a source is a one-line diff, which is the point:
 # the sweep must be able to say "this source changed" mechanically.
 #
@@ -12,3 +17,17 @@
 
 federal-register-va|https://www.federalregister.gov/api/v1/documents.json?conditions[agencies][]=veterans-affairs-department&per_page=20&order=newest
 federal-register-dod|https://www.federalregister.gov/api/v1/documents.json?conditions[agencies][]=defense-department&per_page=20&order=newest
+
+# TIER 1, enrolled 5 AUG 2026 per the Coverage Charter (design section 0.7).
+# Each re-fetched live immediately before this line was written; status,
+# content type, and newest-item date recorded in section 0.7.1. A URL verified
+# three days ago is not a URL verified today.
+federal-register-opm|https://www.federalregister.gov/api/v1/documents.json?conditions[agencies][]=personnel-management-office&per_page=20&order=newest
+# SLUG WARNING: it is veterans-employment-and-training-service. The general
+# employment-and-training-administration slug was tested and REJECTED - 10,000
+# documents of H-2A wage rules and Job Corps with near-zero veteran content.
+federal-register-dolvets|https://www.federalregister.gov/api/v1/documents.json?conditions[agencies][]=veterans-employment-and-training-service&per_page=20&order=newest
+# Trip-wire, not a content feed: reports THAT a CFR title changed, never what.
+# This is the ecfr.gov API, which is a different surface from the bot-walled
+# eCFR HTML front end named above.
+ecfr-title-versioner|https://www.ecfr.gov/api/versioner/v1/titles.json

@@ -375,6 +375,44 @@ statement about the wrong thing.
 sources. Evidence and live-verification records are in
 `intel/coverage-charter-landscape.md`. Dean rules per source.
 
+### 0.7.0 ENROLLMENT RECORD — TIER 1 APPLIED 5 AUG 2026
+
+**Ruled in §0.7 and now applied.** `.github/j1-sources.txt` goes from **2 sources
+to 5**. Issue #12 confirmed the file still held only the original two before this
+change.
+
+**Live re-verification, performed immediately before the lines were written**,
+per the §0.6 rule that enrollment is verified at enrollment — not inherited from
+a survey three days old. That is the slug lesson exactly: a plausible,
+well-formed, wrong URL returns a body and fails silently.
+
+| id | HTTP | Content-Type | Bytes | Newest item / marker |
+|---|---|---|---|---|
+| `federal-register-opm` | **200** | `application/json; charset=utf-8` | 30,542 | count 4,010; newest **2026-08-04** |
+| `federal-register-dolvets` | **200** | `application/json; charset=utf-8` | 42,255 | count 153; newest **2026-03-10** |
+| `ecfr-title-versioner` | **200** | `application/json; charset=utf-8` | 8,033 | 50 titles; Title 38 `latest_amended_on` **2026-07-28**, `up_to_date_as_of` **2026-08-03** |
+
+Verified 2026-08-05T17:02Z. All three returned real bodies, not just status
+codes.
+
+**DOL-VETS is still silent** — newest item unchanged at 2026-03-10, five months
+stale, exactly as the survey found. That is the low-churn profile it was selected
+for, confirmed a second time rather than assumed.
+
+**A header correction shipped with it.** `j1-sources.txt` lists eCFR among the
+bot-walled hosts. That refers to the **HTML front end**; the `api/versioner`
+surface is a different thing and is reachable. The header now says so, so an
+enrolled eCFR source does not read as contradicting the walled roster.
+
+**`federal-register-presdocu` is NOT enrolled** — it remains Tier 1-CONDITIONAL
+pending the V-9 ruling. See §0.7.5.
+
+**The first scheduled run over the expanded sector is the live test.** J1 fires
+`0 9 * * *` (observed ~2h19m late). Tomorrow's run is the first to scan five
+sources, and the first to exercise a compare against a baseline that does not yet
+contain three of them — so expect all three to report as new on first contact,
+the same first-run behaviour §8.12 records for run #4.
+
 ### 0.7.1 The tiers
 
 **TIER 1 — ADD NOW.** High signal, low churn, compact JSON, no new governor
