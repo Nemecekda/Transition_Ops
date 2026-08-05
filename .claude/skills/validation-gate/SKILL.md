@@ -143,6 +143,105 @@ under another name.
      Label it FALLBACK in the evidence. Balanced counts prove nothing about
      placement; a file can balance perfectly and still be broken. Fallback is
      weaker evidence and never PASS-equivalent for a structural change.
+4S. **Schema and expression check - `actionlint` (workflow files only).**
+   Fires when the diff touches any path under `.github/workflows/`. Skipped, and
+   reported as `4S N/A - no workflow files in diff`, otherwise. Runs AFTER step 4
+   and BEFORE anything is staged.
+
+       "$HOME/.local/bin/actionlint" -version      # must read 1.7.12
+       "$HOME/.local/bin/actionlint" .github/workflows/*.yml
+
+   Pass every changed workflow path as an argument. PASS = no output and exit 0.
+   FAIL = one or more findings and a non-zero exit; paste them verbatim, do not
+   paraphrase and do not summarise the count.
+
+   - **DO NOT PIPE THIS COMMAND.** `actionlint ... | head` makes `$?` report
+     `head`, so findings print and the step still exits 0. This is the identical
+     trap already documented for the Ruby parse in step 4, and it has bitten this
+     gate before. Run it unpiped and check the exit code, or capture to a file.
+   - **Version is checked every run.** A binary that is not 1.7.12 fails the gate
+     itself. Pinned per the V-6 discipline; acquisition and hash verification are
+     in `intel/patch-2026-08-03-validation-gate-1.4-actionlint.md`.
+   - **PROHIBITED:** `brew install actionlint`, or any unpinned acquisition. A
+     gate tool that floats is not pinned.
+   - **SCOPE:** local gate, run before staging. This is explicitly **NOT** a CI
+     job - a workflow that validates workflows sits downstream of the push it
+     exists to prevent. Do not "improve" this step by moving it into Actions.
+   - **WHAT 4S ACTUALLY COVERS - measured 5 AUG 2026, not claimed.** Actions
+     **expression grammar**, including empty and malformed `${{ }}` **inside
+     shell comments** (R1, the defect of record). `cron` field validity (R3).
+     Workflow **schema**: missing `on:`/`jobs:`, unexpected top-level keys,
+     invalid `runs-on:` labels (R7, R9). **Context names and typed-context
+     properties** - an undefined context, a misspelled `github.sha`, or a
+     `needs.x` with no `needs:` declared are all caught (R4 variants).
+   - **WHAT 4S DOES NOT COVER - measured. Each clause below was struck from the
+     drafted patch text because the evidence did not support it:**
+     - **Shell analysis of `run:` bodies is INERT on this machine.** actionlint
+       delegates to a separate `shellcheck` executable rather than embedding one,
+       and `shellcheck` is not installed (R6). The shell layer reports nothing and
+       must not be described as coverage. Installing a pinned, hashed `shellcheck`
+       is a separate Commander decision, and section 8.9's gap stays OPEN.
+     - **`github.event.*` payload shape is NOT validated against the trigger.**
+       `github.event` is typed as a bare object, so
+       `github.event.pull_request.number` on a `schedule`-only workflow passes
+       clean (R4). Context *names* are checked; event *payload* is not.
+     - **`with:` input names are NOT checked on SHA-pinned actions.** actionlint
+       resolves inputs from a tag-keyed dataset, so a full-SHA ref - which V-6
+       mandates - resolves to nothing and input validation is silently skipped.
+       A misspelled `persist-credential:` passes on the pinned form and is caught
+       only on a floating tag (R7). **Pinning is the stronger control and stays;
+       the gap is named here so nobody reads 4S as covering it.**
+     - **SHA-pinning of `uses:`** - not enforced by actionlint (R5). The bullet
+       below is the gate's own check.
+   - **DISPOSITION RULE - binding.** Zero findings is the only PASS. Every finding
+     is FIXED, or suppressed only with Dean's explicit approval recorded in the
+     evidence, per finding. **A hit inside a comment is still a hit. There is no
+     comment exemption for anything Actions interpolates** - GitHub substitutes
+     expressions textually before any shell exists, so a leading `#` protects
+     nothing. "COMMENT (inert)" is a prohibited disposition; it is the exact
+     reasoning that cleared the section 8.10 defect after the scan had already
+     found it, and it cost a startup failure. A finding the operator believes is a
+     false positive is still a FAIL until Dean rules - escalated, not absorbed.
+     Never a blanket ignore, never a config file added quietly beside the binary.
+   - **FALLBACK (binary unavailable or hash mismatch):** there is none that is
+     equivalent. Run the section 8.10 ad-hoc scan for empty and malformed
+     expressions across every workflow file, label it FALLBACK, and state in the
+     evidence that the schema layer was not checked. A workflow change validated
+     without 4S is weaker evidence and is never PASS-equivalent.
+   - **SHA-PIN ASSERTION - the gate's own check, not `actionlint`'s.** Every
+     `uses:` in a changed workflow file must reference a **full 40-hex commit
+     SHA**. `actionlint` does NOT enforce this (R5); V-6 requires it; this bullet
+     is where the gate asserts it. Runs whenever 4S runs, and runs **even when the
+     binary is unavailable** - it is `grep`, offline and in-tree.
+
+         UNPINNED=$(grep -nE '^[[:space:]]*-?[[:space:]]*uses:' .github/workflows/*.yml \
+           | grep -vE 'uses:[[:space:]]*\./' \
+           | grep -vE '@[0-9a-f]{40}[[:space:]]*(#.*)?$' || true)
+         if [ -n "$UNPINNED" ]; then
+           printf '%s\n' "$UNPINNED"
+           echo "4S-PIN FAIL - the refs above are not full 40-hex commit SHAs"
+           exit 1
+         fi
+         echo "4S-PIN PASS - every uses: is pinned to a full commit SHA"
+
+     - The trailing **`|| true` is load-bearing.** `grep -v` exits 1 when nothing
+       matches, and nothing matching is precisely the PASS case. Without it, under
+       `set -e`, the clean case aborts the step and the operator debugs a passing
+       repo. Same exit-code trap as DO NOT PIPE, arriving from the opposite
+       direction.
+     - **Local actions (`uses: ./path`) are exempt** and only those. They are
+       in-tree, they move with the diff, and they are reviewed as part of it. A
+       third-party ref is exempt from nothing.
+     - **A version comment is not a pin.** `@3d3c42e5...  # v7.0.1` is pinned
+       because of the SHA; the comment is a courtesy to the reader. `@v7.0.1
+       # pinned` is NOT pinned, and the assertion catches exactly that
+       self-certifying form.
+     - **Disposition:** zero unpinned refs is the only PASS. A finding is FIXED,
+       or suppressed only with Dean's explicit written approval in the evidence,
+       per finding. "It's a trusted publisher" is a prohibited disposition - V-6
+       pinned `actions/checkout` precisely because trust in the publisher is not
+       trust in a mutable tag.
+
 5. **Untouched-region check.** `git diff --stat` - confirm ONLY intended
    files/regions changed. Any unexpected diff is a full stop.
 6. **Evidence.** Report the actual command output, not a summary of it.

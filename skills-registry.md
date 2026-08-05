@@ -9,7 +9,7 @@ written) · DEPRECATED (superseded — note by what)
 
 | # | Skill | Owner | Status | Version | Validated | Location |
 |---|-------|-------|--------|---------|-----------|----------|
-| 1 | validation-gate | s3-devops | CODIFIED | 1.3 | 2026-08-03 | .claude/skills/validation-gate/ |
+| 1 | validation-gate | s3-devops | CODIFIED | 1.4 | 2026-08-05 | .claude/skills/validation-gate/ |
 | 2 | deploy-discipline | s3-devops | CODIFIED | 1.4 | 2026-08-03 | .claude/skills/deploy-discipline/ (1.3 BURNED - see change log) |
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
@@ -251,4 +251,55 @@ validation-gate / deploy-discipline 1.1(d).
   argued this item must close on execution rather than on the text landing,
   because it is the gate standing between this repo and its first workflow
   commit; that argument was accepted.
+  Lane: COMMANDER (hard gate). Owner s3-devops.
+- 2026-08-05 - **validation-gate 1.3 -> 1.4. Adds step 4S, `actionlint`, to EDIT
+  MODE.** Driver: the J2 startup failure of 3 AUG 2026
+  (`intel/scheduled-ops-design.md` section 8.10). A shell comment inside a `run:`
+  block held an Actions expression with an empty body; GitHub substitutes
+  expressions textually before any shell exists, so the leading `#` protected
+  nothing and the file was rejected at startup with zero steps run. Every local
+  layer passed - YAML parsed under Psych, Python compiled, governor regression
+  7/7 - because none of them is GitHub's schema.
+  (a) 4S fires only when the diff touches `.github/workflows/`, runs AFTER step
+  4's Ruby parse and BEFORE staging. Neither layer replaces the other: step 4
+  covers every YAML in the repo with an in-tree offline parser and remains the
+  fallback authority when the binary is missing or its hash fails.
+  (b) Pinned to v1.7.12, `actionlint_1.7.12_darwin_arm64.tar.gz`, SHA-256
+  `aba9ced2dee8d27fecca3dc7feb1a7f9a52caefa1eb46f3271ea66b6e0e6953f`, per the V-6
+  discipline. **Hash verified before extraction on install and matched character
+  for character.** `brew install` is non-conforming; `-version` is checked every
+  run.
+  (c) Carries the DO NOT PIPE warning forward from step 4 verbatim.
+  (d) LOCAL gate, explicitly NOT a CI job (W-2).
+  (e) Binding DISPOSITION RULE: zero findings is the only PASS, a hit inside a
+  comment is still a hit, and "COMMENT (inert)" is a prohibited disposition - it
+  is what cleared the 8.10 defect after the sweep had already found it.
+  **(f) Non-coverage list, REWRITTEN FROM MEASURED EVIDENCE rather than carried
+  over from the drafted text.** R0-R11 executed 5 AUG 2026, and three coverage
+  claims in the draft did not survive execution and were struck before the text
+  was applied: **shell analysis of `run:` bodies is INERT** - actionlint delegates
+  to a separate `shellcheck` binary which is not installed, so section 8.9's gap
+  stays OPEN (R6); **`github.event.*` payload is not validated against the
+  trigger** - `github.event` is typed as a bare object (R4); and **`with:` input
+  names are not checked on SHA-pinned refs** - the input dataset is tag-keyed, so
+  the full-SHA form V-6 mandates silently disables input validation (R7).
+  SHA-pinning of `uses:` is likewise not enforced by actionlint (R5), so 4S
+  carries **its own mechanical SHA-pin assertion** as a separate bullet: full
+  40-hex commit SHA required, local `./` actions exempt, a version comment is not
+  a pin, and the check is pure `grep` so it still runs when the binary is
+  unavailable. The V-6 control is now asserted by the gate rather than only
+  cross-referenced from it. Regression R11 (unpinned MUST FAIL, negative control
+  against the live files, self-certifying `@tag # pinned` case). Commander ruling
+  3 AUG 2026, flag 2 of the W-2 package resolved as option (b).
+  (g) Section 8.4's scope-boundary case (valid YAML, semantically garbage as a
+  workflow) still PASSES step 4 and now FAILS the gate (R9). The verdict change is
+  deliberate and recorded here so a future reader does not read it as a
+  regression.
+  **Regression evidence: R0-R11 executed 5 AUG 2026, full results at
+  `intel/scheduled-ops-design.md` section 8.14. The registry advanced on
+  execution, not on approval.**
+  Basis: Commander ruling W-2, 3 AUG 2026, `intel/scheduled-ops-design.md`
+  section 8.5. Drafted by force-mod in
+  `intel/patch-2026-08-03-validation-gate-1.4-actionlint.md`; corrected against
+  evidence and applied by the Orchestrator, 5 AUG 2026.
   Lane: COMMANDER (hard gate). Owner s3-devops.

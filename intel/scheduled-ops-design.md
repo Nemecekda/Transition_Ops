@@ -2534,6 +2534,125 @@ reaching a send.
 
 ---
 
+### 8.14 W-2 EXECUTION — actionlint INSTALLED, R0–R11 RUN, 5 AUG 2026
+
+**Registry advanced on this evidence, not on the approval.** `validation-gate`
+**1.3 → 1.4**, validated 2026-08-05.
+
+#### Install and pin
+
+| Step | Result |
+|---|---|
+| Asset | `actionlint_1.7.12_darwin_arm64.tar.gz`, 2,164,202 bytes |
+| Expected SHA-256 | `aba9ced2dee8d27fecca3dc7feb1a7f9a52caefa1eb46f3271ea66b6e0e6953f` |
+| Actual SHA-256 | `aba9ced2dee8d27fecca3dc7feb1a7f9a52caefa1eb46f3271ea66b6e0e6953f` |
+| Verdict | **MATCH — verified BEFORE extraction**, character for character |
+| Release `checksums.txt` cross-check | agrees (secondary evidence only, per §1 of the package) |
+| `actionlint -version` | `1.7.12`, built with go1.26.1 for darwin/arm64 |
+| Binary fingerprint | `8db11704dc296f096216db4db65d86cd7f0ebfdf4c38453a1da276b137b88388` — **LOCAL FIRST-USE, derived from the verified tarball, NOT an independently published value** |
+| Location | `~/.local/bin/actionlint` — outside the repo tree, so MODE SELECT stays clean |
+
+#### Regression table
+
+| # | Case | Expected | Actual | Verdict |
+|---|---|---|---|---|
+| **R0** | Pin enforced, not decorative | MISMATCH declared, full stop | Altered value rejected; halt declared, no extraction | **PASS** |
+| **R1** | **MANDATORY** — §8.10 empty-expression replay | **FAIL** | `13:40: unexpected end of input while parsing … [expression]`, exit 1 | **PASS** |
+| **R1b** | Reported even though inside a comment | finding on the comment line | line 13 **is** the comment line | **PASS** |
+| **R2** | All live workflows clean | PASS | 5 files, zero findings, exit 0 | **PASS** |
+| **R3** | Malformed `cron` | FAIL, field named | `invalid CRON format "0 12 * * 8" … end of range (8) above maximum (6)` | **PASS** |
+| **R4** | `pull_request` context on `schedule`-only | FAIL | **exit 0 — NOT flagged** | **FAIL — see below** |
+| **R5** | Unpinned `uses:` floating tag | PASS (honest result) | exit 0, not flagged — exactly as predicted | **PASS** |
+| **R6** | Shell layer live? | settle it | **exit 0, `shellcheck` not on PATH — INERT** | **INERT — clause struck** |
+| **R7** | Bad runner label + misspelled `with:` key | FAIL both | runner label **caught**; `with:` key **NOT caught** | **PARTIAL** |
+| **R8** | Non-workflow diff | `4S N/A` | 0 workflow paths in diff → N/A, actionlint not invoked | **PASS** |
+| **R9** | Valid YAML, garbage as a workflow | step 4 PASS, 4S FAIL | 4S: missing `on:`, missing `jobs:`, 3 unexpected keys, exit 1 | **PASS** |
+| **R10** | `deploy-discipline` non-interference | no bump obligation | zero `.github` paths in `sw.js` ASSETS | **PASS** |
+| **R11** | Unpinned `uses:` must FAIL | FAIL | `4S-PIN FAIL`, offending line printed, exit 1 | **PASS** |
+| **R11b** | Negative control, live files | PASS | `4S-PIN PASS`, **10** `uses:` lines | **PASS** |
+| **R11c** | Self-certifying `@v7.0.1  # pinned` | FAIL | `4S-PIN FAIL` — the comment did not rescue it | **PASS** |
+
+**R1 is the case that justified the whole adoption, and it passes.** actionlint
+reports the empty expression **at the comment line**. The defect that took J2 down
+with zero steps executed is caught locally, before staging, in milliseconds.
+
+#### Three coverage claims did not survive execution, and were struck before the text was applied
+
+The package's own disposition rule required this for R6. The same standard was
+applied to R4 and R7 — a claim the evidence does not support does not ship in a
+gate, because a gate that overstates its coverage is how the next defect gets
+cleared.
+
+**1. Shell analysis is INERT (R6).** `shellcheck` is **not on PATH** — §8.9
+recorded this and it is still true. actionlint **delegates** to a separate
+`shellcheck` executable rather than embedding one, so the shell layer reports
+nothing. A `run:` body containing `for f in $(ls out); do echo $f; done` passes
+clean. **§8.9's gap is NOT closed.** Installing a pinned, hashed `shellcheck` is a
+follow-on Commander decision. This was the precise "worst of all outcomes" the
+package warned about — inert while everyone believes it is running — and the case
+existed to catch it. It did.
+
+**2. `github.event.*` is not validated against the trigger (R4).** The context
+layer is genuinely strong: an undefined context name, a misspelled `github.shaa`,
+and a `needs.build` with no `needs:` declared are **all** caught, each with a
+precise type error. But `github.event` is typed as a **bare object**, so
+`github.event.pull_request.number` on a `schedule`-only workflow passes — and so
+does a wholly invented `github.event.nonexistent_field.foo`. Context **names** are
+checked; event **payload shape** is not. The drafted "context validity against the
+trigger" claim was narrowed to what the tool actually does.
+
+**3. `with:` input names are not checked on SHA-pinned refs (R7) — and this one is
+a control interaction worth reading twice.** The misspelled `persist-credential:`
+on `actions/checkout` was **not** flagged when the ref was the full SHA V-6
+mandates. The same file with `actions/checkout@v5` **was** flagged, naming every
+valid input. actionlint resolves inputs from a **tag-keyed** dataset, so a SHA ref
+matches nothing and input validation is silently skipped.
+
+> **Pinning a SHA disables actionlint's input checking.** The package called
+> `persist-credentials: false` "especially worth proving" because it is a security
+> property of J2 and a misspelling silently restores a usable token. That is
+> exactly the case that cannot be checked — *because* we pin.
+
+**This is not an argument against pinning.** V-6's control is the stronger of the
+two and it stays. It is an argument against believing 4S covers `with:` keys, and
+the non-coverage list now says so.
+
+#### One correction to the package's own record
+
+The addendum states "all 8 `uses:` lines across `j1`, `j2`, `j3`, `j5`." There are
+now **10**, across five workflow files — **J4 landed after the package was
+drafted** (`ops/j4-link-audit`, merged). The assertion passes on all 10. The count
+is corrected here so a future reader does not treat 8 as the expected total and
+conclude two refs went missing.
+
+#### J4 IS THE STEP'S FIRST CUSTOMER — RE-GATED 5 AUG 2026
+
+J4 merged carrying an explicit caveat in its own commit message: **"NOT gated by
+actionlint."** It was authored and merged in the window between W-2 being raised
+and W-2 being executed, so it is the one live workflow that never passed the check
+that now exists. It is therefore the first file put through 4S, and the re-gate is
+retroactive validation rather than a formality.
+
+| Step | Result |
+|---|---|
+| Branch vs `main` | identical — `ops/j4-link-audit` carries no drift from the merged file |
+| Step 4, Ruby/Psych `parse_stream` | `YAML OK .github/workflows/j4-link-audit.yml 38911 bytes`, exit 0 |
+| **Step 4S, actionlint 1.7.12** | **zero findings, exit 0 — 4S PASS** |
+| **4S SHA-pin assertion** | **`4S-PIN PASS`**, 2 of 2 `uses:` pinned to full 40-hex SHAs |
+
+**The caveat in J4's commit message is now discharged.** A 38,911-byte workflow —
+the largest in the fleet — passes the schema and expression layer clean on first
+contact. That is a real result and not a foregone one: R1 proves the tool fails
+files when it should, so a clean pass here carries information.
+
+**What it does not mean.** Per the non-coverage list, J4's `run:` bodies were
+**not** shell-analysed (R6, inert), and its `with:` inputs were **not** validated
+because its refs are SHA-pinned (R7). J4 is gated to the standard 4S actually
+provides, which is now written down honestly, and not to the standard the drafted
+text claimed.
+
+---
+
 ### 8.6 NOTIFICATION PATH — V-4 FINDING, 3 AUG 2026
 
 **What happened.** J1's manual dispatch created Issue #1 successfully. **No
