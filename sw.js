@@ -5,7 +5,7 @@ self.addEventListener("notificationclick", function(event) {
     var blob = "";
     try { blob = JSON.stringify((event.notification && event.notification.data) || {}); } catch (e) {}
     blob += " " + ((event.notification && event.notification.tag) || "");
-    var m = /tool=([a-z]+)/.exec(blob);
+    var m = /tool=([a-z0-9]+)/.exec(blob);
     if (m) {
       event.waitUntil(caches.open("tops-intent").then(function(c) {
         return c.put("/intent", new Response(JSON.stringify({ tool: m[1], ts: Date.now() }), { headers: { "Content-Type": "application/json" } }));
@@ -19,7 +19,7 @@ self.addEventListener("notificationclick", function(event) {
 // install time, caching still works and push simply activates on a later install.
 try { importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js'); } catch (e) {}
 
-const CACHE_NAME = 'transition-ops-v106';
+const CACHE_NAME = 'transition-ops-v107';
 const ASSETS = [
   '/',
   '/index.html',

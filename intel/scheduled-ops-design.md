@@ -2066,7 +2066,7 @@ recorded in the Result column — not an assertion that it was checked.
 
 | **V-17** | No | **OPEN — raised 5 AUG 2026** | s3-watch-officer | **OneSignal capability facts, none of which this repo has verified.** Title and body character limits; per-timezone delivery availability; segment availability and how a segment's size is read; delivery, open, and opt-out telemetry export. §F's U3 and X5 both depend on these. Per the §0.6 live-verification rule they are **not asserted from memory** — U3's send window and X5's character budget stay provisional until this closes. Owner is `push-ops` (registry #7), mechanics only |
 | **V-18** | No | **OPEN — raised 5 AUG 2026** | force-mod | **§F U5 threshold, deliberately unset at n = 0.** Record delivered count, open rate, and opt-out delta at 72 hours for the first three pushes ever sent, then set the criteria-review trigger from the observed baseline. **No percentage may be invented before that data exists** — a plausible, well-formed, wrong number here is the §0.6 slug lesson repeated on the user channel |
-| **V-19** | No | **OPEN — DEFECT FOUND 5 AUG 2026** | Dean / s3-devops | **`sw.js` deep-link regex drops digits.** The notification-tap handler extracts `tool=` with `/tool=([a-z]+)/`; the app's `validTabs` contains **`dd214`**. Tested across all 14 tabs: 13 round-trip, **`dd214` captures `"dd"`, fails validation, and silently falls back to `dashboard`.** Confined to the iOS cold-launch intent path — which is the push path, making it load-bearing for §F. One-character fix (`[a-z]` → `[a-z0-9]`). **NOT APPLIED:** it changes notification routing for every user, COMMANDER lane by blast radius, and it sits outside the tasking that found it. §F's **G5** gate exists so this class of defect cannot reach a send again |
+| **V-19** | No | **CLOSED 5 AUG 2026 — FIXED, REGRESSION 14/14. STAGED on `ops/v19-deeplink-fix`, awaiting merge** | Dean / Orchestrator | **RULED by Dean 5 AUG 2026: apply as its own small ship — a defect repair, not a feature.** Fix applied (`[a-z]` → `[a-z0-9]`), cache **v106 → v107**, full gate PASS, regression evidence at **§8.13**. *Original finding:* **`sw.js` deep-link regex drops digits.** The notification-tap handler extracts `tool=` with `/tool=([a-z]+)/`; the app's `validTabs` contains **`dd214`**. Tested across all 14 tabs: 13 round-trip, **`dd214` captures `"dd"`, fails validation, and silently falls back to `dashboard`.** Confined to the iOS cold-launch intent path — which is the push path, making it load-bearing for §F. One-character fix (`[a-z]` → `[a-z0-9]`). **NOT APPLIED:** it changes notification routing for every user, COMMANDER lane by blast radius, and it sits outside the tasking that found it. §F's **G5** gate exists so this class of defect cannot reach a send again |
 
 **Standup-gating status, 3 AUG 2026: 0 of 8 open. ALL CLOSED.**
 V-2, V-3, V-6, V-7 closed 2 AUG. V-11, V-13, V-14, V-15 closed 3 AUG.
@@ -2481,6 +2481,56 @@ adding one is a design change and this entry is an evidence record.**
 **$0.0596** for run #5 against $0.065 for run #4. Two scan-firing runs within
 10% of each other, both far under the `--max-budget-usd 0.50` cap. The §4 cost
 model holds shape at n=2.
+
+---
+
+### 8.13 V-19 REGRESSION EVIDENCE — DEEP-LINK ROUND-TRIP, 14/14, 5 AUG 2026
+
+**The defect.** `sw.js`'s notification-tap handler parked the tap's target with
+`/tool=([a-z]+)/` — lowercase letters only. The app's `validTabs` list contains
+**`dd214`**, which carries digits. The regex captured `"dd"`, the app's
+`validTabs` check rejected it, and the tap **silently fell back to
+`dashboard`.**
+
+Confined to the notification-tap intent path, which exists because iOS drops URL
+params on cold launch. The ordinary `?tool=` query path was never affected. But
+that path *is* the push path, which is why a one-character bug mattered enough to
+gate a feature on: an approved push deep-linked to the DD-214 tool would have
+landed users on the dashboard at the moment of maximum attention.
+
+**The fix.** `[a-z]` → `[a-z0-9]`. One character. Cache **v106 → v107**.
+
+**The test, and why it is evidence rather than assertion.** The harness reads the
+regex **out of the shipped `sw.js`** and the tab list **out of the shipped
+`index.html`**, then round-trips every tab. Nothing is retyped, so the test
+cannot pass against a fix that was never applied, and it will fail if a future
+edit narrows either the regex or the tab list.
+
+```
+regex extracted from sw.js:  /tool=([a-z0-9]+)/
+validTabs extracted from index.html: 14 tabs
+
+  PASS  dashboard  PASS  vamath     PASS  vapay      PASS  pathway
+  PASS  resources  PASS  taxes      PASS  timeline   PASS  critical
+  PASS  reminders  PASS  readiness  PASS  vethub     PASS  dd214
+  PASS  finalpcs   PASS  navigator
+
+RESULT: 14/14 round-trip
+REGRESSION PASS — every deep-link target resolves
+```
+
+**Before the fix, the same harness returned 13/14** with `dd214 -> captured "dd"
+-> lands on: dashboard (FALLBACK)`. That is the pre/post pair, not a single
+green run.
+
+**Gate: PASS.** Presence 1/1 both strings, absence 0/0 both old strings, encoding
+0 offending added lines, `node --check` clean on `sw.js` and
+`OneSignalSDKWorker.js`, `manifest.json` parses, diff scoped to `sw.js` alone
+(2 insertions, 2 deletions).
+
+**This closes §F's G5 for every current target.** G5 stays in doctrine regardless
+— it is what keeps the next tab with a digit, or the next regex narrowing, from
+reaching a send.
 
 ---
 
