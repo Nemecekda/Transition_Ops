@@ -314,10 +314,36 @@ converts the ruling from "trust the classification" to "the classification canno
 be got wrong," which is the same substitution R1 already made for scheduled jobs
 when it removed the ref-write credential entirely.
 
-**RECOMMENDED PRECONDITION, not a blocker:** confirm or enable branch protection
-on `main` before the lane carries real traffic. **Dean's action.** Without it the
-lane rests on discipline alone, which is exactly what the clause it amends warns
-against.
+**PRECONDITION — CURRENT STATE, 5 AUG 2026: PARTIALLY MET, DELIBERATELY.**
+
+Dean enabled ruleset **"main protection"** on `main`: **restrict deletions** and
+**block force pushes**. The **pull-request requirement is deliberately NOT
+enabled** — it would break the GitHub Desktop merge-and-push rhythm the whole
+workflow runs on. **Ruled: the misclassification risk stays governed by the
+never-push rule until the mobile lane carries real traffic.**
+
+**Read what that does and does not buy, because "branch protection is active" is
+easy to over-read.**
+
+*It does not close the misclassification hole.* Neither enabled rule blocks an
+ordinary push to `main`. Without the PR requirement, `git push origin main`
+still succeeds. The structural substitution proposed above is **not** in place,
+and discipline remains the operative control — as the Commander has explicitly
+ruled, with the cost named.
+
+*What it does buy is worth more than it first appears:* it converts an
+irreversible mistake into a **recoverable** one. Deletion is blocked, and history
+cannot be rewritten. So a wrong-target push lands as an ordinary commit that is
+**visible in history and revertible** — which is precisely what the standing
+rollback discipline depends on (*"production problems get `git revert` within
+seconds, not live debugging"*). The ruleset does not stop the error; it
+guarantees the remedy always works and can never be covered up.
+
+**Standing review trigger:** revisit when the mobile lane carries real traffic,
+per the ruling. If a PR requirement is ever judged too costly, the equivalent
+structural control is a sandbox credential that cannot write `main` at all —
+push rights scoped to non-default branches — which achieves R1's substitution
+without touching Dean's Desktop rhythm.
 
 **What is NOT amended.** R1 and R1a stand untouched. **Scheduled jobs still hold
 no credential that can write a ref** and still reach the repository only through
