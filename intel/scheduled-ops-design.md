@@ -775,6 +775,16 @@ report."
 | `SMTP_*` **or** `SENDGRID_API_KEY` | Weekly SITREP | Dean, repo secrets | Only if §5.1 option 2 or 3 chosen |
 | `GITHUB_TOKEN` | Issues + baseline | built-in | Never a PAT. Declared per workflow as `contents: read, issues: write` |
 
+**PROHIBITED — NEVER A REPOSITORY SECRET:**
+
+| Secret | Why it is banned |
+|---|---|
+| `ONESIGNAL_REST_API_KEY` (or any push-send credential, under any name) | Per §F0.2 the machine never sends a push. A runner holding this key could interrupt every subscribed service member, which is the one failure §D.4 already forbids for operator traffic and §F forbids for everything else. Dean sends from the dashboard. **Verified absent 5 AUG 2026: zero OneSignal references across all five workflow files.** |
+
+A recorded prohibition survives where an absence does not — an empty inventory
+row looks identical to an oversight, and the next agent to need a push channel
+will read silence as permission.
+
 **No PAT anywhere in this design.** The moment a PAT appears, the structural
 safety argument in PART II §A collapses, because a PAT's scope is not bounded by
 the workflow's `permissions:` block.
@@ -1651,6 +1661,356 @@ s3-watch-officer owns the new `scheduled-ops` skill, force-mod owns the
 follow your approval, not precede it.
 ---
 
+## F. USER NOTIFICATION — THE PUSH-WORTHY TIER
+
+**Status: PROPOSED, 5 AUG 2026. Awaiting Commander ruling.** Drafted by
+force-mod on Commander tasking; corrected and staged by the Orchestrator, with
+three deviations from the tasking flagged at §F8.
+
+### F0 — THIS IS NOT A THIRD TIER
+
+§D opens "Two tiers. Hard… There is no third tier and none may be added," and
+N5 restates it. **This section does not add one.** FLASH and ROUTINE are
+unchanged and N5 is unamended.
+
+PUSH-WORTHY sits on a **different axis**. §D grades how loudly the machine
+reaches **Dean**. §F grades whether Dean reaches **users**. **F-criteria and
+P-criteria are independent, and neither implies the other.** An F2 or F5 FLASH
+is not evidence of push-worthiness, and most push-worthy findings are not FLASH
+at all.
+
+F5 (ENACTMENT) is the criterion most likely to be misread as a push trigger.
+**Enactment alone never pushes.** The enacted law must independently produce a
+P1–P4 match.
+
+### F0.1 — WHY THIS CHANNEL IS STRICTER THAN FLASH, NOT LOOSER
+
+OneSignal push reaches every subscribed service member. It spends the **users'**
+alarm budget. Three properties make it the scarcest channel we manage:
+
+1. **No consent to be an operator.** Dean opted into a 0300 SMS. A user opted
+   into an app.
+2. **No canary is possible.** N6 proves the FLASH channel is alive by firing a
+   test into it. There is no equivalent for user attention — a test push proves
+   *delivery* and cannot prove the channel still commands attention. Attrition
+   here is invisible until it is total.
+3. **The failure is one-way.** A muted FLASH channel is repaired by fixing the
+   criteria. A muted push channel is repaired by nothing: the user has already
+   swiped it away or turned notifications off, and there is no path back.
+
+**Therefore: err narrow.** A checklist that approves everything worth writing
+about is miscalibrated. Most verified findings are card-worthy and **not**
+push-worthy. That is the expected outcome, not a failure of the checklist.
+
+### F0.2 — THE MACHINE NEVER SENDS
+
+Structural, not procedural.
+
+- **No OneSignal credential enters any runner, ever.** Recorded as a prohibited
+  line in the §6 secrets inventory, because a written prohibition survives where
+  an absence does not. **Verified 5 AUG 2026:** zero OneSignal references exist
+  across all five workflow files.
+- A scheduled job may attach the GitHub label **`push-candidate`** to a findings
+  issue and do nothing else. The label carries **zero authority**. R7's
+  four-verdict enumeration is a closed set and is **unamended**.
+- A push **recommendation** requires an interactive session, a CONFIRMED rating
+  of record, and every gate and criterion below. CI holds ladder rung 1 only, so
+  every rating a runner could emit is premature by construction.
+- The output is a **packet** handed to Dean under an ACTING ON THIS footer.
+  **Dean sends from the OneSignal dashboard, or declines.** Either way it is
+  logged.
+
+### F1 — GATES: ALL FOUR REQUIRED BEFORE ANY CRITERION IS EVALUATED
+
+Fail any gate and evaluation **stops**. Do not proceed to F2 to see whether a
+criterion would have matched.
+
+**G1 — CONFIRMED, INTERACTIVE, WITH AN ENTRY OF RECORD.** A
+`policy-verification` rating of CONFIRMED exists in `intel/verification-log.md`
+with an entry ID. PROBABLE, BLOCKED, UNVERIFIED and all four J2 verdict words
+are ineligible. No entry, no evaluation.
+
+**G2 — THE CONTENT IS LIVE IN PRODUCTION.** The card, note, or timeline item is
+merged to `main`, cache-bumped, and serving. The push **follows** the app
+content; it never precedes it and never ships alongside it. A push whose
+destination does not exist yet is a broken promise at the moment of maximum
+attention.
+
+**G3 — A NAMED ACT, IN ONE IMPERATIVE SENTENCE.** There is a specific thing the
+recipient does, writable in one sentence naming the form, portal, office, or
+election. "Be aware of," "keep an eye on," "this could affect you," and "talk to
+your VSO" are not acts. If the sentence cannot be written, it is a card.
+
+**G4 — THE AUDIENCE IS THE AUDIENCE.** The finding applies to the subscriber
+population nationwide, **or** a verified OneSignal segment matches the affected
+population and resolves to a non-empty audience. State-specific,
+installation-specific, and single-MOS findings are card-only until segmentation
+exists. Spending fifty states' attention on one state's change is the clearest
+form of the failure this section prevents.
+
+**G5 — THE DEEP LINK RESOLVES.** *(Orchestrator addition, §F8 item 3.)* The
+`tool=` target is on the app's `validTabs` list **and** round-trips through
+`sw.js`'s notification-tap handler. Verified by test, not by reading.
+**`dd214` currently FAILS this gate** — see §F7.
+
+### F2 — CRITERIA: OBJECTIVE, ENUMERATED, ANY ONE SUFFICIENT
+
+Evaluated only after all gates pass. A criterion matches **literally or not at
+all**. No agent may reason a finding into a criterion by analogy, and none may
+reason one out. Altering a P-criterion or an X-disqualifier is a COMMANDER-lane
+doctrine change (mirrors R3).
+
+**P1 — ELIGIBILITY OR ENTITLEMENT CHANGE, IN FORCE.** A final, effective change
+to who qualifies, what they receive, or how much — **and** the recipient must do
+something to obtain, preserve, or recalculate it. A rate or cost change the user
+cannot act on is P1-shaped and fails at G3. That is correct, not a loophole.
+
+**P2 — APPLICATION WINDOW OPEN AND RIVALROUS OR CLOSING.** Applications are open
+now, **and** either (a) a stated capacity cap or first-come allocation exists, or
+(b) a stated close date falls within 180 days. A permanently open application
+with no cap is a card — delay costs the applicant nothing and the timeline
+surfaces it at the right month.
+
+**P3 — DATED WINDOW IN WHICH THE USER'S OWN RIGHT IS LOST OR REDUCED.** A
+published date within 90 days after which the recipient's own eligibility,
+rating, entitlement, or election is permanently lost or reduced. Three binding
+qualifiers: the date is **published by the authority**, never inferred by us; the
+loss is the **recipient's own** (comment periods, advocacy windows, and hearing
+dates do not qualify); and **one push per window, at discovery** — the timeline
+engine owns reminders and "last chance" follow-ups are prohibited under U2.
+
+**P4 — CORRECTION OF A HARMFUL CLAIM WE SHIPPED.** All three required: (a) we
+carried a claim now shown wrong; (b) it was action-guiding; (c) a user who relied
+on it could have **lost or forgone a benefit, or missed a deadline**. P4 is the
+only criterion where *not* pushing carries a harm cost attributable to us. It is
+a duty, exempt from the U1 budget. Condition (c) is load-bearing and keeps P4
+from becoming a general errata channel — most of our errors embarrass us without
+costing a user anything, and those get a card.
+
+**There is no P5, and in particular there is no criterion for topic importance.**
+
+### F3 — DISQUALIFIERS: ANY ONE VETOES, EVEN WITH A CRITERION MATCHED
+
+This is what §D.1 lacks, and it is where the checklist gets its ability to say no
+to good news.
+
+**X1 — NOT FINAL, AND NOT DATED.** Proposed rules, NPRMs, interim rules under
+reconsideration, draft policy, and bills at any stage before enactment.
+**Narrow exception:** a non-final action that itself publishes a date after which
+the *user's own* option is lost is governed by P3 and is not vetoed. The
+disqualifier is not the word "proposed" — it is the **absence of a date**. A
+proposal with no date has no window, and a push with no window is an anxiety
+broadcast.
+
+**X2 — NOTHING TO DO.** Commissions, councils, task forces, working groups,
+advisory bodies, studies, reports, RFIs, listening sessions, appointments,
+reorganizations, and funding authorizations with no application path. Vetoes
+regardless of significance and regardless of how good the news is. **Structure is
+not a benefit.**
+
+**X3 — THE APP ALREADY REACHES THEM IN TIME.** The timeline, reminders, or an
+existing card already surfaces this to the **entire** affected population before
+the deadline or cap bites. Applies only when coverage is complete: if users
+outside the timeline window are exposed, or a cap can exhaust before a user's
+card fires, X3 does not veto.
+
+**X4 — LATE BY OUR OWN CLOCK.** More than **7 days** between the first CONFIRMED
+entry of record and the proposed send. The clock starts at the **first**
+confirmation; re-verifying to reset it is prohibited. We do not control when the
+world acts, but we control how fast we act, and urgency we sat on for a week was
+not urgency. Age of the underlying **event** does not veto on its own — a
+still-open, still-rivalrous window is new information to a user who never heard
+of it.
+
+**X5 — CANNOT BE WRITTEN HONESTLY IN THE SPACE.** The notification cannot be
+written to `brand-voice` standard inside the platform's character limits without
+overstating, implying urgency the facts do not carry, or dropping a qualifier
+that changes what a reader would do. **If the honest version does not fit, it is
+not a push.** pao-content owns this and may veto unilaterally.
+
+### F4 — EXPLICITLY NOT PUSH-WORTHY, ENUMERATED SO IT IS NOT RE-LITIGATED
+
+Mirrors §D.2. Settled; re-argument requires a Commander ruling, not a fresh
+analysis.
+
+A new commission, council, task force, or advisory body. A study, report, GAO or
+IG finding. A hearing, markup, committee vote, or bill at any stage before
+enactment. An NPRM, proposed rule, or comment period — **including its comment
+deadline**, because submitting a comment changes nothing about the sender's own
+entitlement. An executive order that directs a study or creates a body. An
+appropriation or authorization with no application path. An agency reorganization
+or leadership appointment. A rate, copay, or cost change the user cannot act on.
+Good news with no act. A new resource, partner, or directory entry. An app
+feature, update, redesign, or `DATA_VERIFIED` refresh. A dead-link fix. An
+awareness date or observance. **Anything about Transition OPS itself being down
+or degraded** — a user who cannot reach the app already knows, and F0.2 forbids
+operator traffic on this channel. A state- or installation-specific change with
+no verified segment.
+
+**Two arguments pre-rejected by name, because they will recur:**
+
+- **"It is important to our audience."** Topic importance is not a criterion.
+  Spouses and families are already inside the §0.6 audience definition, and P1–P4
+  are written audience-neutral, so a spouse-facing eligibility change clears P1 on
+  its own merits. Being *about* the right people adds no weight.
+- **"It is genuinely good news."** The user's attention is spent identically
+  whether the news is good or bad. Good news with no act is a card.
+
+### F5 — THE PACKET AND THE DECISION STATES
+
+States: `PUSH-RECOMMENDED` · `PUSH-DEFERRED (budget)` · `PUSH-DECLINED (<ID>)`.
+Every declination records the gate, criterion, or disqualifier ID that produced
+it, so it is assessed once rather than re-litigated. **Silence is not a state.**
+
+The packet carries, in order: the verification-log entry ID; G1–G5 results; the
+matching criterion with the literal fact that matched it; the X1–X5 sweep each
+explicitly cleared; the exact title (≤50 chars) and body (≤120 chars); the deep
+link with its G5 test result; the U1 budget state; the recommended send window;
+and the ACTING ON THIS footer with dashboard steps.
+
+**Digest integration.** When a flag is present the BLUF reads:
+
+```
+N item(s) may need your eyes — 1 PUSH RECOMMENDATION.
+```
+
+The PUSH RECOMMENDATION section carries the case (which criterion matched), the
+draft notification, and — required, not optional — **the honest counter-case if
+one exists.** A recommendation with no counter-case must say so explicitly rather
+than omit the heading, so a missing counter-case is a claim rather than an
+oversight.
+
+### F6 — GOVERNORS (U1–U5), ON THE USER AXIS
+
+**U1 — PUSH BUDGET. Maximum 1 per rolling 30 days, and 6 per rolling 12
+months.** An additional qualifying finding inside the window becomes
+PUSH-DEFERRED, ships its card normally, and is named in the next SITREP. **The
+governor governs the recommendation, not the Commander** — Dean always overrides;
+the control exists so the staff cannot recommend frequently. If the 12-month
+ceiling ever binds, the criteria are wrong: force-mod patch trigger, not a reason
+to raise the budget. P4 corrections are exempt.
+
+**U2 — DEDUPE: ONE PUSH PER SUBJECT, EVER.** A subject is the program, rule, or
+deadline. No reminders, no "last chance," no anniversaries — the timeline engine
+owns reminders. Sole exception: a P4 correction to a push already sent.
+
+**U3 — SEND WINDOW.** Recommended 1000–1600 US Central, Tuesday–Thursday. No
+weekend or federal-holiday send unless a P3 date falls inside it. This is a
+coarse instrument that treats CONUS reasonably and OCONUS badly; per-timezone
+delivery availability is **UNVERIFIED (V-17)** and must not be assumed.
+
+**U4 — THE CARD IS CHECKED AGAINST THE PUSH, VERBATIM.** Before handoff, title
+and body are checked word-for-word against the live card text in `index.html`
+with the line number cited. Any claim in the push not present in the card is
+removed, or the card is corrected first. This is the user-side mirror of R7's
+verbatim bar and it addresses the H.R. 980 failure mode: nobody lied there,
+somebody paraphrased.
+
+**U5 — MEASURE, DO NOT GUESS.** After every send the next SITREP records
+delivered count, open rate, and opt-out delta at 72 hours. **No threshold is set
+and none may be invented: n = 0.** After three sends, force-mod sets a review
+trigger from the observed baseline (**V-18**). Channel liveness testing belongs
+to `push-ops`, not here.
+
+**Numbers, marked honestly.** `6/12 months` is derived from a small sample —
+eight POLICY INTEL / WHATS_NEW entries across Jan–Aug 2026, of which two clear
+this checklist, a rate near 3/year; six is 2× headroom on n=8. `1/30 days`,
+`X4=7 days`, `P3=90 days`, `P2=180 days` are judgment calls, the last two
+anchored to framing already in the app. U3 and U5's threshold are **not set** and
+depend on V-17/V-18. Inventing a percentage here would be exactly the plausible,
+well-formed, wrong failure the §0.6 slug lesson records.
+
+### F7 — RETROACTIVE TEST: THE MILITARY SPOUSE COMMISSION
+
+**Commander tasking item 4. Verdict: NO — and it fails twice, independently.**
+
+| Step | Result |
+|---|---|
+| G1 CONFIRMED with entry of record | **PASS** — V-2026-003, 5 AUG 2026 |
+| G2 live in production | **PASS** — shipped to both renders, cache v106 |
+| **G3 a named act** | **FAIL — evaluation stops here** |
+| G4 audience | not reached |
+| P1–P4 | not reached |
+| X2 nothing to do | **would veto independently** — advisory body, enumerated in F4 |
+
+**Reasoning.** The verification log already contains the sentence that decides
+it: *"NOTHING is actionable for a spouse today. No application, no funding, no
+eligibility change, no program stood up."* G3 asks for one imperative sentence
+naming a form, portal, office, or election. None can be written, because none
+exists. The honest push body would be "a commission now exists," which is
+precisely the anxiety-free, action-free content F0.1 says the channel cannot
+afford.
+
+**The calibration signal is *how* it reached NO.** The checklist never considered
+that the subject is military spouses. Had the tasking's fourth candidate
+criterion — "major family/spouse development" — survived into doctrine, it would
+have matched, and a feel-good finding with nothing for a user to do would have
+spent the scarcest channel we manage. **That criterion is deleted for exactly
+this reason**, and F4's pre-rejection line replaces it. Coverage does not shrink:
+a spouse-facing *eligibility* change clears P1 on its own merits without any
+special provision.
+
+**This is the right answer and it should feel slightly unsatisfying.** The EO is
+real, verified, spouse-central, and genuinely good news. It earned a card, and it
+earned nothing more.
+
+### F8 — DEVIATIONS FROM THE TASKING, FLAGGED FOR RULING
+
+**1. `PUSH-WORTHY-PENDING-VERIFICATION` is proposed as a LABEL, not a verdict
+word.** The tasking said a scheduled job may flag
+`PUSH-WORTHY-PENDING-VERIFICATION`. R7's verdict table is a **closed enumeration
+of four**, so a fifth word amends R7 and puts push vocabulary inside what a
+runner emits. **Proposed instead: the GitHub label `push-candidate`**, which
+preserves the tasking's intent exactly — the machine may flag provisionally, only
+an interactive session may recommend — while leaving R7 untouched. Labels are
+already this system's severity carrier (§2's `--label FLASH`). **Rule.**
+
+**2. force-mod's label-attachment rule is wrong, and I corrected it.** Its draft
+attached `push-candidate` "only alongside a CORRELATED or DIVERGENT verdict."
+That is backwards and self-defeating:
+
+- **CORRELATED** means the source and the app agree. Nothing is new to tell
+  users. It is the **least** push-worthy verdict.
+- **NO-APP-EXPOSURE** means a changed source touches nothing the app claims —
+  which is exactly what a **brand-new program** looks like. That is P2, the
+  criterion carrying force-mod's own VET TEC 2.0 YES case. Its rule would have
+  made its own regression case unreachable.
+
+**Corrected: `push-candidate` attaches to NO-APP-EXPOSURE, DIVERGENT, or
+NEEDS-LADDER — never to CORRELATED.**
+
+**A dependency follows, and it is real work rather than a ruling.** J2 currently
+routes only DIVERGENT, NEEDS-LADDER, and control failures to Dean's eyes;
+`.github/workflows/j2-weekly-analysis.yml` treats CORRELATED and NO-APP-EXPOSURE
+as "the machine agreeing with itself." **NO-APP-EXPOSURE is therefore discarded
+today, so the highest-value push class is invisible to the digest.** Surfacing it
+is a J2 workflow change, COMMANDER lane, not folded into this ruling.
+
+**3. G5 added — the deep link must be proven to resolve.** The tasking requires
+the draft to carry a deep-link target. Verifying that requirement surfaced a live
+defect, so it became a gate. See §F7 note and the finding below.
+
+### F9 — LIVE DEFECT FOUND WHILE SPECIFYING G5
+
+`sw.js` records a notification tap by extracting `tool=` with the regex
+`/tool=([a-z]+)/` — **lowercase letters only**. The app's `validTabs` list
+contains **`dd214`**, which has digits.
+
+Tested against all 14 valid tabs: **13 round-trip cleanly; `dd214` captures
+`"dd"`, fails the `validTabs` check, and silently falls back to `dashboard`.**
+
+Impact is confined to the notification-tap path that exists for iOS cold launch,
+where URL params are dropped — the ordinary `?tool=` query path is unaffected.
+But that is the push path, which makes it directly load-bearing here: **an
+approved push deep-linked to the DD-214 tool would land users on the dashboard**,
+at the exact moment of maximum attention that G2 exists to protect.
+
+One-character fix (`[a-z]` → `[a-z0-9]`). **Not applied** — it changes
+notification routing for every user, which is COMMANDER lane by blast radius, and
+it is outside this tasking. Recorded as **V-19**.
+
+---
+
 # PART III — VERIFICATION ITEMS AND SEQUENCING
 
 ## 8. VERIFICATION ITEMS
@@ -1703,6 +2063,10 @@ recorded in the Result column — not an assertion that it was checked.
 | **V-15** | **YES** | **CLOSED 3 AUG 2026** | Dean / Orchestrator | `validation-gate` **1.2 → 1.3** applied. Regression cases **Y1–Y5 EXECUTED, not merely specified** — see §8.4. force-mod argued this item must close on execution rather than on the text landing, because it is the gate standing between this repo and its first workflow commit. Agreed and done |
 
 | **V-16** | **YES — for J2's schedule only** | **CLOSED 3 AUG 2026 — GOVERNORS IMPLEMENTED AND REGRESSION-TESTED** | Orchestrator | Raised as the gap that J2's FLASH power would otherwise open: §D.3 **N1 and N2 existed as doctrine with no implementation anywhere** — J1 and J3 FLASH only on their own failure, so no job had ever exercised them. Commander condition, 3 AUG 2026: governors ship in J2's merge or J2's cron stays off. **Implemented in `.github/workflows/j2-weekly-analysis.yml`, step "Apply governors", in shell/python — never model-side.** N1 counts FLASH issues system-wide (not per job) in a rolling 7-day window from the Issues API, so the FLASH issues *are* the ledger and no new state store exists. N2 keys on `F2\|<source-id>\|L<line>` carried in the issue title, suppresses only on a still-**OPEN** match inside 72h — a CLOSED match means the condition was resolved and has recurred, which per N2 resets the clock. **Regression Y1–Y7 executed 3 AUG 2026, 7/7 pass — see §8.9** |
+
+| **V-17** | No | **OPEN — raised 5 AUG 2026** | s3-watch-officer | **OneSignal capability facts, none of which this repo has verified.** Title and body character limits; per-timezone delivery availability; segment availability and how a segment's size is read; delivery, open, and opt-out telemetry export. §F's U3 and X5 both depend on these. Per the §0.6 live-verification rule they are **not asserted from memory** — U3's send window and X5's character budget stay provisional until this closes. Owner is `push-ops` (registry #7), mechanics only |
+| **V-18** | No | **OPEN — raised 5 AUG 2026** | force-mod | **§F U5 threshold, deliberately unset at n = 0.** Record delivered count, open rate, and opt-out delta at 72 hours for the first three pushes ever sent, then set the criteria-review trigger from the observed baseline. **No percentage may be invented before that data exists** — a plausible, well-formed, wrong number here is the §0.6 slug lesson repeated on the user channel |
+| **V-19** | No | **OPEN — DEFECT FOUND 5 AUG 2026** | Dean / s3-devops | **`sw.js` deep-link regex drops digits.** The notification-tap handler extracts `tool=` with `/tool=([a-z]+)/`; the app's `validTabs` contains **`dd214`**. Tested across all 14 tabs: 13 round-trip, **`dd214` captures `"dd"`, fails validation, and silently falls back to `dashboard`.** Confined to the iOS cold-launch intent path — which is the push path, making it load-bearing for §F. One-character fix (`[a-z]` → `[a-z0-9]`). **NOT APPLIED:** it changes notification routing for every user, COMMANDER lane by blast radius, and it sits outside the tasking that found it. §F's **G5** gate exists so this class of defect cannot reach a send again |
 
 **Standup-gating status, 3 AUG 2026: 0 of 8 open. ALL CLOSED.**
 V-2, V-3, V-6, V-7 closed 2 AUG. V-11, V-13, V-14, V-15 closed 3 AUG.

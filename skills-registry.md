@@ -19,8 +19,37 @@ written) · DEPRECATED (superseded — note by what)
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
 | 10 | brand-assets | pao-content | PENDING | — | — | Pillow pipeline, Poppins fonts, draw_letterspaced helper |
+| 11 | push-worthy | pao-content | PENDING | — | — | **CRITERIA** for recommending a user push: gates G1–G5, criteria P1–P4, disqualifiers X1–X5, governors U1–U5. Doctrine drafted at `intel/scheduled-ops-design.md` §F, awaiting Commander ruling. PENDING until regression set PW-1…PW-9 + PW-X1…PW-X4 executes |
+
+**Scope fence between #7 and #11 — read before extending either.** `push-ops`
+(#7) owns **mechanics only**: OneSignal segments, send procedure, delivery and
+opt-out telemetry, channel liveness testing. `push-worthy` (#11) owns **whether
+a push is justified at all**. Criteria live in #11 and never in #7.
+
+The fence exists because #7 is PENDING, names OneSignal, and is the row someone
+will point at in three months to claim the gap is covered. It is not, and the
+ownership matters: #7's owner is s3-watch-officer, a Haiku detection-and-report
+agent. **The decision about what interrupts every user's phone must not end up
+owned by the cheapest agent on the roster.** Same seam pattern as
+validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-05 — **#11 `push-worthy` added as PENDING; #7 `push-ops` fenced.**
+  Coverage test returned **NONE**: no existing skill covers push-recommendation
+  criteria, and the nearest doctrine (§D.4) is a *prohibition* on routing
+  operator alerts through OneSignal — so an agent searching the registry finds
+  "don't" and no rule saying when it may. That shape produces paralysis or
+  improvisation. Doctrine drafted as design-doc **§F**, deliberately NOT as a
+  §D.6: §D and N5 forbid a third severity tier, and PUSH-WORTHY is a different
+  axis (§D grades how the machine reaches Dean; §F grades whether Dean reaches
+  users). F0 carries the non-amendment clause. Commander's fourth candidate
+  criterion, "major family/spouse development," **deleted** — a topic has no
+  threshold, and it would have pushed the spouse-commission EO that the
+  regression set requires to return NO. Orchestrator corrected force-mod's
+  label-attachment rule, which excluded NO-APP-EXPOSURE and would have made its
+  own VET TEC 2.0 YES case unreachable. Lane: **COMMANDER**, all of it — blast
+  radius is every subscribed user's lock screen. Registration blocked on
+  PW-1…PW-9 and PW-X1…PW-X4, plus V-17.
 - 2026-07-31 — Registry established. Skills 1–4 codified from workflows
   reconstructed out of project session history (Phase 1, Build Step 1).
   Skills 5–10 scheduled for codification during Build Steps 2–5.
