@@ -622,6 +622,109 @@ for it.
 
 ---
 
+## 0.8 SUCCESSOR-SWEEP DOCTRINE — COMMANDER, 5 AUG 2026
+
+**Standing doctrine. Binding on every ship from this date.**
+
+### 0.8.1 The rule
+
+**When a card describes a program that REPLACES or AMENDS an existing one, the
+predecessor's sites are swept in the SAME ship.** Not the next one, not a
+follow-up issue, not "flagged for later."
+
+Three parts, all required:
+
+1. **SWEEP IN THE SAME SHIP.** Every place the app mentions the predecessor is
+   located and brought into agreement with the successor — or corrected to say
+   the predecessor ended.
+2. **EVIDENCE THE SWEEP.** The **grep terms used** and the **site count found**
+   are recorded in the ship's evidence. A sweep nobody can audit is a claim, not
+   a control.
+3. **THE SHIP DOES NOT STAGE UNTIL THE SWEEP IS CLEAN.** This is a blocking
+   condition, in the same class as a failed gate step.
+
+### 0.8.2 The defect class, and why nothing already catches it
+
+**Case of record: [[V-2026-007]], VET TEC, found 5 AUG 2026.**
+
+VET TEC 2.0 shipped as a new card in June. The predecessor's sites survived in
+the present tense. For roughly seven weeks the app told a service member, in one
+module, that VET TEC was *"fully covered by VA"* — and in another, on the same
+device, that it *"charges GI Bill entitlement 1:1."*
+
+**The app contradicted itself about money**, which is the class of error this
+whole system exists to prevent, and it did so while every individual gate passed.
+
+**Why the existing controls all missed it:**
+
+- **`validation-gate` is diff-scoped.** Steps 1, 2, and 5 evaluate *what
+  changed*. The predecessor's lines did not change, so nothing looked at them.
+  A gate that only inspects the diff cannot see a sentence that became false
+  because of the diff.
+- **`policy-verification` verifies a claim, not a corpus.** The 2.0 card was
+  correct on its own terms. Nothing in the ladder asks "what else in the app now
+  disagrees with this?"
+- **J2's correlation runs source-against-app, not app-against-app.** It compares
+  a changed federal source to shipped figures. Two app sites contradicting each
+  other is invisible to it by construction.
+
+**So the failure was structural, not careless.** Every layer did its job, and the
+gap between the layers is where the defect lived. That is precisely what a
+standing rule is for.
+
+**The tell that generalises:** the predecessor's copy did not become wrong
+because someone edited it. It became wrong because something *else* shipped.
+**Correctness is not a property a line keeps once it has been verified** — a
+successor can falsify a sentence nobody touched.
+
+### 0.8.3 The procedure
+
+**Trigger.** Any card, note, reminder, or WHATS_NEW entry whose copy contains a
+successor signal — *replaces, supersedes, returns, is back, 2.0, new version,
+reauthorized, amends, changed from the original* — or where the analyst knows a
+predecessor exists. **When in doubt, sweep.** The sweep is cheap; the
+contradiction is not.
+
+**Steps.**
+
+1. **Name the predecessor** and every term a reader or an author might have used
+   for it — the program name, its abbreviations, its spacing variants, and any
+   URL slug that pointed at it.
+2. **Grep for all of them, case-insensitive, across the whole app** — not the
+   diff.
+3. **Record the terms and the raw site count** in the ship's evidence, before any
+   correction. The count is the denominator that makes "clean" meaningful.
+4. **Triage each site** into: correct as written · needs the successor's terms ·
+   describes a program that no longer exists · a URL that no longer serves what
+   it is cited for.
+5. **Correct every site in this ship.** A partial sweep is worse than none — it
+   leaves a contradiction *and* the belief that it was handled.
+6. **Re-run the grep and record the closing count.** Clean means: no remaining
+   site describes the predecessor as current, and no site contradicts the
+   successor on money, eligibility, or dates.
+
+**Money, eligibility, and dates are the priority order.** V-2026-007's costliest
+defect was money — whether using the benefit consumed GI Bill entitlement. A
+veteran can recover from a wrong field-of-study list. They cannot recover
+entitlement months spent on a false premise.
+
+**Watch the links, not just the prose.** A URL that still resolves is not a URL
+that still serves what it is cited for. V-2026-007's line 1900 pointed at the
+retired VET TEC page, which now returns *successor* content stating the rules had
+changed — **the link contradicted the sentence that cited it.** Fetch cited URLs
+during a sweep; a 200 is not a pass.
+
+### 0.8.4 Scope note
+
+This is doctrine, recorded here because it governs how a ship is judged. **It
+belongs in `validation-gate` as a conditional step** — the same shape as 4S:
+fires on a trigger, blocks staging, produces recorded evidence. That is a
+versioned, registry-tracked, regression-gated skill change and it is **flagged,
+not applied.** Until it lands there, this section governs and the sweep is
+performed by the analyst who invokes it.
+
+---
+
 ## 1. JOB SET AND CADENCE
 
 GitHub Actions `schedule` is **UTC and does not observe DST**. Dean is US
