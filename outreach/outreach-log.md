@@ -119,3 +119,116 @@ goes out.
 - The **WING / Guard-first variant** (`2026-08-05-institutional-brief-DRAFT.md`)
   is drafted, defect-fixed, and **NOT sent**.
 - **No further sends of any kind** until Derek and Tom respond.
+
+---
+
+## 2026-08-06 · APP OVERVIEW + POST-DIRECTORY ASK → Adam W., Dept. of Wisconsin VFW
+
+**Status: SENT. No response yet.**
+
+| | |
+|---|---|
+| **Date sent** | 6 AUG 2026 |
+| **Recipient** | **Adam W., State Adjutant, Department of Wisconsin VFW** |
+| **Artifact** | **Email, link only — no attachment** |
+| **Context** | Follow-up to a **same-day conversation** |
+
+### CONTENT
+
+- App overview
+- **A direct answer to his data/privacy question** — no login, planning data
+  device-local, **GA4 disclosed in-app**, and the **privacy sentence quoted
+  verbatim**
+- The ask to build a **WI VFW post directory with a POC per post**
+- An offer to walk his team through the app
+
+### THE ASK — three parts, and they are not the same thing
+
+1. **Department blessing** — sanction to proceed
+2. **A source of truth for post data** — the actual roster
+3. **Time in front of the team** — a briefing slot
+
+**A yes to one is not a yes to the others.** A follow-up should treat these
+separately; "sounds good" answers none of them cleanly.
+
+### WORTH NOTING
+
+**This is the first time the privacy work was used for its actual purpose.** He
+asked a data question and got the app's own sentence back, including the
+analytics disclosure. **That sentence is only defensible because it was reverted
+on 6 AUG** to describe what the app actually does — had the gap-log wording still
+been live, the answer to a State Adjutant's direct privacy question would have
+described collection that was not happening.
+
+---
+
+## 2026-08-06 · PROGRESS UPDATE + POST-DIRECTORY ASK → American Legion
+
+**Status: SENT. No response yet.**
+
+| | |
+|---|---|
+| **Date sent** | 6 AUG 2026 |
+| **Recipients** | **Joe Sharpe · Steven · Chair Espinoza** |
+| **Artifact** | **Email, link only** |
+| **Context** | **They already know the app from prior meetings. This was an UPDATE, not a pitch.** |
+
+### CONTENT
+
+- The **daily five-source policy watch**, with human verification before
+  anything ships
+- **The OPM RIF rules as the worked example** — published **3 AUG**, verified and
+  in the app **within 72 hours**
+- **The Navigator and its refusal behavior** — that it declines rather than
+  guesses
+- Framing: **nothing gets missed for our veterans**
+
+### THE ASK
+
+1. **Their read on where it helps a Legion post**
+2. **A path to a WI Legion post directory with POCs**
+
+**Dean gave the honest reason for the second: his own difficulty reaching the
+northern Door County post.** A real failure used as the justification rather than
+an abstract case for coverage — recorded because a follow-up should know that
+specific was already spent, and because it is the kind of detail that makes an
+ask land.
+
+### THE 72-HOUR CLAIM — VERIFIED BEFORE LOGGING
+
+FR docs 2026-15665 and 2026-15654 **published 2026-08-03**; V-2026-008 verified
+**6 AUG 2026**; the card is **live in both POLICY INTEL renders**. Three days.
+**The claim is accurate as made** — checked because it is a performance claim to
+an external organization, and those are the ones that get quoted back.
+
+---
+
+## ACROSS ALL THREE SENDS — the pattern worth seeing now, not later
+
+**Two of the three asks are for DIRECTORY DATA WITH POINTS OF CONTACT** — VFW
+posts and Legion posts. That is a consistent, deliberate ask to two different
+organizations on the same day.
+
+**It inverts the direction of the CVSO send.** There we asked *them* how to reach
+*their* people. Here we are asking for **data to build something with** — which
+is a product input, not a distribution question.
+
+**Neither has been scoped as a feature.** No design, no verification standard,
+no decision about whether a post directory is app content or reference material.
+**If either organization says yes, that becomes real work with no plan behind it
+yet** — and a roster of POCs is personal contact data, which carries obligations
+the app has never taken on. **Flagged now, deliberately, while both asks are
+still outstanding and the answer is cheap.**
+
+### WHAT IS NOT KNOWN — all three sends
+
+- **Whether anyone has opened or read any of the three.**
+- **No response from anyone yet.**
+- The Legion send is the one exception worth watching: **a non-response from
+  people who already know the app means something different** from silence
+  after a cold approach.
+
+### STANDING HOLD — UNCHANGED
+
+**No further sends of any kind.** The WING / Guard-first variant remains drafted,
+defect-fixed, and unsent.
