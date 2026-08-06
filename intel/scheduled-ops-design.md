@@ -725,6 +725,80 @@ performed by the analyst who invokes it.
 
 ---
 
+## 0.9 BRANCH DISCIPLINE — VERIFY BEFORE COMMITTING, NOT AFTER
+
+**Standing rule, 6 AUG 2026. Recorded because it already happened once and it
+will recur.**
+
+> **`git branch --show-current` belongs in the PRE-COMMIT sequence, not the
+> post-mortem.**
+
+### 0.9.1 The failure mode
+
+**A Desktop merge moves this working tree's HEAD.** When Dean merges a branch in
+GitHub Desktop he lands on `main`, and the working tree follows — **the branch an
+agent created earlier is no longer checked out, and nothing announces the
+change.** Editing continues normally. Committing lands on `main`.
+
+That is exactly what happened: `ops/gaplog-988-fix` was created and took its
+commit correctly. The branch was then merged in Desktop. The next round of edits
+and `git commit` went **directly to `main`**, which `deploy-discipline`'s
+PROHIBITED list forbids by name.
+
+**The tell is that there is no tell.** No error, no warning, no prompt. A clean
+gate, a clean commit message, and the wrong ref.
+
+### 0.9.2 Why the existing controls did not catch it
+
+- **The validation gate does not check the ref.** Every step — presence,
+  absence, encoding, structural, untouched-region — evaluates *file content*. All
+  six can pass perfectly on the wrong branch.
+- **`git status --porcelain` reports the tree, not HEAD.** MODE SELECT reads it
+  and is satisfied.
+- **The branch WAS created.** A post-hoc `git branch --show-current` was run —
+  **after the commit**, in the report. It surfaced the problem one step too late
+  to prevent it. **The information was available and consulted in the wrong
+  order.**
+
+### 0.9.3 The rule
+
+**Immediately before any `git commit`, confirm the branch is not `main`.** In the
+same command block as the commit, not in a previous one — a check in an earlier
+block proves nothing about the state at commit time, which is the whole point.
+
+The check is procedural, not clever. It does not need to be smart; it needs to
+run **before**:
+
+```sh
+[ "$(git branch --show-current)" != "main" ] || { echo "ON MAIN — STOP"; exit 1; }
+```
+
+**A branch created earlier in the session is not evidence of the branch you are
+on now.** Between creation and commit, a merge, a checkout, or a subagent can
+move HEAD.
+
+### 0.9.4 Blast radius that day, and what held
+
+**Contained. Nothing reached `origin`, nothing deployed, no auto-publish fired.**
+One local commit on the wrong ref, recovered by moving it to a branch and
+resetting `main` to `origin/main` — no history rewritten on anything shared.
+
+**Worth recording: branch protection was doing its job even though it was not the
+control that failed here.** Deletions restricted and force-pushes blocked meant
+the recovery was a two-command move with history intact. §0.65.3 argued that the
+ruleset converts an irreversible mistake into a recoverable one; **this is that
+argument being tested by an unrelated failure and holding.**
+
+### 0.9.5 Scope note
+
+**This belongs in `validation-gate` as a pre-commit assertion**, alongside the
+EDIT APPLICATION rules that already govern *how* edits are applied. That is a
+versioned, registry-tracked, regression-gated skill change and it is **flagged,
+not applied** — the same disposition §0.8.4 carries. Until it lands there, this
+section governs.
+
+---
+
 ## 1. JOB SET AND CADENCE
 
 GitHub Actions `schedule` is **UTC and does not observe DST**. Dean is US
