@@ -1,5 +1,32 @@
 # INSTITUTIONAL DISTRIBUTION BRIEF — DRAFT, NOT SENT
 
+> ## RE-READ REQUIRED — 6 AUG 2026. THE PRIVACY LANGUAGE MOVED TWICE AND IS BACK.
+>
+> **This draft was written against the ORIGINAL privacy sentence, then held
+> pending a rewrite, and the rewrite has now been REVERTED.** Net effect: the app
+> is back to the language this draft was written against, so the brief's privacy
+> content is **accurate again** — but that is luck, not review, and it must be
+> read rather than assumed.
+>
+> **What happened:** the gap-log loop shipped a privacy sentence disclosing
+> topic collection. **The loop never recorded anything** — the package was absent
+> from the function bundle (see `intel/user-signal-loop-design.md` §1.5d). A
+> statement describing collection that is not happening does not ship, per §0.6
+> applied to our own copy, so it was reverted.
+>
+> **The live sentence is now, again:**
+> *"Your planning data — dates, ratings, checklists — stays on your device; we
+> never see it. Anonymous usage analytics only. Optional email signup is used
+> solely for update alerts and never sold."*
+>
+> **What still needs fixing in this draft, unchanged by the revert:** the
+> `"stores nothing"` claims at lines 33 and 44, and the analytics gap flagged in
+> the Orchestrator review below. Those were open before any of this and remain
+> open.
+>
+> **The CVSO benefits-first variant has not been drafted** and must be written
+> against the language above, not against the reverted sentence.
+
 **Status: DRAFT TO THE COMMANDER'S DESK. Nothing goes anywhere without Dean's
 approval.** Drafted by pao-content 5 AUG 2026, brand-voice checked. Accuracy
 review by the Orchestrator below the draft.
