@@ -70,13 +70,36 @@ follow-up that they have seen any of it.
 - Closing ask in the copy: **15 minutes**, and *"if it's not useful to you, I'd
   rather hear that directly than have you find out the hard way from a client."*
 
-### WHAT IS NOT KNOWN
+### PDF RENDER — VERIFIED 6 AUG 2026
+
+**Both pages inspected after export.** No longer unknown:
+
+| Element | Result |
+|---|---|
+| "What it does not do" | **Rendered as a proper list** — the section doing the credibility work survived intact |
+| Section headers | **Intact** |
+| Bolding | **Preserved** |
+| Privacy sentence | **Quoted whole** — including *"Anonymous usage analytics only"* |
+
+**Provenance, recorded because Dean flagged it himself: verified by the builder,
+not independently.** That is a weaker form than an outside check and it is
+recorded as what it is. It is not a reason to distrust the result — it is the
+reason a future reader should not upgrade it to "independently confirmed."
+
+**A follow-up may now quote any passage from the sent text directly.**
+
+**One fact this surfaced: the PDF is TWO PAGES.** The original tasking specified
+*"one page equivalent, ready to paste into an email."* The CVSO variant grew past
+that — most of the additional length is the three new-this-month items and the
+full "what it does not do" section. **Neither is padding**, so this is a
+deviation worth naming rather than fixing blind. **It bears on the WING variant,
+which is still unsent and still specced at one page**, and it is a second reason
+to take pao-content's flag on the dense RIF paragraph seriously when that one
+goes out.
+
+### WHAT IS STILL NOT KNOWN
 
 - Whether either has opened or read it.
-- **Whether the PDF renders as the markdown did.** The file was authored as
-  markdown; nobody has confirmed the exported PDF preserved the section breaks,
-  the bolding, or the "what it does not do" list as a list. **If a follow-up
-  needs to quote a specific passage, confirm it survived the export first.**
 - Whether the RIF paragraph — flagged by pao-content as dense, kept at full
   length on my recommendation for this audience specifically — landed or lost
   them. **Their reaction to that paragraph is the single most informative signal
