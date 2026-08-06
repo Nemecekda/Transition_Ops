@@ -19,13 +19,20 @@
 > never see it. Anonymous usage analytics only. Optional email signup is used
 > solely for update alerts and never sold."*
 >
-> **What still needs fixing in this draft, unchanged by the revert:** the
-> `"stores nothing"` claims at lines 33 and 44, and the analytics gap flagged in
-> the Orchestrator review below. Those were open before any of this and remain
-> open.
+> **RESOLVED 6 AUG 2026 — all three defects fixed in this draft:**
+> - Both `"stores nothing"` claims replaced with precise wording — *"nothing the
+>   member enters is retained"* for the Resume Drafter, *"does not retain
+>   conversations"* for the Navigator.
+> - **The analytics gap is closed.** A privacy line now quotes the app verbatim,
+>   including **"Anonymous usage analytics only"** — so a CVSO who discovers GA4
+>   independently finds it already disclosed.
+> - **The source count was wrong and is corrected:** the what's-new paragraph
+>   named four sources; **five are enrolled.** The eCFR title trip-wire was
+>   missing, and it is now described accurately — it reports *that* a CFR title
+>   changed, never what changed.
 >
-> **The CVSO benefits-first variant has not been drafted** and must be written
-> against the language above, not against the reverted sentence.
+> **The CVSO benefits-first variant now exists:**
+> `2026-08-06-cvso-brief-DRAFT.md`. Both are ready to personalize.
 
 **Status: DRAFT TO THE COMMANDER'S DESK. Nothing goes anywhere without Dean's
 approval.** Drafted by pao-content 5 AUG 2026, brand-voice checked. Accuracy
@@ -57,10 +64,10 @@ Points-statement reading (NGB 23B / DA Form 5016), the 50-point qualifying year,
 - Timeline built from the member's own separation date
 - FIND YOUR VSO / CVSO — official locators (VA accredited-rep search, VA OGC accreditation search, NACVSO), plus a Wisconsin-specific Find My CVSO/TVSO link already built in
 - Resources — VSO/support directory, Veterans Crisis Line (988, press 1), National Call Center for Homeless Veterans (877-424-3838)
-- Career pathways and an AI resume drafter for civilian or USAJOBS applications, built from the member's own words, stores nothing
+- Career pathways and an AI resume drafter for civilian or USAJOBS applications, built from the member's own words; nothing the member enters is retained
 - AI Navigator (BETA) — answers only from the app's verified content and routes to a human when it can't
 
-**What's new:** a daily scan against federal source feeds (VA, DoD, OPM, DOL-VETS) to flag policy changes. It detects; a person verifies before anything ships. Every benefits or policy figure in the app carries a dated verification record — currently 1 AUG 2026.
+**What's new:** a daily scan against five federal sources — Federal Register feeds for VA, DoD, OPM and DOL-VETS, plus an eCFR title trip-wire that reports *that* a CFR title changed, never what changed. It detects; a person verifies before anything ships. Every benefits or policy figure in the app carries a dated verification record — currently 1 AUG 2026.
 
 **What it does not do — this is the part that matters most for a referral:**
 - Does not file claims and does not represent anyone. VSOs do that, free. The app routes to you.
@@ -68,8 +75,10 @@ Points-statement reading (NGB 23B / DA Form 5016), the 50-point qualifying year,
 - No live job search yet. The DOL data-access request is still in the federal approval queue, so the app points to state job banks in the meantime.
 - FIND YOUR VSO is a directory of official locators, not a search. It hands the user to the official tool — it doesn't return a name from a ZIP code.
 - Not affiliated with VA or DoD. Educational information only.
-- The Navigator is beta and stores nothing.
+- The Navigator is beta; it does not retain conversations.
 - No lender relationships, and it recommends no lender.
+
+**Privacy, in the app's own words:** "Your planning data — dates, ratings, checklists — stays on your device; we never see it. Anonymous usage analytics only. Optional email signup is used solely for update alerts and never sold."
 
 **One more thing, because it's the reason a verification record exists:** VET TEC 2.0 replaced the original program in June, including a change to how it charges GI Bill entitlement. We caught that our app carried the new terms correctly in one place while three older sections still described the retired program. We corrected all nine references the same day and logged it. That's what the verification process is built to catch — and why a referral to this app doesn't require taking our word for it.
 
