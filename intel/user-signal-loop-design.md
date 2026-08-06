@@ -281,6 +281,55 @@ failure mode is a sentence that outruns the code. **If Dean wants a brand-voice
 pass before it ships, pao-content should take Option A as a fixed factual frame
 and adjust cadence only, changing no clause.**
 
+## 1.5b LIVE-FIRE — 6 AUG 2026. THE OPEN RISK IS CLOSED.
+
+**Run by Dean on production.** The state property-tax question, asked against the
+live Navigator.
+
+| Claim | Evidence | Verdict |
+|---|---|---|
+| **The tag is stripped before the member sees it** | Dean read the reply on his own screen. No `[[GAP: ...]]` visible. | **PROVEN — directly observed** |
+| **`require("@netlify/blobs")` resolves in our deploy** | Function log shows a normal invocation (4438 ms, 122 MB) with **no `[gap-log] store unavailable` line.** That line prints on, and only on, a failed require. | **PROVEN** |
+| **The topic was recorded** | Inferred from the two rows above. **Not directly observed** — see the limit below. | **STRONGLY INFERRED, NOT PROVEN** |
+
+### THE OPEN RISK FROM THE BUILD COMMIT IS CLOSED
+
+**No `package.json` is needed. No `netlify.toml`. No deploy-pipeline change, and
+no Commander ruling required.** The repo stays zero-dependency and keeps its
+no-build-step property; `@netlify/blobs` is provided by the Netlify function
+runtime. The guarded require was the right call and it cost nothing.
+
+### THE LIMIT IN MY OWN EVIDENCE, STATED
+
+**Absence of the error line proves the require resolved. It does NOT prove the
+write succeeded.** `recordGap` swallows every error after the require — by
+design, so logging can never break an answer — which means a `store.setJSON`
+that threw would be **exactly as silent** as a clean write.
+
+**The failure posture I chose makes success unverifiable from logs alone.** That
+is a real trade-off, not an oversight, and it has one honest remedy: **read the
+store.** The Netlify Blobs UI showing a `gap/2026-08-06` key with a topic and a
+count is the only thing that closes this row properly. Until then it stands as
+inferred.
+
+**Deliberately not fixed by adding a success log line.** A per-write confirmation
+would be a second record of the same event and would drift toward logging
+activity rather than gaps. The store is its own proof; go look at it.
+
+### A SIGNAL WORTH KEEPING — THE TYPO
+
+Dean's question contained a typo (*"diaabled"*) and the Navigator handled it
+correctly. That is a small quality result on its own, and it is **evidence about
+the tag's provenance**: a model that normalised the misspelling in its answer
+almost certainly normalised it in the topic tag too. **The tag is authored, not
+echoed** — which is the property the whole privacy design rests on, and this is
+the first live indication it holds.
+
+It also probes the scrubber usefully. A typo'd topic would **pass** the charset
+allowlist — letters only — and that is correct: a misspelled subject is still a
+subject, not personal data. The scrubber is built to reject *personal
+information*, not *bad spelling*, and it behaved that way.
+
 ## 1.6 THE OUTPUT — a gap list, which is a work order
 
 Not a transcript. Not a dashboard. A ranked list handed into verification
