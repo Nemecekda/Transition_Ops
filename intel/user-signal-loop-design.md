@@ -330,6 +330,76 @@ allowlist — letters only — and that is correct: a misspelled subject is stil
 subject, not personal data. The scrubber is built to reject *personal
 information*, not *bad spelling*, and it behaved that way.
 
+## 1.5c DEFECT RECORD — THE GAP LOG WAS INERT FROM THE MOMENT IT SHIPPED
+
+**Found 6 AUG 2026 when Dean looked for the store and it did not exist.**
+
+**§1.5b predicted this defect by name, one day earlier, and the author of the
+prediction wrote the bug.** That sentence is the record.
+
+### What was wrong
+
+`recordGap` suppressed on **any** reply containing `988`. **RULE 1's routing
+menu — the instruction that fires on exactly the out-of-corpus condition the
+gap log exists to capture — listed the Veterans Crisis Line among its routine
+routes.** So a correctly-behaving model printed `988` in the same reply where
+RULE 16 told it to emit the gap tag, and the suppression killed the write before
+anything else ran.
+
+**The feature could never have recorded anything.** Not rarely — never.
+
+### Why nothing surfaced it
+
+Every path after the `require` is swallowed so logging can never break an
+answer. §1.5b stated the consequence in advance: *"a `store.setJSON` that threw
+would be exactly as silent as a clean write."* The same silence covered a write
+that was never attempted. **Logs showed a healthy invocation because the
+invocation was healthy — the feature inside it simply never ran.**
+
+The live-fire on 6 AUG confirmed the tag was stripped and the require resolved.
+Both true. Neither touched whether a write happened, which is why §1.5b marked
+that row **STRONGLY INFERRED, NOT PROVEN** rather than closing it. **The one row
+held back from "proven" was the one that was false.**
+
+### The fix — at the source, with the ban untouched
+
+**The crisis ban was not weakened to make a feature work.** Narrowing the
+mechanical test to a positional or model-signalled check would have traded the
+§0.1 control for feature function, which is the trade that ruling exists to
+prevent. The suppression remains **global, absolute, and unchanged**.
+
+Instead, the spurious emissions were removed. **Four sites could put `988` into
+a routine reply. Dean named three; the mechanical sweep found the fourth:**
+
+| Site | Disposition |
+|---|---|
+| **RULE 1** routing menu | Crisis line removed from routine routing. RULE 2 owns distress and fires on its own. |
+| **MANIFEST — "WHEN THE APP HAS NO TOOL"** | Removed. This one fired on **exactly** the no-tool case, so fixing RULE 1 alone would have left the collision fully live. |
+| **MANIFEST — RESOURCES tool entry** | **The fourth site, enumerated by nobody.** RULE 14 makes the Navigator *describe a tool when it recommends one*, so this text reaches routine replies. The category is now described in words; the number lives in the corpus entry. |
+| **CORPUS — `[RESOURCES]` listing** | **Kept, by ruling** — it is where a member looks for it. Guarded: surfaced on crisis, mental-health, or support-resource questions, never as filler. |
+
+**Routine-reachable sites remaining: zero.** The two survivors are RULE 2 itself
+(distress only — the ban's purpose) and the guarded corpus listing.
+
+**That fourth site is the §0.8 pattern arriving inside a single file.** One fact,
+four places, and fixing the named three would have left the defect live while
+appearing resolved. The lesson generalises past successor content: **a mechanical
+sweep beats an enumeration, including an enumeration by the person who wrote the
+code.**
+
+### Diagnostics — two, and deliberately not three
+
+`[gap-log] no-tag` and `[gap-log] rejected` record **our own behaviour** and
+carry no member data.
+
+**There is no line for the crisis suppression, and there will not be.** §0.1
+bans recording *"the fact that it happened."* A `[gap-log] suppressed` line would
+do precisely that. **So the one path that failed silently for a day remains the
+one path that must stay silent** — its failures stay indistinguishable, and that
+blindness is accepted rather than overlooked. If the crisis path ever
+malfunctions, we will find it the way we found this one: by looking at the store,
+not at a log.
+
 ## 1.6 THE OUTPUT — a gap list, which is a work order
 
 Not a transcript. Not a dashboard. A ranked list handed into verification
