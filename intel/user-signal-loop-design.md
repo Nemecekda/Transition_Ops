@@ -400,6 +400,129 @@ blindness is accepted rather than overlooked. If the crisis path ever
 malfunctions, we will find it the way we found this one: by looking at the store,
 not at a log.
 
+## 1.5d THREAD CLOSED — DESIGNED, BUILT, INERT. COMMANDER RULING 6 AUG 2026.
+
+**Ruled: close as designed-not-built. No `package.json`, no dependency file, no
+change to the deploy pipeline. Revisit when a build step is warranted for another
+reason.**
+
+### Status, stated without softening
+
+**The gap log has never recorded a single topic.** It was designed, built,
+shipped, live-fired twice, corrected once, and it has written nothing. The loop
+is **inert**, not partial.
+
+### What was actually established
+
+| | |
+|---|---|
+| The tag is emitted, scrubbed, and stripped | **PROVEN.** Member replies are clean; no `no-tag`, no `rejected` on any invocation |
+| ~~`require` resolves, so the module is present in the runtime~~ | **WRONG. I asserted this as PROVEN and it was false.** The module is **not present**. See the correction below. |
+| The write never happens | **PROVEN by absence** — no store exists at all; Blobs shows its onboarding state |
+| **The cause** | **ESTABLISHED 6 AUG 2026 by the deployed diagnostic** — see below |
+
+### THE CAUSE, ESTABLISHED — the diagnostic worked
+
+**The deployed diagnostic logged at 09:06:58:**
+
+> `Cannot find package '@netlify/blobs' imported from /var/task/navigator.js`
+
+**The package is not in the function bundle. Netlify bundles only what a
+manifest declares, and we have no `package.json`.** It was never a shape
+problem, a credential problem, or a context problem. **The module simply is not
+there.**
+
+**All three candidates are now closed:**
+
+- **(a) `getStore()` needs siteID/token** — **ELIMINATED by evidence.** You
+  cannot reach `getStore` in a module that was never bundled.
+- **(b) `store.list()` throwing before the commit** — **ELIMINATED from the code
+  path**, and it stays eliminated: the prune sits after `await store.setJSON`
+  inside its own `try`.
+- **(c) CJS/ESM shape mismatch** — **ELIMINATED by evidence.** The symptom
+  matched; the cause did not.
+
+### Reconciling the earlier silence — my inference, marked as such
+
+The open question the correction leaves is why the **old** code never printed
+`store unavailable`, since it *did* carry that line on a failed `require`.
+
+**Most likely: the bundler resolved the missing `require` to a stub rather than
+letting it throw.** That yields `getStore === undefined` with nothing thrown —
+silent — and the `TypeError` one line later landed in the outer catch. The
+**dynamic `import()` added in 9e4f4d0 could not be stubbed**, so it threw the
+real `ERR_MODULE_NOT_FOUND` and named the cause.
+
+**Flagged as inference, not established.** It fits every observation, and it
+explains why candidate (c)'s *symptom* was a correct read of a *wrong* cause.
+It is not needed for the ruling and is recorded so the loose end is not
+mistaken for a closed one.
+
+**What is established without inference: the package is absent from the bundle,
+and no `package.json` declares it.**
+
+### The root cause was not the bug — it was the silence
+
+The code assumed `require()` either works or throws. **It has a third outcome:
+it resolves and yields `undefined`.** Nothing threw, nothing logged, and the
+`TypeError` fired one line later inside a catch that said nothing.
+
+**The design error, recorded because it generalises past this feature:
+"logging can never break an answer" and "logging must say nothing" are different
+properties, and collapsing them hid the same failure twice.** Swallowing an error
+preserves the caller's guarantee. Staying silent about it is a separate choice.
+**A swallowed error must still be counted.**
+
+### THE CONSEQUENCE THAT DOES NOT WAIT — the live privacy statement now overstates
+
+**The app currently tells every member, on all 14 tabs:**
+
+> *"When the Navigator can't answer something, we record only the topic so we
+> know what to verify next — never your question, never anything you typed."*
+
+**We do not record the topic. We have never recorded a topic.** The sentence
+describes collection that is not happening.
+
+**Over-disclosure is safer than under-disclosure and it is still inaccurate.**
+The statement was written to be exactly true of the implementation, shipped in
+the same merge for that reason, and made reachable from three entry points
+precisely so a member could find it. It is now the one sentence in the app that
+does not match the code.
+
+**And it is about to be repeated to CVSOs.** The institutional brief is held
+pending this language. A CVSO who asks *"what topics have you collected?"* gets
+*"none."*
+
+**This needs a ruling and it is not covered by the close.** Two options:
+1. **Revert the privacy sentence** to the pre-gap-log language until the loop
+   works. Accurate immediately; requires a cache bump and re-reads of both brief
+   variants against a third version of the text.
+2. **Keep it** and treat it as a forward-looking commitment. Accurate the moment
+   the loop works, inaccurate until then.
+
+**Recommend 1.** The whole design principle was that the statement must be true
+of the code, not of the intention — and §0.6's standard is that a claim we cannot
+support does not ship.
+
+### Revisit trigger
+
+**When a build step is warranted for another reason.** Not before, and not on
+its own merits — the loop is not worth a dependency file and a deploy-pipeline
+change by itself.
+
+### The staged diagnostics — recommendation, not a reopening
+
+`ops/gaplog-diagnose` (**9e4f4d0**) remains staged and unmerged. **It adds no
+dependency and changes no pipeline.** It contains the `import()` fallback that
+would fix candidate (c) at zero cost, a read-back that asserts the write instead
+of assuming it, and an outer catch that names the error.
+
+**Recommend merging it anyway.** If (c) is the cause, the loop simply starts
+working and the thread reopens with good news. If not, the next Navigator gap
+prints the actual error and any future revisit starts from a named cause instead
+of this table. **The closure stands either way** — merging it does not commit us
+to the dependency file the ruling declined.
+
 ## 1.6 THE OUTPUT — a gap list, which is a work order
 
 Not a transcript. Not a dashboard. A ranked list handed into verification
