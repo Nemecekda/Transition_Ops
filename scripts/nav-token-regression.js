@@ -110,5 +110,41 @@ const stale = (navSrc.match(/no live token/g) || []).length;
 if (stale === 0) pass("none");
 else fail(stale + " occurrence(s) of 'no live token' remain — every tab now has one");
 
+// ------------------------------------------------- F. THREE lists, not two
+// stripDeadTokens in navigator.js holds a third copy of the token list. Three
+// copies drifting is worse than two, so all three are policed here: MAP,
+// TOOL MANIFEST, and LIVE_TOKENS.
+console.log("\nF. MAP, MANIFEST, and the function's LIVE_TOKENS all agree");
+const liveM = /const LIVE_TOKENS = \[([\s\S]*?)\];/.exec(navSrc);
+if (!liveM) {
+  fail("LIVE_TOKENS not found in navigator.js — stripDeadTokens cannot be verified");
+} else {
+  const liveToks = [...liveM[1].matchAll(/"([^"]+)"/g)].map(m => m[1]);
+  const liveSet = new Set(liveToks);
+  for (const t of mapSet) if (!liveSet.has(t)) fail("[" + t + "] in MAP but NOT in LIVE_TOKENS — the function would strip a working link");
+  for (const t of liveSet) if (!mapSet.has(t)) fail("[" + t + "] in LIVE_TOKENS but NOT in MAP — the function would let dead text through");
+  if (liveSet.size === mapSet.size && [...liveSet].every(t => mapSet.has(t))) {
+    pass("three-way sync, " + liveSet.size + " tokens (MAP = MANIFEST = LIVE_TOKENS)");
+  }
+}
+
+// ------------------------------------------------- G. no orphan corpus headers
+// THE DEFECT THIS EXISTS FOR: the CORPUS organises itself with bracketed
+// section headers. Three of them had no tab behind them, so the model cited
+// [VA HOME LOAN] exactly as instructed and it printed as dead text on a
+// member's screen. A bracketed corpus header is indistinguishable from a
+// citation token to the model reading it. Bracketed = citable; anything else
+// must not be bracketed.
+console.log("\nG. every bracketed CORPUS section header maps to a real tab");
+const corpusM = /const CORPUS = `([\s\S]*?)`;/.exec(navSrc);
+if (!corpusM) {
+  fail("CORPUS block not found in navigator.js");
+} else {
+  const headers = [...corpusM[1].matchAll(/^\[([A-Z0-9 &/-]+)\]\s*$/gm)].map(m => m[1]);
+  const orphans = headers.filter(h => !mapSet.has(h));
+  if (orphans.length === 0) pass(headers.length + " bracketed headers, all mapped");
+  else for (const o of orphans) fail("corpus header [" + o + "] has no MAP entry — the model will cite it and it will print as dead text");
+}
+
 console.log("\nRESULT: " + (failures === 0 ? "ALL ASSERTIONS PASS" : failures + " FAILED"));
 process.exit(failures ? 1 : 0);
