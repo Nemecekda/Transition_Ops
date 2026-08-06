@@ -20,6 +20,25 @@ written) · DEPRECATED (superseded — note by what)
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
 | 10 | brand-assets | pao-content | PENDING | — | — | Pillow pipeline, Poppins fonts, draw_letterspaced helper |
 | 11 | push-worthy | pao-content | PENDING | — | — | **CRITERIA** for recommending a user push: gates G1–G5, criteria P1–P4, disqualifiers X1–X5, governors U1–U5. Doctrine drafted at `intel/scheduled-ops-design.md` §F, awaiting Commander ruling. PENDING until regression set PW-1…PW-9 + PW-X1…PW-X4 executes |
+| 12 | member-impact | s2-intel | PENDING | — | 2026-08-06 (MI-1…MI-9 executed 9/9) | .claude/skills/member-impact/ |
+
+**Scope fence between #3 and #12 — read before extending either.**
+`policy-verification` (#3) owns whether a claim is **TRUE**. Its OUTPUT field
+"affected app module" is **routing exhaust**, not an assessment.
+`member-impact` (#12) owns whether a CONFIRMED finding is **USEFUL**, and there
+**"none" is a verdict**, not a blank. **#3 does not cover #12, and the seam is
+one field wide** — which is exactly the width someone will point at in three
+months.
+
+**Second fence — #12 and #11.** #12 runs **pre-ship**; #11's G2 requires content
+**already merged, cache-bumped, and serving**. Only G3 is shared. **#12 does not
+amend #11, and #11 does not govern findings.**
+
+**Third fence — what #12 does NOT govern.** #12 assesses **incoming findings
+about the world**. It does **not** govern outgoing claims about our own system —
+privacy statements, capability descriptions, the TOOL MANIFEST. **That subject is
+real, is currently unowned, and stays unowned rather than being absorbed here.**
+A skill with two subjects serves neither.
 
 **Scope fence between #7 and #11 — read before extending either.** `push-ops`
 (#7) owns **mechanics only**: OneSignal segments, send procedure, delivery and
@@ -34,6 +53,50 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-06 — **#12 `member-impact` added as PENDING, owner s2-intel.**
+  Coverage test returned **NONE**: every skill we hold governs whether content is
+  TRUE (#3), LANDED (#1), SAFE (#2), or IN VOICE (#4). **Nothing governed whether
+  a transitioning member is better off for reading it.** #11 could not serve as
+  the filter — its G2 requires content already merged and serving, so **the only
+  usefulness test in the repo was unreachable at the moment the ship/decline
+  decision is made.** Drafted by force-mod on Commander tasking; amended and
+  executed by the Orchestrator.
+  **Four axes:** WHO and when it bites (closed population set, mandatory
+  exclusion line, band from a **written-out closed list** rather than a grep) ·
+  THE ACT (§F's G3 imported as the general test, with named non-acts) · WHERE IT
+  LANDS (plus the citation token, which must be live) · WHAT NOT KNOWING COSTS.
+  **The load-bearing clause: "No act ⇒ A4 is NOTHING regardless of topic
+  importance."** That is where topic importance gets smuggled in and where it
+  stops.
+  **DECLINE is first-class and sub-dispositioned** — INOCULATE / GAP / LOG ONLY.
+  The discriminator is the **closure test**: write the reader's next question,
+  and if the app cannot answer it in the same ship, INOCULATE is denied.
+  *"Publishing context that provokes a question we cannot answer is not
+  inoculation, it is a wound."* **DECLINE is not silence** — INOCULATE ships a
+  card whose job is the negation.
+  **Verdicts are re-runnable, not permanent**: a verdict is a function of the
+  app's state, not the finding's dignity. V-2026-004 failed the closure test the
+  day the app had no homeless content and **passes now that 877-424-3838 ships.**
+  **Amendments beyond the original tasking:** citation token named in A3 (a
+  surface alone is not enough — `[VA HOME LOAN]` named a real surface and printed
+  as dead text); an **EXPIRES** stamp, because §0.8's lesson runs both ways and
+  **usefulness decays too**; and the decline-rate tally recorded **in the weekly
+  SITREP beside N7, not on the registry validation line — where numbers go to not
+  be read.**
+  **Rejected from this skill by Commander ruling, and recorded so it is not
+  re-absorbed:** truth-to-implementation for **outgoing self-descriptive claims**.
+  Real, earned by the 6 AUG privacy defect, and **a different subject** — to be
+  drafted separately as doctrine. Fence three exists to hold that line.
+  **PENDING until registration, and MI-1…MI-9 EXECUTED FIRST, 9/9**, per the
+  `validation-gate` 1.4 precedent where the registry advanced on execution
+  evidence and three coverage claims died in that execution. Both mandatory
+  declines returned DECLINE with the correct sub-disposition; the positive
+  control (VET TEC, MI-4) returned SHIP — ACT. Results in
+  `.claude/skills/member-impact/calibration-cases.md`.
+  **Stated limit:** MI-9 against #3 is **specification-level only** — #3's P1–P6
+  were specified, never executed.
+  Lane: **COMMANDER**, all of it — blast radius is what a member is told to do
+  and, sharper, what they are not told.
 - 2026-08-05 — **#11 `push-worthy` added as PENDING; #7 `push-ops` fenced.**
   Coverage test returned **NONE**: no existing skill covers push-recommendation
   criteria, and the nearest doctrine (§D.4) is a *prohibition* on routing
