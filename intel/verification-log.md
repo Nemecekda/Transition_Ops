@@ -363,3 +363,70 @@ have shipped new errors.**
 - **Disposition:** all corrections applied on branch `ops/vettec-accuracy`,
   CACHE_NAME v109 → v110. **DATA_VERIFIED held at 1 AUG** — this verified one
   program's claims, not the dataset. COMMANDER lane; staged, not merged.
+
+---
+
+## V-2026-008 — OPM RIF retention and probationary appeals (final rules, 3 AUG 2026)
+
+- **Claim:** Two OPM final rules change federal reduction-in-force retention
+  standing and probationary-termination appeals, both effective 2 SEP 2026.
+- **Rating:** CONFIRMED
+- **Verified by:** Orchestrator, rung 1 — Federal Register API and the
+  documents' own raw full-text endpoints. No wall encountered.
+- **Verified date:** 6 AUG 2026
+- **Citations of record:**
+  - "Reduction in Force," **Final Rule, FR doc 2026-15665**, published
+    2026-08-03, **effective 2026-09-02**, OPM. Amends 5 CFR Parts 316, 330, 351,
+    353, 359, 362, 430. Raw text:
+    `federalregister.gov/documents/full_text/text/2026/08/03/2026-15665.txt`
+  - "Streamlining Probationary and Trial Period Appeals," **Final Rule, FR doc
+    2026-15654**, published 2026-08-03, **effective 2026-09-02**, OPM.
+  - Same-day companions, verified present but **NOT relied on** for shipped
+    copy: "Reduction in Force Appeals" 2026-15666; "Suitability Action Appeals"
+    2026-15650.
+- **Supporting quotes, verbatim:**
+  - **RETENTION ORDER** — *"Agencies will maintain separate retention registers
+    for competitive service and excepted service employees; within each group,
+    employees will be ranked by performance credit, augmented by veterans'
+    preference, with tenure subgroup and length of service used as tie-breakers."*
+  - **POINTS** — *"Preference eligibles with a compensable service-connected
+    disability of 30 percent or more receive 5 additional points; other
+    preference eligibles receive 3 additional points; non-preference eligibles
+    receive no additional points."*
+  - **EFFECTIVE** — *"This rule is effective September 2, 2026."*
+  - **MSPB → OPM** (2026-15654 abstract) — *"Executive order, 'Strengthening
+    Probationary Periods in the Federal Service,' rendered the prior procedures
+    for appealing such actions to the Merit Systems Protection Board (MSPB)
+    inoperative. This final rule establishes a new, limited appeals process
+    adjudicated by OPM."*
+- **STATED LIMIT, carried into the record rather than smoothed over:** the
+  document does **not** contain a single sentence establishing the complete
+  ranking order, and does **not** name one CFR section for retention standing.
+  The ordering quote above describes the rule's operation in the preamble; it is
+  **not** the codified regulatory text. Anyone relying on exact retention
+  mechanics should read 5 CFR 351 as amended.
+- **NOT CLAIMED — and the app is built so it cannot drift into claiming it.**
+  Both rules amend RIF and appeals regulations, not the hiring-preference
+  statutes, but **no sentence in either document states that hiring preference is
+  unchanged.** An earlier draft of the card asserted exactly that and it was
+  struck before staging. The shipped card states what the rules govern and is
+  silent on hiring. The Navigator corpus carries a binding SCOPE LIMIT
+  forbidding it to say hiring preference is changed *or* unchanged.
+- **THE CONFUSABLE-CLAIM HAZARD — why this shipped to three places, not one.**
+  The app already carried a veterans'-preference points claim for **hiring**
+  (5 points, 10 with a compensable SC disability or Purple Heart). Shipping the
+  RIF numbers (5 / 3) without disambiguation would have left **two different
+  point systems, both containing a "5," in one app.** That is the §0.8
+  successor-sweep failure arriving as a *confusable-adjacent* claim rather than a
+  predecessor — same consequence, different cause.
+- **Affected app modules — all corrected in this one ship, no partial fix:**
+  - 2026 POLICY INTEL card, **both byte-identical renders**
+  - Navigator CORPUS — the two systems split, named separately, with the scope
+    limit; plus **RULES 15**, which forbids answering any preference-points
+    question without naming the system and requires the Navigator to **ask**
+    when the question is ambiguous
+  - Guard/Reserve **Military Technician** entry — dual-status techs are federal
+    civilian employees subject to RIF and would not otherwise see the card
+- **Disposition:** staged on `ops/opm-rif-probation`, CACHE_NAME v110 → v111.
+  **DATA_VERIFIED held at 1 AUG** — this verified two rules, not the dataset.
+  COMMANDER lane; staged, not merged.
