@@ -170,7 +170,7 @@ const CORPUS = `VERIFIED CORPUS (from Transition OPS; verified against 38 CFR / 
 - U.S. Treasury MyMoney Five framework: Earn, Save & Invest, Protect, Spend, Borrow — on the app's VA PAY tab, translated for transition (first civilian paycheck has no BAH/BAS; TSP does not vanish at separation but early cash-out is costly; SGLI ends after separation; build the civilian budget BEFORE the last military paycheck; credit score matters for housing, vehicles, some jobs).
 - Trump Accounts: children born 2025-2028 receive $1,000 in Treasury seed money in tax-advantaged accounts. Details at MyMoney.gov.
 
-[VA HOME LOAN]
+SECTION - VA HOME LOAN
 - The VA home loan guaranty (VA.gov) helps veterans, service members, and eligible surviving spouses buy, build, or refinance a home. Key features: typically NO down payment, NO private mortgage insurance (PMI), and competitive rates because the VA guarantees part of the loan.
 - Step 1 is the Certificate of Eligibility (COE): obtain it through VA.gov, or most VA-approved lenders can pull it electronically.
 - The VA does not lend the money itself — you use a VA-approved private lender; the VA backs the loan.
@@ -179,7 +179,7 @@ const CORPUS = `VERIFIED CORPUS (from Transition OPS; verified against 38 CFR / 
 - WARNING: the VA-loan space attracts aggressive marketers and serial-refinance ("churning") pitches. Unsolicited refinance offers deserve skepticism. Compare multiple lenders; VA.gov's home loan pages are the authoritative source, and a HUD-approved housing counselor or accredited financial counselor (free via Military OneSource while eligible) can review any offer.
 - The app carries no lender relationships and recommends no lender — ever.
 
-[POST-SEPARATION RIGHTS & WINDOWS]
+SECTION - POST-SEPARATION RIGHTS AND WINDOWS
 - ONE-YEAR PRESUMPTIVE WINDOW (38 CFR 3.307): certain chronic conditions (arthritis, diabetes, hypertension, and others on the VA's chronic disease list) that appear to a compensable degree within ONE YEAR after separation are presumed service-connected — no need to prove the in-service link. If something develops in year one, see a doctor, document it, and talk to a VSO promptly.
 - ONE-TIME VA DENTAL WINDOW: veterans may qualify for one-time VA dental care if they apply within 180 DAYS of separation and their DD-214 does not certify complete dental treatment before discharge. Most veterans never hear about this window until it's gone.
 - DECISION-REVIEW CLOCK: after any VA claim decision, you have ONE YEAR to file an appeal or supplemental claim while preserving your original effective date — miss it, and a later win typically pays only from the new filing date. Effective dates are money; calendar the deadline the day a decision arrives, and get a VSO on it.
@@ -191,7 +191,7 @@ const CORPUS = `VERIFIED CORPUS (from Transition OPS; verified against 38 CFR / 
 - USERRA (Guard/Reserve reemployment rights): returning from military service, your civilian job is protected if you meet report-back timelines — service under 31 days: report next scheduled workday; 31–180 days: apply within 14 days; over 180 days: apply within 90 days. Miss the window and USERRA protection can be lost. ESGR (esgr.mil) mediates employer disputes free.
 - VA HEALTHCARE ENROLLMENT: combat veterans have an enhanced post-separation enrollment window (extended under the PACT Act) — enroll EARLY at VA.gov/health-care rather than waiting for a health problem; current window rules are on VA.gov.
 
-[PROTECT YOUR BENEFITS]
+SECTION - PROTECT YOUR BENEFITS
 - Most "benefits fraud" cases against veterans begin as honest administrative mistakes, not schemes — intent matters legally, but investigations and debt collection can start long before intent is sorted out. Five protective habits keep honest veterans clean:
 - 1. REPORT CHANGES PROMPTLY: needs-based benefits (like VA pension) require timely reporting of changes in income, employment, marital status, and dependents. Unreported changes create overpayments — which become debts the VA collects, and waivers are barred where fraud, misrepresentation, or bad faith is found.
 - 2. BE CONSISTENT AND COMPLETE: disability claims run on self-reported symptoms and limitations. Inconsistencies between your statements, medical records, and employment history are a common trigger for fraud referrals even with no intent to deceive. Tell the same complete truth on every form and at every exam.
@@ -235,6 +235,32 @@ const CORPUS = `VERIFIED CORPUS (from Transition OPS; verified against 38 CFR / 
 // FAILURE POSTURE: logging is BEST-EFFORT AND NEVER BREAKS AN ANSWER. Every
 // path below is wrapped; a store that is missing, unwritable, or absent from
 // the runtime results in no log and a completely normal reply.
+// ---------------------------------------------------------------------------
+// DEAD-TOKEN STRIP. A prompt rule is not a boundary; this is.
+//
+// renderNavText (index.html) linkifies ONLY the tokens in its MAP. Any other
+// bracketed ALL-CAPS token prints on screen as dead text, which RULE 14
+// forbids and which shipped anyway -- because the CORPUS organises itself with
+// bracketed section headers and three of them have no tab behind them. The
+// model was not inventing tokens; it was citing its own source structure.
+//
+// This list MUST match renderNavText's MAP exactly. scripts/nav-token-regression.js
+// reads all three consumers -- MAP, TOOL MANIFEST, and this list -- and fails
+// on drift between any of them.
+const LIVE_TOKENS = ["DASHBOARD","VA MATH","VA PAY","MONEY BASICS","CAREER",
+  "RESOURCES","TAX INTEL","TIMELINE","GUARD/RESERVE","CRITICAL WINDOWS",
+  "REMINDERS","READINESS","VET HUB","DD214","FINAL PCS","NAVIGATOR"];
+
+// Unknown token -> keep the WORDS, drop the brackets. "[VA HOME LOAN]" becomes
+// "VA HOME LOAN". Deleting the token outright would leave "see  for details";
+// the reader loses nothing and never sees a dead link.
+function stripDeadTokens(text) {
+  return String(text).replace(/\[([A-Z0-9][A-Z0-9 &/-]{1,40})\]/g,
+    function (whole, inner) {
+      return LIVE_TOKENS.indexOf(inner.trim()) === -1 ? inner.trim() : whole;
+    });
+}
+
 const GAP_STORE = "navigator-gaps";
 const GAP_RETENTION_DAYS = 90;
 const GAP_TAG_RE = /\[\[GAP:\s*([^\]]{1,120})\]\]/i;
@@ -271,12 +297,26 @@ async function recordGap(replyText) {
     const topic = gapTopicOrNull(m[1]);
     if (!topic) { console.log("[gap-log] rejected"); return; }
 
+    // MODULE RESOLUTION. The previous shape assumed require() either works or
+    // throws. It has a third outcome, and that third outcome is what happened:
+    // require RESOLVES but the destructured getStore is undefined (ESM-only
+    // package, or an exports map with no CJS binding). Nothing threw, nothing
+    // logged, and the TypeError only fired one line later inside the outer
+    // catch -- silent. Both remaining candidates produced identical silence.
     let getStore;
-    try { ({ getStore } = require("@netlify/blobs")); }
-    catch (e) {
-      // Blobs not resolvable in this runtime. Self-diagnosing: one line, no
-      // member data, so the first deploy tells us definitively.
-      console.log("[gap-log] store unavailable; nothing recorded");
+    try { ({ getStore } = require("@netlify/blobs")); } catch (e) { /* fall through to import */ }
+    if (typeof getStore !== "function") {
+      // CommonJS require could not produce it. Try the ESM path: recordGap is
+      // already async, so dynamic import is free here.
+      try { ({ getStore } = await import("@netlify/blobs")); }
+      catch (e) {
+        console.log("[gap-log] blobs module unavailable via require AND import: " +
+          (e && e.name) + " " + String(e && e.message).slice(0, 120));
+        return;
+      }
+    }
+    if (typeof getStore !== "function") {
+      console.log("[gap-log] module resolved but getStore is not a function - ESM/CJS shape");
       return;
     }
     const store = getStore(GAP_STORE);
@@ -288,6 +328,22 @@ async function recordGap(replyText) {
     bucket[topic] = (bucket[topic] || 0) + 1;
     await store.setJSON(key, bucket);
 
+    // READ-BACK. "The store is its own proof" made mechanical. setJSON
+    // resolving is not evidence the blob exists; reading the key is. Gaps are
+    // rare, so this costs one extra read on an uncommon path. It logs the
+    // COUNT only -- never the topic, which would put member-derived content
+    // into a second store.
+    try {
+      const back = await store.get(key, { type: "json" });
+      if (back && typeof back === "object") {
+        console.log("[gap-log] wrote " + key + " (" + Object.keys(back).length + " topics)");
+      } else {
+        console.log("[gap-log] write NOT confirmed on read-back: " + key);
+      }
+    } catch (e) {
+      console.log("[gap-log] read-back failed: " + (e && e.name));
+    }
+
     // PRUNE-ON-WRITE. Retention enforced here, not by a job.
     try {
       const cutoff = new Date(now.getTime() - GAP_RETENTION_DAYS * 86400000)
@@ -297,7 +353,20 @@ async function recordGap(replyText) {
         if (b.key.slice(4) < cutoff) { try { await store.delete(b.key); } catch (e) {} }
       }
     } catch (e) { /* prune is best-effort; never fails a reply */ }
-  } catch (e) { /* logging NEVER breaks an answer */ }
+  } catch (e) {
+    // THE CORRECTION. "Logging can never break an answer" and "logging must say
+    // nothing" are DIFFERENT PROPERTIES, and collapsing them is what hid this
+    // failure twice. Swallowing the error preserves the guarantee -- nothing is
+    // rethrown, the reply is unaffected. Staying silent about it was a separate
+    // choice, and it was wrong.
+    //
+    // A SWALLOWED ERROR MUST STILL BE COUNTED.
+    //
+    // Library error name and message only. No topic, no question, no member
+    // data. Cannot fire on a crisis turn: that path returns before any of this.
+    console.log("[gap-log] error " + (e && e.name) + ": " +
+      String(e && e.message).slice(0, 140));
+  }
 }
 
 exports.handler = async (event) => {
@@ -379,7 +448,9 @@ exports.handler = async (event) => {
     // never sees it. Awaited so the write is not cut off when the function
     // freezes, but it can only ever resolve -- recordGap swallows everything.
     await recordGap(rawReply);
-    const reply = rawReply.replace(GAP_TAG_RE, "").replace(/\n{3,}/g, "\n\n").trim() || "No response — try again.";
+    const reply = stripDeadTokens(
+      rawReply.replace(GAP_TAG_RE, "").replace(/\n{3,}/g, "\n\n").trim()
+    ) || "No response — try again.";
     return { statusCode: 200, headers, body: JSON.stringify({ reply }) };
   } catch (e) {
     return { statusCode: 502, headers, body: JSON.stringify({ error: "The Navigator is briefly unavailable. Try again in a moment." }) };
