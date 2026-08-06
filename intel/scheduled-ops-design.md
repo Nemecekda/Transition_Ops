@@ -799,6 +799,54 @@ section governs.
 
 ---
 
+## 0.10 PARTIAL VIEWS STATED AS FACT — 6 AUG 2026
+
+**Two instances in one week, from both people working the repo. That is what
+makes it a pattern rather than a mistake.**
+
+| Claim | The partial view it came from | Reality |
+|---|---|---|
+| *"`require` resolves, so the module is present in the runtime"* — marked **PROVEN** | The **absence of one log line** | The module was never bundled. The whole candidate table rested on it |
+| *"The old PDF-render bullet survived and now contradicts the section above it"* | A **diff render**, not the file | The bullet had already been removed in the same edit |
+
+**Different people, different artifacts, identical shape: a view of a part
+supporting a confident claim about the whole.**
+
+### The tell
+
+**The claim is about a thing the view cannot see.** A missing log line is
+evidence about logging, not about module resolution. A diff render is evidence
+about a change, not about the resulting file. In both cases the inference was
+reasonable and the confidence was not.
+
+**Neither was caught by re-reading the claim.** Both were caught by looking at
+the actual artifact — the deployed error, and the file itself.
+
+### The fix is cheap, and it is not "verify everything"
+
+**Name the view.** *"From the absence of a log line…"* · *"From the diff
+render…"* · *"From one code path…"*
+
+Stating the basis costs a clause and makes the limit visible to the next reader
+without slowing anything down. **A claim that names its own evidence can be
+checked. A bare assertion has to be re-derived from scratch, and usually isn't.**
+
+The stronger form, when it matters: mark the confidence separately from the
+claim. §8.12 and §1.5b both did this correctly — **PROVEN**, **STRONGLY
+INFERRED**, **NOT ESTABLISHED** as distinct rows. **§1.5b's one held-back row was
+the one that turned out false**, which is the argument for the practice in a
+single sentence.
+
+### Why it is recorded here rather than in either incident
+
+Both incidents already carry their own corrections — §1.5d and the outreach log.
+**Recording the pattern separately is the point:** filed only under the incidents,
+it reads as two unrelated slips. Filed here, it is one failure mode with two
+witnesses, and **the second witness is the Commander**, which is what rules out
+"the agent was careless" as the explanation.
+
+---
+
 ## 1. JOB SET AND CADENCE
 
 GitHub Actions `schedule` is **UTC and does not observe DST**. Dean is US
