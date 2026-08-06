@@ -7,6 +7,46 @@ Two pieces: Navigator question logging, and the GA4 monthly review.
 
 ---
 
+# 0. COMMANDER RULINGS — 6 AUG 2026. ALL FIVE. BINDING.
+
+| # | Ruling |
+|---|---|
+| 1 | **Privacy design APPROVED as drafted** — gap-topic only, three fields, mechanical scrubber. |
+| 2 | **Prohibition table APPROVED in full.** The crisis-turn ban is **standing doctrine**, elevated below out of the design table. |
+| 3 | **Sequencing: option 1.** Logging and the privacy-statement rewrite ship in the **SAME merge**. The institutional brief **holds** until after, and is **re-read against the new language** before it goes anywhere. |
+| 4 | **Storage: Dean checks the Netlify plan for Blobs and reports back. Do not guess, do not fetch.** The **GitHub-issue sink is RULED OUT permanently**, regardless of what the plan says. |
+| 5 | **Retention 90 days CONFIRMED. GA4 tier-3 CONFIRMED**, five questions fixed as the agenda. **The OneSignal dashboard task (V-17) runs BEFORE the first GA4 review** so Q4 can be answered whole. |
+
+## 0.1 STANDING RULE — THE CRISIS-TURN BAN
+
+**This is doctrine, not a design note. It does not get traded away in a later
+refactor, and it is not subject to a "just the topic would be harmless" argument.**
+
+> **Any turn where RULE 2 fires — the crisis path — logs NOTHING. Not the topic,
+> not a category, not a counter, not the fact that it happened.**
+>
+> **A member in distress is not a data point.**
+
+**Why it is absolute rather than minimised.** Every other prohibition in §1.3
+protects against a record being *linked to a person*. This one protects against
+the record *existing*. A crisis-turn counter would tell us how often the Veterans
+Crisis Line path fires — which sounds like exactly the kind of thing an
+operations team should want to know, and that is precisely why the ban has to be
+written down. **The value of the metric is the argument that will be made for
+breaking the rule.**
+
+If we ever genuinely need that number, it comes from the Crisis Line's own
+reporting or not at all. It does not come from instrumenting a person's worst
+moment.
+
+## 0.2 RULED OUT PERMANENTLY — THE GITHUB-ISSUE SINK
+
+**Member-derived content does not belong in a repository record, and a Netlify
+function does not hold a repo write credential.** Ruled out on both grounds
+independently — either alone is sufficient, so no future plan-tier finding
+reopens it. It cuts against R1's whole shape: the design's safety argument rests
+on nothing in this system holding a credential that can write a ref.
+
 # PIECE 1 — NAVIGATOR QUESTION LOGGING
 
 ## 1.0 The finding that should shape the whole design
@@ -79,7 +119,7 @@ looks identical to an oversight; a written prohibition survives a refactor.
 | **IP address, user agent, session or device identifier, any hash of any of them** | A hash is an identifier |
 | **Any number the member typed** — rating %, dollar figure, dates, ZIP | |
 | **Discharge characterization, claim status, diagnosis, condition names** | |
-| **ANY turn where the crisis path fired (RULE 2)** | **Log nothing at all for that exchange — not even a topic.** A member in distress is not a data point. This is the single hardest ban in the table and it is not negotiable. |
+| **ANY turn where the crisis path fired (RULE 2)** | **Log nothing at all — not the topic, not a category, not a counter, not the fact that it happened. See §0.1: this is STANDING DOCTRINE, not a line in a design table, and it is the one prohibition here that protects against the record EXISTING rather than against it being linked to a person.** |
 | **Free text of any origin other than the model's own topic tag** | |
 
 **Mechanical enforcement, not prompt trust.** Before write, the function
@@ -147,6 +187,99 @@ brief is built to earn. Three ways out, Dean's call:
 
 **Recommend 1.** The brief is unsent, so it costs nothing to hold; a correction
 to institutional gatekeepers costs a great deal.
+
+## 1.5a THE PRIVACY STATEMENT REWRITE — DRAFT FOR APPROVAL, NOT APPLIED
+
+**Ships in the SAME merge as the logging code (ruling 3). Neither goes without
+the other.**
+
+**The current text, for comparison:**
+
+> *"Your planning data — dates, ratings, checklists — stays on your device; we
+> never see it. Anonymous usage analytics only. Optional email signup is used
+> solely for update alerts and never sold."*
+
+**What has to be true of the replacement.** It is read by a member deciding
+whether to type something honest, and by a CVSO deciding whether to refer
+someone. It has to be **exactly true of the implementation** — not aspirational,
+not lawyerly. Every clause below maps to a specific control in §1.2–§1.4, and if
+the code ever stops matching a clause, the clause comes out.
+
+---
+
+### OPTION A — **APPROVED AS WRITTEN, 6 AUG 2026. SHIPPED.** Four sentences.
+
+> **Ruling:** approved as written, ships in the same merge as the logging code.
+> **NO brand-voice pass before shipping** — "the sentence is right and
+> cadence-tuning risks the clause precision." pao-content reviews it **only
+> after it ships**, against the frame, **changing nothing**. Recorded because it
+> inverts the normal order deliberately: outward-facing copy usually gets voice
+> before ship, and here precision outranked voice.
+
+> **Your planning data — dates, ratings, checklists — stays on your device; we
+> never see it. When the Navigator can't answer something, we record only the
+> topic so we know what to verify next — never your question, never anything you
+> typed. Nothing at all is recorded from a conversation where you tell us you're
+> struggling. Anonymous usage analytics only; optional email signup is used
+> solely for update alerts and never sold.**
+
+**Why this one.** It states the new collection in the same breath as its
+*purpose* — "so we know what to verify next" — which is the honest reason and
+also the reassuring one. **"never your question, never anything you typed"** is
+the clause a skeptical CVSO will look for, and it is doing the real work.
+
+The crisis sentence is written in plain human terms rather than as a policy
+carve-out. *"tell us you're struggling"* is what a member would recognise; *"a
+conversation where the crisis path fires"* is what an engineer would write, and
+it is worse.
+
+---
+
+### OPTION B — Tighter, three sentences. Loses the crisis clause as its own beat.
+
+> **Your planning data — dates, ratings, checklists — stays on your device; we
+> never see it. When the Navigator can't answer something we record only the
+> topic — never your question, never anything you typed, and nothing at all from
+> a conversation where you tell us you're struggling. Anonymous usage analytics
+> only; optional email signup is used solely for update alerts and never sold.**
+
+**Trade-off, stated plainly:** shorter and it reads faster, but the crisis
+protection becomes a subordinate clause. **That protection is the strongest thing
+we do and burying it mid-sentence undersells it to the audience most likely to
+care.** I prefer A; B is here because in-app copy has a length cost and that is a
+real argument, not a bad one.
+
+---
+
+### OPTION C — A, plus retention.
+
+> *(Option A, with:)* **Topics are kept for 90 days.**
+
+**Recommend NOT in the in-app line.** It is accurate — but it invites the follow
+-up "then what?", and the honest answer ("counts remain, topics don't") needs
+more room than this surface has. **Better home: a fuller privacy page**, which we
+do not currently have. Flagged as a gap rather than solved by cramming.
+
+---
+
+### WHAT I DELIBERATELY DID NOT WRITE
+
+- **No claim that logging is "anonymous."** It is — there is no identifier —
+  but the word is doing suspicious work in most privacy notices and a CVSO knows
+  it. Describing what we *do* is stronger than labelling it.
+- **No "we may collect."** We either do or we don't. Hedged permission language
+  is how a statement stops constraining the code.
+- **No mention of GA4 by name.** Unchanged from current copy and out of scope for
+  this rewrite — but flagged: if we ever want to name it, that is its own
+  decision.
+
+### VOICE PASS AVAILABLE, NOT TAKEN
+
+I drafted this rather than routing it to pao-content because the binding
+constraint is **truth-to-implementation** — I hold the design facts and the
+failure mode is a sentence that outruns the code. **If Dean wants a brand-voice
+pass before it ships, pao-content should take Option A as a fixed factual frame
+and adjust cadence only, changing no clause.**
 
 ## 1.6 THE OUTPUT — a gap list, which is a work order
 

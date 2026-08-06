@@ -3362,6 +3362,35 @@ after a send.
 Standing hazards that are not V-items: nothing to verify and close, only
 something to keep watching. Added 3 AUG 2026.
 
+#### W-3 — NO FULL PRIVACY PAGE EXISTS
+
+**Raised by Dean 6 AUG 2026, during the user-signal-loop build. Real gap, not
+urgent.**
+
+The app's entire privacy disclosure is **one sentence in the UI**. That sentence
+is accurate and it is now doing more work than it was designed for: as of the
+gap-log build it must carry planning-data locality, the topic-only gap record,
+the crisis-turn exclusion, analytics, and email signup — in a space sized for a
+single line.
+
+**What the one-liner cannot hold, and therefore is not saying:**
+- **Retention.** 90 days is policy and is enforced in code, but stating it in-app
+  invites *"then what?"* and the honest answer needs more room than the surface
+  has. Option C was declined for exactly this reason.
+- Who can read the gap store, and that its contents are topics and counts only.
+- That Blobs are site-scoped, so the protection is content minimisation rather
+  than access control.
+- Any of it in a form a **CVSO could forward to a client** rather than paraphrase.
+
+**Why this is a watch item and not a V-item:** nothing is unverified and nothing
+is wrong. The disclosure is true. It is simply thinner than the institutional
+audience will eventually want, and each honest thing we add to the product makes
+the one-liner carry more than it comfortably can. **The trigger to act is the
+next disclosure-bearing feature, or the first CVSO who asks for something to
+forward.**
+
+Not scoped, not scheduled, deliberately.
+
 #### W-2 — GITHUB'S SCHEMA LAYER IS UNCHECKED LOCALLY; `actionlint` ADOPTED
 
 **Raised by Dean 3 AUG 2026 after the J2 startup failure (§8.10).**

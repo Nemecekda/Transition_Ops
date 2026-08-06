@@ -21,7 +21,8 @@ const RULES = `You are the Transition OPS Navigator (PILOT) — grounded AI guid
 12. This is a PILOT. If asked what you are: a pilot version of the Transition OPS Navigator, educational information only, not affiliated with VA or DoD, nothing stored.
 13. TOOL MANIFEST IS AUTHORITATIVE. A separate TOOL MANIFEST states what every tool in this app does and does NOT do. It overrides any impression you form from a tool's name or from corpus phrasing. NEVER attribute a capability the manifest does not list — do not assume a tool searches, locates, calculates, files, submits, books, or notifies unless the manifest says so. If the app has no tool for what was asked, say so plainly in the answer ("Transition OPS doesn't have a tool for that") and route to the authoritative source by NAME per rule 6d — never invent a feature, and never soften "we don't have that" into a vague suggestion to "check the app."
 14. TOOL RECOMMENDATIONS CARRY THEIR LINK AND ASK FOR WHAT THEY NEED. When you recommend an app tool: (a) attach its in-app citation token from the manifest's live-token list, spelled exactly, so it renders as a tappable link. EVERY tab has one, so there is no tool you may recommend without citing it — we never send a user looking for something we can link them to. Never emit a bracket that is not on that list; it prints as dead text. (b) if the manifest marks that tool NEEDS INPUT, END your answer by asking the user for exactly that input, in one short question — rating percentages for VA MATH, separation or ETS date for TIMELINE and REMINDERS, target role and experience for the Resume Drafter. Ask only for input the manifest says the tool actually takes: never ask for a ZIP code for FIND YOUR VSO, which takes none. A recommendation that leaves the user to guess what the tool wants is an unfinished answer.
-15. VETERANS' PREFERENCE — ASK WHICH SYSTEM BEFORE YOU ANSWER. There are TWO different veterans'-preference point systems in the verified data and both contain a "5": HIRING preference (getting a federal job) and RIF RETENTION preference (keeping one in a reduction in force). They are not interchangeable. NEVER answer a preference-points question without naming which system you are answering about. If the member's question does not make clear which they mean — and "how many points do I get?" does NOT make it clear — ASK: "Are you asking about getting hired, or about keeping your job in a reduction in force?" Answering the wrong system hands a federal-employee veteran a number that does not apply to their situation.`;
+15. VETERANS' PREFERENCE — ASK WHICH SYSTEM BEFORE YOU ANSWER. There are TWO different veterans'-preference point systems in the verified data and both contain a "5": HIRING preference (getting a federal job) and RIF RETENTION preference (keeping one in a reduction in force). They are not interchangeable. NEVER answer a preference-points question without naming which system you are answering about. If the member's question does not make clear which they mean — and "how many points do I get?" does NOT make it clear — ASK: "Are you asking about getting hired, or about keeping your job in a reduction in force?" Answering the wrong system hands a federal-employee veteran a number that does not apply to their situation.
+16. GAP TAG — emit it whenever you say something is beyond your verified data. On its own final line, output exactly: [[GAP: <topic>]]. The topic is a SHORT SUBJECT DESCRIPTION IN YOUR OWN WORDS — what the missing information is ABOUT — so we know what to verify next. It is NEVER the user's question, NEVER their words, and NEVER any personal detail: no numbers, no percentages, no dollar figures, no dates, no places, no names, no unit, no rating, no discharge status, no diagnosis. Write "state property tax exemption for disabled veterans", never "he has 70% and wants to know about his property taxes in Waukesha". Fewer than 80 characters, plain letters and spaces. If you cannot write the topic without including something personal, OMIT THE TAG ENTIRELY — a missing tag costs us nothing. NEVER emit the tag on any turn where you are responding to distress or routing to the Veterans Crisis Line. The user never sees this line; it is stripped before your answer is shown.`;
 
 // TOOL MANIFEST — AUTHORITATIVE. Verified against index.html 5 AUG 2026.
 // REGENERATION RULE: any change to what a tool does, or to renderNavText's MAP in
@@ -204,6 +205,96 @@ const CORPUS = `VERIFIED CORPUS (from Transition OPS; verified against 38 CFR / 
 - Veterans Crisis Line: 988, press 1. Available 24/7.
 - American Legion service officers: more than 3,000 accredited service officers nationwide provide free claims help. The Legion is listed in the app's RESOURCES directory with a link to legion.org. The app does NOT locate a specific post or service officer by address — use the Legion's own site or the VA accredited-representative search.`;
 
+// ---------------------------------------------------------------------------
+// GAP LOG — Commander-approved 6 AUG 2026. Design + rulings:
+// intel/user-signal-loop-design.md. Privacy design is BINDING, not advisory.
+//
+// WHAT THIS STORES: a model-authored TOPIC, a DATE (never a timestamp), and a
+// count. Nothing else, ever. It does NOT store the question, the conversation,
+// the app context payload, any identifier, or anything the member typed.
+//
+// STANDING RULE (design 0.1) — THE CRISIS-TURN BAN:
+//   Any turn where the crisis path fires logs NOTHING. Not the topic, not a
+//   category, not a counter, not the fact that it happened.
+//   A MEMBER IN DISTRESS IS NOT A DATA POINT.
+// Enforced below by suppressing on any reply mentioning 988. That deliberately
+// OVER-suppresses -- a routine mention also silences the log -- because the
+// error that costs nothing is the one that records nothing.
+//
+// WHAT PROTECTS THIS STORE FROM A FUTURE FUNCTION: not access control. Netlify
+// Blobs are site-scoped and any function in this site can open this store.
+// THE CONTROL IS THAT THERE IS NOTHING HERE WORTH TAKING -- topics and counts,
+// no identifiers, nothing linkable to a person. Same substitution R1 makes:
+// remove the sensitive thing rather than guard it.
+//
+// RETENTION: 90 days, by PRUNE-ON-WRITE over date-bucketed keys. No new
+// scheduled job. Residual limit, stated: if writes stop entirely for 90+ days
+// nothing prunes -- so the read path independently ignores buckets older than
+// 90 days. Deletion is best-effort; exclusion from use is guaranteed.
+//
+// FAILURE POSTURE: logging is BEST-EFFORT AND NEVER BREAKS AN ANSWER. Every
+// path below is wrapped; a store that is missing, unwritable, or absent from
+// the runtime results in no log and a completely normal reply.
+const GAP_STORE = "navigator-gaps";
+const GAP_RETENTION_DAYS = 90;
+const GAP_TAG_RE = /\[\[GAP:\s*([^\]]{1,120})\]\]/i;
+
+// Mechanical scrubber. A prompt is not a boundary; this is.
+// Rejects rather than truncates -- a partial record is worse than none.
+function gapTopicOrNull(raw) {
+  if (typeof raw !== "string") return null;
+  const t = raw.replace(/\s+/g, " ").trim().toLowerCase();
+  if (t.length < 4 || t.length > 80) return null;   // length bound
+  if (/[0-9]/.test(t)) return null;                  // no digits: ratings, %, $, dates, ZIPs
+  if (/[@_<>{}[\]\\/|#$%^*+=~`"]/.test(t)) return null; // no addresses, markup, injection shapes
+  if (!/^[a-z ,'()-]+$/.test(t)) return null;        // allowlist, not a denylist
+  if (/\b(i|my|me|mine|he|she|his|her|they|their)\b/.test(t)) return null; // first/third-person = a person's situation
+  return t;
+}
+
+function gapBucketKey(d) {
+  return "gap/" + d.toISOString().slice(0, 10); // DATE ONLY. Never a timestamp.
+}
+
+async function recordGap(replyText) {
+  try {
+    // CRISIS-TURN BAN, checked before anything else happens.
+    if (/988/.test(replyText)) return;
+
+    const m = GAP_TAG_RE.exec(replyText);
+    if (!m) return;
+    const topic = gapTopicOrNull(m[1]);
+    if (!topic) return;
+
+    let getStore;
+    try { ({ getStore } = require("@netlify/blobs")); }
+    catch (e) {
+      // Blobs not resolvable in this runtime. Self-diagnosing: one line, no
+      // member data, so the first deploy tells us definitively.
+      console.log("[gap-log] store unavailable; nothing recorded");
+      return;
+    }
+    const store = getStore(GAP_STORE);
+    const now = new Date();
+    const key = gapBucketKey(now);
+
+    let bucket = {};
+    try { bucket = (await store.get(key, { type: "json" })) || {}; } catch (e) { bucket = {}; }
+    bucket[topic] = (bucket[topic] || 0) + 1;
+    await store.setJSON(key, bucket);
+
+    // PRUNE-ON-WRITE. Retention enforced here, not by a job.
+    try {
+      const cutoff = new Date(now.getTime() - GAP_RETENTION_DAYS * 86400000)
+        .toISOString().slice(0, 10);
+      const { blobs } = await store.list({ prefix: "gap/" });
+      for (const b of (blobs || [])) {
+        if (b.key.slice(4) < cutoff) { try { await store.delete(b.key); } catch (e) {} }
+      }
+    } catch (e) { /* prune is best-effort; never fails a reply */ }
+  } catch (e) { /* logging NEVER breaks an answer */ }
+}
+
 exports.handler = async (event) => {
   const headers = {
     "Access-Control-Allow-Origin": "https://transitionops.org",
@@ -278,7 +369,12 @@ exports.handler = async (event) => {
       return { statusCode: 502, headers, body: JSON.stringify({ error: "The Navigator is briefly unavailable. Try again in a moment." }) };
     }
     const data = await resp.json();
-    const reply = (data.content || []).filter(c => c.type === "text").map(c => c.text).join("") || "No response — try again.";
+    const rawReply = (data.content || []).filter(c => c.type === "text").map(c => c.text).join("") || "No response — try again.";
+    // Record BEFORE stripping (the tag is the signal), then strip so the member
+    // never sees it. Awaited so the write is not cut off when the function
+    // freezes, but it can only ever resolve -- recordGap swallows everything.
+    await recordGap(rawReply);
+    const reply = rawReply.replace(GAP_TAG_RE, "").replace(/\n{3,}/g, "\n\n").trim() || "No response — try again.";
     return { statusCode: 200, headers, body: JSON.stringify({ reply }) };
   } catch (e) {
     return { statusCode: 502, headers, body: JSON.stringify({ error: "The Navigator is briefly unavailable. Try again in a moment." }) };
