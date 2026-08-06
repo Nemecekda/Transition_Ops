@@ -297,12 +297,26 @@ async function recordGap(replyText) {
     const topic = gapTopicOrNull(m[1]);
     if (!topic) { console.log("[gap-log] rejected"); return; }
 
+    // MODULE RESOLUTION. The previous shape assumed require() either works or
+    // throws. It has a third outcome, and that third outcome is what happened:
+    // require RESOLVES but the destructured getStore is undefined (ESM-only
+    // package, or an exports map with no CJS binding). Nothing threw, nothing
+    // logged, and the TypeError only fired one line later inside the outer
+    // catch -- silent. Both remaining candidates produced identical silence.
     let getStore;
-    try { ({ getStore } = require("@netlify/blobs")); }
-    catch (e) {
-      // Blobs not resolvable in this runtime. Self-diagnosing: one line, no
-      // member data, so the first deploy tells us definitively.
-      console.log("[gap-log] store unavailable; nothing recorded");
+    try { ({ getStore } = require("@netlify/blobs")); } catch (e) { /* fall through to import */ }
+    if (typeof getStore !== "function") {
+      // CommonJS require could not produce it. Try the ESM path: recordGap is
+      // already async, so dynamic import is free here.
+      try { ({ getStore } = await import("@netlify/blobs")); }
+      catch (e) {
+        console.log("[gap-log] blobs module unavailable via require AND import: " +
+          (e && e.name) + " " + String(e && e.message).slice(0, 120));
+        return;
+      }
+    }
+    if (typeof getStore !== "function") {
+      console.log("[gap-log] module resolved but getStore is not a function - ESM/CJS shape");
       return;
     }
     const store = getStore(GAP_STORE);
@@ -314,6 +328,22 @@ async function recordGap(replyText) {
     bucket[topic] = (bucket[topic] || 0) + 1;
     await store.setJSON(key, bucket);
 
+    // READ-BACK. "The store is its own proof" made mechanical. setJSON
+    // resolving is not evidence the blob exists; reading the key is. Gaps are
+    // rare, so this costs one extra read on an uncommon path. It logs the
+    // COUNT only -- never the topic, which would put member-derived content
+    // into a second store.
+    try {
+      const back = await store.get(key, { type: "json" });
+      if (back && typeof back === "object") {
+        console.log("[gap-log] wrote " + key + " (" + Object.keys(back).length + " topics)");
+      } else {
+        console.log("[gap-log] write NOT confirmed on read-back: " + key);
+      }
+    } catch (e) {
+      console.log("[gap-log] read-back failed: " + (e && e.name));
+    }
+
     // PRUNE-ON-WRITE. Retention enforced here, not by a job.
     try {
       const cutoff = new Date(now.getTime() - GAP_RETENTION_DAYS * 86400000)
@@ -323,7 +353,20 @@ async function recordGap(replyText) {
         if (b.key.slice(4) < cutoff) { try { await store.delete(b.key); } catch (e) {} }
       }
     } catch (e) { /* prune is best-effort; never fails a reply */ }
-  } catch (e) { /* logging NEVER breaks an answer */ }
+  } catch (e) {
+    // THE CORRECTION. "Logging can never break an answer" and "logging must say
+    // nothing" are DIFFERENT PROPERTIES, and collapsing them is what hid this
+    // failure twice. Swallowing the error preserves the guarantee -- nothing is
+    // rethrown, the reply is unaffected. Staying silent about it was a separate
+    // choice, and it was wrong.
+    //
+    // A SWALLOWED ERROR MUST STILL BE COUNTED.
+    //
+    // Library error name and message only. No topic, no question, no member
+    // data. Cannot fire on a crisis turn: that path returns before any of this.
+    console.log("[gap-log] error " + (e && e.name) + ": " +
+      String(e && e.message).slice(0, 140));
+  }
 }
 
 exports.handler = async (event) => {
