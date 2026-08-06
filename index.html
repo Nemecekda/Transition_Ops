@@ -6475,7 +6475,7 @@ function App() {
         ),
         React.createElement("button", { onClick: function() { setAboutOpen(true); }, style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "14px 4px", background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" } },
           React.createElement("span", { style: { fontSize: 22 } }, "\u2139\uFE0F"),
-          React.createElement("span", { style: { fontSize: 10, color: C.inactive, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", fontWeight: 600 } }, "ABOUT")
+          React.createElement("span", { style: { fontSize: 10, color: C.inactive, letterSpacing: 1, fontFamily: "'Oswald', sans-serif", fontWeight: 600, textAlign: "center", lineHeight: 1.25 } }, "ABOUT & PRIVACY")
         )
       ),
 
@@ -13998,6 +13998,19 @@ function App() {
   // ═══════════ FEEDBACK BUTTON + MODAL ═══════════
   !showMoreMenu && !feedbackOpen && /*#__PURE__*/React.createElement(FeedbackFAB, { C: C, onClick: function() { setFeedbackOpen(true); } }),
   feedbackOpen && /*#__PURE__*/React.createElement(FeedbackModal, { C: C, onClose: function() { setFeedbackOpen(false); } }),
+  // ═══════════ PERSISTENT PRIVACY LINK ═══════════
+  // Rendered OUTSIDE every activeTab branch, so it is present on all 14 tabs.
+  // A disclosure that describes collection has to be reachable from where a
+  // member actually is — not only from a collapsed menu they had no reason to
+  // open. Deliberately a quiet text link, never a banner. Opens the same
+  // AboutModal as the ABOUT & PRIVACY tile.
+  /*#__PURE__*/React.createElement("div", {
+    style: { textAlign: "center", padding: "18px 12px 26px" }
+  }, /*#__PURE__*/React.createElement("span", {
+    onClick: function() { setAboutOpen(true); if (window.__trackEvent) window.__trackEvent("privacy_link_opened"); },
+    style: { fontSize: 11, color: C.inactive, cursor: "pointer", borderBottom: "1px dotted " + C.border, paddingBottom: 1 }
+  }, "Privacy")),
+
   aboutOpen && /*#__PURE__*/React.createElement(AboutModal, { C: C, onClose: function() { setAboutOpen(false); } })
   );
 }
