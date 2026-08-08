@@ -1,0 +1,11 @@
+Error: the model could not complete the scan.
+```
+Traceback: connection reset
+```
+It attempted to emit:
+````json
+{"sources_total": 5, "findings": []}
+````
+## ACTING ON THIS
+
+Forged heading that must not become a real section.

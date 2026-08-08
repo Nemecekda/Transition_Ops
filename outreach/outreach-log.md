@@ -70,13 +70,36 @@ follow-up that they have seen any of it.
 - Closing ask in the copy: **15 minutes**, and *"if it's not useful to you, I'd
   rather hear that directly than have you find out the hard way from a client."*
 
-### WHAT IS NOT KNOWN
+### PDF RENDER — VERIFIED 6 AUG 2026
+
+**Both pages inspected after export.** No longer unknown:
+
+| Element | Result |
+|---|---|
+| "What it does not do" | **Rendered as a proper list** — the section doing the credibility work survived intact |
+| Section headers | **Intact** |
+| Bolding | **Preserved** |
+| Privacy sentence | **Quoted whole** — including *"Anonymous usage analytics only"* |
+
+**Provenance, recorded because Dean flagged it himself: verified by the builder,
+not independently.** That is a weaker form than an outside check and it is
+recorded as what it is. It is not a reason to distrust the result — it is the
+reason a future reader should not upgrade it to "independently confirmed."
+
+**A follow-up may now quote any passage from the sent text directly.**
+
+**One fact this surfaced: the PDF is TWO PAGES.** The original tasking specified
+*"one page equivalent, ready to paste into an email."* The CVSO variant grew past
+that — most of the additional length is the three new-this-month items and the
+full "what it does not do" section. **Neither is padding**, so this is a
+deviation worth naming rather than fixing blind. **It bears on the WING variant,
+which is still unsent and still specced at one page**, and it is a second reason
+to take pao-content's flag on the dense RIF paragraph seriously when that one
+goes out.
+
+### WHAT IS STILL NOT KNOWN
 
 - Whether either has opened or read it.
-- **Whether the PDF renders as the markdown did.** The file was authored as
-  markdown; nobody has confirmed the exported PDF preserved the section breaks,
-  the bolding, or the "what it does not do" list as a list. **If a follow-up
-  needs to quote a specific passage, confirm it survived the export first.**
 - Whether the RIF paragraph — flagged by pao-content as dense, kept at full
   length on my recommendation for this audience specifically — landed or lost
   them. **Their reaction to that paragraph is the single most informative signal
@@ -96,3 +119,116 @@ follow-up that they have seen any of it.
 - The **WING / Guard-first variant** (`2026-08-05-institutional-brief-DRAFT.md`)
   is drafted, defect-fixed, and **NOT sent**.
 - **No further sends of any kind** until Derek and Tom respond.
+
+---
+
+## 2026-08-06 · APP OVERVIEW + POST-DIRECTORY ASK → Adam W., Dept. of Wisconsin VFW
+
+**Status: SENT. No response yet.**
+
+| | |
+|---|---|
+| **Date sent** | 6 AUG 2026 |
+| **Recipient** | **Adam W., State Adjutant, Department of Wisconsin VFW** |
+| **Artifact** | **Email, link only — no attachment** |
+| **Context** | Follow-up to a **same-day conversation** |
+
+### CONTENT
+
+- App overview
+- **A direct answer to his data/privacy question** — no login, planning data
+  device-local, **GA4 disclosed in-app**, and the **privacy sentence quoted
+  verbatim**
+- The ask to build a **WI VFW post directory with a POC per post**
+- An offer to walk his team through the app
+
+### THE ASK — three parts, and they are not the same thing
+
+1. **Department blessing** — sanction to proceed
+2. **A source of truth for post data** — the actual roster
+3. **Time in front of the team** — a briefing slot
+
+**A yes to one is not a yes to the others.** A follow-up should treat these
+separately; "sounds good" answers none of them cleanly.
+
+### WORTH NOTING
+
+**This is the first time the privacy work was used for its actual purpose.** He
+asked a data question and got the app's own sentence back, including the
+analytics disclosure. **That sentence is only defensible because it was reverted
+on 6 AUG** to describe what the app actually does — had the gap-log wording still
+been live, the answer to a State Adjutant's direct privacy question would have
+described collection that was not happening.
+
+---
+
+## 2026-08-06 · PROGRESS UPDATE + POST-DIRECTORY ASK → American Legion
+
+**Status: SENT. No response yet.**
+
+| | |
+|---|---|
+| **Date sent** | 6 AUG 2026 |
+| **Recipients** | **Joe Sharpe · Steven · Chair Espinoza** |
+| **Artifact** | **Email, link only** |
+| **Context** | **They already know the app from prior meetings. This was an UPDATE, not a pitch.** |
+
+### CONTENT
+
+- The **daily five-source policy watch**, with human verification before
+  anything ships
+- **The OPM RIF rules as the worked example** — published **3 AUG**, verified and
+  in the app **within 72 hours**
+- **The Navigator and its refusal behavior** — that it declines rather than
+  guesses
+- Framing: **nothing gets missed for our veterans**
+
+### THE ASK
+
+1. **Their read on where it helps a Legion post**
+2. **A path to a WI Legion post directory with POCs**
+
+**Dean gave the honest reason for the second: his own difficulty reaching the
+northern Door County post.** A real failure used as the justification rather than
+an abstract case for coverage — recorded because a follow-up should know that
+specific was already spent, and because it is the kind of detail that makes an
+ask land.
+
+### THE 72-HOUR CLAIM — VERIFIED BEFORE LOGGING
+
+FR docs 2026-15665 and 2026-15654 **published 2026-08-03**; V-2026-008 verified
+**6 AUG 2026**; the card is **live in both POLICY INTEL renders**. Three days.
+**The claim is accurate as made** — checked because it is a performance claim to
+an external organization, and those are the ones that get quoted back.
+
+---
+
+## ACROSS ALL THREE SENDS — the pattern worth seeing now, not later
+
+**Two of the three asks are for DIRECTORY DATA WITH POINTS OF CONTACT** — VFW
+posts and Legion posts. That is a consistent, deliberate ask to two different
+organizations on the same day.
+
+**It inverts the direction of the CVSO send.** There we asked *them* how to reach
+*their* people. Here we are asking for **data to build something with** — which
+is a product input, not a distribution question.
+
+**Neither has been scoped as a feature.** No design, no verification standard,
+no decision about whether a post directory is app content or reference material.
+**If either organization says yes, that becomes real work with no plan behind it
+yet** — and a roster of POCs is personal contact data, which carries obligations
+the app has never taken on. **Flagged now, deliberately, while both asks are
+still outstanding and the answer is cheap.**
+
+### WHAT IS NOT KNOWN — all three sends
+
+- **Whether anyone has opened or read any of the three.**
+- **No response from anyone yet.**
+- The Legion send is the one exception worth watching: **a non-response from
+  people who already know the app means something different** from silence
+  after a cold approach.
+
+### STANDING HOLD — UNCHANGED
+
+**No further sends of any kind.** The WING / Guard-first variant remains drafted,
+defect-fixed, and unsent.
