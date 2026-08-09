@@ -430,3 +430,177 @@ have shipped new errors.**
 - **Disposition:** staged on `ops/opm-rif-probation`, CACHE_NAME v110 → v111.
   **DATA_VERIFIED held at 1 AUG** — this verified two rules, not the dataset.
   COMMANDER lane; staged, not merged.
+
+---
+
+## V-2026-008 — AMENDMENT, 9 AUG 2026 (supersedes two statements above)
+
+Re-verified at rung 1 against raw Federal Register full text retrieved by direct
+HTTP (`curl`), which returns the complete document. The earlier pass used a
+fetch tool that truncated every one of these documents inside the preamble,
+before the codified amendatory text. Two statements in V-2026-008 were wrong or
+incomplete as a result, and both are corrected here rather than edited above.
+
+1. **"Two OPM final rules" is REFUTED as a count.** The Federal Register API,
+   queried mechanically (`agencies=personnel-management-office`,
+   `publication_date=2026-08-03`, `type=RULE`), returns **count: 4** —
+   2026-15665, **2026-15666**, 2026-15654, **2026-15650**. V-2026-008 recorded
+   15666 and 15650 as "verified present but NOT relied on." That was a defensible
+   sourcing choice and an indefensible copy outcome: the shipped card said
+   "**Two** OPM final rules," which is a count claim, and the omitted 15666 is
+   *Reduction in Force Appeals* — the same subject the sentence names.
+2. **The STATED LIMIT on retention mechanics is now CLOSED.** V-2026-008 recorded
+   that no single sentence established the complete ranking order and no CFR
+   section was named for retention standing. Both now read from codified text:
+   **5 CFR 351.501** states the order in one section, and **5 CFR 351.504**
+   codifies the 5 / 3 / 0 preference points. The preamble-only caveat no longer
+   applies to these two claims.
+
+**Method note, carried forward:** these FR text files contain stray NUL bytes.
+`file` classifies them as binary and **plain `grep` silently reports no matches
+and exits 1** — it does not warn. Counts taken that way are void. Use `grep -a`
+or count in Python. One such reading was made and corrected in session.
+
+---
+
+## V-2026-009 — OPM RIF appeals and suitability appeals (final rules, 3 AUG 2026)
+
+- **Claim:** Two further OPM final rules published 3 AUG 2026, effective
+  2 SEP 2026, move RIF-action appeals and suitability-action appeals from the
+  MSPB to OPM. Neither was in the app.
+- **Rating:** CONFIRMED
+- **Verified by:** Orchestrator, rung 1 — raw FR full text via direct HTTP.
+- **Verified date:** 9 AUG 2026
+- **Citations of record:**
+  - "Reduction in Force Appeals," **Final Rule, FR doc 2026-15666**, 5 CFR 351,
+    published 2026-08-03, effective 2026-09-02.
+  - "Suitability Action Appeals," **Final Rule, FR doc 2026-15650**, 5 CFR 731,
+    published 2026-08-03, effective 2026-09-02.
+- **Supporting quotes, verbatim:**
+  - **FORUM** (15666 SUMMARY) — *"OPM will replace the Merit Systems Protection
+    Board (MSPB) as the adjudicative agency for such appeals."*
+  - **SCOPE** (15666) — *"the final text specifies that only an employee
+    furloughed for more than 30 days, separated, or demoted by a RIF action
+    taken under part 351 may appeal that action to OPM."*
+  - **MERITS BURDEN** (15666) — *"the appellant must prove that the agency
+    failed to comply with an applicable statute or OPM regulation governing RIF
+    actions under part 351, and the failure prejudiced the appellant by causing
+    the appealed action or the loss of a materially more favorable outcome."*
+  - **EXCLUSIVITY** (15666) — part 351 procedures are *"the sole and exclusive
+    means of appealing a RIF action,"* RIF matters *"cannot be raised in
+    grievance procedures or challenged through grievance arbitration,"* while
+    preserving collateral jurisdiction of EEOC, Inspectors General, MSPB, DOL
+    VETS, and OSC; the no-judicial-review provision is retained.
+  - **APPLICABILITY** (15666 DATES) — *"This final rule applies only to a RIF
+    action for which an agency issues the employee a specific RIF notice under
+    5 CFR 351.802 on or after September 2, 2026."*
+- **STATED LIMIT:** codified §§ 351.901–351.907 were read as amendatory text;
+  the merits-burden and exclusivity sentences quoted above are from the rule's
+  section-by-section analysis of its own final text, not the codified paragraph.
+  Direction and effect are not in doubt; exact codified phrasing of §351.901(b)
+  should be read before any copy quotes it as regulation.
+- **Disposition:** shipped in the same patch as V-2026-010. COMMANDER lane.
+
+---
+
+## V-2026-010 — OPM performance appraisal rule, 91 FR 41521 (IN FORCE 6 AUG 2026)
+
+- **Claim:** A separate OPM final rule, not previously in the app, removed the
+  bar on forced/standardized distribution of rating levels, eliminated mandatory
+  review of Level 1 ratings, and closed the negotiated-grievance route for a
+  rating of record. **Effective 6 AUG 2026 — already in force when verified.**
+- **Rating:** CONFIRMED — on codified regulatory text, not preamble.
+- **Verified by:** Orchestrator, rung 1 — raw FR full text via direct HTTP.
+- **Verified date:** 9 AUG 2026
+- **Citation of record:** "Performance Appraisal for General Schedule,
+  Prevailing Rate, and Certain Other Employees," **Final Rule, FR doc
+  2026-13715, 91 FR 41521**, 5 CFR Parts 351, 430, 537, published 2026-07-07.
+  **Effective 2026-08-06. Compliance with 5 CFR 430.208(e)(1) and (2) required
+  beginning 2027-01-01.**
+- **Supporting quotes, verbatim:**
+  - **SUMMARY** — *"eliminates unnecessary summary level patterns; removes the
+    prohibition of a forced, or standardized, distribution of performance rating
+    levels; eliminates mandatory review of Level 1 ratings; removes the option to
+    grieve a rating of record..."*
+  - **CODIFIED §430.208(c)** — *"OPM may establish, and refine as needed, a
+    standardized distribution of some or all rating levels which agencies must
+    apply when rating employees, except that employees appointed under Schedules
+    C or G in the excepted service may be excluded..."*
+  - **CODIFIED §430.208(k)** — *"Subject to 5 U.S.C. 7116(a)(7), a rating of
+    record may not be challenged through the negotiated grievance procedures
+    established under 5 U.S.C. 7121."*
+  - **CODIFIED §430.208(i)(1)** — a rating of record may be changed *"Within 60
+    days of issuance based upon an informal request, as specified in agency
+    policies and procedures, by the employee."*
+  - **LEVEL 1 REVIEW** — amendatory instruction 5 removes §430.207(c). The
+    characterization of what removed (c) required is taken from the rule's own
+    SUMMARY, quoted above; the prior text of (c) was not read.
+- **HOW THIS WAS MISSED, and why it is the finding rather than a footnote.**
+  Issue #16 scoped the work to OPM documents published 3 AUG 2026. This rule
+  published 7 JUL 2026 and is invisible to that query. It surfaced only because
+  2026-15665's own codified text repeatedly cross-references *"the final rule
+  prescribed at 91 FR 41521."* **A date-scoped source query does not bound a
+  subject.** The RIF rule that was in scope depends on an appraisal rule that
+  was not, and the app's advice line — *"make sure your most recent appraisal is
+  accurate and on file"* — was materially incomplete without it: it told members
+  to protect a rating while omitting that the union route to fix a wrong one had
+  just closed.
+- **CORRECTION TO ANALYST PRODUCT, recorded.** s2-intel reported this rule's
+  existence — the right catch — but rated it PROBABLE that 2026-15665 does not
+  amend §430.208. 15665 **does** amend it: amendatory instruction 48 revises
+  §430.208(e)(4) and removes (e)(5). The substance s2-intel identified was right;
+  the containment claim was wrong. Both rules touch the section; only 13715
+  changes what it means for a member.
+- **NOT CLAIMED:** the standardized distribution's *shape* — how many employees
+  may receive each level — is not stated. §430.208(c) authorizes OPM to establish
+  one; no cap figure exists in this document. No percentage may be published.
+- **Disposition:** staged on `ops/opm-rif-appraisal`, CACHE_NAME v114 → v115.
+  **DATA_VERIFIED held at 1 AUG** — this verified five rules, not the dataset;
+  hold ratified by Dean 9 AUG 2026. COMMANDER lane; staged, not merged.
+
+**IMPACT: SHIP - ACT | A2 | Orchestrator | 9 AUG 2026 | revisit 1 JAN 2027**
+A1 population: SEPARATING, GUARD/RESERVE, SPOUSE/FAMILY, ALREADY SEPARATED — all
+four, because the trigger is federal civilian employment, which any of the four
+may hold (dual-status technicians and spouse-preference hires included).
+band: condition-triggered, no milestone band — it keys on being a federal
+civilian employee, not on months to separation.
+excluded: this does not apply to anyone not in, or entering, federal civilian
+service; it does not touch military pay, military force-shaping, or VA benefits.
+timing: ACT AVAILABLE NOW (rule in force 6 AUG 2026).
+A2 act: "If your rating of record is wrong, request a correction through your
+agency's own procedures within 60 days of the date it was issued (5 CFR
+430.208(i)(1)) — the negotiated grievance procedure is no longer available."
+A3 surface(s): 2026 POLICY INTEL card, both renders (now ONE source —
+`renderPolicyIntel()`); Navigator CORPUS (b) and new (c); RULES 16;
+Guard/Reserve Military Technician entry.  token: [GUARD/RESERVE]
+sweep trigger: FIRED — "amends", "changed from", plus confusable-adjacent
+(a THIRD numeric scale, performance credit 7/5/3/0, alongside RIF preference 5/3
+and hiring preference 5/10). Executed by `validation-gate`, not here.
+**Editorial ruling: the 7/5/3/0 scale is deliberately NOT shipped.** It is real
+and codified at §351.503(a)(1), but publishing a third set of points containing
+a "5" into a card that already carries two re-opens the exact §0.8
+confusable-adjacent hazard V-2026-008 was built to close. The card states the
+ordering qualitatively instead. Recorded so this is a decision, not an omission.
+A4 cost: A CLOSED WINDOW — the 60-day correction window under §430.208(i)(1),
+now the primary route since the grievance route is barred.
+EXPIRES: NONE — permanent regulatory change. Revisit 1 JAN 2027, when agency
+compliance with §430.208(e)(1)-(2) begins and a distribution may be published.
+
+---
+
+## STANDING TICKLERS — opened 9 AUG 2026 (V-2026-009 / V-2026-010)
+
+Dated items that must fire without anyone remembering this session. Both are
+COMMANDER lane on arrival because both touch shipped policy copy.
+
+| Fires | Item | What must happen | Source |
+|---|---|---|---|
+| **2 SEP 2026** | The four 3 AUG 2026 OPM rules take effect. | The POLICY INTEL entry **FEDERAL SERVICE — RIF AND APPEAL RULES CHANGE 2 SEP 2026** is written in the future tense throughout, and Navigator RULE 16 orders future tense for CORPUS (b). **On 2 SEP that copy becomes wrong by tense.** Flip (b) and the card to present tense; keep the notice-date sentence, which stays true permanently. | V-2026-009 |
+| **1 JAN 2027** | Agency compliance with 5 CFR 430.208(e)(1)-(2) begins. | A standardized distribution may be published between now and then. **No cap figure exists today and none may be invented** (V-2026-010, NOT CLAIMED). Re-verify at rung 1; if OPM publishes a distribution, it is a new finding, not an edit. | V-2026-010 |
+
+**Why the 2 SEP item is not optional.** Dean's ruling of 9 AUG 2026 is that the
+card must never blend the two effective dates — a member holding a RIF notice in
+August has to be able to tell which regime governs it. That ruling is what makes
+the future tense correct *today* and wrong *on 2 SEP*. A tense that is only
+correct inside a window is a dated liability, and this is the entry that closes
+it.
