@@ -3004,6 +3004,30 @@ const SCRA_WINDOW = {
   reminderDays:[-90,-30,0,60,90]
 };
 
+// ═══ CAPTURE LAYER — install-path branch detection ═══
+// GA4 recon 9 AUG 2026: install_banner_shown 68 with 66% CTR when seen, but
+// 35% of users are iOS Safari where beforeinstallprompt NEVER fires, and 26
+// are in in-app webviews where install and push are both impossible. So the
+// branch decides what CAN be offered, and email leads regardless because it
+// is the only capture that works in every browser.
+//
+// CAPABILITY FIRST. A captured beforeinstallprompt event is proof the native
+// install is available - it is not a guess about the UA string. UA is used
+// only for the two cases with no capability test: iOS Safari and in-app
+// webviews. Pure function, no globals read, so each branch is forced in the
+// fixture check rather than simulated with a fake browser.
+// Returns "native" | "ios" | "inapp" | "email".
+function __captureBranch(hasDeferredPrompt, ua, standalone, maxTouch) {
+  if (hasDeferredPrompt) return "native";
+  if (standalone) return "email";
+  if (/FBAN|FBAV|Instagram|LinkedInApp|Line\//.test(ua)) return "inapp";
+  if (/iPad|iPhone|iPod/.test(ua)) return "ios";
+  // iPadOS 13+ reports a Macintosh UA. Touch points are the capability tell,
+  // and a desktop Safari that lacks them correctly falls through to email.
+  if (/Macintosh/.test(ua) && (maxTouch || 0) > 1) return "ios";
+  return "email";
+}
+
 // Day-level ETS helper (distinct from month-level moToETS)
 function daysToETSDate(dateStr) {
   if (!dateStr) return null;
@@ -4461,6 +4485,17 @@ function App() {
 
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [installBannerVisible, setInstallBannerVisible] = useState(false);
+  // Capture layer. null = closed; {branch} = open, branch fixed at show time
+  // so capture_card_shown reports what the member actually saw.
+  const [captureCard, setCaptureCard] = useState(null);
+  // Baseline = the ETS already in storage at mount. The mount hydration effect
+  // pushes that same value into separationDate, and that transition is NOT a
+  // user action. Comparing against storage is what separates hydration from a
+  // real set/edit without racing the hydration effect.
+  const captureBaselineRef = useRef(null);
+  // Armed only when a submit originates from this card, so the hero, vethub,
+  // and footer forms never attribute to the capture layer.
+  const captureEmailArmedRef = useRef(false);
   const [vetScore, setVetScore] = useState({});
   const [emailSignup, setEmailSignup] = useState({
     email: "",
@@ -4992,6 +5027,207 @@ function App() {
     } catch (e) {}
     setInstallBannerVisible(false);
   }, []);
+
+  // ═══════════ CAPTURE LAYER — contextual ask at the ETS moment ═══════════
+  // ONE MOUNT POINT, DELIBERATELY. There are five ETS write paths in this file
+  // and they do NOT agree with each other:
+  //   onboarding step 3   - writes both keys, sets state
+  //   dashboard clock     - writes both keys inline, never calls handleETSChange
+  //   settings/profile    - calls handleETSChange (writes etsDate only)
+  //   reminders tab       - setSeparationDate ONLY, persists nothing
+  //   critical windows    - calls handleETSChange
+  // Wiring a card to each would be five places to keep in sync and five
+  // chances to miss one - and the reminders-tab path would have been missed,
+  // because it never touches storage or the shared handler. Every path funnels
+  // into the separationDate STATE, so that is what this watches. It also means
+  // this build changes none of those five controls.
+  useEffect(() => {
+    if (window.__IS_IFRAME) return;
+    if (captureBaselineRef.current === null) {
+      try {
+        captureBaselineRef.current = window.__safeGet("etsDate") || window.__safeGet("tops_sep_date") || "";
+      } catch (e) { captureBaselineRef.current = ""; }
+    }
+    if (!separationDate) return;                          // the dashboard EDIT affordance clears it
+    if (separationDate === captureBaselineRef.current) return;
+    captureBaselineRef.current = separationDate;
+
+    // Dismissal ladder: one dismissal buys 14 days, a second is permanent.
+    var count = 0, at = 0, done = null;
+    try {
+      count = parseInt(window.__safeGet("tops_capture_dismiss_count") || "0", 10) || 0;
+      at = parseInt(window.__safeGet("tops_capture_dismissed_at") || "0", 10) || 0;
+      done = window.__safeGet("tops_capture_done");
+    } catch (e) {}
+    if (done === "1") return;
+    if (count >= 2) return;
+    if (count === 1 && at && (Date.now() - at) / 86400000 < 14) return;
+
+    var standalone = false;
+    try {
+      standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    } catch (e) {}
+    var branch = __captureBranch(!!deferredPrompt, navigator.userAgent || "", standalone, navigator.maxTouchPoints);
+    // Already installed and already on the list: nothing left to ask for.
+    if (branch === "email" && standalone && emailSubmitted) return;
+
+    setCaptureCard({ branch: branch });
+    if (window.__trackEvent) {
+      window.__trackEvent("capture_card_shown", { branch: branch });
+      if (branch === "ios") window.__trackEvent("capture_install_ios_shown", {});
+    }
+  }, [separationDate, deferredPrompt, emailSubmitted]);
+
+  // capture_email_submitted rides the shared emailSubmitted flag, because
+  // handleEmailSubmit is async and signals success only by flipping it. The
+  // armed ref is what keeps this event attributable to the card.
+  useEffect(() => {
+    if (!emailSubmitted) return;
+    if (!captureEmailArmedRef.current) return;
+    captureEmailArmedRef.current = false;
+    if (window.__trackEvent) window.__trackEvent("capture_email_submitted", {});
+    try { window.__safeSet("tops_capture_done", "1"); } catch (e) {}
+  }, [emailSubmitted]);
+
+  const handleCaptureEmail = useCallback(() => {
+    captureEmailArmedRef.current = true;
+    handleEmailSubmit();
+  }, [handleEmailSubmit]);
+
+  const handleCaptureInstall = useCallback(() => {
+    if (window.__trackEvent) window.__trackEvent("capture_install_native", {});
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function (choice) {
+      if (choice && choice.outcome === "accepted") {
+        try { window.__safeSet("tops_capture_done", "1"); } catch (e) {}
+        setCaptureCard(null);
+      }
+      setDeferredPrompt(null);
+    }).catch(function () {});
+  }, [deferredPrompt]);
+
+  const handleCaptureDismiss = useCallback(() => {
+    var count = 0;
+    try {
+      count = parseInt(window.__safeGet("tops_capture_dismiss_count") || "0", 10) || 0;
+    } catch (e) {}
+    count = count + 1;
+    try {
+      window.__safeSet("tops_capture_dismiss_count", String(count));
+      window.__safeSet("tops_capture_dismissed_at", String(Date.now()));
+    } catch (e) {}
+    if (window.__trackEvent) window.__trackEvent("capture_dismissed", { dismiss_count: count });
+    setCaptureCard(null);
+  }, []);
+
+  // Bottom sheet, position:fixed, rendered OUTSIDE the tab tree. Being out of
+  // document flow is what guarantees zero layout shift on the tabs that never
+  // fire it - there is no reserved space to collapse. Not a full-screen modal:
+  // the mission clock the member just armed stays visible behind it.
+  const renderCaptureCard = () => {
+    if (!captureCard) return null;
+    var branch = captureCard.branch;
+    var stepIcon = function (paths) {
+      return React.createElement("svg", {
+        width: 17, height: 17, viewBox: "0 0 24 24", fill: "none",
+        stroke: C.goldBright, strokeWidth: 2, strokeLinecap: "round",
+        strokeLinejoin: "round", "aria-hidden": "true",
+        style: { flexShrink: 0 }
+      }, paths);
+    };
+    var step = function (key, icon, text) {
+      return React.createElement("div", {
+        key: key,
+        style: { display: "flex", alignItems: "center", gap: 9, marginTop: 7 }
+      }, icon, React.createElement("span", {
+        style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.45 }
+      }, text));
+    };
+
+    var installBlock = null;
+    if (branch === "native") {
+      installBlock = React.createElement("div", { style: { marginTop: 14, paddingTop: 12, borderTop: "1px solid " + C.border } },
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "INSTALL THE APP"),
+        React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.45, marginBottom: 9 } }, "One tap. Works offline, and it is what unlocks push alerts."),
+        React.createElement("button", {
+          onClick: handleCaptureInstall,
+          style: { width: "100%", padding: "11px", background: "transparent", border: "1px solid " + C.goldBright, borderRadius: 8, color: C.goldBright, fontSize: 12, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" }
+        }, "INSTALL")
+      );
+    } else if (branch === "ios") {
+      installBlock = React.createElement("div", { style: { marginTop: 14, paddingTop: 12, borderTop: "1px solid " + C.border } },
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 2, color: C.gold } }, "ADD TO HOME SCREEN"),
+        React.createElement("div", { style: { fontSize: 12.5, color: C.textSecondary, lineHeight: 1.45, marginTop: 4 } }, "Two steps in Safari. This is also what makes alerts possible on iPhone."),
+        step("s1", stepIcon([
+          React.createElement("path", { key: "a", d: "M12 16V4" }),
+          React.createElement("path", { key: "b", d: "M8 8l4-4 4 4" }),
+          React.createElement("path", { key: "c", d: "M4 14v5a1 1 0 001 1h14a1 1 0 001-1v-5" })
+        ]), "1. Tap the Share icon in the Safari toolbar"),
+        step("s2", stepIcon([
+          React.createElement("rect", { key: "a", x: 3, y: 3, width: 18, height: 18, rx: 3 }),
+          React.createElement("path", { key: "b", d: "M12 8v8" }),
+          React.createElement("path", { key: "c", d: "M8 12h8" })
+        ]), "2. Choose Add to Home Screen")
+      );
+    } else if (branch === "inapp") {
+      installBlock = React.createElement("div", { style: { marginTop: 14, paddingTop: 12, borderTop: "1px solid " + C.border } },
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "OPEN IN YOUR BROWSER TO INSTALL"),
+        React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.45 } }, "This in-app browser cannot install the app or deliver alerts. Tap the menu in the corner and choose Open in Browser.")
+      );
+    }
+
+    return React.createElement("div", {
+      key: "capture-card",
+      style: {
+        position: "fixed", left: 0, right: 0, zIndex: 190,
+        // Sits ABOVE .bottom-nav (49px: 8+20+2+12+6 content plus a 1px
+        // border-top), never over it. The nav is position:fixed bottom:0
+        // z-index:200, so a card at bottom:0 would bury primary navigation
+        // behind a dismissible sheet. The nav owns the safe-area inset via
+        // its own padding-bottom; this offsets by it rather than re-adding it.
+        bottom: "calc(52px + env(safe-area-inset-bottom, 0px))",
+        maxWidth: 900, margin: "0 auto",
+        background: C.bgCard, border: "1px solid " + C.border,
+        borderTop: "2px solid " + C.gold,
+        borderRadius: "14px 14px 0 0",
+        padding: "15px 16px",
+        boxShadow: "0 -10px 30px rgba(0,0,0,0.45)"
+      }
+    },
+      React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: 10 } },
+        React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 15, fontWeight: 700, letterSpacing: 1.5, color: C.goldBright } }, "YOUR DATE IS SET")
+        ),
+        React.createElement("button", {
+          onClick: handleCaptureDismiss,
+          "aria-label": "Dismiss",
+          style: { background: "none", border: "none", color: C.textSecondary, fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer", padding: "2px 4px", flexShrink: 0 }
+        }, "Not now")
+      ),
+      emailSubmitted ? React.createElement("div", {
+        style: { marginTop: 8, fontSize: 12.5, color: C.greenBright, lineHeight: 1.45 }
+      }, "✓ You are on the list. Deadline alerts are timed to your date.")
+        : React.createElement("div", { style: { marginTop: 8 } },
+          React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.5, marginBottom: 9 } }, "Get your deadline alerts by email — BDD, SGLI, TAP windows, timed to YOUR date."),
+          React.createElement("div", { style: { display: "flex", gap: 8 } },
+            React.createElement("input", {
+              type: "email", inputMode: "email", autoComplete: "email",
+              placeholder: "you@example.com",
+              value: emailSignup.email || "",
+              onChange: function (e) { setEmailSignup(function (p) { return Object.assign({}, p, { email: e.target.value }); }); },
+              style: { flex: 1, minWidth: 0, padding: "11px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, fontSize: 15, fontFamily: "'JetBrains Mono', monospace" }
+            }),
+            React.createElement("button", {
+              onClick: handleCaptureEmail,
+              disabled: emailSubmitting,
+              style: { flexShrink: 0, padding: "11px 14px", background: "linear-gradient(135deg, #4A5D23, #2D5016)", border: "none", borderRadius: 8, color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 1.5, cursor: emailSubmitting ? "default" : "pointer", opacity: emailSubmitting ? 0.5 : 1 }
+            }, emailSubmitting ? "…" : "GET ALERTS")
+          )
+        ),
+      installBlock
+    );
+  };
   const handleEnableNotifs = useCallback(() => {
     // Step 1: Confirm button works
     if (window.__trackEvent) window.__trackEvent('notif_enable_tapped', {});
@@ -5377,7 +5613,9 @@ function App() {
     }
   },/*#__PURE__*/React.createElement("div", {
       key: "install-banner-wrapper",
-      style: { display: installBannerVisible ? "block" : "none" }
+      // Suppressed while the capture card is up. Both ask for the install;
+      // showing them together is the nag this build exists to remove.
+      style: { display: installBannerVisible && !captureCard ? "block" : "none" }
     },
       /*#__PURE__*/React.createElement("div", {
         style: {
@@ -5450,7 +5688,7 @@ function App() {
           }, "✕")
         )
       )
-    ), /*#__PURE__*/React.createElement("div", {
+    ), renderCaptureCard(), /*#__PURE__*/React.createElement("div", {
     style: {
       background: theme === "tactical" ? C.bg : "linear-gradient(180deg, #2C5234 0%, #1A3A24 100%)",
       borderBottom: theme === "tactical" ? "1px solid " + C.border : "3px solid #2C5234",
