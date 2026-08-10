@@ -4488,6 +4488,9 @@ function App() {
   // Capture layer. null = closed; {branch} = open, branch fixed at show time
   // so capture_card_shown reports what the member actually saw.
   const [captureCard, setCaptureCard] = useState(null);
+  // Live height of .bottom-nav, so the card can sit exactly on top of it.
+  // 54 is the observed Chrome value and serves only as the pre-measure default.
+  const [captureNavH, setCaptureNavH] = useState(54);
   // Baseline = the ETS already in storage at mount. The mount hydration effect
   // pushes that same value into separationDate, and that transition is NOT a
   // user action. Comparing against storage is what separates hydration from a
@@ -5078,6 +5081,23 @@ function App() {
     }
   }, [separationDate, deferredPrompt, emailSubmitted]);
 
+  // Measure the nav when the card opens, and on resize while it is open
+  // (rotation and browser-chrome collapse both change the nav height).
+  useEffect(() => {
+    if (!captureCard) return;
+    var measure = function () {
+      var nav = document.querySelector(".bottom-nav");
+      if (nav && nav.offsetHeight > 0) setCaptureNavH(nav.offsetHeight);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    window.addEventListener("orientationchange", measure);
+    return function () {
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("orientationchange", measure);
+    };
+  }, [captureCard]);
+
   // capture_email_submitted rides the shared emailSubmitted flag, because
   // handleEmailSubmit is async and signals success only by flipping it. The
   // armed ref is what keeps this event attributable to the card.
@@ -5181,12 +5201,18 @@ function App() {
       key: "capture-card",
       style: {
         position: "fixed", left: 0, right: 0, zIndex: 190,
-        // Sits ABOVE .bottom-nav (49px: 8+20+2+12+6 content plus a 1px
-        // border-top), never over it. The nav is position:fixed bottom:0
-        // z-index:200, so a card at bottom:0 would bury primary navigation
-        // behind a dismissible sheet. The nav owns the safe-area inset via
-        // its own padding-bottom; this offsets by it rather than re-adding it.
-        bottom: "calc(52px + env(safe-area-inset-bottom, 0px))",
+        // Sits ABOVE .bottom-nav, never over it: the nav is position:fixed
+        // bottom:0 z-index:200, so a card at bottom:0 buries primary
+        // navigation behind a dismissible sheet.
+        //
+        // MEASURED, NOT ASSUMED. The nav height is content-driven (icon +
+        // label + padding) and moves with font scaling and device. A hand
+        // computed constant read 49px against a real 54px and clipped the nav
+        // by 2px in Chrome. captureNavH measures the live element instead.
+        // Note the nav carries padding-bottom: env(safe-area-inset-bottom),
+        // so offsetHeight ALREADY includes the inset - adding env() here as
+        // well would double-count it on iPhone.
+        bottom: captureNavH + "px",
         maxWidth: 900, margin: "0 auto",
         background: C.bgCard, border: "1px solid " + C.border,
         borderTop: "2px solid " + C.gold,
