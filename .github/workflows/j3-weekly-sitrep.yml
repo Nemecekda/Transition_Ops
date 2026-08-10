@@ -237,7 +237,28 @@ jobs:
               printf '  NO FINDINGS this week.\n'
             else
               printf '  %s issue(s) filed, %s FLASH.\n\n' "$TOTAL" "$FLASH"
-              jq -r '.[] | "  - #\(.number) [\(.state)] \(.title)"' out/findings.json
+              # FLASH is tagged ON the line, not just counted above it. The
+              # count says HOW MANY; without this it never says WHICH, and a
+              # reader scanning the list has to open issues to find out.
+              #
+              # Both the state and the tag are padded to fixed width so the
+              # titles land in one column. cell() pads THEN truncates, which is
+              # why it is a function and not a "* n" repeat: jq returns null for
+              # "x" * 0, so the exact-width case ([CLOSED] at 8) would blow up
+              # the whole string on the one input that needs no padding.
+              #
+              # labels[]? tolerates a null labels array. gh has returned one,
+              # and an unguarded .labels[] aborts jq mid-stream -- which would
+              # drop the rest of the CHANGES list, silently, in the one section
+              # a reader trusts to be complete.
+              jq -r '
+                def cell($w): (. + "          ")[0:$w];
+                .[]
+                | "  - #\(.number) "
+                  + (("[" + .state + "]") | cell(9))
+                  + (if any(.labels[]?; .name == "FLASH") then "FLASH " else "      " end)
+                  + .title
+              ' out/findings.json
             fi
             # N7 header line. Renders and stops: it does NOT touch BLUF_ITEMS,
             # because its subject is a RATE, not a finding. Rate-watching is
@@ -265,10 +286,25 @@ jobs:
               printf '  J1 two consecutive zero-run days observed this window\n'
             fi
             printf '  Last ROUTINE canary             %s\n' "$LAST_CANARY_LINE"
+            # HAND-WRITTEN PROSE ABOUT OTHER JOBS. It has no wiring to them, so
+            # it goes stale silently when they change -- and it already did:
+            # it claimed J5 did not exist in a SITREP that listed J5's own issue,
+            # and claimed J1 emitted no coverage line months after the
+            # readability renderer started emitting one. Three subjects with
+            # three different statuses; the old text collapsed them into one
+            # sentence, which is how two of the three went wrong at once.
+            # Standing up a producer, or wiring aggregation here, updates these
+            # lines IN THE SAME COMMIT.
             printf '\nCOVERAGE / DARK SOURCES / BURN\n'
-            printf '  Not yet instrumented. J1 does not emit a coverage line and\n'
-            printf '  J5 does not exist. Stated as a gap rather than omitted, so an\n'
-            printf '  empty section is never read as a clean report.\n'
+            printf '  Not aggregated here. Where each one lives today:\n'
+            printf '  COVERAGE      EMITTED, NOT CARRIED. J1 prints a coverage line in\n'
+            printf '                each findings issue it files. Read the J1 issues above.\n'
+            printf '  DARK SOURCES  NOT BUILT. The C.5 ledger has no producer in any job.\n'
+            printf '                A real gap, not a routing problem.\n'
+            printf '  BURN          EMITTED, NOT CARRIED. J5 is LIVE and files a monthly\n'
+            printf '                spend check issue holding the estimate.\n'
+            printf '  Stated as a gap rather than omitted, so an empty section is never\n'
+            printf '  read as a clean report.\n'
             printf '\nWATCH\n'
             printf '  Open items live in intel/scheduled-ops-design.md section 8.\n'
           } > out/sitrep.md
