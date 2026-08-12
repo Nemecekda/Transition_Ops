@@ -604,3 +604,62 @@ August has to be able to tell which regime governs it. That ruling is what makes
 the future tense correct *today* and wrong *on 2 SEP*. A tense that is only
 correct inside a window is a dated liability, and this is the entry that closes
 it.
+
+---
+
+## V-2026-011 — Veterans Forge (partner listing, certs group)
+
+- **Claim:** Veterans Forge Inc. is a registered 501(c)(3) nonprofit offering
+  hands-on AI training (machine learning, neural networks, data analysis),
+  emerging-tech tracks (blockchain, cybersecurity, Internet of Things), and
+  career support from resume building to interview preparation, open to
+  veterans, active duty, and their spouses/partners, **at no cost to the
+  member**.
+- **Rating:** CONFIRMED, with one field carried on attestation (see below).
+- **Verified by:** Orchestrator, rung 1, live fetch of https://veteransforge.org
+  (HTTP 200), independent of the tasking packet.
+- **Verified date:** 12 AUG 2026
+- **Citation of record:** https://veteransforge.org
+- **Supporting quotes (verbatim, veteransforge.org, 12 AUG 2026):**
+  - *"Veterans Forge Inc. is a registered 501(c)(3) nonprofit organization. All
+    donations are tax-deductible."*
+  - Eligibility: *"US military Veterans"*, *"Active Duty, and their
+    Spouses/Partners"*.
+  - Programs named: AI Training — *machine learning, neural networks, data
+    analysis*; Future Technology — *blockchain, cybersecurity, Internet of
+    Things*; Career Support — *"From resume building to interview preparation,
+    we offer the guidance needed to successfully navigate the job market."*
+  - *"founded by Vets for Vets"*.
+
+### COST IS PARTNER-ATTESTED, NOT SITE-VERIFIED — recheck trigger
+
+**No pricing, fee, tuition, or free-access language appears anywhere on
+veteransforge.org.** The `cost: "free"` field, which drives the member-facing
+**FREE** chip, rests entirely on the Commander's direct confirmation from the
+partner.
+
+- **Attestation, verbatim, Dean Nemecek, 12 AUG 2026:** *"classes for veterans
+  are free"*.
+- **Why this is recorded separately.** Every other field on this entry is
+  quotable off a public page. This one is not, so no source diff can detect
+  drift. If the partner introduces tuition, the app keeps advertising FREE and
+  nothing in the monitoring chain fires.
+- **RECHECK TRIGGER — s2-scanner / s2-vetting.** On any of: (a) pricing,
+  tuition, or fee language appearing on veteransforge.org; (b) 90 days elapsed
+  with no re-attestation; (c) any member report of a charge. On fire, the
+  `cost` field is re-verified before it ships another day. Route to COMMANDER
+  lane — it is user-facing benefits copy.
+- **Note the attestation covers "classes for veterans."** It does not by its
+  own words cover active duty or spouses, who are listed as eligible. Treated
+  as covered by the partner relationship for now; fold into the same recheck.
+
+### HELD — guard_reserve eligibility
+
+Guard/Reserve is **not** claimed. It appears nowhere on veteransforge.org, and
+the eligibility array ships as `["veteran","active","spouse"]`. Awaiting Robbe.
+This is a held item pending confirmation, **not an omission by oversight** — if
+it lands, it is a one-line amendment to this entry and to the array.
+
+- **Affected app module:** RESOURCES certs group, `veterans-forge`
+  (index.html:2809). Second entry to carry `relationship: "partner"` under the
+  disclosure convention established in 7a95351; render side unchanged.
