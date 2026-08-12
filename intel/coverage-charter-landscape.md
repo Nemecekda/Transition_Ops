@@ -109,3 +109,86 @@ its public web presence.
   being broken.
 - **Routed to J4 link-liveness, not fixed here.** Rewriting a user-facing citation
   URL is COMMANDER lane and does not belong inside an unrelated ship.
+
+---
+
+# SECOND SWEEP — 12 AUG 2026, ISSUE #19 SESSION
+
+**Tasked:** Title 38 / Title 5 amendment correlation, not a charter task. These
+sources were exercised to answer that tasking and are reported here because
+they earned their place doing real work. **Method is unchanged: §0.6 live
+verification.** Every URL below was fetched live during the session, with
+status code, payload size or record count, and the substantive fact it
+returned recorded as proof a real body came back.
+
+**Ruling status: NONE OF THIS IS ENROLLED.** `.github/j1-sources.txt` is
+untouched. Dean rules per source.
+
+## VERIFIED LIVE — eligible for a ruling
+
+| Source | ID | Status observed | What it returned |
+|---|---|---|---|
+| eCFR versions by date | `ecfr-versions-by-date` | 200, JSON | Title 38 on 2026-08-10: **1** changed section. Title 5 on 2026-08-06: **7**. |
+| eCFR full section text | `ecfr-full-section` | 200, XML | 38 CFR 17.4020 at 4,645 B (7/10) and 4,869 B (8/10); 5 CFR 430.208 at 8,535 / 8,647 / 7,599 B across 7/07, 8/03, 8/06. |
+| FR document metadata | `fr-document-metadata` | 200, JSON, 5/5 docs | `effective_on` 2026-09-02 on all four RIF-family rules; 2026-08-06 on 2026-13715. |
+| FR document raw text | `fr-raw-text` | 200, 369,726 B | Located the codified home of the veterans-preference points. |
+
+**URLs, as verified:**
+
+```
+ecfr-versions-by-date|https://www.ecfr.gov/api/versioner/v1/versions/title-{N}.json?issue_date[on]=YYYY-MM-DD
+ecfr-full-section|https://www.ecfr.gov/api/versioner/v1/full/{date}/title-{N}.xml?part={P}&section={S}
+fr-document-metadata|https://www.federalregister.gov/api/v1/documents/{docnum}.json?fields[]=effective_on&fields[]=cfr_references&fields[]=publication_date&fields[]=citation
+fr-raw-text|https://www.federalregister.gov/documents/full_text/text/{yyyy}/{mm}/{dd}/{docnum}.txt
+```
+
+### Why these are distinct from what is already on the ledger
+
+The enrolled-candidate `ecfr-title-versioner` (`titles.json`) reports **that** a
+title moved and when. It cannot say **what** moved. This sweep needed the
+section list, and `versions/title-{N}.json?issue_date[on]=` supplied it exactly:
+Title 38's 2026-08-10 amendment resolved to a single section, 17.4020, which
+made a NO-IMPACT verdict cheap and defensible instead of a guess. Pairing it
+with `ecfr-full-section` at two dates produces a real before/after diff, which
+is how the 8/3-to-8/6 changes to 5 CFR 430.208 were read rather than inferred.
+
+`fr-document-metadata` with an explicit `fields[]` list is the cheapest
+tickler-maintenance instrument found so far: one call per document returned the
+effective dates that re-confirmed the 2 SEP 2026 package without opening a
+single page. `fr-raw-text` is the heavyweight of the set and should be treated
+as such, but it was the only thing that answered *where* a provision gets
+codified, which is the question that separates a correct forward citation from
+a misleading one.
+
+**Fourth endpoint, reported for completeness.** `ecfr-full-section` was not in
+the three candidates named in the session report. It is listed here because the
+session actually depended on it, and a method record that omits a source it
+relied on is not a method record.
+
+## DEAD END, DOCUMENTED — KnowVA / M21-1
+
+A documented dead end is evidence. This one should stop the next analyst from
+spending the same tokens.
+
+| Source | Status | Nature |
+|---|---|---|
+| M21-1 Adjudication Procedures Manual | 200 on status, **no article body** | Rendering wall, not an access wall. **Do not enroll.** |
+
+- **Host:** `knowva.ebenefits.va.gov`. **Probed:** 12 AUG 2026.
+- **Tier 1, WebFetch:** returned only *"Javascript is not enabled. Please enable
+  Javascript to access this website."* No content.
+- **Tier 2, orchestrator browser:** HTTP 200. Page title resolved to *"M21-1
+  Adjudication Procedures Manual"* and the full Part I-XII topic tree rendered,
+  so the host is reachable and not bot-walling. The **article body never
+  rendered** across three attempts including a 6-second settle: `body.innerText`
+  held at 3,231 characters, ending in the literal string `Loading ...`, with
+  **0** occurrences of `BDD` on a page whose URL names the BDD program.
+- **No CAPTCHA was encountered and none was attempted.**
+- **Classification:** this is an ACCESS failure, so claims resting on it rate
+  **BLOCKED, never UNSUPPORTED**. The distinction is the whole point: the two
+  BDD process claims left open by this session are unread, not disproven.
+- **Consequence for the charter:** curl returning 200 proves the host answered,
+  not that the document was read. §0.6 exists for exactly this shape of failure.
+  A scanner pointed here would report success forever and read nothing.
+- **Correct route is ladder tier 3**, human verification, which is where the
+  open M21-1 questions were sent.
