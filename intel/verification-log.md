@@ -663,3 +663,82 @@ it lands, it is a one-line amendment to this entry and to the array.
 - **Affected app module:** RESOURCES certs group, `veterans-forge`
   (index.html:2809). Second entry to carry `relationship: "partner"` under the
   disclosure convention established in 7a95351; render side unchanged.
+
+---
+
+## V-2026-012 — AI crawler control tokens (robots.txt policy basis)
+
+- **Claim:** The user-agent tokens governing AI search retrieval are distinct
+  from those governing model training, such that blocking a training crawler
+  does not remove a site from that vendor's AI search results.
+- **Rating:** CONFIRMED
+- **Verified by:** Orchestrator, rung 1, each vendor's own crawler
+  documentation fetched live. No secondary sources used.
+- **Verified date:** 12 AUG 2026
+- **Citations of record:**
+  - OpenAI — https://developers.openai.com/api/docs/bots
+  - Anthropic — https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler
+  - Google — https://developers.google.com/search/docs/crawling-indexing/google-common-crawlers
+  - Perplexity — https://docs.perplexity.ai/guides/bots
+  - Common Crawl — https://commoncrawl.org/ccbot
+- **TWO CITATION URLS MOVED.** Both were reached through a cross-host 301 and
+  re-fetched at the destination; the destinations above are the citations of
+  record. `platform.openai.com/docs/bots` now redirects to
+  `developers.openai.com/api/docs/bots`, and
+  `support.anthropic.com/en/articles/8896518-...` now redirects to
+  `support.claude.com/en/articles/8896518-...`. Neither old URL was cited
+  anywhere in this repo, so nothing was replaced; this entry is the first
+  record of either.
+- **Supporting quotes (verbatim):**
+  - OpenAI, GPTBot: *"crawl content that may be used in training our
+    generative AI foundation models"*. OAI-SearchBot: *"used to surface
+    websites in search results in ChatGPT's search features"*, and *"Sites
+    that are opted out of OAI-SearchBot will not be shown in ChatGPT search
+    answers."*
+  - Anthropic, ClaudeBot: *"collecting web content that could potentially
+    contribute to their training"*. Claude-SearchBot: *"analyzes online
+    content specifically to enhance the relevance and accuracy of search
+    responses"*. Claude-User: *"When individuals ask questions to Claude, it
+    may access websites"*.
+  - Google, Google-Extended: *"manage whether content Google crawls from
+    their sites may be used for training future generations of Gemini
+    models"*, and *"Google-Extended does not impact a site's inclusion in
+    Google Search nor is it used as a ranking signal in Google Search."*
+  - Perplexity, PerplexityBot: *"designed to surface and link websites in
+    search results on Perplexity. It is not used to crawl content for AI
+    foundation models."* Perplexity-User *"generally ignores robots.txt
+    rules"*, so a directive aimed at it is advisory only.
+  - Common Crawl, CCBot: an open repository *"universally accessible and
+    analyzable by anyone"*.
+
+### What this corrected
+
+The audit initially rated the `GPTBot` block as a CRITICAL AI-retrieval
+blocker. **The vendor documentation disproves that.** GPTBot governs training
+only, OAI-SearchBot was never blocked, and every AI *search* retriever was
+already permitted. The finding was downgraded to MEDIUM and re-characterised:
+the pre-existing file was inconsistent about **training** (opting out of
+OpenAI and Common Crawl while permitting Anthropic and Gemini training), not
+about search. Recorded because the first rating was wrong and the pull is what
+caught it.
+
+### Commander's ruling, 12 AUG 2026
+
+Option B, full discovery. Training crawlers are allowed deliberately. The
+reasoning of record: these systems will answer a veteran's benefits question
+whether or not this site is in their corpus, so the only variable is the
+quality of what they learned from. Placing primary-source-verified content in
+the corpus is harm reduction consistent with the standing constraint that
+wrong transition information causes direct harm.
+
+- **NOT VERIFIED, deliberately:** Applebot and Applebot-Extended. Rung 1
+  returned a truncated page and no tier-2 escalation was authorised. Both
+  remain unnamed in robots.txt and therefore permitted by the wildcard, which
+  is status quo. Open item, not an omission.
+- **Service worker is not involved.** `robots.txt` is absent from the `ASSETS`
+  precache list, but that alone would not settle it, since the fetch handler
+  runtime-caches any GET returning 200. The controlling fact is that crawlers
+  do not execute service workers at all. No cache-version bump can gate what a
+  crawler reads, so none was made.
+- **Affected app module:** `robots.txt`. No change to `index.html`, `sw.js`,
+  or `sitemap.xml`.
