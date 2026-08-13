@@ -742,3 +742,68 @@ wrong transition information causes direct harm.
   crawler reads, so none was made.
 - **Affected app module:** `robots.txt`. No change to `index.html`, `sw.js`,
   or `sitemap.xml`.
+
+---
+
+## V-2026-013 — ChatGPT Plus free-year offer for service members, veterans, retirees
+
+- **Claim:** OpenAI offers one free year of ChatGPT Plus to verified U.S. veterans and
+  retirees who transitioned from active duty within the past 12 months, and to active
+  service members who will transition within the next 12 months; verification is via
+  ID.me; personal ChatGPT accounts only; the subscription renews at the standard paid
+  rate after the free year unless cancelled.
+- **Rating:** CONFIRMED
+- **Verified date:** 13 AUG 2026
+- **Ladder tiers used:** tier 1 WebFetch returned **HTTP 403** on both URLs. Tier 2
+  orchestrator browser read the ToS in full. The offer page itself required **tier 3**.
+- **HUMAN-VERIFIED | D. Nemecek | 2026-08-13 | chatgpt.com/veterans-claim | offer open;
+  "Offer unavailable" is a state-dependent label, not a closed offer; eligibility
+  headline, ID.me wording, mobile-app-store restriction, existing-subscriber
+  auto-credit, no end date stated**
+- **HUMAN-VERIFIED | D. Nemecek | 2026-08-13 | KnowVA M21-1 Part X, Subpart i, 6.B
+  (Article 554400000177950, changed 22 APR 2026) | full section incl. tables** —
+  recorded here because it arrived in the same session; it governs
+  [[V-2026-011]]-adjacent BDD content, not this offer.
+- **Citations of record:**
+  - https://chatgpt.com/veterans-claim (tier 3)
+  - https://help.openai.com/en/articles/12803158-chatgpt-plus-for-service-members-veterans-retirees-terms-of-service (tier 2)
+- **CITATION URL MOVED.** The tasked URL ended `...-chatgpt-plus-for-servicemembers-veterans-terms-of-service`
+  and redirects to `...-chatgpt-plus-for-service-members-veterans-retirees-terms-of-service`.
+  The destination is the citation of record.
+- **Supporting quotes (verbatim, OpenAI Help Center, 13 AUG 2026):**
+  - *"This promotion is exclusively for verified U.S. military veterans and retirees who
+    transitioned from active-duty service within the past 12 months, and active service
+    members who will transition within the next 12 months. Verification through ID.me is
+    required. The offer can be redeemed only on an eligible personal ChatGPT account."*
+  - *"After the promotional period, your subscription will renew at the standard rate
+    unless canceled."*
+  - *"expires after 1 year from the date claimed"*; *"There is a limit of one offer per
+    eligible subscriber."*
+  - *"Accounts that belong to an Enterprise workspace cannot redeem this personal
+    subscription offer, even from a personal workspace."*
+  - *"If your current Plus subscription was purchased through a mobile app store, the
+    offer is unavailable while that subscription is active."*
+  - *"Existing web Plus users should not cancel before applying the offer."*
+
+### The renewal term is the reason this card is worded the way it is
+
+The tasking brief framed the offer as expiring per member. The ToS is sharper: it
+**converts to paid**. A member who claims during transition is billed at the standard
+rate twelve months later, which for someone who separated is roughly the point the pay
+gap bites hardest. The description leads with the eligibility window but states the
+renewal in its own sentence, and the push notification carries it in the body rather
+than ending on good news.
+
+### RECHECK TRIGGER — s2-scanner
+
+The ToS page read **"Updated: 9 hours ago"** at verification time. This offer is being
+actively revised. Recheck on any of: (a) the page's Updated stamp advancing; (b) an end
+date appearing, since none is published today; (c) any change to the 12-month windows.
+Route COMMANDER lane — it is user-facing benefits copy with a money consequence.
+
+- **HELD, not claimed:** `guard_reserve`. The ToS says "active-duty service" throughout
+  and is silent on Title 10 mobilisation, so extending it to Guard/Reserve would be
+  inference. `spouse` is excluded outright: the offer is "exclusively for" members,
+  veterans, and retirees.
+- **Affected app module:** RESOURCES employment group, `chatgpt-plus-veterans`;
+  WHATS_NEW v95. Arm's-length listing, no `relationship` field.
