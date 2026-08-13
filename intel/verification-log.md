@@ -807,3 +807,75 @@ Route COMMANDER lane — it is user-facing benefits copy with a money consequenc
   veterans, and retirees.
 - **Affected app module:** RESOURCES employment group, `chatgpt-plus-veterans`;
   WHATS_NEW v95. Arm's-length listing, no `relationship` field.
+
+---
+
+## V-2026-014 — BDD filing-window mechanics (M21-1 Part X, Subpart i, 6.B)
+
+- **Claim:** A BDD claim received with more than 180 days of remaining service is
+  **denied**, not held, except where the member has 180 or fewer days remaining by the
+  time VA works it. A claim inside 90 days is **excluded** from BDD but not denied, and
+  is processed under FDC, the standard process, or another available program. A claim
+  with no known discharge date is an incomplete application under 38 CFR 3.159(a)(3)
+  and is not accepted. Date of claim is the day following RAD regardless of receipt date.
+- **Rating:** CONFIRMED
+- **Verified date:** 13 AUG 2026
+- **Ladder tier:** 3. Tier 1 WebFetch hit a JavaScript gate; tier 2 orchestrator browser
+  rendered the KnowVA shell and topic tree but never the article body across three
+  attempts. No CAPTCHA encountered or attempted.
+- **HUMAN-VERIFIED | D. Nemecek | 2026-08-13 | KnowVA M21-1, Part X, Subpart i, 6.B
+  (Article 554400000177950, changed 22 APR 2026) | full section captured, tables
+  included**
+- **Citation of record:** M21-1 Part X, Subpart i, 6.B, per the record above. No URL is
+  cited because the article body is not machine-readable; see the KnowVA dead-end entry
+  in `coverage-charter-landscape.md`.
+
+### This closes two claims that were BLOCKED since 3791b17
+
+Both were carried as BLOCKED rather than UNSUPPORTED, on the rule that an unreachable
+source is an ACCESS failure and not an evidence failure. That distinction held: the
+claims were unread, not wrong, and the record confirms them.
+
+**It also corrects my own citation.** I recorded these as living in M21-1 **Part VIII**,
+Subpart i, Chapter 1, Section A, and pointed tier-2 attempts at that article. They are in
+**Part X**, Subpart i, 6.B. Part of why the browser returned a shell with zero `BDD`
+occurrences is that it was aimed at the wrong document. The wrong location is preserved in
+the commit body of 3791b17 and in this session's SITREPs; it appears in no shipped file.
+
+### The wording changed as a result, and it matters
+
+The app's previous phrasing was *"cannot process before T-180"* — passive, and it reads
+like a queue. The record says the claim is **denied**: Non-BDD EP 400, denial via the
+On Active Duty selection, a *Non-BDD Claim – Request Resubmission* letter, reason
+*"More than 180 days of remaining service."* Denial is an adverse action.
+
+**The aging-in exception ships wherever the denial ships**, per the Commander's ruling of
+13 AUG 2026. Publishing the denial alone would tell members something harsher than the
+truth, and a member who filed at T-200 and is now at T-170 would wrongly believe their
+claim is dead.
+
+### Corroboration of already-shipped content
+
+6.B.2.b — date of claim is the day following RAD regardless of receipt date —
+independently confirms the `38 CFR 3.400(b)(2)(i)` correction shipped in 3791b17.
+6.B.1.b–c confirms the sub-90 language shipped on `/bdd-timeline/` in 1d3351a **exactly as
+written**; that page needed enrichment, not correction.
+
+- **Affected app module:** `/bdd-timeline/` sections "More than 180 days out", "Fewer than
+  90 days left", and "Who can use BDD".
+
+---
+
+### Send record — V-2026-013
+
+OneSignal broadcast for the ChatGPT Plus listing was **sent 13 AUG 2026**, on the
+Commander's explicit go, after live deploy verification confirmed the listing serving in
+production (RESOURCES 47, sw v124). Title: *"Free Year of ChatGPT Plus — Window Open"*.
+Body carried the renewal warning rather than ending on the offer. Launch URL
+`https://transitionops.org/?tool=resources`.
+
+**Known friction, accepted deliberately:** the app reads only the `tool` URL parameter, and
+`subTab` initialises to `vsos`, so the notification lands two taps from the card. No
+deeper deep-link exists — there is no category, hash, or search parameter, no DOM `id` on
+resource cards, and no `scrollIntoView` anywhere in the app. Ruled acceptable because the
+push body carries the material facts on its own.
