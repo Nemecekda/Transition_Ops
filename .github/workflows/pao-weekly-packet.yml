@@ -48,7 +48,7 @@ jobs:
       # bootstraps the issue: this job will not create one, for the same reason
       # J1 will not - a lookup that fails is indistinguishable from a first run,
       # and one transient error would invent a second baseline.
-      BASELINE_ISSUE: ''
+      BASELINE_ISSUE: '22'
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
