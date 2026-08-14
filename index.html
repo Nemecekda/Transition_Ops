@@ -2217,12 +2217,14 @@ const VSO_DIRECTORY = [{
     name: "Veterans of Foreign Wars (VFW)",
     url: "https://www.vfw.org",
     desc: "Nation's largest war veterans org. Free claims assistance, transition support, and legislative advocacy.",
-    icon: "\u2B50"
+    icon: "\u2B50",
+    locator: "https://www.vfw.org/find-a-post"
   }, {
     name: "The American Legion",
     url: "https://www.legion.org",
     desc: "Founded 1919. Four pillars: veterans affairs, defense, youth, and Americanism. Free VSO reps for claims.",
-    icon: "\u2B50"
+    icon: "\u2B50",
+    locator: "https://www.legion.org/posts"
   }, {
     name: "Disabled American Veterans (DAV)",
     url: "https://www.dav.org",
@@ -10407,7 +10409,7 @@ function App() {
       marginBottom: 10,
       marginTop: -4
     }
-  }, section.desc), section.orgs.map((org, oi) => /*#__PURE__*/React.createElement("a", {
+  }, section.desc), section.orgs.map((org, oi) => [/*#__PURE__*/React.createElement("a", {
     key: oi,
     href: org.url,
     target: "_blank",
@@ -10465,7 +10467,27 @@ function App() {
       marginTop: 3,
       paddingLeft: 22
     }
-  }, org.url.replace("https://", ""))))))), subTab === "tap" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, org.url.replace("https://", ""))), org.locator && /*#__PURE__*/React.createElement("a", {
+    key: "loc" + oi,
+    href: org.locator,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    style: {
+      display: "block",
+      textDecoration: "none",
+      padding: "8px 13px",
+      marginTop: -2,
+      marginBottom: 9,
+      marginLeft: 22,
+      background: C.bg,
+      border: "1px solid " + C.border,
+      borderRadius: 4,
+      fontFamily: "'Oswald', sans-serif",
+      fontSize: 11,
+      letterSpacing: 1,
+      color: C.greenBright
+    }
+  }, "FIND YOUR POST \u2192")])))), subTab === "tap" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: S.card
   }, /*#__PURE__*/React.createElement("div", {
     style: S.cardTitle
