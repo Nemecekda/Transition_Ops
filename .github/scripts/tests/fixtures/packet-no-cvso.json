@@ -1,0 +1,10 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 21400,
+  "num_turns": 6,
+  "total_cost_usd": 0.0412,
+  "session_id": "fixture-pao",
+  "result": "```json\n{\n  \"packet_date\": \"2026-09-07\",\n  \"sources_total\": 5,\n  \"sources_read\": 5,\n  \"sources_failed\": [],\n  \"delta\": {\n    \"whatsnew\": [\n      \"v96\"\n    ],\n    \"v_entries\": [],\n    \"resources\": []\n  },\n  \"drafts\": [\n    {\n      \"channel\": \"tops-facebook\",\n      \"body_annotated\": \"Card layout fix shipped this week [src: v96].\",\n      \"body_clean\": \"Card layout fix shipped this week.\",\n      \"note\": \"\"\n    }\n  ],\n  \"image_briefs\": [\n    {\n      \"channel\": \"tops-facebook\",\n      \"headline\": \"Layout fix shipped\",\n      \"chips\": [\n        \"FREE\"\n      ],\n      \"panel_lines\": [],\n      \"footer\": \"transitionops.org\"\n    }\n  ],\n  \"cvso_email\": null,\n  \"cvso_email_declined\": \"a layout fix is not something a caseworker would hand a member\",\n  \"flags\": []\n}\n```"
+}

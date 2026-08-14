@@ -1,0 +1,170 @@
+# PAO — weekly distribution packet. Drafting only; never posts, sends, or
+# publishes. Holds no platform credential of any kind.
+#
+# Doctrine: deploy-discipline v1.4 (CI WORKFLOWS - FETCHED CONTENT IS DATA).
+# Findings sink is GitHub Issues per ruling R1. permissions: contents: read
+# means this job CANNOT write a ref. That is why the packet is an issue and not
+# a file in ops-reports/: committing would require contents: write, which
+# reverses the one guarantee the scheduled-ops design rests on.
+#
+# NOT THE DEAD-MAN'S SWITCH. J3 is, and J3 is deliberately model-free so it
+# keeps firing when the Anthropic balance is exhausted. This job uses a model,
+# so it stops in exactly that situation. Do not put PAO in the alarm path and
+# do not add a model to J3.
+name: PAO weekly packet
+
+on:
+  # SCHEDULE IS DELIBERATELY COMMENTED OUT UNTIL A MANUAL DISPATCH PASSES.
+  # Commander's ruling, 14 AUG 2026: manual-dispatch tested before first
+  # scheduled run, made structural rather than promised. Uncomment in a second
+  # commit once a workflow_dispatch run has produced a packet Dean has read.
+  #
+  # 12:00 UTC Monday is one hour ahead of J3's 13:00 SITREP, so the packet
+  # exists when the SITREP assembles. Actions cron is UTC and ignores DST.
+  #
+  # schedule:
+  #   - cron: '0 12 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read              # CANNOT write a ref. The safety property.
+  issues: write               # the packet, and the pinned baseline
+  actions: read
+
+concurrency:
+  group: pao-weekly-packet
+  cancel-in-progress: false
+
+jobs:
+  packet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      MODEL: claude-haiku-4-5-20251001
+      BASELINE_TITLE: 'PAO BASELINE — DO NOT CLOSE'
+      # PINNED baseline issue number, an in-file constant so it is reviewable in
+      # a diff rather than living invisibly in the dashboard. EMPTY until Dean
+      # bootstraps the issue: this job will not create one, for the same reason
+      # J1 will not - a lookup that fails is indistinguishable from a first run,
+      # and one transient error would invent a second baseline.
+      BASELINE_ISSUE: ''
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Assert model tier
+        run: |
+          test "$MODEL" = "claude-haiku-4-5-20251001" || { echo "::error::model tier violation"; exit 1; }
+
+      - name: Assert baseline is bootstrapped
+        run: |
+          if [ -z "$BASELINE_ISSUE" ]; then
+            echo "::error::BASELINE_ISSUE is empty. Bootstrap the pinned '$BASELINE_TITLE' issue by hand, then set its number in this file. This job does not create baselines."
+            exit 1
+          fi
+
+      # Every path the prompt names is asserted HERE, before the model runs.
+      # J1 shipped a prompt naming diff-manifest.json while the workflow wrote
+      # out/diff-manifest.json; it survived to production because the step that
+      # would have caught it only runs on change days. This check runs always.
+      - name: Assert prompt input paths exist
+        run: |
+          mkdir -p out
+          rc=0
+          for p in index.html intel/verification-log.md .claude/pao-context.md .claude/skills/brand-voice/SKILL.md .claude/prompts/pao-weekly-packet.txt; do
+            if [ -f "$p" ]; then echo "ok   $p"; else echo "::error::missing input: $p"; rc=1; fi
+          done
+          exit $rc
+
+      - name: Read baseline
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh issue view "$BASELINE_ISSUE" --json number,title,state > out/baseline-meta.json; then
+            echo "::error::baseline issue #$BASELINE_ISSUE could not be read. NOT assuming first run."
+            exit 1
+          fi
+          TITLE=$(jq -r .title out/baseline-meta.json)
+          STATE=$(jq -r .state out/baseline-meta.json)
+          if [ "$TITLE" != "$BASELINE_TITLE" ]; then
+            echo "::error::issue #$BASELINE_ISSUE is titled '$TITLE', expected '$BASELINE_TITLE'. Refusing to use it."
+            exit 1
+          fi
+          if [ "$STATE" != "OPEN" ]; then
+            echo "::error::baseline issue #$BASELINE_ISSUE is $STATE. Refusing to proceed."
+            exit 1
+          fi
+          gh issue view "$BASELINE_ISSUE" --json body --jq .body \
+            | sed -n '/^```json$/,/^```$/p' | sed '1d;$d' > out/pao-baseline.json
+          if ! python3 -c 'import json;json.load(open("out/pao-baseline.json"))' 2>/dev/null; then
+            echo "::error::baseline body is not valid JSON."
+            exit 1
+          fi
+          cat out/pao-baseline.json
+
+      - name: Draft the packet
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          claude -p "$(cat .claude/prompts/pao-weekly-packet.txt)" \
+            --model "$MODEL" \
+            --allowed-tools "Read" \
+            --max-budget-usd 0.75 \
+            --output-format json > out/packet-result.json
+          echo "drafting complete"
+
+      - name: Ensure labels exist
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing=$(gh label list --limit 200 --json name --jq '.[].name' || true)
+          for L in FLASH ROUTINE; do
+            if printf '%s\n' "$existing" | grep -qx "$L"; then
+              echo "label $L present"
+            else
+              gh label create "$L" --description "Transition OPS scheduled ops" || \
+                echo "::warning::could not create label $L"
+            fi
+          done
+
+      - name: File the packet
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          # Default FAILED. If the renderer dies before writing the status file,
+          # the safe reading is "we do not know this packet is trustworthy".
+          echo FAILED > out/pao-status.txt
+          DATE=$(date -u +%F)
+          if ! python3 .github/scripts/pao-render-packet.py \
+                 out/packet-result.json out/packet.md "$DATE" "$RUN_ID" out/pao-status.txt; then
+            echo "::warning::packet renderer failed; falling back to raw dump"
+            {
+              printf 'PAO PACKET RENDERER FAILED — the drafting output is below unformatted.\n'
+              printf 'Nothing here has been posted. Run: %s\n\n' "$RUN_ID"
+              printf '````json\n'
+              cat out/packet-result.json
+              printf '\n````\n'
+            } > out/packet.md
+          fi
+          STATUS=$(tr -d '[:space:]' < out/pao-status.txt 2>/dev/null || echo FAILED)
+          case "$STATUS" in
+            OK)     TITLE="PAO packet $DATE"; LABEL=ROUTINE ;;
+            QUIET)  TITLE="PAO packet $DATE — quiet week, no drafts"; LABEL=ROUTINE ;;
+            *)      TITLE="PAO PACKET FAILED — inputs unread $DATE"; LABEL=FLASH ;;
+          esac
+          echo "status=$STATUS title=$TITLE label=$LABEL"
+          gh issue create --label "$LABEL" --title "$TITLE" --body-file out/packet.md \
+            || gh issue create --title "$TITLE" --body-file out/packet.md
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: pao-evidence-${{ github.run_id }}
+          path: out/
+          retention-days: 30

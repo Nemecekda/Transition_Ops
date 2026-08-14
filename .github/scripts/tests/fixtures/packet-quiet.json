@@ -1,0 +1,10 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 21400,
+  "num_turns": 6,
+  "total_cost_usd": 0.0412,
+  "session_id": "fixture-pao",
+  "result": "```json\n{\n  \"packet_date\": \"2026-08-24\",\n  \"sources_total\": 5,\n  \"sources_read\": 5,\n  \"sources_failed\": [],\n  \"delta\": {\n    \"whatsnew\": [],\n    \"v_entries\": [],\n    \"resources\": []\n  },\n  \"drafts\": [],\n  \"image_briefs\": [],\n  \"cvso_email\": null,\n  \"cvso_email_declined\": \"nothing shipped this week\",\n  \"flags\": []\n}\n```"
+}
