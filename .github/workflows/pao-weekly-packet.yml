@@ -14,16 +14,20 @@
 name: PAO weekly packet
 
 on:
-  # SCHEDULE IS DELIBERATELY COMMENTED OUT UNTIL A MANUAL DISPATCH PASSES.
-  # Commander's ruling, 14 AUG 2026: manual-dispatch tested before first
-  # scheduled run, made structural rather than promised. Uncomment in a second
-  # commit once a workflow_dispatch run has produced a packet Dean has read.
+  # SCHEDULE WENT LIVE 14 AUG 2026, after a manual dispatch produced a packet
+  # Dean read. It was held commented out until then so that "dispatch tested
+  # before first schedule" was structural rather than promised.
+  #
+  # The first packet came back QUIET - every input read, nothing shipped, no
+  # drafts written - and that is the better proof than a busy week would have
+  # been. It shows the job declines to manufacture content when there is
+  # nothing to say, which is the failure mode a weekly comms cadence actually
+  # has. A packet full of filler on a quiet week is how a channel dies.
   #
   # 12:00 UTC Monday is one hour ahead of J3's 13:00 SITREP, so the packet
   # exists when the SITREP assembles. Actions cron is UTC and ignores DST.
-  #
-  # schedule:
-  #   - cron: '0 12 * * 1'
+  schedule:
+    - cron: '0 12 * * 1'
   workflow_dispatch:
 
 permissions:
