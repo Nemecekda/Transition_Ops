@@ -59,6 +59,15 @@ jobs:
         run: |
           test "$MODEL" = "claude-haiku-4-5-20251001" || { echo "::error::model tier violation"; exit 1; }
 
+      # THE EXIT 127. Run 31799240790 failed here in 12 seconds with "command
+      # not found": the workflow called `claude -p` in Draft the packet without
+      # ever installing it. J1 has carried this step since authorship; PAO was
+      # written from J1's shape and this line was dropped. Same pinned version
+      # as J1 - two jobs on different CLI versions is a difference nobody would
+      # think to check when their outputs diverge.
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code@2.1.220
+
       - name: Assert baseline is bootstrapped
         run: |
           if [ -z "$BASELINE_ISSUE" ]; then
@@ -163,8 +172,55 @@ jobs:
 
       - name: Upload evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        # v4.6.2 runs on node20, which Actions now warns is deprecated. The
+        # other five workflows already pin v7.0.1; PAO was the sole outlier
+        # because it was authored from an older reference. This is removing
+        # drift from an established pin, not choosing a new version.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: pao-evidence-${{ github.run_id }}
           path: out/
           retention-days: 30
+
+      # A job that dies before filing reports NOTHING. Every other workflow in
+      # this repo carries an if: failure() reporter; PAO shipped without one,
+      # so run 31799240790 crashed and filed no issue at all - the only signal
+      # was a red run nobody was watching for.
+      #
+      # This is a WORSE failure than the one J1 was just fixed for. J1 filed a
+      # quiet day over a blind scan: wrong, but visible and auditable. Silence
+      # is not auditable. A packet that never arrives looks exactly like a week
+      # with nothing to say.
+      #
+      # Runner values reach the shell through env:, never through run:.
+      - name: Report failure loudly
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          mkdir -p out
+          printf '1 item may need your eyes: the PAO packet failed, so this week produced no distribution drafts.\n\n' > out/failure.md
+          printf 'PAO failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" >> out/failure.md
+          printf 'NOTHING WAS POSTED OR SENT. The PAO holds no platform credential, so a\n' >> out/failure.md
+          printf 'failure here costs a packet, never a bad post.\n\n' >> out/failure.md
+          if [ -f out/pao-status.txt ]; then
+            printf 'Renderer status at failure: %s\n\n' "$(tr -d '[:space:]' < out/pao-status.txt)" >> out/failure.md
+          fi
+          URL=$(gh issue create --label FLASH --title "PAO FAILED $(date -u +%F)" --body-file out/failure.md) \
+          || URL=$(gh issue create --title "PAO FAILED $(date -u +%F)" --body-file out/failure.md)
+          N="${URL##*/}"
+          case "$N" in
+            ''|*[!0-9]*)
+              echo "::warning::could not read an issue number from '$URL'; ACTING ON THIS footer not appended" ;;
+            *)
+              { cat out/failure.md
+                printf '\n---\n\n## ACTING ON THIS\n\n'
+                printf 'An order for you to paste into an interactive session. The machine does not run it and ships nothing.\n\n'
+                printf '```text\n'
+                printf 'URGENT — machine failure session. Source: issue #%s, job: PAO. s3-devops: read the run evidence, diagnose the failure, and propose the fix on a branch; gate it and stage on my approval. I merge.\n' "$N"
+                printf '```\n'
+              } > out/failure-final.md
+              gh issue edit "$N" --body-file out/failure-final.md \
+                || echo "::warning::footer edit failed for #$N; the issue is filed without it" ;;
+          esac
