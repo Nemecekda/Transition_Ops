@@ -199,6 +199,38 @@ def render_cost(envelope):
     return ("Scan cost: " + " · ".join(bits) + "\n") if bits else ""
 
 
+def scan_status(payload):
+    """Decide OK vs FAILED from the PAYLOAD, never from argv.
+
+    A scan that fetched nothing, fetched less than it set out to, or recorded
+    any failure is not a quiet day - it is a blind one. The caller must not be
+    able to talk this into OK by passing a nicer number on the command line.
+
+    Returns (status, reason, changed_count_or_None).
+    """
+    if not isinstance(payload, dict):
+        return "FAILED", "scanner output could not be parsed into a payload", None
+
+    total = payload.get("sources_total")
+    fetched = payload.get("sources_fetched")
+    changed = payload.get("sources_changed")
+    failed = payload.get("sources_failed")
+    failed = failed if isinstance(failed, list) else []
+
+    if not isinstance(fetched, int):
+        return "FAILED", "payload did not report sources_fetched", None
+    if fetched == 0:
+        return "FAILED", "zero sources fetched - coverage blind", changed if isinstance(changed, int) else None
+    if isinstance(total, int) and fetched < total:
+        return ("FAILED",
+                "partial coverage: %s of %s sources fetched" % (fetched, total),
+                changed if isinstance(changed, int) else None)
+    if failed:
+        ids = ", ".join(str(f.get("id", "?")) for f in failed if isinstance(f, dict)) or "unknown"
+        return "FAILED", "source failures recorded (%s)" % ids, changed if isinstance(changed, int) else None
+    return "OK", "", changed if isinstance(changed, int) else None
+
+
 def main():
     scan_path, out_path, count, date_utc, run_id = sys.argv[1:6]
 
@@ -214,12 +246,32 @@ def main():
 
     # 1. BLUF - unchanged. First line, one sentence, so the mail preview answers
     #    "read on?" without opening it.
-    s.append(
-        "NO ACTION NEEDED — informational: J1 detected changes in %s source(s), "
-        "nothing here is rated, and correlation against the app is J2 work.\n"
-        % count
-    )
-    s.append("J1 detected changes in %s source(s) on %s.\n" % (count, date_utc))
+    # The BLUF is derived, never templated. `count` is the HASH-DIFF count from
+    # argv; it says how many sources the workflow thought changed. It says
+    # nothing about whether the scanner could see them. Run 31790049008 filed
+    # "NO ACTION NEEDED - detected changes in 3 source(s)" over a payload
+    # reporting 0 of 0 fetched and a manifest failure, and the run exited 0.
+    # A broken scanner must never report a quiet day.
+    status, reason, payload_changed = scan_status(payload)
+    if status == "FAILED":
+        s.append(
+            "J1 SCAN FAILED — coverage blind: %s. Nothing was scanned, so nothing "
+            "below is evidence of a quiet day. This issue is a coverage gap "
+            "report, not a findings report.\n" % reason
+        )
+        s.append(
+            "The workflow computed a hash diff of %s source(s) on %s, but the "
+            "scanner did not report on them. Those changes are unexamined.\n"
+            % (count, date_utc)
+        )
+    else:
+        headline = payload_changed if payload_changed is not None else count
+        s.append(
+            "NO ACTION NEEDED — informational: J1 detected changes in %s source(s), "
+            "nothing here is rated, and correlation against the app is J2 work.\n"
+            % headline
+        )
+        s.append("J1 detected changes in %s source(s) on %s.\n" % (headline, date_utc))
 
     # 2. WHAT CHANGED - the finding, in prose, before anything else.
     if payload is not None:
@@ -271,6 +323,12 @@ def main():
 
     with open(out_path, "w", encoding="utf-8") as fh:
         fh.write("\n".join(s))
+
+    # Machine field for the workflow: one constrained token, OK or FAILED. The
+    # shell validates it again before use - a file is not a trust boundary.
+    if len(sys.argv) > 6:
+        with open(sys.argv[6], "w", encoding="utf-8") as fh:
+            fh.write(status + "\n")
 
 
 if __name__ == "__main__":

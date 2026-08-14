@@ -153,10 +153,38 @@ for fx, label in (("malformed-result.json", "result present but not JSON"),
     if body:
         unclosed, _ = walk_fences(body)
         check("no unclosed fence", unclosed is None)
-        check("BLUF still present", "NO ACTION NEEDED" in body)
+        # WAS: check("BLUF still present", "NO ACTION NEEDED" in body).
+        # That assertion required the all-clear banner on a scan the renderer
+        # could not parse - it encoded the defect that filed run 31790049008 as
+        # a quiet day. Replaced with two checks, not one, and the first is a
+        # NEGATIVE: absence of all-clear language cannot be satisfied by
+        # accident the way presence of a string can.
+        check("no all-clear language on a degraded scan",
+              "NO ACTION NEEDED" not in body)
+        check("failure BLUF leads the body",
+              body.lstrip().startswith("J1 SCAN FAILED"))
         check("degraded path stated", "Could not parse the scanner output" in body)
         check("raw preserved verbatim",
               open(os.path.join(FIXTURES, fx), encoding="utf-8").read().strip() in body)
+
+
+# Parseable payload, zero coverage. This is the shape of run 31790049008: the
+# scanner ran, answered honestly, and reported that it could not see anything.
+# The old renderer filed that as "NO ACTION NEEDED - detected changes in 3
+# source(s)" and the workflow exited 0. This block is why that cannot recur.
+print("== coverage-blind.json — scanner ran but saw nothing ==")
+body, proc = render("coverage-blind.json")
+check("renderer exits 0", body is not None, proc.stderr if body is None else "")
+if body:
+    unclosed, _ = walk_fences(body)
+    check("no unclosed fence", unclosed is None)
+    check("no all-clear language on a blind scan", "NO ACTION NEEDED" not in body)
+    check("failure BLUF leads the body", body.lstrip().startswith("J1 SCAN FAILED"))
+    check("names the coverage failure", "coverage blind" in body)
+    check("argv count is NOT the headline",
+          "detected changes in 2 source(s)" not in body.splitlines()[0])
+    check("says the diffed sources went unexamined", "unexamined" in body)
+
 
 print()
 if FAILURES:

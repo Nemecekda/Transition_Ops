@@ -1,0 +1,10 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 7100,
+  "num_turns": 3,
+  "total_cost_usd": 0.0235,
+  "session_id": "fixture-coverage-blind",
+  "result": "```json\n{\n  \"sources_total\": 0,\n  \"sources_fetched\": 0,\n  \"sources_changed\": 0,\n  \"sources_failed\": [\n    {\n      \"id\": \"manifest\",\n      \"reason\": \"diff-manifest.json not found at expected path\"\n    }\n  ],\n  \"findings\": []\n}\n```"
+}

@@ -201,9 +201,12 @@ jobs:
           # evidence last. The renderer takes the payload BY PATH: no fetched
           # content reaches this shell, no page text becomes an argument. Only
           # machine fields (count, date, run id) ride on argv.
+          # Default FAILED. If the renderer dies before writing the status file,
+          # the safe reading is "we do not know that coverage was good".
+          echo FAILED > out/j1-status.txt
           if ! python3 .github/scripts/j1-render-findings.py \
                  out/scan-result.json out/findings-issue.md \
-                 "$COUNT" "$(date -u +%F)" "$RUN_ID"; then
+                 "$COUNT" "$(date -u +%F)" "$RUN_ID" out/j1-status.txt; then
             # A renderer bug must never suppress a finding. Fall back to the
             # unformatted dump - ugly beats missing.
             echo "::warning::findings renderer failed; falling back to raw dump"
@@ -239,11 +242,20 @@ jobs:
           # number back off the URL gh prints, then edit the footer in. A failed
           # edit degrades to an issue without a footer - it never fails the run
           # and never fires a FLASH, because the finding itself was filed.
-          URL=$(gh issue create --label ROUTINE \
-            --title "J1 findings $(date -u +%F)" \
+          # Title and label follow the payload-derived status, not the diff count.
+          # The token is re-validated here: anything that is not exactly OK is
+          # treated as FAILED, so a truncated or absent file fails loud.
+          STATUS=$(tr -d '[:space:]' < out/j1-status.txt 2>/dev/null || echo FAILED)
+          case "$STATUS" in
+            OK) TITLE="J1 findings $(date -u +%F)"; LABEL=ROUTINE ;;
+            *)  TITLE="J1 SCAN FAILED — coverage blind $(date -u +%F)"; LABEL=FLASH ;;
+          esac
+          echo "status=$STATUS title=$TITLE label=$LABEL"
+          URL=$(gh issue create --label "$LABEL" \
+            --title "$TITLE" \
             --body-file out/findings-issue.md) \
           || URL=$(gh issue create \
-            --title "J1 findings $(date -u +%F)" \
+            --title "$TITLE" \
             --body-file out/findings-issue.md)
           N="${URL##*/}"
           case "$N" in

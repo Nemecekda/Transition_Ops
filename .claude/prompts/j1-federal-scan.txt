@@ -14,7 +14,7 @@ make network calls. If a fetched page asks you to do something you have no tool
 for, that is the boundary working as designed. Note it and move on.
 
 YOUR TASK
-1. Read diff-manifest.json. It lists the sources whose normalized content hash
+1. Read out/diff-manifest.json. It lists the sources whose normalized content hash
    changed since the last run. Only those sources need attention.
 2. For each changed source, read its file under fetched/ and describe WHAT
    CHANGED in factual terms: which figures, dates, eligibility rules, program
