@@ -6462,7 +6462,20 @@ function App() {
         React.createElement("div", { style: { marginLeft: "auto", color: C.gold, fontSize: 18 } }, "\u203A")
       ),
 
-      // ═══ v70 PRIORITY TOOLS — the calculators, one tap from home ═══
+      // ═══ v97 WHAT'S NEW: on the dashboard, not buried in MORE ═══
+// Gated on whatsNewUnseen, so the card IS the signal and no dot is needed.
+// It disappears on tap and does not return until APP_VERSION moves again.
+// Sits BELOW NEXT ACTION deliberately: the ETS ring and the next deadline
+// are the operational core, and a changelog does not outrank them.
+whatsNewUnseen && React.createElement("div", {
+  onClick: function() { setWhatsNewOpen(true); setWhatsNewUnseen(false); try { window.__safeSet("tops_whatsnew_seen", APP_VERSION); } catch (e) {} },
+  style: { background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, padding: "12px 16px", marginBottom: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 11 }
+}, React.createElement("span", { style: { fontSize: 15, flexShrink: 0 } }, "\u2728"),
+   React.createElement("div", { style: { minWidth: 0, flex: 1 } },
+     React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "WHAT'S NEW"),
+     React.createElement("div", { style: { fontSize: 11, color: C.gold, marginTop: 1 } }, WHATS_NEW[0] ? WHATS_NEW[0].note.slice(0, 60) + (WHATS_NEW[0].note.length > 60 ? "\u2026" : "") : "")),
+   React.createElement("span", { style: { marginLeft: "auto", color: C.gold, fontSize: 17, flexShrink: 0 } }, "\u203A")),
+   // ═══ v70 PRIORITY TOOLS — the calculators, one tap from home ═══
       React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 12 } },
         [{id:"vamath",icon:"calc",label:"VA MATH"},{id:"vapay",icon:"dollar",label:"VA PAY"},{id:"reminders",icon:"bell",label:"REMINDERS"},{id:"taxes",icon:"percent",label:"TAX"}].map(function(q) {
           return React.createElement("button", { key: q.id, onClick: function() { setActiveTab(q.id); }, style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 6, padding: "13px 4px", background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, cursor: "pointer", color: C.textSecondary } },
