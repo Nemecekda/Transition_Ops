@@ -87,12 +87,28 @@ Bump if the branch changes ANY file backing an entry in `ASSETS`
 | `/icon-192.png` | `icon-192.png` |
 | `/icon-512.png` | `icon-512.png` |
 | `/va-math/` | `va-math/index.html` |
+| `/bdd-timeline/` | `bdd-timeline/index.html` |
 | `/vendor/react.production.min.js` | `vendor/react.production.min.js` |
 | `/vendor/react-dom.production.min.js` | `vendor/react-dom.production.min.js` |
 | Google Fonts `css2?family=...` URL | remote - no repo file; changing the URL string is itself an `sw.js` change |
 
-`/va-math/` and the two `vendor/` files are the ones agents forget. They are
-triggers. So is `manifest.json`. So are the icons.
+The landing pages `/va-math/` and `/bdd-timeline/` and the two `vendor/` files
+are the ones agents forget. They are triggers. So is `manifest.json`. So are
+the icons. Landing pages are the easiest miss of all: they are static HTML
+nobody thinks of as app code, and they are precached, so a change with no bump
+leaves offline users on the old page indefinitely.
+
+### THE MAPPING IS PART OF THE ASSETS LIST
+
+A commit that adds, removes, or renames an `ASSETS` entry in `sw.js` MUST patch
+the table above and both trigger commands below in the SAME commit. The list
+and its mapping are one artifact split across two files; letting them drift is
+how the next agent hits an entry this skill does not enumerate and has to stop.
+
+That is not hypothetical. `/bdd-timeline/` was added to `ASSETS` on 13 AUG 2026
+and this table was not updated, so the drift check fired on the very next
+branch that ran it. The audit that followed found exactly one missing row, but
+the cost was a stop-and-flag in the middle of unrelated work.
 
 Also bump when you change caching logic in `sw.js` itself (fetch handler,
 timeout, ASSETS list, install/activate). The old cache was built by the old
@@ -108,11 +124,11 @@ assumed.
 ### Verify the trigger
 Committed branch work, against main:
 
-    git diff --name-only main...HEAD -- index.html manifest.json icon-192.png icon-512.png va-math/index.html vendor/react.production.min.js vendor/react-dom.production.min.js
+    git diff --name-only main...HEAD -- index.html manifest.json icon-192.png icon-512.png va-math/index.html bdd-timeline/index.html vendor/react.production.min.js vendor/react-dom.production.min.js
 
 Uncommitted working tree:
 
-    git diff --name-only HEAD -- index.html manifest.json icon-192.png icon-512.png va-math/index.html vendor/react.production.min.js vendor/react-dom.production.min.js
+    git diff --name-only HEAD -- index.html manifest.json icon-192.png icon-512.png va-math/index.html bdd-timeline/index.html vendor/react.production.min.js vendor/react-dom.production.min.js
 
 Any output = bump REQUIRED. Empty output = bump not required; say so explicitly
 in the handoff rather than staying silent.
