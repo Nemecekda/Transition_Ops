@@ -1,0 +1,119 @@
+#!/bin/sh
+# Transition OPS — pre-commit branch guard.
+#
+# Refuses any commit made while HEAD is on main, or while HEAD is detached.
+#
+# WHY THIS IS A HOOK AND NOT A VALIDATION-GATE STEP. The gate is a procedure an
+# operator chooses to run. Both recorded failures happened because the check was
+# never invoked at all, not because it was invoked and gave a wrong answer:
+#
+#   6 AUG 2026  — ops/gaplog-988-fix was created correctly, Dean merged it in
+#                 GitHub Desktop, HEAD followed to main, and the next commit
+#                 landed on main.
+#   14 AUG 2026 — recurred. ops/j1-coverage-integrity was merged mid-session and
+#                 the next commit, a docs-only skill patch, landed on main. A
+#                 memory describing this exact failure already existed.
+#
+# The second occurrence is the argument for a hook. The branch guard was present
+# on every app-code commit in that session and was dropped on the one commit
+# that felt low-stakes. The reasoning that skips it is "this one cannot hurt
+# production" — but the guard does not protect production, it protects the
+# branch invariant. deploy-discipline forbids direct commits to main by name,
+# and a docs commit on main violates that exactly as much as a code commit does.
+#
+# git invokes this on every `git commit`. Nobody has to remember it.
+#
+# ACTIVATION — COPY INTO .git/hooks. DO NOT POINT core.hooksPath AT THIS FILE:
+#
+#     cp .githooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+#
+# THIS FILE IS THE SOURCE OF RECORD. THE INSTALLED COPY IS WHAT RUNS.
+#
+# The obvious activation, `git config core.hooksPath .githooks`, is WRONG here,
+# and the verification matrix caught it before handoff. core.hooksPath resolves
+# relative to the worktree, and this file is version controlled, so it exists
+# only on branches where it has been committed. On main — the one branch this
+# guard exists to protect — the directory is absent, git finds no hook, and the
+# commit proceeds. That was not theory: a test commit landed on main with
+# core.hooksPath set, because the hook it pointed at did not exist there.
+#
+# .git/hooks/ lives outside the worktree and is unaffected by branch switches or
+# by checking out older commits, so the installed copy is present wherever HEAD
+# goes. That is the property this guard requires.
+#
+# Neither .git/config nor .git/hooks is version controlled, so a clone does not
+# arm this. It protects the machine it is installed on, which is where both
+# failures occurred; it is not a repo-wide guarantee. Re-run the copy after
+# editing this file — the installed copy does not track the source.
+#
+# DELIBERATE OVERRIDE, when a commit on main is genuinely intended:
+#
+#     ALLOW_MAIN_COMMIT=1 git commit ...
+#
+# An environment variable rather than a flag: it cannot be set by accident, it
+# is visible in the command itself, and it survives into the transcript so the
+# decision is auditable afterwards. The override announces itself loudly — a
+# silent escape hatch is how a guard rots into decoration.
+#
+# `git commit --no-verify` bypasses every pre-commit hook. That is git's design
+# and this hook does not try to defeat it. Bypassing is a second deliberate act,
+# which is the whole point.
+
+set -e
+
+PROTECTED="main"
+
+# --symbolic-full-name is empty on a detached HEAD, which is how we tell the two
+# states apart. `git branch --show-current` is also empty when detached, so it
+# cannot distinguish "detached" from "error" on its own.
+REF=$(git symbolic-ref --quiet HEAD 2>/dev/null || true)
+
+if [ -z "$REF" ]; then
+    if [ "$ALLOW_MAIN_COMMIT" = "1" ]; then
+        printf '\n*** PRE-COMMIT GUARD OVERRIDDEN — committing on a DETACHED HEAD ***\n'
+        printf '    ALLOW_MAIN_COMMIT=1 was set. This commit is not on any branch\n'
+        printf '    and is easy to lose. Attach it to a branch when you are done.\n\n'
+        exit 0
+    fi
+    printf '\n=======================================================================\n'
+    printf 'PRE-COMMIT GUARD: REFUSED — HEAD is DETACHED\n'
+    printf '=======================================================================\n\n'
+    printf 'HEAD is not on a branch, so the intended target cannot be verified.\n'
+    printf 'A commit made here belongs to no branch and is trivially lost.\n\n'
+    printf 'Attach it first:\n\n'
+    printf '    git switch -c ops/<descriptor>\n\n'
+    printf 'Or, if this is genuinely intended:\n\n'
+    printf '    ALLOW_MAIN_COMMIT=1 git commit ...\n\n'
+    exit 1
+fi
+
+BRANCH=${REF#refs/heads/}
+
+if [ "$BRANCH" != "$PROTECTED" ]; then
+    exit 0
+fi
+
+if [ "$ALLOW_MAIN_COMMIT" = "1" ]; then
+    printf '\n*** PRE-COMMIT GUARD OVERRIDDEN — committing directly to %s ***\n' "$PROTECTED"
+    printf '    ALLOW_MAIN_COMMIT=1 was set, so this commit is proceeding.\n'
+    printf '    main auto-publishes via Netlify. If this reaches origin it is a\n'
+    printf '    live deployment to serving veterans. That had better be intended.\n\n'
+    exit 0
+fi
+
+printf '\n=======================================================================\n'
+printf 'PRE-COMMIT GUARD: REFUSED — you are on %s\n' "$PROTECTED"
+printf '=======================================================================\n\n'
+printf 'deploy-discipline forbids direct commits to %s. Netlify auto-publishes\n' "$PROTECTED"
+printf 'this branch, so %s IS production.\n\n' "$PROTECTED"
+printf 'This most often happens because a GitHub Desktop merge moved HEAD off\n'
+printf 'the branch you created earlier in the session. Nothing announces that.\n\n'
+printf 'Move the work to a branch — your staged changes are untouched:\n\n'
+printf '    git switch -c ops/<descriptor>\n'
+printf '    git commit ...\n\n'
+printf 'If a commit already landed on %s, preserve it before resetting:\n\n' "$PROTECTED"
+printf '    git branch ops/<descriptor> <sha>\n'
+printf '    git reset --hard origin/%s\n\n' "$PROTECTED"
+printf 'If committing to %s is genuinely intended:\n\n' "$PROTECTED"
+printf '    ALLOW_MAIN_COMMIT=1 git commit ...\n\n'
+exit 1
