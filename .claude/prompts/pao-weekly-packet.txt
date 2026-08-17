@@ -30,12 +30,41 @@ succeeded — record it in sources_failed and keep going with what you have:
 
 YOUR TASK
 
-1. Compute the delta since the baseline:
-   - WHATS_NEW entries newer than last_whatsnew_version
-   - V-entries after last_v_entry
-   - RESOURCES entries beyond last_resources_count
+1. Compute the delta since the baseline. THE DELTA IS POSITIONAL, NEVER
+   IMPRESSIONISTIC. You decide what is new by WHERE it sits in the file
+   relative to the baseline marker, never by whether an entry looks new,
+   sounds recent, or is unfamiliar to you.
+
+   - WHATS_NEW: entries after last_whatsnew_version in the array.
+   - V-entries: entries after last_v_entry. Newest are at the END of the log.
+   - RESOURCES: count the entries in const RESOURCES. Call that N.
+       * N <= last_resources_count  ->  resources is []. STOP. No exceptions.
+         An unchanged count means nothing was added, whatever the entries look
+         like. An entry you do not recognize is an entry you have not read
+         before, not a new entry.
+       * N >  last_resources_count  ->  the delta is exactly the LAST
+         (N - last_resources_count) entries in array order, and nothing else.
+     State N and last_resources_count in your reasoning before you name a
+     single id, so the arithmetic is visible rather than assumed.
+
+   RUN 32030211413 GOT THIS WRONG AND IT IS WHY THE RULE IS NOW ARITHMETIC.
+   That packet reported resources as ["chatgpt-plus-veterans",
+   "veterans-forge"] against last_resources_count 47, while const RESOURCES
+   held exactly 47 entries. Both ids were already in the app - ordinals 43 and
+   23, inside the baseline, not beyond it. The true delta was []. Two of three
+   drafts were written announcing listings that had shipped weeks earlier.
+
+   You have ONLY Read. You cannot grep and you cannot pipe to a counter -
+   attempts to shell out will be denied, and that boundary is working. Counting
+   by reading is the job, not a workaround for it. If you genuinely cannot
+   establish N by reading, say so in sources_failed and report resources as [].
+   An unproven delta is reported as empty, never as a guess.
+
    If the delta is empty in all three, say so plainly and draft nothing. A quiet
-   week is a real outcome. Do not manufacture content to fill the packet.
+   week is a real outcome. Do not manufacture content to fill the packet. Do not
+   reach back for older material to give a thin week something to announce: a
+   packet drawing on entries inside the baseline is not a fuller week, it is a
+   wrong one.
 
 2. Draft, in the voice brand-voice defines and the channels pao-context lists:
    - TOPS Facebook (member voice, square card)
@@ -93,6 +122,21 @@ OUTPUT — a single JSON object in a fenced block, nothing else:
   "cvso_email_declined": "no ship this week clears the caseworker criterion",
   "flags": [{"date": "2026-09-02", "what": "...", "why_now": "..."}]
 }
+
+cvso_email IS AN OBJECT WHEN POPULATED, and null when declined. Only the null
+form was ever illustrated above, which left the populated shape to inference
+and took the renderer down on run 32030211413. It is stated here so it is not
+inferred again. Same three body fields as a draft, minus the channel:
+
+  "cvso_email": {
+    "body_annotated": "...[src: V-2026-013]...",
+    "body_clean": "...",
+    "note": "anything Dean should personalize or check"
+  }
+
+Exactly one of cvso_email and cvso_email_declined carries content. Populate the
+email and cvso_email_declined is null; decline it and cvso_email is null.
+Never both, never neither.
 
 sources_read and sources_total are counts of the FIVE paths above, not of
 drafts. They are how the renderer decides whether this packet is trustworthy.

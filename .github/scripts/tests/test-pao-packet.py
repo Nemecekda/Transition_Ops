@@ -111,6 +111,54 @@ if body:
     check("raw output preserved, nothing dropped",
           "could not produce a packet" in body.lower())
 
+print("== packet-cvso-object.json — RUN 32030211413, the payload that killed the renderer ==")
+# Regression fixture. This is the real envelope from the failed run, byte for
+# byte, not a reconstruction. Before the fix this raised TypeError at
+# fence_for() and the renderer exited 1 without writing a status file, which is
+# why the workflow's default FAILED held and a FLASH went up over a packet that
+# was actually fine. Every assertion below failed to exist that morning.
+body, status, proc = render("packet-cvso-object.json")
+check("renderer exits 0 on the payload that crashed it", body is not None, proc.stderr)
+check("no TypeError from fence_for", "TypeError" not in (proc.stderr or ""), proc.stderr)
+if body:
+    check("status OK", status == "OK", "was %r" % status)
+    # (a) populated cvso_email is an OBJECT, not a string. No fixture had ever
+    # exercised one: the prompt only ever illustrated null, so the null path and
+    # the declined path were the only paths under test.
+    check("object-shaped cvso_email renders", "CVSO / PARTNER EMAIL" in body)
+    check("clean copy offered for sending", "**Send this**" in body)
+    check("annotated copy collapsed, not primary",
+          body.count("Annotated copy") == 4)  # 3 drafts + the email
+    check("email body_clean carries no citation markers",
+          "**Veterans Forge** — Free hands-on AI" in body)
+    check("email note surfaced", "caseworker criterion" in body)
+    check("NOT dumped as a raw unrecognized shape", "Unrecognized shape" not in body)
+    # (b) the model appended a BRIEF after the fenced block despite the prompt
+    # saying "a single JSON object in a fenced block, nothing else". Extraction
+    # has to survive that, and the primary evidence block has to stay clean.
+    check("trailing BRIEF did not defeat extraction",
+          "Could not parse the packet output" not in body)
+    check("parsed path taken, envelope collapsed below it", "Full SDK envelope" in body)
+    inner_block = body.split("## Evidence", 1)[-1].split("<details>", 1)[0]
+    check("BRIEF is NOT inside the primary evidence JSON", "BRIEF" not in inner_block)
+    check("BRIEF is preserved in the full envelope", "BRIEF" in body)
+    check("flags survived to the packet", "2026-09-02" in body)
+
+print("== packet-resources-unchanged.json — count unchanged, delta is empty ==")
+# The DELTA half of the same incident. Run 32030211413 named two RESOURCES ids
+# as new while const RESOURCES still held 47 entries against a baseline of 47.
+# An empty resources delta beside a non-empty whatsnew delta must stay OK: a
+# renderer that collapsed it into QUIET would bury a real shipped change.
+body, status, proc = render("packet-resources-unchanged.json")
+if body:
+    check("status OK, NOT quiet", status == "OK", "was %r" % status)
+    check("empty resources delta is not a quiet week", "QUIET WEEK" not in body)
+    check("headline reports 0 new listings from the payload",
+          "1 shipped change(s), 0 verification entr(ies), 0 new listing(s)" in body)
+    check("new listings line reads none", "**New listings:** none" in body)
+    check("the one real change is still reported", "**WHATS_NEW:** v96" in body)
+    check("drafts still rendered for the change that did ship", "**Post this**" in body)
+
 print("== tools/make-social-card.py — brief schema still renders ==")
 proc = subprocess.run([sys.executable, CARD, "--self-test"], capture_output=True, text=True)
 check("card generator self-test passes", proc.returncode == 0,
