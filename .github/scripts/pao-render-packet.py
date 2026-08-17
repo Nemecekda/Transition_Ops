@@ -27,8 +27,16 @@ VOICE_DENYLIST = [
 
 
 def fence_for(text):
-    """Widest backtick run in the text, plus one, minimum three."""
-    runs = [len(m.group(0)) for m in re.finditer(r"`+", text or "")]
+    """Widest backtick run in the text, plus one, minimum three.
+
+    TOTAL BY CONSTRUCTION. Run 32030211413 died on this function's first line:
+    cvso_email arrived as an OBJECT, re.finditer refused it, and the packet went
+    down with a TypeError. A fence width is a formatting detail. It must never
+    be the thing that takes a packet down, whatever the drafter hands it.
+    """
+    if not isinstance(text, str):
+        text = "" if text is None else str(text)
+    runs = [len(m.group(0)) for m in re.finditer(r"`+", text)]
     return "`" * max(3, (max(runs) + 1) if runs else 3)
 
 
@@ -80,9 +88,22 @@ def packet_status(payload):
 
 
 def voice_violations(payload):
-    """Cheap, deterministic gate. Not a substitute for Dean reading it."""
+    """Cheap, deterministic gate. Not a substitute for Dean reading it.
+
+    COVERS THE CVSO EMAIL, which it did not until run 32030211413. The gate was
+    written to walk `drafts`, and for as long as cvso_email was null or declined
+    that was the whole outward-facing surface. The first week an email was
+    actually populated, the one artifact Dean pastes into a message to a partner
+    organization was the one artifact no gate had read - a leaked [src: marker
+    would have gone out to a caseworker. Same three checks, same field names,
+    same mechanical answer.
+    """
     out = []
-    for d in payload.get("drafts") or []:
+    bodies = list(payload.get("drafts") or [])
+    email = payload.get("cvso_email")
+    if isinstance(email, dict):
+        bodies.append(dict(email, channel="cvso-email"))
+    for d in bodies:
         if not isinstance(d, dict):
             continue
         ch = d.get("channel", "?")
@@ -152,6 +173,69 @@ def render_flags(payload):
     return "\n".join(s)
 
 
+def render_cvso(payload):
+    """The CVSO/partner email, in whichever shape the drafter produced.
+
+    THE GAP THAT KILLED RUN 32030211413. The prompt's OUTPUT block only ever
+    illustrated `"cvso_email": null`, so the POPULATED shape was never specified
+    and no fixture ever exercised one. Every green harness run had been testing
+    the null path and the declined path. The drafter, handed an underspecified
+    field, produced the shape every other body in the packet uses -
+    {body_annotated, body_clean, note} - which is the reasonable answer, and the
+    renderer was written for a bare string.
+
+    Both shapes are accepted here. The prompt has since been made explicit, and
+    this still stays permissive: a renderer that handles only the shape it was
+    promised is a renderer that files a FLASH the next time the drafter is
+    reasonable in a way nobody predicted. Rendering something Dean can read
+    beats being right about a schema.
+    """
+    email = payload.get("cvso_email")
+    clean = annotated = note = raw = ""
+
+    if isinstance(email, dict):
+        clean = email.get("body_clean") or ""
+        annotated = email.get("body_annotated") or ""
+        note = email.get("note") or ""
+        # Annotated-only is still a sendable email once Dean strips markers;
+        # showing it beats showing nothing and claiming the week was declined.
+        if not clean and annotated:
+            clean, annotated = annotated, ""
+            note = (note + " " if note else "") + \
+                "RENDERER: no body_clean in this packet - the copy above is the " \
+                "ANNOTATED body and still carries [src: markers. Strip them before sending."
+    elif isinstance(email, str):
+        clean = email
+    elif email:
+        # Some third shape entirely. Render it verbatim rather than dropping it:
+        # an awkward email in the packet is recoverable, a silently missing one
+        # is not, and silence is what a FLASH exists to prevent.
+        raw = json.dumps(email, indent=2, ensure_ascii=False, default=str)
+
+    if raw:
+        f = fence_for(raw)
+        return ("## CVSO / PARTNER EMAIL\n\n**Unrecognized shape - rendered raw so "
+                "nothing is lost.**\n\n" + f + "json\n" + raw + "\n" + f + "\n")
+
+    if clean.strip():
+        s = ["## CVSO / PARTNER EMAIL\n"]
+        f = fence_for(clean)
+        s.append("**Send this** (citations already removed):\n")
+        s.append(f + "\n" + clean + "\n" + f + "\n")
+        if annotated:
+            s.append("<details>\n<summary>Annotated copy — verify against this</summary>\n")
+            fa = fence_for(annotated)
+            s.append("\n" + fa + "\n" + annotated + "\n" + fa + "\n\n</details>\n")
+        if note:
+            s.append("_Note: %s_\n" % note)
+        return "\n".join(s)
+
+    if payload.get("cvso_email_declined"):
+        return ("## CVSO / PARTNER EMAIL\n\nDeclined this week: %s\n"
+                % payload["cvso_email_declined"])
+    return ""
+
+
 def main():
     payload_path, out_path, packet_date, run_id = sys.argv[1:5]
     status_file = sys.argv[5] if len(sys.argv) > 5 else None
@@ -196,13 +280,9 @@ def main():
             s.append(render_drafts(payload))
             s.append(render_briefs(payload))
         s.append(render_flags(payload))
-        if payload.get("cvso_email"):
-            s.append("## CVSO / PARTNER EMAIL\n")
-            f = fence_for(payload["cvso_email"])
-            s.append(f + "\n" + payload["cvso_email"] + "\n" + f + "\n")
-        elif payload.get("cvso_email_declined"):
-            s.append("## CVSO / PARTNER EMAIL\n")
-            s.append("Declined this week: %s\n" % payload["cvso_email_declined"])
+        cvso = render_cvso(payload)
+        if cvso:
+            s.append(cvso)
 
         viol = voice_violations(payload)
         if viol:
