@@ -232,3 +232,95 @@ still outstanding and the answer is cheap.**
 
 **No further sends of any kind.** The WING / Guard-first variant remains drafted,
 defect-fixed, and unsent.
+
+---
+
+## 2026-08-17 · FOLLOW-UP: SHIPPED-SINCE UPDATE + A DIRECT YES/NO → American Legion
+
+**Status: SENT. Awaiting response. TICKLER 31 AUG 2026 if no reply.**
+
+| | |
+|---|---|
+| **Date sent** | 17 AUG 2026, 10:43 UTC |
+| **Sent by** | Dean |
+| **Recipients** | **Joe Sharpe** (`jsharpe@legion.org`) · **Steven** (`sbetsch@legion.org`) |
+| **Variant** | Per the subject line: **"Transition OPS update — and a straight question on the post directory"** |
+| **Artifact** | **Email, links only — no attachment** |
+| **Context** | **Follow-up to the 6 AUG send**, which had no response in 11 days |
+
+### DISTRIBUTION CHANGED FROM THE 6 AUG SEND — recorded because it is a decision
+
+The 6 AUG send went to **Joe Sharpe, Steven, and Chair Espinoza**
+(`paul64espi@yahoo.com`). **This one did not include Chair Espinoza.** Narrowed
+to the two staff contacts. A future follow-up should know the Chair has the
+6 AUG update and not the 17 AUG one, and that the direct question was put to
+staff rather than to the Chair.
+
+### CONTENT — three things shipped since, then the question
+
+1. **BDD timeline page** (`transitionops.org/bdd-timeline`) — plain-language
+   guide to the disability claim filing window, sourced to VA guidance and the
+   M21-1 manual. **The claim-prep step names the American Legion specifically**
+   and tells every member to schedule a pre-claim consultation with a VSO.
+2. **FIND YOUR POST button** — the Legion's card in the app's VSO directory now
+   carries a one-tap route to **legion.org's own post locator**. Framed as: a
+   member one tap from the BDD checklist is one more tap from their nearest post.
+3. **Verified ChatGPT Plus listing** — free year for members within 12 months of
+   transition, **with the fine print surfaced first**: it renews at the paid rate
+   after year one, and app-store subscribers must cancel before claiming. **The
+   catch leads, per doctrine.**
+
+### THE ASK — narrowed to one question with a binary answer
+
+**"Is this something the Legion wants to pursue? If yes, point me at the right
+person at the Department and I'll take it from there."**
+
+The 6 AUG ask was two open-ended items (their read on where it helps a post; a
+path to a post directory). **This one asks for a yes/no and a name.** It also
+states the no-case in advance — *"if it's not the right time, no hard feelings,
+the app routes members to legion.org regardless"* — which removes the cost of
+declining and makes silence, if it comes, mean something.
+
+### THE POST-DIRECTORY ASK — Dean answered the 6 AUG flag himself
+
+The 6 AUG entry flagged that a POC roster **had never been scoped as a feature**
+and that **personal contact data carries obligations the app has never taken
+on**. This send resolves the shape of that without waiting for a ruling:
+
+- **He did the homework and said so:** neither the Legion's nor the VFW's post
+  data is published in a form built for reuse.
+- **"I won't automate anyone's member-facing systems without asking."** Scraping
+  is off the table, stated to the counterparty rather than merely decided.
+- **The proposal is a data-sharing arrangement, not an integration:** the
+  Department shares its Wisconsin post roster in whatever format exists, the app
+  carries it, refreshed on whatever cadence works, **a named contact on each
+  side**, and **the Legion owns its own data**.
+
+**This narrows the obligation but does not remove it.** A roster with commanders
+and contacts is still personal contact data the app has never carried, and there
+is still no design, no verification standard, and no decision on whether it is
+app content or reference material. **If the Legion says yes, that work starts
+with a ruling, not with a commit.**
+
+### WHAT IS NOT KNOWN
+
+- **No response to the 6 AUG send**, and none to this one yet.
+- Whether either was opened.
+- **Silence now reads differently than it did on 6 AUG.** These are people who
+  already know the app and have now been asked a direct, low-cost question with
+  the no-case pre-authorized. **A non-answer to that is closer to an answer.**
+
+### TICKLER — 31 AUG 2026
+
+**If no reply by 31 AUG, the disposition is Dean's call, not an automatic
+resend.** Two unanswered sends to the same contacts is the point at which
+sending a third stops being follow-up.
+
+### STANDING HOLD — OVERTAKEN BY EVENTS, FLAGGED FOR THE COMMANDER
+
+The 6 AUG block closes with **"STANDING HOLD — UNCHANGED. No further sends of
+any kind."** This send post-dates it. **Recorded as observed, not amended** —
+the log is append-only and the hold was Dean's to lift. **Dean: confirm whether
+the hold is lifted generally or was a one-time exception for this thread.** The
+WING / Guard-first variant remains drafted, defect-fixed, and unsent, and stays
+that way until that is answered.
