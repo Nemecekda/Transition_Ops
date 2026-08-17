@@ -88,9 +88,22 @@ def packet_status(payload):
 
 
 def voice_violations(payload):
-    """Cheap, deterministic gate. Not a substitute for Dean reading it."""
+    """Cheap, deterministic gate. Not a substitute for Dean reading it.
+
+    COVERS THE CVSO EMAIL, which it did not until run 32030211413. The gate was
+    written to walk `drafts`, and for as long as cvso_email was null or declined
+    that was the whole outward-facing surface. The first week an email was
+    actually populated, the one artifact Dean pastes into a message to a partner
+    organization was the one artifact no gate had read - a leaked [src: marker
+    would have gone out to a caseworker. Same three checks, same field names,
+    same mechanical answer.
+    """
     out = []
-    for d in payload.get("drafts") or []:
+    bodies = list(payload.get("drafts") or [])
+    email = payload.get("cvso_email")
+    if isinstance(email, dict):
+        bodies.append(dict(email, channel="cvso-email"))
+    for d in bodies:
         if not isinstance(d, dict):
             continue
         ch = d.get("channel", "?")

@@ -100,6 +100,15 @@ if body:
     check("caught leaked citation marker", "still contains [src:" in body)
     check("caught exclamation mark", "exclamation mark" in body)
     check("caught performative phrase", "performative phrase" in body)
+    # The CVSO email is outward-facing copy Dean pastes into a message to a
+    # partner organization, and until run 32030211413 the gate never read it -
+    # it walked `drafts` only, which was the whole surface for as long as the
+    # email was null. A leaked [src: marker would have reached a caseworker.
+    check("gate reads the CVSO email, not just the drafts",
+          "cvso-email: body_clean still contains [src:" in body)
+    check("caught exclamation mark in the email", "cvso-email: exclamation mark" in body)
+    check("caught performative phrase in the email",
+          "cvso-email: performative phrase" in body)
 
 print("== packet-malformed.json — result present but not JSON ==")
 body, status, proc = render("packet-malformed.json", "2026-09-21")
@@ -143,6 +152,7 @@ if body:
     check("BRIEF is NOT inside the primary evidence JSON", "BRIEF" not in inner_block)
     check("BRIEF is preserved in the full envelope", "BRIEF" in body)
     check("flags survived to the packet", "2026-09-02" in body)
+    check("this week's email is clean under the gate", "VOICE GATE" not in body)
 
 print("== packet-resources-unchanged.json — count unchanged, delta is empty ==")
 # The DELTA half of the same incident. Run 32030211413 named two RESOURCES ids
