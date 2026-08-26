@@ -879,3 +879,21 @@ Body carried the renewal warning rather than ending on the offer. Launch URL
 deeper deep-link exists — there is no category, hash, or search parameter, no DOM `id` on
 resource cards, and no `scrollIntoView` anywhere in the app. Ruled acceptable because the
 push body carries the material facts on its own.
+
+---
+
+V-2026-015 | 26 AUG 2026 | SkillBridge rank-tier primary-source pass
+Method: project-mount source extraction (unzip-to-text), keyword scan
+with pre-stated success conditions, full-table reads. Run by S2
+(chat session), attested by Dean.
+Sources verified: AR 600-81, 25 MAR 2026 (eff 25 APR 2026, supersedes
+12 MAR 2024 ed.), Table 5-1 | AFI 36-2671, 31 MAR 2026, Table 1 |
+SPFI 36-2672, 31 MAR 2026, Table 1 | MARADMIN 280/24, 17 JUN 2024
+(eff 31 AUG 2024) | CI 1040.7 (USCG retains 180-day ceiling).
+Findings: rank-tiered durations 60-120 days (USCG excepted at 180);
+approval elevated to O-6/GO tiers; Army Cat III = first GO w/ GCMCA,
+O-4 and above; AF O-6 ineligible absent ETP. Navy: NO SOURCE — gap
+held open, no Navy tiers asserted anywhere in app copy.
+Live-file defect confirmed against main prior to patch: blanket
+180-day and O-4+ approval language, index.html:2849/2903 plus
+residuals :2812/:8761 (Patch E).
