@@ -1,4 +1,4 @@
-// TOPS Resume Builder — server-side proxy to Anthropic API
+// TOPS Resume Builder — server-side proxy to OpenAI API
 // Stateless: nothing stored, nothing logged. Key lives in Netlify env only.
 exports.handler = async function (event) {
   const headers = {
@@ -114,31 +114,24 @@ Every degree they stated (B.A./B.S./M.A./M.S./M.B.A./PhD etc.), one line each, w
 End with one line: "TIP:" naming the single highest-value fact to add before sending - specific to THEIR draft, not generic advice.`;
 
   try {
-    const resp = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: mode === "federal" ? 1900 : 1300,
-        system: [{ type: "text", text: mode === "federal" ? systemFederal : system, cache_control: { type: "ephemeral" } }],
-        messages: [{ role: "user", content: userBlock }]
-      })
+    const { createOpenAIClient, responseText } = require("./openai-client");
+    const client = createOpenAIClient();
+    const response = await client.responses.create({
+      model: "gpt-5.6-luna",
+      instructions: mode === "federal" ? systemFederal : system,
+      input: userBlock,
+      max_output_tokens: mode === "federal" ? 1900 : 1300,
+      reasoning: { effort: "none" },
+      store: false
     });
-    const data = await resp.json();
-    if (!resp.ok) {
-      const msg = (data && data.error && data.error.message) || "generation failed";
-      const friendly = /credit|billing|limit/i.test(msg)
-        ? "The free generator has hit its monthly limit. It resets next month — meanwhile, the Resume Starter on each career page still works."
-        : "Generation hiccup — try again in a minute.";
-      return { statusCode: 502, headers, body: JSON.stringify({ error: friendly }) };
-    }
-    const text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("\n").trim();
+    const text = response.status === "completed" ? responseText(response) : "";
+    if (!text) throw new Error("generation incomplete");
     return { statusCode: 200, headers, body: JSON.stringify({ bullets: text }) };
   } catch (e) {
-    return { statusCode: 502, headers, body: JSON.stringify({ error: "Network hiccup — try again in a minute." }) };
+    const msg = String(e && e.message || "generation failed");
+    const friendly = /credit|billing|limit|quota/i.test(msg)
+      ? "The free generator has hit its monthly limit. It resets next month — meanwhile, the Resume Starter on each career page still works."
+      : "Generation hiccup — try again in a minute.";
+    return { statusCode: 502, headers, body: JSON.stringify({ error: friendly }) };
   }
 };

@@ -397,24 +397,19 @@ exports.handler = async (event) => {
   }
 
   try {
-    const resp = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 800,
-        system: (function(){
+    const { createOpenAIClient, responseText } = require("./openai-client");
+    const client = createOpenAIClient();
+    const response = await client.responses.create({
+      model: "gpt-5.6-luna",
+      max_output_tokens: 800,
+      instructions: (function(){
           var sys = [
-            { type: "text", text: RULES },
-            { type: "text", text: MANIFEST },
-            { type: "text", text: CORPUS, cache_control: { type: "ephemeral" } }
+            RULES,
+            MANIFEST,
+            CORPUS
           ];
           if (typeof body.context === "string" && body.context.trim()) {
-            sys.push({ type: "text", text: "USER'S APP CONTEXT (from their own device, provided by them \u2014 use it to personalize sequencing; do not repeat it back verbatim): " + body.context.slice(0, 400) });
+            sys.push("USER'S APP CONTEXT (from their own device, provided by them \u2014 use it to personalize sequencing; do not repeat it back verbatim): " + body.context.slice(0, 400));
           }
           if (typeof body.daysOut === "number" && isFinite(body.daysOut) && Math.abs(body.daysOut) < 20000) {
             var d = Math.round(body.daysOut);
@@ -433,19 +428,17 @@ exports.handler = async (event) => {
             if (d >= 240) lines.push("- SkillBridge: guidance runway intact (start command conversation 8-12 months out).");
             else if (d >= 0) lines.push("- SkillBridge: past the recommended 8-12 month runway; feasibility at this point is a command decision \u2014 route to their command, do not declare impossible.");
             else lines.push("- SkillBridge: not applicable (pre-separation program).");
-            sys.push({ type: "text", text: lines.join("\n") });
+            sys.push(lines.join("\n"));
           }
-          return sys;
+          return sys.join("\n\n--- VERIFIED CONTEXT ---\n\n");
         })(),
-        messages: msgs
-      })
+      input: msgs,
+      reasoning: { effort: "none" },
+      store: false
     });
 
-    if (!resp.ok) {
-      return { statusCode: 502, headers, body: JSON.stringify({ error: "The Navigator is briefly unavailable. Try again in a moment." }) };
-    }
-    const data = await resp.json();
-    const rawReply = (data.content || []).filter(c => c.type === "text").map(c => c.text).join("") || "No response — try again.";
+    const rawReply = response.status === "completed" ? responseText(response) : "";
+    if (!rawReply) throw new Error("generation incomplete");
     // Record BEFORE stripping (the tag is the signal), then strip so the member
     // never sees it. Awaited so the write is not cut off when the function
     // freezes, but it can only ever resolve -- recordGap swallows everything.

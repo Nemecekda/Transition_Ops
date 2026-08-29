@@ -1,0 +1,14 @@
+{
+  "name": "transition-ops",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "test:openai-migration": "node scripts/openai-migration-regression.js"
+  },
+  "dependencies": {
+    "openai": "7.8.0"
+  }
+}
