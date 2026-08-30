@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.6"
+  version: "0.7"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.6 is PENDING until the RDM regression suite
+Version 0.7 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -41,7 +41,8 @@ Any violation below fails the draft regardless of its aggregate score:
    belongs in descriptive content, not silent identity rewrites.
 4. Every distinct employer/title/date combination remains a distinct role.
 5. Calendar dates come only from explicit calendar dates. Tenure is not a date.
-   Missing dates remain `MISSING` in the ledger and bracketed in a draft.
+   Missing dates remain `MISSING` only in the internal/member-reviewed ledger.
+   Civilian output omits an unknown date segment; federal output may bracket it.
 6. Every number and dollar figure is preserved exactly; no number, percentage,
    headcount, budget, duration, or scale may be inferred from military structure.
 7. A missing quantified result lowers the score or becomes an improvement
@@ -74,7 +75,8 @@ hide a blocker.
 - Grounding and claim trace: every factual clause has ledger support.
 - Exact identity preservation: identity fields remain byte-exact.
 - Role separation: distinct roles are not merged or omitted.
-- Date completeness: explicit dates are retained and missing dates are visible.
+- Date completeness: explicit dates are retained; missing civilian dates are
+  recorded as `NEEDS MEMBER FACT` gaps without rendering unsupported content.
 - Quantified impact: supplied scale and outcomes are used exactly; missing
   quantification is identified without invention.
 - Job-posting alignment: supported keywords are used; unsupported requirements
@@ -125,15 +127,35 @@ An empty clause inventory must fail closed before the audit call: return a safe
 `quality_gate` response with blocking `missing_trace`, make zero audit calls,
 and never construct a structured-output `claim_id` enum with an empty list.
 
+Before drafting or auditing, build a request-local canonical fact catalog from
+the confirmed ledger. Give every role-scoped and global fact a closed ID. Role
+claims may cite only facts owned by that role. A global unlinked number cannot
+support a role bullet or an ambiguous summary claim. Audit `fact_refs` must be
+drawn from the closed catalog; unknown IDs and cross-role references fail closed
+as `missing_trace` or `unsupported_claim`. Catalog IDs carry no member identifier
+and may not enter logs, persistence, or analytics.
+
 ## FORMAT RULES
 
-Civilian mode is one-page-oriented: concise summary, concrete skills, distinct
-roles, short evidence-bearing bullets, exact credentials, and visible brackets
-for missing essentials. No federal-only fields.
+Civilian mode is candidate-ready and one-page-oriented: concise summary,
+concrete skills, distinct roles, short evidence-bearing bullets, and exact
+credentials. Unknown name/contact/header fields, role location/date segments,
+and education years are omitted. `MISSING` remains explicit only in the
+internal/member-reviewed ledger. Missing optional civilian fields are `NEEDS
+MEMBER FACT` audit gaps, not blockers when the draft makes no unsupported claim.
+Civilian output contains no brackets, literal `MISSING`, `TIP:`, or federal-only
+fields. Improvement guidance belongs in the response's gaps, outside the resume.
 
 Federal mode may be longer and retain more military specificity. It uses
 specialized-experience detail and bracketed USAJOBS fields. Never invent hours,
 salary, supervisor details, series, grade, citizenship, or veterans' preference.
+Federal bracket behavior is unchanged.
+
+Job title, employer or unit, degree, school, certification, and license are
+byte-exact identities. Civilian translation is allowed only in summaries and
+duty/accomplishment language, never in an identity field. Runtime prompts must
+not contain unrelated numeric exemplars: no example headcounts, budgets,
+percentages, states, locations, or outcomes may become candidate facts.
 
 ## PRIVACY AND COST
 
@@ -348,6 +370,41 @@ all existing hard input bounds.
   a fact-request cap; the external monthly cap remains `UNVERIFIED`.
 - **RDM-53 Fact hard stop:** any fact extraction or repair cap above 3500 must
   fail governance without a new architecture review.
+- **RDM-54 Civilian header:** missing civilian name, email, phone, or location
+  must produce no header placeholder, brackets, or literal `MISSING`.
+- **RDM-55 Optional role fields:** missing civilian role location and dates must
+  be omitted; when no claim is made, audit must return `NEEDS MEMBER FACT`, not
+  `FAIL`.
+- **RDM-56 Education year:** education without a year must render the byte-exact
+  degree and school while omitting the year and any placeholder.
+- **RDM-57 Federal behavior:** federal required-field brackets must remain
+  unchanged.
+- **RDM-58 Exact identities:** every title, employer or unit, degree, school,
+  certification, and license must remain byte-exact.
+- **RDM-59 Civilian guidance:** civilian output must contain no `TIP:`;
+  improvement advice must appear only in response gaps.
+- **RDM-60 Prompt isolation:** runtime prompts must contain no unrelated numeric
+  exemplar capable of becoming a candidate claim.
+- **RDM-61 Global numbers:** global `1,200 employees` and `18 states` without
+  role linkage must appear in neither a role bullet nor an ambiguous summary.
+- **RDM-62 Role numbers:** a role-linked number may support only that role.
+- **RDM-63 Closed fact refs:** audit `fact_refs` must be closed request-local
+  catalog IDs; unknown or cross-role references must fail closed.
+- **RDM-64 Live-shape reproduction:** a synthetic, structurally equivalent
+  six-role reproduction of the supplied live ledger must produce a releasable
+  civilian draft with exact synthetic identities, unknown optional fields
+  omitted, and no unsupported `1,200 employees` or `18 states` claim. Never
+  persist the member's verbatim ledger or depend on an attachment path.
+- **RDM-65 Civilian contamination:** civilian brackets, literal `MISSING`, or
+  embedded `TIP:` must cause withholding.
+- **RDM-66 UI guidance:** civilian UI must not instruct members to fill brackets;
+  federal guidance remains mode-specific.
+- **RDM-67 Unchanged controls:** facts/repair remain 3500, civilian 2200,
+  federal 1900, audit 4000, with unchanged call count, zero retries, draft limit,
+  posting isolation, `store: false`, and no logging or persistence.
+- **RDM-68 Cost and external cap:** the architecture adds no API call or cap, so
+  maximum incremental API exposure is $0; external monthly cap remains
+  `UNVERIFIED`.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -358,6 +415,6 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.6 until all cases execute and evidence
+Keep registry item #6 PENDING at version 0.7 until all cases execute and evidence
 is reviewed. After successful execution, force-mod proposes the smallest
 evidence-supported revision and Commander rules on promotion to CODIFIED 1.0.

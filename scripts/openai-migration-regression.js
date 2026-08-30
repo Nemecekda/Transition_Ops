@@ -28,11 +28,18 @@ function clauseInventoryFromAuditRequest(request) {
   return JSON.parse(match[1]);
 }
 
+function factCatalogFromAuditRequest(request) {
+  const match = String(request.input || "").match(/<UNTRUSTED_FACT_CATALOG>\n([\s\S]*?)\n<\/UNTRUSTED_FACT_CATALOG>/);
+  assert.ok(match, "audit request includes the closed fact catalog");
+  return JSON.parse(match[1]);
+}
+
 function passingAudit(request, changes) {
+  const catalog = factCatalogFromAuditRequest(request);
   const audit = {
     audit_verdict: "pass",
     blockers: [],
-    claim_trace: clauseInventoryFromAuditRequest(request).map((claim) => ({ claim_id: claim.claim_id, section: "resume", fact_refs: ["confirmed fact sheet"], posting_refs: [], transform: "exact", verdict: "supported" })),
+    claim_trace: clauseInventoryFromAuditRequest(request).map((claim) => ({ claim_id: claim.claim_id, section: "resume", fact_refs: [(catalog.find((fact) => fact.owner === claim.owner && !fact.unlinked_number) || catalog.find((fact) => fact.owner === "global" && !fact.unlinked_number) || catalog[0]).fact_id], posting_refs: [], transform: "exact", verdict: "supported" })),
     scorecard: auditDimensions.map((dimension) => ({ dimension, status: "PASS", evidence: "Synthetic fixture passed this dimension." })),
     supported_keywords: ["preventive maintenance"],
     unmet_gaps: []
@@ -83,7 +90,7 @@ async function run() {
     skills: "Planning",
     certs: "PMP"
   }));
-  assert.equal(result.statusCode, 200);
+  assert.equal(result.statusCode, 200, result.body);
   assert.equal(calls.length - callsBeforeCleanFacts, 1);
   assert.equal(JSON.parse(result.body).factSheet, facts);
   assert.deepEqual(JSON.parse(result.body).warnings, []);
@@ -205,7 +212,7 @@ async function run() {
   assert.deepEqual(JSON.parse(result.body).warnings, unresolvedBody.warnings);
   assert.match(JSON.parse(result.body).error, /Resolve the fact-sheet warnings before drafting/);
 
-  nextResponse = { status: "completed", output_text: "```text\n**Synthetic Logistics Leader - Synthetic Unit**\n# PROFESSIONAL EXPERIENCE\n[Hours per week: __]\nLed a 15-person team managing a $2M equipment inventory.\nTIP: Add dates.\n```" };
+  nextResponse = { status: "completed", output_text: "```text\n**Synthetic Logistics Leader - Synthetic Unit**\n# PROFESSIONAL EXPERIENCE\nLed a 15-person team managing a $2M equipment inventory.\n```" };
   result = await resume.handler(post({
     action: "draft",
     role: "Synthetic logistics leader",
@@ -217,7 +224,7 @@ async function run() {
   assert.equal(result.statusCode, 200);
   assert.match(JSON.parse(result.body).bullets, /Synthetic Logistics Leader - Synthetic Unit/);
   assert.doesNotMatch(JSON.parse(result.body).bullets, /```|\*\*|^#/m);
-  assert.match(JSON.parse(result.body).bullets, /\[Hours per week: __\]/);
+  assert.doesNotMatch(JSON.parse(result.body).bullets, /\[|MISSING|TIP:/);
   assert.equal(calls.at(-1).model, "gpt-5.6-terra");
 
   const callsBeforeTargetChecks = calls.length;
@@ -234,7 +241,7 @@ async function run() {
   assert.equal(calls.length, callsBeforeTargetChecks);
 
   for (const specificTarget of ["Talent Development Manager", "Program Analyst", "Recruiter", "Head of Talent"]) {
-    nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed a 15-person team managing a $2M equipment inventory.\nTIP: Add dates." };
+    nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed a 15-person team managing a $2M equipment inventory." };
     result = await resume.handler(post({
       action: "draft",
       target: specificTarget,
@@ -245,7 +252,7 @@ async function run() {
     assert.equal(calls.at(-1).model, "gpt-5.6-terra");
   }
 
-  nextResponse = { status: "completed", output_text: "HR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director - Synthetic Command\nManaged Workday reporting.\nTIP: Add calendar dates." };
+  nextResponse = { status: "completed", output_text: "HR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director - Synthetic Command\nManaged Workday reporting." };
   const callsBeforeCorrectedDraft = calls.length;
   result = await resume.handler(post({
     action: "draft",
@@ -262,7 +269,7 @@ async function run() {
 
   const colonRoleSource = "Served as HR Director at Synthetic Command and later served as Deputy Director of Personnel: talent management, succession planning, and workforce reporting.";
   const colonRoleFacts = multiRoleFacts.replace("JOB TITLE (EXACT): Deputy Director", "JOB TITLE (EXACT): Deputy Director of Personnel");
-  nextResponse = { status: "completed", output_text: "HR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director of Personnel - Synthetic Command\nManaged talent programs.\nTIP: Add calendar dates." };
+  nextResponse = { status: "completed", output_text: "HR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director of Personnel - Synthetic Command\nManaged talent programs." };
   const callsBeforeColonRoleDraft = calls.length;
   result = await resume.handler(post({
     action: "draft",
@@ -302,7 +309,7 @@ async function run() {
   assert.deepEqual(lastAuditCall.text.format.schema.properties.scorecard.items.required, ["dimension", "status", "evidence"]);
   assert.equal(lastAuditCall.text.format.schema.properties.scorecard.items.properties.dimension.enum.length, 10);
 
-  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nImproved customer satisfaction.\nTIP: Add dates." };
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nImproved customer satisfaction." };
   auditResponseQueue.push((request) => {
     const audit = passingAudit(request);
     const claimId = clauseInventoryFromAuditRequest(request).find((item) => /customer satisfaction/.test(item.claim_text)).claim_id;
@@ -318,7 +325,7 @@ async function run() {
   assert.equal(Object.hasOwn(JSON.parse(result.body), "bullets"), false);
   assert.match(JSON.parse(result.body).blockers.join(" "), /unsupported|quality dimensions failed/);
 
-  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work." };
   auditResponseQueue.push((request) => passingAudit(request, { audit_verdict: "withhold" }));
   result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
   assert.equal(result.statusCode, 422);
@@ -332,7 +339,7 @@ async function run() {
   assert.equal(calls.length - callsBeforeUnsupported600, 1);
   assert.equal(calls.slice(callsBeforeUnsupported600).filter((call) => call.text && call.text.format).length, 0);
 
-  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work." };
   auditResponseQueue.push((request) => {
     const audit = passingAudit(request);
     audit.claim_trace.pop();
@@ -346,7 +353,7 @@ async function run() {
     (audit) => { audit.claim_trace[1].claim_id = audit.claim_trace[0].claim_id; },
     (audit) => { audit.claim_trace[0].claim_id = "C999"; }
   ]) {
-    nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
+    nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work." };
     auditResponseQueue.push((request) => { const audit = passingAudit(request); mutateIds(audit); return audit; });
     result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
     assert.equal(result.statusCode, 502);
@@ -355,7 +362,7 @@ async function run() {
   }
 
   const duplicateClause = "Led planning work.";
-  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\n" + duplicateClause + "\n" + duplicateClause + "\nTIP: Add dates." };
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\n" + duplicateClause + "\n" + duplicateClause };
   auditResponseQueue.push((request) => passingAudit(request));
   result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
   assert.equal(result.statusCode, 200);
@@ -375,7 +382,79 @@ async function run() {
   assert.equal(calls.slice(callsBeforeEmptyInventory).filter((call) => call.text && call.text.format).length, 0);
   assert.equal(calls.slice(callsBeforeEmptyInventory).some((call) => /\"enum\":\[\]/.test(JSON.stringify(call))), false);
 
-  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
+  const liveLedger = Array.from({ length: 6 }, (_, index) => "ROLE " + (index + 1) + "\nJOB TITLE (EXACT): Synthetic Role " + (index + 1) + "\nEMPLOYER OR UNIT (EXACT): Synthetic Employer " + (index + 1) + "\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led synthetic function " + (index + 1) + (index === 2 ? " with a team of 9 specialists." : index === 4 ? " with a 110-person operation and $9M budget." : ".")).join("\n\n") + "\n\nEDUCATION (EXACT OR MISSING): M.B.A., Synthetic Management, Synthetic University\nCERTIFICATIONS (EXACT OR MISSING): Synthetic Certified Professional; Synthetic Leadership License\nSKILLS AND TOOLS (EXACT OR MISSING): Planning; Analytics\nNUMBERS AND SCALE (EXACT OR MISSING): team of 9 specialists; 110-person operation; $9M budget; 1,200 employees; 18 states; 1100 hires\nTARGET ROLE (EXACT OR MISSING): Talent Management Manager";
+  const liveCivilianDraft = Array.from({ length: 6 }, (_, index) => "Synthetic Role " + (index + 1) + " - Synthetic Employer " + (index + 1) + "\nLed synthetic function " + (index + 1) + (index === 2 ? " with a team of 9 specialists." : index === 4 ? " with a 110-person operation and $9M budget." : ".")).join("\n\n") + "\n\nEDUCATION\nM.B.A., Synthetic Management, Synthetic University\n\nCERTIFICATIONS\nSynthetic Certified Professional\nSynthetic Leadership License";
+  nextResponse = { status: "completed", output_text: liveCivilianDraft };
+  auditResponseQueue.push((request) => passingAudit(request, { unmet_gaps: ["Dates for roles where none were confirmed"], scorecard: auditDimensions.map((dimension) => ({ dimension, status: dimension === "date_completeness" ? "NEEDS MEMBER FACT" : "PASS", evidence: "Synthetic v0.7 fixture." })) }));
+  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  assert.equal(result.statusCode, 200);
+  const liveBody = JSON.parse(result.body);
+  assert.doesNotMatch(liveBody.bullets, /\[|\bMISSING\b|TIP:|1,200 employees|18 states/);
+  for (const identity of ["Synthetic Role 1", "Synthetic Employer 1", "Synthetic Role 6", "Synthetic Employer 6", "M.B.A., Synthetic Management, Synthetic University", "Synthetic Certified Professional", "Synthetic Leadership License"]) assert.match(liveBody.bullets, new RegExp(identity.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.equal(liveBody.scorecard.find((item) => item.dimension === "date_completeness").status, "NEEDS MEMBER FACT");
+
+  const ownershipDraft = "SUMMARY\nSynthetic Role 1 at Synthetic Employer 1 provides context.\nThis summary claim stays global.\n\nPROFESSIONAL EXPERIENCE\nSynthetic Role 1 - Synthetic Employer 1\nWorked with Synthetic Role 2 without changing ownership.\n\nSynthetic Role 2 - Synthetic Employer 2\nLed synthetic function 2.";
+  const ownershipLedger = "ROLE 1\nJOB TITLE (EXACT): Synthetic Role 1\nEMPLOYER OR UNIT (EXACT): Synthetic Employer 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Worked with Synthetic Role 2 without changing ownership.\n\nROLE 2\nJOB TITLE (EXACT): Synthetic Role 2\nEMPLOYER OR UNIT (EXACT): Synthetic Employer 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led synthetic function 2.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 88 sites\nTARGET ROLE (EXACT OR MISSING): Talent Management Manager";
+  nextResponse = { status: "completed", output_text: ownershipDraft };
+  auditResponseQueue.push((request) => {
+    const inventory = clauseInventoryFromAuditRequest(request);
+    assert.deepEqual(inventory.map((item) => item.owner), ["global", "global", "R1", "R1", "R2", "R2"]);
+    return passingAudit(request);
+  });
+  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: ownershipLedger, confirmedFacts: ownershipLedger }));
+  assert.equal(result.statusCode, 200);
+
+  const boundaryLedger = "ROLE 1\nJOB TITLE (EXACT): Boundary Role 1\nEMPLOYER OR UNIT (EXACT): Boundary Employer 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and delivered 1100 hires.\n\nROLE 2\nJOB TITLE (EXACT): Boundary Role 2\nEMPLOYER OR UNIT (EXACT): Boundary Employer 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and managed 22 specialists.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 22 specialists; shared 44-unit scale; 110; 77 sites\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+  nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nBoundary Role 1 - Boundary Employer 1\nDelivered hiring work.\nBoundary Role 2 - Boundary Employer 2\nManaged specialist work." };
+  auditResponseQueue.push((request) => {
+    const catalog = factCatalogFromAuditRequest(request);
+    assert.equal(catalog.find((fact) => fact.text === "22 specialists").owner, "R2");
+    assert.equal(catalog.find((fact) => fact.text === "shared 44-unit scale").unlinked_number, true);
+    assert.equal(catalog.find((fact) => fact.text === "110").unlinked_number, true);
+    assert.equal(catalog.find((fact) => fact.text === "77 sites").unlinked_number, true);
+    return passingAudit(request);
+  });
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: boundaryLedger, confirmedFacts: boundaryLedger }));
+  assert.equal(result.statusCode, 200);
+
+  nextResponse = { status: "completed", output_text: "SUMMARY\nSynthetic summary claim.\nPROFESSIONAL EXPERIENCE\nSynthetic Role 1 - Synthetic Employer 1\nWorked with Synthetic Role 2 without changing ownership.\nSynthetic Role 2 - Synthetic Employer 2\nLed synthetic function 2." };
+  auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.unlinked_number).fact_id]; return audit; });
+  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: ownershipLedger, confirmedFacts: ownershipLedger }));
+  assert.equal(result.statusCode, 502);
+
+  for (const contamination of ["[email]", "MISSING", "TIP: Add dates."]) {
+    nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\n" + contamination };
+    const before = calls.length;
+    result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit with planning duties.", confirmedFacts: facts }));
+    assert.equal(result.statusCode, 502);
+    assert.equal(calls.length - before, 1);
+  }
+
+  for (const badRef of ["F999", "CROSS_ROLE", "GLOBAL_ROLE", "UNLINKED", "MALFORMED"]) {
+    nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nHR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director - Synthetic Command\nManaged Workday reporting." };
+    auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = badRef === "MALFORMED" ? null : [badRef === "F999" ? badRef : badRef === "CROSS_ROLE" ? catalog.find((fact) => fact.owner === "R2").fact_id : badRef === "UNLINKED" ? catalog.find((fact) => fact.unlinked_number).fact_id : catalog.find((fact) => fact.owner === "global" && !fact.unlinked_number).fact_id]; return audit; });
+    result = await resume.handler(post({ action: "draft", target: "Human Resources Director", experience: factsRequest.experience, confirmedFacts: multiRoleFacts }));
+    assert.equal(result.statusCode, 502);
+    assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
+  }
+
+  nextResponse = { status: "completed", output_text: liveCivilianDraft.replace("with a 110-person", "with 1,200 employees across 18 states and a 110-person") };
+  const callsBeforeUnlinkedGlobal = calls.length;
+  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  assert.equal(result.statusCode, 502);
+  assert.equal(calls.length - callsBeforeUnlinkedGlobal, 1);
+
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nClaimed RAW_SOURCE_ONLY_TOOL expertise." };
+  auditResponseQueue.push((request) => { const audit = passingAudit(request); audit.claim_trace[1].verdict = "unsupported"; audit.claim_trace[1].fact_refs = []; return audit; });
+  const callsBeforeRawOnly = calls.length;
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit used RAW_SOURCE_ONLY_TOOL extensively.", posting: "RAW_SOURCE_ONLY_TOOL preferred", confirmedFacts: facts }));
+  assert.equal(result.statusCode, 422);
+  assert.equal(calls.length - callsBeforeRawOnly, 2);
+  assert.doesNotMatch(calls[callsBeforeRawOnly].input, /RAW_SOURCE_ONLY_TOOL extensively/);
+  assert.doesNotMatch(calls[callsBeforeRawOnly].instructions, /member's source or confirmed fact sheet|unless it appears in the member's source/i);
+  assert.match(calls[callsBeforeRawOnly].instructions, /sole controlling fact ledger/);
+
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work." };
   auditResponseQueue.push((request) => {
     const audit = passingAudit(request);
     audit.scorecard.pop();
@@ -387,7 +466,7 @@ async function run() {
 
   const threeRoleFacts = "ROLE 1\nJOB TITLE (EXACT): NCOIC\nEMPLOYER OR UNIT (EXACT): 1st Bn., U.S. Army\nLOCATION (EXACT OR MISSING): Fort Example\nDATES (EXACT OR MISSING): Jan 2020 - Dec 2021\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led PMCS for 15 personnel; managed $2M; maintained 95% readiness.\n\nROLE 2\nJOB TITLE (EXACT): Deputy Director of Personnel\nEMPLOYER OR UNIT (EXACT): 1st Bn., U.S. Army\nLOCATION (EXACT OR MISSING): Fort Example\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led talent management and succession planning.\n\nROLE 3\nJOB TITLE (EXACT): Senior Advisor\nEMPLOYER OR UNIT (EXACT): 1st Bn., U.S. Army\nLOCATION (EXACT OR MISSING): Fort Example\nDATES (EXACT OR MISSING): 2022 - 2023\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Advised leaders on workforce planning.\n\nEDUCATION (EXACT OR MISSING): B.S., Example University\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): PMCS; talent management\nNUMBERS AND SCALE (EXACT OR MISSING): 15 personnel; $2M; 95%\nTARGET ROLE (EXACT OR MISSING): Talent Development Manager";
   const threeRoleSource = "NCOIC at 1st Bn., U.S. Army from Jan 2020 - Dec 2021. Led PMCS for 15 personnel, managed $2M, and maintained 95% readiness; later served as Deputy Director of Personnel, then served as Senior Advisor at 1st Bn., U.S. Army from 2022 - 2023. Led talent management, succession planning, and workforce planning. B.S., Example University. PMP.";
-  const civilianThreeRoleDraft = "NCOIC - 1st Bn., U.S. Army\nFort Example | Jan 2020 - Dec 2021\nLed preventive maintenance for 15 personnel and managed $2M while maintaining 95% readiness.\n\nDeputy Director of Personnel - 1st Bn., U.S. Army\nFort Example | [Month Year - Month Year]\nLed talent management and succession planning.\n\nSenior Advisor - 1st Bn., U.S. Army\nFort Example | 2022 - 2023\nAdvised leaders on workforce planning.\n\nCERTIFICATIONS\nPMP\nEDUCATION\nB.S., Example University\nTIP: Add dates for Deputy Director of Personnel.";
+  const civilianThreeRoleDraft = "NCOIC - 1st Bn., U.S. Army\nFort Example | Jan 2020 - Dec 2021\nLed preventive maintenance for 15 personnel and managed $2M while maintaining 95% readiness.\n\nDeputy Director of Personnel - 1st Bn., U.S. Army\nLed talent management and succession planning.\n\nSenior Advisor - 1st Bn., U.S. Army\nFort Example | 2022 - 2023\nAdvised leaders on workforce planning.\n\nCERTIFICATIONS\nPMP\nEDUCATION\nB.S., Example University";
   nextResponse = { status: "completed", output_text: civilianThreeRoleDraft };
   auditResponseQueue.push((request) => {
     const audit = passingAudit(request);
@@ -417,7 +496,7 @@ async function run() {
   assert.equal(calls.at(-2).max_output_tokens, 1900);
 
   const noMetricFacts = facts.replace("Led a 15-person team and managed a $2M equipment inventory.", "Led planning and maintenance work.").replace("15-person; $2M", "MISSING");
-  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning and maintenance work.\nTIP: Add team size or readiness outcome." };
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning and maintenance work." };
   auditResponseQueue.push((request) => {
     const audit = passingAudit(request);
     audit.scorecard.find((item) => item.dimension === "quantified_impact").status = "NEEDS MEMBER FACT";
@@ -430,7 +509,7 @@ async function run() {
   assert.doesNotMatch(JSON.parse(result.body).bullets, /\b\d/);
 
   const longExperience = "Synthetic Logistics Leader at Synthetic Unit. Led a 15-person team and managed a $2M equipment inventory. " + "A".repeat(9000) + "ENDMARKER";
-  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed a 15-person team and managed a $2M equipment inventory.\nTIP: Add dates." };
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed a 15-person team and managed a $2M equipment inventory." };
   const callsBeforeLongInput = calls.length;
   result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: longExperience, posting: "P".repeat(5000), confirmedFacts: facts }));
   assert.equal(result.statusCode, 200);
@@ -535,7 +614,7 @@ async function run() {
   assert.equal(calls.length - callsBeforeIncompleteRepair, 2);
   assert.doesNotMatch(result.body, /PRIVATE REPAIR|max_output_tokens/);
 
-  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work." };
   auditResponseQueue.push({ status: "incomplete", incomplete_details: { reason: "max_output_tokens" }, output_text: "PRIVATE AUDIT request_id=req_audit" });
   const callsBeforeIncompleteAudit = calls.length;
   result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
@@ -548,7 +627,7 @@ async function run() {
   assert.doesNotMatch(JSON.parse(result.body).error, /shorten|facts are too long/i);
   assert.doesNotMatch(result.body, /PRIVATE AUDIT|req_audit|max_output_tokens/);
 
-  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work." };
   auditResponseQueue.push(() => { throw Object.assign(new Error("PRIVATE AUDIT TRANSPORT request_id=req_transport"), { name: "APIConnectionTimeoutError", code: "ETIMEDOUT", status: 408, type: "timeout" }); });
   const callsBeforeAuditTransport = calls.length;
   result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
@@ -606,6 +685,9 @@ async function run() {
   const packageData = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   assert.equal(packageData.dependencies.openai, "7.8.0");
   assert.doesNotMatch(resumeSource, /battalion -> "600-person organization"|Every bullet names scale/);
+  assert.doesNotMatch(resumeSource, /1,200\+? employees across 18 states|7,000\+? Soldiers|110 people and a \$9M budget/);
+  const civilianPrompt = resumeSource.match(/const system = `([\s\S]*?)`;/)[1];
+  assert.doesNotMatch(civilianPrompt, /TIP:|\[[^\]]+\]/);
   assert.match(resumeSource, /AUDIT_INCREMENTAL_CEILING_USD = 0\.08/);
   assert.match(resumeSource, /BROWSER_DAILY_AUDIT_CEILING_USD = 0\.24/);
   assert.match(resumeSource, /EXTERNAL_MONTHLY_HARD_CAP_STATUS = "UNVERIFIED"/);
@@ -641,10 +723,14 @@ async function run() {
   assert.match(uiSource, /SHOW CLAIM TRACE/);
   assert.match(uiSource, /SUPPORTED JOB KEYWORDS/);
   assert.match(uiSource, /HONEST GAPS/);
+  assert.match(uiSource, /Civilian format omits optional details/);
+  assert.match(uiSource, /aiR\.mode === "federal" \? "RESUME COPIED \\u2014 fill the \[brackets\]/);
+  assert.match(fs.readFileSync(path.join(root, "sw.js"), "utf8"), /transition-ops-v136/);
+  assert.ok(auditCalls.every((call) => call.max_output_tokens === 4000) && calls.every((call) => call.store === false), "v0.7 preserves call caps and store:false");
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
 
-  console.log("PASS: synthetic RDM-1..RDM-53 control paths, fact-stage 3500 isolation/failure contract, civilian draft 2200, federal 1900, audit 4000, Navigator 800, exact nonempty ID trace inventory/hydration, zero retries (live model evaluation pending)");
+  console.log("PASS: synthetic RDM-1..RDM-68 control paths, v0.7 civilian omission/exact-identity/catalog isolation, six-role ledger, unchanged caps/calls/privacy controls (live model evaluation pending)");
 }
 
 run().catch((error) => {
