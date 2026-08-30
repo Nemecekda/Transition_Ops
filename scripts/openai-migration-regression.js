@@ -1,4 +1,5 @@
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
 const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
@@ -6,7 +7,31 @@ const helperPath = path.join(root, "netlify/functions/openai-client.js");
 const calls = [];
 let nextResponse = { status: "completed", output_text: "SYNTHETIC OUTPUT" };
 let responseQueue = [];
+let auditResponseQueue = [];
 let nextError = null;
+
+const auditDimensions = [
+  "grounding_and_claim_trace", "exact_identity_preservation", "role_separation", "date_completeness",
+  "quantified_impact", "job_posting_alignment", "military_jargon_translation", "filler",
+  "length_and_readability", "format_compliance"
+];
+
+function draftClausesFromAuditRequest(request) {
+  const draft = String(request.input || "").split("\n\nCANDIDATE DRAFT:\n").pop();
+  return draft.split("\n").map((line) => line.trim().replace(/^[\u2022*-]\s*/, "")).filter((line) => line && !/^(?:SUMMARY|PROFESSIONAL SUMMARY|CORE SKILLS|PROFESSIONAL EXPERIENCE|CERTIFICATIONS(?: & TRAINING)?|EDUCATION)$/i.test(line) && !/^\[[^\]]+\](?:\s*\|\s*\[[^\]]+\])*$/.test(line));
+}
+
+function passingAudit(request, changes) {
+  const audit = {
+    audit_verdict: "pass",
+    blockers: [],
+    claim_trace: draftClausesFromAuditRequest(request).map((claim, index) => ({ claim_id: "claim-" + (index + 1), section: "resume", claim_text: claim, fact_refs: ["confirmed fact sheet"], posting_refs: [], transform: "exact", verdict: "supported" })),
+    scorecard: auditDimensions.map((dimension) => ({ dimension, status: "PASS", evidence: "Synthetic fixture passed this dimension." })),
+    supported_keywords: ["preventive maintenance"],
+    unmet_gaps: []
+  };
+  return Object.assign(audit, changes || {});
+}
 
 require.cache[helperPath] = {
   id: helperPath,
@@ -18,6 +43,11 @@ require.cache[helperPath] = {
         create: async (request) => {
           calls.push(request);
           if (nextError) throw nextError;
+          if (request.text && request.text.format && request.text.format.name === "resume_quality_audit") {
+            const queuedAudit = auditResponseQueue.length ? auditResponseQueue.shift() : null;
+            const audit = typeof queuedAudit === "function" ? queuedAudit(request) : (queuedAudit || passingAudit(request));
+            return audit && audit.status ? audit : { status: "completed", output_text: JSON.stringify(audit) };
+          }
           return responseQueue.length ? responseQueue.shift() : nextResponse;
         }
       }
@@ -207,7 +237,9 @@ async function run() {
     confirmedFacts: multiRoleFacts
   }));
   assert.equal(result.statusCode, 200);
-  assert.equal(calls.length - callsBeforeCorrectedDraft, 1);
+  assert.equal(calls.length - callsBeforeCorrectedDraft, 2);
+  assert.equal(calls[callsBeforeCorrectedDraft].max_output_tokens, 1300);
+  assert.equal(calls[callsBeforeCorrectedDraft + 1].max_output_tokens, 3000);
   assert.equal(calls.at(-1).model, "gpt-5.6-terra");
   assert.match(JSON.parse(result.body).bullets, /^HR Director - Synthetic Command[\s\S]*^Deputy Director - Synthetic Command/m);
 
@@ -223,7 +255,9 @@ async function run() {
   }));
   assert.equal(result.statusCode, 200);
   assert.deepEqual(JSON.parse(result.body).warnings || [], []);
-  assert.equal(calls.length - callsBeforeColonRoleDraft, 1);
+  assert.equal(calls.length - callsBeforeColonRoleDraft, 2);
+  assert.equal(calls.filter((call, index) => index >= callsBeforeColonRoleDraft && !(call.text && call.text.format)).length, 1);
+  assert.equal(calls.filter((call, index) => index >= callsBeforeColonRoleDraft && call.text && call.text.format).length, 1);
   assert.equal(calls.at(-1).model, "gpt-5.6-terra");
 
   const callsBeforeMissingColonRole = calls.length;
@@ -236,6 +270,113 @@ async function run() {
   assert.equal(result.statusCode, 400);
   assert.equal(calls.length, callsBeforeMissingColonRole);
   assert.match(JSON.parse(result.body).warnings.join(" "), /distinct job title/);
+
+  const lastAuditCall = calls.filter((call) => call.text && call.text.format).at(-1);
+  assert.equal(lastAuditCall.model, "gpt-5.6-terra");
+  assert.equal(lastAuditCall.max_output_tokens, 3000);
+  assert.equal(lastAuditCall.store, false);
+  assert.deepEqual(lastAuditCall.reasoning, { effort: "none" });
+  assert.equal(lastAuditCall.text.format.type, "json_schema");
+  assert.equal(lastAuditCall.text.format.strict, true);
+  assert.deepEqual(lastAuditCall.text.format.schema.required, ["audit_verdict", "blockers", "claim_trace", "scorecard", "supported_keywords", "unmet_gaps"]);
+
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nImproved customer satisfaction.\nTIP: Add dates." };
+  auditResponseQueue.push((request) => {
+    const audit = passingAudit(request);
+    const claim = audit.claim_trace.find((item) => /customer satisfaction/.test(item.claim_text));
+    claim.fact_refs = [];
+    claim.verdict = "unsupported";
+    audit.scorecard.find((item) => item.dimension === "grounding_and_claim_trace").status = "FAIL";
+    return audit;
+  });
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Planning duties completed.", confirmedFacts: facts }));
+  assert.equal(result.statusCode, 422);
+  assert.equal(Object.hasOwn(JSON.parse(result.body), "bullets"), false);
+  assert.match(JSON.parse(result.body).blockers.join(" "), /unsupported|quality dimensions failed/);
+
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
+  auditResponseQueue.push((request) => passingAudit(request, { audit_verdict: "withhold" }));
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  assert.equal(result.statusCode, 422);
+  assert.equal(Object.hasOwn(JSON.parse(result.body), "bullets"), false);
+  assert.deepEqual(JSON.parse(result.body).blockers, ["The quality review determined this draft should not be released."]);
+
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nManaged maintenance for a 600-person organization." };
+  const callsBeforeUnsupported600 = calls.length;
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Battalion maintenance leader.", confirmedFacts: facts }));
+  assert.equal(result.statusCode, 502);
+  assert.equal(calls.length - callsBeforeUnsupported600, 1);
+  assert.equal(calls.slice(callsBeforeUnsupported600).filter((call) => call.text && call.text.format).length, 0);
+
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
+  auditResponseQueue.push((request) => {
+    const audit = passingAudit(request);
+    audit.claim_trace.pop();
+    return audit;
+  });
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  assert.equal(result.statusCode, 422);
+  assert.match(JSON.parse(result.body).blockers.join(" "), /not traced/);
+
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
+  auditResponseQueue.push((request) => {
+    const audit = passingAudit(request);
+    audit.scorecard.pop();
+    return audit;
+  });
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  assert.equal(result.statusCode, 502);
+  assert.match(JSON.parse(result.body).error, /quality review could not be verified/);
+
+  const threeRoleFacts = "ROLE 1\nJOB TITLE (EXACT): NCOIC\nEMPLOYER OR UNIT (EXACT): 1st Bn., U.S. Army\nLOCATION (EXACT OR MISSING): Fort Example\nDATES (EXACT OR MISSING): Jan 2020 - Dec 2021\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led PMCS for 15 personnel; managed $2M; maintained 95% readiness.\n\nROLE 2\nJOB TITLE (EXACT): Deputy Director of Personnel\nEMPLOYER OR UNIT (EXACT): 1st Bn., U.S. Army\nLOCATION (EXACT OR MISSING): Fort Example\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led talent management and succession planning.\n\nROLE 3\nJOB TITLE (EXACT): Senior Advisor\nEMPLOYER OR UNIT (EXACT): 1st Bn., U.S. Army\nLOCATION (EXACT OR MISSING): Fort Example\nDATES (EXACT OR MISSING): 2022 - 2023\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Advised leaders on workforce planning.\n\nEDUCATION (EXACT OR MISSING): B.S., Example University\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): PMCS; talent management\nNUMBERS AND SCALE (EXACT OR MISSING): 15 personnel; $2M; 95%\nTARGET ROLE (EXACT OR MISSING): Talent Development Manager";
+  const threeRoleSource = "NCOIC at 1st Bn., U.S. Army from Jan 2020 - Dec 2021. Led PMCS for 15 personnel, managed $2M, and maintained 95% readiness; later served as Deputy Director of Personnel, then served as Senior Advisor at 1st Bn., U.S. Army from 2022 - 2023. Led talent management, succession planning, and workforce planning. B.S., Example University. PMP.";
+  const civilianThreeRoleDraft = "NCOIC - 1st Bn., U.S. Army\nFort Example | Jan 2020 - Dec 2021\nLed preventive maintenance for 15 personnel and managed $2M while maintaining 95% readiness.\n\nDeputy Director of Personnel - 1st Bn., U.S. Army\nFort Example | [Month Year - Month Year]\nLed talent management and succession planning.\n\nSenior Advisor - 1st Bn., U.S. Army\nFort Example | 2022 - 2023\nAdvised leaders on workforce planning.\n\nCERTIFICATIONS\nPMP\nEDUCATION\nB.S., Example University\nTIP: Add dates for Deputy Director of Personnel.";
+  nextResponse = { status: "completed", output_text: civilianThreeRoleDraft };
+  auditResponseQueue.push((request) => {
+    const audit = passingAudit(request);
+    audit.scorecard.find((item) => item.dimension === "date_completeness").status = "NEEDS MEMBER FACT";
+    audit.unmet_gaps = ["Dates for Deputy Director of Personnel", "Posting-only Workday certification"];
+    audit.supported_keywords = ["talent management", "succession planning"];
+    return audit;
+  });
+  result = await resume.handler(post({ action: "draft", mode: "standard", target: "Talent Development Manager", experience: threeRoleSource, posting: "Talent management, succession planning, and Workday certification required.", confirmedFacts: threeRoleFacts }));
+  assert.equal(result.statusCode, 200);
+  const civilianAuditBody = JSON.parse(result.body);
+  assert.equal(civilianAuditBody.scorecard.length, 10);
+  assert.equal(civilianAuditBody.scorecard.find((item) => item.dimension === "date_completeness").status, "NEEDS MEMBER FACT");
+  assert.deepEqual(civilianAuditBody.supportedKeywords, ["talent management", "succession planning"]);
+  assert.match(civilianAuditBody.gaps.join(" "), /Workday certification/);
+  assert.match(civilianAuditBody.bullets, /^NCOIC - 1st Bn\., U\.S\. Army[\s\S]*^Deputy Director of Personnel - 1st Bn\., U\.S\. Army[\s\S]*^Senior Advisor - 1st Bn\., U\.S\. Army/m);
+  assert.doesNotMatch(civilianAuditBody.bullets, /Hours per week|Supervisor:/);
+
+  nextResponse = { status: "completed", output_text: civilianThreeRoleDraft.replace("Fort Example | Jan 2020 - Dec 2021", "Fort Example | Jan 2020 - Dec 2021 | [Hours per week: __]\n[Supervisor: Name, Phone - may contact: Yes/No]") };
+  result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: threeRoleSource, confirmedFacts: threeRoleFacts }));
+  assert.equal(result.statusCode, 200);
+  assert.match(JSON.parse(result.body).bullets, /\[Hours per week: __\]/);
+  assert.equal(calls.at(-2).max_output_tokens, 1900);
+
+  const noMetricFacts = facts.replace("Led a 15-person team and managed a $2M equipment inventory.", "Led planning and maintenance work.").replace("15-person; $2M", "MISSING");
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning and maintenance work.\nTIP: Add team size or readiness outcome." };
+  auditResponseQueue.push((request) => {
+    const audit = passingAudit(request);
+    audit.scorecard.find((item) => item.dimension === "quantified_impact").status = "NEEDS MEMBER FACT";
+    audit.unmet_gaps = ["Team size or readiness outcome"];
+    return audit;
+  });
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning and maintenance work.", confirmedFacts: noMetricFacts }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(JSON.parse(result.body).scorecard.find((item) => item.dimension === "quantified_impact").status, "NEEDS MEMBER FACT");
+  assert.doesNotMatch(JSON.parse(result.body).bullets, /\b\d/);
+
+  const longExperience = "Synthetic Logistics Leader at Synthetic Unit. Led a 15-person team and managed a $2M equipment inventory. " + "A".repeat(9000) + "ENDMARKER";
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed a 15-person team and managed a $2M equipment inventory.\nTIP: Add dates." };
+  const callsBeforeLongInput = calls.length;
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: longExperience, posting: "P".repeat(5000), confirmedFacts: facts }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(calls.length - callsBeforeLongInput, 2);
+  assert.doesNotMatch(calls[callsBeforeLongInput].input, /ENDMARKER/);
+  assert.ok(calls[callsBeforeLongInput].input.length < 22000);
+  assert.match(JSON.parse(result.body).bullets, /Synthetic Logistics Leader - Synthetic Unit/);
 
   nextResponse = { status: "completed", output_text: "HR Director and Deputy Director - Synthetic Command\nLed personnel operations and managed Workday reporting." };
   result = await resume.handler(post({
@@ -302,7 +443,32 @@ async function run() {
   result = await navigator.handler(post({ messages: [{ role: "user", content: "Synthetic request" }] }));
   assert.equal(result.statusCode, 502);
 
-  console.log("PASS: synthetic OpenAI migration regression (grounded target autofill, Luna extraction, Terra repair, editable warning fallback, zero-call unresolved draft block, corrected Terra draft, safe deduped warnings, Navigator, budget/error paths)");
+  const auditCalls = calls.filter((call) => call.text && call.text.format && call.text.format.name === "resume_quality_audit");
+  assert.ok(auditCalls.length > 0);
+  assert.ok(calls.every((call) => call.store === false));
+  assert.ok(auditCalls.every((call) => call.model === "gpt-5.6-terra" && call.max_output_tokens === 3000 && call.reasoning.effort === "none"));
+  const resumeSource = fs.readFileSync(path.join(root, "netlify/functions/resume.js"), "utf8");
+  const clientSource = fs.readFileSync(path.join(root, "netlify/functions/openai-client.js"), "utf8");
+  const uiSource = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const packageData = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+  assert.equal(packageData.dependencies.openai, "7.8.0");
+  assert.doesNotMatch(resumeSource, /battalion -> "600-person organization"|Every bullet names scale/);
+  assert.match(resumeSource, /AUDIT_INCREMENTAL_CEILING_USD = 0\.06/);
+  assert.match(resumeSource, /BROWSER_DAILY_AUDIT_CEILING_USD = 0\.18/);
+  assert.match(resumeSource, /EXTERNAL_MONTHLY_HARD_CAP_STATUS = "UNVERIFIED"/);
+  assert.match(resumeSource, /clip\(experience, 8000\)/);
+  assert.match(resumeSource, /clip\(posting, 3500\)/);
+  assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)/);
+  assert.match(clientSource, /maxRetries: 0/);
+  assert.match(uiSource, /QUALITY SCORECARD/);
+  assert.match(uiSource, /DRAFT WITHHELD/);
+  assert.match(uiSource, /SHOW CLAIM TRACE/);
+  assert.match(uiSource, /SUPPORTED JOB KEYWORDS/);
+  assert.match(uiSource, /HONEST GAPS/);
+  assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
+  assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
+
+  console.log("PASS: synthetic RDM-1..RDM-17 control paths, strict audit schema/validation, privacy/cost controls, UI audit anchors, and existing OpenAI migration regressions (live model evaluation pending)");
 }
 
 run().catch((error) => {

@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | — | — | prompt QA + integrity rules for the in-app Resume Drafter |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.1 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,16 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` drafted at 0.1, remains
+  PENDING.** Coverage was PARTIAL: the private OpenAI clone had fact extraction,
+  selected grounding checks, separate civilian/federal prompts, and `store:
+  false`, but no governed scorecard, complete claim trace, or executed regression
+  suite. Version 0.1 defines blocking grounding and identity invariants, ten
+  score dimensions, the claim-to-confirmed-fact trace contract, privacy and cost
+  requirements, and RDM-1…RDM-17 plus RDM-X1…RDM-X3. The external monthly budget
+  cap is explicitly **UNVERIFIED** until direct account evidence exists. Remains
+  PENDING until app regression execution and Commander review. Lane: COMMANDER.
+  Owner: force-mod.
 - 2026-08-06 — **#12 `member-impact` added as PENDING, owner s2-intel.**
   Coverage test returned **NONE**: every skill we hold governs whether content is
   TRUE (#3), LANDED (#1), SAFE (#2), or IN VOICE (#4). **Nothing governed whether

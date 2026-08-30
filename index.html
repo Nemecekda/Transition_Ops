@@ -4289,7 +4289,7 @@ function App() {
       return p;
     });
   };
-  const [aiR, setAiR] = useState({ open: false, mode: "standard", role: "", years: "", target: "", skills: "", certs: "", exp: "", loading: false, out: "", err: "", posting: "", facts: "", factWarnings: [] });
+  const [aiR, setAiR] = useState({ open: false, mode: "standard", role: "", years: "", target: "", skills: "", certs: "", exp: "", loading: false, out: "", err: "", posting: "", facts: "", factWarnings: [], auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false });
   const [jobsQ, setJobsQ] = useState({ open: false, keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "" });
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [whatsNewUnseen, setWhatsNewUnseen] = useState(function() { try { return window.__safeGet("tops_whatsnew_seen") !== APP_VERSION; } catch (e) { return false; } });
@@ -7305,20 +7305,36 @@ whatsNewUnseen && React.createElement("div", {
         var used = 0; try { var rec = JSON.parse(window.__safeGet("tops_air_uses") || "{}"); used = rec.d === today ? rec.n : 0; } catch(e) {}
         if (used >= 3) { setAiR(function(p){ return Object.assign({}, p, { err: "Daily limit reached (3/day) \u2014 resets tomorrow. This keeps the tool free for everyone." }); }); return; }
         var resumeAction = aiR.facts ? "draft" : "facts";
-        setAiR(function(p){ return Object.assign({}, p, { loading: true, err: "", out: "" }); });
+        setAiR(function(p){ return Object.assign({}, p, { loading: true, err: "", out: "", auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); });
         if (window.__trackEvent) window.__trackEvent(resumeAction === "draft" ? "ai_resume_generated" : "ai_resume_facts_reviewed", {});
         (function attempt(n) { return fetch("/.netlify/functions/resume", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: resumeAction, mode: aiR.mode, role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp, posting: aiR.posting, confirmedFacts: aiR.facts }) })
           .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
           .catch(function(e){ if (n < 1) { return new Promise(function(res){ setTimeout(res, 1200); }).then(function(){ return attempt(n + 1); }); } throw e; }); })(0)
           .then(function(res) {
-            if (!res.ok) { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: res.d.error || "Try again in a minute.", factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : p.factWarnings }); }); return; }
-            if (resumeAction === "facts") { setAiR(function(p){ return Object.assign({}, p, { loading: false, facts: res.d.factSheet || "", factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : [], target: res.d.suggestedTarget || p.target, err: res.d.factSheet ? "" : "We could not build a fact sheet. Try again." }); }); return; }
+            if (!res.ok) { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: res.d.error || "Try again in a minute.", factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : p.factWarnings, auditScorecard: Array.isArray(res.d.scorecard) ? res.d.scorecard : [], auditBlockers: Array.isArray(res.d.blockers) ? res.d.blockers : [], supportedKeywords: Array.isArray(res.d.supportedKeywords) ? res.d.supportedKeywords : [], auditGaps: Array.isArray(res.d.gaps) ? res.d.gaps : [], auditTrace: [] }); }); return; }
+            if (resumeAction === "facts") { setAiR(function(p){ return Object.assign({}, p, { loading: false, facts: res.d.factSheet || "", factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : [], target: res.d.suggestedTarget || p.target, err: res.d.factSheet ? "" : "We could not build a fact sheet. Try again.", auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); }); return; }
             try { window.__safeSet("tops_air_uses", JSON.stringify({ d: new Date().toISOString().slice(0,10), n: used + 1 })); } catch(e) {}
-            setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets }); });
+            setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets, auditScorecard: Array.isArray(res.d.scorecard) ? res.d.scorecard : [], auditTrace: Array.isArray(res.d.trace) ? res.d.trace : [], auditBlockers: [], supportedKeywords: Array.isArray(res.d.supportedKeywords) ? res.d.supportedKeywords : [], auditGaps: Array.isArray(res.d.gaps) ? res.d.gaps : [] }); });
           })
           .catch(function(){ setAiR(function(p){ return Object.assign({}, p, { loading: false, err: "Still warming up \u2014 give it 10 seconds and tap GENERATE once more." }); }); });
       }, style: { width: "100%", background: aiR.loading ? C.border : C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? (aiR.facts ? "DRAFTING\u2026 (10-15 SEC)" : "CHECKING FACTS\u2026") : (aiR.facts ? "DRAFT FROM CONFIRMED FACTS" : "BUILD MY FACT SHEET")),
       aiR.err && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, aiR.err),
+      aiR.auditBlockers.length > 0 && React.createElement("div", { style: { marginTop: 10, padding: "11px 12px", background: "rgba(190,70,70,0.12)", border: "1px solid " + C.warning, borderRadius: 8 } },
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.warning, fontWeight: 700, marginBottom: 5 } }, "DRAFT WITHHELD \u2014 FIX THESE FIRST"),
+        aiR.auditBlockers.map(function(blocker, i){ return React.createElement("div", { key: i, style: { fontSize: 11, color: C.textBody, lineHeight: 1.5 } }, "\u2022 " + blocker); })),
+      aiR.auditScorecard.length > 0 && React.createElement("div", { style: { marginTop: 12, padding: "11px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } },
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.greenBright, fontWeight: 700, marginBottom: 7 } }, "QUALITY SCORECARD"),
+        aiR.auditScorecard.map(function(item, i){ var statusColor = item.status === "PASS" ? C.greenBright : item.status === "FAIL" ? C.warning : C.goldBright; return React.createElement("div", { key: i, style: { marginBottom: 7, paddingBottom: 7, borderBottom: i < aiR.auditScorecard.length - 1 ? "1px solid " + C.border : "none" } },
+          React.createElement("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, fontSize: 11, fontWeight: 700, color: C.textPrimary } }, React.createElement("span", null, String(item.dimension || "").replace(/_/g, " ").toUpperCase()), React.createElement("span", { style: { color: statusColor, whiteSpace: "nowrap" } }, item.status)),
+          React.createElement("div", { style: { fontSize: 10.5, color: C.textSecondary, lineHeight: 1.45, marginTop: 2 } }, item.evidence)); })),
+      (aiR.supportedKeywords.length > 0 || aiR.auditGaps.length > 0) && React.createElement("div", { style: { marginTop: 10, padding: "10px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } },
+        aiR.supportedKeywords.length > 0 && React.createElement("div", { style: { fontSize: 11, color: C.textBody, lineHeight: 1.5, marginBottom: aiR.auditGaps.length ? 6 : 0 } }, React.createElement("strong", { style: { color: C.greenBright } }, "SUPPORTED JOB KEYWORDS: "), aiR.supportedKeywords.join(", ")),
+        aiR.auditGaps.length > 0 && React.createElement("div", { style: { fontSize: 11, color: C.textBody, lineHeight: 1.5 } }, React.createElement("strong", { style: { color: C.goldBright } }, "HONEST GAPS: "), aiR.auditGaps.join("; "))),
+      aiR.auditTrace.length > 0 && React.createElement("div", { style: { marginTop: 10 } },
+        React.createElement("button", { onClick: function(){ setAiR(function(p){ return Object.assign({}, p, { showTrace: !p.showTrace }); }); }, style: { background: "transparent", color: C.greenBright, border: "1px solid " + C.greenBright, borderRadius: 7, padding: "7px 10px", fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: 1, cursor: "pointer" } }, aiR.showTrace ? "HIDE CLAIM TRACE" : "SHOW CLAIM TRACE"),
+        aiR.showTrace && React.createElement("div", { style: { marginTop: 7, padding: "10px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } }, aiR.auditTrace.map(function(item, i){ return React.createElement("div", { key: item.claim_id || i, style: { marginBottom: i < aiR.auditTrace.length - 1 ? 9 : 0, paddingBottom: i < aiR.auditTrace.length - 1 ? 9 : 0, borderBottom: i < aiR.auditTrace.length - 1 ? "1px solid " + C.border : "none" } },
+          React.createElement("div", { style: { fontSize: 11, color: C.textPrimary, lineHeight: 1.45 } }, item.claim_text),
+          React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 2 } }, "Confirmed facts: " + (item.fact_refs && item.fact_refs.length ? item.fact_refs.join(", ") : "member fact needed"))); }))),
       aiR.out && React.createElement("div", { style: { marginTop: 12 } },
         React.createElement("div", { style: { background: "#FDFDF8", borderRadius: 8, padding: "18px 17px", border: "1px solid " + C.border } },
           aiR.out.split("\n").map(function(ln, i) {
