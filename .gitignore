@@ -1,3 +1,6 @@
 .DS_Store
 apply_*.py
 node_modules/
+.agents/
+.codex/
+AGENTS.md
