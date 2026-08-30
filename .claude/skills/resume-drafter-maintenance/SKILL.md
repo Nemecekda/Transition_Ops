@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.13"
+  version: "0.14"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.13 is PENDING until the RDM regression suite
+Version 0.14 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -246,6 +246,37 @@ Summary trace into the returned trace. Unsupported non-Summary claims remain
 fail-closed. Add no call or retry and change no model, cap, `store: false`,
 privacy control, usage limit, logging, persistence, analytics, or cost ceiling.
 Maximum incremental API exposure is $0.
+
+## CIVILIAN CANONICAL CORE SKILLS
+
+In civilian mode only, replace any model-generated Core Skills section with a
+server-owned canonical section derived only from exact semicolon-delimited atoms
+in the confirmed global `SKILLS AND TOOLS (EXACT OR MISSING)` field. Preserve
+stable source order and select at most nine safe atoms. Exclude empty atoms,
+literal `MISSING`, exact duplicates, and atoms containing quantities, numeric
+forms, dates, or durations. Preserve every selected atom's internal bytes. The
+server may generate only the `CORE SKILLS` heading and comma-space separators.
+
+Replace the generated Core Skills heading and body completely. If no safe atom
+exists, omit both heading and body. Preserve every non-Core-Skills byte, and
+make canonicalization idempotent. Posting text, target title, role facts, duties,
+adjacent roles, and raw source cannot contribute canonical skills.
+
+The canonical Core Skills claim is deterministically grounded and server-owned.
+Exclude it from model-adjudicated claim IDs and pre-map it only to the closed
+global Skills fact. The model may attach neither role nor posting references to
+it. Merge exactly one deterministic Core Skills trace only after every remaining
+audit check passes. Unsupported noncanonical claims remain audit-mediated and
+fail closed.
+
+Civilian translation may change terminology but must preserve the confirmed
+activity, object, beneficiary or audience, purpose, domain, scope, scale, level,
+and outcome. Same-role facts must support the entire translated claim; posting
+references never cure partial support. Unsupported translations remain
+audit-mediated and fail closed. Add no call or retry and change no model, cap,
+cost ceiling, `store: false`, privacy control, usage limit, logging, persistence,
+or analytics. Federal behavior is unchanged, maximum incremental API exposure
+is $0, and the external monthly cap remains `UNVERIFIED`.
 
 ## CIVILIAN ROLE METADATA COMPLETION
 
@@ -778,6 +809,42 @@ all existing hard input bounds.
   privacy, logging, storage, persistence, analytics, draft and usage limits
   remain unchanged. Configured maximum exposure is unchanged, and the external
   monthly cap remains `UNVERIFIED`.
+- **RDM-158 Posting-only Core Skills:** synthetic posting-only `workforce
+  development programs` and `onboarding strategy` phrases must never enter the
+  canonical Core Skills section.
+- **RDM-159 Posting-only gaps:** posting-only skill phrases must appear only as
+  unmet gaps, never as member qualifications.
+- **RDM-160 Safe atom counts:** one through nine confirmed safe Skills atoms
+  must render byte-exact in stable source order.
+- **RDM-161 Bounded skills:** more than nine safe Skills atoms must use only the
+  first nine in source order.
+- **RDM-162 Unsafe atom exclusion:** empty, literal `MISSING`, exact duplicate,
+  quantified, numeric, date, and duration atoms must be excluded.
+- **RDM-163 Generated replacement:** broad or posting-derived model Core Skills
+  must be removed completely and replaced only by canonical Skills atoms.
+- **RDM-164 No-safe omission:** when no safe atom remains, both Core Skills
+  heading and body must be omitted without a format failure.
+- **RDM-165 Preservation and idempotence:** canonicalization must preserve every
+  non-Core-Skills byte, and applying it twice must be byte-identical to applying
+  it once.
+- **RDM-166 Deterministic Skills support:** the canonical Core Skills trace must
+  reference only the closed global `SKILLS AND TOOLS` fact.
+- **RDM-167 Audit exclusion and merge:** canonical Core Skills must be excluded
+  from model-adjudicated claim IDs and merged exactly once only after every
+  remaining audit check passes.
+- **RDM-168 Translation broadening:** a confirmed `transition-planning
+  application` must not become `candidate support`; the audit must withhold the
+  unsupported broader claim.
+- **RDM-169 Narrow translation:** a civilian translation may pass only when
+  same-role facts support the entire activity, object, beneficiary or audience,
+  purpose, domain, scope, scale, level, and outcome.
+- **RDM-170 Posting cannot cure support:** posting terminology or references
+  must not cure an unsupported or partially supported role claim.
+- **RDM-171 Unchanged controls:** federal behavior, models, calls, retries,
+  facts/repair 3500, civilian 2200, federal 1900, audit 4000, `store: false`,
+  privacy, logging, storage, persistence, analytics, draft and usage limits
+  remain unchanged. Maximum incremental API exposure is $0, and the external
+  monthly cap remains `UNVERIFIED`.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -788,7 +855,7 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.13 until all cases execute and live
+Keep registry item #6 PENDING at version 0.14 until all cases execute and live
 clone evidence passes. After successful execution and live evidence, force-mod
 proposes the smallest evidence-supported revision and Commander rules on
 promotion to CODIFIED 1.0.

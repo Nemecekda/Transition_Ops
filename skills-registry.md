@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.13 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.14 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,31 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.13 -> 0.14, remains
+  PENDING.** Live v0.13 evidence showed a correctly withheld civilian draft:
+  Core Skills presented posting-only workforce-development and onboarding
+  terminology as member qualifications, and a role claim broadened a confirmed
+  transition-planning application into candidate support. Exact identities,
+  role separation, dates, quantities, jargon, filler, readability, and format
+  otherwise passed. Coverage was **PARTIAL**: existing doctrine prohibited both
+  failures and the audit withheld them, but model-authored Core Skills and the
+  civilian-translation boundary lacked deterministic governance. Version 0.14
+  replaces generated Core Skills with a server-owned section derived only from
+  up to nine safe, exact semicolon-delimited global Skills atoms in stable order;
+  omits the section when none are safe; preserves all other bytes; and uses one
+  deterministic closed-global-Skills trace outside model adjudication. Posting,
+  target, roles, duties, and raw source cannot contribute canonical skills.
+  Civilian translation may change terminology only while preserving the entire
+  confirmed activity, object, beneficiary or audience, purpose, domain, scope,
+  scale, level, and outcome; same-role support remains mandatory and posting
+  references cannot cure partial support. RDM-158…RDM-171 use synthetic fixtures
+  and preserve federal behavior, models, calls, zero retries, all caps,
+  `store: false`, privacy, logging/storage/persistence/analytics, and usage
+  limits. No call, retry, model, cap, or cost ceiling changes; maximum
+  incremental API exposure is $0 and the external monthly cap remains
+  `UNVERIFIED`. Registry remains PENDING until synthetic and live clone
+  validation pass. Lane: AUTO for internal governance; app implementation
+  remains Commander-gated. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.12 -> 0.13, remains
   PENDING.** A live pre-audit `unlinked_global_number` rejection exposed an
   overbroad exact-phrase collision check: a shortened role claim could collide
