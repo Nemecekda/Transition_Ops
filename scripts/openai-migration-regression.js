@@ -5,6 +5,7 @@ const root = path.resolve(__dirname, "..");
 const helperPath = path.join(root, "netlify/functions/openai-client.js");
 const calls = [];
 let nextResponse = { status: "completed", output_text: "SYNTHETIC OUTPUT" };
+let responseQueue = [];
 let nextError = null;
 
 require.cache[helperPath] = {
@@ -17,7 +18,7 @@ require.cache[helperPath] = {
         create: async (request) => {
           calls.push(request);
           if (nextError) throw nextError;
-          return nextResponse;
+          return responseQueue.length ? responseQueue.shift() : nextResponse;
         }
       }
     }),
@@ -35,6 +36,7 @@ function post(body) {
 async function run() {
   const facts = "ROLE 1\nJOB TITLE (EXACT): Synthetic Logistics Leader\nEMPLOYER OR UNIT (EXACT): Synthetic Unit\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led a 15-person team and managed a $2M equipment inventory.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 15-person; $2M\nTARGET ROLE (EXACT OR MISSING): Operations manager";
   nextResponse = { status: "completed", output_text: facts };
+  const callsBeforeCleanFacts = calls.length;
   let result = await resume.handler(post({
     action: "facts",
     role: "Synthetic logistics leader",
@@ -45,6 +47,7 @@ async function run() {
     certs: "PMP"
   }));
   assert.equal(result.statusCode, 200);
+  assert.equal(calls.length - callsBeforeCleanFacts, 1);
   assert.equal(JSON.parse(result.body).factSheet, facts);
   assert.equal(calls.at(-1).model, "gpt-5.6-luna");
   assert.equal(calls.at(-1).max_output_tokens, 1300);
@@ -65,23 +68,43 @@ async function run() {
   assert.equal(result.statusCode, 200);
   assert.match(JSON.parse(result.body).factSheet, /ROLE 2\nJOB TITLE \(EXACT\): Deputy Director/);
 
-  const badFactSheets = [
-    multiRoleFacts.replace("DATES (EXACT OR MISSING): MISSING", "DATES (EXACT OR MISSING): 26 years of service"),
-    multiRoleFacts.replace("CERTIFICATIONS (EXACT OR MISSING): PMP", "CERTIFICATIONS (EXACT OR MISSING): Workday").replace("SKILLS AND TOOLS (EXACT OR MISSING): Workday", "SKILLS AND TOOLS (EXACT OR MISSING): MISSING"),
-    multiRoleFacts.replace(/\n\nROLE 2[\s\S]*?Managed Workday reporting\./, "")
+  const invalidDateFacts = multiRoleFacts.replace("DATES (EXACT OR MISSING): MISSING", "DATES (EXACT OR MISSING): 26 years of service");
+  const invalidWorkdayFacts = multiRoleFacts.replace("CERTIFICATIONS (EXACT OR MISSING): PMP", "CERTIFICATIONS (EXACT OR MISSING): Workday").replace("SKILLS AND TOOLS (EXACT OR MISSING): Workday", "SKILLS AND TOOLS (EXACT OR MISSING): MISSING");
+  const factsRequest = {
+    action: "facts",
+    target: "Human Resources Director",
+    experience: "Served as HR Director at Synthetic Command and later served as Deputy Director. Used Workday across 26 years of service.",
+    certs: "PMP"
+  };
+
+  responseQueue = [
+    { status: "completed", output_text: invalidDateFacts },
+    { status: "completed", output_text: multiRoleFacts }
   ];
-  for (const badFacts of badFactSheets) {
-    nextResponse = { status: "completed", output_text: badFacts };
-    result = await resume.handler(post({
-      action: "facts",
-      target: "Human Resources Director",
-      experience: "Served as HR Director at Synthetic Command and later served as Deputy Director. Used Workday across 26 years of service.",
-      certs: "PMP"
-    }));
-    assert.equal(result.statusCode, 502);
-    assert.match(JSON.parse(result.body).error, /could not safely separate or classify the fact sheet/);
-    assert.doesNotMatch(JSON.parse(result.body).error, /quality check failed|Workday misclassified|invalid date|missing distinct/);
-  }
+  const callsBeforeSuccessfulRepair = calls.length;
+  result = await resume.handler(post(factsRequest));
+  assert.equal(result.statusCode, 200);
+  assert.equal(JSON.parse(result.body).factSheet, multiRoleFacts);
+  assert.equal(calls.length - callsBeforeSuccessfulRepair, 2);
+  const repairCall = calls[callsBeforeSuccessfulRepair + 1];
+  assert.equal(repairCall.model, "gpt-5.6-luna");
+  assert.equal(repairCall.max_output_tokens, 1300);
+  assert.equal(repairCall.store, false);
+  assert.deepEqual(repairCall.reasoning, { effort: "none" });
+  assert.match(repairCall.input, /ORIGINAL BOUNDED SOURCE:/);
+  assert.match(repairCall.input, /FIRST FACT SHEET:/);
+  assert.match(repairCall.input, /STRUCTURAL ISSUE LABELS:/);
+
+  responseQueue = [
+    { status: "completed", output_text: invalidWorkdayFacts },
+    { status: "completed", output_text: invalidWorkdayFacts }
+  ];
+  const callsBeforeFailedRepair = calls.length;
+  result = await resume.handler(post(factsRequest));
+  assert.equal(result.statusCode, 502);
+  assert.equal(calls.length - callsBeforeFailedRepair, 2);
+  assert.match(JSON.parse(result.body).error, /could not safely separate or classify the fact sheet/);
+  assert.doesNotMatch(JSON.parse(result.body).error, /quality check failed|Workday misclassified|invalid date|missing distinct/);
 
   nextResponse = { status: "completed", output_text: "```text\n**Synthetic Logistics Leader - Synthetic Unit**\n# PROFESSIONAL EXPERIENCE\n[Hours per week: __]\nLed a 15-person team managing a $2M equipment inventory.\nTIP: Add dates.\n```" };
   result = await resume.handler(post({
@@ -198,7 +221,7 @@ async function run() {
   result = await navigator.handler(post({ messages: [{ role: "user", content: "Synthetic request" }] }));
   assert.equal(result.statusCode, 502);
 
-  console.log("PASS: synthetic OpenAI migration regression (role splitting, date/tenure, Workday classification, target gate, markdown normalization, separate entries, grounding, Navigator, budget/error paths)");
+  console.log("PASS: synthetic OpenAI migration regression (bounded fact repair 1/2/2 calls, role splitting, date/tenure, Workday classification, target gate, markdown normalization, separate entries, grounding, draft/Terra isolation, Navigator, budget/error paths)");
 }
 
 run().catch((error) => {

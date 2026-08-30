@@ -244,8 +244,21 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
     if (!rawText) throw new Error("generation incomplete");
     if (action === "facts") {
       const factIssues = factSheetIssues(rawText, userBlock);
-      if (factIssues.length) throw new Error("fact sheet quality check failed: " + factIssues.join(", "));
-      return { statusCode: 200, headers, body: JSON.stringify({ factSheet: rawText }) };
+      if (!factIssues.length) return { statusCode: 200, headers, body: JSON.stringify({ factSheet: rawText }) };
+
+      const repairResponse = await client.responses.create({
+        model: "gpt-5.6-luna",
+        instructions: `Repair the fact sheet's structure and classification only. Preserve every source fact exactly; do not add, infer, translate, or improve facts. Split every distinct job title into its own ROLE block, including later or subsequent roles. DATES may contain only explicit calendar dates or date ranges; move tenure to NUMBERS AND SCALE. Put software and tools under SKILLS AND TOOLS unless the source explicitly names a certification. Return the complete corrected fact sheet in the original plain-text field structure, with no markdown or commentary.`,
+        input: "ORIGINAL BOUNDED SOURCE:\n" + userBlock + "\n\nFIRST FACT SHEET:\n" + rawText + "\n\nSTRUCTURAL ISSUE LABELS:\n" + factIssues.join(", "),
+        max_output_tokens: mode === "federal" ? 1900 : 1300,
+        reasoning: { effort: "none" },
+        store: false
+      });
+      const repairedText = repairResponse.status === "completed" ? responseText(repairResponse) : "";
+      if (!repairedText) throw new Error("fact sheet quality check failed: repair incomplete");
+      const repairedIssues = factSheetIssues(repairedText, userBlock);
+      if (repairedIssues.length) throw new Error("fact sheet quality check failed: repair rejected");
+      return { statusCode: 200, headers, body: JSON.stringify({ factSheet: repairedText }) };
     }
     const text = normalizePlainText(rawText);
     const issues = draftQualityIssues(text, userBlock + "\n" + confirmedFacts, confirmedFacts);
