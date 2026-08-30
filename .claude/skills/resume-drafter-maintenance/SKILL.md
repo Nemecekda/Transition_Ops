@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.7"
+  version: "0.8"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.7 is PENDING until the RDM regression suite
+Version 0.8 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -134,6 +134,34 @@ support a role bullet or an ambiguous summary claim. Audit `fact_refs` must be
 drawn from the closed catalog; unknown IDs and cross-role references fail closed
 as `missing_trace` or `unsupported_claim`. Catalog IDs carry no member identifier
 and may not enter logs, persistence, or analytics.
+
+## SCOPED GENERATION CONTRACT
+
+Build the canonical fact catalog before draft generation, then derive a separate
+draft-eligible view. Send the generator only that view, never the raw confirmed
+ledger. The eligible view contains exact role identities, confirmed optional
+role fields, role-owned duties/outcomes/numbers, exact education and credentials,
+confirmed skills, and the explicit target. Exclude `MISSING` fields, the raw
+`NUMBERS AND SCALE` line, and every global unlinked number.
+
+The generator may use only draft-eligible scoped numbers and must preserve each
+used value exactly. It must not be instructed to use every number in the ledger.
+Role-owned numbers remain attached to their owner. Global unlinked numbers are
+unavailable to generation and cannot support a role bullet or ambiguous summary.
+The full closed catalog remains available only to the audit under its existing
+fact-reference restrictions.
+
+One-page length is a formatting target; complete role inventory is a blocking
+safety requirement. Reduce bullets before omitting, merging, or rewriting a
+role. Deterministic filler checks apply only to generated summary and
+duty/accomplishment prose, never byte-exact title, employer/unit, degree, school,
+certification, or license fields.
+
+Pre-audit deterministic failures remain fail-closed but use distinct,
+content-free categories: `civilian_format`, `filler_language`,
+`unsupported_number`, `role_structure`, and `unlinked_global_number`. Return
+approved actionable wording only. Never return member text, the rejected draft,
+fact values, IDs, provider details, or raw internal issue labels.
 
 ## FORMAT RULES
 
@@ -405,6 +433,38 @@ all existing hard input bounds.
 - **RDM-68 Cost and external cap:** the architecture adds no API call or cap, so
   maximum incremental API exposure is $0; external monthly cap remains
   `UNVERIFIED`.
+- **RDM-69 Scoped input:** the draft request must contain the draft-eligible fact
+  view and must not contain the raw confirmed ledger.
+- **RDM-70 Unlinked exclusion:** synthetic unlinked tenure, recruiter-count,
+  employee-count, and state-count facts must be absent from generator input.
+- **RDM-71 Role ownership:** synthetic role-linked plant, hiring-volume,
+  headcount, budget, personnel, and location-count facts must remain attached
+  only to their owning roles.
+- **RDM-72 Number instruction:** the prompt must authorize only draft-eligible
+  scoped numbers and must not instruct the model to use every ledger number.
+- **RDM-73 Six-role pressure:** a synthetic six-role live-shape fixture must
+  preserve six exact title/employer identity lines within the civilian 2200 cap.
+- **RDM-74 Failure categories:** civilian-format, filler, unsupported-number,
+  role-structure, and unlinked-global failures must return distinct content-free
+  categories with no member text, fact values, IDs, or raw internal labels.
+- **RDM-75 Filler scope:** banned filler in summary or duty prose must fail; the
+  same token inside an exact identity or credential must not.
+- **RDM-76 Date punctuation:** confirmed synthetic en-dash date ranges must
+  survive without false rejection.
+- **RDM-77 Number punctuation:** supported number values must remain valid across
+  harmless range punctuation while invented values fail.
+- **RDM-78 Unlinked variants:** exact, paraphrased, and numerically colliding
+  unlinked-global claims must never be released; deterministic checks or audit
+  must withhold them.
+- **RDM-79 Role completeness:** one-page pressure may reduce bullets but must not
+  merge, omit, or rewrite any confirmed role.
+- **RDM-80 Unchanged controls:** facts/repair remain 3500, civilian 2200,
+  federal 1900, audit 4000, with unchanged call count, zero retries, draft limit,
+  posting isolation, `store: false`, no logging or persistence, and the external
+  monthly cap `UNVERIFIED`.
+- **RDM-81 Synthetic portability:** regression fixtures must be synthetic and
+  structurally equivalent; they must contain no member source or absolute
+  attachment path.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -415,6 +475,6 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.7 until all cases execute and evidence
+Keep registry item #6 PENDING at version 0.8 until all cases execute and evidence
 is reviewed. After successful execution, force-mod proposes the smallest
 evidence-supported revision and Commander rules on promotion to CODIFIED 1.0.

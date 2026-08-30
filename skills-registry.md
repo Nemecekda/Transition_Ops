@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.7 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.8 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,20 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.7 -> 0.8, remains
+  PENDING.** A live pre-audit rejection exposed a generation/validation seam:
+  the generator could receive raw unlinked global numbers that the deterministic
+  gate correctly refused. Version 0.8 requires catalog-first generation and a
+  separate draft-eligible scoped fact view, excluding the raw ledger, `MISSING`,
+  raw `NUMBERS AND SCALE`, and every global unlinked number. Role ownership and
+  exact identities remain binding; one-page pressure may reduce bullets but not
+  roles. Deterministic failures now require distinct content-free categories,
+  and filler checks apply only to prose. RDM-69…RDM-81 use synthetic portable
+  fixtures and preserve facts/repair 3500, civilian 2200, federal 1900, audit
+  4000, calls, zero retries, draft limit, posting isolation, `store: false`, no
+  logging/storage, and the `UNVERIFIED` external monthly cap. No call or cap is
+  added; maximum incremental API exposure is $0. Lane: AUTO for internal
+  governance; app implementation remains Commander-gated. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.6 -> 0.7, remains
   PENDING.** A live six-role civilian draft exposed conflicting placeholder
   rules and lost number provenance. Version 0.7 makes civilian output
