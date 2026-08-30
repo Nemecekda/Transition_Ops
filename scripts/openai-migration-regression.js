@@ -38,6 +38,11 @@ function factCatalogFromAuditRequest(request) {
   return JSON.parse(match[1]);
 }
 
+function summarySupportFromAuditRequest(request) {
+  const match = String(request.input || "").match(/<SERVER_OWNED_SUMMARY_SUPPORT>\n([\s\S]*?)\n<\/SERVER_OWNED_SUMMARY_SUPPORT>/);
+  return match ? JSON.parse(match[1]) : null;
+}
+
 function passingAudit(request, changes) {
   const catalog = factCatalogFromAuditRequest(request);
   const audit = {
@@ -439,7 +444,7 @@ async function run() {
   nextResponse = { status: "completed", output_text: ownershipDraft };
   auditResponseQueue.push((request) => {
     const inventory = clauseInventoryFromAuditRequest(request);
-    assert.deepEqual(inventory.map((item) => item.owner), ["global", "global", "R1", "R1", "R2", "R2"]);
+    assert.deepEqual(inventory.map((item) => item.owner), ["R1", "R1", "R2", "R2"]);
     return passingAudit(request);
   });
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: ownershipLedger, confirmedFacts: ownershipLedger }));
@@ -449,7 +454,7 @@ async function run() {
   const headingVariantDraft = "SUMMARY:\nPlanning leader.\n\nPROFESSIONAL EXPERIENCE:\nJOB TITLE: Synthetic Role 1 - Synthetic Employer 1\nWorked with Synthetic Role 2 without changing ownership.\n\nROLE: Synthetic Role 2 - Synthetic Employer 2\nLed synthetic function 2.\n\nCERTIFICATIONS AND LICENSES:\nSynthetic License\n\nEDUCATION & TRAINING:\nB.S., Synthetic University";
   nextResponse = { status: "completed", output_text: headingVariantDraft };
   auditResponseQueue.push((request) => {
-    assert.deepEqual(clauseInventoryFromAuditRequest(request).map((item) => item.owner), ["global", "R1", "R1", "R2", "R2", "global", "global"]);
+    assert.deepEqual(clauseInventoryFromAuditRequest(request).map((item) => item.owner), ["R1", "R1", "R2", "R2", "global", "global"]);
     return passingAudit(request);
   });
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: headingLedger, confirmedFacts: headingLedger }));
@@ -502,7 +507,9 @@ async function run() {
   assert.equal(result.statusCode, 200);
   assert.equal(calls.length - callsBeforeMetadataCompletion, 2);
   const completedMetadataDraft = JSON.parse(result.body).bullets;
-  assert.equal(completedMetadataDraft, completedAuditCandidate);
+  assert.equal(completedMetadataDraft.replace(/^SUMMARY\nPlanning\.\n\n/, ""), completedAuditCandidate);
+  assert.match(completedMetadataDraft, /^SUMMARY\nPlanning\.\n\n/);
+  assert.doesNotMatch(completedAuditCandidate, /SUMMARY|Planning\./);
   assert.match(completedMetadataDraft, /Metadata Role 1 - Metadata Unit 1\nFort Alpha, VA \| Jan 2018 - Feb 2019/);
   assert.match(completedMetadataDraft, /Metadata Role 2 - Metadata Unit 2\nRemote \/ Global\n/);
   assert.match(completedMetadataDraft, /Metadata Role 2 - Metadata Unit 2\nRemote \/ Global\n• Remote \/ Global\n/);
@@ -555,6 +562,89 @@ async function run() {
   result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).bullets, incompleteMetadataDraft);
+
+  // RDM-123..RDM-141: replacement, exact atoms, bound/order, unsafe filters, isolation,
+  // omission/insertion, preservation/idempotence, federal isolation, closed support,
+  // deterministic trace, remaining-claim withholding, ten dimensions, and controls.
+  const summaryLedger = "ROLE 1\nJOB TITLE (EXACT): Summary Role\nEMPLOYER OR UNIT (EXACT): Summary Unit\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led confirmed planning work.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING):  Planning ; Workday  HCM ; Planning ; ; MISSING ; 12 years ; $5M ; 25% ; March 2020 ; Present ; twenty-six years ; three programs ; one-on-one coaching ; Analytics? ; Coaching ; Facilitation\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+  const summaryBaseDraft = "CORE SKILLS\nPlanning\n\nPROFESSIONAL EXPERIENCE\nSummary Role - Summary Unit\nLed confirmed planning work.";
+  const generatedUnsafeSummary = "SUMMARY:\nCross-functional career pipeline leader for Program Analyst work.\n\n" + summaryBaseDraft;
+  let canonicalSummaryAuditCandidate = "";
+  let canonicalSummarySupport = null;
+  const callsBeforeCanonicalSummary = calls.length;
+  nextResponse = { status: "completed", output_text: generatedUnsafeSummary };
+  auditResponseQueue.push((request) => {
+    canonicalSummaryAuditCandidate = candidateDraftFromAuditRequest(request);
+    canonicalSummarySupport = summarySupportFromAuditRequest(request);
+    const inventory = clauseInventoryFromAuditRequest(request);
+    const catalog = factCatalogFromAuditRequest(request);
+    assert.equal(inventory.some((claim) => claim.section === "summary"), false);
+    assert.equal(inventory.some((claim) => /career pipeline|Cross-functional/.test(claim.claim_text)), false);
+    assert.ok(canonicalSummarySupport && canonicalSummarySupport.claim_id);
+    assert.equal(canonicalSummarySupport.fact_refs.length, 1);
+    const supportFact = catalog.find((fact) => fact.fact_id === canonicalSummarySupport.fact_refs[0]);
+    assert.equal(supportFact.owner, "global");
+    assert.match(supportFact.text, /^SKILLS AND TOOLS/);
+    assert.doesNotMatch(request.input, /Cross-functional career pipeline|Program Analyst work/);
+    assert.match(request.instructions, /server owns and separately grounds the intentionally omitted Summary/);
+    return passingAudit(request);
+  });
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", posting: "Cross-functional pipeline leadership required.", experience: summaryLedger, confirmedFacts: summaryLedger }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(calls.length - callsBeforeCanonicalSummary, 2);
+  const canonicalSummaryBody = JSON.parse(result.body);
+  const canonicalSummaryText = "Planning; Workday  HCM; Analytics?; Coaching.";
+  assert.match(canonicalSummaryBody.bullets, new RegExp("^SUMMARY:\\n" + canonicalSummaryText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\n\\n"));
+  assert.equal(canonicalSummaryBody.bullets.replace(/^SUMMARY:\n[^\n]+\n\n/, ""), summaryBaseDraft);
+  assert.equal(canonicalSummaryAuditCandidate, summaryBaseDraft);
+  assert.doesNotMatch(canonicalSummaryBody.bullets.split("\n")[1], /Facilitation|MISSING|12|\$|%|2020|Present|twenty-six|three programs|one-on-one coaching|career|pipeline|Program Analyst/);
+  assert.equal(canonicalSummaryBody.scorecard.length, 10);
+  const canonicalTrace = canonicalSummaryBody.trace.find((trace) => trace.section === "summary");
+  assert.equal(canonicalTrace.claim_text, canonicalSummaryText);
+  assert.deepEqual(canonicalTrace.fact_refs, canonicalSummarySupport.fact_refs);
+  assert.deepEqual(canonicalTrace.posting_refs, []);
+  assert.equal(canonicalTrace.transform, "exact");
+  assert.equal(canonicalTrace.verdict, "supported");
+
+  nextResponse = { status: "completed", output_text: canonicalSummaryBody.bullets };
+  auditResponseQueue.push((request) => passingAudit(request));
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: summaryLedger, confirmedFacts: summaryLedger }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(JSON.parse(result.body).bullets, canonicalSummaryBody.bullets);
+
+  nextResponse = { status: "completed", output_text: summaryBaseDraft };
+  auditResponseQueue.push((request) => { assert.doesNotMatch(candidateDraftFromAuditRequest(request), /SUMMARY/); return passingAudit(request); });
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: summaryLedger, confirmedFacts: summaryLedger }));
+  assert.equal(result.statusCode, 200);
+  assert.match(JSON.parse(result.body).bullets, new RegExp("^SUMMARY\\n" + canonicalSummaryText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\n\\nCORE SKILLS"));
+
+  const noSafeSummaryLedger = summaryLedger.replace(/^SKILLS AND TOOLS.*$/m, "SKILLS AND TOOLS (EXACT OR MISSING): MISSING; 12 years; $5M; 25%; March 2020; twenty-six years");
+  nextResponse = { status: "completed", output_text: "PROFESSIONAL SUMMARY\nUnsupported aggregate claim.\n\n" + summaryBaseDraft };
+  auditResponseQueue.push((request) => { assert.equal(summarySupportFromAuditRequest(request), null); return passingAudit(request); });
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: noSafeSummaryLedger, confirmedFacts: noSafeSummaryLedger }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(JSON.parse(result.body).bullets, summaryBaseDraft);
+  assert.equal(JSON.parse(result.body).trace.some((trace) => trace.section === "summary"), false);
+
+  nextResponse = { status: "completed", output_text: generatedUnsafeSummary };
+  auditResponseQueue.push((request) => {
+    const audit = passingAudit(request);
+    const dutyId = clauseInventoryFromAuditRequest(request).find((claim) => claim.claim_text === "Led confirmed planning work.").claim_id;
+    const dutyTrace = audit.claim_trace.find((trace) => trace.claim_id === dutyId);
+    dutyTrace.fact_refs = [];
+    dutyTrace.verdict = "unsupported";
+    return audit;
+  });
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: summaryLedger, confirmedFacts: summaryLedger }));
+  assert.equal(result.statusCode, 422);
+  assert.match(JSON.parse(result.body).blockers.join(" "), /unsupported/i);
+
+  const federalSummaryDraft = "PROFESSIONAL SUMMARY\nFederal generated summary remains byte-exact.\n\nPROFESSIONAL EXPERIENCE\nSummary Role - Summary Unit\n[Month Year - Month Year]\nLed confirmed planning work.";
+  nextResponse = { status: "completed", output_text: federalSummaryDraft };
+  auditResponseQueue.push((request) => { assert.equal(summarySupportFromAuditRequest(request), null); assert.equal(candidateDraftFromAuditRequest(request), federalSummaryDraft); return passingAudit(request); });
+  result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: summaryLedger, confirmedFacts: summaryLedger }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(JSON.parse(result.body).bullets, federalSummaryDraft);
 
   const boundaryLedger = "ROLE 1\nJOB TITLE (EXACT): Boundary Role 1\nEMPLOYER OR UNIT (EXACT): Boundary Employer 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and delivered 1100 hires.\n\nROLE 2\nJOB TITLE (EXACT): Boundary Role 2\nEMPLOYER OR UNIT (EXACT): Boundary Employer 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and managed 22 specialists.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 22 specialists; shared 44-unit scale; 110; 77 sites\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
   nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nBoundary Role 1 - Boundary Employer 1\nDelivered hiring work.\nBoundary Role 2 - Boundary Employer 2\nManaged specialist work." };
@@ -615,13 +705,15 @@ async function run() {
 
   const attributedSummary = "SUMMARY\nSynthetic Role 5 led a 110-person operation.\n" + liveCivilianDraft;
   nextResponse = { status: "completed", output_text: attributedSummary };
-  auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.owner === "R5" && /110-person/.test(fact.text)).fact_id]; return audit; });
+  auditResponseQueue.push((request) => passingAudit(request));
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 200);
+  assert.match(JSON.parse(result.body).bullets, /^SUMMARY\nPlanning; Analytics\./);
+  assert.doesNotMatch(JSON.parse(result.body).bullets, /Synthetic Role 5 led a 110-person operation/);
 
   for (const nonnumericSummary of ["Operations leadership.", "Operations leadership across complex organizations with distributed teams."]) {
     nextResponse = { status: "completed", output_text: "SUMMARY\n" + nonnumericSummary + "\n" + liveCivilianDraft };
-    auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.owner === "R5" && /110-person.*\$9M.*1,100 to 1,300/.test(fact.text)).fact_id]; return audit; });
+    auditResponseQueue.push((request) => passingAudit(request));
     result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
     assert.equal(result.statusCode, 200);
   }
@@ -631,35 +723,35 @@ async function run() {
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 200);
 
-  nextResponse = { status: "completed", output_text: attributedSummary.replace("Synthetic Role 5 led", "Led") };
+  nextResponse = { status: "completed", output_text: "CORE SKILLS\nLed a 110-person operation.\n" + liveCivilianDraft };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.owner === "R5" && /110-person/.test(fact.text)).fact_id]; return audit; });
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 502);
 
-  nextResponse = { status: "completed", output_text: "SUMMARY\nSynthetic Employer 5 led a 110-person operation.\n" + liveCivilianDraft };
+  nextResponse = { status: "completed", output_text: "CORE SKILLS\nSynthetic Employer 5 led a 110-person operation.\n" + liveCivilianDraft };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.owner === "R5" && /110-person/.test(fact.text)).fact_id]; return audit; });
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 200);
 
   const collisionLedger = liveLedger.replace("Coached the top 15 leaders.", "Led a 110-person team.");
-  nextResponse = { status: "completed", output_text: attributedSummary.replace("Coached the top 15 leaders.", "Led a 110-person team.") };
+  nextResponse = { status: "completed", output_text: ("CORE SKILLS\nLed a 110-person operation.\n" + liveCivilianDraft).replace("Coached the top 15 leaders.", "Led a 110-person team.") };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.owner === "R4" && /110-person/.test(fact.text)).fact_id]; return audit; });
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: collisionLedger, confirmedFacts: collisionLedger }));
   assert.equal(result.statusCode, 502);
   assert.deepEqual(JSON.parse(result.body).blockers, ["[global_quantity_owner_mismatch] A global quantified claim did not identify its owning role."]);
 
-  nextResponse = { status: "completed", output_text: "SUMMARY\nSynthetic Role 5 led a 1,200-person operation.\n" + liveCivilianDraft };
-  auditResponseQueue.push((request) => { const audit = passingAudit(request); audit.claim_trace[0].verdict = "unsupported"; audit.claim_trace[0].fact_refs = []; return audit; });
+  nextResponse = { status: "completed", output_text: liveCivilianDraft.replace("Led work across 17 plants.", "Claimed unsupported result.") };
+  auditResponseQueue.push((request) => { const audit = passingAudit(request); const claimId = clauseInventoryFromAuditRequest(request).find((claim) => claim.claim_text === "Claimed unsupported result.").claim_id; const trace = audit.claim_trace.find((item) => item.claim_id === claimId); trace.verdict = "unsupported"; trace.fact_refs = []; return audit; });
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 422);
 
   nextResponse = { status: "completed", output_text: "SUMMARY\nPlanning and analytics leader.\n" + liveCivilianDraft };
-  auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.owner === "R1" && !/(?:\$?\d|\bone\b|\btwo\b)/i.test(fact.text)).fact_id]; return audit; });
+  auditResponseQueue.push((request) => passingAudit(request));
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 200);
 
-  nextResponse = { status: "completed", output_text: "SUMMARY\nUnsupported strategic outcome.\n" + liveCivilianDraft };
-  auditResponseQueue.push((request) => { const audit = passingAudit(request); audit.claim_trace[0].verdict = "unsupported"; audit.claim_trace[0].fact_refs = []; return audit; });
+  nextResponse = { status: "completed", output_text: liveCivilianDraft.replace("Led work across 17 plants.", "Unsupported strategic outcome.") };
+  auditResponseQueue.push((request) => { const audit = passingAudit(request); const claimId = clauseInventoryFromAuditRequest(request).find((claim) => claim.claim_text === "Unsupported strategic outcome.").claim_id; const trace = audit.claim_trace.find((item) => item.claim_id === claimId); trace.verdict = "unsupported"; trace.fact_refs = []; return audit; });
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 422);
   assert.match(JSON.parse(result.body).blockers.join(" "), /unsupported/i);
@@ -688,7 +780,7 @@ async function run() {
   assert.match(JSON.parse(result.body).blockers.join(" "), /\[global_fact_on_role_claim\]/);
   assert.doesNotMatch(result.body, /HR Director|Synthetic Command|Workday|F\d+|C\d+/);
 
-  nextResponse = { status: "completed", output_text: "SUMMARY\nLed 1,200 employees across 18 states.\n" + liveCivilianDraft };
+  nextResponse = { status: "completed", output_text: "CORE SKILLS\nLed 1,200 employees across 18 states.\n" + liveCivilianDraft };
   const callsBeforeUnlinkedGlobal = calls.length;
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 502);
@@ -737,7 +829,8 @@ async function run() {
   assert.equal(result.statusCode, 200);
   const civilianAuditBody = JSON.parse(result.body);
   assert.equal(civilianAuditBody.scorecard.length, 10);
-  assert.equal(civilianAuditBody.trace.length, draftClausesFromAuditRequest(calls.at(-1)).length);
+  assert.equal(civilianAuditBody.trace.length, draftClausesFromAuditRequest(calls.at(-1)).length + 1);
+  assert.equal(civilianAuditBody.trace.filter((item) => item.section === "summary").length, 1);
   assert.ok(civilianAuditBody.trace.every((item) => item.claim_id && item.section && item.claim_text && item.fact_refs.length > 0 && Object.hasOwn(item, "posting_refs") && item.transform && item.verdict));
   assert.equal(civilianAuditBody.scorecard.find((item) => item.dimension === "date_completeness").status, "NEEDS MEMBER FACT");
   assert.deepEqual(civilianAuditBody.supportedKeywords, ["talent management", "succession planning"]);
@@ -845,9 +938,9 @@ async function run() {
   assert.match(calls.at(-1).instructions, /T-200 days BEFORE separation/);
 
   const badDrafts = [
-    "Synthetic Logistics Leader - Synthetic Unit\nSUMMARY\nLed a 99-person team.",
-    "Changed Title - Changed Employer\nSUMMARY\nLed a 15-person team.",
-    "Synthetic Logistics Leader - Synthetic Unit\nSUMMARY\nResults-driven leader who leveraged planning for a 15-person team."
+    "PROFESSIONAL EXPERIENCE\nSynthetic Logistics Leader - Synthetic Unit\nLed a 99-person team.",
+    "PROFESSIONAL EXPERIENCE\nChanged Title - Changed Employer\nLed a 15-person team.",
+    "PROFESSIONAL EXPERIENCE\nSynthetic Logistics Leader - Synthetic Unit\nResults-driven leader who leveraged planning for a 15-person team."
   ];
   for (const [badDraft, expectedCategory] of badDrafts.map((draft, index) => [draft, ["unsupported_number", "role_structure", "filler_language"][index]])) {
     nextResponse = { status: "completed", output_text: badDraft };
@@ -984,7 +1077,12 @@ async function run() {
   assert.match(resumeSource, /clip\(posting, 3500\)/);
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)/);
   assert.match(resumeSource, /function completeConfirmedRoleMetadata/);
-  assert.match(resumeSource, /mode === "federal" \? normalizedText : completeConfirmedRoleMetadata\(normalizedText, confirmedFacts\)/);
+  assert.match(resumeSource, /const CANONICAL_SUMMARY_ATOM_LIMIT = 4/);
+  assert.match(resumeSource, /function canonicalCivilianSummary/);
+  assert.match(resumeSource, /function replaceCivilianSummary/);
+  assert.match(resumeSource, /const auditCandidate = summaryClaim \? withoutSummary\(text\) : text/);
+  assert.match(resumeSource, /const deterministicSummaryTrace = summaryClaim \? \{ claim_id: summaryClaim\.claim_id, section: "summary", fact_refs: \[summaryFact\.fact_id\], posting_refs: \[\], transform: "exact", verdict: "supported"/);
+  assert.match(resumeSource, /mode === "federal" \? summaryCompletion\.text : completeConfirmedRoleMetadata\(summaryCompletion\.text, confirmedFacts\)/);
   const referenceMessagesBlock = resumeSource.match(/const referenceMessages = \{([\s\S]*?)\n      \};/)[1];
   const referenceCodes = Array.from(referenceMessagesBlock.matchAll(/^        ([a-z_]+):/gm), (match) => match[1]);
   assert.deepEqual(referenceCodes, ["trace_reference_shape", "unavailable_fact_reference", "global_fact_on_role_claim", "role_cross_reference", "global_quantity_owner_mismatch", "claim_owner_unresolved"]);
@@ -1024,7 +1122,7 @@ async function run() {
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
 
-  console.log("PASS: synthetic RDM-1..RDM-122 control paths, scoped generation, deterministic safe categories, role-complete identities, confirmed-role metadata completion, unchanged caps/calls/privacy controls (live model evaluation pending)");
+  console.log("PASS: synthetic RDM-1..RDM-141 control paths, scoped generation, deterministic safe categories, role-complete identities, confirmed-role metadata completion, server-owned civilian Summary, unchanged caps/calls/privacy controls (live model evaluation pending)");
 }
 
 run().catch((error) => {

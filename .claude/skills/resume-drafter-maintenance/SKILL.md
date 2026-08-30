@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.11"
+  version: "0.12"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.11 is PENDING until the RDM regression suite
+Version 0.12 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -182,6 +182,37 @@ and approved message, such as `global_fact_on_role_claim`,
 `trace_reference_shape`. Never return claim or fact text, catalog or claim IDs,
 member identities, provider or token details, or raw internal labels. Do not log
 or persist the diagnostic. Diagnostics do not relax fail-closed grounding.
+
+## CIVILIAN CANONICAL SUMMARY
+
+In civilian mode only, after `normalizePlainText` and before role metadata
+completion, deterministic checks, clause inventory, or audit, replace any
+model-generated Summary with a server-owned canonical Summary. Derive it only
+from exact semicolon-delimited atoms in the confirmed global `SKILLS AND TOOLS
+(EXACT OR MISSING)` field. Apply structural edge trimming only and preserve each
+atom's internal bytes. Keep stable source order and select at most four safe
+atoms. Exclude empty atoms, literal `MISSING`, exact duplicates, and atoms
+containing digits, currency, percentages, dates, durations, or quantified number
+words. Join selected atoms with `; ` and add terminal punctuation only when the
+last selected atom lacks it.
+
+Never rewrite, translate, rank, semantically deduplicate, aggregate, or broaden
+an atom. Never source Summary content from role facts, duties, quantities,
+posting, target title, adjacent roles, raw source, or inferred career span. If
+no safe global atom exists, omit both Summary heading and body; audit format must
+permit that safe omission. If the model omitted Summary and safe atoms exist,
+insert the canonical Summary before the first recognized civilian section.
+Preserve every non-Summary byte. Canonicalization must be idempotent. Federal
+output is unchanged.
+
+The canonical Summary is deterministically grounded and server-owned. Exclude
+its claim from model-adjudicated claim IDs and pre-map it only to the closed
+global Skills fact. The model may attach neither role nor posting references to
+it. After every remaining audit check passes, merge exactly one deterministic
+Summary trace into the returned trace. Unsupported non-Summary claims remain
+fail-closed. Add no call or retry and change no model, cap, `store: false`,
+privacy control, usage limit, logging, persistence, analytics, or cost ceiling.
+Maximum incremental API exposure is $0.
 
 ## CIVILIAN ROLE METADATA COMPLETION
 
@@ -625,6 +656,52 @@ all existing hard input bounds.
   draft and usage limits, posting isolation, `store: false`, no logging,
   persistence, or analytics, unchanged privacy controls, $0 incremental API
   exposure, and the external monthly cap `UNVERIFIED`.
+- **RDM-123 Four safe atoms:** four safe global Skills atoms must produce one
+  canonical Summary in stable source order.
+- **RDM-124 One, two, and three atoms:** each smaller safe-atom set must produce
+  the corresponding deterministic Summary without padding or invention.
+- **RDM-125 Bounded selection:** more than four safe atoms must use only the
+  first four in source order; omitted atoms must not be invented elsewhere.
+- **RDM-126 Unsafe atom exclusion:** atoms containing digits, currency,
+  percentages, dates, durations, or quantified number words, plus empty,
+  literal `MISSING`, and exact duplicate atoms, must be excluded.
+- **RDM-127 Byte and punctuation preservation:** selected atoms must preserve
+  internal capitalization and punctuation byte-exact, adding terminal
+  punctuation only when absent.
+- **RDM-128 Generated separators only:** canonicalization may generate only
+  `; ` separators and permitted terminal punctuation.
+- **RDM-129 No-safe omission:** when no safe atom remains, both Summary heading
+  and body must be omitted and audit format must permit the omission.
+- **RDM-130 Broad Summary replacement:** any model-generated broad or aggregated
+  Summary must be removed completely and replaced only by the canonical Summary.
+- **RDM-131 Source isolation:** role facts, duties, quantities, posting, target,
+  adjacent roles, raw source, and inferred career span must not influence the
+  canonical Summary.
+- **RDM-132 Non-Summary preservation:** canonicalization must preserve every
+  non-Summary candidate byte, including Core Skills, roles, bullets, metadata,
+  education, and credentials.
+- **RDM-133 Summary idempotence:** applying canonicalization twice must be
+  byte-identical to applying it once.
+- **RDM-134 Deterministic support:** the canonical Summary trace must reference
+  only the closed global `SKILLS AND TOOLS` fact.
+- **RDM-135 Model-adjudication exclusion:** the canonical Summary claim must not
+  appear in model-adjudicated claim IDs.
+- **RDM-136 Single merged trace:** exactly one deterministic canonical Summary
+  trace must be merged after all remaining audit checks pass.
+- **RDM-137 No model references:** the auditor must be unable to attach role or
+  posting references to the canonical Summary.
+- **RDM-138 Non-Summary fail closed:** an unsupported role bullet or other
+  noncanonical claim must still cause withholding.
+- **RDM-139 Existing quality controls:** exact identity, role separation,
+  metadata, quantity, keyword, translation, filler, readability, format, and
+  complete-trace controls must remain unchanged.
+- **RDM-140 Federal boundary:** federal output and federal Summary behavior must
+  remain byte-identical to the pre-v0.12 path.
+- **RDM-141 Unchanged operational controls:** facts/repair remain 3500, civilian
+  2200, federal 1900, audit 4000, with unchanged models, call count, zero
+  retries, draft and usage limits, posting isolation, `store: false`, no logging,
+  persistence, or analytics, unchanged privacy controls, $0 incremental API
+  exposure, and the external monthly cap `UNVERIFIED`.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -635,7 +712,7 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.11 until all cases execute and live
+Keep registry item #6 PENDING at version 0.12 until all cases execute and live
 clone evidence passes. After successful execution and live evidence, force-mod
 proposes the smallest evidence-supported revision and Commander rules on
 promotion to CODIFIED 1.0.

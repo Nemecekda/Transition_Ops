@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.11 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.12 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,25 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.11 -> 0.12, remains
+  PENDING.** Complete live v0.11 evidence isolated the only substantive failure
+  to an unsupported aggregated civilian Summary while identities, roles,
+  quantities, keywords, translation, filler, and readability passed. Version
+  0.12 replaces model Summary content with a server-owned canonical Summary
+  derived only from up to four safe semicolon-delimited global Skills atoms in
+  stable source order. It preserves atom and non-Summary bytes, excludes unsafe
+  or duplicate atoms, omits Summary when none are safe, and prohibits role,
+  posting, target, raw-source, duty, quantity, and career-span influence. The
+  canonical claim is excluded from model-adjudicated IDs, mapped only to the
+  closed global Skills fact, and merged exactly once after remaining audit
+  checks pass; unsupported non-Summary claims remain fail-closed.
+  RDM-123…RDM-141 use synthetic fixtures and preserve federal behavior, models,
+  caps, calls, zero retries, usage limits, `store: false`, no
+  logging/storage/analytics, privacy controls, and the `UNVERIFIED` external
+  monthly cap. No call or cap is added; maximum incremental API exposure is $0.
+  Registry remains PENDING until app regressions and live clone evidence pass.
+  Lane: AUTO for internal governance; app implementation remains
+  Commander-gated. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.10 -> 0.11, remains
   PENDING.** Live v0.10 evidence showed a grounded draft withheld because the
   generator omitted confirmed role dates and locations. Version 0.11 adds a
