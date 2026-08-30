@@ -211,6 +211,32 @@ async function run() {
   assert.equal(calls.at(-1).model, "gpt-5.6-terra");
   assert.match(JSON.parse(result.body).bullets, /^HR Director - Synthetic Command[\s\S]*^Deputy Director - Synthetic Command/m);
 
+  const colonRoleSource = "Served as HR Director at Synthetic Command and later served as Deputy Director of Personnel: talent management, succession planning, and workforce reporting.";
+  const colonRoleFacts = multiRoleFacts.replace("JOB TITLE (EXACT): Deputy Director", "JOB TITLE (EXACT): Deputy Director of Personnel");
+  nextResponse = { status: "completed", output_text: "HR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director of Personnel - Synthetic Command\nManaged talent programs.\nTIP: Add calendar dates." };
+  const callsBeforeColonRoleDraft = calls.length;
+  result = await resume.handler(post({
+    action: "draft",
+    target: "Human Resources Director",
+    experience: colonRoleSource,
+    confirmedFacts: colonRoleFacts
+  }));
+  assert.equal(result.statusCode, 200);
+  assert.deepEqual(JSON.parse(result.body).warnings || [], []);
+  assert.equal(calls.length - callsBeforeColonRoleDraft, 1);
+  assert.equal(calls.at(-1).model, "gpt-5.6-terra");
+
+  const callsBeforeMissingColonRole = calls.length;
+  result = await resume.handler(post({
+    action: "draft",
+    target: "Human Resources Director",
+    experience: colonRoleSource,
+    confirmedFacts: multiRoleFacts
+  }));
+  assert.equal(result.statusCode, 400);
+  assert.equal(calls.length, callsBeforeMissingColonRole);
+  assert.match(JSON.parse(result.body).warnings.join(" "), /distinct job title/);
+
   nextResponse = { status: "completed", output_text: "HR Director and Deputy Director - Synthetic Command\nLed personnel operations and managed Workday reporting." };
   result = await resume.handler(post({
     action: "draft",

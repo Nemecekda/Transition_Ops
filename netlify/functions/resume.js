@@ -150,7 +150,7 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
 
   function explicitLaterRoleTitles(source) {
     const titles = [];
-    const pattern = /\b(?:later|then|subsequently)\s+served\s+as\s+([^,.;\n]+?)(?=\s+(?:at|for)\s+|[,.;\n]|$)/gi;
+    const pattern = /\b(?:later|then|subsequently)\s+served\s+as\s+([^,:.;\n]+?)(?=\s+(?:at|for)\s+|[,:.;\n]|$)/gi;
     let match;
     while ((match = pattern.exec(String(source || "")))) titles.push(match[1].trim());
     return titles;
