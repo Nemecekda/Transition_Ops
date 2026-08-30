@@ -4289,7 +4289,7 @@ function App() {
       return p;
     });
   };
-  const [aiR, setAiR] = useState({ open: false, mode: "standard", role: "", years: "", target: "", skills: "", certs: "", exp: "", loading: false, out: "", err: "", posting: "", facts: "" });
+  const [aiR, setAiR] = useState({ open: false, mode: "standard", role: "", years: "", target: "", skills: "", certs: "", exp: "", loading: false, out: "", err: "", posting: "", facts: "", factWarnings: [] });
   const [jobsQ, setJobsQ] = useState({ open: false, keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "" });
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [whatsNewUnseen, setWhatsNewUnseen] = useState(function() { try { return window.__safeGet("tops_whatsnew_seen") !== APP_VERSION; } catch (e) { return false; } });
@@ -7296,7 +7296,10 @@ whatsNewUnseen && React.createElement("div", {
       aiR.facts && React.createElement("div", { style: { marginBottom: 10, padding: "11px 12px", background: C.bg, border: "1px solid " + C.gold, borderRadius: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.goldBright, fontWeight: 700, marginBottom: 5 } }, "STEP 2 \u2014 REVIEW YOUR FACTS"),
         React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.5, marginBottom: 7 } }, "Check that every distinct role has its own block, job titles and employers match your source, DATES contains real calendar dates only, and software such as Workday is under SKILLS AND TOOLS unless you named a certification."),
-        React.createElement("textarea", { value: aiR.facts, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { facts: v }); }); }, rows: 12, style: { ...S.input, resize: "vertical", fontFamily: "'Courier Prime', monospace", fontSize: 10.5 } })),
+        aiR.factWarnings.length > 0 && React.createElement("div", { style: { background: "rgba(212,168,67,0.12)", border: "1px solid " + C.gold, borderRadius: 7, padding: "8px 10px", marginBottom: 8 } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: 1, color: C.goldBright, fontWeight: 700, marginBottom: 4 } }, "FIX THESE BEFORE DRAFTING"),
+          aiR.factWarnings.map(function(warning, i){ return React.createElement("div", { key: i, style: { fontSize: 11, color: C.textBody, lineHeight: 1.5 } }, "\u2022 " + warning); })),
+        React.createElement("textarea", { value: aiR.facts, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { facts: v, factWarnings: [] }); }); }, rows: 12, style: { ...S.input, resize: "vertical", fontFamily: "'Courier Prime', monospace", fontSize: 10.5 } })),
       React.createElement("button", { disabled: aiR.loading, onClick: function() {
         var today = new Date().toISOString().slice(0,10);
         var used = 0; try { var rec = JSON.parse(window.__safeGet("tops_air_uses") || "{}"); used = rec.d === today ? rec.n : 0; } catch(e) {}
@@ -7308,8 +7311,8 @@ whatsNewUnseen && React.createElement("div", {
           .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
           .catch(function(e){ if (n < 1) { return new Promise(function(res){ setTimeout(res, 1200); }).then(function(){ return attempt(n + 1); }); } throw e; }); })(0)
           .then(function(res) {
-            if (!res.ok) { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: res.d.error || "Try again in a minute." }); }); return; }
-            if (resumeAction === "facts") { setAiR(function(p){ return Object.assign({}, p, { loading: false, facts: res.d.factSheet || "", err: res.d.factSheet ? "" : "We could not build a fact sheet. Try again." }); }); return; }
+            if (!res.ok) { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: res.d.error || "Try again in a minute.", factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : p.factWarnings }); }); return; }
+            if (resumeAction === "facts") { setAiR(function(p){ return Object.assign({}, p, { loading: false, facts: res.d.factSheet || "", factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : [], err: res.d.factSheet ? "" : "We could not build a fact sheet. Try again." }); }); return; }
             try { window.__safeSet("tops_air_uses", JSON.stringify({ d: new Date().toISOString().slice(0,10), n: used + 1 })); } catch(e) {}
             setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets }); });
           })

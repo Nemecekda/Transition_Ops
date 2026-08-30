@@ -49,6 +49,7 @@ async function run() {
   assert.equal(result.statusCode, 200);
   assert.equal(calls.length - callsBeforeCleanFacts, 1);
   assert.equal(JSON.parse(result.body).factSheet, facts);
+  assert.deepEqual(JSON.parse(result.body).warnings, []);
   assert.equal(calls.at(-1).model, "gpt-5.6-luna");
   assert.equal(calls.at(-1).max_output_tokens, 1300);
   assert.equal(calls.at(-1).store, false);
@@ -70,6 +71,7 @@ async function run() {
 
   const invalidDateFacts = multiRoleFacts.replace("DATES (EXACT OR MISSING): MISSING", "DATES (EXACT OR MISSING): 26 years of service");
   const invalidWorkdayFacts = multiRoleFacts.replace("CERTIFICATIONS (EXACT OR MISSING): PMP", "CERTIFICATIONS (EXACT OR MISSING): Workday").replace("SKILLS AND TOOLS (EXACT OR MISSING): Workday", "SKILLS AND TOOLS (EXACT OR MISSING): MISSING");
+  const unresolvedFacts = invalidWorkdayFacts.replaceAll("DATES (EXACT OR MISSING): MISSING", "DATES (EXACT OR MISSING): 26 years of service");
   const factsRequest = {
     action: "facts",
     target: "Human Resources Director",
@@ -85,9 +87,10 @@ async function run() {
   result = await resume.handler(post(factsRequest));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).factSheet, multiRoleFacts);
+  assert.deepEqual(JSON.parse(result.body).warnings, []);
   assert.equal(calls.length - callsBeforeSuccessfulRepair, 2);
   const repairCall = calls[callsBeforeSuccessfulRepair + 1];
-  assert.equal(repairCall.model, "gpt-5.6-luna");
+  assert.equal(repairCall.model, "gpt-5.6-terra");
   assert.equal(repairCall.max_output_tokens, 1300);
   assert.equal(repairCall.store, false);
   assert.deepEqual(repairCall.reasoning, { effort: "none" });
@@ -96,15 +99,32 @@ async function run() {
   assert.match(repairCall.input, /STRUCTURAL ISSUE LABELS:/);
 
   responseQueue = [
-    { status: "completed", output_text: invalidWorkdayFacts },
-    { status: "completed", output_text: invalidWorkdayFacts }
+    { status: "completed", output_text: unresolvedFacts },
+    { status: "completed", output_text: unresolvedFacts }
   ];
   const callsBeforeFailedRepair = calls.length;
   result = await resume.handler(post(factsRequest));
-  assert.equal(result.statusCode, 502);
+  assert.equal(result.statusCode, 200);
   assert.equal(calls.length - callsBeforeFailedRepair, 2);
-  assert.match(JSON.parse(result.body).error, /could not safely separate or classify the fact sheet/);
-  assert.doesNotMatch(JSON.parse(result.body).error, /quality check failed|Workday misclassified|invalid date|missing distinct/);
+  const unresolvedBody = JSON.parse(result.body);
+  assert.equal(unresolvedBody.factSheet, unresolvedFacts);
+  assert.equal(unresolvedBody.warnings.length, 2);
+  assert.equal(new Set(unresolvedBody.warnings).size, unresolvedBody.warnings.length);
+  assert.match(unresolvedBody.warnings.join(" "), /calendar dates only/);
+  assert.match(unresolvedBody.warnings.join(" "), /Workday under SKILLS AND TOOLS/);
+  assert.doesNotMatch(unresolvedBody.warnings.join(" "), /quality check failed|Workday misclassified|invalid date|missing distinct|Synthetic/);
+
+  const callsBeforeBlockedDraft = calls.length;
+  result = await resume.handler(post({
+    action: "draft",
+    target: "Human Resources Director",
+    experience: factsRequest.experience,
+    confirmedFacts: unresolvedBody.factSheet
+  }));
+  assert.equal(result.statusCode, 400);
+  assert.equal(calls.length, callsBeforeBlockedDraft);
+  assert.deepEqual(JSON.parse(result.body).warnings, unresolvedBody.warnings);
+  assert.match(JSON.parse(result.body).error, /Resolve the fact-sheet warnings before drafting/);
 
   nextResponse = { status: "completed", output_text: "```text\n**Synthetic Logistics Leader - Synthetic Unit**\n# PROFESSIONAL EXPERIENCE\n[Hours per week: __]\nLed a 15-person team managing a $2M equipment inventory.\nTIP: Add dates.\n```" };
   result = await resume.handler(post({
@@ -147,6 +167,7 @@ async function run() {
   }
 
   nextResponse = { status: "completed", output_text: "HR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director - Synthetic Command\nManaged Workday reporting.\nTIP: Add calendar dates." };
+  const callsBeforeCorrectedDraft = calls.length;
   result = await resume.handler(post({
     action: "draft",
     target: "Human Resources Director",
@@ -154,6 +175,8 @@ async function run() {
     confirmedFacts: multiRoleFacts
   }));
   assert.equal(result.statusCode, 200);
+  assert.equal(calls.length - callsBeforeCorrectedDraft, 1);
+  assert.equal(calls.at(-1).model, "gpt-5.6-terra");
   assert.match(JSON.parse(result.body).bullets, /^HR Director - Synthetic Command[\s\S]*^Deputy Director - Synthetic Command/m);
 
   nextResponse = { status: "completed", output_text: "HR Director and Deputy Director - Synthetic Command\nLed personnel operations and managed Workday reporting." };
@@ -221,7 +244,7 @@ async function run() {
   result = await navigator.handler(post({ messages: [{ role: "user", content: "Synthetic request" }] }));
   assert.equal(result.statusCode, 502);
 
-  console.log("PASS: synthetic OpenAI migration regression (bounded fact repair 1/2/2 calls, role splitting, date/tenure, Workday classification, target gate, markdown normalization, separate entries, grounding, draft/Terra isolation, Navigator, budget/error paths)");
+  console.log("PASS: synthetic OpenAI migration regression (Luna extraction, Terra repair, editable warning fallback, zero-call unresolved draft block, corrected Terra draft, safe deduped warnings, Navigator, budget/error paths)");
 }
 
 run().catch((error) => {

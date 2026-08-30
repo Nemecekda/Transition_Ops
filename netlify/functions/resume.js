@@ -174,6 +174,16 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
     return issues;
   }
 
+  function factIssueWarnings(issues) {
+    const warnings = [];
+    (issues || []).forEach(function (issue) {
+      if (issue === "missing distinct later role") warnings.push("Give each distinct job title its own ROLE block.");
+      if (issue === "invalid date field") warnings.push("Use calendar dates only in DATES; put tenure under NUMBERS AND SCALE.");
+      if (issue === "Workday misclassified") warnings.push("Put Workday under SKILLS AND TOOLS unless your source explicitly names a Workday certification.");
+    });
+    return warnings.filter(function (warning, index) { return warnings.indexOf(warning) === index; });
+  }
+
   function hasSpecificTarget(value) {
     const targetValue = String(value || "").trim();
     if (targetValue.length < 2 || !/[A-Za-z]/.test(targetValue)) return false;
@@ -230,6 +240,15 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
     if (action === "draft" && !hasSpecificTarget(clip(target, 120))) {
       return { statusCode: 400, headers, body: JSON.stringify({ error: "Enter a specific target job title before drafting, such as Operations Manager or Program Analyst." }) };
     }
+    if (action === "draft") {
+      const unresolvedFactIssues = factSheetIssues(confirmedFacts, userBlock);
+      if (unresolvedFactIssues.length) {
+        return { statusCode: 400, headers, body: JSON.stringify({
+          error: "Resolve the fact-sheet warnings before drafting. Review each role, date, tool, and certification, then try again.",
+          warnings: factIssueWarnings(unresolvedFactIssues)
+        }) };
+      }
+    }
     const { createOpenAIClient, responseText } = require("./openai-client");
     const client = createOpenAIClient();
     const response = await client.responses.create({
@@ -244,10 +263,10 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
     if (!rawText) throw new Error("generation incomplete");
     if (action === "facts") {
       const factIssues = factSheetIssues(rawText, userBlock);
-      if (!factIssues.length) return { statusCode: 200, headers, body: JSON.stringify({ factSheet: rawText }) };
+      if (!factIssues.length) return { statusCode: 200, headers, body: JSON.stringify({ factSheet: rawText, warnings: [] }) };
 
       const repairResponse = await client.responses.create({
-        model: "gpt-5.6-luna",
+        model: "gpt-5.6-terra",
         instructions: `Repair the fact sheet's structure and classification only. Preserve every source fact exactly; do not add, infer, translate, or improve facts. Split every distinct job title into its own ROLE block, including later or subsequent roles. DATES may contain only explicit calendar dates or date ranges; move tenure to NUMBERS AND SCALE. Put software and tools under SKILLS AND TOOLS unless the source explicitly names a certification. Return the complete corrected fact sheet in the original plain-text field structure, with no markdown or commentary.`,
         input: "ORIGINAL BOUNDED SOURCE:\n" + userBlock + "\n\nFIRST FACT SHEET:\n" + rawText + "\n\nSTRUCTURAL ISSUE LABELS:\n" + factIssues.join(", "),
         max_output_tokens: mode === "federal" ? 1900 : 1300,
@@ -255,10 +274,12 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
         store: false
       });
       const repairedText = repairResponse.status === "completed" ? responseText(repairResponse) : "";
-      if (!repairedText) throw new Error("fact sheet quality check failed: repair incomplete");
-      const repairedIssues = factSheetIssues(repairedText, userBlock);
-      if (repairedIssues.length) throw new Error("fact sheet quality check failed: repair rejected");
-      return { statusCode: 200, headers, body: JSON.stringify({ factSheet: repairedText }) };
+      const editableText = repairedText || rawText;
+      const repairedIssues = factSheetIssues(editableText, userBlock);
+      if (repairedIssues.length) {
+        return { statusCode: 200, headers, body: JSON.stringify({ factSheet: editableText, warnings: factIssueWarnings(repairedIssues) }) };
+      }
+      return { statusCode: 200, headers, body: JSON.stringify({ factSheet: editableText, warnings: [] }) };
     }
     const text = normalizePlainText(rawText);
     const issues = draftQualityIssues(text, userBlock + "\n" + confirmedFacts, confirmedFacts);
