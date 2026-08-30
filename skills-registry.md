@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.3 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.4 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,15 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.3 -> 0.4, remains
+  PENDING.** Records reproduced generation-stage `output_limit` evidence and the
+  approved civilian-only cap increase from 1300 to 1600: +300 tokens or 23.08%,
+  with maximum added exposure of $0.0036 per draft and $0.0108 per three-draft
+  browser day at verified Terra output pricing. RDM-30…RDM-32 hold federal at
+  1900, audit at 4000, fact/repair behavior and caps unchanged, zero retries,
+  unchanged call count, `store: false`, no logging/storage, and the external
+  monthly cap at `UNVERIFIED`. Lane: AUTO for internal governance; app
+  implementation remains separately gated. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.2 -> 0.3, remains
   PENDING.** Governs the approved audit-only capacity increase from 3000 to
   4000, separates generation-stage from audit-stage output limits, and requires

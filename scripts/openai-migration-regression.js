@@ -239,7 +239,7 @@ async function run() {
   }));
   assert.equal(result.statusCode, 200);
   assert.equal(calls.length - callsBeforeCorrectedDraft, 2);
-  assert.equal(calls[callsBeforeCorrectedDraft].max_output_tokens, 1300);
+  assert.equal(calls[callsBeforeCorrectedDraft].max_output_tokens, 1600);
   assert.equal(calls[callsBeforeCorrectedDraft + 1].max_output_tokens, 4000);
   assert.equal(calls.at(-1).model, "gpt-5.6-terra");
   assert.match(JSON.parse(result.body).bullets, /^HR Director - Synthetic Command[\s\S]*^Deputy Director - Synthetic Command/m);
@@ -548,9 +548,13 @@ async function run() {
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)/);
   assert.doesNotMatch(resumeSource, /\.message/);
   assert.match(clientSource, /maxRetries: 0/);
-  assert.match(resumeSource, /max_output_tokens: mode === "federal" \? 1900 : 1300/);
-  assert.equal((resumeSource.match(/max_output_tokens: mode === "federal" \? 1900 : 1300/g) || []).length, 2);
+  assert.match(resumeSource, /action === "draft" && mode !== "federal" \? 1600 : \(mode === "federal" \? 1900 : 1300\)/);
+  assert.equal((resumeSource.match(/max_output_tokens: mode === "federal" \? 1900 : 1300/g) || []).length, 1);
   assert.match(resumeSource, /AUDIT_MAX_OUTPUT_TOKENS = 4000/);
+  assert.equal(1600 - 1300, 300);
+  assert.equal((((1600 - 1300) / 1300) * 100).toFixed(2), "23.08");
+  assert.equal(((1600 - 1300) * 12 / 1000000).toFixed(4), "0.0036");
+  assert.equal((((1600 - 1300) * 12 / 1000000) * 3).toFixed(4), "0.0108");
   assert.equal(((4000 - 3000) * 12 / 1000000).toFixed(3), "0.012");
   assert.equal((((4000 - 3000) * 12 / 1000000) * 3).toFixed(3), "0.036");
   assert.match(fs.readFileSync(path.join(root, "netlify/functions/navigator.js"), "utf8"), /max_output_tokens: 800/);
@@ -562,7 +566,7 @@ async function run() {
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
 
-  console.log("PASS: synthetic RDM-1..RDM-29 control paths, audit 4000 capacity/wording/exposure, unchanged other caps/retries, complete strict schema/trace controls, and existing OpenAI migration regressions (live model evaluation pending)");
+  console.log("PASS: synthetic RDM-1..RDM-32 control paths, civilian draft 1600 isolation/exposure, unchanged fact/repair/federal/audit/Navigator caps, zero retries, and existing OpenAI migration regressions (live model evaluation pending)");
 }
 
 run().catch((error) => {

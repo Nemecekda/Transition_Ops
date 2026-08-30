@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.3"
+  version: "0.4"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.3 is PENDING until the RDM regression suite
+Version 0.4 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -176,6 +176,14 @@ remain zero. The increase adds no call and may not compact or weaken the schema,
 complete claim trace, ten score dimensions, or evidence. The external monthly
 cap remains `UNVERIFIED`.
 
+Reproduced generation-stage `output_limit` evidence authorizes the civilian-only
+draft cap increase from 1300 to 1600: +300 tokens or 23.08%. At verified Terra
+pricing of $12 per million output tokens, maximum added exposure is $0.0036 per
+draft and $0.0108 per three-draft browser day. Federal stays 1900 and audit stays
+4000. Fact and repair behavior and caps, zero retries, call count, `store: false`,
+no logging or persistence, and the `UNVERIFIED` external monthly cap are
+unchanged.
+
 ## REGRESSION CASES
 
 - **RDM-1 Unsupported claim:** add an unprovided nonnumeric outcome. Must FAIL
@@ -242,6 +250,14 @@ cap remains `UNVERIFIED`.
   exactly $0.08 and $0.24; the external monthly cap remains `UNVERIFIED`.
 - **RDM-29 No weakening:** no prompt or schema compaction may remove claims,
   trace fields, score dimensions, or evidence requirements.
+- **RDM-30 Civilian cap:** reproduced generation-stage `output_limit` evidence
+  must support a civilian draft cap of exactly 1600, increased by 300 or 23.08%.
+- **RDM-31 Civilian exposure:** maximum added exposure must be $0.0036 per draft
+  and $0.0108 per three-draft browser day at $12 per million output tokens.
+- **RDM-32 Unchanged controls:** federal must remain 1900, audit 4000, and fact
+  and repair behavior and caps unchanged; retries remain zero, no call is added,
+  every model call retains `store: false`, no logging or persistence is added,
+  and the external monthly cap remains `UNVERIFIED`.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -252,6 +268,6 @@ cap remains `UNVERIFIED`.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.3 until all cases execute and evidence
+Keep registry item #6 PENDING at version 0.4 until all cases execute and evidence
 is reviewed. After successful execution, force-mod proposes the smallest
 evidence-supported revision and Commander rules on promotion to CODIFIED 1.0.

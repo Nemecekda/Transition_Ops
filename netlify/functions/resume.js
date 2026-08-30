@@ -387,11 +387,12 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
     }
     const { createOpenAIClient, responseText } = require("./openai-client");
     const client = createOpenAIClient();
+    const generationMaxOutputTokens = action === "draft" && mode !== "federal" ? 1600 : (mode === "federal" ? 1900 : 1300);
     const response = await client.responses.create({
       model: action === "facts" ? "gpt-5.6-luna" : "gpt-5.6-terra",
       instructions: action === "facts" ? factInstructions : (mode === "federal" ? systemFederal : system) + `\n\nCONFIRMED FACT SHEET RULES:\nThe member reviewed the fact sheet below. Treat it as the controlling fact ledger. Preserve every JOB TITLE (EXACT) and EMPLOYER OR UNIT (EXACT) byte-for-byte in the draft. Do not use a number, outcome, credential, tool, employer, title, or qualification unless it appears in the member's source or confirmed fact sheet. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.`,
       input: action === "facts" ? userBlock : userBlock + "\n\nMEMBER-REVIEWED FACT SHEET:\n" + confirmedFacts,
-      max_output_tokens: mode === "federal" ? 1900 : 1300,
+      max_output_tokens: generationMaxOutputTokens,
       reasoning: { effort: "none" },
       store: false
     });
