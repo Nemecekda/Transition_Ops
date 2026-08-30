@@ -184,6 +184,7 @@ async function run() {
     confirmedFacts: unresolvedBody.factSheet
   }));
   assert.equal(result.statusCode, 400);
+  assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
   assert.equal(calls.length, callsBeforeBlockedDraft);
   assert.deepEqual(JSON.parse(result.body).warnings, unresolvedBody.warnings);
   assert.match(JSON.parse(result.body).error, /Resolve the fact-sheet warnings before drafting/);
@@ -291,6 +292,7 @@ async function run() {
   });
   result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Planning duties completed.", confirmedFacts: facts }));
   assert.equal(result.statusCode, 422);
+  assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
   assert.equal(Object.hasOwn(JSON.parse(result.body), "bullets"), false);
   assert.match(JSON.parse(result.body).blockers.join(" "), /unsupported|quality dimensions failed/);
 
@@ -429,14 +431,86 @@ async function run() {
       confirmedFacts: facts
     }));
     assert.equal(result.statusCode, 502);
+    assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
     assert.match(JSON.parse(result.body).error, /did not pass grounding and role-structure checks/);
     assert.doesNotMatch(JSON.parse(result.body).error, /quality check failed|unsupported number|filler language|merged or missing/);
   }
 
-  nextError = new Error("quota exceeded");
+  nextResponse = { status: "incomplete", incomplete_details: { reason: "max_output_tokens" }, output_text: "MEMBER SECRET request_id=req_123 token=999" };
+  const callsBeforeOutputLimit = calls.length;
   result = await resume.handler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
   assert.equal(result.statusCode, 502);
-  assert.match(JSON.parse(result.body).error, /monthly limit/);
+  assert.equal(JSON.parse(result.body).reasonCategory, "output_limit");
+  assert.equal(calls.length - callsBeforeOutputLimit, 1);
+  assert.doesNotMatch(result.body, /MEMBER SECRET|req_123|999|max_output_tokens/);
+
+  nextResponse = { status: "incomplete", incomplete_details: { reason: "unrecognized_provider_reason" }, output_text: "PRIVATE DRAFT" };
+  const callsBeforeUnknownIncomplete = calls.length;
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  assert.equal(result.statusCode, 502);
+  assert.equal(JSON.parse(result.body).reasonCategory, "incomplete_unknown");
+  assert.equal(calls.length - callsBeforeUnknownIncomplete, 1);
+  assert.doesNotMatch(result.body, /unrecognized_provider_reason|PRIVATE DRAFT/);
+
+  responseQueue = [{ status: "completed", output_text: invalidDateFacts }, { status: "incomplete", incomplete_details: { reason: "max_output_tokens" }, output_text: "PRIVATE REPAIR" }];
+  const callsBeforeIncompleteRepair = calls.length;
+  result = await resume.handler(post(factsRequest));
+  assert.equal(result.statusCode, 502);
+  assert.equal(JSON.parse(result.body).reasonCategory, "output_limit");
+  assert.equal(calls.length - callsBeforeIncompleteRepair, 2);
+  assert.doesNotMatch(result.body, /PRIVATE REPAIR|max_output_tokens/);
+
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
+  auditResponseQueue.push({ status: "incomplete", incomplete_details: { reason: "max_output_tokens" }, output_text: "PRIVATE AUDIT request_id=req_audit" });
+  const callsBeforeIncompleteAudit = calls.length;
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  assert.equal(result.statusCode, 502);
+  assert.equal(JSON.parse(result.body).reasonCategory, "output_limit");
+  assert.equal(calls.length - callsBeforeIncompleteAudit, 2);
+  assert.doesNotMatch(result.body, /PRIVATE AUDIT|req_audit|max_output_tokens/);
+
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
+  auditResponseQueue.push(() => { throw Object.assign(new Error("PRIVATE AUDIT TRANSPORT request_id=req_transport"), { name: "APIConnectionTimeoutError", code: "ETIMEDOUT", status: 408, type: "timeout" }); });
+  const callsBeforeAuditTransport = calls.length;
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  assert.equal(result.statusCode, 502);
+  assert.equal(JSON.parse(result.body).reasonCategory, "timeout");
+  assert.equal(calls.length - callsBeforeAuditTransport, 2);
+  assert.doesNotMatch(result.body, /PRIVATE AUDIT TRANSPORT|req_transport|ETIMEDOUT/);
+
+  const timeoutError = Object.assign(new Error("MEMBER SECRET timeout request_id=req_timeout token=777"), { name: "APIConnectionTimeoutError", code: "ETIMEDOUT", status: 408, type: "timeout" });
+  nextError = timeoutError;
+  const callsBeforeTimeout = calls.length;
+  result = await resume.handler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
+  assert.equal(JSON.parse(result.body).reasonCategory, "timeout");
+  assert.equal(calls.length - callsBeforeTimeout, 1);
+  assert.doesNotMatch(result.body, /MEMBER SECRET|req_timeout|777|ETIMEDOUT/);
+
+  nextError = Object.assign(new Error("raw provider rate message"), { status: 429, code: "rate_limit_exceeded", type: "rate_limit_error" });
+  const callsBeforeRateLimit = calls.length;
+  result = await resume.handler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
+  assert.equal(JSON.parse(result.body).reasonCategory, "rate_limit");
+  assert.equal(calls.length - callsBeforeRateLimit, 1);
+  assert.doesNotMatch(result.body, /raw provider rate message|rate_limit_exceeded/);
+
+  const capturedLogs = [];
+  const originalConsoleLog = console.log;
+  console.log = function () { capturedLogs.push(Array.from(arguments).join(" ")); };
+  nextError = Object.assign(new Error("MEMBER SECRET billing body request_id=req_budget token=888"), { status: 429, code: "insufficient_quota", type: "billing_error" });
+  const callsBeforeBudgetLimit = calls.length;
+  result = await resume.handler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
+  console.log = originalConsoleLog;
+  assert.equal(JSON.parse(result.body).reasonCategory, "budget_limit");
+  assert.equal(calls.length - callsBeforeBudgetLimit, 1);
+  assert.equal(capturedLogs.length, 0);
+  assert.doesNotMatch(result.body, /MEMBER SECRET|billing body|req_budget|888|insufficient_quota/);
+
+  nextError = Object.assign(new Error("raw upstream body"), { status: 503, code: "server_error", type: "server_error" });
+  const callsBeforeUpstream = calls.length;
+  result = await resume.handler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
+  assert.equal(JSON.parse(result.body).reasonCategory, "upstream_unavailable");
+  assert.equal(calls.length - callsBeforeUpstream, 1);
+  assert.doesNotMatch(result.body, /raw upstream body|server_error/);
 
   nextError = null;
   nextResponse = { status: "incomplete", output_text: "" };
@@ -456,10 +530,17 @@ async function run() {
   assert.match(resumeSource, /AUDIT_INCREMENTAL_CEILING_USD = 0\.06/);
   assert.match(resumeSource, /BROWSER_DAILY_AUDIT_CEILING_USD = 0\.18/);
   assert.match(resumeSource, /EXTERNAL_MONTHLY_HARD_CAP_STATUS = "UNVERIFIED"/);
+  const failureMessagesBlock = resumeSource.match(/const FAILURE_MESSAGES = \{([\s\S]*?)\n  \};/)[1];
+  const publicCategories = Array.from(failureMessagesBlock.matchAll(/^    ([a-z_]+):/gm), (match) => match[1]);
+  assert.deepEqual(publicCategories, ["output_limit", "timeout", "rate_limit", "budget_limit", "upstream_unavailable", "quality_gate", "incomplete_unknown"]);
   assert.match(resumeSource, /clip\(experience, 8000\)/);
   assert.match(resumeSource, /clip\(posting, 3500\)/);
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)/);
+  assert.doesNotMatch(resumeSource, /\.message/);
   assert.match(clientSource, /maxRetries: 0/);
+  assert.match(resumeSource, /max_output_tokens: mode === "federal" \? 1900 : 1300/);
+  assert.match(resumeSource, /AUDIT_MAX_OUTPUT_TOKENS = 3000/);
+  assert.match(fs.readFileSync(path.join(root, "netlify/functions/navigator.js"), "utf8"), /max_output_tokens: 800/);
   assert.match(uiSource, /QUALITY SCORECARD/);
   assert.match(uiSource, /DRAFT WITHHELD/);
   assert.match(uiSource, /SHOW CLAIM TRACE/);
@@ -468,7 +549,7 @@ async function run() {
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
 
-  console.log("PASS: synthetic RDM-1..RDM-17 control paths, strict audit schema/validation, privacy/cost controls, UI audit anchors, and existing OpenAI migration regressions (live model evaluation pending)");
+  console.log("PASS: synthetic RDM-1..RDM-23 control paths, content-free failure categories, unchanged caps/retries, privacy controls, strict audit validation, and existing OpenAI migration regressions (live model evaluation pending)");
 }
 
 run().catch((error) => {

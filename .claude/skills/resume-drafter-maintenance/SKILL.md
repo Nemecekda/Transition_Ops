@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.1"
+  version: "0.2"
   status: PENDING
 ---
 
@@ -13,8 +13,8 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.1 is PENDING until RDM-1 through RDM-17 and RDM-X1 through RDM-X3
-execute against the app. Specification approval is not execution evidence.
+Version 0.2 is PENDING until the RDM regression suite
+executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
 
@@ -140,6 +140,27 @@ salary, supervisor details, series, grade, citizenship, or veterans' preference.
   been proven. It does not authorize inspection or mutation of external account
   settings without Dean's approval.
 
+## CONTENT-FREE FAILURE CONTRACT
+
+Classify incomplete model responses and caught provider errors into exactly one
+allowlisted reason: `output_limit`, `timeout`, `rate_limit`, `budget_limit`,
+`upstream_unavailable`, `quality_gate`, or `incomplete_unknown`.
+
+- Return only the reason category and approved member-safe wording. Never expose
+  raw errors, provider messages, member content, request or response IDs, token
+  details, prompts, facts, drafts, scorecards, or traces through an error path.
+- Do not log or persist the raw failure, category, or member content. Preserve
+  `store: false` on every model call.
+- A deterministic grounding or audit rejection is `quality_gate`; do not
+  misclassify it as provider failure.
+- Unknown or unrecognized incomplete states are `incomplete_unknown`. Never
+  infer a more specific category without evidence.
+- Classification must not add retries, repair calls, or any other model call.
+  Retry limits and output-token caps remain unchanged unless separately approved.
+- Any proposed cap increase requires reproduced `output_limit` evidence, the
+  exact old and new cap, percentage growth in maximum output exposure, verified
+  model pricing, and a worst-case cost calculation before Commander approval.
+
 ## REGRESSION CASES
 
 - **RDM-1 Unsupported claim:** add an unprovided nonnumeric outcome. Must FAIL
@@ -175,6 +196,24 @@ salary, supervisor details, series, grade, citizenship, or veterans' preference.
   `UNVERIFIED` until that evidence exists.
 - **RDM-17 Readability and length:** long input must produce mode-appropriate
   output without truncating identities or inventing facts to compress it.
+- **RDM-17A Complex generation:** a live-shaped long civilian input must either
+  complete or return `output_limit`, never a generic failure.
+- **RDM-17B Output limit:** a non-completed response with a confirmed
+  max-output-token reason must return only `output_limit` and safe wording.
+- **RDM-17C Unknown incomplete:** an unrecognized incomplete reason must return
+  only `incomplete_unknown` and safe wording.
+- **RDM-18 Timeout:** a timeout must return `timeout` and make no retry.
+- **RDM-19 Provider limits:** rate limiting and billing or quota exhaustion must
+  map separately to `rate_limit` and `budget_limit`.
+- **RDM-20 Sanitization:** raw errors containing member text, provider messages,
+  IDs, or token details must appear in neither the response nor logs.
+- **RDM-21 Quality gate:** deterministic grounding and audit rejection must
+  remain `quality_gate`, not a provider or incomplete category.
+- **RDM-22 Privacy paths:** initial, repair, draft, audit, and every error path
+  must retain `store: false` with no logging or persistence.
+- **RDM-23 Cap discipline:** failure classification must leave output caps and
+  retries unchanged. A future cap proposal must supply reproduced evidence,
+  exact cap delta, percentage exposure, verified pricing, and worst-case cost.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -185,6 +224,6 @@ salary, supervisor details, series, grade, citizenship, or veterans' preference.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.1 until all cases execute and evidence
+Keep registry item #6 PENDING at version 0.2 until all cases execute and evidence
 is reviewed. After successful execution, force-mod proposes the smallest
 evidence-supported revision and Commander rules on promotion to CODIFIED 1.0.

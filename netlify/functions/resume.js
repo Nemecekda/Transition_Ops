@@ -333,20 +333,56 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
     return { malformed: false, withhold: blockers.length > 0, blockers: blockers.filter(function (item, index, all) { return all.indexOf(item) === index; }) };
   }
 
+  const FAILURE_MESSAGES = {
+    output_limit: "The model reached its output limit before finishing. Shorten the source slightly and try again.",
+    timeout: "The request timed out before completion. Try again in a minute.",
+    rate_limit: "The service is busy right now. Try again in a minute.",
+    budget_limit: "The free generator has hit its monthly limit. It resets next month; meanwhile, the Resume Starter on each career page still works.",
+    upstream_unavailable: "The generation service is temporarily unavailable. Try again in a minute.",
+    quality_gate: "The result did not pass the required grounding and quality checks. Review your confirmed facts and try again.",
+    incomplete_unknown: "The model did not finish the request. Try again in a minute."
+  };
+
+  function safeFailure(reasonCategory, statusCode, extra) {
+    return { statusCode: statusCode || 502, headers, body: JSON.stringify(Object.assign({ error: FAILURE_MESSAGES[reasonCategory], reasonCategory: reasonCategory }, extra || {})) };
+  }
+
+  function classifyIncomplete(response) {
+    const status = response && response.status;
+    const reason = response && response.incomplete_details && response.incomplete_details.reason;
+    if (["max_output_tokens", "max_output_tokens_exceeded", "output_limit", "length"].indexOf(reason) !== -1) return "output_limit";
+    if (["timeout", "request_timeout"].indexOf(reason) !== -1) return "timeout";
+    if (["rate_limit", "rate_limit_exceeded"].indexOf(reason) !== -1) return "rate_limit";
+    if (["insufficient_quota", "billing_limit", "budget_limit"].indexOf(reason) !== -1) return "budget_limit";
+    if (["failed", "cancelled"].indexOf(status) !== -1 && ["server_error", "service_unavailable", "upstream_unavailable"].indexOf(reason) !== -1) return "upstream_unavailable";
+    return "incomplete_unknown";
+  }
+
+  function classifyProviderError(error) {
+    const status = error && error.status;
+    const code = error && error.code;
+    const name = error && error.name;
+    const type = error && error.type;
+    if (["insufficient_quota", "billing_hard_limit_reached", "billing_limit", "credits_exhausted"].indexOf(code) !== -1 || ["insufficient_quota", "billing_error"].indexOf(type) !== -1) return "budget_limit";
+    if (status === 429 || ["rate_limit", "rate_limit_exceeded"].indexOf(code) !== -1 || type === "rate_limit_error") return "rate_limit";
+    if ([408, 504].indexOf(status) !== -1 || ["ETIMEDOUT", "ECONNABORTED"].indexOf(code) !== -1 || ["APIConnectionTimeoutError", "TimeoutError"].indexOf(name) !== -1 || type === "timeout") return "timeout";
+    return "upstream_unavailable";
+  }
+
   try {
     if (action === "draft" && !confirmedFacts.trim()) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: "Review the fact sheet before drafting." }) };
+      return safeFailure("quality_gate", 400, { error: "Review the fact sheet before drafting." });
     }
     if (action === "draft" && !hasSpecificTarget(clip(target, 120))) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: "Enter a specific target job title before drafting, such as Operations Manager or Program Analyst." }) };
+      return safeFailure("quality_gate", 400, { error: "Enter a specific target job title before drafting, such as Operations Manager or Program Analyst." });
     }
     if (action === "draft") {
       const unresolvedFactIssues = factSheetIssues(confirmedFacts, userBlock);
       if (unresolvedFactIssues.length) {
-        return { statusCode: 400, headers, body: JSON.stringify({
+        return safeFailure("quality_gate", 400, {
           error: "Resolve the fact-sheet warnings before drafting. Review each role, date, tool, and certification, then try again.",
           warnings: factIssueWarnings(unresolvedFactIssues)
-        }) };
+        });
       }
     }
     const { createOpenAIClient, responseText } = require("./openai-client");
@@ -359,8 +395,9 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
       reasoning: { effort: "none" },
       store: false
     });
-    const rawText = response.status === "completed" ? responseText(response) : "";
-    if (!rawText) throw new Error("generation incomplete");
+    if (response.status !== "completed") return safeFailure(classifyIncomplete(response));
+    const rawText = responseText(response);
+    if (!rawText) return safeFailure("incomplete_unknown");
     if (action === "facts") {
       const factIssues = factSheetIssues(rawText, userBlock);
       if (!factIssues.length) return { statusCode: 200, headers, body: JSON.stringify(factResponseBody(rawText, [], clip(target, 120))) };
@@ -373,7 +410,8 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
         reasoning: { effort: "none" },
         store: false
       });
-      const repairedText = repairResponse.status === "completed" ? responseText(repairResponse) : "";
+      if (repairResponse.status !== "completed") return safeFailure(classifyIncomplete(repairResponse));
+      const repairedText = responseText(repairResponse);
       const editableText = repairedText || rawText;
       const repairedIssues = factSheetIssues(editableText, userBlock);
       if (repairedIssues.length) {
@@ -383,7 +421,7 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
     }
     const text = normalizePlainText(rawText);
     const issues = draftQualityIssues(text, userBlock + "\n" + confirmedFacts, confirmedFacts);
-    if (issues.length) throw new Error("quality check failed: " + issues.join(", "));
+    if (issues.length) return safeFailure("quality_gate", 502, { error: "The draft did not pass grounding and role-structure checks. Review your confirmed roles and facts, then try again." });
     let auditResponse;
     try {
       auditResponse = await client.responses.create({
@@ -396,36 +434,29 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
         text: { format: { type: "json_schema", name: "resume_quality_audit", strict: true, schema: auditSchema } }
       });
     } catch (auditError) {
-      return { statusCode: 502, headers, body: JSON.stringify({ error: "The draft was created, but its quality review could not be completed. Try again.", blockers: ["The quality review service was unavailable."], scorecard: [] }) };
+      return safeFailure(classifyProviderError(auditError), 502, { blockers: ["The quality review could not be completed."], scorecard: [] });
     }
-    const auditText = auditResponse.status === "completed" ? responseText(auditResponse) : "";
+    if (auditResponse.status !== "completed") return safeFailure(classifyIncomplete(auditResponse), 502, { blockers: ["The quality review could not be completed."], scorecard: [] });
+    const auditText = responseText(auditResponse);
     let audit;
     try { audit = JSON.parse(auditText); } catch (auditError) {
-      return { statusCode: 502, headers, body: JSON.stringify({
+      return safeFailure("quality_gate", 502, {
         error: "The draft was created, but its quality review could not be verified. Try again.",
         blockers: ["The quality review did not return a safe, complete result."], scorecard: []
-      }) };
+      });
     }
     const auditCheck = validateAudit(audit, text);
     if (auditCheck.malformed) {
-      return { statusCode: 502, headers, body: JSON.stringify({ error: "The draft was created, but its quality review could not be verified. Try again.", blockers: auditCheck.blockers, scorecard: [] }) };
+      return safeFailure("quality_gate", 502, { error: "The draft was created, but its quality review could not be verified. Try again.", blockers: auditCheck.blockers, scorecard: [] });
     }
     if (auditCheck.withhold) {
-      return { statusCode: 422, headers, body: JSON.stringify({
+      return safeFailure("quality_gate", 422, {
         error: "This draft was withheld because it did not pass the grounding and quality review. Check the blockers and confirmed facts, then try again.",
         blockers: auditCheck.blockers, scorecard: audit.scorecard, supportedKeywords: audit.supported_keywords, gaps: audit.unmet_gaps
-      }) };
+      });
     }
     return { statusCode: 200, headers, body: JSON.stringify({ bullets: text, scorecard: audit.scorecard, trace: audit.claim_trace, supportedKeywords: audit.supported_keywords, gaps: audit.unmet_gaps }) };
   } catch (e) {
-    const msg = String(e && e.message || "generation failed");
-    const friendly = /^fact sheet quality check failed:/.test(msg)
-      ? "We could not safely separate or classify the fact sheet. Revise your source so each role lists one title, employer, dates, and duties, then try again."
-      : /^quality check failed:/.test(msg)
-        ? "The draft did not pass grounding and role-structure checks. Review your confirmed roles and facts, then try again."
-        : /credit|billing|limit|quota/i.test(msg)
-          ? "The free generator has hit its monthly limit. It resets next month — meanwhile, the Resume Starter on each career page still works."
-          : "Generation hiccup — try again in a minute.";
-    return { statusCode: 502, headers, body: JSON.stringify({ error: friendly }) };
+    return safeFailure(classifyProviderError(e));
   }
 };
