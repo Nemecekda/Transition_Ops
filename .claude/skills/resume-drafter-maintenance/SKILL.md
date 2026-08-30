@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.15"
+  version: "0.16"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.15 is PENDING until the RDM regression suite
+Version 0.16 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -337,6 +337,55 @@ This gate adds no model call or retry and changes no model, input bound, output
 cap, usage limit, budget or cost ceiling, `store: false`, privacy control,
 logging, storage, persistence, or analytics. Maximum incremental API exposure
 is $0, and the external monthly cap remains `UNVERIFIED`.
+
+## CIVILIAN WORD PAGINATION CONTRACT
+
+This contract extends the final civilian artifact gate without weakening any
+v0.15 content, grounding, identity, export, or render requirement.
+
+DOCX styling and rendered-layout validation must classify the already-audited
+released candidate text by structural sequence; the browser must not reparse or
+re-resolve role identities against the closed ledger. Within PROFESSIONAL
+EXPERIENCE, the first eligible nonblank content line after the section heading,
+and the first eligible nonblank content line after each completed bullet block,
+is the role header. Optional nonbullet content after that role and before its
+first bullet is metadata. `Title | Employer`, `Title - Employer`, and
+`Title — Employer` are presentation variants that classify as role headers only
+in that structural role position. A location/date line or standalone date line
+in the metadata position remains metadata. Separator alone is insufficient;
+classification and styling must not split, rewrite, or otherwise change any
+role identity, separator, or surrounding candidate-content byte.
+
+Execute the final render check in a layout-capable browser. Static source
+inspection, function-presence checks, regular-expression assertions, OOXML
+structure checks, and extracted-text checks remain useful supporting evidence
+but cannot substitute for executed browser layout behavior.
+
+Second-page occupancy alone is not proof that a trailing page is avoidably
+sparse. A numeric occupancy threshold, including the prior 25% heuristic, may
+flag a layout for review but may not withhold the artifact by itself. Call a
+trailing page avoidable only when the renderer demonstrates a safe,
+content-equivalent layout alternative that removes the avoidable sparsity while
+preserving readability. Rebalancing may change presentation-only properties,
+including safe spacing, pagination, and page-break placement; it may not add,
+remove, rewrite, merge, split, reorder, duplicate, conceal, or compress
+candidate content. When no safe content-equivalent alternative exists, release
+a readable, balanced two-page artifact rather than delete supported content,
+even if the final page is below an occupancy threshold.
+
+Keep-with-next behavior is transitive across each logical opening chain: a
+section heading, its role header, optional role metadata, and the first role
+bullet must remain together across a page boundary. A page break introduced for
+balance must preserve that full chain and every released content byte exactly
+once and in order.
+
+Withhold the Word artifact when executed layout evidence shows clipping,
+overlap, hidden text, an orphaned section heading or role header, more than two
+pages, or unreadable compression. These negative controls remain blocking; the
+sparse-page correction does not turn a genuinely defective layout into PASS.
+Federal output and behavior remain unchanged. This contract adds no model call,
+retry, cap, storage, logging, analytics, privacy change, usage-limit change, or
+cost exposure. Maximum incremental API exposure is $0.
 
 ## CIVILIAN ROLE METADATA COMPLETION
 
@@ -951,6 +1000,51 @@ all existing hard input bounds.
   logging, storage, persistence, and analytics remain unchanged. Maximum
   incremental API exposure is $0, and the external monthly cap remains
   `UNVERIFIED`.
+- **RDM-179 Live-shaped Word positive control:** a synthetic civilian fixture
+  with exactly six roles, 16 bullets, four certifications, and four education
+  items, including mixed confirmed and missing optional metadata, must produce
+  a downloadable genuine DOCX of one or two readable pages while preserving
+  every required item.
+- **RDM-180 Role-header grammar:** in otherwise identical already-audited
+  released candidate fixtures, `Title | Employer`, `Title - Employer`, and
+  `Title — Employer` must each classify as a role header when placed after the
+  PROFESSIONAL EXPERIENCE heading or a completed bullet block. Location/date
+  lines and standalone date lines in the following metadata position must
+  classify as metadata. Separator alone is insufficient, the browser must not
+  reparse the closed ledger, and classification and styling must preserve every
+  identity and candidate-content byte.
+- **RDM-181 Executed browser render:** the regression must execute the actual
+  final render check in a layout-capable browser. A static source match,
+  function-presence assertion, OOXML byte check, or extracted-text check alone
+  cannot satisfy this case.
+- **RDM-182A Low occupancy is not avoidability:** a legitimate readable,
+  content-complete artifact whose second page falls below the occupancy
+  threshold must not fail solely because of that percentage when no safe
+  content-equivalent one-page or better-balanced alternative exists.
+- **RDM-182B Demonstrated avoidability:** a trailing page made sparse only by
+  presentation spacing must be safely rebalanced or withheld when an executed
+  render demonstrates a readable content-equivalent alternative; occupancy
+  alone remains insufficient evidence.
+- **RDM-183 Transitive keep-with-next:** force a page boundary through the
+  complete section-heading, role-header, optional-metadata, and first-bullet
+  chain. The entire chain must remain together with no orphaned heading or role
+  header.
+- **RDM-184 Rebalancing equivalence:** any inserted page break, spacing change,
+  or other pagination adjustment must be presentation-only. Extracted sections,
+  order, six roles, 16 bullets, four certifications, four education items, and
+  every released candidate-content byte must remain exact, complete, and
+  represented once.
+- **RDM-185 Negative layout controls:** clipping, overlap, hidden text, an
+  orphaned section heading or role header, more than two pages, and unreadable
+  compression must each withhold the artifact with the correct member-safe
+  reason.
+- **RDM-186 Unchanged operational boundary:** federal generation, content,
+  brackets, audit, export, and scoring remain unchanged. Models, API calls,
+  retries, facts/repair 3500, civilian 2200, federal 1900, audit 4000, input
+  bounds, budget and cost ceilings, draft and usage limits, `store: false`,
+  privacy, logging, storage, persistence, and analytics remain unchanged.
+  Maximum incremental API exposure is $0, and the external monthly cap remains
+  `UNVERIFIED`.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -961,7 +1055,7 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.15 until all cases execute and live
+Keep registry item #6 PENDING at version 0.16 until all cases execute and live
 clone evidence passes. After successful execution and live evidence, force-mod
 proposes the smallest evidence-supported revision and Commander rules on
 promotion to CODIFIED 1.0.

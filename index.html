@@ -4247,7 +4247,7 @@ function topsResumeRunProperties(sizeHalfPoints, bold) {
   return "<w:rPr><w:rFonts w:ascii=\"Calibri\" w:hAnsi=\"Calibri\" w:eastAsia=\"Calibri\" w:cs=\"Calibri\"/>" + (bold ? "<w:b/><w:bCs/>" : "") + "<w:color w:val=\"000000\"/><w:sz w:val=\"" + sizeHalfPoints + "\"/><w:szCs w:val=\"" + sizeHalfPoints + "\"/><w:lang w:val=\"en-US\"/></w:rPr>";
 }
 
-function topsResumeParagraphXml(line, state) {
+function topsResumeParagraphXml(line, state, options, paragraphIndex) {
   var styleId = "ResumeBody";
   var text = String(line);
   var numberingId = 0;
@@ -4260,6 +4260,8 @@ function topsResumeParagraphXml(line, state) {
     styleId = "ResumeSection";
     state.section = trimmed.toUpperCase();
     state.seenSection = true;
+    state.experienceExpectRole = state.section === "PROFESSIONAL EXPERIENCE";
+    state.experienceMetadataOpen = false;
   } else if (!state.seenSection) {
     styleId = state.headerLineCount === 0 ? "ResumeName" : "ResumeContact";
     state.headerLineCount += 1;
@@ -4267,12 +4269,19 @@ function topsResumeParagraphXml(line, state) {
     styleId = "ResumeBullet";
     text = bullet[2];
     numberingId = bullet[1] === "-" ? ATS_RESUME_COMPACT.bullets.hyphenNumId : bullet[1] === "*" ? ATS_RESUME_COMPACT.bullets.asteriskNumId : ATS_RESUME_COMPACT.bullets.bulletNumId;
-  } else if (state.section === "PROFESSIONAL EXPERIENCE" && (/\s(?:-|\u2014)\s/.test(trimmed) || /\s\|\s/.test(trimmed) === false && trimmed.length < 140 && /(?:LLC|INC\.?|CORP\.?|COMMAND|UNIT|GUARD|ARMY|NAVY|MARINE|AIR FORCE|SPACE FORCE|COAST GUARD)/i.test(trimmed))) {
+    if (state.section === "PROFESSIONAL EXPERIENCE") {
+      state.experienceExpectRole = true;
+      state.experienceMetadataOpen = false;
+    }
+  } else if (state.section === "PROFESSIONAL EXPERIENCE" && state.experienceExpectRole) {
     styleId = "ResumeRole";
-  } else if (state.section === "PROFESSIONAL EXPERIENCE" && /\s\|\s/.test(trimmed)) {
+    state.experienceExpectRole = false;
+    state.experienceMetadataOpen = true;
+  } else if (state.section === "PROFESSIONAL EXPERIENCE" && state.experienceMetadataOpen) {
     styleId = "ResumeMetadata";
   }
-  var properties = "<w:pPr><w:pStyle w:val=\"" + styleId + "\"/>" + (numberingId ? "<w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"" + numberingId + "\"/></w:numPr>" : "") + "</w:pPr>";
+  var pageBreakBefore = options && options.pageBreakBeforeParagraph === paragraphIndex;
+  var properties = "<w:pPr><w:pStyle w:val=\"" + styleId + "\"/>" + (pageBreakBefore ? "<w:pageBreakBefore/>" : "") + (numberingId ? "<w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"" + numberingId + "\"/></w:numPr>" : "") + "</w:pPr>";
   if (!trimmed) return "<w:p>" + properties + "</w:p>";
   return "<w:p>" + properties + "<w:r><w:t xml:space=\"preserve\">" + topsDocxXmlEscape(text) + "</w:t></w:r></w:p>";
 }
@@ -4287,12 +4296,13 @@ function topsResumeNumberingLevel(abstractId, marker, styleId) {
   return "<w:abstractNum w:abstractNumId=\"" + abstractId + "\"><w:multiLevelType w:val=\"singleLevel\"/><w:lvl w:ilvl=\"0\"><w:start w:val=\"1\"/><w:numFmt w:val=\"bullet\"/><w:lvlText w:val=\"" + topsDocxXmlEscape(marker) + "\"/><w:lvlJc w:val=\"left\"/><w:pStyle w:val=\"" + styleId + "\"/><w:pPr><w:tabs><w:tab w:val=\"num\" w:pos=\"" + b.tabStopDxa + "\"/></w:tabs><w:ind w:left=\"" + b.textIndentAtDxa + "\" w:hanging=\"" + b.hangingDxa + "\"/><w:spacing w:before=\"0\" w:after=\"" + b.afterTwips + "\" w:line=\"" + b.lineTwips + "\" w:lineRule=\"auto\"/></w:pPr>" + topsResumeRunProperties(ATS_RESUME_COMPACT.typography.bulletHalfPoints, false) + "</w:lvl></w:abstractNum>";
 }
 
-function buildTransitionOpsResumeDocx(resumeText) {
+function buildTransitionOpsResumeDocx(resumeText, options) {
   var s = ATS_RESUME_COMPACT;
   var t = s.typography;
+  var buildOptions = options || {};
   var lines = String(resumeText == null ? "" : resumeText).replace(/\r\n?/g, "\n").split("\n");
-  var state = { section: "", seenSection: false, headerLineCount: 0 };
-  var paragraphs = lines.map(function(line) { return topsResumeParagraphXml(line, state); }).join("");
+  var state = { section: "", seenSection: false, headerLineCount: 0, experienceExpectRole: false, experienceMetadataOpen: false };
+  var paragraphs = lines.map(function(line, index) { return topsResumeParagraphXml(line, state, buildOptions, index); }).join("");
   var documentXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body>" + paragraphs + "<w:sectPr><w:pgSz w:w=\"" + s.page.widthDxa + "\" w:h=\"" + s.page.heightDxa + "\" w:orient=\"" + s.page.orientation + "\"/><w:pgMar w:top=\"" + s.page.marginTopDxa + "\" w:right=\"" + s.page.marginRightDxa + "\" w:bottom=\"" + s.page.marginBottomDxa + "\" w:left=\"" + s.page.marginLeftDxa + "\" w:header=\"" + s.page.headerDistanceDxa + "\" w:footer=\"" + s.page.footerDistanceDxa + "\" w:gutter=\"" + s.page.gutterDxa + "\"/><w:cols w:space=\"720\"/><w:docGrid w:linePitch=\"360\"/></w:sectPr></w:body></w:document>";
   var stylesXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:docDefaults><w:rPrDefault>" + topsResumeRunProperties(t.bodyHalfPoints, false) + "</w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:before=\"0\" w:after=\"" + t.bodyAfterTwips + "\" w:line=\"" + t.bodyLineTwips + "\" w:lineRule=\"auto\"/></w:pPr></w:pPrDefault></w:docDefaults>" +
     topsResumeStyleXml("Normal", "ats_resume_compact body", t.bodyHalfPoints, t.bodyBeforeTwips, t.bodyAfterTwips, t.bodyLineTwips, {}) +
@@ -4303,7 +4313,7 @@ function buildTransitionOpsResumeDocx(resumeText) {
     topsResumeStyleXml("ResumeMetadata", "ats_resume_compact metadata", t.metadataHalfPoints, t.metadataBeforeTwips, t.metadataAfterTwips, t.metadataLineTwips, { keepNext: true }) +
     topsResumeStyleXml("ResumeBody", "ats_resume_compact body claim", t.bodyHalfPoints, t.bodyBeforeTwips, t.bodyAfterTwips, t.bodyLineTwips, {}) +
     topsResumeStyleXml("ResumeBullet", "ats_resume_compact bullet", t.bulletHalfPoints, t.bulletBeforeTwips, t.bulletAfterTwips, t.bulletLineTwips, {}) +
-    topsResumeStyleXml("ResumeSpacer", "ats_resume_compact spacer", t.spacerHalfPoints, t.spacerBeforeTwips, t.spacerAfterTwips, t.spacerLineTwips, { exact: true }) + "</w:styles>";
+    topsResumeStyleXml("ResumeSpacer", "ats_resume_compact spacer", t.spacerHalfPoints, t.spacerBeforeTwips, t.spacerAfterTwips, t.spacerLineTwips, { exact: true, keepNext: true }) + "</w:styles>";
   var numberingXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:numbering xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">" + topsResumeNumberingLevel(s.bullets.bulletAbstractNumId, "\u2022", "ResumeBullet") + topsResumeNumberingLevel(s.bullets.hyphenAbstractNumId, "-", "ResumeBullet") + topsResumeNumberingLevel(s.bullets.asteriskAbstractNumId, "*", "ResumeBullet") + "<w:num w:numId=\"41\"><w:abstractNumId w:val=\"41\"/></w:num><w:num w:numId=\"42\"><w:abstractNumId w:val=\"42\"/></w:num><w:num w:numId=\"43\"><w:abstractNumId w:val=\"43\"/></w:num></w:numbering>";
   var contentTypes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/><Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/><Override PartName=\"/word/numbering.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml\"/><Override PartName=\"/word/settings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/><Override PartName=\"/word/fontTable.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml\"/><Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/><Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/></Types>";
   var packageRels = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/><Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/><Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/></Relationships>";
@@ -4348,10 +4358,9 @@ function topsDocxXmlUnescape(value) {
   return String(value).replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"").replace(/&apos;/g, "'").replace(/&amp;/g, "&");
 }
 
-function renderTransitionOpsResumeDocxCheck(bytes) {
-  if (typeof document === "undefined" || !document.body) return { ok: false, reason: "The browser could not render the Word artifact." };
+function topsResumeDocxParagraphs(bytes) {
   var xml = topsDocxStoredEntryText(bytes, "word/document.xml");
-  if (!xml) return { ok: false, reason: "The Word artifact could not be read for render review." };
+  if (!xml) return [];
   var paragraphs = [];
   var paragraphPattern = /<w:p>([\s\S]*?)<\/w:p>/g;
   var paragraphMatch;
@@ -4363,41 +4372,106 @@ function renderTransitionOpsResumeDocxCheck(bytes) {
     var textPattern = /<w:t(?: [^>]*)?>([\s\S]*?)<\/w:t>/g;
     var textMatch;
     while ((textMatch = textPattern.exec(paragraphXml))) textParts.push(topsDocxXmlUnescape(textMatch[1]));
-    paragraphs.push({ styleId: styleMatch ? styleMatch[1] : "ResumeBody", text: (numMatch ? "\u2022 " : "") + textParts.join("") });
+    paragraphs.push({
+      styleId: styleMatch ? styleMatch[1] : "ResumeBody",
+      text: (numMatch ? "\u2022 " : "") + textParts.join(""),
+      pageBreakBefore: /<w:pageBreakBefore\/>/.test(paragraphXml)
+    });
   }
+  return paragraphs;
+}
+
+function topsResumeDocxStyleHalfPoints(bytes) {
+  var xml = topsDocxStoredEntryText(bytes, "word/styles.xml");
+  var sizes = {};
+  var stylePattern = /<w:style w:type="paragraph" w:styleId="([^"]+)"[\s\S]*?<\/w:style>/g;
+  var styleMatch;
+  while ((styleMatch = stylePattern.exec(xml))) {
+    var sizeMatch = /<w:sz w:val="(\d+)"\/>/.exec(styleMatch[0]);
+    if (sizeMatch) sizes[styleMatch[1]] = parseInt(sizeMatch[1], 10);
+  }
+  return sizes;
+}
+
+function topsResumeKeepsNext(styleId) {
+  return /^(?:ResumeName|ResumeContact|ResumeSection|ResumeRole|ResumeMetadata|ResumeSpacer)$/.test(styleId);
+}
+
+function topsResumeSafeBreakCandidates(paragraphs) {
+  var candidates = [];
+  paragraphs.forEach(function(paragraph, index) {
+    if (paragraph.styleId !== "ResumeSection" && paragraph.styleId !== "ResumeRole") return;
+    var breakIndex = index;
+    while (breakIndex > 0 && paragraphs[breakIndex - 1].styleId === "ResumeSpacer") breakIndex -= 1;
+    if (paragraph.styleId === "ResumeRole" && breakIndex > 0 && paragraphs[breakIndex - 1].styleId === "ResumeSection") {
+      breakIndex -= 1;
+      while (breakIndex > 0 && paragraphs[breakIndex - 1].styleId === "ResumeSpacer") breakIndex -= 1;
+    }
+    if (breakIndex > 0 && candidates.indexOf(breakIndex) === -1) candidates.push(breakIndex);
+  });
+  return candidates;
+}
+
+function renderTransitionOpsResumeDocxCheck(bytes) {
+  if (typeof document === "undefined" || !document.body) return { ok: false, reason: "The browser could not render the Word artifact." };
+  var paragraphs = topsResumeDocxParagraphs(bytes);
   if (!paragraphs.length) return { ok: false, reason: "The Word artifact contained no renderable paragraphs." };
+  var styleHalfPoints = topsResumeDocxStyleHalfPoints(bytes);
   var root = document.createElement("div");
   root.setAttribute("aria-hidden", "true");
   root.style.cssText = "position:fixed;left:-10000px;top:0;visibility:hidden;width:720px;box-sizing:border-box;background:#fff;color:#000;font-family:Calibri,Arial,sans-serif;font-size:9.5pt;line-height:11pt;white-space:pre-wrap;";
   var keepNext = [];
+  var breakBefore = [];
+  var unreadableCompression = false;
   paragraphs.forEach(function(paragraph) {
     var element = document.createElement("div");
     element.textContent = paragraph.text || " ";
     element.style.cssText = "box-sizing:border-box;width:720px;overflow:visible;white-space:pre-wrap;overflow-wrap:normal;font-family:Calibri,Arial,sans-serif;font-size:9.5pt;line-height:11pt;padding:0 0 0.5pt 0;margin:0;";
-    if (paragraph.styleId === "ResumeName") element.style.cssText += "font-size:13pt;line-height:14pt;font-weight:700;text-align:center;padding-bottom:2pt;";
-    else if (paragraph.styleId === "ResumeContact") element.style.cssText += "font-size:9pt;line-height:10pt;text-align:center;padding-bottom:2pt;";
-    else if (paragraph.styleId === "ResumeSection") element.style.cssText += "font-size:10.5pt;line-height:11pt;font-weight:700;padding-top:5pt;padding-bottom:1pt;";
-    else if (paragraph.styleId === "ResumeRole") element.style.cssText += "font-size:10pt;line-height:11pt;font-weight:700;padding-top:2.5pt;padding-bottom:0.5pt;";
-    else if (paragraph.styleId === "ResumeMetadata") element.style.cssText += "font-size:9.25pt;line-height:10.5pt;padding-bottom:0.5pt;";
+    var halfPoints = styleHalfPoints[paragraph.styleId] || ATS_RESUME_COMPACT.typography.bodyHalfPoints;
+    element.style.fontSize = (halfPoints / 2) + "pt";
+    if (paragraph.styleId !== "ResumeSpacer" && halfPoints < 18) unreadableCompression = true;
+    if (paragraph.styleId === "ResumeName") element.style.cssText += "line-height:14pt;font-weight:700;text-align:center;padding-bottom:2pt;";
+    else if (paragraph.styleId === "ResumeContact") element.style.cssText += "line-height:10pt;text-align:center;padding-bottom:2pt;";
+    else if (paragraph.styleId === "ResumeSection") element.style.cssText += "line-height:11pt;font-weight:700;padding-top:5pt;padding-bottom:1pt;";
+    else if (paragraph.styleId === "ResumeRole") element.style.cssText += "line-height:11pt;font-weight:700;padding-top:2.5pt;padding-bottom:0.5pt;";
+    else if (paragraph.styleId === "ResumeMetadata") element.style.cssText += "line-height:10.5pt;padding-bottom:0.5pt;";
     else if (paragraph.styleId === "ResumeBullet") element.style.cssText += "padding-left:18px;text-indent:-9px;";
     else if (paragraph.styleId === "ResumeSpacer") element.style.cssText += "font-size:3pt;line-height:3pt;padding:0;";
-    keepNext.push(/^(?:ResumeName|ResumeContact|ResumeSection|ResumeRole|ResumeMetadata)$/.test(paragraph.styleId));
+    keepNext.push(topsResumeKeepsNext(paragraph.styleId));
+    breakBefore.push(paragraph.pageBreakBefore);
     root.appendChild(element);
   });
   document.body.appendChild(root);
   var pageHeight = 960;
   var pageUsed = [0];
+  var pageAssignments = [];
   var overflow = false;
+  var hiddenText = false;
+  var overlap = false;
   var children = Array.prototype.slice.call(root.children);
+  var previousBottom = null;
   var heights = children.map(function(child) {
-    if (child.scrollWidth > 722) overflow = true;
-    var height = Math.max(1, Math.ceil(child.getBoundingClientRect().height));
+    var rect = child.getBoundingClientRect();
+    if (child.scrollWidth > child.clientWidth + 2) overflow = true;
+    if (child.textContent.trim() && (rect.width <= 0 || rect.height <= 0)) hiddenText = true;
+    if (previousBottom !== null && rect.top + 0.5 < previousBottom) overlap = true;
+    previousBottom = Math.max(previousBottom === null ? rect.bottom : previousBottom, rect.bottom);
+    var height = Math.max(1, Math.ceil(rect.height));
     if (height > pageHeight) overflow = true;
     return height;
   });
   heights.forEach(function(height, index) {
     var pageIndex = pageUsed.length - 1;
-    var groupedHeight = height + (keepNext[index] && index + 1 < heights.length ? heights[index + 1] : 0);
+    if (breakBefore[index] && pageUsed[pageIndex] > 0) {
+      pageUsed.push(0);
+      pageIndex += 1;
+    }
+    var groupedHeight = height;
+    var groupEnd = index;
+    while (keepNext[groupEnd] && groupEnd + 1 < heights.length) {
+      groupEnd += 1;
+      groupedHeight += heights[groupEnd];
+    }
     if (pageUsed[pageIndex] > 0 && groupedHeight <= pageHeight && pageUsed[pageIndex] + groupedHeight > pageHeight) {
       pageUsed.push(0);
       pageIndex += 1;
@@ -4406,17 +4480,37 @@ function renderTransitionOpsResumeDocxCheck(bytes) {
       pageIndex += 1;
     }
     pageUsed[pageIndex] += height;
+    pageAssignments[index] = pageIndex;
   });
   root.remove();
+  var orphan = keepNext.some(function(kept, index) { return kept && index + 1 < pageAssignments.length && pageAssignments[index] !== pageAssignments[index + 1]; });
   var sparseTrailingPage = pageUsed.length > 1 && pageUsed[pageUsed.length - 1] < pageHeight * 0.25;
   var tooManyPages = pageUsed.length > 2;
-  var ok = !overflow && !sparseTrailingPage && !tooManyPages;
-  var reason = overflow ? "The Word artifact contains text that may clip." : tooManyPages ? "The civilian Word artifact exceeds two pages." : sparseTrailingPage ? "The Word artifact would create an avoidably sparse trailing page." : "Rendered artifact is readable and page-balanced.";
-  return { ok: ok, reason: reason, pageCount: pageUsed.length, pageUsed: pageUsed, overflow: overflow, sparseTrailingPage: sparseTrailingPage, tooManyPages: tooManyPages };
+  var minimumPageUseRatio = pageUsed.length ? Math.min.apply(Math, pageUsed) / pageHeight : 0;
+  var pageBalanceSpread = pageUsed.length > 1 ? Math.abs(pageUsed[0] - pageUsed[1]) / pageHeight : 0;
+  var ok = !overflow && !hiddenText && !overlap && !unreadableCompression && !orphan && !tooManyPages;
+  var reason = overflow || hiddenText ? "The Word artifact contains text that may clip or remain hidden." : overlap ? "The Word artifact contains overlapping text." : unreadableCompression ? "The Word artifact uses unreadably compressed text." : tooManyPages ? "The civilian Word artifact exceeds two pages." : orphan ? "The Word artifact would orphan a heading or role header." : "Rendered artifact is readable.";
+  return {
+    ok: ok,
+    reason: reason,
+    pageCount: pageUsed.length,
+    pageUsed: pageUsed,
+    pageAssignments: pageAssignments,
+    overflow: overflow,
+    hiddenText: hiddenText,
+    overlap: overlap,
+    unreadableCompression: unreadableCompression,
+    orphan: orphan,
+    sparseTrailingPage: sparseTrailingPage,
+    tooManyPages: tooManyPages,
+    minimumPageUseRatio: minimumPageUseRatio,
+    pageBalanceSpread: pageBalanceSpread,
+    balanceCandidates: topsResumeSafeBreakCandidates(paragraphs)
+  };
 }
 
-function validateTransitionOpsResumeDocx(bytes, resumeText, fileName, mime) {
-  var expected = buildTransitionOpsResumeDocx(resumeText);
+function validateTransitionOpsResumeDocx(bytes, resumeText, fileName, mime, options) {
+  var expected = buildTransitionOpsResumeDocx(resumeText, options);
   var exactBytes = bytes && bytes.length === expected.length;
   if (exactBytes) for (var i = 0; i < expected.length; i += 1) if (bytes[i] !== expected[i]) { exactBytes = false; break; }
   var decoded = bytes ? new TextDecoder().decode(bytes) : "";
@@ -4426,7 +4520,56 @@ function validateTransitionOpsResumeDocx(bytes, resumeText, fileName, mime) {
   return { ok: ok, contentEquivalence: exactBytes, formatIntegrity: structural && truthful };
 }
 
-if (typeof window !== "undefined") window.__TOPS_RESUME_DOCX = { build: buildTransitionOpsResumeDocx, validate: validateTransitionOpsResumeDocx, renderCheck: renderTransitionOpsResumeDocxCheck, mime: TOPS_DOCX_MIME, style: ATS_RESUME_COMPACT };
+function prepareTransitionOpsResumeDocx(resumeText, fileName, mime) {
+  var initialOptions = {};
+  var initialBytes = buildTransitionOpsResumeDocx(resumeText, initialOptions);
+  var initialArtifactCheck = validateTransitionOpsResumeDocx(initialBytes, resumeText, fileName, mime, initialOptions);
+  if (!initialArtifactCheck.ok) return { ok: false, reason: "The Word artifact failed its content and format check." };
+  var initialRenderCheck = renderTransitionOpsResumeDocxCheck(initialBytes);
+  if (!initialRenderCheck.ok) return { ok: false, reason: initialRenderCheck.reason, artifactCheck: initialArtifactCheck, renderCheck: initialRenderCheck };
+
+  var initialResult = {
+    ok: true,
+    bytes: initialBytes,
+    options: initialOptions,
+    artifactCheck: initialArtifactCheck,
+    renderCheck: initialRenderCheck,
+    balanceDisposition: "not_needed"
+  };
+  if (initialRenderCheck.pageCount !== 2 || !initialRenderCheck.sparseTrailingPage) return initialResult;
+
+  var best = null;
+  initialRenderCheck.balanceCandidates.forEach(function(paragraphIndex) {
+    var candidateOptions = { pageBreakBeforeParagraph: paragraphIndex };
+    var candidateBytes = buildTransitionOpsResumeDocx(resumeText, candidateOptions);
+    var candidateArtifactCheck = validateTransitionOpsResumeDocx(candidateBytes, resumeText, fileName, mime, candidateOptions);
+    if (!candidateArtifactCheck.ok) return;
+    var candidateRenderCheck = renderTransitionOpsResumeDocxCheck(candidateBytes);
+    if (!candidateRenderCheck.ok || candidateRenderCheck.pageCount !== 2 || candidateRenderCheck.sparseTrailingPage || candidateRenderCheck.minimumPageUseRatio < 0.25) return;
+    if (candidateRenderCheck.minimumPageUseRatio <= initialRenderCheck.minimumPageUseRatio) return;
+    if (candidateRenderCheck.pageBalanceSpread >= initialRenderCheck.pageBalanceSpread) return;
+    if (!best || candidateRenderCheck.pageBalanceSpread < best.renderCheck.pageBalanceSpread || candidateRenderCheck.pageBalanceSpread === best.renderCheck.pageBalanceSpread && candidateRenderCheck.minimumPageUseRatio > best.renderCheck.minimumPageUseRatio) {
+      best = {
+        ok: true,
+        bytes: candidateBytes,
+        options: candidateOptions,
+        artifactCheck: candidateArtifactCheck,
+        renderCheck: candidateRenderCheck,
+        balanceDisposition: "rebalanced"
+      };
+    }
+  });
+
+  if (best) {
+    best.renderCheck.reason = "Rendered artifact is readable and page-balanced.";
+    return best;
+  }
+  initialResult.balanceDisposition = "sparse_tail_not_proven_avoidable";
+  initialResult.renderCheck.reason = "Rendered artifact is readable; no safer content-equivalent balance was proven.";
+  return initialResult;
+}
+
+if (typeof window !== "undefined") window.__TOPS_RESUME_DOCX = { build: buildTransitionOpsResumeDocx, validate: validateTransitionOpsResumeDocx, renderCheck: renderTransitionOpsResumeDocxCheck, prepare: prepareTransitionOpsResumeDocx, mime: TOPS_DOCX_MIME, style: ATS_RESUME_COMPACT };
 // RESUME_DOCX_END
 
 function App() {
@@ -7686,16 +7829,14 @@ whatsNewUnseen && React.createElement("div", {
             trackResumeDownload();
             return;
           }
-          var docxBytes = window.__TOPS_RESUME_DOCX.build(aiR.out);
           var fileName = "Resume_Draft.docx";
-          var artifactCheck = window.__TOPS_RESUME_DOCX.validate(docxBytes, aiR.out, fileName, window.__TOPS_RESUME_DOCX.mime);
-          if (!artifactCheck.ok) { showToast("WORD EXPORT CHECK FAILED \u2014 copy the resume and try again."); return; }
-          var renderCheck = window.__TOPS_RESUME_DOCX.renderCheck(docxBytes);
-          if (!renderCheck.ok) {
-            setAiR(function(p){ return Object.assign({}, p, { auditScorecard: p.auditScorecard.map(function(item){ return item.dimension === "length_and_readability" || item.dimension === "format_compliance" ? Object.assign({}, item, { status: "FAIL", evidence: renderCheck.reason }) : item; }) }); });
-            showToast("WORD EXPORT HELD \u2014 " + renderCheck.reason);
+          var preparedDocx = window.__TOPS_RESUME_DOCX.prepare(aiR.out, fileName, window.__TOPS_RESUME_DOCX.mime);
+          if (!preparedDocx.ok) {
+            setAiR(function(p){ return Object.assign({}, p, { auditScorecard: p.auditScorecard.map(function(item){ return item.dimension === "length_and_readability" || item.dimension === "format_compliance" ? Object.assign({}, item, { status: "FAIL", evidence: preparedDocx.reason }) : item; }) }); });
+            showToast("WORD EXPORT HELD \u2014 " + preparedDocx.reason);
             return;
           }
+          var docxBytes = preparedDocx.bytes;
           var blob = new Blob([docxBytes], { type: window.__TOPS_RESUME_DOCX.mime });
           var objectUrl = URL.createObjectURL(blob);
           var a = document.createElement("a"); a.href = objectUrl;

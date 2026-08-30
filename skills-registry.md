@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.15 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.16 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,32 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.15 -> 0.16, remains
+  PENDING.** Dean approved v0.16 after live-clone Word export evidence exposed
+  PARTIAL v0.15 coverage: six `Title | Employer` role headers were classified as
+  metadata, the browser estimator withheld an otherwise grounded artifact from
+  second-page occupancy alone, and the committed regression asserted render
+  wiring without executing layout in a layout-capable browser. Version 0.16
+  preserves every v0.15 requirement and adds the CIVILIAN WORD PAGINATION
+  CONTRACT: structural-sequence classification of the already-audited released
+  candidate text after PROFESSIONAL EXPERIENCE or a completed bullet block;
+  pipe, hyphen, and em-dash presentation variants with separator alone
+  insufficient and no browser ledger reparsing; executed browser-layout
+  evidence; occupancy as a review signal but not proof of avoidability; safe
+  content-equivalent rebalancing; transitive keep-with-next; and blocking
+  controls for clipping, overlap, hidden text, orphaned headings or role
+  headers, more than two pages, and unreadable compression. RDM-179…186 add a
+  synthetic six-role/16-bullet/four-certification/
+  four-education positive control, role grammar, real-browser execution,
+  sparse-versus-avoidable controls, complete-chain pagination, content
+  equivalence, negative layout cases, and federal/operational non-regression.
+  No app code, tests, cache, model, API call, retry, cap, privacy, logging,
+  storage, persistence, analytics, usage-limit, budget, or cost behavior is
+  changed by this specification update; maximum incremental API exposure is $0
+  and the external monthly cap remains `UNVERIFIED`. This records Dean's
+  specification approval only; registration remains PENDING until synthetic
+  regression execution and live-clone evidence pass. Lane: AUTO for internal
+  governance; app implementation remains Commander-gated. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.14 -> 0.15, remains
   PENDING.** Commander-approved scope responds to the first rendered v0.14
   civilian artifact: confirmed education was omitted; confirmed header and
