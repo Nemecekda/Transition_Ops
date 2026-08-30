@@ -21,6 +21,10 @@ function draftClausesFromAuditRequest(request) {
   return draft.split("\n").map((line) => line.trim().replace(/^[\u2022*-]\s*/, "")).filter((line) => line && !/^(?:SUMMARY|PROFESSIONAL SUMMARY|CORE SKILLS|PROFESSIONAL EXPERIENCE|CERTIFICATIONS(?: & TRAINING)?|EDUCATION)$/i.test(line) && !/^\[[^\]]+\](?:\s*\|\s*\[[^\]]+\])*$/.test(line));
 }
 
+function candidateDraftFromAuditRequest(request) {
+  return String(request.input || "").split("\n\nCANDIDATE DRAFT:\n").pop();
+}
+
 function clauseInventoryFromAuditRequest(request) {
   const input = String(request.input || "");
   const match = input.match(/<UNTRUSTED_CLAUSE_INVENTORY>\n([\s\S]*?)\n<\/UNTRUSTED_CLAUSE_INVENTORY>/);
@@ -468,6 +472,90 @@ async function run() {
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: nonsequentialLedger, confirmedFacts: nonsequentialLedger }));
   assert.equal(result.statusCode, 200);
 
+  const metadataLedger = [
+    ["Metadata Role 1", "Metadata Unit 1", "Fort Alpha, VA", "Jan 2018 - Feb 2019", "Performed alpha planning."],
+    ["Metadata Role 2", "Metadata Unit 2", "Remote / Global", "MISSING", "• Remote / Global"],
+    ["Metadata Role 3", "Metadata Unit 3", "MISSING", "Mar 2020 – Apr 2021", "Performed charlie planning."],
+    ["Metadata Role 4", "Metadata Unit 4", "MISSING", "MISSING", "Performed delta planning."],
+    ["Metadata Role 5", "Metadata Unit 5", "St. Louis, Mo. (Hybrid)", "May 2021 – Present", "Performed echo planning."],
+    ["Metadata Role 6", "Metadata Unit 6", "Pacific Region", "2024 to Present", "Performed foxtrot planning."]
+  ].map((role, index) => "ROLE " + (index + 1) + "\nJOB TITLE (EXACT): " + role[0] + "\nEMPLOYER OR UNIT (EXACT): " + role[1] + "\nLOCATION (EXACT OR MISSING): " + role[2] + "\nDATES (EXACT OR MISSING): " + role[3] + "\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): " + role[4]).join("\n\n") + "\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+  const metadataDuties = ["Performed alpha planning.", "• Remote / Global", "Performed charlie planning.", "Performed delta planning.", "Performed echo planning.", "Performed foxtrot planning."];
+  const incompleteMetadataDraft = "PROFESSIONAL EXPERIENCE:\n" + metadataDuties.map((duty, index) => "Metadata Role " + (index + 1) + " - Metadata Unit " + (index + 1) + "\n" + duty).join("\n\n");
+  function metadataAudit(request) {
+    const audit = passingAudit(request);
+    const inventory = clauseInventoryFromAuditRequest(request);
+    const catalog = factCatalogFromAuditRequest(request);
+    inventory.filter((claim) => /Fort Alpha|Remote \/ Global|Mar 2020|St\. Louis|Pacific Region/.test(claim.claim_text)).forEach((claim) => {
+      const trace = audit.claim_trace.find((item) => item.claim_id === claim.claim_id);
+      trace.fact_refs = catalog.filter((fact) => fact.owner === claim.owner && (/^LOCATION /.test(fact.text) || /^DATES /.test(fact.text)) && claim.claim_text.includes(fact.text.replace(/^[^:]+:\s*/, ""))).map((fact) => fact.fact_id);
+      assert.ok(trace.fact_refs.length > 0);
+    });
+    return audit;
+  }
+
+  let completedAuditCandidate = "";
+  nextResponse = { status: "completed", output_text: incompleteMetadataDraft };
+  auditResponseQueue.push((request) => { completedAuditCandidate = candidateDraftFromAuditRequest(request); return metadataAudit(request); });
+  const callsBeforeMetadataCompletion = calls.length;
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(calls.length - callsBeforeMetadataCompletion, 2);
+  const completedMetadataDraft = JSON.parse(result.body).bullets;
+  assert.equal(completedMetadataDraft, completedAuditCandidate);
+  assert.match(completedMetadataDraft, /Metadata Role 1 - Metadata Unit 1\nFort Alpha, VA \| Jan 2018 - Feb 2019/);
+  assert.match(completedMetadataDraft, /Metadata Role 2 - Metadata Unit 2\nRemote \/ Global\n/);
+  assert.match(completedMetadataDraft, /Metadata Role 2 - Metadata Unit 2\nRemote \/ Global\n• Remote \/ Global\n/);
+  assert.match(completedMetadataDraft, /Metadata Role 3 - Metadata Unit 3\nMar 2020 – Apr 2021\n/);
+  assert.match(completedMetadataDraft, /Metadata Role 4 - Metadata Unit 4\nPerformed delta planning\./);
+  assert.match(completedMetadataDraft, /Metadata Role 5 - Metadata Unit 5\nSt\. Louis, Mo\. \(Hybrid\) \| May 2021 – Present/);
+  assert.match(completedMetadataDraft, /Metadata Role 6 - Metadata Unit 6\nPacific Region \| 2024 to Present/);
+  assert.doesNotMatch(completedMetadataDraft, /\bMISSING\b|\[[^\]]+\]/);
+  assert.deepEqual(completedMetadataDraft.split("\n").filter((line) => metadataDuties.includes(line)), metadataDuties);
+  assert.equal(metadataDuties.reduce((count, duty) => count + (completedMetadataDraft.match(new RegExp(duty.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length, 0), metadataDuties.length);
+
+  nextResponse = { status: "completed", output_text: completedMetadataDraft };
+  auditResponseQueue.push((request) => metadataAudit(request));
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(JSON.parse(result.body).bullets, completedMetadataDraft);
+
+  const separateMetadataDraft = completedMetadataDraft.replace("Fort Alpha, VA | Jan 2018 - Feb 2019", "Fort Alpha, VA\nJan 2018 - Feb 2019");
+  nextResponse = { status: "completed", output_text: separateMetadataDraft };
+  auditResponseQueue.push((request) => metadataAudit(request));
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
+  assert.equal(result.statusCode, 200);
+  assert.equal((JSON.parse(result.body).bullets.match(/Fort Alpha, VA/g) || []).length, 1);
+  assert.equal((JSON.parse(result.body).bullets.match(/Jan 2018 - Feb 2019/g) || []).length, 1);
+
+  const conflictingDraft = incompleteMetadataDraft.replace("Metadata Role 1 - Metadata Unit 1\n", "Metadata Role 1 - Metadata Unit 1\nUnknown Harbor | Undated\n");
+  nextResponse = { status: "completed", output_text: conflictingDraft };
+  auditResponseQueue.push((request) => {
+    const audit = metadataAudit(request);
+    const conflictId = clauseInventoryFromAuditRequest(request).find((claim) => claim.claim_text === "Unknown Harbor | Undated").claim_id;
+    const conflictTrace = audit.claim_trace.find((item) => item.claim_id === conflictId);
+    conflictTrace.fact_refs = [];
+    conflictTrace.verdict = "unsupported";
+    assert.match(candidateDraftFromAuditRequest(request), /Metadata Role 1 - Metadata Unit 1\nFort Alpha, VA \| Jan 2018 - Feb 2019\nUnknown Harbor \| Undated/);
+    return audit;
+  });
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
+  assert.equal(result.statusCode, 422);
+
+  const duplicateMetadataLedger = "ROLE 1\nJOB TITLE (EXACT): Program Lead\nEMPLOYER OR UNIT (EXACT): Shared Unit\nLOCATION (EXACT OR MISSING): Alpha Site\nDATES (EXACT OR MISSING): 2018 - 2019\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led alpha work.\n\nROLE 7\nJOB TITLE (EXACT): Program Lead\nEMPLOYER OR UNIT (EXACT): Shared Unit\nLOCATION (EXACT OR MISSING): Bravo Site\nDATES (EXACT OR MISSING): 2020 - 2021\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led bravo work.\n\nROLE 9\nJOB TITLE (EXACT): Program Leader\nEMPLOYER OR UNIT (EXACT): Shared Unit\nLOCATION (EXACT OR MISSING): Charlie Site\nDATES (EXACT OR MISSING): 2022 - 2023\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led charlie work.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+  const duplicateMetadataDraft = "WORK EXPERIENCE —\nProgram Lead - Shared Unit\nLed alpha work.\nProgram Lead - Shared Unit\nLed bravo work.\nProgram Leader - Shared Unit\nLed charlie work.";
+  nextResponse = { status: "completed", output_text: duplicateMetadataDraft };
+  auditResponseQueue.push((request) => metadataAudit(request));
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: duplicateMetadataLedger, confirmedFacts: duplicateMetadataLedger }));
+  assert.equal(result.statusCode, 200);
+  assert.match(JSON.parse(result.body).bullets, /Program Lead - Shared Unit\nAlpha Site \| 2018 - 2019\nLed alpha work\.[\s\S]*Program Lead - Shared Unit\nBravo Site \| 2020 - 2021\nLed bravo work\.[\s\S]*Program Leader - Shared Unit\nCharlie Site \| 2022 - 2023\nLed charlie work\./);
+
+  nextResponse = { status: "completed", output_text: incompleteMetadataDraft };
+  auditResponseQueue.push((request) => passingAudit(request));
+  result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(JSON.parse(result.body).bullets, incompleteMetadataDraft);
+
   const boundaryLedger = "ROLE 1\nJOB TITLE (EXACT): Boundary Role 1\nEMPLOYER OR UNIT (EXACT): Boundary Employer 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and delivered 1100 hires.\n\nROLE 2\nJOB TITLE (EXACT): Boundary Role 2\nEMPLOYER OR UNIT (EXACT): Boundary Employer 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and managed 22 specialists.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 22 specialists; shared 44-unit scale; 110; 77 sites\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
   nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nBoundary Role 1 - Boundary Employer 1\nDelivered hiring work.\nBoundary Role 2 - Boundary Employer 2\nManaged specialist work." };
   auditResponseQueue.push((request) => {
@@ -895,6 +983,8 @@ async function run() {
   assert.match(resumeSource, /clip\(experience, 8000\)/);
   assert.match(resumeSource, /clip\(posting, 3500\)/);
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)/);
+  assert.match(resumeSource, /function completeConfirmedRoleMetadata/);
+  assert.match(resumeSource, /mode === "federal" \? normalizedText : completeConfirmedRoleMetadata\(normalizedText, confirmedFacts\)/);
   const referenceMessagesBlock = resumeSource.match(/const referenceMessages = \{([\s\S]*?)\n      \};/)[1];
   const referenceCodes = Array.from(referenceMessagesBlock.matchAll(/^        ([a-z_]+):/gm), (match) => match[1]);
   assert.deepEqual(referenceCodes, ["trace_reference_shape", "unavailable_fact_reference", "global_fact_on_role_claim", "role_cross_reference", "global_quantity_owner_mismatch", "claim_owner_unresolved"]);
@@ -934,7 +1024,7 @@ async function run() {
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
 
-  console.log("PASS: synthetic RDM-1..RDM-105 control paths, scoped generation, deterministic safe categories, role-complete identities, unchanged caps/calls/privacy controls (live model evaluation pending)");
+  console.log("PASS: synthetic RDM-1..RDM-122 control paths, scoped generation, deterministic safe categories, role-complete identities, confirmed-role metadata completion, unchanged caps/calls/privacy controls (live model evaluation pending)");
 }
 
 run().catch((error) => {

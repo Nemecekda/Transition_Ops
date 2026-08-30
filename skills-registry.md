@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.10 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.11 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,23 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.10 -> 0.11, remains
+  PENDING.** Live v0.10 evidence showed a grounded draft withheld because the
+  generator omitted confirmed role dates and locations. Version 0.11 adds a
+  civilian-only deterministic completion step after text normalization and
+  before grounding, inventory, and audit. It inserts byte-exact confirmed
+  location/date values under the exact owning role, omits literal `MISSING`,
+  generates only the ` | ` separator, is idempotent, preserves every bullet,
+  and never infers from duties, posting, target, adjacent roles, or raw source.
+  Existing exact metadata may be safely canonicalized; unknown or conflicting
+  metadata remains visible to fail-closed audit. Duplicate identities use safe
+  first-unmatched ownership or fail closed. RDM-106…RDM-122 use synthetic
+  fixtures and preserve federal behavior, models, caps, calls, zero retries,
+  usage limits, `store: false`, no logging/storage/analytics, privacy controls,
+  and the `UNVERIFIED` external monthly cap. No call or cap is added; maximum
+  incremental API exposure is $0. Registry remains PENDING until app regressions
+  and live clone evidence pass. Lane: AUTO for internal governance; app
+  implementation remains Commander-gated. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.9 -> 0.10, remains
   PENDING.** A repeated live audit-reference rejection showed that generation,
   clause ownership, and audit-reference rules needed one alignment contract

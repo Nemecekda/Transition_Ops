@@ -133,6 +133,22 @@ Every supplied degree and school, byte-exact, one line each. Include a year only
     }).filter(function (entry) { return entry.title && !/^MISSING$/i.test(entry.title); });
   }
 
+  function confirmedRoleDetails(facts) {
+    return String(facts || "").split(/^ROLE\s+\d+\s*$/im).slice(1).map(function (block) {
+      function exactField(pattern) {
+        const match = pattern.exec(block);
+        const value = match ? match[1].trim() : "";
+        return /^MISSING$/i.test(value) ? "" : value;
+      }
+      return {
+        title: exactField(/^JOB TITLE \(EXACT\):\s*(.+)$/im),
+        employer: exactField(/^EMPLOYER OR UNIT \(EXACT\):\s*(.+)$/im),
+        location: exactField(/^LOCATION \(EXACT OR MISSING\):\s*(.+)$/im),
+        dates: exactField(/^DATES \(EXACT OR MISSING\):\s*(.+)$/im)
+      };
+    }).filter(function (entry) { return entry.title; });
+  }
+
   function explicitLaterRoleTitles(source) {
     const titles = [];
     const pattern = /\b(?:later|then|subsequently)\s+served\s+as\s+([^,:.;\n]+?)(?=\s+(?:at|for)\s+|[,:.;\n]|$)/gi;
@@ -213,22 +229,62 @@ Every supplied degree and school, byte-exact, one line each. Include a year only
     return "";
   }
 
-  function roleHeaderIndex(line, roles) {
+  function roleHeaderIndex(line, roles, usedRoleIndexes) {
     const value = String(line || "").trim().replace(/^(?:JOB TITLE|ROLE)\s*:\s*/i, "");
-    return roles.findIndex(function (role) {
+    return roles.findIndex(function (role, roleIndex) {
+      if (usedRoleIndexes && usedRoleIndexes.has(roleIndex)) return false;
       const employerRequired = role.employer && !/^MISSING$/i.test(role.employer);
-      return value.length <= 180 && value.indexOf(role.title) === 0 && (!employerRequired || value.indexOf(role.employer, role.title.length) !== -1);
+      const titleRemainder = value.slice(role.title.length);
+      const exactTitleStart = value.indexOf(role.title) === 0 && (!titleRemainder || /^[^0-9A-Za-z]/.test(titleRemainder));
+      const employerIndex = employerRequired ? value.indexOf(role.employer, role.title.length) : -1;
+      const exactEmployer = !employerRequired || (employerIndex !== -1 && (employerIndex === 0 || /[^0-9A-Za-z]/.test(value[employerIndex - 1])) && (employerIndex + role.employer.length === value.length || /[^0-9A-Za-z]/.test(value[employerIndex + role.employer.length])));
+      return value.length <= 180 && exactTitleStart && exactEmployer;
     });
+  }
+
+  function completeConfirmedRoleMetadata(text, facts) {
+    const roles = confirmedRoleDetails(facts);
+    const usedRoleIndexes = new Set();
+    const lines = String(text || "").split("\n");
+    let section = "global";
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
+      const heading = sectionHeading(lines[lineIndex]);
+      if (heading) { section = heading; continue; }
+      if (section !== "experience") continue;
+      const roleIndex = roleHeaderIndex(lines[lineIndex], roles, usedRoleIndexes);
+      if (roleIndex === -1) continue;
+      usedRoleIndexes.add(roleIndex);
+      const role = roles[roleIndex];
+      const canonical = role.location && role.dates ? role.location + " | " + role.dates : (role.location || role.dates);
+      if (!canonical) continue;
+
+      const metadataIndexes = [];
+      for (let scanIndex = lineIndex + 1; scanIndex < lines.length && metadataIndexes.length < 2; scanIndex += 1) {
+        if (!lines[scanIndex].trim()) continue;
+        if (sectionHeading(lines[scanIndex]) || roleHeaderIndex(lines[scanIndex], roles, usedRoleIndexes) !== -1) break;
+        const value = lines[scanIndex].trim();
+        if (value === canonical || value === role.location || value === role.dates) { metadataIndexes.push(scanIndex); continue; }
+        break;
+      }
+
+      if (metadataIndexes.length === 1 && lines[metadataIndexes[0]].trim() === canonical && metadataIndexes[0] === lineIndex + 1) continue;
+      for (let removeIndex = metadataIndexes.length - 1; removeIndex >= 0; removeIndex -= 1) lines.splice(metadataIndexes[removeIndex], 1);
+      lines.splice(lineIndex + 1, 0, canonical);
+      lineIndex += 1;
+    }
+    return lines.join("\n");
   }
 
   function roleStructureIssues(text, facts) {
     const lines = String(text || "").split("\n").map(function (line) { return line.trim(); });
     const usedLines = [];
+    const usedRoleIndexes = new Set();
     const roles = factRoles(facts);
     return roles.filter(function (role, roleIndex) {
-      const lineIndex = lines.findIndex(function (line) { return roleHeaderIndex(line, roles) === roleIndex; });
+      const lineIndex = lines.findIndex(function (line, candidateIndex) { return usedLines.indexOf(candidateIndex) === -1 && roleHeaderIndex(line, roles, usedRoleIndexes) === roleIndex; });
       if (lineIndex === -1 || usedLines.indexOf(lineIndex) !== -1) return true;
       usedLines.push(lineIndex);
+      usedRoleIndexes.add(roleIndex);
       return false;
     }).map(function () { return "merged or missing role entry"; });
   }
@@ -364,6 +420,7 @@ Every supplied degree and school, byte-exact, one line each. Include a year only
 
   function clauseInventory(text, facts) {
     const roles = factRoles(facts);
+    const usedRoleIndexes = new Set();
     let owner = "global";
     let section = "global";
     const claims = [];
@@ -373,8 +430,8 @@ Every supplied degree and school, byte-exact, one line each. Include a year only
       if (heading) { section = heading; owner = "global"; return; }
       if (!claimText || /^\[[^\]]+\](?:\s*\|\s*\[[^\]]+\])*$/.test(claimText)) return;
       if (section === "experience") {
-        const matchedRoleIndex = roleHeaderIndex(claimText, roles);
-        if (matchedRoleIndex !== -1) owner = "R" + (matchedRoleIndex + 1);
+        const matchedRoleIndex = roleHeaderIndex(claimText, roles, usedRoleIndexes);
+        if (matchedRoleIndex !== -1) { usedRoleIndexes.add(matchedRoleIndex); owner = "R" + (matchedRoleIndex + 1); }
       }
       claims.push({ claim_id: "C" + (claims.length + 1), claim_text: claimText, owner: owner });
     });
@@ -541,7 +598,8 @@ Every supplied degree and school, byte-exact, one line each. Include a year only
       }
       return { statusCode: 200, headers, body: JSON.stringify(factResponseBody(editableText, [], clip(target, 120))) };
     }
-    const text = normalizePlainText(rawText);
+    const normalizedText = normalizePlainText(rawText);
+    const text = mode === "federal" ? normalizedText : completeConfirmedRoleMetadata(normalizedText, confirmedFacts);
     const groundingCatalogText = catalog.filter(function (fact) { return !fact.unlinked_number; }).map(function (fact) { return fact.text; }).join("\n");
     const issues = draftQualityIssues(text, groundingCatalogText, confirmedFacts, mode);
     if (catalog.some(function (fact) { return fact.unlinked_number && text.indexOf(fact.text) !== -1; })) issues.push("unlinked global number");

@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.10"
+  version: "0.11"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.10 is PENDING until the RDM regression suite
+Version 0.11 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -182,6 +182,33 @@ and approved message, such as `global_fact_on_role_claim`,
 `trace_reference_shape`. Never return claim or fact text, catalog or claim IDs,
 member identities, provider or token details, or raw internal labels. Do not log
 or persist the diagnostic. Diagnostics do not relax fail-closed grounding.
+
+## CIVILIAN ROLE METADATA COMPLETION
+
+In civilian mode only, after `normalizePlainText` and before
+`draftQualityIssues`, clause inventory, or audit, deterministically complete
+confirmed role `LOCATION` and `DATES` from the closed role ledger or catalog.
+Use the shared role-header matcher and exact role identity. Values equal to the
+literal `MISSING` are absent. When both values are confirmed, emit one dedicated
+line immediately after the exact role header as `location | dates`. When only
+one is confirmed, emit only that exact value. When neither is confirmed, emit no
+metadata line. Preserve metadata bytes exactly, including punctuation,
+capitalization, and en dashes; only the separator is generated.
+
+Completion must be idempotent and must not duplicate exact metadata. Existing
+exact combined or separate metadata may be canonicalized safely. Never infer,
+translate, abbreviate, or source metadata from duties, the posting, target title,
+adjacent roles, or raw source. Never alter, remove, combine, reorder, or reword
+any bullet. Unknown or conflicting generated metadata must not be removed or
+silently blessed; it remains visible to the fail-closed audit.
+
+Duplicate exact title/employer roles must never cross-populate metadata. Use a
+safe first-unmatched role assignment or fail closed when ownership is ambiguous.
+The completed candidate text must reach deterministic checks, inventory, audit,
+same-role trace validation, and the UI. Federal output is unchanged. Add no
+model call or retry and change no token cap, model, `store: false`, logging,
+persistence, analytics, usage limit, privacy control, or cost ceiling. Maximum
+incremental API exposure is $0.
 
 One-page length is a formatting target; complete role inventory is a blocking
 safety requirement. Reduce bullets before omitting, merging, or rewriting a
@@ -558,6 +585,46 @@ all existing hard input bounds.
   federal 1900, audit 4000, with unchanged call count, zero retries, draft limit,
   posting isolation, `store: false`, no logging or persistence, no diagnostic
   member content, and the external monthly cap `UNVERIFIED`.
+- **RDM-106 Six-role metadata:** a synthetic six-role civilian draft must insert
+  confirmed metadata correctly for first, middle, and final roles.
+- **RDM-107 Both values:** confirmed location and dates must produce exactly one
+  dedicated `location | dates` line immediately after the exact role header.
+- **RDM-108 Location only:** confirmed location with `MISSING` dates must produce
+  only the byte-exact location.
+- **RDM-109 Dates only:** confirmed dates with `MISSING` location must produce
+  only the byte-exact dates.
+- **RDM-110 Neither value:** two literal `MISSING` values must produce no
+  metadata line, placeholder, bracket, separator artifact, or `MISSING` output.
+- **RDM-111 Existing combined metadata:** an existing exact combined metadata
+  line must remain single after completion.
+- **RDM-112 Existing separate metadata:** exact separate location and date lines
+  may be safely canonicalized without duplication or byte changes to values.
+- **RDM-113 Idempotence:** applying civilian metadata completion twice must be
+  byte-identical to applying it once.
+- **RDM-114 Exact bytes:** synthetic capitalization, punctuation, commas, and
+  en-dash date ranges must survive byte-exact; only ` | ` may be generated.
+- **RDM-115 Conflict handling:** unknown or conflicting generated metadata must
+  remain present and cause fail-closed withholding; completion must not remove,
+  replace, or silently bless it.
+- **RDM-116 Duplicate and similar roles:** duplicate exact title/employer pairs
+  and similar titles must use safe first-unmatched ownership or fail closed,
+  never cross-assign metadata.
+- **RDM-117 Bullet preservation:** completion must preserve every bullet's byte
+  content, count, order, and owning role.
+- **RDM-118 Audit candidate:** the completed metadata must be present in the
+  candidate draft sent to audit and in the released UI text.
+- **RDM-119 Trace ownership:** each completed metadata claim must cite only its
+  same-role closed location or date fact.
+- **RDM-120 No inference:** metadata absent from the closed role ledger must not
+  be sourced from duties, posting, target title, adjacent roles, or raw source.
+- **RDM-121 Mode boundary:** civilian output must leak no brackets,
+  placeholders, or literal `MISSING`; federal output and federal bracket behavior
+  must remain unchanged.
+- **RDM-122 Unchanged controls:** facts/repair remain 3500, civilian 2200,
+  federal 1900, audit 4000, with unchanged models, call count, zero retries,
+  draft and usage limits, posting isolation, `store: false`, no logging,
+  persistence, or analytics, unchanged privacy controls, $0 incremental API
+  exposure, and the external monthly cap `UNVERIFIED`.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -568,6 +635,7 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.10 until all cases execute and evidence
-is reviewed. After successful execution, force-mod proposes the smallest
-evidence-supported revision and Commander rules on promotion to CODIFIED 1.0.
+Keep registry item #6 PENDING at version 0.11 until all cases execute and live
+clone evidence passes. After successful execution and live evidence, force-mod
+proposes the smallest evidence-supported revision and Commander rules on
+promotion to CODIFIED 1.0.
