@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.9 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.10 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,23 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.9 -> 0.10, remains
+  PENDING.** A repeated live audit-reference rejection showed that generation,
+  clause ownership, and audit-reference rules needed one alignment contract
+  before further validator changes. Version 0.10 keeps quantities out of
+  civilian Summary and Core Skills, preserves any used supported metrics in their owning
+  role bullets, restricts role claims to same-role facts, keeps global skills in
+  Core Skills unless repeated in a role, and requires minimum necessary audit
+  references with no redundant refs. Shared heading and role-header recognition
+  covers safe punctuation and variants, numbering consistency, and `MISSING`
+  employers. Reference failures may expose only allowlisted content-free codes
+  and messages; member content, IDs, identities, provider/token details,
+  logging, and persistence remain prohibited. RDM-93…RDM-105 use synthetic
+  fixtures and preserve all caps, calls, zero retries, draft limit, posting
+  isolation, `store: false`, no logging/storage, and the `UNVERIFIED` external
+  monthly cap. No call or cap is added; maximum incremental API exposure is $0.
+  Lane: AUTO for internal governance; app implementation remains
+  Commander-gated. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.8 -> 0.9, remains
   PENDING.** A live structured-audit rejection exposed a shared-quantity
   validator seam: a nonnumeric global claim was rejected because its supporting

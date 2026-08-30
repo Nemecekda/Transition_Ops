@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.9"
+  version: "0.10"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.9 is PENDING until the RDM regression suite
+Version 0.10 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -160,6 +160,28 @@ An explicit numeric global claim must name the exact owning role title or
 employer before it may cite that role's fact. Unlinked numbers, unknown fact
 references, cross-role experience references, wrong-role numeric collisions,
 and unsupported audit verdicts remain fail-closed.
+
+In civilian generation, keep quantities out of global Summary and Core Skills
+claims. Preserve any used supported metric in a bullet under its exact owning role.
+A role bullet may use only that role's facts. A global skill remains in Core
+Skills unless the confirmed ledger explicitly repeats it in that role's facts.
+The auditor must cite the minimum necessary fact references: role claims cite
+same-role facts only, and redundant references are prohibited.
+
+Generation, clause inventory, and reference validation must use one shared
+section and role-header recognition contract. It must recognize approved safe
+heading punctuation and variants consistently, preserve role numbering, and
+handle an explicitly `MISSING` employer without assigning later claims to the
+wrong role. A role header accepted by the deterministic structure check must be
+assigned the same owner by the clause inventory.
+
+A reference-validation failure may return only an allowlisted content-free code
+and approved message, such as `global_fact_on_role_claim`,
+`role_cross_reference`, `claim_owner_unresolved`,
+`global_quantity_owner_mismatch`, `unavailable_fact_reference`, or
+`trace_reference_shape`. Never return claim or fact text, catalog or claim IDs,
+member identities, provider or token details, or raw internal labels. Do not log
+or persist the diagnostic. Diagnostics do not relax fail-closed grounding.
 
 One-page length is a formatting target; complete role inventory is a blocking
 safety requirement. Reduce bullets before omitting, merging, or rewriting a
@@ -500,6 +522,42 @@ all existing hard input bounds.
   federal 1900, audit 4000, with unchanged call count, zero retries, draft limit,
   posting isolation, `store: false`, no logging or persistence, and the external
   monthly cap `UNVERIFIED`.
+- **RDM-93 Summary quantity suppression:** a synthetic civilian generator input
+  containing role-owned metrics must produce no quantity in global Summary.
+- **RDM-94 Core Skills quantity suppression:** the same input must produce no
+  quantity in global Core Skills.
+- **RDM-95 Owning-role metric:** every used supported metric must remain in a
+  bullet under its exact owning role.
+- **RDM-96 Global reference diagnostic:** a role claim citing a global skill not
+  explicitly repeated in that role's facts must FAIL with only the approved
+  `global_fact_on_role_claim` code and content-free message.
+- **RDM-97 Cross-role diagnostic:** a role claim citing another role's fact must
+  FAIL with only `role_cross_reference` and its content-free message.
+- **RDM-98 Heading variants:** approved punctuation and variants for Summary,
+  Core Skills, and Professional Experience must produce the same section and
+  owner assignments as canonical headings.
+- **RDM-99 Matcher consistency:** every synthetic role header accepted by the
+  deterministic structure matcher must receive the same role owner in the
+  clause inventory.
+- **RDM-100 Missing employer:** an explicitly `MISSING` employer must preserve
+  the role, assign its claims correctly, and never shift later claims to an
+  adjacent role.
+- **RDM-101 Numbering consistency:** first, middle, and final roles in a
+  synthetic multi-role draft must retain matching catalog, inventory, and trace
+  owner numbers.
+- **RDM-102 Natural numeric summary:** a naturally phrased civilian Summary
+  containing a role-owned quantity must FAIL when it lacks exact owner
+  attribution.
+- **RDM-103 Attributed numeric summary:** the same supported quantity must PASS
+  the validator when a test fixture deliberately supplies the exact owning title
+  or employer, preserving the existing attributed-claim boundary.
+- **RDM-104 Extra invalid reference:** a claim with one valid minimum reference
+  plus an unnecessary invalid global, cross-role, unknown, or unlinked reference
+  must FAIL with the corresponding content-free diagnostic.
+- **RDM-105 Unchanged controls:** facts/repair remain 3500, civilian 2200,
+  federal 1900, audit 4000, with unchanged call count, zero retries, draft limit,
+  posting isolation, `store: false`, no logging or persistence, no diagnostic
+  member content, and the external monthly cap `UNVERIFIED`.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -510,6 +568,6 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.9 until all cases execute and evidence
+Keep registry item #6 PENDING at version 0.10 until all cases execute and evidence
 is reviewed. After successful execution, force-mod proposes the smallest
 evidence-supported revision and Commander rules on promotion to CODIFIED 1.0.

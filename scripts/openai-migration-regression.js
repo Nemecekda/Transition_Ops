@@ -441,6 +441,33 @@ async function run() {
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: ownershipLedger, confirmedFacts: ownershipLedger }));
   assert.equal(result.statusCode, 200);
 
+  const headingLedger = ownershipLedger.replace("EDUCATION (EXACT OR MISSING): MISSING", "EDUCATION (EXACT OR MISSING): B.S., Synthetic University").replace("CERTIFICATIONS (EXACT OR MISSING): MISSING", "CERTIFICATIONS (EXACT OR MISSING): Synthetic License");
+  const headingVariantDraft = "SUMMARY:\nPlanning leader.\n\nPROFESSIONAL EXPERIENCE:\nJOB TITLE: Synthetic Role 1 - Synthetic Employer 1\nWorked with Synthetic Role 2 without changing ownership.\n\nROLE: Synthetic Role 2 - Synthetic Employer 2\nLed synthetic function 2.\n\nCERTIFICATIONS AND LICENSES:\nSynthetic License\n\nEDUCATION & TRAINING:\nB.S., Synthetic University";
+  nextResponse = { status: "completed", output_text: headingVariantDraft };
+  auditResponseQueue.push((request) => {
+    assert.deepEqual(clauseInventoryFromAuditRequest(request).map((item) => item.owner), ["global", "R1", "R1", "R2", "R2", "global", "global"]);
+    return passingAudit(request);
+  });
+  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: headingLedger, confirmedFacts: headingLedger }));
+  assert.equal(result.statusCode, 200);
+
+  const missingEmployerLedger = "ROLE 4\nJOB TITLE (EXACT): Synthetic Solo Role\nEMPLOYER OR UNIT (EXACT): MISSING\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led planning work.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+  nextResponse = { status: "completed", output_text: "EXPERIENCE\nSynthetic Solo Role\nLed planning work." };
+  auditResponseQueue.push((request) => { assert.deepEqual(clauseInventoryFromAuditRequest(request).map((item) => item.owner), ["R1", "R1"]); return passingAudit(request); });
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: missingEmployerLedger, confirmedFacts: missingEmployerLedger }));
+  assert.equal(result.statusCode, 200);
+
+  const nonsequentialLedger = ownershipLedger.replace("ROLE 2", "ROLE 7");
+  nextResponse = { status: "completed", output_text: "WORK EXPERIENCE -\nSynthetic Role 1 - Synthetic Employer 1\nWorked with Synthetic Role 2 without changing ownership.\nSynthetic Role 2 - Synthetic Employer 2\nLed synthetic function 2." };
+  auditResponseQueue.push((request) => {
+    const catalog = factCatalogFromAuditRequest(request);
+    assert.ok(catalog.some((fact) => fact.owner === "R2" && /Led synthetic function 2/.test(fact.text)));
+    assert.deepEqual(clauseInventoryFromAuditRequest(request).map((item) => item.owner), ["R1", "R1", "R2", "R2"]);
+    return passingAudit(request);
+  });
+  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: nonsequentialLedger, confirmedFacts: nonsequentialLedger }));
+  assert.equal(result.statusCode, 200);
+
   const boundaryLedger = "ROLE 1\nJOB TITLE (EXACT): Boundary Role 1\nEMPLOYER OR UNIT (EXACT): Boundary Employer 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and delivered 1100 hires.\n\nROLE 2\nJOB TITLE (EXACT): Boundary Role 2\nEMPLOYER OR UNIT (EXACT): Boundary Employer 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and managed 22 specialists.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 22 specialists; shared 44-unit scale; 110; 77 sites\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
   nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nBoundary Role 1 - Boundary Employer 1\nDelivered hiring work.\nBoundary Role 2 - Boundary Employer 2\nManaged specialist work." };
   auditResponseQueue.push((request) => {
@@ -531,7 +558,7 @@ async function run() {
   auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.owner === "R4" && /110-person/.test(fact.text)).fact_id]; return audit; });
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: collisionLedger, confirmedFacts: collisionLedger }));
   assert.equal(result.statusCode, 502);
-  assert.deepEqual(JSON.parse(result.body).blockers, ["A draft claim was not supported by your confirmed facts."]);
+  assert.deepEqual(JSON.parse(result.body).blockers, ["[global_quantity_owner_mismatch] A global quantified claim did not identify its owning role."]);
 
   nextResponse = { status: "completed", output_text: "SUMMARY\nSynthetic Role 5 led a 1,200-person operation.\n" + liveCivilianDraft };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); audit.claim_trace[0].verdict = "unsupported"; audit.claim_trace[0].fact_refs = []; return audit; });
@@ -555,8 +582,23 @@ async function run() {
     result = await resume.handler(post({ action: "draft", target: "Human Resources Director", experience: factsRequest.experience, confirmedFacts: multiRoleFacts }));
     assert.equal(result.statusCode, 502);
     assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
-    if (badRef === "CROSS_ROLE") assert.deepEqual(JSON.parse(result.body).blockers, ["A draft claim was not supported by your confirmed facts."]);
+    const expectedReferenceCode = badRef === "F999" || badRef === "UNLINKED" ? "unavailable_fact_reference" : badRef === "MALFORMED" ? "trace_reference_shape" : badRef === "GLOBAL_ROLE" ? "global_fact_on_role_claim" : "role_cross_reference";
+    assert.match(JSON.parse(result.body).blockers.join(" "), new RegExp("\\[" + expectedReferenceCode + "\\]"));
+    assert.doesNotMatch(result.body, /F999|HR Director|Deputy Director|Synthetic Command|Workday reporting/);
   }
+
+  nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nHR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director - Synthetic Command\nManaged Workday reporting." };
+  auditResponseQueue.push((request) => {
+    const audit = passingAudit(request);
+    const catalog = factCatalogFromAuditRequest(request);
+    const roleClaim = audit.claim_trace.find((item) => item.claim_id === clauseInventoryFromAuditRequest(request).find((claim) => claim.owner === "R1" && /personnel operations/.test(claim.claim_text)).claim_id);
+    roleClaim.fact_refs.push(catalog.find((fact) => fact.owner === "global" && /Workday/.test(fact.text)).fact_id);
+    return audit;
+  });
+  result = await resume.handler(post({ action: "draft", target: "Human Resources Director", experience: factsRequest.experience, confirmedFacts: multiRoleFacts }));
+  assert.equal(result.statusCode, 502);
+  assert.match(JSON.parse(result.body).blockers.join(" "), /\[global_fact_on_role_claim\]/);
+  assert.doesNotMatch(result.body, /HR Director|Synthetic Command|Workday|F\d+|C\d+/);
 
   nextResponse = { status: "completed", output_text: "SUMMARY\nLed 1,200 employees across 18 states.\n" + liveCivilianDraft };
   const callsBeforeUnlinkedGlobal = calls.length;
@@ -827,6 +869,7 @@ async function run() {
   assert.ok(auditCalls.length > 0);
   assert.ok(calls.every((call) => call.store === false));
   assert.ok(auditCalls.every((call) => call.model === "gpt-5.6-terra" && call.max_output_tokens === 4000 && call.reasoning.effort === "none"));
+  assert.ok(auditCalls.every((call) => /Cite only the minimum facts necessary/.test(call.instructions) && /do not add redundant references/.test(call.instructions) && /same role/.test(call.instructions)));
   const resumeSource = fs.readFileSync(path.join(root, "netlify/functions/resume.js"), "utf8");
   const regressionSource = fs.readFileSync(__filename, "utf8");
   const clientSource = fs.readFileSync(path.join(root, "netlify/functions/openai-client.js"), "utf8");
@@ -837,6 +880,12 @@ async function run() {
   assert.doesNotMatch(resumeSource, /1,200\+? employees across 18 states|7,000\+? Soldiers|110 people and a \$9M budget/);
   const civilianPrompt = resumeSource.match(/const system = `([\s\S]*?)`;/)[1];
   assert.doesNotMatch(civilianPrompt, /TIP:|\[[^\]]+\]/);
+  assert.match(civilianPrompt, /Put no quantities, numbers, percentages, dates, durations, or dollar figures in SUMMARY or CORE SKILLS/);
+  assert.match(civilianPrompt, /Any quantity used must remain exact and appear only in a bullet under its owning role/);
+  assert.match(civilianPrompt, /use only nonnumeric confirmed activities, capabilities, and credentials/);
+  assert.match(civilianPrompt, /Each experience bullet may use only facts owned by that exact role/);
+  const quantityPlacementRule = civilianPrompt.match(/^2A\..*$/m)[0];
+  assert.doesNotMatch(quantityPlacementRule, /\b(?:use|include|preserve)\s+every\b/i);
   assert.match(resumeSource, /AUDIT_INCREMENTAL_CEILING_USD = 0\.08/);
   assert.match(resumeSource, /BROWSER_DAILY_AUDIT_CEILING_USD = 0\.24/);
   assert.match(resumeSource, /EXTERNAL_MONTHLY_HARD_CAP_STATUS = "UNVERIFIED"/);
@@ -846,6 +895,11 @@ async function run() {
   assert.match(resumeSource, /clip\(experience, 8000\)/);
   assert.match(resumeSource, /clip\(posting, 3500\)/);
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)/);
+  const referenceMessagesBlock = resumeSource.match(/const referenceMessages = \{([\s\S]*?)\n      \};/)[1];
+  const referenceCodes = Array.from(referenceMessagesBlock.matchAll(/^        ([a-z_]+):/gm), (match) => match[1]);
+  assert.deepEqual(referenceCodes, ["trace_reference_shape", "unavailable_fact_reference", "global_fact_on_role_claim", "role_cross_reference", "global_quantity_owner_mismatch", "claim_owner_unresolved"]);
+  assert.doesNotMatch(referenceMessagesBlock, /F\d+|C\d+|Synthetic|provider|token/i);
+  assert.doesNotMatch(resumeSource, /REF_/);
   for (const forbiddenSourceMarker of ["/" + "Users/", ".codex/" + "attachments", "pasted " + "member source"]) assert.doesNotMatch(regressionSource, new RegExp(forbiddenSourceMarker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"));
   assert.doesNotMatch(resumeSource, /\.message/);
   assert.match(clientSource, /maxRetries: 0/);
@@ -880,7 +934,7 @@ async function run() {
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
 
-  console.log("PASS: synthetic RDM-1..RDM-92 control paths, scoped generation, deterministic safe categories, role-complete identities, unchanged caps/calls/privacy controls (live model evaluation pending)");
+  console.log("PASS: synthetic RDM-1..RDM-105 control paths, scoped generation, deterministic safe categories, role-complete identities, unchanged caps/calls/privacy controls (live model evaluation pending)");
 }
 
 run().catch((error) => {
