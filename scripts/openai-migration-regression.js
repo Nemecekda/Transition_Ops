@@ -50,8 +50,40 @@ async function run() {
   assert.equal(calls.at(-1).max_output_tokens, 1300);
   assert.equal(calls.at(-1).store, false);
   assert.deepEqual(calls.at(-1).reasoning, { effort: "none" });
+  assert.match(calls.at(-1).instructions, /later served as Deputy Director/);
+  assert.match(calls.at(-1).instructions, /Tenure such as "26 years of service" is not a date/);
+  assert.match(calls.at(-1).instructions, /including Workday/);
 
-  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed a 15-person team managing a $2M equipment inventory.\nTIP: Add dates." };
+  const multiRoleFacts = "ROLE 1\nJOB TITLE (EXACT): HR Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led personnel operations.\n\nROLE 2\nJOB TITLE (EXACT): Deputy Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Managed Workday reporting.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): Workday\nNUMBERS AND SCALE (EXACT OR MISSING): 26 years of service\nTARGET ROLE (EXACT OR MISSING): Human Resources Director";
+  nextResponse = { status: "completed", output_text: multiRoleFacts };
+  result = await resume.handler(post({
+    action: "facts",
+    target: "Human Resources Director",
+    experience: "Served as HR Director at Synthetic Command and later served as Deputy Director. Used Workday across 26 years of service.",
+    certs: "PMP"
+  }));
+  assert.equal(result.statusCode, 200);
+  assert.match(JSON.parse(result.body).factSheet, /ROLE 2\nJOB TITLE \(EXACT\): Deputy Director/);
+
+  const badFactSheets = [
+    multiRoleFacts.replace("DATES (EXACT OR MISSING): MISSING", "DATES (EXACT OR MISSING): 26 years of service"),
+    multiRoleFacts.replace("CERTIFICATIONS (EXACT OR MISSING): PMP", "CERTIFICATIONS (EXACT OR MISSING): Workday").replace("SKILLS AND TOOLS (EXACT OR MISSING): Workday", "SKILLS AND TOOLS (EXACT OR MISSING): MISSING"),
+    multiRoleFacts.replace(/\n\nROLE 2[\s\S]*?Managed Workday reporting\./, "")
+  ];
+  for (const badFacts of badFactSheets) {
+    nextResponse = { status: "completed", output_text: badFacts };
+    result = await resume.handler(post({
+      action: "facts",
+      target: "Human Resources Director",
+      experience: "Served as HR Director at Synthetic Command and later served as Deputy Director. Used Workday across 26 years of service.",
+      certs: "PMP"
+    }));
+    assert.equal(result.statusCode, 502);
+    assert.match(JSON.parse(result.body).error, /could not safely separate or classify the fact sheet/);
+    assert.doesNotMatch(JSON.parse(result.body).error, /quality check failed|Workday misclassified|invalid date|missing distinct/);
+  }
+
+  nextResponse = { status: "completed", output_text: "```text\n**Synthetic Logistics Leader - Synthetic Unit**\n# PROFESSIONAL EXPERIENCE\n[Hours per week: __]\nLed a 15-person team managing a $2M equipment inventory.\nTIP: Add dates.\n```" };
   result = await resume.handler(post({
     action: "draft",
     role: "Synthetic logistics leader",
@@ -62,7 +94,55 @@ async function run() {
   }));
   assert.equal(result.statusCode, 200);
   assert.match(JSON.parse(result.body).bullets, /Synthetic Logistics Leader - Synthetic Unit/);
+  assert.doesNotMatch(JSON.parse(result.body).bullets, /```|\*\*|^#/m);
+  assert.match(JSON.parse(result.body).bullets, /\[Hours per week: __\]/);
   assert.equal(calls.at(-1).model, "gpt-5.6-terra");
+
+  const callsBeforeTargetChecks = calls.length;
+  for (const vagueTarget of ["", "manager", "not sure", "Talent Management", "Human Resources"]) {
+    result = await resume.handler(post({
+      action: "draft",
+      target: vagueTarget,
+      experience: "Synthetic Logistics Leader at Synthetic Unit with enough source detail.",
+      confirmedFacts: facts
+    }));
+    assert.equal(result.statusCode, 400);
+    assert.match(JSON.parse(result.body).error, /specific target job title/);
+  }
+  assert.equal(calls.length, callsBeforeTargetChecks);
+
+  for (const specificTarget of ["Talent Development Manager", "Program Analyst", "Recruiter", "Head of Talent"]) {
+    nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed a 15-person team managing a $2M equipment inventory.\nTIP: Add dates." };
+    result = await resume.handler(post({
+      action: "draft",
+      target: specificTarget,
+      experience: "Synthetic Logistics Leader at Synthetic Unit. Led a 15-person team and managed a $2M equipment inventory.",
+      confirmedFacts: facts
+    }));
+    assert.equal(result.statusCode, 200);
+    assert.equal(calls.at(-1).model, "gpt-5.6-terra");
+  }
+
+  nextResponse = { status: "completed", output_text: "HR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director - Synthetic Command\nManaged Workday reporting.\nTIP: Add calendar dates." };
+  result = await resume.handler(post({
+    action: "draft",
+    target: "Human Resources Director",
+    experience: "Served as HR Director at Synthetic Command and later served as Deputy Director. Used Workday across 26 years of service.",
+    confirmedFacts: multiRoleFacts
+  }));
+  assert.equal(result.statusCode, 200);
+  assert.match(JSON.parse(result.body).bullets, /^HR Director - Synthetic Command[\s\S]*^Deputy Director - Synthetic Command/m);
+
+  nextResponse = { status: "completed", output_text: "HR Director and Deputy Director - Synthetic Command\nLed personnel operations and managed Workday reporting." };
+  result = await resume.handler(post({
+    action: "draft",
+    target: "Human Resources Director",
+    experience: "Served as HR Director at Synthetic Command and later served as Deputy Director. Used Workday across 26 years of service.",
+    confirmedFacts: multiRoleFacts
+  }));
+  assert.equal(result.statusCode, 502);
+  assert.match(JSON.parse(result.body).error, /did not pass grounding and role-structure checks/);
+  assert.doesNotMatch(JSON.parse(result.body).error, /quality check failed|merged or missing/);
 
   nextResponse = { status: "completed", output_text: facts };
   result = await resume.handler(post({
@@ -91,7 +171,6 @@ async function run() {
   assert.match(calls.at(-1).instructions, /T-200 days BEFORE separation/);
 
   const badDrafts = [
-    "Synthetic Logistics Leader - Synthetic Unit\n**SUMMARY**\nLed a 15-person team.",
     "Synthetic Logistics Leader - Synthetic Unit\nSUMMARY\nLed a 99-person team.",
     "Changed Title - Changed Employer\nSUMMARY\nLed a 15-person team.",
     "Synthetic Logistics Leader - Synthetic Unit\nSUMMARY\nResults-driven leader who leveraged planning for a 15-person team."
@@ -100,11 +179,13 @@ async function run() {
     nextResponse = { status: "completed", output_text: badDraft };
     result = await resume.handler(post({
       action: "draft",
+      target: "Operations Manager",
       experience: "Synthetic Logistics Leader at Synthetic Unit. Led a 15-person team and managed a $2M equipment inventory.",
       confirmedFacts: facts
     }));
     assert.equal(result.statusCode, 502);
-    assert.match(JSON.parse(result.body).error, /Generation hiccup/);
+    assert.match(JSON.parse(result.body).error, /did not pass grounding and role-structure checks/);
+    assert.doesNotMatch(JSON.parse(result.body).error, /quality check failed|unsupported number|filler language|merged or missing/);
   }
 
   nextError = new Error("quota exceeded");
@@ -117,7 +198,7 @@ async function run() {
   result = await navigator.handler(post({ messages: [{ role: "user", content: "Synthetic request" }] }));
   assert.equal(result.statusCode, 502);
 
-  console.log("PASS: synthetic OpenAI migration regression (two-step resume, exact identities, unsupported claims, markdown, filler, Navigator, budget/error paths)");
+  console.log("PASS: synthetic OpenAI migration regression (role splitting, date/tenure, Workday classification, target gate, markdown normalization, separate entries, grounding, Navigator, budget/error paths)");
 }
 
 run().catch((error) => {

@@ -49,7 +49,10 @@ SKILLS AND TOOLS (EXACT OR MISSING):
 NUMBERS AND SCALE (EXACT OR MISSING):
 TARGET ROLE (EXACT OR MISSING):
 
-Use one ROLE block for every distinct role. No markdown, bullets, commentary, advice, or resume language.`;
+Use one ROLE block for every distinct job title, even when several titles share one employer or unit. Transition phrases such as "later served as Deputy Director" always start a new ROLE block.
+DATES may contain only calendar dates or calendar date ranges explicitly stated in the source. Tenure such as "26 years of service" is not a date; put it under NUMBERS AND SCALE.
+Software and tools, including Workday, belong under SKILLS AND TOOLS unless the source explicitly identifies a named certification in that software or tool.
+No markdown, bullets, commentary, advice, or resume language.`;
 
   const systemFederal = `You draft a FEDERAL-STYLE resume (USAJOBS format) for a transitioning U.S. service member, targeted at their stated desired role. Their words are your ONLY source for facts. Federal resumes are longer and more detailed than civilian resumes - that detail must come from what they stated, never invention.
 
@@ -134,12 +137,76 @@ Every degree they stated (B.A./B.S./M.A./M.S./M.B.A./PhD etc.), one line each, w
 
 End with one line: "TIP:" naming the single highest-value fact to add before sending - specific to THEIR draft, not generic advice.`;
 
-  function exactIdentityValues(facts) {
-    return String(facts || "").split("\n").reduce(function (values, line) {
-      const match = /^(?:JOB TITLE|EMPLOYER OR UNIT) \(EXACT\):\s*(.+)$/i.exec(line.trim());
-      if (match && match[1] && !/^MISSING$/i.test(match[1])) values.push(match[1].trim());
-      return values;
-    }, []);
+  function factRoles(facts) {
+    return String(facts || "").split(/^ROLE\s+\d+\s*$/im).slice(1).map(function (block) {
+      const title = /^JOB TITLE \(EXACT\):\s*(.+)$/im.exec(block);
+      const employer = /^EMPLOYER OR UNIT \(EXACT\):\s*(.+)$/im.exec(block);
+      return {
+        title: title ? title[1].trim() : "",
+        employer: employer ? employer[1].trim() : ""
+      };
+    }).filter(function (entry) { return entry.title && !/^MISSING$/i.test(entry.title); });
+  }
+
+  function explicitLaterRoleTitles(source) {
+    const titles = [];
+    const pattern = /\b(?:later|then|subsequently)\s+served\s+as\s+([^,.;\n]+?)(?=\s+(?:at|for)\s+|[,.;\n]|$)/gi;
+    let match;
+    while ((match = pattern.exec(String(source || "")))) titles.push(match[1].trim());
+    return titles;
+  }
+
+  function factSheetIssues(facts, source) {
+    const issues = [];
+    const roles = factRoles(facts);
+    explicitLaterRoleTitles(source).forEach(function (title) {
+      if (!roles.some(function (role) { return role.title.toLowerCase() === title.toLowerCase(); })) issues.push("missing distinct later role");
+    });
+    const dateLines = String(facts || "").match(/^DATES \(EXACT OR MISSING\):\s*(.+)$/gim) || [];
+    dateLines.forEach(function (line) {
+      const value = line.replace(/^DATES \(EXACT OR MISSING\):\s*/i, "").trim();
+      if (!/^MISSING$/i.test(value) && (!/(?:\b(?:19|20)\d{2}\b|\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|present|current)\b)/i.test(value) || /\byears?\s+(?:of\s+)?(?:service|experience|tenure)\b/i.test(value))) issues.push("invalid date field");
+    });
+    const sourceNamesWorkdayCertification = /(?:workday.{0,35}(?:certif|credential)|(?:certif|credential).{0,35}workday)/i.test(source);
+    const certLine = (/^CERTIFICATIONS \(EXACT OR MISSING\):\s*(.+)$/im.exec(facts) || ["", ""])[1];
+    const toolsLine = (/^SKILLS AND TOOLS \(EXACT OR MISSING\):\s*(.+)$/im.exec(facts) || ["", ""])[1];
+    if (/\bWorkday\b/i.test(source) && !sourceNamesWorkdayCertification && (/\bWorkday\b/i.test(certLine) || !/\bWorkday\b/i.test(toolsLine))) issues.push("Workday misclassified");
+    return issues;
+  }
+
+  function hasSpecificTarget(value) {
+    const targetValue = String(value || "").trim();
+    if (targetValue.length < 2 || !/[A-Za-z]/.test(targetValue)) return false;
+    if (/^(?:a\s+)?(?:job|civilian job|federal job|management|manager|leadership|business|human resources|talent management|anything|any|open|not sure|unsure|unknown|tbd|n\/a)$/i.test(targetValue)) return false;
+    // Deterministic title test: require a role noun, or an established "Head of X" title.
+    // Function areas such as "Talent Management" and "Human Resources" are not job titles.
+    const roleNoun = /\b(?:manager|analyst|specialist|coordinator|director|officer|engineer|developer|administrator|supervisor|lead|consultant|advisor|recruiter|technician|mechanic|nurse|physician|counselor|teacher|instructor|planner|auditor|investigator|operator|controller|architect|scientist|designer|writer|editor|attorney|paralegal|accountant|clerk|agent|representative|executive|president|chief)\b/i;
+    return roleNoun.test(targetValue) || /^head\s+of\s+[A-Za-z][A-Za-z &/-]*$/i.test(targetValue);
+  }
+
+  function normalizePlainText(text) {
+    return String(text || "")
+      .replace(/^\s*```.*$/gm, "")
+      .replace(/^\s*#{1,6}\s+/gm, "")
+      .replace(/\*\*([^*\n]+)\*\*/g, "$1")
+      .replace(/__([^_\n]+)__/g, "$1")
+      .replace(/`/g, "")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+  }
+
+  function roleStructureIssues(text, facts) {
+    const lines = String(text || "").split("\n").map(function (line) { return line.trim(); });
+    const usedLines = [];
+    return factRoles(facts).filter(function (role) {
+      const employerRequired = role.employer && !/^MISSING$/i.test(role.employer);
+      const lineIndex = lines.findIndex(function (line) {
+        return line.length <= 180 && line.indexOf(role.title) !== -1 && (!employerRequired || line.indexOf(role.employer) !== -1);
+      });
+      if (lineIndex === -1 || usedLines.indexOf(lineIndex) !== -1) return true;
+      usedLines.push(lineIndex);
+      return false;
+    }).map(function () { return "merged or missing role entry"; });
   }
 
   function unsupportedNumbers(text, source) {
@@ -151,16 +218,17 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
 
   function draftQualityIssues(text, source, facts) {
     const issues = [];
-    if (/^\s*(?:#|\*\*|```)/m.test(text)) issues.push("markdown");
     if (/\b(?:leveraged|utilize[sd]?|synergy|dynamic|results-driven|responsible for|ensured)\b/i.test(text)) issues.push("filler language");
     if (unsupportedNumbers(text, source).length) issues.push("unsupported number");
-    if (exactIdentityValues(facts).some(function (value) { return text.indexOf(value) === -1; })) issues.push("altered or missing job identity");
-    return issues;
+    return issues.concat(roleStructureIssues(text, facts));
   }
 
   try {
     if (action === "draft" && !confirmedFacts.trim()) {
       return { statusCode: 400, headers, body: JSON.stringify({ error: "Review the fact sheet before drafting." }) };
+    }
+    if (action === "draft" && !hasSpecificTarget(clip(target, 120))) {
+      return { statusCode: 400, headers, body: JSON.stringify({ error: "Enter a specific target job title before drafting, such as Operations Manager or Program Analyst." }) };
     }
     const { createOpenAIClient, responseText } = require("./openai-client");
     const client = createOpenAIClient();
@@ -172,17 +240,26 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
       reasoning: { effort: "none" },
       store: false
     });
-    const text = response.status === "completed" ? responseText(response) : "";
-    if (!text) throw new Error("generation incomplete");
-    if (action === "facts") return { statusCode: 200, headers, body: JSON.stringify({ factSheet: text }) };
+    const rawText = response.status === "completed" ? responseText(response) : "";
+    if (!rawText) throw new Error("generation incomplete");
+    if (action === "facts") {
+      const factIssues = factSheetIssues(rawText, userBlock);
+      if (factIssues.length) throw new Error("fact sheet quality check failed: " + factIssues.join(", "));
+      return { statusCode: 200, headers, body: JSON.stringify({ factSheet: rawText }) };
+    }
+    const text = normalizePlainText(rawText);
     const issues = draftQualityIssues(text, userBlock + "\n" + confirmedFacts, confirmedFacts);
     if (issues.length) throw new Error("quality check failed: " + issues.join(", "));
     return { statusCode: 200, headers, body: JSON.stringify({ bullets: text }) };
   } catch (e) {
     const msg = String(e && e.message || "generation failed");
-    const friendly = /credit|billing|limit|quota/i.test(msg)
-      ? "The free generator has hit its monthly limit. It resets next month — meanwhile, the Resume Starter on each career page still works."
-      : "Generation hiccup — try again in a minute.";
+    const friendly = /^fact sheet quality check failed:/.test(msg)
+      ? "We could not safely separate or classify the fact sheet. Revise your source so each role lists one title, employer, dates, and duties, then try again."
+      : /^quality check failed:/.test(msg)
+        ? "The draft did not pass grounding and role-structure checks. Review your confirmed roles and facts, then try again."
+        : /credit|billing|limit|quota/i.test(msg)
+          ? "The free generator has hit its monthly limit. It resets next month — meanwhile, the Resume Starter on each career page still works."
+          : "Generation hiccup — try again in a minute.";
     return { statusCode: 502, headers, body: JSON.stringify({ error: friendly }) };
   }
 };
