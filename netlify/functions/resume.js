@@ -20,6 +20,8 @@ exports.handler = async function (event) {
   }
   // Hard input bounds (cost + abuse control)
   const clip = (s, n) => String(s || "").slice(0, n);
+  const action = input.action === "draft" ? "draft" : "facts";
+  const confirmedFacts = clip(input.confirmedFacts, 10000);
   const userBlock = [
     "Military role/MOS/rate: " + clip(role, 120),
     "Years of service: " + clip(years, 20),
@@ -29,6 +31,25 @@ exports.handler = async function (event) {
     "What they actually did (their own words): " + clip(experience, 8000),
     (posting && String(posting).trim() ? "TARGET JOB POSTING - tailor the resume to this announcement per the TAILORING rule: " + clip(posting, 3500) : "")
   ].filter(Boolean).join("\n");
+
+  const factInstructions = `Extract a reviewable fact sheet from the member's source text. Do not draft a resume. Do not infer, improve, translate, or add facts. Preserve every stated job title, employer or unit, location, date, certification, degree, tool, number, dollar figure, and outcome exactly as written. A missing item is MISSING, never guessed.
+
+Return plain text only, using this exact repeating structure:
+ROLE 1
+JOB TITLE (EXACT):
+EMPLOYER OR UNIT (EXACT):
+LOCATION (EXACT OR MISSING):
+DATES (EXACT OR MISSING):
+DUTIES AND OUTCOMES (EXACT FACTS ONLY):
+
+Then include:
+EDUCATION (EXACT OR MISSING):
+CERTIFICATIONS (EXACT OR MISSING):
+SKILLS AND TOOLS (EXACT OR MISSING):
+NUMBERS AND SCALE (EXACT OR MISSING):
+TARGET ROLE (EXACT OR MISSING):
+
+Use one ROLE block for every distinct role. No markdown, bullets, commentary, advice, or resume language.`;
 
   const systemFederal = `You draft a FEDERAL-STYLE resume (USAJOBS format) for a transitioning U.S. service member, targeted at their stated desired role. Their words are your ONLY source for facts. Federal resumes are longer and more detailed than civilian resumes - that detail must come from what they stated, never invention.
 
@@ -113,19 +134,49 @@ Every degree they stated (B.A./B.S./M.A./M.S./M.B.A./PhD etc.), one line each, w
 
 End with one line: "TIP:" naming the single highest-value fact to add before sending - specific to THEIR draft, not generic advice.`;
 
+  function exactIdentityValues(facts) {
+    return String(facts || "").split("\n").reduce(function (values, line) {
+      const match = /^(?:JOB TITLE|EMPLOYER OR UNIT) \(EXACT\):\s*(.+)$/i.exec(line.trim());
+      if (match && match[1] && !/^MISSING$/i.test(match[1])) values.push(match[1].trim());
+      return values;
+    }, []);
+  }
+
+  function unsupportedNumbers(text, source) {
+    const values = String(text || "").match(/\$?\d[\d,.]*%?\+?/g) || [];
+    return values.filter(function (value, index) {
+      return values.indexOf(value) === index && String(source || "").indexOf(value) === -1;
+    });
+  }
+
+  function draftQualityIssues(text, source, facts) {
+    const issues = [];
+    if (/^\s*(?:#|\*\*|```)/m.test(text)) issues.push("markdown");
+    if (/\b(?:leveraged|utilize[sd]?|synergy|dynamic|results-driven|responsible for|ensured)\b/i.test(text)) issues.push("filler language");
+    if (unsupportedNumbers(text, source).length) issues.push("unsupported number");
+    if (exactIdentityValues(facts).some(function (value) { return text.indexOf(value) === -1; })) issues.push("altered or missing job identity");
+    return issues;
+  }
+
   try {
+    if (action === "draft" && !confirmedFacts.trim()) {
+      return { statusCode: 400, headers, body: JSON.stringify({ error: "Review the fact sheet before drafting." }) };
+    }
     const { createOpenAIClient, responseText } = require("./openai-client");
     const client = createOpenAIClient();
     const response = await client.responses.create({
-      model: "gpt-5.6-luna",
-      instructions: mode === "federal" ? systemFederal : system,
-      input: userBlock,
+      model: action === "facts" ? "gpt-5.6-luna" : "gpt-5.6-terra",
+      instructions: action === "facts" ? factInstructions : (mode === "federal" ? systemFederal : system) + `\n\nCONFIRMED FACT SHEET RULES:\nThe member reviewed the fact sheet below. Treat it as the controlling fact ledger. Preserve every JOB TITLE (EXACT) and EMPLOYER OR UNIT (EXACT) byte-for-byte in the draft. Do not use a number, outcome, credential, tool, employer, title, or qualification unless it appears in the member's source or confirmed fact sheet. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.`,
+      input: action === "facts" ? userBlock : userBlock + "\n\nMEMBER-REVIEWED FACT SHEET:\n" + confirmedFacts,
       max_output_tokens: mode === "federal" ? 1900 : 1300,
       reasoning: { effort: "none" },
       store: false
     });
     const text = response.status === "completed" ? responseText(response) : "";
     if (!text) throw new Error("generation incomplete");
+    if (action === "facts") return { statusCode: 200, headers, body: JSON.stringify({ factSheet: text }) };
+    const issues = draftQualityIssues(text, userBlock + "\n" + confirmedFacts, confirmedFacts);
+    if (issues.length) throw new Error("quality check failed: " + issues.join(", "));
     return { statusCode: 200, headers, body: JSON.stringify({ bullets: text }) };
   } catch (e) {
     const msg = String(e && e.message || "generation failed");
