@@ -58,7 +58,36 @@ async function run() {
   assert.match(calls.at(-1).instructions, /Tenure such as "26 years of service" is not a date/);
   assert.match(calls.at(-1).instructions, /including Workday/);
 
-  const multiRoleFacts = "ROLE 1\nJOB TITLE (EXACT): HR Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led personnel operations.\n\nROLE 2\nJOB TITLE (EXACT): Deputy Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Managed Workday reporting.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): Workday\nNUMBERS AND SCALE (EXACT OR MISSING): 26 years of service\nTARGET ROLE (EXACT OR MISSING): Human Resources Director";
+  const combinedTargetFacts = facts.replace("TARGET ROLE (EXACT OR MISSING): Operations manager", "TARGET ROLE (EXACT OR MISSING): Talent Management; Talent Development Manager");
+  nextResponse = { status: "completed", output_text: combinedTargetFacts };
+  result = await resume.handler(post({
+    action: "facts",
+    target: "Talent Management",
+    experience: "Led a synthetic 15-person team and managed a $2M equipment inventory."
+  }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(JSON.parse(result.body).suggestedTarget, "Talent Development Manager");
+
+  nextResponse = { status: "completed", output_text: combinedTargetFacts };
+  result = await resume.handler(post({
+    action: "facts",
+    target: "Program Analyst",
+    experience: "Led a synthetic 15-person team and managed a $2M equipment inventory."
+  }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(Object.hasOwn(JSON.parse(result.body), "suggestedTarget"), false);
+
+  const broadOnlyTargetFacts = facts.replace("TARGET ROLE (EXACT OR MISSING): Operations manager", "TARGET ROLE (EXACT OR MISSING): Talent Management");
+  nextResponse = { status: "completed", output_text: broadOnlyTargetFacts };
+  result = await resume.handler(post({
+    action: "facts",
+    target: "Talent Management",
+    experience: "Led a synthetic 15-person team and managed a $2M equipment inventory."
+  }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(Object.hasOwn(JSON.parse(result.body), "suggestedTarget"), false);
+
+  const multiRoleFacts = "ROLE 1\nJOB TITLE (EXACT): HR Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led personnel operations.\n\nROLE 2\nJOB TITLE (EXACT): Deputy Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Managed Workday reporting.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): Workday\nNUMBERS AND SCALE (EXACT OR MISSING): 26 years of service\nTARGET ROLE (EXACT OR MISSING): Talent Management; Talent Development Manager";
   nextResponse = { status: "completed", output_text: multiRoleFacts };
   result = await resume.handler(post({
     action: "facts",
@@ -68,13 +97,14 @@ async function run() {
   }));
   assert.equal(result.statusCode, 200);
   assert.match(JSON.parse(result.body).factSheet, /ROLE 2\nJOB TITLE \(EXACT\): Deputy Director/);
+  assert.equal(Object.hasOwn(JSON.parse(result.body), "suggestedTarget"), false);
 
   const invalidDateFacts = multiRoleFacts.replace("DATES (EXACT OR MISSING): MISSING", "DATES (EXACT OR MISSING): 26 years of service");
   const invalidWorkdayFacts = multiRoleFacts.replace("CERTIFICATIONS (EXACT OR MISSING): PMP", "CERTIFICATIONS (EXACT OR MISSING): Workday").replace("SKILLS AND TOOLS (EXACT OR MISSING): Workday", "SKILLS AND TOOLS (EXACT OR MISSING): MISSING");
   const unresolvedFacts = invalidWorkdayFacts.replaceAll("DATES (EXACT OR MISSING): MISSING", "DATES (EXACT OR MISSING): 26 years of service");
   const factsRequest = {
     action: "facts",
-    target: "Human Resources Director",
+    target: "Talent Management",
     experience: "Served as HR Director at Synthetic Command and later served as Deputy Director. Used Workday across 26 years of service.",
     certs: "PMP"
   };
@@ -87,6 +117,7 @@ async function run() {
   result = await resume.handler(post(factsRequest));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).factSheet, multiRoleFacts);
+  assert.equal(JSON.parse(result.body).suggestedTarget, "Talent Development Manager");
   assert.deepEqual(JSON.parse(result.body).warnings, []);
   assert.equal(calls.length - callsBeforeSuccessfulRepair, 2);
   const repairCall = calls[callsBeforeSuccessfulRepair + 1];
@@ -108,6 +139,7 @@ async function run() {
   assert.equal(calls.length - callsBeforeFailedRepair, 2);
   const unresolvedBody = JSON.parse(result.body);
   assert.equal(unresolvedBody.factSheet, unresolvedFacts);
+  assert.equal(unresolvedBody.suggestedTarget, "Talent Development Manager");
   assert.equal(unresolvedBody.warnings.length, 2);
   assert.equal(new Set(unresolvedBody.warnings).size, unresolvedBody.warnings.length);
   assert.match(unresolvedBody.warnings.join(" "), /calendar dates only/);
@@ -244,7 +276,7 @@ async function run() {
   result = await navigator.handler(post({ messages: [{ role: "user", content: "Synthetic request" }] }));
   assert.equal(result.statusCode, 502);
 
-  console.log("PASS: synthetic OpenAI migration regression (Luna extraction, Terra repair, editable warning fallback, zero-call unresolved draft block, corrected Terra draft, safe deduped warnings, Navigator, budget/error paths)");
+  console.log("PASS: synthetic OpenAI migration regression (grounded target autofill, Luna extraction, Terra repair, editable warning fallback, zero-call unresolved draft block, corrected Terra draft, safe deduped warnings, Navigator, budget/error paths)");
 }
 
 run().catch((error) => {

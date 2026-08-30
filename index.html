@@ -7283,7 +7283,7 @@ whatsNewUnseen && React.createElement("div", {
       React.createElement("input", { placeholder: "Your MOS / AFSC / rate (e.g. 92A)", defaultValue: aiR.role, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { role: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
       React.createElement("div", { style: { display: "flex", gap: 8 } },
         React.createElement("input", { placeholder: "Years served", defaultValue: aiR.years, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { years: v }); }); }, style: { ...S.input, marginBottom: 8, flex: 1 } }),
-        React.createElement("input", { placeholder: "Specific target job title (e.g. Operations Manager)", defaultValue: aiR.target, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { target: v }); }); }, style: { ...S.input, marginBottom: 8, flex: 2 } })),
+        React.createElement("input", { placeholder: "Specific target job title (e.g. Operations Manager)", value: aiR.target, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { target: v }); }); }, style: { ...S.input, marginBottom: 8, flex: 2 } })),
       React.createElement("div", { style: { marginBottom: 10, padding: "11px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.greenBright, fontWeight: 700, marginBottom: 4 } }, "TAILOR TO A JOB (OPTIONAL)"),
         React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.5, marginBottom: 7 } }, "Paste a civilian job description or USAJOBS announcement. We use matching keywords only when your confirmed facts support them."),
@@ -7312,7 +7312,7 @@ whatsNewUnseen && React.createElement("div", {
           .catch(function(e){ if (n < 1) { return new Promise(function(res){ setTimeout(res, 1200); }).then(function(){ return attempt(n + 1); }); } throw e; }); })(0)
           .then(function(res) {
             if (!res.ok) { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: res.d.error || "Try again in a minute.", factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : p.factWarnings }); }); return; }
-            if (resumeAction === "facts") { setAiR(function(p){ return Object.assign({}, p, { loading: false, facts: res.d.factSheet || "", factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : [], err: res.d.factSheet ? "" : "We could not build a fact sheet. Try again." }); }); return; }
+            if (resumeAction === "facts") { setAiR(function(p){ return Object.assign({}, p, { loading: false, facts: res.d.factSheet || "", factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : [], target: res.d.suggestedTarget || p.target, err: res.d.factSheet ? "" : "We could not build a fact sheet. Try again." }); }); return; }
             try { window.__safeSet("tops_air_uses", JSON.stringify({ d: new Date().toISOString().slice(0,10), n: used + 1 })); } catch(e) {}
             setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets }); });
           })

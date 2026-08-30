@@ -194,6 +194,21 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
     return roleNoun.test(targetValue) || /^head\s+of\s+[A-Za-z][A-Za-z &/-]*$/i.test(targetValue);
   }
 
+  function suggestedTargetFromFacts(facts, originalTarget) {
+    if (hasSpecificTarget(originalTarget)) return "";
+    const match = /^TARGET ROLE \(EXACT OR MISSING\):\s*([\s\S]*)$/im.exec(String(facts || ""));
+    if (!match) return "";
+    const candidates = match[1].split(/[;|\n]+/).map(function (candidate) { return candidate.trim(); }).filter(Boolean);
+    return candidates.find(hasSpecificTarget) || "";
+  }
+
+  function factResponseBody(facts, warnings, originalTarget) {
+    const body = { factSheet: facts, warnings: warnings || [] };
+    const suggestedTarget = suggestedTargetFromFacts(facts, originalTarget);
+    if (suggestedTarget) body.suggestedTarget = suggestedTarget;
+    return body;
+  }
+
   function normalizePlainText(text) {
     return String(text || "")
       .replace(/^\s*```.*$/gm, "")
@@ -263,7 +278,7 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
     if (!rawText) throw new Error("generation incomplete");
     if (action === "facts") {
       const factIssues = factSheetIssues(rawText, userBlock);
-      if (!factIssues.length) return { statusCode: 200, headers, body: JSON.stringify({ factSheet: rawText, warnings: [] }) };
+      if (!factIssues.length) return { statusCode: 200, headers, body: JSON.stringify(factResponseBody(rawText, [], clip(target, 120))) };
 
       const repairResponse = await client.responses.create({
         model: "gpt-5.6-terra",
@@ -277,9 +292,9 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
       const editableText = repairedText || rawText;
       const repairedIssues = factSheetIssues(editableText, userBlock);
       if (repairedIssues.length) {
-        return { statusCode: 200, headers, body: JSON.stringify({ factSheet: editableText, warnings: factIssueWarnings(repairedIssues) }) };
+        return { statusCode: 200, headers, body: JSON.stringify(factResponseBody(editableText, factIssueWarnings(repairedIssues), clip(target, 120))) };
       }
-      return { statusCode: 200, headers, body: JSON.stringify({ factSheet: editableText, warnings: [] }) };
+      return { statusCode: 200, headers, body: JSON.stringify(factResponseBody(editableText, [], clip(target, 120))) };
     }
     const text = normalizePlainText(rawText);
     const issues = draftQualityIssues(text, userBlock + "\n" + confirmedFacts, confirmedFacts);
