@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.12 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.13 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,26 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.12 -> 0.13, remains
+  PENDING.** A live pre-audit `unlinked_global_number` rejection exposed an
+  overbroad exact-phrase collision check: a shortened role claim could collide
+  with an unlinked global phrase even when every exact quantity was independently
+  supported by that same role. Version 0.13 keeps every unlinked `NUMBERS AND
+  SCALE` entry excluded from generation, audit support IDs, and returned trace;
+  uses escaped alphanumeric-boundary collision matching; and permits only a
+  role-owned collision with exact same-role, non-unlinked numeric provenance to
+  reach the existing audit. Numeric provenance is a prerequisite, never
+  automatic approval; same-role references and a supported verdict remain
+  mandatory, while global, unresolved, absent-token, wrong-role, unknown,
+  cross-role, unlinked-reference, and unsupported-audit cases remain
+  fail-closed. RDM-142…RDM-157 use synthetic fixtures and preserve federal
+  behavior, models, calls, zero retries, all caps, `store: false`, privacy,
+  logging/storage/persistence/analytics, and usage limits. A qualifying request
+  may consume the already-authorized audit call rather than stopping early;
+  configured maximum exposure is unchanged and the external monthly cap remains
+  `UNVERIFIED`. Registry remains PENDING until synthetic and live clone
+  validation pass. Lane: AUTO for internal governance; app implementation
+  remains Commander-gated. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.11 -> 0.12, remains
   PENDING.** Complete live v0.11 evidence isolated the only substantive failure
   to an unsupported aggregated civilian Summary while identities, roles,

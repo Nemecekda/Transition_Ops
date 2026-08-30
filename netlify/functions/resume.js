@@ -356,6 +356,33 @@ Every supplied degree and school, byte-exact, one line each. Include a year only
     return digitValues.concat(wordValues);
   }
 
+  function hasExactBoundaryOccurrence(text, value) {
+    const escaped = String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return !!escaped && new RegExp("(^|[^0-9A-Za-z])" + escaped + "(?=$|[^0-9A-Za-z])").test(String(text || ""));
+  }
+
+  function exactQuantityTokens(text) {
+    const source = String(text || "");
+    const numeric = Array.from(source.matchAll(/(^|[^0-9A-Za-z])((?:[$€£¥])?\d[\d,]*(?:\.\d+)?(?:[KMB]|\s+(?:hundred|thousand|million|billion))?(?:%|\+)?)(?=$|[^0-9A-Za-z])/g), function (match) { return match[2]; });
+    const words = source.match(/\b(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)(?:[- ](?:one|two|three|four|five|six|seven|eight|nine|hundred|thousand|million))*\s+(?:years?|months?|weeks?|days?|people|persons?|personnel|employees?|specialists?|recruiters?|hires?|leaders?|members?|locations?|states?|plants?|sites?|units?|teams?|organizations?|operations?|dollars?|percent)\b/gi) || [];
+    return numeric.concat(words).filter(function (value, index, all) { return all.indexOf(value) === index; });
+  }
+
+  function hasUnsafeUnlinkedCollision(inventory, catalog) {
+    const unlinked = catalog.filter(function (fact) { return fact.unlinked_number; });
+    return inventory.some(function (claim) {
+      if (!unlinked.some(function (fact) { return hasExactBoundaryOccurrence(claim.claim_text, fact.text); })) return false;
+      if (!/^R\d+$/.test(claim.owner)) return true;
+      const tokens = exactQuantityTokens(claim.claim_text);
+      if (!tokens.length) return true;
+      const sameRoleFacts = catalog.filter(function (fact) { return !fact.unlinked_number && fact.owner === claim.owner; });
+      const sameRoleTokens = sameRoleFacts.reduce(function (all, fact) { return all.concat(exactQuantityTokens(fact.text)); }, []);
+      return tokens.some(function (token) {
+        return sameRoleTokens.indexOf(token) === -1;
+      });
+    });
+  }
+
   function unsupportedNumbers(text, source) {
     const values = quantifiedValues(text);
     return values.filter(function (value, index) {
@@ -427,8 +454,11 @@ Every supplied degree and school, byte-exact, one line each. Include a year only
       if (!value || /^MISSING$/i.test(value) || /^\w[\w ]+\(.*\):\s*MISSING$/i.test(value)) return;
       if (/^NUMBERS AND SCALE/i.test(value)) {
         value.replace(/^NUMBERS AND SCALE\s*\(.*?\):\s*/i, "").split(";").map(function (item) { return item.trim(); }).filter(Boolean).forEach(function (item) {
-          const escaped = item.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-          const linkedRoles = roleBlocks.map(function (block, index) { return new RegExp("(^|[^0-9A-Za-z])" + escaped + "(?=$|[^0-9A-Za-z])").test(block) ? index : -1; }).filter(function (index) { return index !== -1; });
+          const itemTokens = exactQuantityTokens(item);
+          const linkedRoles = roleBlocks.map(function (block, index) {
+            const blockTokens = exactQuantityTokens(block);
+            return hasExactBoundaryOccurrence(block, item) && itemTokens.every(function (token) { return blockTokens.indexOf(token) !== -1; }) ? index : -1;
+          }).filter(function (index) { return index !== -1; });
           catalog.push({ fact_id: "F" + (catalog.length + 1), owner: linkedRoles.length === 1 ? "R" + (linkedRoles[0] + 1) : "global", text: item, unlinked_number: linkedRoles.length !== 1 });
         });
         return;
@@ -664,12 +694,12 @@ Every supplied degree and school, byte-exact, one line each. Include a year only
     const text = mode === "federal" ? summaryCompletion.text : completeConfirmedRoleMetadata(summaryCompletion.text, confirmedFacts);
     const groundingCatalogText = catalog.filter(function (fact) { return !fact.unlinked_number; }).map(function (fact) { return fact.text; }).join("\n");
     const issues = draftQualityIssues(text, groundingCatalogText, confirmedFacts, mode);
-    if (catalog.some(function (fact) { return fact.unlinked_number && text.indexOf(fact.text) !== -1; })) issues.push("unlinked global number");
+    const fullInventory = clauseInventory(text, confirmedFacts);
+    if (mode === "federal" ? catalog.some(function (fact) { return fact.unlinked_number && text.indexOf(fact.text) !== -1; }) : hasUnsafeUnlinkedCollision(fullInventory, catalog)) issues.push("unlinked global number");
     if (issues.length) {
       const issueCategory = issues.indexOf("civilian placeholder contamination") !== -1 ? "civilian_format" : issues.indexOf("unlinked global number") !== -1 ? "unlinked_global_number" : issues.indexOf("unsupported number") !== -1 ? "unsupported_number" : issues.indexOf("merged or missing role entry") !== -1 ? "role_structure" : "filler_language";
       return safeFailure(issueCategory, 502);
     }
-    const fullInventory = clauseInventory(text, confirmedFacts);
     const summaryClaim = summaryCompletion.body ? fullInventory.find(function (claim) { return claim.section === "summary" && claim.claim_text === summaryCompletion.body; }) : null;
     const summaryFact = summaryClaim ? catalog.find(function (fact) { return fact.owner === "global" && fact.text === summaryCompletion.skillsFactText && !fact.unlinked_number; }) : null;
     if (summaryCompletion.body && (!summaryClaim || !summaryFact)) return safeFailure("quality_gate", 502, { error: "The draft was created, but its quality review could not be verified. Try again.", blockers: [AUDIT_BLOCKER_MESSAGES.missing_trace], scorecard: [] });

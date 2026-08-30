@@ -646,6 +646,131 @@ async function run() {
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).bullets, federalSummaryDraft);
 
+  // RDM-142..RDM-157: owner-aware unlinked-number collision handling.
+  const collisionFacts = "ROLE 1\nJOB TITLE (EXACT): Collision Role 1\nEMPLOYER OR UNIT (EXACT): Collision Unit 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led a 110-person recruiting operation in 2026.\nManaged a $9M budget.\nAchieved 95% readiness.\nSupported 65+ sites.\nProcessed 1,200.50 cases.\nDelivered 1,100 to 1,300 hires.\n\nROLE 2\nJOB TITLE (EXACT): Collision Role 2\nEMPLOYER OR UNIT (EXACT): Collision Unit 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led a 110-person workforce operation and managed $9 million.\n\nROLE 3\nJOB TITLE (EXACT): Collision Role 3\nEMPLOYER OR UNIT (EXACT): Collision Unit 3\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Managed $9 million.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 26; 110-person operation; 95; 65; 1,200.5; 1200.50; $9 million; 9 million; Twenty-six years; 1,200 employees; 18 states\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+  function collisionDraft(roleOneClaim, prefix) {
+    return (prefix || "") + "PROFESSIONAL EXPERIENCE\nCollision Role 1 - Collision Unit 1\n" + roleOneClaim + "\n\nCollision Role 2 - Collision Unit 2\nLed a 110-person workforce operation and managed $9 million.\n\nCollision Role 3 - Collision Unit 3\nManaged $9 million.";
+  }
+  function sameRoleAudit(request, claimPattern, factPatterns) {
+    const audit = passingAudit(request);
+    const inventory = clauseInventoryFromAuditRequest(request);
+    const catalog = factCatalogFromAuditRequest(request);
+    const claim = inventory.find((item) => claimPattern.test(item.claim_text));
+    const trace = audit.claim_trace.find((item) => item.claim_id === claim.claim_id);
+    trace.fact_refs = factPatterns.map((pattern) => catalog.find((fact) => fact.owner === claim.owner && !fact.unlinked_number && pattern.test(fact.text)).fact_id);
+    return audit;
+  }
+
+  nextResponse = { status: "completed", output_text: collisionDraft("Led operations in 2026.") };
+  const callsBeforeBoundary26 = calls.length;
+  auditResponseQueue.push((request) => sameRoleAudit(request, /2026/, [/2026/]));
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(calls.length - callsBeforeBoundary26, 2);
+
+  nextResponse = { status: "completed", output_text: collisionDraft("Led a 110-person operation.") };
+  const callsBeforeSameRoleCollision = calls.length;
+  let collisionUnlinkedIds = [];
+  auditResponseQueue.push((request) => {
+    const catalog = factCatalogFromAuditRequest(request);
+    collisionUnlinkedIds = catalog.filter((fact) => fact.unlinked_number).map((fact) => fact.fact_id);
+    const schemaIds = request.text.format.schema.properties.claim_trace.items.properties.fact_refs.items.enum;
+    assert.equal(collisionUnlinkedIds.some((id) => schemaIds.includes(id)), false);
+    return sameRoleAudit(request, /Led a 110-person operation\.$/, [/110-person recruiting operation in 2026/]);
+  });
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(calls.length - callsBeforeSameRoleCollision, 2);
+  const sameRoleBody = JSON.parse(result.body);
+  const sameRoleTrace = sameRoleBody.trace.find((trace) => trace.claim_text === "Led a 110-person operation.");
+  assert.ok(sameRoleTrace.fact_refs.length > 0);
+  assert.equal(sameRoleBody.trace.some((trace) => trace.fact_refs.some((id) => collisionUnlinkedIds.includes(id))), false);
+
+  nextResponse = { status: "completed", output_text: collisionDraft("Led a 110-person operation with unsupported surrounding wording.") };
+  auditResponseQueue.push((request) => {
+    const audit = sameRoleAudit(request, /unsupported surrounding wording/, [/110-person recruiting operation in 2026/]);
+    const trace = audit.claim_trace.find((item) => item.claim_id === clauseInventoryFromAuditRequest(request).find((claim) => /unsupported surrounding wording/.test(claim.claim_text)).claim_id);
+    trace.fact_refs = [];
+    trace.verdict = "unsupported";
+    return audit;
+  });
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  assert.equal(result.statusCode, 422);
+
+  for (const prefix of ["CORE SKILLS\n110-person operation\n\n", "UNRESOLVED SECTION\n110-person operation\n\n"]) {
+    nextResponse = { status: "completed", output_text: collisionDraft("Led operations in 2026.", prefix) };
+    const callsBeforeGlobalCollision = calls.length;
+    result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+    assert.equal(result.statusCode, 502);
+    assert.equal(JSON.parse(result.body).reasonCategory, "unlinked_global_number");
+    assert.equal(calls.length - callsBeforeGlobalCollision, 1);
+  }
+
+  for (const unsupportedGlobal of ["1,200 employees", "18 states"]) {
+    nextResponse = { status: "completed", output_text: collisionDraft("Led operations in 2026.", "CORE SKILLS\n" + unsupportedGlobal + "\n\n") };
+    const callsBeforeUnsupportedGlobal = calls.length;
+    result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+    assert.equal(result.statusCode, 502);
+    assert.equal(calls.length - callsBeforeUnsupportedGlobal, 1);
+  }
+
+  nextResponse = { status: "completed", output_text: collisionDraft("Led a 110-person operation across 18 states.") };
+  const callsBeforeMixedCollision = calls.length;
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  assert.equal(result.statusCode, 502);
+  assert.equal(calls.length - callsBeforeMixedCollision, 1);
+
+  for (const inexactQuantity of ["Achieved 95 readiness.", "Supported 65 sites.", "Processed 1,200.5 cases.", "Processed 1200.50 cases."]) {
+    nextResponse = { status: "completed", output_text: collisionDraft(inexactQuantity) };
+    const callsBeforeInexactQuantity = calls.length;
+    result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+    assert.equal(result.statusCode, 502);
+    assert.equal(JSON.parse(result.body).reasonCategory, "unlinked_global_number");
+    assert.equal(calls.length - callsBeforeInexactQuantity, 1);
+  }
+
+  for (const wrongRoleForm of ["Managed $9 million.", "Managed 9 million.", "Served Twenty-six years."]) {
+    nextResponse = { status: "completed", output_text: collisionDraft(wrongRoleForm) };
+    const callsBeforeWrongRole = calls.length;
+    result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+    assert.equal(result.statusCode, 502);
+    assert.equal(calls.length - callsBeforeWrongRole, 1);
+  }
+
+  const exactMultiFactClaim = "Led a 110-person operation with a $9M budget, 95% readiness, 65+ sites, and 1,200.50 cases.";
+  nextResponse = { status: "completed", output_text: collisionDraft(exactMultiFactClaim) };
+  auditResponseQueue.push((request) => sameRoleAudit(request, /1,200\.50 cases/, [/110-person recruiting operation in 2026/, /\$9M budget/, /95% readiness/, /65\+ sites/, /1,200\.50 cases/]));
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  assert.equal(result.statusCode, 200);
+
+  for (const range of ["1,100–1,300 hires", "1,100-1,300 hires"]) {
+    nextResponse = { status: "completed", output_text: collisionDraft("Led a 110-person operation and delivered " + range + ".") };
+    auditResponseQueue.push((request) => sameRoleAudit(request, /delivered 1,100/, [/110-person recruiting operation in 2026/, /1,100 to 1,300 hires/]));
+    result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+    assert.equal(result.statusCode, 200);
+  }
+  nextResponse = { status: "completed", output_text: collisionDraft("Led a 110-person operation and delivered 1,100-1,301 hires.") };
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  assert.equal(result.statusCode, 502);
+
+  nextResponse = { status: "completed", output_text: collisionDraft("Led a 110-person operation.") };
+  auditResponseQueue.push((request) => {
+    const audit = sameRoleAudit(request, /Led a 110-person operation\.$/, [/110-person recruiting operation in 2026/]);
+    const catalog = factCatalogFromAuditRequest(request);
+    audit.claim_trace.find((trace) => trace.claim_id === clauseInventoryFromAuditRequest(request).find((claim) => claim.claim_text === "Led a 110-person operation.").claim_id).fact_refs = [catalog.find((fact) => fact.unlinked_number && fact.text === "110-person operation").fact_id];
+    return audit;
+  });
+  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  assert.equal(result.statusCode, 502);
+  assert.match(JSON.parse(result.body).blockers.join(" "), /unavailable_fact_reference/);
+
+  const federalCollisionDraft = "PROFESSIONAL EXPERIENCE\nCollision Role 1 - Collision Unit 1\nLed confirmed planning work.\n\nCollision Role 2 - Collision Unit 2\nLed confirmed work.\n\nCollision Role 3 - Collision Unit 3\nManaged confirmed work.";
+  nextResponse = { status: "completed", output_text: federalCollisionDraft };
+  auditResponseQueue.push((request) => { assert.equal(candidateDraftFromAuditRequest(request), federalCollisionDraft); return passingAudit(request); });
+  result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(JSON.parse(result.body).bullets, federalCollisionDraft);
+
   const boundaryLedger = "ROLE 1\nJOB TITLE (EXACT): Boundary Role 1\nEMPLOYER OR UNIT (EXACT): Boundary Employer 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and delivered 1100 hires.\n\nROLE 2\nJOB TITLE (EXACT): Boundary Role 2\nEMPLOYER OR UNIT (EXACT): Boundary Employer 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and managed 22 specialists.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 22 specialists; shared 44-unit scale; 110; 77 sites\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
   nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nBoundary Role 1 - Boundary Employer 1\nDelivered hiring work.\nBoundary Role 2 - Boundary Employer 2\nManaged specialist work." };
   auditResponseQueue.push((request) => {
@@ -1080,6 +1205,10 @@ async function run() {
   assert.match(resumeSource, /const CANONICAL_SUMMARY_ATOM_LIMIT = 4/);
   assert.match(resumeSource, /function canonicalCivilianSummary/);
   assert.match(resumeSource, /function replaceCivilianSummary/);
+  assert.match(resumeSource, /function hasExactBoundaryOccurrence/);
+  assert.match(resumeSource, /function exactQuantityTokens/);
+  assert.match(resumeSource, /function hasUnsafeUnlinkedCollision/);
+  assert.match(resumeSource, /mode === "federal"[\s\S]*hasUnsafeUnlinkedCollision\(fullInventory, catalog\)/);
   assert.match(resumeSource, /const auditCandidate = summaryClaim \? withoutSummary\(text\) : text/);
   assert.match(resumeSource, /const deterministicSummaryTrace = summaryClaim \? \{ claim_id: summaryClaim\.claim_id, section: "summary", fact_refs: \[summaryFact\.fact_id\], posting_refs: \[\], transform: "exact", verdict: "supported"/);
   assert.match(resumeSource, /mode === "federal" \? summaryCompletion\.text : completeConfirmedRoleMetadata\(summaryCompletion\.text, confirmedFacts\)/);
@@ -1122,7 +1251,7 @@ async function run() {
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
 
-  console.log("PASS: synthetic RDM-1..RDM-141 control paths, scoped generation, deterministic safe categories, role-complete identities, confirmed-role metadata completion, server-owned civilian Summary, unchanged caps/calls/privacy controls (live model evaluation pending)");
+  console.log("PASS: synthetic RDM-1..RDM-157 control paths, scoped generation, deterministic safe categories, role-complete identities, confirmed-role metadata completion, server-owned civilian Summary, owner-aware unlinked-number collisions, unchanged caps/calls/privacy controls (live model evaluation pending)");
 }
 
 run().catch((error) => {

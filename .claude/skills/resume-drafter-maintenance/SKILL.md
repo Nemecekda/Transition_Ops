@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.12"
+  version: "0.13"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.12 is PENDING until the RDM regression suite
+Version 0.13 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -182,6 +182,39 @@ and approved message, such as `global_fact_on_role_claim`,
 `trace_reference_shape`. Never return claim or fact text, catalog or claim IDs,
 member identities, provider or token details, or raw internal labels. Do not log
 or persist the diagnostic. Diagnostics do not relax fail-closed grounding.
+
+## OWNER-AWARE UNLINKED-NUMBER COLLISIONS
+
+Unlinked `NUMBERS AND SCALE` entries remain excluded from generation, audit
+support IDs, and the returned trace. They can never ground a claim. Detect an
+output collision with an unlinked entry using the same escaped
+alphanumeric-boundary exact-occurrence contract used for catalog ownership,
+never a raw substring search. A bare unlinked `26` must not collide with
+`2026`.
+
+Build request-local numeric provenance only from non-unlinked catalog facts
+owned by a specific role. A colliding claim in global content, Summary, Core
+Skills, or an ambiguous or unresolved-owner section must fail before audit. A
+role-owned colliding claim may proceed to the existing audit only when every
+exact quantity token in the claim is independently present in one or more
+non-unlinked catalog facts owned by that exact role. This check is only a
+prerequisite for audit and never automatic approval.
+
+Same-role audit references and a `supported` verdict remain mandatory.
+Unsupported wording around a valid quantity still withholds the draft. Do not
+normalize numeric forms: `26` is not `Twenty-six`; `$9M` is not `$9 million` or
+`9 million`. Preserve currency, magnitude, percent, plus signs, commas, decimal
+form, and endpoints exactly. Harmless range punctuation remains governed by
+RDM-77.
+
+An absent token, a token found only in another role, an unknown, cross-role, or
+unlinked reference, an unsupported audit verdict, or a global claim remains
+fail-closed under the existing content-free categories. Federal behavior is
+unchanged. Add no calls or retries and change no model, cap, privacy control,
+storage, logging, persistence, analytics, or usage limit. A qualifying request
+may consume the already-authorized audit call instead of stopping early;
+configured maximum exposure is unchanged and the external monthly cap remains
+`UNVERIFIED`.
 
 ## CIVILIAN CANONICAL SUMMARY
 
@@ -702,6 +735,49 @@ all existing hard input bounds.
   retries, draft and usage limits, posting isolation, `store: false`, no logging,
   persistence, or analytics, unchanged privacy controls, $0 incremental API
   exposure, and the external monthly cap `UNVERIFIED`.
+- **RDM-142 Alphanumeric boundary:** a bare unlinked `26` must not collide with
+  `2026`; collision matching must use escaped alphanumeric boundaries rather
+  than raw substring search.
+- **RDM-143 Same-role shortened phrase:** a role fact containing a synthetic
+  `110-person recruiting operation` must allow a colliding role-owned
+  `110-person operation` claim to reach the existing audit when exact numeric
+  provenance belongs to that role.
+- **RDM-144 Supported release:** the RDM-143 candidate may release only after a
+  supported audit verdict with valid same-role references.
+- **RDM-145 Unsupported audit:** the RDM-143 candidate must be withheld when the
+  audit does not support the shortened wording.
+- **RDM-146 Global and unresolved collision:** a colliding claim in Summary,
+  Core Skills, other global content, or an ambiguous or unresolved-owner
+  section must stop before audit.
+- **RDM-147 Unsupported quantities:** a role claim using synthetic `1,200` and
+  `18` without exact same-role numeric provenance must stop before audit.
+- **RDM-148 Mixed quantities:** a colliding role claim with one supported and
+  one unsupported quantity must stop before audit.
+- **RDM-149 Wrong-role quantity:** a quantity present only in another role's
+  non-unlinked facts must stop before audit.
+- **RDM-150 Exact numeric forms:** synthetic cases must keep `26` distinct from
+  `Twenty-six`, `$9M` distinct from `$9 million` and `9 million`, and preserve
+  percent signs, plus signs, commas, and decimal forms exactly.
+- **RDM-151 Ranges:** harmless range punctuation must preserve RDM-77 behavior,
+  while every endpoint must retain exact same-role provenance.
+- **RDM-152 Duplicate quantity ownership:** when the same quantity appears in
+  multiple roles, only non-unlinked facts owned by the claim's exact role may
+  satisfy the prerequisite.
+- **RDM-153 Unlinked reference exclusion:** unlinked IDs must be absent from the
+  audit support schema and returned trace, and any returned unlinked reference
+  must fail closed.
+- **RDM-154 Multiple same-role facts:** exact quantities from more than one
+  non-unlinked fact owned by the same role may satisfy the audit prerequisite
+  but must never cause automatic approval.
+- **RDM-155 Unsupported surrounding wording:** valid same-role numeric
+  provenance must not rescue unsupported surrounding nonnumeric wording; an
+  unsupported audit verdict withholds the draft.
+- **RDM-156 Federal boundary:** federal behavior must remain unchanged.
+- **RDM-157 Unchanged operational controls:** models, calls, retries,
+  facts/repair 3500, civilian 2200, federal 1900, audit 4000, `store: false`,
+  privacy, logging, storage, persistence, analytics, draft and usage limits
+  remain unchanged. Configured maximum exposure is unchanged, and the external
+  monthly cap remains `UNVERIFIED`.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -712,7 +788,7 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.12 until all cases execute and live
+Keep registry item #6 PENDING at version 0.13 until all cases execute and live
 clone evidence passes. After successful execution and live evidence, force-mod
 proposes the smallest evidence-supported revision and Commander rules on
 promotion to CODIFIED 1.0.
