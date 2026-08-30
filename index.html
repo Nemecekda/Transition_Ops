@@ -4117,6 +4117,318 @@ function AboutModal(props) {
   }, "\u258CBUILT BY A VETERAN", /*#__PURE__*/React.createElement("br", null), "\u258CFOR THOSE WHO SERVE", /*#__PURE__*/React.createElement("br", null), "\u258CNO ADS \xB7 NO PAYWALLS \xB7 NO SUBSCRIPTIONS"))));
 }
 
+// RESUME_DOCX_START
+var ATS_RESUME_COMPACT = Object.freeze({
+  presetName: "ats_resume_compact",
+  basePreset: "compact_reference_guide",
+  headerPattern: "ats_resume_identity",
+  page: {
+    widthDxa: 12240, heightDxa: 15840, orientation: "portrait",
+    marginTopDxa: 720, marginRightDxa: 720, marginBottomDxa: 720, marginLeftDxa: 720,
+    headerDistanceDxa: 360, footerDistanceDxa: 360, gutterDxa: 0, contentWidthDxa: 10800
+  },
+  typography: {
+    font: "Calibri",
+    bodyHalfPoints: 19, bodyBeforeTwips: 0, bodyAfterTwips: 20, bodyLineTwips: 228,
+    nameHalfPoints: 32, nameBeforeTwips: 0, nameAfterTwips: 20, nameLineTwips: 240,
+    contactHalfPoints: 18, contactBeforeTwips: 0, contactAfterTwips: 10, contactLineTwips: 216,
+    sectionHalfPoints: 21, sectionBeforeTwips: 70, sectionAfterTwips: 20, sectionLineTwips: 240,
+    roleHalfPoints: 20, roleBeforeTwips: 20, roleAfterTwips: 0, roleLineTwips: 228,
+    metadataHalfPoints: 18, metadataBeforeTwips: 0, metadataAfterTwips: 10, metadataLineTwips: 216,
+    bulletHalfPoints: 19, bulletBeforeTwips: 0, bulletAfterTwips: 10, bulletLineTwips: 228,
+    spacerHalfPoints: 2, spacerBeforeTwips: 0, spacerAfterTwips: 0, spacerLineTwips: 20
+  },
+  bullets: {
+    bulletAbstractNumId: 41, bulletNumId: 41,
+    hyphenAbstractNumId: 42, hyphenNumId: 42,
+    asteriskAbstractNumId: 43, asteriskNumId: 43,
+    markerAlignedAtDxa: 180, textIndentAtDxa: 360, hangingDxa: 180, tabStopDxa: 360,
+    afterTwips: 10, lineTwips: 228
+  }
+});
+
+var TOPS_DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+function topsDocxXmlEscape(value) {
+  return String(value == null ? "" : value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+}
+
+function topsDocxUtf8(value) {
+  return new TextEncoder().encode(String(value));
+}
+
+function topsDocxConcat(parts) {
+  var size = parts.reduce(function(total, part) { return total + part.length; }, 0);
+  var output = new Uint8Array(size);
+  var offset = 0;
+  parts.forEach(function(part) { output.set(part, offset); offset += part.length; });
+  return output;
+}
+
+var TOPS_DOCX_CRC_TABLE = (function() {
+  var table = [];
+  for (var n = 0; n < 256; n += 1) {
+    var value = n;
+    for (var k = 0; k < 8; k += 1) value = value & 1 ? 0xEDB88320 ^ (value >>> 1) : value >>> 1;
+    table[n] = value >>> 0;
+  }
+  return table;
+})();
+
+function topsDocxCrc32(bytes) {
+  var crc = 0xFFFFFFFF;
+  for (var i = 0; i < bytes.length; i += 1) crc = TOPS_DOCX_CRC_TABLE[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+function topsDocxZip(entries) {
+  var localParts = [];
+  var centralParts = [];
+  var localOffset = 0;
+  entries.forEach(function(entry) {
+    var nameBytes = topsDocxUtf8(entry.name);
+    var dataBytes = typeof entry.data === "string" ? topsDocxUtf8(entry.data) : entry.data;
+    var crc = topsDocxCrc32(dataBytes);
+    var local = new Uint8Array(30 + nameBytes.length + dataBytes.length);
+    var localView = new DataView(local.buffer);
+    localView.setUint32(0, 0x04034B50, true);
+    localView.setUint16(4, 20, true);
+    localView.setUint16(6, 0x0800, true);
+    localView.setUint16(8, 0, true);
+    localView.setUint16(10, 0, true);
+    localView.setUint16(12, 33, true);
+    localView.setUint32(14, crc, true);
+    localView.setUint32(18, dataBytes.length, true);
+    localView.setUint32(22, dataBytes.length, true);
+    localView.setUint16(26, nameBytes.length, true);
+    localView.setUint16(28, 0, true);
+    local.set(nameBytes, 30);
+    local.set(dataBytes, 30 + nameBytes.length);
+    localParts.push(local);
+
+    var central = new Uint8Array(46 + nameBytes.length);
+    var centralView = new DataView(central.buffer);
+    centralView.setUint32(0, 0x02014B50, true);
+    centralView.setUint16(4, 20, true);
+    centralView.setUint16(6, 20, true);
+    centralView.setUint16(8, 0x0800, true);
+    centralView.setUint16(10, 0, true);
+    centralView.setUint16(12, 0, true);
+    centralView.setUint16(14, 33, true);
+    centralView.setUint32(16, crc, true);
+    centralView.setUint32(20, dataBytes.length, true);
+    centralView.setUint32(24, dataBytes.length, true);
+    centralView.setUint16(28, nameBytes.length, true);
+    centralView.setUint16(30, 0, true);
+    centralView.setUint16(32, 0, true);
+    centralView.setUint16(34, 0, true);
+    centralView.setUint16(36, 0, true);
+    centralView.setUint32(38, 0, true);
+    centralView.setUint32(42, localOffset, true);
+    central.set(nameBytes, 46);
+    centralParts.push(central);
+    localOffset += local.length;
+  });
+  var centralDirectory = topsDocxConcat(centralParts);
+  var end = new Uint8Array(22);
+  var endView = new DataView(end.buffer);
+  endView.setUint32(0, 0x06054B50, true);
+  endView.setUint16(4, 0, true);
+  endView.setUint16(6, 0, true);
+  endView.setUint16(8, entries.length, true);
+  endView.setUint16(10, entries.length, true);
+  endView.setUint32(12, centralDirectory.length, true);
+  endView.setUint32(16, localOffset, true);
+  endView.setUint16(20, 0, true);
+  return topsDocxConcat(localParts.concat([centralDirectory, end]));
+}
+
+function topsResumeRunProperties(sizeHalfPoints, bold) {
+  return "<w:rPr><w:rFonts w:ascii=\"Calibri\" w:hAnsi=\"Calibri\" w:eastAsia=\"Calibri\" w:cs=\"Calibri\"/>" + (bold ? "<w:b/><w:bCs/>" : "") + "<w:color w:val=\"000000\"/><w:sz w:val=\"" + sizeHalfPoints + "\"/><w:szCs w:val=\"" + sizeHalfPoints + "\"/><w:lang w:val=\"en-US\"/></w:rPr>";
+}
+
+function topsResumeParagraphXml(line, state) {
+  var styleId = "ResumeBody";
+  var text = String(line);
+  var numberingId = 0;
+  var trimmed = text.trim();
+  var heading = /^(?:SUMMARY|PROFESSIONAL SUMMARY|CORE SKILLS|PROFESSIONAL EXPERIENCE|CERTIFICATIONS|EDUCATION|TIP:)$/i.test(trimmed);
+  var bullet = /^([\u2022*-])\s+(.*)$/.exec(text);
+  if (!trimmed) {
+    styleId = "ResumeSpacer";
+  } else if (heading) {
+    styleId = "ResumeSection";
+    state.section = trimmed.toUpperCase();
+    state.seenSection = true;
+  } else if (!state.seenSection) {
+    styleId = state.headerLineCount === 0 ? "ResumeName" : "ResumeContact";
+    state.headerLineCount += 1;
+  } else if (bullet) {
+    styleId = "ResumeBullet";
+    text = bullet[2];
+    numberingId = bullet[1] === "-" ? ATS_RESUME_COMPACT.bullets.hyphenNumId : bullet[1] === "*" ? ATS_RESUME_COMPACT.bullets.asteriskNumId : ATS_RESUME_COMPACT.bullets.bulletNumId;
+  } else if (state.section === "PROFESSIONAL EXPERIENCE" && (/\s(?:-|\u2014)\s/.test(trimmed) || /\s\|\s/.test(trimmed) === false && trimmed.length < 140 && /(?:LLC|INC\.?|CORP\.?|COMMAND|UNIT|GUARD|ARMY|NAVY|MARINE|AIR FORCE|SPACE FORCE|COAST GUARD)/i.test(trimmed))) {
+    styleId = "ResumeRole";
+  } else if (state.section === "PROFESSIONAL EXPERIENCE" && /\s\|\s/.test(trimmed)) {
+    styleId = "ResumeMetadata";
+  }
+  var properties = "<w:pPr><w:pStyle w:val=\"" + styleId + "\"/>" + (numberingId ? "<w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"" + numberingId + "\"/></w:numPr>" : "") + "</w:pPr>";
+  if (!trimmed) return "<w:p>" + properties + "</w:p>";
+  return "<w:p>" + properties + "<w:r><w:t xml:space=\"preserve\">" + topsDocxXmlEscape(text) + "</w:t></w:r></w:p>";
+}
+
+function topsResumeStyleXml(styleId, name, size, before, after, line, options) {
+  var config = options || {};
+  return "<w:style w:type=\"paragraph\" w:styleId=\"" + styleId + "\"" + (styleId === "Normal" ? " w:default=\"1\"" : "") + "><w:name w:val=\"" + name + "\"/>" + (styleId === "Normal" ? "" : "<w:basedOn w:val=\"Normal\"/>") + "<w:qFormat/><w:pPr>" + (config.center ? "<w:jc w:val=\"center\"/>" : "<w:jc w:val=\"left\"/>") + (config.keepNext ? "<w:keepNext/>" : "") + "<w:widowControl/><w:spacing w:before=\"" + before + "\" w:after=\"" + after + "\" w:line=\"" + line + "\" w:lineRule=\"" + (config.exact ? "exact" : "auto") + "\"/></w:pPr>" + topsResumeRunProperties(size, !!config.bold) + "</w:style>";
+}
+
+function topsResumeNumberingLevel(abstractId, marker, styleId) {
+  var b = ATS_RESUME_COMPACT.bullets;
+  return "<w:abstractNum w:abstractNumId=\"" + abstractId + "\"><w:multiLevelType w:val=\"singleLevel\"/><w:lvl w:ilvl=\"0\"><w:start w:val=\"1\"/><w:numFmt w:val=\"bullet\"/><w:lvlText w:val=\"" + topsDocxXmlEscape(marker) + "\"/><w:lvlJc w:val=\"left\"/><w:pStyle w:val=\"" + styleId + "\"/><w:pPr><w:tabs><w:tab w:val=\"num\" w:pos=\"" + b.tabStopDxa + "\"/></w:tabs><w:ind w:left=\"" + b.textIndentAtDxa + "\" w:hanging=\"" + b.hangingDxa + "\"/><w:spacing w:before=\"0\" w:after=\"" + b.afterTwips + "\" w:line=\"" + b.lineTwips + "\" w:lineRule=\"auto\"/></w:pPr>" + topsResumeRunProperties(ATS_RESUME_COMPACT.typography.bulletHalfPoints, false) + "</w:lvl></w:abstractNum>";
+}
+
+function buildTransitionOpsResumeDocx(resumeText) {
+  var s = ATS_RESUME_COMPACT;
+  var t = s.typography;
+  var lines = String(resumeText == null ? "" : resumeText).replace(/\r\n?/g, "\n").split("\n");
+  var state = { section: "", seenSection: false, headerLineCount: 0 };
+  var paragraphs = lines.map(function(line) { return topsResumeParagraphXml(line, state); }).join("");
+  var documentXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body>" + paragraphs + "<w:sectPr><w:pgSz w:w=\"" + s.page.widthDxa + "\" w:h=\"" + s.page.heightDxa + "\" w:orient=\"" + s.page.orientation + "\"/><w:pgMar w:top=\"" + s.page.marginTopDxa + "\" w:right=\"" + s.page.marginRightDxa + "\" w:bottom=\"" + s.page.marginBottomDxa + "\" w:left=\"" + s.page.marginLeftDxa + "\" w:header=\"" + s.page.headerDistanceDxa + "\" w:footer=\"" + s.page.footerDistanceDxa + "\" w:gutter=\"" + s.page.gutterDxa + "\"/><w:cols w:space=\"720\"/><w:docGrid w:linePitch=\"360\"/></w:sectPr></w:body></w:document>";
+  var stylesXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:docDefaults><w:rPrDefault>" + topsResumeRunProperties(t.bodyHalfPoints, false) + "</w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:before=\"0\" w:after=\"" + t.bodyAfterTwips + "\" w:line=\"" + t.bodyLineTwips + "\" w:lineRule=\"auto\"/></w:pPr></w:pPrDefault></w:docDefaults>" +
+    topsResumeStyleXml("Normal", "ats_resume_compact body", t.bodyHalfPoints, t.bodyBeforeTwips, t.bodyAfterTwips, t.bodyLineTwips, {}) +
+    topsResumeStyleXml("ResumeName", "ats_resume_compact name", t.nameHalfPoints, t.nameBeforeTwips, t.nameAfterTwips, t.nameLineTwips, { center: true, bold: true, keepNext: true }) +
+    topsResumeStyleXml("ResumeContact", "ats_resume_compact contact", t.contactHalfPoints, t.contactBeforeTwips, t.contactAfterTwips, t.contactLineTwips, { center: true, keepNext: true }) +
+    topsResumeStyleXml("ResumeSection", "ats_resume_compact section heading", t.sectionHalfPoints, t.sectionBeforeTwips, t.sectionAfterTwips, t.sectionLineTwips, { bold: true, keepNext: true }) +
+    topsResumeStyleXml("ResumeRole", "ats_resume_compact role", t.roleHalfPoints, t.roleBeforeTwips, t.roleAfterTwips, t.roleLineTwips, { bold: true, keepNext: true }) +
+    topsResumeStyleXml("ResumeMetadata", "ats_resume_compact metadata", t.metadataHalfPoints, t.metadataBeforeTwips, t.metadataAfterTwips, t.metadataLineTwips, { keepNext: true }) +
+    topsResumeStyleXml("ResumeBody", "ats_resume_compact body claim", t.bodyHalfPoints, t.bodyBeforeTwips, t.bodyAfterTwips, t.bodyLineTwips, {}) +
+    topsResumeStyleXml("ResumeBullet", "ats_resume_compact bullet", t.bulletHalfPoints, t.bulletBeforeTwips, t.bulletAfterTwips, t.bulletLineTwips, {}) +
+    topsResumeStyleXml("ResumeSpacer", "ats_resume_compact spacer", t.spacerHalfPoints, t.spacerBeforeTwips, t.spacerAfterTwips, t.spacerLineTwips, { exact: true }) + "</w:styles>";
+  var numberingXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:numbering xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">" + topsResumeNumberingLevel(s.bullets.bulletAbstractNumId, "\u2022", "ResumeBullet") + topsResumeNumberingLevel(s.bullets.hyphenAbstractNumId, "-", "ResumeBullet") + topsResumeNumberingLevel(s.bullets.asteriskAbstractNumId, "*", "ResumeBullet") + "<w:num w:numId=\"41\"><w:abstractNumId w:val=\"41\"/></w:num><w:num w:numId=\"42\"><w:abstractNumId w:val=\"42\"/></w:num><w:num w:numId=\"43\"><w:abstractNumId w:val=\"43\"/></w:num></w:numbering>";
+  var contentTypes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/><Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/><Override PartName=\"/word/numbering.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml\"/><Override PartName=\"/word/settings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/><Override PartName=\"/word/fontTable.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml\"/><Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/><Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/></Types>";
+  var packageRels = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/><Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/><Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/></Relationships>";
+  var documentRels = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/><Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering\" Target=\"numbering.xml\"/><Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/><Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/></Relationships>";
+  var settingsXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:settings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:zoom w:percent=\"100\"/><w:defaultTabStop w:val=\"360\"/><w:characterSpacingControl w:val=\"doNotCompress\"/><w:compat><w:compatSetting w:name=\"compatibilityMode\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"15\"/></w:compat></w:settings>";
+  var fontTableXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:fonts xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:font w:name=\"Calibri\"><w:panose1 w:val=\"020F0502020204030204\"/><w:charset w:val=\"00\"/><w:family w:val=\"swiss\"/><w:pitch w:val=\"variable\"/></w:font></w:fonts>";
+  var coreXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dc:title>Resume Draft</dc:title><dc:creator>Transition OPS</dc:creator><cp:lastModifiedBy>Transition OPS</cp:lastModifiedBy><dcterms:created xsi:type=\"dcterms:W3CDTF\">2026-08-30T00:00:00Z</dcterms:created><dcterms:modified xsi:type=\"dcterms:W3CDTF\">2026-08-30T00:00:00Z</dcterms:modified></cp:coreProperties>";
+  var appXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\"><Application>Transition OPS</Application><AppVersion>1.0</AppVersion></Properties>";
+  return topsDocxZip([
+    { name: "[Content_Types].xml", data: contentTypes },
+    { name: "_rels/.rels", data: packageRels },
+    { name: "docProps/core.xml", data: coreXml },
+    { name: "docProps/app.xml", data: appXml },
+    { name: "word/document.xml", data: documentXml },
+    { name: "word/styles.xml", data: stylesXml },
+    { name: "word/numbering.xml", data: numberingXml },
+    { name: "word/settings.xml", data: settingsXml },
+    { name: "word/fontTable.xml", data: fontTableXml },
+    { name: "word/_rels/document.xml.rels", data: documentRels }
+  ]);
+}
+
+function topsDocxStoredEntryText(bytes, targetName) {
+  var offset = 0;
+  while (bytes && offset + 30 <= bytes.length) {
+    var view = new DataView(bytes.buffer, bytes.byteOffset + offset, bytes.byteLength - offset);
+    if (view.getUint32(0, true) !== 0x04034B50) break;
+    var method = view.getUint16(8, true);
+    var size = view.getUint32(18, true);
+    var nameLength = view.getUint16(26, true);
+    var extraLength = view.getUint16(28, true);
+    var nameStart = offset + 30;
+    var dataStart = nameStart + nameLength + extraLength;
+    var name = new TextDecoder().decode(bytes.slice(nameStart, nameStart + nameLength));
+    if (name === targetName && method === 0) return new TextDecoder().decode(bytes.slice(dataStart, dataStart + size));
+    offset = dataStart + size;
+  }
+  return "";
+}
+
+function topsDocxXmlUnescape(value) {
+  return String(value).replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"").replace(/&apos;/g, "'").replace(/&amp;/g, "&");
+}
+
+function renderTransitionOpsResumeDocxCheck(bytes) {
+  if (typeof document === "undefined" || !document.body) return { ok: false, reason: "The browser could not render the Word artifact." };
+  var xml = topsDocxStoredEntryText(bytes, "word/document.xml");
+  if (!xml) return { ok: false, reason: "The Word artifact could not be read for render review." };
+  var paragraphs = [];
+  var paragraphPattern = /<w:p>([\s\S]*?)<\/w:p>/g;
+  var paragraphMatch;
+  while ((paragraphMatch = paragraphPattern.exec(xml))) {
+    var paragraphXml = paragraphMatch[1];
+    var styleMatch = /<w:pStyle w:val="([^"]+)"\/>/.exec(paragraphXml);
+    var numMatch = /<w:numId w:val="([^"]+)"\/>/.exec(paragraphXml);
+    var textParts = [];
+    var textPattern = /<w:t(?: [^>]*)?>([\s\S]*?)<\/w:t>/g;
+    var textMatch;
+    while ((textMatch = textPattern.exec(paragraphXml))) textParts.push(topsDocxXmlUnescape(textMatch[1]));
+    paragraphs.push({ styleId: styleMatch ? styleMatch[1] : "ResumeBody", text: (numMatch ? "\u2022 " : "") + textParts.join("") });
+  }
+  if (!paragraphs.length) return { ok: false, reason: "The Word artifact contained no renderable paragraphs." };
+  var root = document.createElement("div");
+  root.setAttribute("aria-hidden", "true");
+  root.style.cssText = "position:fixed;left:-10000px;top:0;visibility:hidden;width:720px;box-sizing:border-box;background:#fff;color:#000;font-family:Calibri,Arial,sans-serif;font-size:9.5pt;line-height:11pt;white-space:pre-wrap;";
+  var keepNext = [];
+  paragraphs.forEach(function(paragraph) {
+    var element = document.createElement("div");
+    element.textContent = paragraph.text || " ";
+    element.style.cssText = "box-sizing:border-box;width:720px;overflow:visible;white-space:pre-wrap;overflow-wrap:normal;font-family:Calibri,Arial,sans-serif;font-size:9.5pt;line-height:11pt;padding:0 0 0.5pt 0;margin:0;";
+    if (paragraph.styleId === "ResumeName") element.style.cssText += "font-size:13pt;line-height:14pt;font-weight:700;text-align:center;padding-bottom:2pt;";
+    else if (paragraph.styleId === "ResumeContact") element.style.cssText += "font-size:9pt;line-height:10pt;text-align:center;padding-bottom:2pt;";
+    else if (paragraph.styleId === "ResumeSection") element.style.cssText += "font-size:10.5pt;line-height:11pt;font-weight:700;padding-top:5pt;padding-bottom:1pt;";
+    else if (paragraph.styleId === "ResumeRole") element.style.cssText += "font-size:10pt;line-height:11pt;font-weight:700;padding-top:2.5pt;padding-bottom:0.5pt;";
+    else if (paragraph.styleId === "ResumeMetadata") element.style.cssText += "font-size:9.25pt;line-height:10.5pt;padding-bottom:0.5pt;";
+    else if (paragraph.styleId === "ResumeBullet") element.style.cssText += "padding-left:18px;text-indent:-9px;";
+    else if (paragraph.styleId === "ResumeSpacer") element.style.cssText += "font-size:3pt;line-height:3pt;padding:0;";
+    keepNext.push(/^(?:ResumeName|ResumeContact|ResumeSection|ResumeRole|ResumeMetadata)$/.test(paragraph.styleId));
+    root.appendChild(element);
+  });
+  document.body.appendChild(root);
+  var pageHeight = 960;
+  var pageUsed = [0];
+  var overflow = false;
+  var children = Array.prototype.slice.call(root.children);
+  var heights = children.map(function(child) {
+    if (child.scrollWidth > 722) overflow = true;
+    var height = Math.max(1, Math.ceil(child.getBoundingClientRect().height));
+    if (height > pageHeight) overflow = true;
+    return height;
+  });
+  heights.forEach(function(height, index) {
+    var pageIndex = pageUsed.length - 1;
+    var groupedHeight = height + (keepNext[index] && index + 1 < heights.length ? heights[index + 1] : 0);
+    if (pageUsed[pageIndex] > 0 && groupedHeight <= pageHeight && pageUsed[pageIndex] + groupedHeight > pageHeight) {
+      pageUsed.push(0);
+      pageIndex += 1;
+    } else if (pageUsed[pageIndex] > 0 && pageUsed[pageIndex] + height > pageHeight) {
+      pageUsed.push(0);
+      pageIndex += 1;
+    }
+    pageUsed[pageIndex] += height;
+  });
+  root.remove();
+  var sparseTrailingPage = pageUsed.length > 1 && pageUsed[pageUsed.length - 1] < pageHeight * 0.25;
+  var tooManyPages = pageUsed.length > 2;
+  var ok = !overflow && !sparseTrailingPage && !tooManyPages;
+  var reason = overflow ? "The Word artifact contains text that may clip." : tooManyPages ? "The civilian Word artifact exceeds two pages." : sparseTrailingPage ? "The Word artifact would create an avoidably sparse trailing page." : "Rendered artifact is readable and page-balanced.";
+  return { ok: ok, reason: reason, pageCount: pageUsed.length, pageUsed: pageUsed, overflow: overflow, sparseTrailingPage: sparseTrailingPage, tooManyPages: tooManyPages };
+}
+
+function validateTransitionOpsResumeDocx(bytes, resumeText, fileName, mime) {
+  var expected = buildTransitionOpsResumeDocx(resumeText);
+  var exactBytes = bytes && bytes.length === expected.length;
+  if (exactBytes) for (var i = 0; i < expected.length; i += 1) if (bytes[i] !== expected[i]) { exactBytes = false; break; }
+  var decoded = bytes ? new TextDecoder().decode(bytes) : "";
+  var structural = !!bytes && bytes.length > 4 && bytes[0] === 0x50 && bytes[1] === 0x4B && /word\/document\.xml/.test(decoded) && /word\/styles\.xml/.test(decoded) && /word\/numbering\.xml/.test(decoded) && /ats_resume_compact/.test(decoded) && /<w:numFmt w:val="bullet"\/>/.test(decoded);
+  var truthful = mime === TOPS_DOCX_MIME && /\.docx$/i.test(String(fileName || ""));
+  var ok = exactBytes && structural && truthful;
+  return { ok: ok, contentEquivalence: exactBytes, formatIntegrity: structural && truthful };
+}
+
+if (typeof window !== "undefined") window.__TOPS_RESUME_DOCX = { build: buildTransitionOpsResumeDocx, validate: validateTransitionOpsResumeDocx, renderCheck: renderTransitionOpsResumeDocxCheck, mime: TOPS_DOCX_MIME, style: ATS_RESUME_COMPACT };
+// RESUME_DOCX_END
+
 function App() {
   const [theme, setTheme] = useState(() => {
     try {
@@ -4289,7 +4601,7 @@ function App() {
       return p;
     });
   };
-  const [aiR, setAiR] = useState({ open: false, mode: "standard", role: "", years: "", target: "", skills: "", certs: "", exp: "", loading: false, out: "", err: "", posting: "", facts: "", factWarnings: [], auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false });
+  const [aiR, setAiR] = useState({ open: false, mode: "standard", role: "", years: "", target: "", skills: "", certs: "", exp: "", headerName: "", headerLocation: "", headerEmail: "", headerPhone: "", loading: false, out: "", err: "", posting: "", facts: "", factWarnings: [], auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false });
   const [jobsQ, setJobsQ] = useState({ open: false, keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "" });
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [whatsNewUnseen, setWhatsNewUnseen] = useState(function() { try { return window.__safeGet("tops_whatsnew_seen") !== APP_VERSION; } catch (e) { return false; } });
@@ -7281,6 +7593,14 @@ whatsNewUnseen && React.createElement("div", {
         })),
       aiR.mode === "federal" && React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.5, marginBottom: 8 } }, "Federal format: longer, more detailed, with [brackets] for hours/week, supervisor contacts, and veterans' preference \u2014 the blanks USAJOBS requires that only you can fill."),
       aiR.mode !== "federal" && React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.5, marginBottom: 8 } }, "Civilian format omits optional details you have not confirmed. Review HONEST GAPS below the draft for facts you may want to add."),
+      aiR.mode !== "federal" && React.createElement("div", { style: { marginBottom: 10, padding: "11px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } },
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.greenBright, fontWeight: 700, marginBottom: 4 } }, "RESUME HEADER (OPTIONAL FOR DRAFTING)"),
+        React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.5, marginBottom: 7 } }, "Add what you have now. These details go only to the Transition OPS resume function, are excluded from AI-provider calls, are not stored by the app, and are added after the civilian draft passes review."),
+        React.createElement("input", { placeholder: "Name", value: aiR.headerName, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerName: v }); }); }, style: { ...S.input, marginBottom: 7 } }),
+        React.createElement("input", { placeholder: "City, State", value: aiR.headerLocation, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerLocation: v }); }); }, style: { ...S.input, marginBottom: 7 } }),
+        React.createElement("div", { style: { display: "flex", gap: 8 } },
+          React.createElement("input", { placeholder: "Email", inputMode: "email", value: aiR.headerEmail, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerEmail: v }); }); }, style: { ...S.input, marginBottom: 0, flex: 1 } }),
+          React.createElement("input", { placeholder: "Phone", inputMode: "tel", value: aiR.headerPhone, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerPhone: v }); }); }, style: { ...S.input, marginBottom: 0, flex: 1 } }))),
       React.createElement("input", { placeholder: "Your MOS / AFSC / rate (e.g. 92A)", defaultValue: aiR.role, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { role: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
       React.createElement("div", { style: { display: "flex", gap: 8 } },
         React.createElement("input", { placeholder: "Years served", defaultValue: aiR.years, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { years: v }); }); }, style: { ...S.input, marginBottom: 8, flex: 1 } }),
@@ -7308,7 +7628,7 @@ whatsNewUnseen && React.createElement("div", {
         var resumeAction = aiR.facts ? "draft" : "facts";
         setAiR(function(p){ return Object.assign({}, p, { loading: true, err: "", out: "", auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); });
         if (window.__trackEvent) window.__trackEvent(resumeAction === "draft" ? "ai_resume_generated" : "ai_resume_facts_reviewed", {});
-        (function attempt(n) { return fetch("/.netlify/functions/resume", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: resumeAction, mode: aiR.mode, role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp, posting: aiR.posting, confirmedFacts: aiR.facts }) })
+        (function attempt(n) { return fetch("/.netlify/functions/resume", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({ action: resumeAction, mode: aiR.mode, role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp, posting: aiR.posting, confirmedFacts: aiR.facts }, resumeAction === "draft" && aiR.mode !== "federal" ? { header: { name: aiR.headerName, location: aiR.headerLocation, email: aiR.headerEmail, phone: aiR.headerPhone } } : {})) })
           .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
           .catch(function(e){ if (n < 1) { return new Promise(function(res){ setTimeout(res, 1200); }).then(function(){ return attempt(n + 1); }); } throw e; }); })(0)
           .then(function(res) {
@@ -7348,21 +7668,42 @@ whatsNewUnseen && React.createElement("div", {
             return React.createElement("div", { key: i, style: { fontSize: 12, color: "#2a2a2a", lineHeight: 1.6, fontWeight: isJob ? 700 : 400, fontFamily: "Georgia, serif" } }, t);
           })),
         React.createElement("button", { onClick: function() {
-          var lines = aiR.out.split("\n"); var html = "";
-          lines.forEach(function(ln, i) { var t = ln.trim();
-            if (!t) { html += "<br/>"; return; }
-            var esc = t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-            if (i === 0) html += "<p style=\"font-size:17pt;font-weight:bold;margin:0 0 1pt 0;text-align:center;letter-spacing:1pt;\">" + esc + "</p>";
-            else if (i <= 3 && /\|/.test(t)) html += "<p style=\"font-size:9.5pt;margin:0 0 2pt 0;text-align:center;color:#444;\">" + esc + "</p>";
-            else if (/^(SUMMARY|PROFESSIONAL SUMMARY|CORE SKILLS|PROFESSIONAL EXPERIENCE|CERTIFICATIONS|EDUCATION|TIP:)/.test(t)) html += "<p style=\"font-size:10pt;font-weight:bold;letter-spacing:1pt;border-bottom:1pt solid #999;margin:10pt 0 3pt 0;\">" + esc + "</p>";
-            else html += "<p style=\"font-size:10.5pt;margin:0 0 3pt 0;\">" + esc + "</p>"; });
-          var doc = "<html xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'><title>Resume</title></head><body style=\"font-family:Calibri,Georgia,serif;max-width:7.5in;\">" + html + "</body></html>";
-          var blob = new Blob(["\ufeff", doc], { type: "application/msword" });
-          var a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-          a.download = aiR.mode === "federal" ? "Federal_Resume_Draft.doc" : "Resume_Draft.doc";
+          var trackResumeDownload = function() { if (window.__trackEvent) window.__trackEvent("ai_resume_doc_downloaded", {}); };
+          if (aiR.mode === "federal") {
+            var lines = aiR.out.split("\n"); var html = "";
+            lines.forEach(function(ln, i) { var t = ln.trim();
+              if (!t) { html += "<br/>"; return; }
+              var esc = t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+              if (i === 0) html += "<p style=\"font-size:17pt;font-weight:bold;margin:0 0 1pt 0;text-align:center;letter-spacing:1pt;\">" + esc + "</p>";
+              else if (i <= 3 && /\|/.test(t)) html += "<p style=\"font-size:9.5pt;margin:0 0 2pt 0;text-align:center;color:#444;\">" + esc + "</p>";
+              else if (/^(SUMMARY|PROFESSIONAL SUMMARY|CORE SKILLS|PROFESSIONAL EXPERIENCE|CERTIFICATIONS|EDUCATION|TIP:)/.test(t)) html += "<p style=\"font-size:10pt;font-weight:bold;letter-spacing:1pt;border-bottom:1pt solid #999;margin:10pt 0 3pt 0;\">" + esc + "</p>";
+              else html += "<p style=\"font-size:10.5pt;margin:0 0 3pt 0;\">" + esc + "</p>"; });
+            var federalDoc = "<html xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'><title>Resume</title></head><body style=\"font-family:Calibri,Georgia,serif;max-width:7.5in;\">" + html + "</body></html>";
+            var federalBlob = new Blob(["\ufeff", federalDoc], { type: "application/msword" });
+            var federalLink = document.createElement("a"); federalLink.href = URL.createObjectURL(federalBlob);
+            federalLink.download = "Federal_Resume_Draft.doc";
+            document.body.appendChild(federalLink); federalLink.click(); document.body.removeChild(federalLink);
+            trackResumeDownload();
+            return;
+          }
+          var docxBytes = window.__TOPS_RESUME_DOCX.build(aiR.out);
+          var fileName = "Resume_Draft.docx";
+          var artifactCheck = window.__TOPS_RESUME_DOCX.validate(docxBytes, aiR.out, fileName, window.__TOPS_RESUME_DOCX.mime);
+          if (!artifactCheck.ok) { showToast("WORD EXPORT CHECK FAILED \u2014 copy the resume and try again."); return; }
+          var renderCheck = window.__TOPS_RESUME_DOCX.renderCheck(docxBytes);
+          if (!renderCheck.ok) {
+            setAiR(function(p){ return Object.assign({}, p, { auditScorecard: p.auditScorecard.map(function(item){ return item.dimension === "length_and_readability" || item.dimension === "format_compliance" ? Object.assign({}, item, { status: "FAIL", evidence: renderCheck.reason }) : item; }) }); });
+            showToast("WORD EXPORT HELD \u2014 " + renderCheck.reason);
+            return;
+          }
+          var blob = new Blob([docxBytes], { type: window.__TOPS_RESUME_DOCX.mime });
+          var objectUrl = URL.createObjectURL(blob);
+          var a = document.createElement("a"); a.href = objectUrl;
+          a.download = fileName;
           document.body.appendChild(a); a.click(); document.body.removeChild(a);
-          if (window.__trackEvent) window.__trackEvent("ai_resume_doc_downloaded", {});
-        }, style: { width: "100%", marginTop: 8, background: C.goldBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "12px", fontFamily: "'Oswald', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1.5, cursor: "pointer" } }, "\u2B07 DOWNLOAD AS WORD DOC"),
+          setTimeout(function(){ URL.revokeObjectURL(objectUrl); }, 0);
+          trackResumeDownload();
+        }, style: { width: "100%", marginTop: 8, background: C.goldBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "12px", fontFamily: "'Oswald', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1.5, cursor: "pointer" } }, aiR.mode === "federal" ? "\u2B07 DOWNLOAD AS WORD DOC" : "\u2B07 DOWNLOAD WORD DOCX"),
         React.createElement("button", { onClick: function() { if (navigator.clipboard) { navigator.clipboard.writeText(aiR.out).then(function(){ showToast(aiR.mode === "federal" ? "RESUME COPIED \u2014 fill the [brackets], then send." : "RESUME COPIED \u2014 review the draft and honest gaps, then send."); }); } if (window.__trackEvent) window.__trackEvent("ai_resume_copied", {}); }, style: { marginTop: 8, background: "transparent", color: C.greenBright, border: "1px solid " + C.greenBright, borderRadius: 8, padding: "9px 16px", fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: "pointer" } }, "COPY RESUME"), /*#__PURE__*/React.createElement("a", {
         href: "https://www.dol.gov/agencies/vets/programs/tap/employment-navigator-partnership", target: "_blank", rel: "noopener noreferrer",
         onClick: function() { if (window.__trackEvent) window.__trackEvent("enpp_handoff_tapped", {}); },

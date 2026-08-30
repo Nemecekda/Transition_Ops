@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.14"
+  version: "0.15"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.14 is PENDING until the RDM regression suite
+Version 0.15 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -86,9 +86,12 @@ hide a blocker.
 - Filler: generic adjectives, empty ownership language, and banned filler are
   removed without deleting supported substance.
 - Length and readability: civilian output is concise and federal output is
-  detailed, while neither truncates identities or fabricates compression.
+  detailed, while neither truncates identities or fabricates compression. For
+  civilian downloads, the final rendered artifact and its page balance are the
+  controlling evidence.
 - Format compliance: civilian and federal requirements are evaluated against
-  separate closed checklists.
+  separate closed checklists. Civilian downloadable format is scored against
+  the final exported and rendered artifact, not model text alone.
 
 Use `PASS`, `NEEDS MEMBER FACT`, or `FAIL` per dimension. `FAIL` is mandatory
 for a blocking invariant. `NEEDS MEMBER FACT` is not permission to infer.
@@ -252,10 +255,12 @@ Maximum incremental API exposure is $0.
 In civilian mode only, replace any model-generated Core Skills section with a
 server-owned canonical section derived only from exact semicolon-delimited atoms
 in the confirmed global `SKILLS AND TOOLS (EXACT OR MISSING)` field. Preserve
-stable source order and select at most nine safe atoms. Exclude empty atoms,
-literal `MISSING`, exact duplicates, and atoms containing quantities, numeric
-forms, dates, or durations. Preserve every selected atom's internal bytes. The
-server may generate only the `CORE SKILLS` heading and comma-space separators.
+stable source order. Before selection, exclude every atom already selected for
+the canonical Summary by exact atom bytes, then select at most nine remaining
+safe atoms. Exclude empty atoms, literal `MISSING`, exact duplicates, and atoms
+containing quantities, numeric forms, dates, or durations. Preserve every
+selected atom's internal bytes. The server may generate only the `CORE SKILLS`
+heading and comma-space separators.
 
 Replace the generated Core Skills heading and body completely. If no safe atom
 exists, omit both heading and body. Preserve every non-Core-Skills byte, and
@@ -276,6 +281,61 @@ references never cure partial support. Unsupported translations remain
 audit-mediated and fail closed. Add no call or retry and change no model, cap,
 cost ceiling, `store: false`, privacy control, usage limit, logging, persistence,
 or analytics. Federal behavior is unchanged, maximum incremental API exposure
+is $0, and the external monthly cap remains `UNVERIFIED`.
+
+## FINAL CIVILIAN ARTIFACT GATE
+
+This gate applies only to civilian candidate text and its downloadable artifact.
+It does not change the federal path.
+
+Before clause inventory and audit, canonicalize member identity sections from
+the closed confirmed ledger. Include every confirmed personal-header value
+exactly once and byte-exact. Include every confirmed education,
+certification, and license item exactly once and byte-exact. An education item
+retains each confirmed degree, school, and date component; an unknown component
+is omitted without changing the confirmed components. Replace generated copies
+of these sections rather than appending to them, and make the operation
+idempotent. Never infer, translate, abbreviate, merge, split, or source these
+values from duties, roles, the posting, target title, adjacent facts, or raw
+source.
+
+An essential civilian personal header consists of a confirmed member name and
+at least one confirmed direct contact method: email or phone. Confirmed location
+is included exactly once but is not a substitute for a direct contact method.
+When any essential header element is unavailable, omit the unknown value and
+all placeholders, score Format Compliance `NEEDS MEMBER FACT`, and give
+member-safe guidance outside the resume identifying the missing header fact.
+Never invent or reconstruct a header value. A missing essential header does not
+turn a truthful, otherwise grounded draft into `PASS` for Format Compliance.
+
+After all deterministic and audit checks pass, the released audited candidate
+text is the sole content source for export. The exported artifact must be
+content-equivalent: it preserves every released section, identity, claim,
+value, order, and list relationship with no added, omitted, changed, or
+duplicated candidate content. Presentation-only document structure is allowed;
+it may not alter meaning or hide content. Verify equivalence against the actual
+exported file, not an intended template or pre-export string.
+
+A Word download must be a real Office Open XML document with the `.docx`
+extension and MIME type
+`application/vnd.openxmlformats-officedocument.wordprocessingml.document`.
+HTML, rich text, or another payload renamed `.doc` or `.docx` fails Format
+Compliance. The filename, extension, MIME declaration, and file signature must
+agree.
+
+Render the final exported artifact before release. Length and Readability and
+Format Compliance may both be `PASS` only when that render is readable and
+balanced: no clipping, overlap, hidden text, orphaned heading or role header,
+unreadable compression, avoidable sparse trailing page, or large blank region
+created while resume content is stranded on another page. One page remains the
+civilian target, but a readable, balanced second page is preferable to deleted
+roles, credentials, education, or supported substance. The rendered export,
+not the unaudited model response or browser preview, controls these two
+dimensions.
+
+This gate adds no model call or retry and changes no model, input bound, output
+cap, usage limit, budget or cost ceiling, `store: false`, privacy control,
+logging, storage, persistence, or analytics. Maximum incremental API exposure
 is $0, and the external monthly cap remains `UNVERIFIED`.
 
 ## CIVILIAN ROLE METADATA COMPLETION
@@ -814,10 +874,15 @@ all existing hard input bounds.
   canonical Core Skills section.
 - **RDM-159 Posting-only gaps:** posting-only skill phrases must appear only as
   unmet gaps, never as member qualifications.
-- **RDM-160 Safe atom counts:** one through nine confirmed safe Skills atoms
-  must render byte-exact in stable source order.
-- **RDM-161 Bounded skills:** more than nine safe Skills atoms must use only the
-  first nine in source order.
+- **RDM-160 Canonical atom de-duplication:** one through nine confirmed safe
+  Skills atoms must render byte-exact and exactly once across Summary and Core
+  Skills in stable source order. Summary receives up to the first four; Core
+  Skills excludes those exact atoms and receives only the remainder. Reapplying
+  both canonicalizers must be idempotent.
+- **RDM-161 Bounded de-duplicated skills:** with more than thirteen confirmed
+  safe Skills atoms, Summary must use the first four and Core Skills only the
+  next nine in stable source order; later atoms are excluded, and no exact atom
+  may appear in both sections.
 - **RDM-162 Unsafe atom exclusion:** empty, literal `MISSING`, exact duplicate,
   quantified, numeric, date, and duration atoms must be excluded.
 - **RDM-163 Generated replacement:** broad or posting-derived model Core Skills
@@ -832,19 +897,60 @@ all existing hard input bounds.
 - **RDM-167 Audit exclusion and merge:** canonical Core Skills must be excluded
   from model-adjudicated claim IDs and merged exactly once only after every
   remaining audit check passes.
-- **RDM-168 Translation broadening:** a confirmed `transition-planning
-  application` must not become `candidate support`; the audit must withhold the
-  unsupported broader claim.
-- **RDM-169 Narrow translation:** a civilian translation may pass only when
-  same-role facts support the entire activity, object, beneficiary or audience,
-  purpose, domain, scope, scale, level, and outcome.
-- **RDM-170 Posting cannot cure support:** posting terminology or references
-  must not cure an unsupported or partially supported role claim.
+- **RDM-168A Unsupported translation broadening:** attempt to turn a confirmed
+  `transition-planning application` into `candidate support`; the audit must
+  withhold the unsupported broader claim.
+- **RDM-168B Exact-phrase positive control:** the same fixture using the exact
+  confirmed `transition-planning application` phrase must remain eligible for
+  release when every other gate passes.
+- **RDM-169A Fully supported narrow translation:** a civilian translation may
+  pass only when same-role facts support the complete activity, object,
+  beneficiary or audience, purpose, domain, scope, scale, level, and outcome.
+- **RDM-169B Semantic mutation failures:** starting from the RDM-169A positive
+  control, mutate activity, object, beneficiary or audience, purpose, domain,
+  scope, scale, level, and outcome one element at a time; every unsupported
+  mutation must be withheld.
+- **RDM-170A Posting-only cure rejection:** posting terminology or references
+  must not cure an unsupported or partially supported role claim; an
+  adversarial posting containing the missing element must still withhold it.
+- **RDM-170B Member-fact positive control:** the same terminology may pass only
+  when member-confirmed same-role facts independently support every semantic
+  element; the posting remains targeting context, not evidence.
 - **RDM-171 Unchanged controls:** federal behavior, models, calls, retries,
   facts/repair 3500, civilian 2200, federal 1900, audit 4000, `store: false`,
   privacy, logging, storage, persistence, analytics, draft and usage limits
   remain unchanged. Maximum incremental API exposure is $0, and the external
   monthly cap remains `UNVERIFIED`.
+- **RDM-172 Cross-section uniqueness and idempotence:** exact Summary atoms must
+  be absent from Core Skills, all retained atoms must remain in stable order,
+  and repeated final civilian canonicalization must be byte-identical.
+- **RDM-173 Identity-section completeness:** every confirmed personal-header,
+  education, certification, and license item must survive byte-exact and exactly
+  once. An unknown education component must be omitted without losing confirmed
+  components. Missing member name or both direct contact methods must produce no
+  invention or placeholder, must score Format Compliance `NEEDS MEMBER FACT`,
+  and must return member guidance outside the resume.
+- **RDM-174 Export equivalence and truthful DOCX:** extracted content from the
+  final download must be structurally equivalent to the released audited
+  candidate text with no added, omitted, changed, reordered, or duplicated
+  content. The payload must be genuine Office Open XML with `.docx`, the exact
+  DOCX MIME type, and a matching file signature; renamed HTML or `.doc` fails.
+- **RDM-175 Six-role render balance:** a synthetic six-role civilian fixture
+  must retain all roles, education, and credentials and must not render a second
+  page containing only two roles with most of that page blank. It may use a
+  readable balanced second page when one page cannot hold all supported content.
+- **RDM-176 Render-governed scoring:** clipping, overlap, hidden text, orphaned
+  headings or role headers, unreadable compression, or avoidable sparse trailing
+  pages must prevent simultaneous `PASS` for Length and Readability and Format
+  Compliance, even when model text and grounding checks pass.
+- **RDM-177 Federal artifact boundary:** federal generation, brackets, content,
+  audit, export behavior, and score rules must remain unchanged from v0.14.
+- **RDM-178 Unchanged operational controls:** models, calls, retries,
+  facts/repair 3500, civilian 2200, federal 1900, audit 4000, input bounds,
+  draft and usage limits, budget and cost ceilings, `store: false`, privacy,
+  logging, storage, persistence, and analytics remain unchanged. Maximum
+  incremental API exposure is $0, and the external monthly cap remains
+  `UNVERIFIED`.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -855,7 +961,7 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.14 until all cases execute and live
+Keep registry item #6 PENDING at version 0.15 until all cases execute and live
 clone evidence passes. After successful execution and live evidence, force-mod
 proposes the smallest evidence-supported revision and Commander rules on
 promotion to CODIFIED 1.0.

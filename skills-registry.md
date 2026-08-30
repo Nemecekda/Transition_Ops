@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.14 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.15 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,30 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.14 -> 0.15, remains
+  PENDING.** Commander-approved scope responds to the first rendered v0.14
+  civilian artifact: confirmed education was omitted; confirmed header and
+  credentials were not deterministically guaranteed; Summary repeated exact
+  Core Skills atoms; the two-page export stranded two roles on a mostly blank
+  second page; and HTML was presented with a `.doc` extension. Version 0.15 adds
+  a FINAL CIVILIAN ARTIFACT GATE. Summary atoms are excluded byte-exact before
+  Core Skills selection. Every confirmed personal-header, education,
+  certification, and license item is included byte-exact and exactly once;
+  missing essential header facts produce Format Compliance `NEEDS MEMBER FACT`
+  and member guidance without placeholders or invention. The actual export must
+  remain content-equivalent to released audited candidate text and be a genuine
+  `.docx` with matching Office Open XML MIME type and file signature. Final
+  render and page balance govern Length and Readability and Format Compliance.
+  RDM-160/161 are amended; RDM-168A/B, RDM-169A/B, RDM-170A/B, and RDM-172…178
+  specify de-duplication, translation boundaries, posting isolation, exact
+  education and credential survival, export equivalence, truthful file format,
+  page balance, federal non-regression, and operational non-regression. No model,
+  call, retry, cap, privacy, storage, logging, persistence, analytics, usage, or
+  cost control changes are authorized; maximum incremental API exposure is $0
+  and the external monthly cap remains `UNVERIFIED`. This entry records approved
+  specification scope only. No regression or live execution evidence is claimed;
+  registration remains PENDING. Lane: AUTO for internal governance; app
+  implementation remains Commander-gated. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.13 -> 0.14, remains
   PENDING.** Live v0.13 evidence showed a correctly withheld civilian draft:
   Core Skills presented posting-only workforce-development and onboarding
