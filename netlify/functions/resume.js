@@ -248,11 +248,11 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
     return issues.concat(roleStructureIssues(text, facts));
   }
 
-  const AUDIT_MAX_OUTPUT_TOKENS = 3000;
-  // Approved conservative incremental ceilings: $0.06 per audit and $0.18 per browser/day.
+  const AUDIT_MAX_OUTPUT_TOKENS = 4000;
+  // Approved conservative incremental ceilings: $0.08 per audit and $0.24 per browser/day.
   // External monthly hard cap remains UNVERIFIED; repository controls do not prove account configuration.
-  const AUDIT_INCREMENTAL_CEILING_USD = 0.06;
-  const BROWSER_DAILY_AUDIT_CEILING_USD = 0.18;
+  const AUDIT_INCREMENTAL_CEILING_USD = 0.08;
+  const BROWSER_DAILY_AUDIT_CEILING_USD = 0.24;
   const EXTERNAL_MONTHLY_HARD_CAP_STATUS = "UNVERIFIED";
   const SCORE_DIMENSIONS = [
     "grounding_and_claim_trace", "exact_identity_preservation", "role_separation",
@@ -436,7 +436,13 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
     } catch (auditError) {
       return safeFailure(classifyProviderError(auditError), 502, { blockers: ["The quality review could not be completed."], scorecard: [] });
     }
-    if (auditResponse.status !== "completed") return safeFailure(classifyIncomplete(auditResponse), 502, { blockers: ["The quality review could not be completed."], scorecard: [] });
+    if (auditResponse.status !== "completed") {
+      const auditReasonCategory = classifyIncomplete(auditResponse);
+      return safeFailure(auditReasonCategory, 502, {
+        error: auditReasonCategory === "output_limit" ? "Your draft was created, but the quality review needed more room to complete. Your confirmed facts are not the issue. Please try again." : FAILURE_MESSAGES[auditReasonCategory],
+        blockers: ["The quality review could not be completed."], scorecard: []
+      });
+    }
     const auditText = responseText(auditResponse);
     let audit;
     try { audit = JSON.parse(auditText); } catch (auditError) {

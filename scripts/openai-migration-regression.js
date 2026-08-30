@@ -240,7 +240,7 @@ async function run() {
   assert.equal(result.statusCode, 200);
   assert.equal(calls.length - callsBeforeCorrectedDraft, 2);
   assert.equal(calls[callsBeforeCorrectedDraft].max_output_tokens, 1300);
-  assert.equal(calls[callsBeforeCorrectedDraft + 1].max_output_tokens, 3000);
+  assert.equal(calls[callsBeforeCorrectedDraft + 1].max_output_tokens, 4000);
   assert.equal(calls.at(-1).model, "gpt-5.6-terra");
   assert.match(JSON.parse(result.body).bullets, /^HR Director - Synthetic Command[\s\S]*^Deputy Director - Synthetic Command/m);
 
@@ -274,12 +274,15 @@ async function run() {
 
   const lastAuditCall = calls.filter((call) => call.text && call.text.format).at(-1);
   assert.equal(lastAuditCall.model, "gpt-5.6-terra");
-  assert.equal(lastAuditCall.max_output_tokens, 3000);
+  assert.equal(lastAuditCall.max_output_tokens, 4000);
   assert.equal(lastAuditCall.store, false);
   assert.deepEqual(lastAuditCall.reasoning, { effort: "none" });
   assert.equal(lastAuditCall.text.format.type, "json_schema");
   assert.equal(lastAuditCall.text.format.strict, true);
   assert.deepEqual(lastAuditCall.text.format.schema.required, ["audit_verdict", "blockers", "claim_trace", "scorecard", "supported_keywords", "unmet_gaps"]);
+  assert.deepEqual(lastAuditCall.text.format.schema.properties.claim_trace.items.required, ["claim_id", "section", "claim_text", "fact_refs", "posting_refs", "transform", "verdict"]);
+  assert.deepEqual(lastAuditCall.text.format.schema.properties.scorecard.items.required, ["dimension", "status", "evidence"]);
+  assert.equal(lastAuditCall.text.format.schema.properties.scorecard.items.properties.dimension.enum.length, 10);
 
   nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nImproved customer satisfaction.\nTIP: Add dates." };
   auditResponseQueue.push((request) => {
@@ -345,6 +348,8 @@ async function run() {
   assert.equal(result.statusCode, 200);
   const civilianAuditBody = JSON.parse(result.body);
   assert.equal(civilianAuditBody.scorecard.length, 10);
+  assert.equal(civilianAuditBody.trace.length, draftClausesFromAuditRequest(calls.at(-1)).length);
+  assert.ok(civilianAuditBody.trace.every((item) => item.claim_id && item.section && item.claim_text && item.fact_refs.length > 0 && Object.hasOwn(item, "posting_refs") && item.transform && item.verdict));
   assert.equal(civilianAuditBody.scorecard.find((item) => item.dimension === "date_completeness").status, "NEEDS MEMBER FACT");
   assert.deepEqual(civilianAuditBody.supportedKeywords, ["talent management", "succession planning"]);
   assert.match(civilianAuditBody.gaps.join(" "), /Workday certification/);
@@ -441,6 +446,7 @@ async function run() {
   result = await resume.handler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "output_limit");
+  assert.equal(JSON.parse(result.body).error, "The model reached its output limit before finishing. Shorten the source slightly and try again.");
   assert.equal(calls.length - callsBeforeOutputLimit, 1);
   assert.doesNotMatch(result.body, /MEMBER SECRET|req_123|999|max_output_tokens/);
 
@@ -467,6 +473,10 @@ async function run() {
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "output_limit");
   assert.equal(calls.length - callsBeforeIncompleteAudit, 2);
+  assert.equal(JSON.parse(result.body).error, "Your draft was created, but the quality review needed more room to complete. Your confirmed facts are not the issue. Please try again.");
+  assert.deepEqual(JSON.parse(result.body).blockers, ["The quality review could not be completed."]);
+  assert.deepEqual(JSON.parse(result.body).scorecard, []);
+  assert.doesNotMatch(JSON.parse(result.body).error, /shorten|facts are too long/i);
   assert.doesNotMatch(result.body, /PRIVATE AUDIT|req_audit|max_output_tokens/);
 
   nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
@@ -520,15 +530,15 @@ async function run() {
   const auditCalls = calls.filter((call) => call.text && call.text.format && call.text.format.name === "resume_quality_audit");
   assert.ok(auditCalls.length > 0);
   assert.ok(calls.every((call) => call.store === false));
-  assert.ok(auditCalls.every((call) => call.model === "gpt-5.6-terra" && call.max_output_tokens === 3000 && call.reasoning.effort === "none"));
+  assert.ok(auditCalls.every((call) => call.model === "gpt-5.6-terra" && call.max_output_tokens === 4000 && call.reasoning.effort === "none"));
   const resumeSource = fs.readFileSync(path.join(root, "netlify/functions/resume.js"), "utf8");
   const clientSource = fs.readFileSync(path.join(root, "netlify/functions/openai-client.js"), "utf8");
   const uiSource = fs.readFileSync(path.join(root, "index.html"), "utf8");
   const packageData = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   assert.equal(packageData.dependencies.openai, "7.8.0");
   assert.doesNotMatch(resumeSource, /battalion -> "600-person organization"|Every bullet names scale/);
-  assert.match(resumeSource, /AUDIT_INCREMENTAL_CEILING_USD = 0\.06/);
-  assert.match(resumeSource, /BROWSER_DAILY_AUDIT_CEILING_USD = 0\.18/);
+  assert.match(resumeSource, /AUDIT_INCREMENTAL_CEILING_USD = 0\.08/);
+  assert.match(resumeSource, /BROWSER_DAILY_AUDIT_CEILING_USD = 0\.24/);
   assert.match(resumeSource, /EXTERNAL_MONTHLY_HARD_CAP_STATUS = "UNVERIFIED"/);
   const failureMessagesBlock = resumeSource.match(/const FAILURE_MESSAGES = \{([\s\S]*?)\n  \};/)[1];
   const publicCategories = Array.from(failureMessagesBlock.matchAll(/^    ([a-z_]+):/gm), (match) => match[1]);
@@ -539,7 +549,10 @@ async function run() {
   assert.doesNotMatch(resumeSource, /\.message/);
   assert.match(clientSource, /maxRetries: 0/);
   assert.match(resumeSource, /max_output_tokens: mode === "federal" \? 1900 : 1300/);
-  assert.match(resumeSource, /AUDIT_MAX_OUTPUT_TOKENS = 3000/);
+  assert.equal((resumeSource.match(/max_output_tokens: mode === "federal" \? 1900 : 1300/g) || []).length, 2);
+  assert.match(resumeSource, /AUDIT_MAX_OUTPUT_TOKENS = 4000/);
+  assert.equal(((4000 - 3000) * 12 / 1000000).toFixed(3), "0.012");
+  assert.equal((((4000 - 3000) * 12 / 1000000) * 3).toFixed(3), "0.036");
   assert.match(fs.readFileSync(path.join(root, "netlify/functions/navigator.js"), "utf8"), /max_output_tokens: 800/);
   assert.match(uiSource, /QUALITY SCORECARD/);
   assert.match(uiSource, /DRAFT WITHHELD/);
@@ -549,7 +562,7 @@ async function run() {
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
 
-  console.log("PASS: synthetic RDM-1..RDM-23 control paths, content-free failure categories, unchanged caps/retries, privacy controls, strict audit validation, and existing OpenAI migration regressions (live model evaluation pending)");
+  console.log("PASS: synthetic RDM-1..RDM-29 control paths, audit 4000 capacity/wording/exposure, unchanged other caps/retries, complete strict schema/trace controls, and existing OpenAI migration regressions (live model evaluation pending)");
 }
 
 run().catch((error) => {

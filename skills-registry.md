@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.2 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.3 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,16 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.2 -> 0.3, remains
+  PENDING.** Governs the approved audit-only capacity increase from 3000 to
+  4000, separates generation-stage from audit-stage output limits, and requires
+  audit-specific member-safe wording. Records the exact 33.33% cap increase,
+  $0.012 maximum added exposure per audit, $0.036 per three-draft browser day,
+  and conservative ceilings of $0.08/$0.24. RDM-24…RDM-29 preserve all other
+  caps, zero retries, call count, full schema, complete trace, ten score
+  dimensions, no logging/storage, and the `UNVERIFIED` external monthly cap.
+  Lane: AUTO for internal governance; app implementation remains separately
+  gated. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.1 -> 0.2, remains
   PENDING.** Adds an allowlisted, content-free failure contract for output
   limits, timeouts, rate and budget limits, upstream failure, quality-gate

@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.2"
+  version: "0.3"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.2 is PENDING until the RDM regression suite
+Version 0.3 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -161,6 +161,21 @@ allowlisted reason: `output_limit`, `timeout`, `rate_limit`, `budget_limit`,
   exact old and new cap, percentage growth in maximum output exposure, verified
   model pricing, and a worst-case cost calculation before Commander approval.
 
+Generation-stage and audit-stage `output_limit` failures are separate. A
+generation-stage limit may address draft length. An audit-stage limit means the
+draft was created but its structured quality review did not finish; member-safe
+wording must say that the review needed more room and must not tell the member to
+shorten confirmed facts.
+
+The approved audit-only capacity is `AUDIT_MAX_OUTPUT_TOKENS = 4000`, increased
+from 3000 by 1000 tokens or 33.33%. At verified Terra pricing of $12 per million
+output tokens, maximum added exposure is $0.012 per audit and $0.036 per
+three-draft browser day. Conservative ceilings are $0.08 per audit and $0.24 per
+browser day. Civilian, federal, fact, and repair caps remain unchanged; retries
+remain zero. The increase adds no call and may not compact or weaken the schema,
+complete claim trace, ten score dimensions, or evidence. The external monthly
+cap remains `UNVERIFIED`.
+
 ## REGRESSION CASES
 
 - **RDM-1 Unsupported claim:** add an unprovided nonnumeric outcome. Must FAIL
@@ -214,6 +229,19 @@ allowlisted reason: `output_limit`, `timeout`, `rate_limit`, `budget_limit`,
 - **RDM-23 Cap discipline:** failure classification must leave output caps and
   retries unchanged. A future cap proposal must supply reproduced evidence,
   exact cap delta, percentage exposure, verified pricing, and worst-case cost.
+- **RDM-24 Audit completion:** the complex structured audit must complete at
+  4000 with all ten score dimensions and a complete claim trace.
+- **RDM-25 Audit wording:** audit-stage `output_limit` must say the draft was
+  created but its quality review needed more room; it must not tell the member
+  to shorten confirmed facts.
+- **RDM-26 Other limits:** civilian, federal, fact, and repair caps remain
+  unchanged; retries remain zero and no call is added.
+- **RDM-27 Exact exposure:** the audit cap must be exactly 4000, with maximum
+  added exposure of $0.012 per audit and $0.036 per three-draft browser day.
+- **RDM-28 Conservative ceilings:** audit and browser-day ceilings must be
+  exactly $0.08 and $0.24; the external monthly cap remains `UNVERIFIED`.
+- **RDM-29 No weakening:** no prompt or schema compaction may remove claims,
+  trace fields, score dimensions, or evidence requirements.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -224,6 +252,6 @@ allowlisted reason: `output_limit`, `timeout`, `rate_limit`, `budget_limit`,
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.2 until all cases execute and evidence
+Keep registry item #6 PENDING at version 0.3 until all cases execute and evidence
 is reviewed. After successful execution, force-mod proposes the smallest
 evidence-supported revision and Commander rules on promotion to CODIFIED 1.0.
