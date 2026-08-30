@@ -22,13 +22,16 @@ exports.handler = async function (event) {
   const clip = (s, n) => String(s || "").slice(0, n);
   const action = input.action === "draft" ? "draft" : "facts";
   const confirmedFacts = clip(input.confirmedFacts, 10000);
-  const userBlock = [
+  const factSourceBlock = [
     "Military role/MOS/rate: " + clip(role, 120),
     "Years of service: " + clip(years, 20),
     "Target civilian role: " + clip(target, 120),
     "Additional skills/ASIs: " + clip(skills, 400),
     "Certifications: " + clip(certs, 400),
-    "What they actually did (their own words): " + clip(experience, 8000),
+    "What they actually did (their own words): " + clip(experience, 8000)
+  ].filter(Boolean).join("\n");
+  const userBlock = [
+    factSourceBlock,
     (posting && String(posting).trim() ? "TARGET JOB POSTING - tailor the resume to this announcement per the TAILORING rule: " + clip(posting, 3500) : "")
   ].filter(Boolean).join("\n");
 
@@ -346,6 +349,7 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
     quality_gate: "The result did not pass the required grounding and quality checks. Review your confirmed facts and try again.",
     incomplete_unknown: "The model did not finish the request. Try again in a minute."
   };
+  const FACT_OUTPUT_LIMIT_MESSAGE = "We could not safely extract every fact into a complete fact sheet. Nothing was drafted or stored. Your source text is not the problem; this fact-sheet review needs a different workflow.";
 
   function safeFailure(reasonCategory, statusCode, extra) {
     return { statusCode: statusCode || 502, headers, body: JSON.stringify(Object.assign({ error: FAILURE_MESSAGES[reasonCategory], reasonCategory: reasonCategory }, extra || {})) };
@@ -381,7 +385,7 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
       return safeFailure("quality_gate", 400, { error: "Enter a specific target job title before drafting, such as Operations Manager or Program Analyst." });
     }
     if (action === "draft") {
-      const unresolvedFactIssues = factSheetIssues(confirmedFacts, userBlock);
+      const unresolvedFactIssues = factSheetIssues(confirmedFacts, factSourceBlock);
       if (unresolvedFactIssues.length) {
         return safeFailure("quality_gate", 400, {
           error: "Resolve the fact-sheet warnings before drafting. Review each role, date, tool, and certification, then try again.",
@@ -391,41 +395,47 @@ End with one line: "TIP:" naming the single highest-value fact to add before sen
     }
     const { createOpenAIClient, responseText } = require("./openai-client");
     const client = createOpenAIClient();
-    const generationMaxOutputTokens = action === "draft" && mode !== "federal" ? 2200 : (mode === "federal" ? 1900 : 1300);
+    const generationMaxOutputTokens = action === "facts" ? 3500 : (mode === "federal" ? 1900 : 2200);
     const response = await client.responses.create({
       model: action === "facts" ? "gpt-5.6-luna" : "gpt-5.6-terra",
       instructions: action === "facts" ? factInstructions : (mode === "federal" ? systemFederal : system) + `\n\nCONFIRMED FACT SHEET RULES:\nThe member reviewed the fact sheet below. Treat it as the controlling fact ledger. Preserve every JOB TITLE (EXACT) and EMPLOYER OR UNIT (EXACT) byte-for-byte in the draft. Do not use a number, outcome, credential, tool, employer, title, or qualification unless it appears in the member's source or confirmed fact sheet. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.`,
-      input: action === "facts" ? userBlock : userBlock + "\n\nMEMBER-REVIEWED FACT SHEET:\n" + confirmedFacts,
+      input: action === "facts" ? factSourceBlock : userBlock + "\n\nMEMBER-REVIEWED FACT SHEET:\n" + confirmedFacts,
       max_output_tokens: generationMaxOutputTokens,
       reasoning: { effort: "none" },
       store: false
     });
-    if (response.status !== "completed") return safeFailure(classifyIncomplete(response));
+    if (response.status !== "completed") {
+      const generationReason = classifyIncomplete(response);
+      return action === "facts" && generationReason === "output_limit" ? safeFailure("output_limit", 502, { error: FACT_OUTPUT_LIMIT_MESSAGE, stage: "facts" }) : safeFailure(generationReason);
+    }
     const rawText = responseText(response);
     if (!rawText) return safeFailure("incomplete_unknown");
     if (action === "facts") {
-      const factIssues = factSheetIssues(rawText, userBlock);
+      const factIssues = factSheetIssues(rawText, factSourceBlock);
       if (!factIssues.length) return { statusCode: 200, headers, body: JSON.stringify(factResponseBody(rawText, [], clip(target, 120))) };
 
       const repairResponse = await client.responses.create({
         model: "gpt-5.6-terra",
         instructions: `Repair the fact sheet's structure and classification only. Preserve every source fact exactly; do not add, infer, translate, or improve facts. Split every distinct job title into its own ROLE block, including later or subsequent roles. DATES may contain only explicit calendar dates or date ranges; move tenure to NUMBERS AND SCALE. Put software and tools under SKILLS AND TOOLS unless the source explicitly names a certification. Return the complete corrected fact sheet in the original plain-text field structure, with no markdown or commentary.`,
-        input: "ORIGINAL BOUNDED SOURCE:\n" + userBlock + "\n\nFIRST FACT SHEET:\n" + rawText + "\n\nSTRUCTURAL ISSUE LABELS:\n" + factIssues.join(", "),
-        max_output_tokens: mode === "federal" ? 1900 : 1300,
+        input: "ORIGINAL BOUNDED SOURCE:\n" + factSourceBlock + "\n\nFIRST FACT SHEET:\n" + rawText + "\n\nSTRUCTURAL ISSUE LABELS:\n" + factIssues.join(", "),
+        max_output_tokens: 3500,
         reasoning: { effort: "none" },
         store: false
       });
-      if (repairResponse.status !== "completed") return safeFailure(classifyIncomplete(repairResponse));
+      if (repairResponse.status !== "completed") {
+        const repairReason = classifyIncomplete(repairResponse);
+        return repairReason === "output_limit" ? safeFailure("output_limit", 502, { error: FACT_OUTPUT_LIMIT_MESSAGE, stage: "facts" }) : safeFailure(repairReason);
+      }
       const repairedText = responseText(repairResponse);
       const editableText = repairedText || rawText;
-      const repairedIssues = factSheetIssues(editableText, userBlock);
+      const repairedIssues = factSheetIssues(editableText, factSourceBlock);
       if (repairedIssues.length) {
         return { statusCode: 200, headers, body: JSON.stringify(factResponseBody(editableText, factIssueWarnings(repairedIssues), clip(target, 120))) };
       }
       return { statusCode: 200, headers, body: JSON.stringify(factResponseBody(editableText, [], clip(target, 120))) };
     }
     const text = normalizePlainText(rawText);
-    const issues = draftQualityIssues(text, userBlock + "\n" + confirmedFacts, confirmedFacts);
+    const issues = draftQualityIssues(text, factSourceBlock + "\n" + confirmedFacts, confirmedFacts);
     if (issues.length) return safeFailure("quality_gate", 502, { error: "The draft did not pass grounding and role-structure checks. Review your confirmed roles and facts, then try again." });
     const inventory = clauseInventory(text);
     if (!inventory.length) return safeFailure("quality_gate", 502, { error: "The draft was created, but its quality review could not be verified. Try again.", blockers: [AUDIT_BLOCKER_MESSAGES.missing_trace], scorecard: [] });

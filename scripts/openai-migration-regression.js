@@ -88,7 +88,7 @@ async function run() {
   assert.equal(JSON.parse(result.body).factSheet, facts);
   assert.deepEqual(JSON.parse(result.body).warnings, []);
   assert.equal(calls.at(-1).model, "gpt-5.6-luna");
-  assert.equal(calls.at(-1).max_output_tokens, 1300);
+  assert.equal(calls.at(-1).max_output_tokens, 3500);
   assert.equal(calls.at(-1).store, false);
   assert.deepEqual(calls.at(-1).reasoning, { effort: "none" });
   assert.match(calls.at(-1).instructions, /later served as Deputy Director/);
@@ -126,6 +126,7 @@ async function run() {
 
   const multiRoleFacts = "ROLE 1\nJOB TITLE (EXACT): HR Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led personnel operations.\n\nROLE 2\nJOB TITLE (EXACT): Deputy Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Managed Workday reporting.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): Workday\nNUMBERS AND SCALE (EXACT OR MISSING): 26 years of service\nTARGET ROLE (EXACT OR MISSING): Talent Management; Talent Development Manager";
   nextResponse = { status: "completed", output_text: multiRoleFacts };
+  const callsBeforeComplexStandardFacts = calls.length;
   result = await resume.handler(post({
     action: "facts",
     target: "Human Resources Director",
@@ -133,17 +134,21 @@ async function run() {
     certs: "PMP"
   }));
   assert.equal(result.statusCode, 200);
+  assert.equal(calls.length - callsBeforeComplexStandardFacts, 1);
+  assert.equal(calls[callsBeforeComplexStandardFacts].max_output_tokens, 3500);
   assert.match(JSON.parse(result.body).factSheet, /ROLE 2\nJOB TITLE \(EXACT\): Deputy Director/);
   assert.equal(Object.hasOwn(JSON.parse(result.body), "suggestedTarget"), false);
 
   const invalidDateFacts = multiRoleFacts.replace("DATES (EXACT OR MISSING): MISSING", "DATES (EXACT OR MISSING): 26 years of service");
   const invalidWorkdayFacts = multiRoleFacts.replace("CERTIFICATIONS (EXACT OR MISSING): PMP", "CERTIFICATIONS (EXACT OR MISSING): Workday").replace("SKILLS AND TOOLS (EXACT OR MISSING): Workday", "SKILLS AND TOOLS (EXACT OR MISSING): MISSING");
   const unresolvedFacts = invalidWorkdayFacts.replaceAll("DATES (EXACT OR MISSING): MISSING", "DATES (EXACT OR MISSING): 26 years of service");
+  const postingOnlySentinel = "POSTING_ONLY_SENTINEL employer Example Corp requires Workday Elite credential, service from Jan 2040 to Dec 2041, $777 scope, 88% outcome, and SentinelTool.";
   const factsRequest = {
     action: "facts",
     target: "Talent Management",
     experience: "Served as HR Director at Synthetic Command and later served as Deputy Director. Used Workday across 26 years of service.",
-    certs: "PMP"
+    certs: "PMP",
+    posting: postingOnlySentinel
   };
 
   responseQueue = [
@@ -159,12 +164,16 @@ async function run() {
   assert.equal(calls.length - callsBeforeSuccessfulRepair, 2);
   const repairCall = calls[callsBeforeSuccessfulRepair + 1];
   assert.equal(repairCall.model, "gpt-5.6-terra");
-  assert.equal(repairCall.max_output_tokens, 1300);
+  assert.equal(repairCall.max_output_tokens, 3500);
   assert.equal(repairCall.store, false);
   assert.deepEqual(repairCall.reasoning, { effort: "none" });
   assert.match(repairCall.input, /ORIGINAL BOUNDED SOURCE:/);
   assert.match(repairCall.input, /FIRST FACT SHEET:/);
   assert.match(repairCall.input, /STRUCTURAL ISSUE LABELS:/);
+  assert.doesNotMatch(calls[callsBeforeSuccessfulRepair].input, /POSTING_ONLY_SENTINEL|Example Corp|2040|\$777|88%|SentinelTool/);
+  assert.doesNotMatch(repairCall.input, /POSTING_ONLY_SENTINEL|Example Corp|2040|\$777|88%|SentinelTool/);
+  assert.match(calls[callsBeforeSuccessfulRepair].input, /Target civilian role: Talent Management/);
+  assert.match(repairCall.input, /Target civilian role: Talent Management/);
 
   responseQueue = [
     { status: "completed", output_text: unresolvedFacts },
@@ -398,6 +407,8 @@ async function run() {
   assert.match(civilianAuditBody.gaps.join(" "), /Workday certification/);
   assert.match(civilianAuditBody.bullets, /^NCOIC - 1st Bn\., U\.S\. Army[\s\S]*^Deputy Director of Personnel - 1st Bn\., U\.S\. Army[\s\S]*^Senior Advisor - 1st Bn\., U\.S\. Army/m);
   assert.doesNotMatch(civilianAuditBody.bullets, /Hours per week|Supervisor:/);
+  assert.match(calls.at(-2).input, /Workday certification required/);
+  assert.match(calls.at(-1).input, /Workday certification required/);
 
   nextResponse = { status: "completed", output_text: civilianThreeRoleDraft.replace("Fort Example | Jan 2020 - Dec 2021", "Fort Example | Jan 2020 - Dec 2021 | [Hours per week: __]\n[Supervisor: Name, Phone - may contact: Yes/No]") };
   result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: threeRoleSource, confirmedFacts: threeRoleFacts }));
@@ -428,6 +439,14 @@ async function run() {
   assert.ok(calls[callsBeforeLongInput].input.length < 22000);
   assert.match(JSON.parse(result.body).bullets, /Synthetic Logistics Leader - Synthetic Unit/);
 
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nManaged $777 and achieved an 88% outcome.\nTIP: Add dates." };
+  const callsBeforePostingOnlyGrounding = calls.length;
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", posting: postingOnlySentinel, confirmedFacts: facts }));
+  assert.equal(result.statusCode, 502);
+  assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
+  assert.equal(calls.length - callsBeforePostingOnlyGrounding, 1);
+  assert.match(calls[callsBeforePostingOnlyGrounding].input, /POSTING_ONLY_SENTINEL/);
+
   nextResponse = { status: "completed", output_text: "HR Director and Deputy Director - Synthetic Command\nLed personnel operations and managed Workday reporting." };
   result = await resume.handler(post({
     action: "draft",
@@ -439,16 +458,18 @@ async function run() {
   assert.match(JSON.parse(result.body).error, /did not pass grounding and role-structure checks/);
   assert.doesNotMatch(JSON.parse(result.body).error, /quality check failed|merged or missing/);
 
-  nextResponse = { status: "completed", output_text: facts };
+  nextResponse = { status: "completed", output_text: multiRoleFacts };
   result = await resume.handler(post({
     action: "facts",
     mode: "federal",
-    role: "Synthetic personnel specialist",
+    role: "Human resources leader",
     target: "Program analyst",
-    experience: "Prepared synthetic personnel reports and coordinated actions across five offices."
+    skills: "Workday",
+    certs: "PMP",
+    experience: "Served as HR Director at Synthetic Command and later served as Deputy Director. Used Workday across 26 years of service."
   }));
   assert.equal(result.statusCode, 200);
-  assert.equal(calls.at(-1).max_output_tokens, 1900);
+  assert.equal(calls.at(-1).max_output_tokens, 3500);
   assert.match(calls.at(-1).instructions, /reviewable fact sheet/);
 
   nextResponse = { status: "completed", output_text: "SYNTHETIC OUTPUT" };
@@ -489,7 +510,9 @@ async function run() {
   result = await resume.handler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "output_limit");
-  assert.equal(JSON.parse(result.body).error, "The model reached its output limit before finishing. Shorten the source slightly and try again.");
+  assert.equal(JSON.parse(result.body).error, "We could not safely extract every fact into a complete fact sheet. Nothing was drafted or stored. Your source text is not the problem; this fact-sheet review needs a different workflow.");
+  assert.equal(JSON.parse(result.body).stage, "facts");
+  assert.equal(Object.hasOwn(JSON.parse(result.body), "factSheet"), false);
   assert.equal(calls.length - callsBeforeOutputLimit, 1);
   assert.doesNotMatch(result.body, /MEMBER SECRET|req_123|999|max_output_tokens/);
 
@@ -506,6 +529,9 @@ async function run() {
   result = await resume.handler(post(factsRequest));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "output_limit");
+  assert.equal(JSON.parse(result.body).error, "We could not safely extract every fact into a complete fact sheet. Nothing was drafted or stored. Your source text is not the problem; this fact-sheet review needs a different workflow.");
+  assert.equal(JSON.parse(result.body).stage, "facts");
+  assert.equal(Object.hasOwn(JSON.parse(result.body), "factSheet"), false);
   assert.equal(calls.length - callsBeforeIncompleteRepair, 2);
   assert.doesNotMatch(result.body, /PRIVATE REPAIR|max_output_tokens/);
 
@@ -591,8 +617,8 @@ async function run() {
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)/);
   assert.doesNotMatch(resumeSource, /\.message/);
   assert.match(clientSource, /maxRetries: 0/);
-  assert.match(resumeSource, /action === "draft" && mode !== "federal" \? 2200 : \(mode === "federal" \? 1900 : 1300\)/);
-  assert.equal((resumeSource.match(/max_output_tokens: mode === "federal" \? 1900 : 1300/g) || []).length, 1);
+  assert.match(resumeSource, /action === "facts" \? 3500 : \(mode === "federal" \? 1900 : 2200\)/);
+  assert.equal((resumeSource.match(/max_output_tokens: 3500/g) || []).length, 1);
   assert.match(resumeSource, /AUDIT_MAX_OUTPUT_TOKENS = 4000/);
   assert.equal(2200 - 1600, 600);
   assert.equal((((2200 - 1600) / 1600) * 100).toFixed(2), "37.50");
@@ -604,6 +630,11 @@ async function run() {
   assert.equal((((2200 - 1300) * 12 / 1000000) * 3).toFixed(4), "0.0324");
   assert.equal(((4000 - 3000) * 12 / 1000000).toFixed(3), "0.012");
   assert.equal((((4000 - 3000) * 12 / 1000000) * 3).toFixed(3), "0.036");
+  assert.equal((3500 * 1.2 / 1000000).toFixed(5), "0.00420");
+  assert.equal((3500 * 12 / 1000000).toFixed(5), "0.04200");
+  assert.equal(((3500 * 1.2 + 3500 * 12) / 1000000).toFixed(5), "0.04620");
+  assert.equal((((3500 - 1300) * (1.2 + 12)) / 1000000).toFixed(5), "0.02904");
+  assert.doesNotMatch(resumeSource + uiSource, /(?:three|3)\s+(?:fact|fact-sheet)\s+(?:requests|reviews).*day|daily\s+fact/i);
   assert.match(fs.readFileSync(path.join(root, "netlify/functions/navigator.js"), "utf8"), /max_output_tokens: 800/);
   assert.match(uiSource, /QUALITY SCORECARD/);
   assert.match(uiSource, /DRAFT WITHHELD/);
@@ -613,7 +644,7 @@ async function run() {
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
 
-  console.log("PASS: synthetic RDM-1..RDM-43 control paths, civilian draft 2200 isolation/exposure, exact nonempty ID trace inventory/hydration, unchanged fact/repair/federal/audit/Navigator caps, zero retries, and existing OpenAI migration regressions (live model evaluation pending)");
+  console.log("PASS: synthetic RDM-1..RDM-53 control paths, fact-stage 3500 isolation/failure contract, civilian draft 2200, federal 1900, audit 4000, Navigator 800, exact nonempty ID trace inventory/hydration, zero retries (live model evaluation pending)");
 }
 
 run().catch((error) => {

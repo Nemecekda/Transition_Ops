@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.5 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.6 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,19 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.5 -> 0.6, remains
+  PENDING.** Root cause moved the live limit from draft generation to button-one
+  fact extraction. Version 0.6 sets mode-independent Luna extraction and Terra
+  repair hard caps of 3500, excludes the full posting while retaining the
+  explicit target, bars posting content from member facts, and withholds every
+  partial sheet with fact-stage wording. Maximum output exposure is $0.00420
+  initial, $0.04200 repair, $0.04620 repaired worst case, and $0.02904 added
+  worst case over 1300. RDM-44…RDM-53 preserve civilian 2200, federal 1900,
+  audit 4000, calls, zero retries, `store: false`, no logging/storage, and the
+  `UNVERIFIED` external monthly cap; they also record that the local three-draft
+  limit is not a fact-request cap. Any fact cap above 3500 requires a new
+  architecture review. Lane: AUTO for internal governance; app implementation
+  remains separately gated. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.4 -> 0.5, remains
   PENDING.** Repeated generation-stage `output_limit` evidence authorizes a
   civilian hard ceiling of 2200: +600/37.50% over 1600 and +900/69.23% over the

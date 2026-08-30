@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.5"
+  version: "0.6"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.5 is PENDING until the RDM regression suite
+Version 0.6 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -200,6 +200,34 @@ count, `store: false`, no logging or persistence, and the `UNVERIFIED` external
 monthly cap are unchanged. A further civilian increase above 2200 requires a
 new architecture review; another cap ratchet is not authorized.
 
+## FACT-STAGE CONTRACT
+
+Stage caps are distinct and must not be inferred from the selected resume mode:
+initial Luna fact extraction is 3500, Terra structural repair is 3500, civilian
+draft generation is 2200, federal draft generation is 1900, and structured
+audit is 4000. The fact extraction and repair cap is mode-independent and is a
+hard stop; any increase above 3500 requires a new architecture review.
+
+Fact extraction and repair may receive the bounded experience source, role,
+years, explicit target, skills, and certifications. Exclude the full job posting
+from both fact-stage inputs. The explicit target stays, but posting content is
+never evidence about the member and may not create a ledger fact.
+
+A fact-stage `output_limit` must return stage-specific member-safe wording and
+withhold the partial fact sheet. Never let a member confirm or draft from a
+truncated ledger, describe the failure as a draft failure, or tell the member to
+shorten confirmed facts. The initial extraction and existing conditional repair
+remain the only fact-stage calls; add no retry or call.
+
+At verified output prices of $1.20 per million Luna tokens and $12 per million
+Terra tokens, maximum output exposure is $0.00420 for initial extraction,
+$0.04200 for repair, and $0.04620 worst case when repair occurs. Added worst-case
+exposure over the prior 1300 cap is $0.02904. The local three-draft limit counts
+completed drafts only and is not a fact-request cap; do not represent it as
+fact-stage abuse protection or a daily fact-stage ceiling. External monthly cap
+remains `UNVERIFIED`. Preserve `store: false`, no logging or persistence, and
+all existing hard input bounds.
+
 ## REGRESSION CASES
 
 - **RDM-1 Unsupported claim:** add an unprovided nonnumeric outcome. Must FAIL
@@ -298,6 +326,28 @@ new architecture review; another cap ratchet is not authorized.
 - **RDM-43 Empty inventory:** an empty clause inventory must return safe
   `quality_gate` with blocking `missing_trace`, make zero audit calls, and never
   construct `claim_id` with `enum: []`.
+- **RDM-44 Fact completion:** the reproduced complex source must produce a
+  complete fact sheet at the hard cap of 3500.
+- **RDM-45 Initial cap:** the initial Luna fact cap must be exactly 3500 in both
+  civilian and federal modes.
+- **RDM-46 Repair cap:** the Terra structural repair cap must be exactly 3500 and
+  return the complete corrected fact sheet.
+- **RDM-47 Fact input:** the full posting must be absent from extraction and
+  repair input while the explicit target remains.
+- **RDM-48 Posting isolation:** a posting-only employer, credential, tool, date,
+  number, or outcome must never enter the fact ledger.
+- **RDM-49 Fact failure:** fact-stage `output_limit` wording must be safe and
+  stage-specific, and a partial fact sheet must never be released.
+- **RDM-50 Other stages:** civilian remains 2200, federal 1900, audit 4000, and
+  call count, zero retries, `store: false`, and no logging or persistence remain
+  unchanged.
+- **RDM-51 Fact costs:** evidence must show $0.00420 initial Luna maximum,
+  $0.04200 Terra repair maximum, $0.04620 repaired worst case, and $0.02904
+  added worst case over 1300.
+- **RDM-52 Usage truth:** the local three-draft limit must not be represented as
+  a fact-request cap; the external monthly cap remains `UNVERIFIED`.
+- **RDM-53 Fact hard stop:** any fact extraction or repair cap above 3500 must
+  fail governance without a new architecture review.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -308,6 +358,6 @@ new architecture review; another cap ratchet is not authorized.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.5 until all cases execute and evidence
+Keep registry item #6 PENDING at version 0.6 until all cases execute and evidence
 is reviewed. After successful execution, force-mod proposes the smallest
 evidence-supported revision and Commander rules on promotion to CODIFIED 1.0.
