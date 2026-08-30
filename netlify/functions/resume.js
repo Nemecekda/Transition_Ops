@@ -217,10 +217,14 @@ Every supplied degree and school, byte-exact, one line each. Include a year only
     }).map(function () { return "merged or missing role entry"; });
   }
 
-  function unsupportedNumbers(text, source) {
+  function quantifiedValues(text) {
     const digitValues = String(text || "").match(/\$?\d[\d,.]*%?\+?/g) || [];
     const wordValues = String(text || "").match(/\b(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)(?:[- ](?:one|two|three|four|five|six|seven|eight|nine|hundred|thousand|million))*\s+(?:years?|months?|weeks?|days?|people|persons?|personnel|employees?|specialists?|recruiters?|hires?|leaders?|members?|locations?|states?|plants?|sites?|units?|teams?|organizations?|operations?|dollars?|percent)\b/gi) || [];
-    const values = digitValues.concat(wordValues);
+    return digitValues.concat(wordValues);
+  }
+
+  function unsupportedNumbers(text, source) {
+    const values = quantifiedValues(text);
     return values.filter(function (value, index) {
       return values.indexOf(value) === index && String(source || "").toLowerCase().indexOf(value.toLowerCase()) === -1;
     });
@@ -377,7 +381,9 @@ Every supplied degree and school, byte-exact, one line each. Include a year only
       return claim && Array.isArray(trace.fact_refs) && trace.fact_refs.every(function (ref) {
         const fact = factsById.get(ref);
         if (!fact || fact.unlinked_number || (claim.owner !== "global" && fact.owner !== claim.owner)) return false;
-        if (claim.owner === "global" && /^R\d+$/.test(fact.owner) && /(?:\$?\d|\b(?:one|two|three|four|five|six|seven|eight|nine|ten|hundred|thousand|million)\b)/i.test(fact.text)) {
+        const claimValues = quantifiedValues(claim.claim_text).map(function (value) { return value.toLowerCase(); });
+        const sharedQuantity = quantifiedValues(fact.text).some(function (value) { return claimValues.indexOf(value.toLowerCase()) !== -1; });
+        if (claim.owner === "global" && /^R\d+$/.test(fact.owner) && sharedQuantity) {
           const role = catalogRoles[Number(fact.owner.slice(1)) - 1];
           return !!role && (claim.claim_text.indexOf(role.title) !== -1 || claim.claim_text.indexOf(role.employer) !== -1);
         }

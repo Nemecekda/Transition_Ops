@@ -504,10 +504,34 @@ async function run() {
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 200);
 
+  for (const nonnumericSummary of ["Operations leadership.", "Operations leadership across complex organizations with distributed teams."]) {
+    nextResponse = { status: "completed", output_text: "SUMMARY\n" + nonnumericSummary + "\n" + liveCivilianDraft };
+    auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.owner === "R5" && /110-person.*\$9M.*1,100 to 1,300/.test(fact.text)).fact_id]; return audit; });
+    result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+    assert.equal(result.statusCode, 200);
+  }
+
+  nextResponse = { status: "completed", output_text: "CORE SKILLS\nOperations leadership\n" + liveCivilianDraft };
+  auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.owner === "R5" && /110-person/.test(fact.text)).fact_id]; return audit; });
+  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  assert.equal(result.statusCode, 200);
+
   nextResponse = { status: "completed", output_text: attributedSummary.replace("Synthetic Role 5 led", "Led") };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.owner === "R5" && /110-person/.test(fact.text)).fact_id]; return audit; });
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 502);
+
+  nextResponse = { status: "completed", output_text: "SUMMARY\nSynthetic Employer 5 led a 110-person operation.\n" + liveCivilianDraft };
+  auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.owner === "R5" && /110-person/.test(fact.text)).fact_id]; return audit; });
+  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  assert.equal(result.statusCode, 200);
+
+  const collisionLedger = liveLedger.replace("Coached the top 15 leaders.", "Led a 110-person team.");
+  nextResponse = { status: "completed", output_text: attributedSummary.replace("Coached the top 15 leaders.", "Led a 110-person team.") };
+  auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.owner === "R4" && /110-person/.test(fact.text)).fact_id]; return audit; });
+  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: collisionLedger, confirmedFacts: collisionLedger }));
+  assert.equal(result.statusCode, 502);
+  assert.deepEqual(JSON.parse(result.body).blockers, ["A draft claim was not supported by your confirmed facts."]);
 
   nextResponse = { status: "completed", output_text: "SUMMARY\nSynthetic Role 5 led a 1,200-person operation.\n" + liveCivilianDraft };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); audit.claim_trace[0].verdict = "unsupported"; audit.claim_trace[0].fact_refs = []; return audit; });
@@ -519,12 +543,19 @@ async function run() {
   result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 200);
 
+  nextResponse = { status: "completed", output_text: "SUMMARY\nUnsupported strategic outcome.\n" + liveCivilianDraft };
+  auditResponseQueue.push((request) => { const audit = passingAudit(request); audit.claim_trace[0].verdict = "unsupported"; audit.claim_trace[0].fact_refs = []; return audit; });
+  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  assert.equal(result.statusCode, 422);
+  assert.match(JSON.parse(result.body).blockers.join(" "), /unsupported/i);
+
   for (const badRef of ["F999", "CROSS_ROLE", "GLOBAL_ROLE", "UNLINKED", "MALFORMED"]) {
     nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nHR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director - Synthetic Command\nManaged Workday reporting." };
     auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = badRef === "MALFORMED" ? null : [badRef === "F999" ? badRef : badRef === "CROSS_ROLE" ? catalog.find((fact) => fact.owner === "R2").fact_id : badRef === "UNLINKED" ? catalog.find((fact) => fact.unlinked_number).fact_id : catalog.find((fact) => fact.owner === "global" && !fact.unlinked_number).fact_id]; return audit; });
     result = await resume.handler(post({ action: "draft", target: "Human Resources Director", experience: factsRequest.experience, confirmedFacts: multiRoleFacts }));
     assert.equal(result.statusCode, 502);
     assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
+    if (badRef === "CROSS_ROLE") assert.deepEqual(JSON.parse(result.body).blockers, ["A draft claim was not supported by your confirmed facts."]);
   }
 
   nextResponse = { status: "completed", output_text: "SUMMARY\nLed 1,200 employees across 18 states.\n" + liveCivilianDraft };
@@ -849,7 +880,7 @@ async function run() {
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
 
-  console.log("PASS: synthetic RDM-1..RDM-81 control paths, scoped generation, deterministic safe categories, role-complete identities, unchanged caps/calls/privacy controls (live model evaluation pending)");
+  console.log("PASS: synthetic RDM-1..RDM-92 control paths, scoped generation, deterministic safe categories, role-complete identities, unchanged caps/calls/privacy controls (live model evaluation pending)");
 }
 
 run().catch((error) => {

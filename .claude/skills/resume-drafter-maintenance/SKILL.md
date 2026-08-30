@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.8"
+  version: "0.9"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.8 is PENDING until the RDM regression suite
+Version 0.9 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -150,6 +150,16 @@ Role-owned numbers remain attached to their owner. Global unlinked numbers are
 unavailable to generation and cannot support a role bullet or ambiguous summary.
 The full closed catalog remains available only to the audit under its existing
 fact-reference restrictions.
+
+For global Summary and Core Skills claims, apply role attribution restrictions
+only when a quantified value is shared between the claim and a referenced
+role-owned fact. Do not treat an incidental number elsewhere in the supporting
+fact line as proof that a nonnumeric global claim is numeric. A nonnumeric global
+claim may cite a mixed duty/metric role fact when the audit supports that claim.
+An explicit numeric global claim must name the exact owning role title or
+employer before it may cite that role's fact. Unlinked numbers, unknown fact
+references, cross-role experience references, wrong-role numeric collisions,
+and unsupported audit verdicts remain fail-closed.
 
 One-page length is a formatting target; complete role inventory is a blocking
 safety requirement. Reduce bullets before omitting, merging, or rewriting a
@@ -465,6 +475,31 @@ all existing hard input bounds.
 - **RDM-81 Synthetic portability:** regression fixtures must be synthetic and
   structurally equivalent; they must contain no member source or absolute
   attachment path.
+- **RDM-82 Nonnumeric Summary duty:** a synthetic nonnumeric Summary claim may
+  cite a role-owned duty fact whose same line also contains `110-person`.
+- **RDM-83 Nonnumeric Core Skills duty:** a synthetic nonnumeric Core Skills
+  claim may cite a mixed duty/metric role fact without naming the role.
+- **RDM-84 Multiple incidental metrics:** a synthetic nonnumeric global claim
+  may cite a supported role fact containing multiple incidental quantities.
+- **RDM-85 Unattributed quantity:** a global claim that states `110-person`
+  without the exact owning title or employer must FAIL.
+- **RDM-86 Exact-title attribution:** the same supported quantified global claim
+  must PASS when it names the exact owning role title.
+- **RDM-87 Exact-employer attribution:** the same supported quantified global
+  claim must PASS when it names the exact owning employer.
+- **RDM-88 Wrong-role collision:** a global quantity matching values in more than
+  one role must FAIL when attributed to the wrong role.
+- **RDM-89 Cross-role experience:** an experience claim may not cite another
+  role's fact, whether or not either line contains a quantity.
+- **RDM-90 Unlinked global quantity:** an unlinked global number remains
+  unavailable to claims and must FAIL.
+- **RDM-91 Unsupported nonnumeric claim:** a nonnumeric global claim marked
+  unsupported by the audit must be WITHHELD even when its reference shape is
+  valid.
+- **RDM-92 Unchanged controls:** facts/repair remain 3500, civilian 2200,
+  federal 1900, audit 4000, with unchanged call count, zero retries, draft limit,
+  posting isolation, `store: false`, no logging or persistence, and the external
+  monthly cap `UNVERIFIED`.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -475,6 +510,6 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.8 until all cases execute and evidence
+Keep registry item #6 PENDING at version 0.9 until all cases execute and evidence
 is reviewed. After successful execution, force-mod proposes the smallest
 evidence-supported revision and Commander rules on promotion to CODIFIED 1.0.
