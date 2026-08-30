@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.4"
+  version: "0.5"
   status: PENDING
 ---
 
@@ -13,7 +13,7 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.4 is PENDING until the RDM regression suite
+Version 0.5 is PENDING until the RDM regression suite
 executes against the app. Specification approval is not execution evidence.
 
 ## TRIGGERS AND GATE
@@ -112,6 +112,19 @@ for one. `civilian_translation` may change terminology but not identity, scale,
 qualification level, or outcome. Do not send the trace or ledger to analytics,
 logs, or durable storage.
 
+The model may omit `claim_text` only when the server first creates a closed,
+request-local inventory of every exact traceable draft clause, identified
+`C1` through `Cn`. The server must require exact set equality between that
+inventory and the returned trace: exactly one record per ID, with no unknown,
+duplicate, or omitted ID. Any mismatch is a blocking `missing_trace` failure.
+Only after that check passes may the server reattach the byte-exact `claim_text`
+for each ID before the UI response. IDs are request-local, carry no member
+identifier, and may not enter logs, persistence, or analytics. This optimization
+may not remove trace fields, any of the ten score dimensions, or evidence.
+An empty clause inventory must fail closed before the audit call: return a safe
+`quality_gate` response with blocking `missing_trace`, make zero audit calls,
+and never construct a structured-output `claim_id` enum with an empty list.
+
 ## FORMAT RULES
 
 Civilian mode is one-page-oriented: concise summary, concrete skills, distinct
@@ -176,13 +189,16 @@ remain zero. The increase adds no call and may not compact or weaken the schema,
 complete claim trace, ten score dimensions, or evidence. The external monthly
 cap remains `UNVERIFIED`.
 
-Reproduced generation-stage `output_limit` evidence authorizes the civilian-only
-draft cap increase from 1300 to 1600: +300 tokens or 23.08%. At verified Terra
-pricing of $12 per million output tokens, maximum added exposure is $0.0036 per
-draft and $0.0108 per three-draft browser day. Federal stays 1900 and audit stays
-4000. Fact and repair behavior and caps, zero retries, call count, `store: false`,
-no logging or persistence, and the `UNVERIFIED` external monthly cap are
-unchanged.
+Repeated generation-stage `output_limit` evidence at 1600 authorizes the
+civilian hard ceiling of 2200: +600 tokens or 37.50% over 1600, with maximum
+added exposure of $0.0072 per draft and $0.0216 per three-draft browser day at
+verified Terra pricing of $12 per million output tokens. From the original 1300
+cap, the increase is +900 tokens or 69.23%, with maximum added exposure of
+$0.0108 per draft and $0.0324 per three-draft browser day. Federal stays 1900
+and audit stays 4000. Fact and repair behavior and caps, zero retries, call
+count, `store: false`, no logging or persistence, and the `UNVERIFIED` external
+monthly cap are unchanged. A further civilian increase above 2200 requires a
+new architecture review; another cap ratchet is not authorized.
 
 ## REGRESSION CASES
 
@@ -258,6 +274,30 @@ unchanged.
   and repair behavior and caps unchanged; retries remain zero, no call is added,
   every model call retains `store: false`, no logging or persistence is added,
   and the external monthly cap remains `UNVERIFIED`.
+- **RDM-33 Civilian completion:** the reproduced complex case must complete at
+  the civilian hard ceiling of exactly 2200.
+- **RDM-34 Closed inventory:** the auditor must return exactly one record for
+  every request-local `C1` through `Cn`, no more and no fewer.
+- **RDM-35 ID mismatch:** missing, duplicate, and unknown IDs must each cause a
+  blocking `missing_trace` failure.
+- **RDM-36 Exact reattachment:** server-reattached `claim_text` must be
+  byte-exact, including duplicate textual clauses assigned different IDs.
+- **RDM-37 UI trace:** the returned UI trace must retain every current field and
+  exact claim text.
+- **RDM-38 Scorecard:** all ten score dimensions and their evidence must remain
+  complete.
+- **RDM-39 Audit capacity:** the complex structured audit must complete within
+  the unchanged 4000 cap after model-output claim text is omitted.
+- **RDM-40 Unchanged controls:** federal remains 1900, audit remains 4000, and
+  fact/repair caps, call count, zero retries, `store: false`, and no logging or
+  persistence remain unchanged.
+- **RDM-41 Request-local IDs:** clause IDs must carry no member identifier and
+  appear in neither logs, persistence, nor analytics.
+- **RDM-42 Hard stop:** any civilian cap increase above 2200 must fail governance
+  without a new architecture review.
+- **RDM-43 Empty inventory:** an empty clause inventory must return safe
+  `quality_gate` with blocking `missing_trace`, make zero audit calls, and never
+  construct `claim_id` with `enum: []`.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -268,6 +308,6 @@ unchanged.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.4 until all cases execute and evidence
+Keep registry item #6 PENDING at version 0.5 until all cases execute and evidence
 is reviewed. After successful execution, force-mod proposes the smallest
 evidence-supported revision and Commander rules on promotion to CODIFIED 1.0.

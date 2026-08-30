@@ -21,11 +21,18 @@ function draftClausesFromAuditRequest(request) {
   return draft.split("\n").map((line) => line.trim().replace(/^[\u2022*-]\s*/, "")).filter((line) => line && !/^(?:SUMMARY|PROFESSIONAL SUMMARY|CORE SKILLS|PROFESSIONAL EXPERIENCE|CERTIFICATIONS(?: & TRAINING)?|EDUCATION)$/i.test(line) && !/^\[[^\]]+\](?:\s*\|\s*\[[^\]]+\])*$/.test(line));
 }
 
+function clauseInventoryFromAuditRequest(request) {
+  const input = String(request.input || "");
+  const match = input.match(/<UNTRUSTED_CLAUSE_INVENTORY>\n([\s\S]*?)\n<\/UNTRUSTED_CLAUSE_INVENTORY>/);
+  assert.ok(match, "audit request includes the delimited clause inventory");
+  return JSON.parse(match[1]);
+}
+
 function passingAudit(request, changes) {
   const audit = {
     audit_verdict: "pass",
     blockers: [],
-    claim_trace: draftClausesFromAuditRequest(request).map((claim, index) => ({ claim_id: "claim-" + (index + 1), section: "resume", claim_text: claim, fact_refs: ["confirmed fact sheet"], posting_refs: [], transform: "exact", verdict: "supported" })),
+    claim_trace: clauseInventoryFromAuditRequest(request).map((claim) => ({ claim_id: claim.claim_id, section: "resume", fact_refs: ["confirmed fact sheet"], posting_refs: [], transform: "exact", verdict: "supported" })),
     scorecard: auditDimensions.map((dimension) => ({ dimension, status: "PASS", evidence: "Synthetic fixture passed this dimension." })),
     supported_keywords: ["preventive maintenance"],
     unmet_gaps: []
@@ -239,7 +246,7 @@ async function run() {
   }));
   assert.equal(result.statusCode, 200);
   assert.equal(calls.length - callsBeforeCorrectedDraft, 2);
-  assert.equal(calls[callsBeforeCorrectedDraft].max_output_tokens, 1600);
+  assert.equal(calls[callsBeforeCorrectedDraft].max_output_tokens, 2200);
   assert.equal(calls[callsBeforeCorrectedDraft + 1].max_output_tokens, 4000);
   assert.equal(calls.at(-1).model, "gpt-5.6-terra");
   assert.match(JSON.parse(result.body).bullets, /^HR Director - Synthetic Command[\s\S]*^Deputy Director - Synthetic Command/m);
@@ -280,14 +287,17 @@ async function run() {
   assert.equal(lastAuditCall.text.format.type, "json_schema");
   assert.equal(lastAuditCall.text.format.strict, true);
   assert.deepEqual(lastAuditCall.text.format.schema.required, ["audit_verdict", "blockers", "claim_trace", "scorecard", "supported_keywords", "unmet_gaps"]);
-  assert.deepEqual(lastAuditCall.text.format.schema.properties.claim_trace.items.required, ["claim_id", "section", "claim_text", "fact_refs", "posting_refs", "transform", "verdict"]);
+  assert.deepEqual(lastAuditCall.text.format.schema.properties.claim_trace.items.required, ["claim_id", "section", "fact_refs", "posting_refs", "transform", "verdict"]);
+  assert.equal(Object.hasOwn(lastAuditCall.text.format.schema.properties.claim_trace.items.properties, "claim_text"), false);
+  assert.deepEqual(lastAuditCall.text.format.schema.properties.claim_trace.items.properties.claim_id.enum, clauseInventoryFromAuditRequest(lastAuditCall).map((item) => item.claim_id));
   assert.deepEqual(lastAuditCall.text.format.schema.properties.scorecard.items.required, ["dimension", "status", "evidence"]);
   assert.equal(lastAuditCall.text.format.schema.properties.scorecard.items.properties.dimension.enum.length, 10);
 
   nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nImproved customer satisfaction.\nTIP: Add dates." };
   auditResponseQueue.push((request) => {
     const audit = passingAudit(request);
-    const claim = audit.claim_trace.find((item) => /customer satisfaction/.test(item.claim_text));
+    const claimId = clauseInventoryFromAuditRequest(request).find((item) => /customer satisfaction/.test(item.claim_text)).claim_id;
+    const claim = audit.claim_trace.find((item) => item.claim_id === claimId);
     claim.fact_refs = [];
     claim.verdict = "unsupported";
     audit.scorecard.find((item) => item.dimension === "grounding_and_claim_trace").status = "FAIL";
@@ -320,8 +330,41 @@ async function run() {
     return audit;
   });
   result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
-  assert.equal(result.statusCode, 422);
+  assert.equal(result.statusCode, 502);
   assert.match(JSON.parse(result.body).blockers.join(" "), /not traced/);
+
+  for (const mutateIds of [
+    (audit) => { audit.claim_trace[1].claim_id = audit.claim_trace[0].claim_id; },
+    (audit) => { audit.claim_trace[0].claim_id = "C999"; }
+  ]) {
+    nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
+    auditResponseQueue.push((request) => { const audit = passingAudit(request); mutateIds(audit); return audit; });
+    result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+    assert.equal(result.statusCode, 502);
+    assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
+    assert.deepEqual(JSON.parse(result.body).blockers, ["One or more draft claims were not traced to confirmed facts."]);
+  }
+
+  const duplicateClause = "Led planning work.";
+  nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\n" + duplicateClause + "\n" + duplicateClause + "\nTIP: Add dates." };
+  auditResponseQueue.push((request) => passingAudit(request));
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  assert.equal(result.statusCode, 200);
+  const duplicateTraces = JSON.parse(result.body).trace.filter((item) => item.claim_text === duplicateClause);
+  assert.equal(duplicateTraces.length, 2);
+  assert.notEqual(duplicateTraces[0].claim_id, duplicateTraces[1].claim_id);
+  assert.ok(duplicateTraces.every((item) => item.claim_text === duplicateClause));
+
+  const emptyInventoryFacts = facts.replace("JOB TITLE (EXACT): Synthetic Logistics Leader", "JOB TITLE (EXACT): SUMMARY").replace("EMPLOYER OR UNIT (EXACT): Synthetic Unit", "EMPLOYER OR UNIT (EXACT): MISSING");
+  nextResponse = { status: "completed", output_text: "SUMMARY\nPROFESSIONAL EXPERIENCE\nCERTIFICATIONS\nEDUCATION" };
+  const callsBeforeEmptyInventory = calls.length;
+  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "SUMMARY role placeholder text.", confirmedFacts: emptyInventoryFacts }));
+  assert.equal(result.statusCode, 502);
+  assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
+  assert.deepEqual(JSON.parse(result.body).blockers, ["One or more draft claims were not traced to confirmed facts."]);
+  assert.equal(calls.length - callsBeforeEmptyInventory, 1);
+  assert.equal(calls.slice(callsBeforeEmptyInventory).filter((call) => call.text && call.text.format).length, 0);
+  assert.equal(calls.slice(callsBeforeEmptyInventory).some((call) => /\"enum\":\[\]/.test(JSON.stringify(call))), false);
 
   nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work.\nTIP: Add dates." };
   auditResponseQueue.push((request) => {
@@ -548,13 +591,17 @@ async function run() {
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)/);
   assert.doesNotMatch(resumeSource, /\.message/);
   assert.match(clientSource, /maxRetries: 0/);
-  assert.match(resumeSource, /action === "draft" && mode !== "federal" \? 1600 : \(mode === "federal" \? 1900 : 1300\)/);
+  assert.match(resumeSource, /action === "draft" && mode !== "federal" \? 2200 : \(mode === "federal" \? 1900 : 1300\)/);
   assert.equal((resumeSource.match(/max_output_tokens: mode === "federal" \? 1900 : 1300/g) || []).length, 1);
   assert.match(resumeSource, /AUDIT_MAX_OUTPUT_TOKENS = 4000/);
-  assert.equal(1600 - 1300, 300);
-  assert.equal((((1600 - 1300) / 1300) * 100).toFixed(2), "23.08");
-  assert.equal(((1600 - 1300) * 12 / 1000000).toFixed(4), "0.0036");
-  assert.equal((((1600 - 1300) * 12 / 1000000) * 3).toFixed(4), "0.0108");
+  assert.equal(2200 - 1600, 600);
+  assert.equal((((2200 - 1600) / 1600) * 100).toFixed(2), "37.50");
+  assert.equal(((2200 - 1600) * 12 / 1000000).toFixed(4), "0.0072");
+  assert.equal((((2200 - 1600) * 12 / 1000000) * 3).toFixed(4), "0.0216");
+  assert.equal(2200 - 1300, 900);
+  assert.equal((((2200 - 1300) / 1300) * 100).toFixed(2), "69.23");
+  assert.equal(((2200 - 1300) * 12 / 1000000).toFixed(4), "0.0108");
+  assert.equal((((2200 - 1300) * 12 / 1000000) * 3).toFixed(4), "0.0324");
   assert.equal(((4000 - 3000) * 12 / 1000000).toFixed(3), "0.012");
   assert.equal((((4000 - 3000) * 12 / 1000000) * 3).toFixed(3), "0.036");
   assert.match(fs.readFileSync(path.join(root, "netlify/functions/navigator.js"), "utf8"), /max_output_tokens: 800/);
@@ -566,7 +613,7 @@ async function run() {
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
 
-  console.log("PASS: synthetic RDM-1..RDM-32 control paths, civilian draft 1600 isolation/exposure, unchanged fact/repair/federal/audit/Navigator caps, zero retries, and existing OpenAI migration regressions (live model evaluation pending)");
+  console.log("PASS: synthetic RDM-1..RDM-43 control paths, civilian draft 2200 isolation/exposure, exact nonempty ID trace inventory/hydration, unchanged fact/repair/federal/audit/Navigator caps, zero retries, and existing OpenAI migration regressions (live model evaluation pending)");
 }
 
 run().catch((error) => {
