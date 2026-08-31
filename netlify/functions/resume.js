@@ -16,6 +16,8 @@ exports.handler = async function (event) {
   const { role, years, experience, skills, certs, target, posting } = input;
   const mode = input.mode === "federal" ? "federal" : "standard";
   const requestHeader = mode === "federal" ? null : input.header;
+  const lengthPreference = ["adaptive", "one_page", "two_pages"].indexOf(input.lengthPreference) !== -1 ? input.lengthPreference : "adaptive";
+  const requestLengthInputs = mode === "federal" || !input.lengthInputs || typeof input.lengthInputs !== "object" || Array.isArray(input.lengthInputs) ? null : input.lengthInputs;
   if (!experience || String(experience).trim().length < 20) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: "Tell us what you actually did — at least a sentence or two." }) };
   }
@@ -92,7 +94,7 @@ Exactly as stated - never change a certification's name or level. Include stated
 
 End with: "TIP:" - the single highest-value addition for federal applications, specific to their draft (e.g., which bracket to fill first, or matching announcement keywords).`;
 
-  const system = `You draft a complete one-page civilian resume for a transitioning U.S. service member from the supplied draft-eligible confirmed facts.
+  const system = `You draft a complete civilian resume for a transitioning U.S. service member from the supplied draft-eligible confirmed facts.
 
 HARD RULES:
 1. GROUNDING: Every factual claim must trace to the supplied confirmed fact view. NEVER invent employers, dates, degrees, tools, metrics, or outcomes. Omit unknown name/contact/header fields, role location/date segments, and education years. Never output brackets, literal MISSING, or TIP. Missing optional facts belong in response gaps.
@@ -105,11 +107,11 @@ TAILORING: when a target job posting is provided, mirror its language only where
 6. BANNED: leveraged, utilize, synergy, framework, dynamic, results-driven, "Responsible for", "Ensured". Write plainly and concretely.
 7. ROLE SCOPE: Each experience bullet may use only facts owned by that exact role, and those same-role facts must support the entire activity, object, beneficiary or audience, purpose, domain, scope, qualification level, scale, and outcome claimed. Put general skills and tools in CORE SKILLS unless the supplied fact view explicitly owns them to one role.
 
-FORMAT - plain text, no markdown, one page. Return PROFESSIONAL EXPERIENCE only. The server deterministically inserts any confirmed personal header, SUMMARY, CORE SKILLS, CERTIFICATIONS, and EDUCATION after the draft passes review. Do not write those server-owned sections.
+FORMAT - plain text, no markdown. Return PROFESSIONAL EXPERIENCE only. The server deterministically inserts any confirmed personal header, SUMMARY, CORE SKILLS, CERTIFICATIONS, and EDUCATION after the draft passes review. Do not write those server-owned sections.
 PROFESSIONAL EXPERIENCE
 CRITICAL: one entry per confirmed role, most recent first. Preserve every job title and employer or unit byte-exact. Never merge separate employers into one block. Per entry:
 On the first line of each entry, place the exact title, a separator, and the exact employer. On the next line, include only explicitly confirmed location and date segments; omit missing segments.
-2-4 bullets per rule 3 (fewer bullets per job when they held many jobs - one page total).`;
+Use concise evidence-bearing bullets per role when the confirmed facts support them. Preserve every confirmed role and exact identity under either length profile. Retain only grounded, role-owned substance selected under the request-local length guidance. Never add filler, duplicates, padding, or invented content to reach a page count.`;
 
   function factRoles(facts) {
     return String(facts || "").split(/^ROLE\s+\d+\s*$/im).slice(1).map(function (block) {
@@ -715,6 +717,185 @@ On the first line of each entry, place the exact title, a separator, and the exa
     return claims;
   }
 
+  const TWO_PAGE_MIN_DRAFT_ELIGIBLE_ATOMS = 10;
+  const TWO_PAGE_MIN_SUPPORTED_ROLE_BULLETS = 10;
+
+  function confirmedRelevantYears(value) {
+    const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    const rawYears = String(source.relevantYears == null ? "" : source.relevantYears).trim();
+    const parsedYears = /^(?:0|[1-9]\d?|100)(?:\.\d{1,2})?$/.test(rawYears) ? Number(rawYears) : null;
+    return parsedYears !== null && Number.isFinite(parsedYears) && parsedYears <= 100 ? parsedYears : null;
+  }
+
+  function confirmedRelevantRoleIndexes(value, roleCount) {
+    const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    const indexes = Array.isArray(source.relevantRoleIndexes) ? source.relevantRoleIndexes : [];
+    const seen = new Set();
+    return indexes.filter(function (roleIndex) {
+      if (!Number.isInteger(roleIndex) || roleIndex < 0 || roleIndex >= roleCount || seen.has(roleIndex)) return false;
+      seen.add(roleIndex);
+      return true;
+    });
+  }
+
+  function confirmedRoleBlockCount(facts) {
+    return String(facts || "").split(/^ROLE\s+\d+\s*$/im).slice(1).length;
+  }
+
+  function roleDutyEvidenceAtoms(facts, scopedFacts) {
+    const eligibleByOwner = new Map();
+    (scopedFacts || []).forEach(function (fact) {
+      if (!fact || !/^R\d+$/.test(fact.owner) || typeof fact.text !== "string") return;
+      if (!eligibleByOwner.has(fact.owner)) eligibleByOwner.set(fact.owner, []);
+      eligibleByOwner.get(fact.owner).push(fact.text);
+    });
+    const atoms = [];
+    const seen = new Set();
+    String(facts || "").split(/^ROLE\s+\d+\s*$/im).slice(1).forEach(function (block, roleIndex) {
+      const title = (/^JOB TITLE \(EXACT\):\s*(.+)$/im.exec(block) || ["", ""])[1].trim();
+      if (!title || /^MISSING$/i.test(title)) return;
+      const owner = "R" + (roleIndex + 1);
+      const eligibleFacts = eligibleByOwner.get(owner) || [];
+      const lines = block.replace(/\r/g, "").split("\n");
+      let collecting = false;
+      const dutyLines = [];
+      lines.forEach(function (line) {
+        const dutyMatch = /^DUTIES AND OUTCOMES \(EXACT FACTS ONLY\):\s*(.*)$/i.exec(line.trim());
+        if (dutyMatch) {
+          collecting = true;
+          if (dutyMatch[1]) dutyLines.push(dutyMatch[1]);
+          return;
+        }
+        if (!collecting) return;
+        if (/^(?:EDUCATION|CERTIFICATIONS|SKILLS AND TOOLS|NUMBERS AND SCALE|TARGET ROLE) \(/i.test(line.trim())) {
+          collecting = false;
+          return;
+        }
+        dutyLines.push(line);
+      });
+      dutyLines.join("\n").split(/[;\n]+/).forEach(function (rawAtom) {
+        const atom = rawAtom.trim().replace(/^[\u2022*-]\s*/, "").replace(/\s+/g, " ");
+        const key = owner + "\u0000" + atom;
+        if (!atom || /^MISSING$/i.test(atom) || !/[A-Za-z]/.test(atom) || seen.has(key)) return;
+        const catalogEligible = eligibleFacts.some(function (factText) {
+          return hasExactBoundaryOccurrence(factText, atom) || factText.indexOf(atom) !== -1;
+        });
+        if (!catalogEligible) return;
+        seen.add(key);
+        atoms.push({ owner: owner, text: atom });
+      });
+    });
+    return atoms;
+  }
+
+  function civilianPreGenerationLengthPlan(preference, lengthInputs, facts, scopedFacts) {
+    const relevantYears = confirmedRelevantYears(lengthInputs);
+    const relevantRoleIndexes = confirmedRelevantRoleIndexes(lengthInputs, confirmedRoleBlockCount(facts));
+    const selectedOwners = new Set(relevantRoleIndexes.map(function (roleIndex) { return "R" + (roleIndex + 1); }));
+    const relevantAtoms = roleDutyEvidenceAtoms(facts, scopedFacts).filter(function (atom) { return selectedOwners.has(atom.owner); });
+    const relevantRoles = relevantAtoms.reduce(function (owners, atom) {
+      if (owners.indexOf(atom.owner) === -1) owners.push(atom.owner);
+      return owners;
+    }, []).length;
+    const draftEligibleAtoms = relevantAtoms.length;
+    const evidenceFit = draftEligibleAtoms >= TWO_PAGE_MIN_DRAFT_ELIGIBLE_ATOMS;
+    const yearsAvailable = relevantYears !== null;
+    let branch;
+    let thresholdMet;
+    if (yearsAvailable && relevantYears >= 10 && relevantRoles >= 3) {
+      branch = "confirmed_years_10_3";
+      thresholdMet = true;
+    } else if (yearsAvailable && relevantYears >= 15 && relevantRoles >= 2) {
+      branch = "confirmed_years_15_2";
+      thresholdMet = true;
+    } else if (yearsAvailable) {
+      branch = "confirmed_years_no_match";
+      thresholdMet = false;
+    } else if (relevantRoles >= 4) {
+      branch = "years_unavailable_4_role";
+      thresholdMet = true;
+    } else {
+      branch = "years_unavailable_no_match";
+      thresholdMet = false;
+    }
+    const recommendTwoPages = evidenceFit && thresholdMet;
+    const recommendedPages = recommendTwoPages ? 2 : 1;
+    const selectedPages = preference === "one_page" ? 1 : preference === "two_pages" ? (evidenceFit ? 2 : 1) : recommendedPages;
+    const selectionReason = preference === "adaptive" ? "adaptive_recommendation" : preference === "one_page" ? "guarded_one_page_preference" : evidenceFit ? "guarded_two_page_preference" : "two_page_preference_evidence_guard";
+    const rationale = "Y=" + (yearsAvailable ? String(relevantYears) : "unavailable") + "; R=" + relevantRoles + "; A=" + draftEligibleAtoms + "; E=" + (evidenceFit ? "PASS" : "FAIL") + "; branch=" + branch + "; recommendation=" + (recommendTwoPages ? "two_pages" : "one_page") + "; selected=" + (selectedPages === 2 ? "two_pages" : "one_page");
+    return {
+      version: "v0.17",
+      preference: preference,
+      relevantYears: relevantYears,
+      relevantRoles: relevantRoles,
+      draftEligibleAtoms: draftEligibleAtoms,
+      evidenceFit: evidenceFit ? "PASS" : "FAIL",
+      branch: branch,
+      recommendation: recommendTwoPages ? "two_pages" : "one_page",
+      recommendedPages: recommendedPages,
+      selectedPages: selectedPages,
+      selectionReason: selectionReason,
+      preGenerationRationale: rationale,
+      rationale: rationale
+    };
+  }
+
+  function civilianLengthProfileInstructions(plan) {
+    if (!plan || plan.selectedPages !== 2) return `REQUEST-LOCAL LENGTH PROFILE: ONE PAGE PREFERRED. Keep every confirmed role and exact identity. Retain a concise subset of distinct, target-relevant, grounded same-role duty and outcome evidence, normally using 1-3 bullets per role when available. Do not merge or erase the supported substance of a role, and do not compress content into unreadable prose.`;
+    return `REQUEST-LOCAL LENGTH PROFILE: TWO PAGES ELIGIBLE. Retain more distinct grounded, role-owned duty and outcome evidence from the supplied catalog when available, normally using 3-6 concise bullets per role so a two-role catalog can retain ten distinct supported bullets. Do not add filler, duplication, invention, padding, posting-only claims, or artificial page-break content.`;
+  }
+
+  function roleBulletRecords(text, facts, mode) {
+    const roles = factRoles(facts);
+    const usedRoleIndexes = new Set();
+    let owner = "global";
+    let section = "global";
+    let claimNumber = 0;
+    const records = [];
+    String(text || "").split("\n").forEach(function (line) {
+      const rawLine = line.trim();
+      const claimText = rawLine.replace(/^[\u2022*-]\s*/, "");
+      const exactSection = mode !== "federal" ? civilianExactSectionHeading(claimText) : "";
+      if (exactSection) { section = exactSection; owner = "global"; return; }
+      const heading = sectionHeading(claimText);
+      if (heading) { section = heading; owner = "global"; return; }
+      if (!claimText || /^\[[^\]]+\](?:\s*\|\s*\[[^\]]+\])*$/.test(claimText)) return;
+      if (section === "experience") {
+        const matchedRoleIndex = roleHeaderIndex(claimText, roles, usedRoleIndexes);
+        if (matchedRoleIndex !== -1) { usedRoleIndexes.add(matchedRoleIndex); owner = "R" + (matchedRoleIndex + 1); }
+      }
+      claimNumber += 1;
+      if (section === "experience" && /^R\d+$/.test(owner) && /^[\u2022*-]\s+/.test(rawLine)) records.push({ claim_id: "C" + claimNumber, owner: owner, claim_text: claimText });
+    });
+    return records;
+  }
+
+  function confirmCivilianLengthPlan(plan, text, facts, trace) {
+    const traceById = new Map((trace || []).map(function (item) { return [item.claim_id, item]; }));
+    const distinctSupportedBullets = [];
+    const seenBullets = new Set();
+    roleBulletRecords(text, facts, "standard").forEach(function (record) {
+      const traceRecord = traceById.get(record.claim_id);
+      const key = record.owner + "\u0000" + record.claim_text;
+      if (!traceRecord || traceRecord.verdict !== "supported" || seenBullets.has(key)) return;
+      seenBullets.add(key);
+      distinctSupportedBullets.push(record);
+    });
+    const supportedRoleBullets = distinctSupportedBullets.length;
+    const substantive = supportedRoleBullets >= TWO_PAGE_MIN_SUPPORTED_ROLE_BULLETS;
+    const selectedTwoPages = plan && plan.selectedPages === 2;
+    const presentationProfile = selectedTwoPages && substantive ? "readable_two_page" : "compact_one_page";
+    const postAuditDisposition = selectedTwoPages && !substantive ? "fallback_one_page_insufficient_supported_bullets" : selectedTwoPages ? "two_page_candidate_substantive" : "one_page_candidate";
+    const rationale = String(plan && plan.preGenerationRationale || "") + "; B=" + supportedRoleBullets + "; postAudit=" + (substantive ? "PASS" : "FAIL") + "; presentation=" + presentationProfile;
+    return Object.assign({}, plan, {
+      supportedRoleBullets: supportedRoleBullets,
+      postAuditEvidenceFit: substantive ? "PASS" : "FAIL",
+      presentationProfile: presentationProfile,
+      postAuditDisposition: postAuditDisposition,
+      rationale: rationale
+    });
+  }
+
   function semanticTerms(text) {
     const stop = new Set(["about", "after", "along", "also", "among", "and", "are", "been", "before", "being", "built", "delivered", "for", "from", "had", "has", "have", "into", "led", "managed", "more", "most", "only", "provided", "that", "the", "their", "them", "they", "this", "through", "under", "used", "using", "was", "were", "with", "within"]);
     return (String(text || "").toLowerCase().match(/[a-z][a-z-]{2,}/g) || []).map(function (term) { return term.replace(/(?:ing|ed|es|s)$/i, ""); }).filter(function (term, index, all) { return term.length >= 3 && !stop.has(term) && all.indexOf(term) === index; });
@@ -863,12 +1044,14 @@ On the first line of each entry, place the exact title, a separator, and the exa
     }
     const catalog = action === "draft" ? factCatalog(confirmedFacts) : [];
     const scopedFacts = action === "draft" ? draftEligibleFacts(catalog) : [];
+    const preGenerationLengthPlan = action === "draft" && mode !== "federal" ? civilianPreGenerationLengthPlan(lengthPreference, requestLengthInputs, confirmedFacts, scopedFacts) : null;
+    const scopedFactRules = mode === "federal" ? `\n\nSCOPED FACT RULES:\nThe supplied draft-eligible fact view is the sole controlling fact source. Use no member fact unless it appears there. Preserve every job title, employer or unit, degree, school, certification, and license byte-for-byte. Include every role's exact title and employer or unit even under one-page pressure. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.` : `\n\nSCOPED FACT RULES:\nThe supplied draft-eligible fact view is the sole controlling fact source. Use no member fact unless it appears there. Preserve every job title, employer or unit, degree, school, certification, and license byte-for-byte. Include every role's exact title and employer or unit regardless of page count. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.`;
     const { createOpenAIClient, responseText } = require("./openai-client");
     const client = createOpenAIClient();
     const generationMaxOutputTokens = action === "facts" ? 3500 : (mode === "federal" ? 1900 : 2200);
     const response = await client.responses.create({
       model: action === "facts" ? "gpt-5.6-luna" : "gpt-5.6-terra",
-      instructions: action === "facts" ? factInstructions : (mode === "federal" ? systemFederal : system) + `\n\nSCOPED FACT RULES:\nThe supplied draft-eligible fact view is the sole controlling fact source. Use no member fact unless it appears there. Preserve every job title, employer or unit, degree, school, certification, and license byte-for-byte. Include every role's exact title and employer or unit even under one-page pressure. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.`,
+      instructions: action === "facts" ? factInstructions : (mode === "federal" ? systemFederal : system) + scopedFactRules + (preGenerationLengthPlan ? "\n\n" + civilianLengthProfileInstructions(preGenerationLengthPlan) : ""),
       input: action === "facts" ? factSourceBlock : draftContextBlock + "\n\n<DRAFT_ELIGIBLE_FACTS>\n" + JSON.stringify(scopedFacts) + "\n</DRAFT_ELIGIBLE_FACTS>",
       max_output_tokens: generationMaxOutputTokens,
       reasoning: { effort: "none" },
@@ -996,7 +1179,9 @@ On the first line of each entry, place the exact title, a separator, and the exa
       return Object.assign({}, traceById.get(entry.claim_id), { claim_text: entry.claim_text });
     });
     const releaseQuality = mode === "federal" ? { scorecard: audit.scorecard, gaps: audit.unmet_gaps } : applyCivilianHeaderReadiness(audit.scorecard, audit.unmet_gaps, headerCompletion);
-    return { statusCode: 200, headers, body: JSON.stringify({ bullets: text, scorecard: releaseQuality.scorecard, trace: hydratedTrace, supportedKeywords: audit.supported_keywords, gaps: releaseQuality.gaps }) };
+    const responseBody = { bullets: text, scorecard: releaseQuality.scorecard, trace: hydratedTrace, supportedKeywords: audit.supported_keywords, gaps: releaseQuality.gaps };
+    if (mode !== "federal") responseBody.lengthPlan = confirmCivilianLengthPlan(preGenerationLengthPlan, text, confirmedFacts, hydratedTrace);
+    return { statusCode: 200, headers, body: JSON.stringify(responseBody) };
   } catch (e) {
     return safeFailure(classifyProviderError(e));
   }

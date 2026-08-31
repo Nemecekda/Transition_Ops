@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.16"
+  version: "0.17"
   status: PENDING
 ---
 
@@ -13,8 +13,9 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.16 is PENDING until the RDM regression suite
-executes against the app. Specification approval is not execution evidence.
+Version 0.17 is PENDING until the synthetic RDM regression suite and live-clone
+validation execute against the app. Specification approval and approved live
+evidence are not v0.17 execution evidence.
 
 ## TRIGGERS AND GATE
 
@@ -327,10 +328,11 @@ Render the final exported artifact before release. Length and Readability and
 Format Compliance may both be `PASS` only when that render is readable and
 balanced: no clipping, overlap, hidden text, orphaned heading or role header,
 unreadable compression, avoidable sparse trailing page, or large blank region
-created while resume content is stranded on another page. One page remains the
-civilian target, but a readable, balanced second page is preferable to deleted
-roles, credentials, education, or supported substance. The rendered export,
-not the unaudited model response or browser preview, controls these two
+created while resume content is stranded on another page. Page count is
+selected by the adaptive civilian length contract; neither page count is an
+unconditional target. A readable, balanced second page is preferable to
+deleted roles, credentials, education, or supported substance. The rendered
+export, not the unaudited model response or browser preview, controls these two
 dimensions.
 
 This gate adds no model call or retry and changes no model, input bound, output
@@ -356,10 +358,14 @@ in the metadata position remains metadata. Separator alone is insufficient;
 classification and styling must not split, rewrite, or otherwise change any
 role identity, separator, or surrounding candidate-content byte.
 
-Execute the final render check in a layout-capable browser. Static source
-inspection, function-presence checks, regular-expression assertions, OOXML
-structure checks, and extracted-text checks remain useful supporting evidence
-but cannot substitute for executed browser layout behavior.
+Execute the browser layout estimator in a layout-capable browser as a
+conservative preflight. Static source inspection, function-presence checks,
+regular-expression assertions, OOXML structure checks, and extracted-text
+checks remain useful supporting evidence but cannot substitute for executed
+browser layout behavior. Browser preflight is not proof of final DOCX
+pagination or compatibility. Regression evidence must render the actual
+exported `.docx` through Microsoft Word or another Word-compatible renderer;
+only that rendered artifact can prove final compatibility and page behavior.
 
 Second-page occupancy alone is not proof that a trailing page is avoidably
 sparse. A numeric occupancy threshold, including the prior 25% heuristic, may
@@ -379,6 +385,11 @@ bullet must remain together across a page boundary. A page break introduced for
 balance must preserve that full chain and every released content byte exactly
 once and in order.
 
+Never apply automatic `pageBreakBefore` to `ResumeSpacer`; a spacer may not act
+as an implicit or hidden page break. Any explicit pagination break must attach
+to a semantic content boundary and pass both browser preflight and actual DOCX
+render checks.
+
 Withhold the Word artifact when executed layout evidence shows clipping,
 overlap, hidden text, an orphaned section heading or role header, more than two
 pages, or unreadable compression. These negative controls remain blocking; the
@@ -386,6 +397,98 @@ sparse-page correction does not turn a genuinely defective layout into PASS.
 Federal output and behavior remain unchanged. This contract adds no model call,
 retry, cap, storage, logging, analytics, privacy change, usage-limit change, or
 cost exposure. Maximum incremental API exposure is $0.
+
+## ADAPTIVE CIVILIAN LENGTH CONTRACT
+
+This contract extends the v0.16 civilian artifact and pagination protections.
+It changes only civilian length planning, the approved page profile, and how
+much already-confirmed draft-eligible role evidence the generator retains. It
+weakens no grounding, identity, role, content-equivalence, readability, privacy,
+cost, or federal requirement.
+
+Present exactly three preferences in this order: `Adaptive (recommended)`,
+`Prefer one page`, and `Prefer two pages`. Select `Adaptive (recommended)` by
+default. The preference, pre-generation plan, its inputs and rationale, and the
+post-audit validation result are request-local and must not be logged,
+persisted, stored, or sent to analytics.
+
+Compute the deterministic length plan after building the confirmed
+draft-eligible fact catalog and before calling the existing generator. The plan
+and guarded preference may guide how much grounded, role-owned evidence the
+generator retains and which approved one- or two-page presentation profile is
+used. They may not alter the confirmed ledger or draft-eligible catalog, relax
+grounding or same-role ownership, add a model call or retry, increase a cap, or
+exceed an existing cap. Use these closed request-local planning inputs:
+
+- `Y`: an explicit member-confirmed count of target-relevant years. If no such
+  value is confirmed, `Y` is unavailable. Never calculate, infer, substitute,
+  or increase `Y` from age, total service, title, or prose.
+- `R`: the count of distinct roles the member selects as target-relevant for
+  this request, preserving the existing employer/title/date role-separation
+  invariant. Count a selected role only when it contains at least one
+  draft-eligible duty or outcome atom. If no role is selected, `R = 0`. Never
+  infer role relevance from a title, target, job posting, keyword overlap, or
+  model output.
+- `A`: the count of distinct draft-eligible, same-role duty or outcome evidence
+  atoms owned by the member-selected roles and available to target-aligned
+  generation. Count each closed catalog atom once under its exact role owner.
+  Global skills, unlinked numbers, unselected roles, and posting terms do not
+  count.
+
+Under `Adaptive (recommended)`, recommend two pages only when `A >= 10` and one
+applicable branch is true:
+
+1. `Y` is available and ((`Y >= 10` and `R >= 3`) or (`Y >= 15` and
+   `R >= 2`)).
+2. `Y` is unavailable and `R >= 4`.
+
+Recommend one page in every other case. `A >= 10` is the pre-generation evidence
+sufficiency gate, not proof that a final two-page artifact is substantive. The
+unavailable-years branch is not an alternative when `Y` is available. Produce a
+content-free request-local rationale containing `Y` or `unavailable`, `R`, `A`,
+the branch evaluated, and the resulting recommendation. The member-facing UI
+must summarize the confirmed counts and recommendation in plain language; it
+must not expose internal variable or branch codes. Identical inputs must produce
+identical recommendations and rationales. Total service may be displayed
+elsewhere only as a confirmed fact; it never enters or substitutes for this
+decision.
+
+Preferences are guarded overrides and do not rewrite the recommendation.
+Report the adaptive recommendation and applied plan separately. A one-page plan
+may direct the existing generator to retain a concise subset of grounded,
+role-owned evidence; a two-page plan may retain more grounded role detail from
+the same draft-eligible catalog. This profile-specific difference is expected.
+Neither plan may omit a confirmed role, education item, certification, or
+license; mutate an identity; invent, duplicate, fill, or pad; use posting text as
+member evidence; or relax audit, trace, or grounding requirements. `Prefer one
+page` cannot force unreadable compression and must use two pages when required
+content cannot fit safely. `Prefer two pages` cannot select two pages when
+`A < 10` or insert an artificial break merely to reach page two.
+
+After audit, set `B` to the count of distinct supported role bullets in the
+audited candidate, counting each bullet once under its exact role owner. A
+selected two-page output is release-eligible only when `B >= 10` and the actual
+exported DOCX renders as two substantive, readable, balanced pages in a
+Word-compatible renderer. Browser estimation remains conservative preflight,
+not proof. If either post-audit check fails, apply only the approved one-page
+presentation profile to the same audited candidate and re-render, preserving
+every released candidate-content byte. If that content cannot render safely on
+one page, withhold the artifact. Never make another model call, delete or
+rewrite audited content, conceal content, or weaken a blocking gate during
+fallback.
+
+Content exactness compares each export to its own released audited candidate,
+not a one-page candidate to a two-page candidate. A valid two-page candidate may
+contain more grounded role detail than a valid one-page candidate generated from
+the same catalog, while every retained claim remains fully grounded and traced.
+
+Every result remains subject to the v0.16 maximum of two pages, complete-chain
+pagination, content exactness, and actual DOCX render gates. Federal behavior,
+models, API calls, retries, input bounds, facts/repair 3500, civilian 2200,
+federal 1900, audit 4000, usage limits, budget and cost ceilings, `store: false`,
+privacy, logging, storage, persistence, and analytics remain unchanged. Maximum
+incremental API exposure is $0, and the external monthly cap remains
+`UNVERIFIED`.
 
 ## CIVILIAN ROLE METADATA COMPLETION
 
@@ -414,11 +517,13 @@ model call or retry and change no token cap, model, `store: false`, logging,
 persistence, analytics, usage limit, privacy control, or cost ceiling. Maximum
 incremental API exposure is $0.
 
-One-page length is a formatting target; complete role inventory is a blocking
-safety requirement. Reduce bullets before omitting, merging, or rewriting a
-role. Deterministic filler checks apply only to generated summary and
-duty/accomplishment prose, never byte-exact title, employer/unit, degree, school,
-certification, or license fields.
+Page-count planning may vary how many draft-eligible, same-role evidence atoms
+the generator retains before audit. Complete role inventory, credentials, and
+education remain blocking safety requirements. After audit, presentation and
+fallback may not delete or rewrite released supported content. Deterministic
+filler checks apply only to generated summary and duty/accomplishment prose,
+never byte-exact title, employer/unit, degree, school, certification, or license
+fields.
 
 Pre-audit deterministic failures remain fail-closed but use distinct,
 content-free categories: `civilian_format`, `filler_language`,
@@ -428,14 +533,15 @@ fact values, IDs, provider details, or raw internal issue labels.
 
 ## FORMAT RULES
 
-Civilian mode is candidate-ready and one-page-oriented: concise summary,
-concrete skills, distinct roles, short evidence-bearing bullets, and exact
-credentials. Unknown name/contact/header fields, role location/date segments,
-and education years are omitted. `MISSING` remains explicit only in the
-internal/member-reviewed ledger. Missing optional civilian fields are `NEEDS
-MEMBER FACT` audit gaps, not blockers when the draft makes no unsupported claim.
-Civilian output contains no brackets, literal `MISSING`, `TIP:`, or federal-only
-fields. Improvement guidance belongs in the response's gaps, outside the resume.
+Civilian mode is candidate-ready, with one or two pages selected adaptively:
+concise summary, concrete skills, distinct roles, short evidence-bearing
+bullets, and exact credentials. Unknown name/contact/header fields, role
+location/date segments, and education years are omitted. `MISSING` remains
+explicit only in the internal/member-reviewed ledger. Missing optional civilian
+fields are `NEEDS MEMBER FACT` audit gaps, not blockers when the draft makes no
+unsupported claim. Civilian output contains no brackets, literal `MISSING`,
+`TIP:`, or federal-only fields. Improvement guidance belongs in the response's
+gaps, outside the resume.
 
 Federal mode may be longer and retain more military specificity. It uses
 specialized-experience detail and bracketed USAJOBS fields. Never invent hours,
@@ -719,8 +825,11 @@ all existing hard input bounds.
 - **RDM-78 Unlinked variants:** exact, paraphrased, and numerically colliding
   unlinked-global claims must never be released; deterministic checks or audit
   must withhold them.
-- **RDM-79 Role completeness:** one-page pressure may reduce bullets but must not
-  merge, omit, or rewrite any confirmed role.
+- **RDM-79 Role and required-content completeness:** a one-page plan may retain
+  fewer grounded, same-role duty or outcome atoms before audit than a two-page
+  plan. Neither plan may merge, omit, or rewrite a confirmed role or omit a
+  credential or education item; after audit, no released claim may be deleted
+  or rewritten for pagination.
 - **RDM-80 Unchanged controls:** facts/repair remain 3500, civilian 2200,
   federal 1900, audit 4000, with unchanged call count, zero retries, draft limit,
   posting isolation, `store: false`, no logging or persistence, and the external
@@ -986,8 +1095,9 @@ all existing hard input bounds.
   DOCX MIME type, and a matching file signature; renamed HTML or `.doc` fails.
 - **RDM-175 Six-role render balance:** a synthetic six-role civilian fixture
   must retain all roles, education, and credentials and must not render a second
-  page containing only two roles with most of that page blank. It may use a
-  readable balanced second page when one page cannot hold all supported content.
+  page containing only two roles with most of that page blank. It must use a
+  readable balanced second page when adaptive selection or preservation of all
+  supported content requires it.
 - **RDM-176 Render-governed scoring:** clipping, overlap, hidden text, orphaned
   headings or role headers, unreadable compression, or avoidable sparse trailing
   pages must prevent simultaneous `PASS` for Length and Readability and Format
@@ -1013,10 +1123,11 @@ all existing hard input bounds.
   classify as metadata. Separator alone is insufficient, the browser must not
   reparse the closed ledger, and classification and styling must preserve every
   identity and candidate-content byte.
-- **RDM-181 Executed browser render:** the regression must execute the actual
-  final render check in a layout-capable browser. A static source match,
-  function-presence assertion, OOXML byte check, or extracted-text check alone
-  cannot satisfy this case.
+- **RDM-181 Executed browser preflight:** the regression must execute the
+  layout estimator in a layout-capable browser as conservative preflight. A
+  static source match, function-presence assertion, OOXML byte check, or
+  extracted-text check alone cannot satisfy this case, and browser execution
+  cannot satisfy the actual-DOCX render case.
 - **RDM-182A Low occupancy is not avoidability:** a legitimate readable,
   content-complete artifact whose second page falls below the occupancy
   threshold must not fail solely because of that percentage when no safe
@@ -1045,6 +1156,71 @@ all existing hard input bounds.
   privacy, logging, storage, persistence, and analytics remain unchanged.
   Maximum incremental API exposure is $0, and the external monthly cap remains
   `UNVERIFIED`.
+- **RDM-187 Short-career adaptive one page:** a synthetic civilian candidate
+  with pre-generation inputs `Y = 6`, `R = 2`, and `A = 6` must default to
+  `Adaptive (recommended)`, select the one-page plan before generation, retain
+  a concise grounded subset of same-role evidence while preserving every role,
+  education item, and credential, and render one readable audited page.
+- **RDM-188 Senior or broad adaptive two pages:** synthetic positive controls
+  at `Y = 10`, `R = 3`, `A = 10` and at `Y = 15`, `R = 2`, `A = 10` must
+  select the two-page plan before generation. Against a paired one-page
+  preference using the same catalog, each two-page candidate may retain more
+  grounded same-role detail without filler, padding, duplication, invention,
+  or an artificial break; after audit it must have `B >= 10` and render as two
+  substantive, balanced pages in a Word-compatible renderer.
+- **RDM-189 Deterministic boundaries and unavailable years:** table-driven
+  cases must return two pages at the exact `10/3` and `15/2` boundaries only
+  when `A >= 10`; `9/3`, `10/2`, `14/2`, or `A = 9` returns one page.
+  Confirmed total service of 20 years with `Y = 4` must use `Y = 4`, never 20.
+  When `Y` is unavailable, only `R >= 4` and `A >= 10` together recommend two
+  pages; `R = 3`, `A = 10` or `R = 4`, `A = 9` recommends one. The request-local
+  role selector must count only member-selected roles containing
+  draft-eligible atoms; an unselected role, posting-only term, target, keyword
+  overlap, or role title must add neither a role nor an atom. Repeated identical
+  catalog and selection inputs must expose identical `Y`, `R`, `A`, branch,
+  plan, and rationale. A newly extracted or edited fact sheet must start with no
+  relevant roles selected; the member must actively select each role counted in
+  `R`.
+- **RDM-190 Guarded and request-local preferences:** present exactly these
+  labels: `Adaptive (recommended)`, `Prefer one page`, and `Prefer two pages`,
+  in that order with Adaptive selected by default. From one adequate catalog, a
+  one-page preference may retain fewer grounded same-role atoms and a two-page
+  preference may retain more, while both preserve every role, education item,
+  credential, exact identity, and grounding rule. A one-page preference that
+  cannot fit required content readably must use two pages; a two-page preference
+  with `A < 10` must use one page rather than add filler, duplicate or invent
+  claims, pad, or force a break. Report the unchanged adaptive recommendation
+  and applied plan separately, and place neither preference nor rationale in
+  logs, storage, persistence, or analytics.
+- **RDM-191 No spacer page breaks:** `ResumeSpacer` must never receive automatic
+  `pageBreakBefore` or act as an implicit break in one- or two-page fixtures.
+  Any explicit break must attach to a semantic content boundary and preserve
+  the complete keep-with-next chain.
+- **RDM-192 Actual DOCX compatibility:** export the one- and two-page fixtures
+  as genuine DOCX files and open and render those actual files in Microsoft
+  Word or another Word-compatible renderer. A selected two-page output must
+  have post-audit `B >= 10` and two substantive, readable, balanced rendered
+  pages with no clipping, overlap, hidden text, orphaned chain, or compatibility
+  error. A `B = 9` fixture and a non-substantive render fixture must each apply
+  the one-page presentation profile to the same audited content and re-render
+  with no model call or model retry; if that content cannot fit safely, the
+  artifact is withheld. The conservative browser estimator must execute as
+  preflight, but its result alone cannot satisfy this case.
+- **RDM-193 Per-output content exactness:** one- and two-page candidates from the
+  same catalog need not contain the same number of grounded role bullets. Each
+  extracted DOCX and Word-compatible render must match its own released audited
+  candidate exactly, preserving every released section, order, role, identity,
+  metadata value, supported bullet, credential, education item, and list
+  relationship once, with no added, omitted, changed, reordered, duplicated,
+  or concealed candidate content. A fallback changes presentation only.
+- **RDM-194 Unchanged federal and operational boundary:** federal generation,
+  content, brackets, audit, export, pagination, and scoring remain unchanged.
+  Models, API calls, retries, facts/repair 3500, civilian 2200, federal 1900,
+  audit 4000, input bounds, budget and cost ceilings, draft and usage limits,
+  `store: false`, privacy, logging, storage, persistence, and analytics remain
+  unchanged. Planning, profile selection, post-audit validation, and fallback
+  add no model call or retry and exceed no cap. Maximum incremental API exposure
+  is $0, and the external monthly cap remains `UNVERIFIED`.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -1055,7 +1231,8 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.16 until all cases execute and live
-clone evidence passes. After successful execution and live evidence, force-mod
+Keep registry item #6 PENDING at version 0.17 until all synthetic cases execute
+and live-clone evidence, including actual DOCX rendering in a Word-compatible
+renderer, passes. After successful execution and live evidence, force-mod
 proposes the smallest evidence-supported revision and Commander rules on
 promotion to CODIFIED 1.0.

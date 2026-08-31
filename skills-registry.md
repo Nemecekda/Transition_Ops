@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.16 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.17 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,50 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.16 -> 0.17, remains
+  PENDING.** Commander-approved live evidence established that civilian length
+  must adapt to confirmed target-relevant experience, distinct relevant-role
+  breadth, and grounded evidence fit rather than a fixed one-page target.
+  Version 0.17 preserves every v0.16 grounding, identity, role, privacy, cost,
+  federal, content-equivalence, and pagination protection and adds the ADAPTIVE
+  CIVILIAN LENGTH CONTRACT. The exact request-local options are `Adaptive (recommended)`
+  (default), `Prefer one page`, and `Prefer two pages`; neither preference nor
+  rationale may be logged, persisted, stored, or sent to analytics. The plan is
+  computed before generation from the confirmed draft-eligible fact catalog:
+  `Y` is explicit member-confirmed target-relevant years; `R` is the count of
+  member-selected relevant roles that contain draft-eligible duty/outcome
+  evidence; and `A` is the distinct draft-eligible same-role duty/outcome
+  evidence owned by those selected roles. New and edited fact sheets begin with
+  no relevant roles selected; no role selection means `R = 0`.
+  Target, title, posting, keyword overlap, and model output cannot select a role
+  or add an atom; posting remains targeting language, never member fact support. Adaptive
+  recommends two pages only when `A >= 10` and relevant years/role breadth meet
+  `10/3` or `15/2`, or, when relevant years are unavailable, `R >= 4`. Age,
+  total service, title, and prose cannot supply relevant years. The plan and
+  guarded preference may guide how much grounded role-owned evidence the
+  existing generator retains and the presentation profile, so a valid two-page
+  resume may contain more grounded role detail than a valid one-page resume.
+  They cannot alter the ledger or catalog, omit a role, education item, or
+  credential, relax grounding, invent, duplicate, fill, pad, add calls or
+  retries, or exceed caps. After audit, `B >= 10` supported role bullets and an
+  actual Word-compatible DOCX render must prove that a selected two-page output
+  is substantive; failure applies only the one-page presentation profile to the
+  same audited candidate and re-renders without another model call, or withholds
+  the artifact if one page cannot render safely. Automatic `pageBreakBefore` on
+  `ResumeSpacer` remains prohibited, and browser estimation remains conservative
+  preflight rather than proof. RDM-187…194 cover short-career one page,
+  senior/broad detail retention, exact rule boundaries and total-service
+  isolation, guarded overrides, spacer safety, actual DOCX/post-audit fallback,
+  per-output content exactness, and unchanged federal/API/cap/privacy/cost
+  controls. App code, tests, and cache metadata implement the approved contract;
+  no model, call, retry, cap, storage, logging, persistence, analytics, privacy,
+  usage-limit, budget, or cost behavior changes; maximum incremental API
+  exposure is $0 and the external monthly cap remains `UNVERIFIED`. This entry
+  records the approved live evidence and specification scope. Synthetic
+  RDM-1…RDM-194, browser preflight, and actual LibreOffice rendering passed
+  locally on 2026-08-30; live-clone validation is not yet claimed, so
+  registration remains PENDING. Lane: AUTO for internal governance; app
+  implementation remains Commander-gated. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.15 -> 0.16, remains
   PENDING.** Dean approved v0.16 after live-clone Word export evidence exposed
   PARTIAL v0.15 coverage: six `Title | Employer` role headers were classified as

@@ -508,7 +508,7 @@ async function run() {
   assert.doesNotMatch(liveGenerationCall.input, /MEMBER-REVIEWED FACT SHEET|NUMBERS AND SCALE|\bMISSING\b|26 years of service|9 corporate recruiters|1,200 employees|18 states/);
   assert.match(liveGenerationCall.input, /17 plants|1,200 hires|team of 9 specialists|110-person operation|\$9M budget|1,100 to 1,300 hires|7,000 personnel|65\+ locations/);
   assert.doesNotMatch(liveGenerationCall.instructions, /every number/i);
-  assert.match(liveGenerationCall.instructions, /Include every role's exact title and employer or unit even under one-page pressure/);
+  assert.match(liveGenerationCall.instructions, /Include every role's exact title and employer or unit regardless of page count/);
 
   const malformedRoleDrafts = [
     liveCivilianDraft.replace(/Synthetic Role 3 - Synthetic Employer 3\nLed a team of 9 specialists\.\n\n/, ""),
@@ -1151,6 +1151,192 @@ async function run() {
   assert.equal(incompleteHeaderBody.scorecard.find((item) => item.dimension === "format_compliance").status, "NEEDS MEMBER FACT");
   assert.match(incompleteHeaderBody.gaps.join(" "), /Add an email address or phone number before submitting this resume\./);
 
+  // RDM-187..RDM-190: pre-generation adaptive planning uses explicit Y plus member-selected roles and their same-role draft-eligible atoms only.
+  const adaptiveAtomLabels = ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India", "Juliet", "Kilo", "Lima", "Mike", "November", "Oscar", "Papa", "Quebec", "Romeo", "Sierra", "Tango", "Uniform", "Victor", "Whiskey", "Xray"];
+  function adaptiveFixture(roleCount, atomCount, totalService, draftAtomCount, roleNumbers) {
+    const atomsByRole = Array.from({ length: roleCount }, () => []);
+    for (let atomIndex = 0; atomIndex < atomCount; atomIndex += 1) {
+      const label = adaptiveAtomLabels[atomIndex];
+      atomsByRole[atomIndex % roleCount].push({ index: atomIndex, text: "Coordinated target operations workflow " + label + " and documented approved handoffs." });
+    }
+    const factLines = [];
+    const draftLines = ["PROFESSIONAL EXPERIENCE"];
+    atomsByRole.forEach((atoms, roleIndex) => {
+      const label = adaptiveAtomLabels[roleIndex];
+      const title = "Adaptive Role " + label;
+      const employer = "Synthetic Employer " + label;
+      factLines.push(
+        "ROLE " + (Array.isArray(roleNumbers) ? roleNumbers[roleIndex] : roleIndex + 1),
+        "JOB TITLE (EXACT): " + title,
+        "EMPLOYER OR UNIT (EXACT): " + employer,
+        "LOCATION (EXACT OR MISSING): MISSING",
+        "DATES (EXACT OR MISSING): MISSING",
+        "DUTIES AND OUTCOMES (EXACT FACTS ONLY): " + atoms.map((atom) => atom.text).join("; "),
+        ""
+      );
+      draftLines.push(title + " - " + employer);
+      atoms.filter((atom) => atom.index < (draftAtomCount == null ? atomCount : draftAtomCount)).forEach((atom) => draftLines.push("\u2022 " + atom.text));
+      draftLines.push("");
+    });
+    factLines.push(
+      "EDUCATION (EXACT OR MISSING): B.S., Operations Management, Synthetic University",
+      "CERTIFICATIONS (EXACT OR MISSING): Project Management Certificate",
+      "SKILLS AND TOOLS (EXACT OR MISSING): Operations planning; Process coordination; Risk review; Performance reporting",
+      "NUMBERS AND SCALE (EXACT OR MISSING): " + (totalService || "MISSING"),
+      "TARGET ROLE (EXACT OR MISSING): Operations Manager"
+    );
+    return { facts: factLines.join("\n"), draft: draftLines.join("\n").trim() };
+  }
+
+  async function runAdaptiveCase(config) {
+    const fixture = adaptiveFixture(config.roles, config.atoms, config.totalService || "20 years of service", config.draftAtoms, config.roleNumbers);
+    nextResponse = { status: "completed", output_text: fixture.draft };
+    auditResponseQueue.push((request) => passingAudit(request));
+    const callsBefore = calls.length;
+    const lengthInputs = {};
+    if (config.relevantYears !== null && config.relevantYears !== undefined) lengthInputs.relevantYears = String(config.relevantYears);
+    lengthInputs.relevantRoleIndexes = Array.isArray(config.selectedRoleIndexes) ? config.selectedRoleIndexes : Array.from({ length: config.roles }, (_, roleIndex) => roleIndex);
+    const adaptiveResult = await resume.handler(post({
+      action: "draft",
+      target: "Operations Manager",
+      posting: "The operations manager coordinates target operations workflows and approved handoffs.",
+      years: "20",
+      experience: fixture.facts,
+      confirmedFacts: fixture.facts,
+      lengthPreference: config.preference || "adaptive",
+      lengthInputs
+    }));
+    assert.equal(adaptiveResult.statusCode, 200, adaptiveResult.body);
+    assert.equal(calls.length - callsBefore, 2, config.label + " uses the existing generation and audit calls only");
+    const generationCall = calls[callsBefore];
+    const body = JSON.parse(adaptiveResult.body);
+    assert.equal(body.lengthPlan.relevantYears, config.relevantYears === null || config.relevantYears === undefined ? null : config.relevantYears, config.label + " exposes explicit relevant years only");
+    const expectedRelevantRoles = config.expectedRelevantRoles == null ? config.roles : config.expectedRelevantRoles;
+    const expectedRelevantAtoms = config.expectedRelevantAtoms == null ? config.atoms : config.expectedRelevantAtoms;
+    assert.equal(body.lengthPlan.relevantRoles, expectedRelevantRoles, config.label + " counts member-selected roles with same-role evidence");
+    assert.equal(body.lengthPlan.draftEligibleAtoms, expectedRelevantAtoms, config.label + " counts duty/outcome atoms owned by selected roles");
+    assert.equal(body.lengthPlan.evidenceFit, expectedRelevantAtoms >= 10 ? "PASS" : "FAIL", config.label + " applies A >= 10");
+    assert.equal(body.lengthPlan.recommendedPages, config.expectedPages, config.label + " recommendation");
+    const expectedSupportedBullets = config.draftAtoms == null ? config.atoms : config.draftAtoms;
+    assert.equal(body.lengthPlan.supportedRoleBullets, expectedSupportedBullets, config.label + " post-audit B count");
+    assert.equal(body.lengthPlan.postAuditEvidenceFit, expectedSupportedBullets >= 10 ? "PASS" : "FAIL", config.label + " post-audit B gate");
+    assert.equal(body.lengthPlan.preference, config.preference || "adaptive");
+    assert.match(body.lengthPlan.rationale, /^Y=(?:unavailable|\d+(?:\.\d+)?); R=\d+; A=\d+; E=(?:PASS|FAIL); branch=[a-z0-9_]+; recommendation=(?:one_page|two_pages); selected=(?:one_page|two_pages); B=\d+; postAudit=(?:PASS|FAIL); presentation=(?:compact_one_page|readable_two_page)$/);
+    assert.doesNotMatch(JSON.stringify(body.lengthPlan), /Adaptive Role|Synthetic Employer|approved handoffs|operations manager coordinates/i, config.label + " plan and rationale remain content-free");
+    const expectedSelectedPages = config.expectedSelectedPages == null ? config.expectedPages : config.expectedSelectedPages;
+    assert.equal(body.lengthPlan.selectedPages, expectedSelectedPages, config.label + " selected plan");
+    assert.equal(body.lengthPlan.presentationProfile, expectedSelectedPages === 2 && expectedSupportedBullets >= 10 ? "readable_two_page" : "compact_one_page", config.label + " post-audit presentation profile");
+    if (expectedSelectedPages === 2) {
+      assert.match(generationCall.instructions, /REQUEST-LOCAL LENGTH PROFILE: TWO PAGES ELIGIBLE/);
+      assert.match(generationCall.instructions, /Retain more distinct grounded, role-owned duty and outcome evidence/);
+    } else {
+      assert.match(generationCall.instructions, /REQUEST-LOCAL LENGTH PROFILE: ONE PAGE PREFERRED/);
+    }
+    assert.equal(generationCall.model, "gpt-5.6-terra");
+    assert.equal(generationCall.max_output_tokens, 2200);
+    assert.equal(generationCall.store, false);
+    assert.doesNotMatch(JSON.stringify(generationCall), /relevantRoleIndexes|relevantYears/, config.label + " keeps planner inputs out of provider requests");
+    adaptiveAtomLabels.slice(0, config.roles).forEach((label) => assert.equal(body.bullets.split("Adaptive Role " + label).length - 1, 1, config.label + " preserves every role"));
+    return { body, generationCall, fixture };
+  }
+
+  const shortAdaptive = await runAdaptiveCase({ label: "RDM-187 short", relevantYears: 6, roles: 2, atoms: 6, expectedPages: 1 });
+  assert.equal(shortAdaptive.body.lengthPlan.branch, "confirmed_years_no_match");
+  assert.equal(shortAdaptive.body.lengthPlan.postAuditDisposition, "one_page_candidate");
+
+  const exactTenThree = await runAdaptiveCase({ label: "RDM-188 10/3", relevantYears: 10, roles: 3, atoms: 10, expectedPages: 2 });
+  assert.equal(exactTenThree.body.lengthPlan.branch, "confirmed_years_10_3");
+  const exactFifteenTwo = await runAdaptiveCase({ label: "RDM-188 15/2", relevantYears: 15, roles: 2, atoms: 10, expectedPages: 2 });
+  assert.equal(exactFifteenTwo.body.lengthPlan.branch, "confirmed_years_15_2");
+
+  for (const boundary of [
+    { label: "RDM-189 9/3", relevantYears: 9, roles: 3, atoms: 10, expectedPages: 1 },
+    { label: "RDM-189 10/2", relevantYears: 10, roles: 2, atoms: 10, expectedPages: 1 },
+    { label: "RDM-189 14/2", relevantYears: 14, roles: 2, atoms: 10, expectedPages: 1 },
+    { label: "RDM-189 evidence fail", relevantYears: 15, roles: 2, atoms: 9, expectedPages: 1 },
+    { label: "RDM-189 unavailable 4/10", relevantYears: null, roles: 4, atoms: 10, expectedPages: 2 },
+    { label: "RDM-189 unavailable 3/10", relevantYears: null, roles: 3, atoms: 10, expectedPages: 1 },
+    { label: "RDM-189 unavailable 4/9", relevantYears: null, roles: 4, atoms: 9, expectedPages: 1 }
+  ]) await runAdaptiveCase(boundary);
+
+  const totalServiceBoundary = await runAdaptiveCase({ label: "RDM-189 total service boundary", relevantYears: 4, roles: 4, atoms: 10, totalService: "20 years of service", expectedPages: 1 });
+  assert.equal(totalServiceBoundary.body.lengthPlan.relevantYears, 4);
+  assert.match(totalServiceBoundary.body.lengthPlan.preGenerationRationale, /^Y=4;/);
+  assert.doesNotMatch(totalServiceBoundary.body.lengthPlan.preGenerationRationale, /Y=20/);
+
+  const repeatedBoundary = await runAdaptiveCase({ label: "RDM-189 deterministic repeat", relevantYears: 10, roles: 3, atoms: 10, expectedPages: 2 });
+  assert.deepEqual(
+    ["relevantYears", "relevantRoles", "draftEligibleAtoms", "evidenceFit", "branch", "recommendation", "recommendedPages", "selectedPages", "preGenerationRationale", "rationale"].map((key) => repeatedBoundary.body.lengthPlan[key]),
+    ["relevantYears", "relevantRoles", "draftEligibleAtoms", "evidenceFit", "branch", "recommendation", "recommendedPages", "selectedPages", "preGenerationRationale", "rationale"].map((key) => exactTenThree.body.lengthPlan[key])
+  );
+
+  const selectedRoleIsolation = await runAdaptiveCase({ label: "RDM-189 selected-role isolation", relevantYears: 20, roles: 4, atoms: 10, selectedRoleIndexes: [0, 2, 2, 99, -1, "1"], expectedRelevantRoles: 2, expectedRelevantAtoms: 5, expectedPages: 1 });
+  assert.equal(selectedRoleIsolation.body.lengthPlan.branch, "confirmed_years_15_2");
+  assert.equal(selectedRoleIsolation.body.lengthPlan.evidenceFit, "FAIL");
+  const noRoleSelection = await runAdaptiveCase({ label: "RDM-189 no role selection", relevantYears: null, roles: 4, atoms: 10, selectedRoleIndexes: [], expectedRelevantRoles: 0, expectedRelevantAtoms: 0, expectedPages: 1 });
+  assert.equal(noRoleSelection.body.lengthPlan.branch, "years_unavailable_no_match");
+  const encounterOrderSelection = await runAdaptiveCase({ label: "RDM-189 encounter-order role selection", relevantYears: 20, roles: 2, atoms: 4, roleNumbers: [9, 3], selectedRoleIndexes: [1], expectedRelevantRoles: 1, expectedRelevantAtoms: 2, expectedPages: 1 });
+  assert.equal(encounterOrderSelection.body.lengthPlan.relevantRoles, 1);
+
+  const onePageOverride = await runAdaptiveCase({ label: "RDM-190 one-page override", relevantYears: 10, roles: 3, atoms: 10, preference: "one_page", expectedPages: 2, expectedSelectedPages: 1 });
+  assert.equal(onePageOverride.body.lengthPlan.recommendation, "two_pages");
+  assert.equal(onePageOverride.body.lengthPlan.presentationProfile, "compact_one_page");
+  const twoPageGuard = await runAdaptiveCase({ label: "RDM-190 two-page evidence guard", relevantYears: 6, roles: 2, atoms: 6, preference: "two_pages", expectedPages: 1, expectedSelectedPages: 1 });
+  assert.equal(twoPageGuard.body.lengthPlan.selectionReason, "two_page_preference_evidence_guard");
+  assert.equal(twoPageGuard.body.lengthPlan.postAuditDisposition, "one_page_candidate");
+  const guardedTwoPage = await runAdaptiveCase({ label: "RDM-190 guarded two-page override", relevantYears: 4, roles: 4, atoms: 10, preference: "two_pages", expectedPages: 1, expectedSelectedPages: 2 });
+  assert.equal(guardedTwoPage.body.lengthPlan.recommendation, "one_page");
+  assert.equal(guardedTwoPage.body.lengthPlan.postAuditDisposition, "two_page_candidate_substantive");
+
+  const pairedOnePage = await runAdaptiveCase({ label: "RDM-188 paired one-page generation", relevantYears: 10, roles: 3, atoms: 12, draftAtoms: 6, preference: "one_page", expectedPages: 2, expectedSelectedPages: 1 });
+  const pairedTwoPage = await runAdaptiveCase({ label: "RDM-188 paired two-page generation", relevantYears: 10, roles: 3, atoms: 12, draftAtoms: 12, preference: "adaptive", expectedPages: 2, expectedSelectedPages: 2 });
+  assert.equal(pairedOnePage.fixture.facts, pairedTwoPage.fixture.facts, "paired length profiles use the same confirmed catalog");
+  assert.equal((pairedOnePage.body.bullets.match(/^\u2022 /gm) || []).length, 6);
+  assert.equal((pairedTwoPage.body.bullets.match(/^\u2022 /gm) || []).length, 12);
+  assert.notEqual(pairedOnePage.body.bullets, pairedTwoPage.body.bullets, "two-page generation may retain more grounded role evidence");
+  ["Project Management Certificate", "B.S., Operations Management, Synthetic University"].forEach((item) => {
+    assert.equal(pairedOnePage.body.bullets.split(item).length - 1, 1, "one-page candidate preserves " + item);
+    assert.equal(pairedTwoPage.body.bullets.split(item).length - 1, 1, "two-page candidate preserves " + item);
+  });
+
+  const nineBulletFallback = await runAdaptiveCase({ label: "RDM-192 B=9 fallback", relevantYears: 10, roles: 3, atoms: 10, draftAtoms: 9, expectedPages: 2, expectedSelectedPages: 2 });
+  assert.equal(nineBulletFallback.body.lengthPlan.postAuditEvidenceFit, "FAIL");
+  assert.equal(nineBulletFallback.body.lengthPlan.presentationProfile, "compact_one_page");
+  assert.equal(nineBulletFallback.body.lengthPlan.postAuditDisposition, "fallback_one_page_insufficient_supported_bullets");
+
+  const titleOnlyFacts = [
+    "ROLE 1",
+    "JOB TITLE (EXACT): Operations Manager",
+    "EMPLOYER OR UNIT (EXACT): Synthetic Engine Group",
+    "LOCATION (EXACT OR MISSING): MISSING",
+    "DATES (EXACT OR MISSING): MISSING",
+    "DUTIES AND OUTCOMES (EXACT FACTS ONLY): Calibrated equipment and repaired engine records.",
+    "",
+    "EDUCATION (EXACT OR MISSING): MISSING",
+    "CERTIFICATIONS (EXACT OR MISSING): MISSING",
+    "SKILLS AND TOOLS (EXACT OR MISSING): MISSING",
+    "NUMBERS AND SCALE (EXACT OR MISSING): MISSING",
+    "TARGET ROLE (EXACT OR MISSING): Operations Manager"
+  ].join("\n");
+  nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nOperations Manager - Synthetic Engine Group\n\u2022 Calibrated equipment and repaired engine records." };
+  auditResponseQueue.push((request) => passingAudit(request));
+  const titleOnlyCallsBefore = calls.length;
+  result = await resume.handler(post({
+    action: "draft",
+    target: "Operations Manager",
+    posting: "Seeking an operations manager with PostingOnlySentinel expertise.",
+    experience: titleOnlyFacts,
+    confirmedFacts: titleOnlyFacts,
+    lengthPreference: "adaptive",
+    lengthInputs: { relevantYears: "20", relevantRoleIndexes: [] }
+  }));
+  assert.equal(result.statusCode, 200, result.body);
+  assert.equal(calls.length - titleOnlyCallsBefore, 2);
+  const titleOnlyPlan = JSON.parse(result.body).lengthPlan;
+  assert.equal(titleOnlyPlan.relevantRoles, 0, "role title, target, and posting cannot select a relevant role");
+  assert.equal(titleOnlyPlan.draftEligibleAtoms, 0, "an unselected role contributes no evidence atom");
+  assert.equal(titleOnlyPlan.recommendedPages, 1);
+
   // RDM-174, RDM-175, and RDM-179: true DOCX, exact structural equivalence, and a live-shaped six-role, 16-bullet, four-certification, four-education fixture.
   const docxApi = resumeDocxApiFromIndex();
   const sixRoleFixture = [
@@ -1268,8 +1454,10 @@ async function run() {
     assert.equal(candidateDraftFromAuditRequest(request), federalCoreDraft);
     const federalGenerationCall = calls[calls.length - 2];
     const federalSystemSource = fs.readFileSync(path.join(root, "netlify/functions/resume.js"), "utf8").match(/const systemFederal = `([\s\S]*?)`;/)[1];
+    const federalScopedFactRules = `\n\nSCOPED FACT RULES:\nThe supplied draft-eligible fact view is the sole controlling fact source. Use no member fact unless it appears there. Preserve every job title, employer or unit, degree, school, certification, and license byte-for-byte. Include every role's exact title and employer or unit even under one-page pressure. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.`;
     assert.equal(crypto.createHash("sha256").update(federalSystemSource).digest("hex"), "194fad7838fa064f0c18ac24b7ecfde0d6d1e04e3507a815dec630dc5a843b92");
-    assert.match(federalGenerationCall.instructions, /^You draft a FEDERAL-STYLE resume/);
+    assert.equal(federalGenerationCall.instructions, federalSystemSource + federalScopedFactRules, "RDM-194 preserves the complete assembled federal generation instructions byte-for-byte");
+    assert.doesNotMatch(federalGenerationCall.instructions, /REQUEST-LOCAL LENGTH PROFILE|regardless of page count/);
     return passingAudit(request);
   });
   result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: coreLedger, confirmedFacts: coreLedger }));
@@ -1777,7 +1965,7 @@ async function run() {
   assert.match(uiSource, /HONEST GAPS/);
   assert.match(uiSource, /Civilian format omits optional details/);
   assert.match(uiSource, /aiR\.mode === "federal" \? "RESUME COPIED \\u2014 fill the \[brackets\]/);
-  assert.match(fs.readFileSync(path.join(root, "sw.js"), "utf8"), /transition-ops-v138/);
+  assert.match(fs.readFileSync(path.join(root, "sw.js"), "utf8"), /transition-ops-v139/);
   assert.ok(auditCalls.every((call) => call.max_output_tokens === 4000) && calls.every((call) => call.store === false), "v0.8 preserves call caps and store:false");
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
@@ -1791,9 +1979,33 @@ async function run() {
   assert.match(uiSource, /function topsDocxStoredEntryText/);
   assert.match(uiSource, /function renderTransitionOpsResumeDocxCheck/);
   assert.match(uiSource, /function prepareTransitionOpsResumeDocx/);
-  assert.match(uiSource, /window\.__TOPS_RESUME_DOCX\.prepare\(aiR\.out, fileName, window\.__TOPS_RESUME_DOCX\.mime\)/);
-  assert.match(uiSource, /sparse_tail_not_proven_avoidable/);
-  assert.match(uiSource, /balanceDisposition: "rebalanced"/);
+  assert.match(uiSource, /window\.__TOPS_RESUME_DOCX\.prepare\(aiR\.out, fileName, window\.__TOPS_RESUME_DOCX\.mime, aiR\.lengthPlan\)/);
+  assert.match(uiSource, /presetName: "ats_resume_readable_two_page"/);
+  assert.match(uiSource, /function topsResumePreflightSelection/);
+  assert.match(uiSource, /fallback_non_substantive_two_page/);
+  assert.doesNotMatch(uiSource, /sparse_tail_not_proven_avoidable|balanceDisposition: "rebalanced"|topsResumeSafeBreakCandidates|balanceCandidates/);
+  assert.match(uiSource, /pageBreakBeforeParagraph === paragraphIndex && \(styleId === "ResumeSection" \|\| styleId === "ResumeRole"\)/);
+  assert.doesNotMatch(uiSource, /pageBreakBeforeParagraph === paragraphIndex && styleId === "ResumeSpacer"/);
+  assert.match(uiSource, /\{ id: "adaptive", label: "Adaptive \(recommended\)" \}[\s\S]*?\{ id: "one_page", label: "Prefer one page" \}[\s\S]*?\{ id: "two_pages", label: "Prefer two pages" \}/);
+  assert.match(uiSource, /lengthPreference: "adaptive"/);
+  assert.match(uiSource, /relevantRoleIndexes: \[\]/);
+  assert.match(uiSource, /ROLES THAT SUPPORT THIS TARGET/);
+  assert.match(uiSource, /relevantRoleIndexes: aiR\.relevantRoleIndexes/);
+  assert.match(uiSource, /var roleIndex = \(i - 1\) \/ 2;/);
+  assert.doesNotMatch(uiSource, /!employer \|\| \/\^MISSING\$\/i\.test\(employer\)/);
+  assert.doesNotMatch(uiSource, /topsResumeConfirmedRoleChoices\(nextFactSheet\)\.map/);
+  assert.match(uiSource, /No roles selected\. Adaptive length will use the one-page plan\./);
+  assert.doesNotMatch(uiSource, /aiR\.lengthPlan\.rationale|Y = confirmed target-relevant years|APPLIED BROWSER PREFLIGHT/);
+  assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:lengthPreference|relevantYears|relevantRoleIndexes|lengthPlan)/);
+  assert.match(resumeSource, /function civilianPreGenerationLengthPlan/);
+  assert.match(resumeSource, /const preGenerationLengthPlan = action === "draft" && mode !== "federal"/);
+  assert.match(resumeSource, /draftEligibleAtoms >= TWO_PAGE_MIN_DRAFT_ELIGIBLE_ATOMS/);
+  assert.match(resumeSource, /function confirmCivilianLengthPlan/);
+  assert.match(resumeSource, /function confirmedRelevantRoleIndexes/);
+  assert.match(resumeSource, /function confirmedRoleBlockCount/);
+  assert.match(resumeSource, /selectedOwners\.has\(atom\.owner\)/);
+  assert.doesNotMatch(resumeSource, /TWO_PAGE_MIN_SUPPORTED_ROLE_BULLET_WORDS|function lengthAlignmentTerms/);
+  assert.doesNotMatch(resumeSource, /one-page civilian resume|one page is the target|fit on one page/i);
   assert.match(uiSource, /item\.dimension === "length_and_readability" \|\| item\.dimension === "format_compliance"[\s\S]*?status: "FAIL"/);
   assert.match(uiSource, /application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document/);
   assert.match(uiSource, /Resume_Draft\.docx/);
@@ -1810,7 +2022,7 @@ async function run() {
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)|localStorage|sessionStorage/);
 
   await runRenderRegression();
-  console.log("PASS: synthetic RDM-1..RDM-186 control paths; canonical civilian sections, request-local header privacy/readiness, true DOCX structure/content equivalence, browser-executed render balancing, federal isolation, and unchanged caps/calls/privacy controls verified locally");
+  console.log("PASS: synthetic RDM-1..RDM-194 control paths; pre-generation adaptive civilian length, guarded request-local preferences, canonical sections, true DOCX exactness, browser preflight, actual LibreOffice rendering, federal isolation, and unchanged caps/calls/privacy controls verified locally");
 }
 
 run().catch((error) => {

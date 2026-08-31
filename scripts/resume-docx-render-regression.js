@@ -3,6 +3,9 @@ const childProcess = require("node:child_process");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+const { pathToFileURL } = require("node:url");
+const vm = require("node:vm");
+const { TextDecoder, TextEncoder } = require("node:util");
 
 const root = path.resolve(__dirname, "..");
 
@@ -16,7 +19,7 @@ function executable(filePath) {
   }
 }
 
-function browserOnPath(names) {
+function executableOnPath(names) {
   const directories = String(process.env.PATH || "").split(path.delimiter).filter(Boolean);
   for (const directory of directories) {
     for (const name of names) {
@@ -46,207 +49,321 @@ function findLayoutBrowser() {
     process.env.PROGRAMFILES && path.join(process.env.PROGRAMFILES, "Microsoft", "Edge", "Application", "msedge.exe"),
     process.env["PROGRAMFILES(X86)"] && path.join(process.env["PROGRAMFILES(X86)"], "Microsoft", "Edge", "Application", "msedge.exe")
   ].filter(Boolean);
-  return candidates.find(executable) || browserOnPath(["google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "microsoft-edge", "microsoft-edge-stable", "chrome", "msedge"]);
+  return candidates.find(executable) || executableOnPath(["google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "microsoft-edge", "microsoft-edge-stable", "chrome", "msedge"]);
+}
+
+function bundledTool(name) {
+  return path.join(os.homedir(), ".cache", "codex-runtimes", "codex-primary-runtime", "dependencies", "bin", "override", name);
+}
+
+function findLibreOffice() {
+  if (process.env.TOPS_LIBREOFFICE_BIN) {
+    assert.ok(executable(process.env.TOPS_LIBREOFFICE_BIN), "TOPS_LIBREOFFICE_BIN must name an executable LibreOffice binary");
+    return process.env.TOPS_LIBREOFFICE_BIN;
+  }
+  const candidates = [
+    bundledTool("soffice"),
+    "/Applications/LibreOffice.app/Contents/MacOS/soffice",
+    "/Applications/LibreOfficeDev.app/Contents/MacOS/soffice",
+    "/usr/bin/libreoffice",
+    "/usr/bin/soffice"
+  ];
+  return candidates.find(executable) || executableOnPath(["libreoffice", "soffice"]);
+}
+
+function requiredPdfTool(envName, bundledName, pathNames) {
+  if (process.env[envName]) {
+    assert.ok(executable(process.env[envName]), envName + " must name an executable binary");
+    return process.env[envName];
+  }
+  const bundled = bundledTool(bundledName);
+  return executable(bundled) ? bundled : executableOnPath(pathNames);
+}
+
+function buildRenderFixtures() {
+  const short = [
+    "Jordan Short", "Madison, WI | jordan.short@example.test | (555) 010-1100", "",
+    "SUMMARY", "Operations planning; scheduling; maintenance coordination.", "",
+    "CORE SKILLS", "Process improvement, team coordination, reporting", "",
+    "PROFESSIONAL EXPERIENCE",
+    "Operations Coordinator | Synthetic Service Group", "2022 - Present",
+    "\u2022 Coordinated maintenance schedules and documented service priorities for the operations team.",
+    "\u2022 Tracked open work and briefed supervisors on confirmed completion status.",
+    "\u2022 Updated operating procedures from approved process changes.", "",
+    "Maintenance Lead | Synthetic Unit", "2019 - 2022",
+    "\u2022 Assigned daily maintenance work and reviewed completed records.",
+    "\u2022 Coordinated parts requests with the supported supply team.",
+    "\u2022 Trained team members on documented inspection procedures.", "",
+    "CERTIFICATIONS", "Project Management Certificate", "",
+    "EDUCATION", "A.A.S., Applied Management, Synthetic College"
+  ].join("\n");
+
+  const liveSixRole = [
+    "Alex Exact", "Ephraim, WI | alex.exact@example.test | (555) 010-2026", "",
+    "SUMMARY", "Planning; Workday HCM; Analytics; Coaching.", "",
+    "CORE SKILLS", "Facilitation, Recruiting, Workforce planning, Process improvement, Data analysis", "",
+    "PROFESSIONAL EXPERIENCE",
+    "Founder and Principal | Veteran Bridge Solutions LLC", "Ephraim, WI | 2024 - Present",
+    "\u2022 Advise employers on recruiting strategy and hiring workflow design.",
+    "\u2022 Built a transition-planning application for service members.",
+    "\u2022 Coordinate synthetic market research, screening support, and funnel analysis.", "",
+    "Talent Program Manager | Clarios", "17 U.S. plants | 2024 - 2026",
+    "\u2022 Managed full-cycle recruiting for technical and manufacturing roles.",
+    "\u2022 Built market-specific sourcing strategies tied to documented funnel data.",
+    "\u2022 Developed recruiting dashboards for synthetic executive sponsors.", "",
+    "HR Director | Mad City Windows and Baths", "2024",
+    "\u2022 Led employee relations, performance coaching, and succession planning.",
+    "\u2022 Delivered talent planning and leadership development for confirmed leaders.", "",
+    "Talent Acquisition Leader | Trek Bicycle", "Waterloo, WI | Oct 2021 - Feb 2024",
+    "\u2022 Led recruiters through a documented high-volume growth year.",
+    "\u2022 Built a talent acquisition structure using confirmed competency practices.",
+    "\u2022 Directed the recruiting workstream for a Workday implementation.", "",
+    "Recruiting and Retention Battalion Commander | Wisconsin Army National Guard",
+    "\u2022 Led a recruiting operation against documented monthly production targets.",
+    "\u2022 Managed staff activity, resources, and recruiting performance reviews.",
+    "\u2022 Developed leaders and maintained accountable workforce planning practices.", "",
+    "Deputy Director of Personnel | Wisconsin Army National Guard",
+    "\u2022 Directed talent management, succession planning, and workforce analytics.",
+    "\u2022 Coordinated personnel planning across documented statewide locations.", "",
+    "CERTIFICATIONS", "SHRM-SCP", "SPHR", "TalentSmart EQ Certified", "Lean Six Sigma Green Belt", "",
+    "EDUCATION", "MBA, Human Resource Management, Synthetic University, 2008", "B.B.A., Business Administration, Synthetic College, 2002", "M.A., Strategic Studies, Synthetic War College", "Doctoral candidate, Applied Leadership, Synthetic University"
+  ].join("\n");
+
+  const substantiveOnePage = [
+    "Morgan Grounded", "Milwaukee, WI | morgan.grounded@example.test", "",
+    "SUMMARY", "Operations planning; reporting; team coordination.", "",
+    "PROFESSIONAL EXPERIENCE",
+    "Operations Manager | Synthetic Company Alpha", "2022 - Present",
+    "\u2022 Coordinated weekly operations planning and approved handoffs.",
+    "\u2022 Reviewed documented risks with accountable team leads.",
+    "\u2022 Tracked confirmed milestones through scheduled completion reviews.", "",
+    "Program Lead | Synthetic Company Bravo", "2019 - 2022",
+    "\u2022 Managed program schedules and documented open actions.",
+    "\u2022 Briefed supported leaders on confirmed operating constraints.",
+    "\u2022 Updated approved procedures after completed process reviews.", "",
+    "Operations Coordinator | Synthetic Company Charlie", "2016 - 2019",
+    "\u2022 Coordinated service requests across supported functional teams.",
+    "\u2022 Maintained accurate status records for recurring reviews.", "",
+    "Operations Analyst | Synthetic Company Delta", "2013 - 2016",
+    "\u2022 Analyzed confirmed performance trends for operations supervisors.",
+    "\u2022 Prepared recurring reports from approved source records.", "",
+    "CERTIFICATIONS", "Project Management Certificate", "",
+    "EDUCATION", "B.S., Operations Management, Synthetic University"
+  ].join("\n");
+
+  const nineBulletLongLines = [
+    "Casey Fallback", "Appleton, WI | casey.fallback@example.test", "",
+    "SUMMARY", "Operations planning; service coordination; risk review.", "",
+    "PROFESSIONAL EXPERIENCE"
+  ];
+  ["Alpha", "Bravo", "Charlie"].forEach((label, roleIndex) => {
+    nineBulletLongLines.push("Operations Lead " + label + " | Synthetic Fallback Group " + label, "Role period " + label);
+    ["planning", "delivery", "review"].forEach((activity, activityIndex) => {
+      nineBulletLongLines.push("\u2022 Coordinated documented " + activity + " activity " + label + " " + (activityIndex + 1) + " across supported functional teams, reviewed approved operating requirements with accountable leaders, maintained complete action records, analyzed confirmed constraints, prepared recurring status updates, tracked open decisions through established governance reviews, preserved the source evidence used for each completed handoff, validated status against approved records, coordinated documented dependencies with designated owners, summarized unresolved issues for the next decision forum, and closed actions only after receiving confirmed completion evidence from the responsible functional lead.");
+    });
+    nineBulletLongLines.push("");
+  });
+  nineBulletLongLines.push("CERTIFICATIONS", "Project Management Certificate", "", "EDUCATION", "B.S., Operations Management, Synthetic University");
+
+  const roleSpecs = [
+    ["Senior Operations Program Manager | Synthetic Manufacturing Group", "2021 - Present", "production planning", "plant leaders"],
+    ["Regional Operations Manager | Synthetic Logistics Network", "2017 - 2021", "distribution operations", "regional partners"],
+    ["Program Operations Lead | Synthetic Technology Services", "2013 - 2017", "service delivery", "program stakeholders"],
+    ["Operations Planning Manager | Synthetic Support Command", "2009 - 2013", "resource planning", "supported organizations"],
+    ["Operations Analyst | Synthetic Readiness Center", "2005 - 2009", "readiness analysis", "operations supervisors"],
+    ["Operations Supervisor | Synthetic Service Activity", "2001 - 2005", "service operations", "functional coordinators"]
+  ];
+  const seniorLines = [
+    "Taylor Senior", "Green Bay, WI | taylor.senior@example.test | (555) 010-2200", "",
+    "SUMMARY", "Operations program leadership; process governance; performance analysis; cross-functional planning.", "",
+    "CORE SKILLS", "Program operations, Process improvement, Workforce planning, Risk review, Executive reporting, Stakeholder coordination", "",
+    "PROFESSIONAL EXPERIENCE"
+  ];
+  roleSpecs.forEach((role, roleIndex) => {
+    seniorLines.push(role[0], role[1]);
+    seniorLines.push("\u2022 Directed " + role[2] + " through documented weekly reviews, coordinated decisions with " + role[3] + ", and maintained approved action records through completion.");
+    seniorLines.push("\u2022 Analyzed operating constraints, compared confirmed performance trends, and presented prioritized corrective actions to accountable leaders during recurring program reviews.");
+    seniorLines.push("\u2022 Standardized handoffs across functional teams, documented ownership for open work, and monitored supported milestones without changing the underlying operating requirements.");
+    seniorLines.push("\u2022 Coached team members on approved procedures, reviewed work products for accuracy, and escalated documented risks through the established leadership channel for role " + (roleIndex + 1) + ".");
+    seniorLines.push("");
+  });
+  seniorLines.push("CERTIFICATIONS", "Project Management Professional", "Lean Six Sigma Green Belt", "Certified Manager", "Change Management Practitioner", "");
+  seniorLines.push("EDUCATION", "M.S., Operations Management, Synthetic University", "B.S., Business Administration, Synthetic College");
+
+  return { short, substantiveOnePage, nineBulletLong: nineBulletLongLines.join("\n"), liveSixRole, senior: seniorLines.join("\n") };
+}
+
+function docxBlockFromIndex() {
+  const uiSource = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const blockMatch = uiSource.match(/\/\/ RESUME_DOCX_START\n([\s\S]*?)\n\/\/ RESUME_DOCX_END/);
+  assert.ok(blockMatch, "index.html contains one isolated resume DOCX implementation block");
+  return blockMatch[1];
+}
+
+function nodeDocxApi(docxBlock) {
+  const context = { window: {}, TextDecoder, TextEncoder, Uint8Array, ArrayBuffer, DataView, Object, String, RegExp };
+  vm.runInNewContext(docxBlock, context, { timeout: 1000 });
+  return context.window.__TOPS_RESUME_DOCX;
+}
+
+function storedDocxEntry(bytes, targetName) {
+  let offset = 0;
+  while (offset + 30 <= bytes.length) {
+    const view = new DataView(bytes.buffer, bytes.byteOffset + offset, bytes.byteLength - offset);
+    if (view.getUint32(0, true) !== 0x04034B50) break;
+    const method = view.getUint16(8, true);
+    const size = view.getUint32(18, true);
+    const nameLength = view.getUint16(26, true);
+    const extraLength = view.getUint16(28, true);
+    const nameStart = offset + 30;
+    const dataStart = nameStart + nameLength + extraLength;
+    const name = new TextDecoder().decode(bytes.slice(nameStart, nameStart + nameLength));
+    if (name === targetName) {
+      assert.equal(method, 0, "regression DOCX entries remain deterministic and uncompressed");
+      return bytes.slice(dataStart, dataStart + size);
+    }
+    offset = dataStart + size;
+  }
+  throw new Error("DOCX entry missing: " + targetName);
+}
+
+function xmlText(value) {
+  return String(value).replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"").replace(/&apos;/g, "'").replace(/&amp;/g, "&");
+}
+
+function extractedDocxText(bytes) {
+  const documentXml = new TextDecoder().decode(storedDocxEntry(bytes, "word/document.xml"));
+  const markerByNumId = { "41": "\u2022", "42": "-", "43": "*" };
+  return Array.from(documentXml.matchAll(/<w:p>([\s\S]*?)<\/w:p>/g), (paragraphMatch) => {
+    const paragraph = paragraphMatch[1];
+    const text = Array.from(paragraph.matchAll(/<w:t(?: [^>]*)?>([\s\S]*?)<\/w:t>/g), (textMatch) => xmlText(textMatch[1])).join("");
+    const numberMatch = paragraph.match(/<w:numId w:val="(\d+)"\/>/);
+    return numberMatch ? markerByNumId[numberMatch[1]] + " " + text : text;
+  }).join("\n");
+}
+
+function pageBreakCount(bytes) {
+  const documentXml = new TextDecoder().decode(storedDocxEntry(bytes, "word/document.xml"));
+  return (documentXml.match(/<w:pageBreakBefore\/>|<w:br w:type="page"\/>/g) || []).length;
 }
 
 function browserRegressionBody() {
   function check(condition, message) {
     if (!condition) throw new Error(message);
   }
-
-  function liveFixture(extraWords) {
-    var roles = [
-      ["Founder and Principal | Veteran Bridge Solutions LLC", "Ephraim, WI | 2024 - Present", [
-        "Advise employers on recruiting strategy, sourcing programs, and hiring workflow design.",
-        "Built and operate a transition-planning application for service members.",
-        "Coordinate synthetic market research, screening support, and funnel analysis."
-      ]],
-      ["Talent Program Manager | Clarios", "17 U.S. plants | 2024 - 2026", [
-        "Managed full-cycle recruiting for technical, production, and maintenance roles.",
-        "Built market-specific sourcing strategies tied to documented funnel data.",
-        "Developed recruiting dashboards for synthetic executive sponsors."
-      ]],
-      ["HR Director | Mad City Windows and Baths", "2024", [
-        "Led employee relations, investigations, and performance management coaching.",
-        "Delivered talent planning and leadership development for confirmed leaders."
-      ]],
-      ["Talent Acquisition Leader | Trek Bicycle", "Waterloo, WI | Oct 2021 - Feb 2024", [
-        "Led recruiters and coordinators through a documented high-volume growth year.",
-        "Built a talent acquisition structure using confirmed competency practices.",
-        "Directed the recruiting workstream for a Workday implementation."
-      ]],
-      ["Recruiting and Retention Battalion Commander | Wisconsin Army National Guard", "", [
-        "Led a recruiting operation against documented monthly production targets.",
-        "Managed staff activity, resources, and recruiting performance reviews.",
-        "Developed leaders and maintained accountable workforce planning practices."
-      ]],
-      ["Deputy Director of Personnel | Wisconsin Army National Guard", "", [
-        "Directed talent management, succession planning, and workforce analytics.",
-        "Coordinated personnel planning across documented statewide locations."
-      ]]
-    ];
-    var remainingWords = Math.max(0, extraWords || 0);
-    var bulletIndex = 0;
-    var lines = [
-      "Alex Exact", "Ephraim, WI | alex.exact@example.test | (555) 010-2026", "",
-      "SUMMARY", "Planning; Workday HCM; Analytics; Coaching.", "",
-      "CORE SKILLS", "Facilitation, Recruiting, Workforce planning, Process improvement, Data analysis", "",
-      "PROFESSIONAL EXPERIENCE"
-    ];
-    roles.forEach(function(role) {
-      lines.push(role[0]);
-      if (role[1]) lines.push(role[1]);
-      role[2].forEach(function(bullet) {
-        var add = Math.floor(remainingWords / Math.max(1, 16 - bulletIndex));
-        remainingWords -= add;
-        bulletIndex += 1;
-        lines.push("\u2022 " + bullet + (add ? " " + Array(add + 1).join("coordination ").trim() : ""));
-      });
-      lines.push("");
-    });
-    lines.push("CERTIFICATIONS", "SHRM-SCP", "SPHR", "TalentSmart EQ Certified", "Lean Six Sigma Green Belt", "");
-    lines.push("EDUCATION", "MBA, Human Resource Management, Synthetic University, 2008", "B.B.A., Business Administration, Synthetic College, 2002", "M.A., Strategic Studies, Synthetic War College", "Doctoral candidate, Applied Leadership, Synthetic University");
-    return lines.join("\n");
-  }
-
-  function extractedText(bytes) {
+  function exactText(bytes) {
     return topsResumeDocxParagraphs(bytes).map(function(paragraph) { return paragraph.text; }).join("\n");
   }
 
-  function tamperStyleSize(bytes, styleId, oldSize, newSize) {
-    check(String(oldSize).length === String(newSize).length, "tampered style size must preserve byte length");
-    var output = bytes.slice();
-    var marker = new TextEncoder().encode('w:styleId="' + styleId + '"');
-    var target = new TextEncoder().encode('w:sz w:val="' + oldSize + '"');
-    var replacement = new TextEncoder().encode('w:sz w:val="' + newSize + '"');
-    function find(sequence, start) {
-      for (var i = start || 0; i <= output.length - sequence.length; i += 1) {
-        var match = true;
-        for (var j = 0; j < sequence.length; j += 1) if (output[i + j] !== sequence[j]) { match = false; break; }
-        if (match) return i;
-      }
-      return -1;
-    }
-    var markerIndex = find(marker, 0);
-    check(markerIndex >= 0, "target style exists for unreadable-compression control");
-    var targetIndex = find(target, markerIndex + marker.length);
-    check(targetIndex >= 0, "target style size exists for unreadable-compression control");
-    output.set(replacement, targetIndex);
-    return output;
-  }
-
+  var fixtures = window.__TOPS_RENDER_FIXTURES;
   var api = window.__TOPS_RESUME_DOCX;
   var fileName = "Resume_Draft.docx";
-  var baseText = liveFixture(0);
-  var baseBytes = api.build(baseText);
-  var basePrepared = api.prepare(baseText, fileName, api.mime);
-  check(basePrepared.ok, "RDM-179 live-shaped six-role artifact downloads");
-  check(baseBytes[0] === 0x50 && baseBytes[1] === 0x4B, "RDM-179 artifact has a genuine ZIP/DOCX signature");
-  check((baseText.match(/^\u2022 /gm) || []).length === 16, "RDM-179 fixture contains 16 bullets");
-  check(topsResumeDocxParagraphs(baseBytes).filter(function(paragraph) { return paragraph.styleId === "ResumeRole"; }).length === 6, "RDM-179 all six pipe headers use ResumeRole");
-  check(extractedText(basePrepared.bytes) === baseText, "RDM-179 released DOCX preserves exact content and order");
+  var shortPlan = {
+    preference: "two_pages", recommendedPages: 1, selectedPages: 2,
+    postAuditEvidenceFit: "FAIL", presentationProfile: "compact_one_page"
+  };
+  var seniorPlan = {
+    preference: "adaptive", recommendedPages: 2, selectedPages: 2,
+    postAuditEvidenceFit: "PASS", presentationProfile: "readable_two_page"
+  };
+  var onePageSeniorPlan = {
+    preference: "one_page", recommendedPages: 2, selectedPages: 1,
+    postAuditEvidenceFit: "PASS", presentationProfile: "compact_one_page"
+  };
+  var livePlan = {
+    preference: "adaptive", recommendedPages: 1, selectedPages: 1,
+    postAuditEvidenceFit: "PASS", presentationProfile: "compact_one_page"
+  };
+  var substantiveOnePagePlan = {
+    preference: "two_pages", recommendedPages: 1, selectedPages: 2,
+    postAuditEvidenceFit: "PASS", presentationProfile: "readable_two_page"
+  };
+  var failedPostAuditFallbackPlan = {
+    preference: "adaptive", recommendedPages: 2, selectedPages: 2,
+    postAuditEvidenceFit: "FAIL", presentationProfile: "compact_one_page",
+    postAuditDisposition: "fallback_one_page_insufficient_supported_bullets"
+  };
 
-  var grammarText = [
-    "Alex Exact", "alex.exact@example.test", "", "PROFESSIONAL EXPERIENCE",
-    "Pipe Title | Pipe Employer", "Madison, WI | 2024 - Present", "\u2022 Pipe duty.", "",
-    "Hyphen Title - Hyphen Employer", "2023", "\u2022 Hyphen duty.", "",
-    "Em Title \u2014 Em Employer", "Remote", "\u2022 Em duty."
-  ].join("\n");
-  var grammarParagraphs = topsResumeDocxParagraphs(api.build(grammarText));
-  ["Pipe Title | Pipe Employer", "Hyphen Title - Hyphen Employer", "Em Title \u2014 Em Employer"].forEach(function(line) {
-    check(grammarParagraphs.find(function(paragraph) { return paragraph.text === line; }).styleId === "ResumeRole", "RDM-180 role grammar classifies " + line);
+  var shortPrepared = api.prepare(fixtures.short, fileName, api.mime, shortPlan);
+  check(shortPrepared.ok && shortPrepared.renderCheck.pageCount === 1, "RDM-187/RDM-190 short candidate stays one page without padding");
+  check(shortPrepared.options.presentationProfile === "compact_one_page", "RDM-190 two-page preference is guarded after insufficient supported bullets");
+  check(exactText(shortPrepared.bytes) === fixtures.short, "RDM-193 short candidate content is exact");
+
+  var substantiveOnePagePrepared = api.prepare(fixtures.substantiveOnePage, fileName, api.mime, substantiveOnePagePlan);
+  check(substantiveOnePagePrepared.ok && substantiveOnePagePrepared.renderCheck.pageCount === 1, "RDM-190 substantive one-page candidate stays one page");
+  check(substantiveOnePagePrepared.requestedRenderCheck.pageCount === 1, "RDM-190 readable profile does not manufacture a second page");
+  check(substantiveOnePagePrepared.options.presentationProfile === "compact_one_page", "RDM-190 two-page preference falls back without filler or an artificial break");
+  check(substantiveOnePagePrepared.lengthPlan.preflightDisposition === "fallback_non_substantive_two_page", "RDM-190 guarded fallback is transparent");
+  check(exactText(substantiveOnePagePrepared.bytes) === fixtures.substantiveOnePage, "RDM-193 substantive one-page candidate content is exact");
+
+  var failedFallbackPrepared = api.prepare(fixtures.nineBulletLong, fileName, api.mime, failedPostAuditFallbackPlan);
+  check(!failedFallbackPrepared.ok, "RDM-192 B=9 fallback is withheld when the same audited content still needs two pages");
+  check(failedFallbackPrepared.renderCheck.pageCount === 2, "RDM-192 B=9 fallback re-renders the compact profile before withholding");
+  check(failedFallbackPrepared.lengthPlan.preflightDisposition === "fallback_withheld", "RDM-192 failed fallback disposition is transparent");
+  check(failedFallbackPrepared.lengthPlan.appliedPages === null, "RDM-192 failed fallback is never reported as an applied artifact");
+
+  var seniorPrepared = api.prepare(fixtures.senior, fileName, api.mime, seniorPlan);
+  check(seniorPrepared.ok && seniorPrepared.renderCheck.pageCount === 2, "RDM-188 senior candidate reaches two natural browser-preflight pages");
+  check(seniorPrepared.options.presentationProfile === "readable_two_page", "RDM-188 substantive senior candidate keeps the readable two-page profile");
+  check(seniorPrepared.renderCheck.minimumPageUseRatio >= 0.25, "RDM-188 both senior preflight pages are substantive");
+  check(exactText(seniorPrepared.bytes) === fixtures.senior, "RDM-193 senior candidate content is exact");
+
+  var onePageSeniorPrepared = api.prepare(fixtures.senior, fileName, api.mime, onePageSeniorPlan);
+  check(onePageSeniorPrepared.ok, "RDM-190 one-page preference does not withhold supported senior content");
+  check(onePageSeniorPrepared.renderCheck.pageCount === 2, "RDM-190 one-page preference retains two pages when content does not fit readably");
+  check(onePageSeniorPrepared.lengthPlan.preflightDisposition === "content_preserved_two_pages", "RDM-190 one-page override reports content preservation");
+  check(exactText(onePageSeniorPrepared.bytes) === fixtures.senior, "RDM-193 one-page preference preserves candidate content");
+
+  var livePrepared = api.prepare(fixtures.liveSixRole, fileName, api.mime, livePlan);
+  check(livePrepared.ok && livePrepared.renderCheck.pageCount === 1, "RDM-175 prior six-role fixture remains one natural page");
+  check(exactText(livePrepared.bytes) === fixtures.liveSixRole, "RDM-175 prior fixture remains exact");
+
+  [shortPrepared, substantiveOnePagePrepared, seniorPrepared, onePageSeniorPrepared, livePrepared].forEach(function(prepared) {
+    var paragraphs = topsResumeDocxParagraphs(prepared.bytes);
+    check(paragraphs.filter(function(paragraph) { return paragraph.pageBreakBefore; }).length === 0, "RDM-191 released profiles contain zero automatic page breaks");
   });
-  ["Madison, WI | 2024 - Present", "2023", "Remote"].forEach(function(line) {
-    check(grammarParagraphs.find(function(paragraph) { return paragraph.text === line; }).styleId === "ResumeMetadata", "RDM-180 metadata remains metadata: " + line);
-  });
-  check(extractedText(api.build(grammarText)) === grammarText, "RDM-180 role grammar preserves every input byte");
-
-  var baseRender = api.renderCheck(baseBytes);
-  check(baseRender.ok && baseRender.pageCount <= 2 && baseRender.pageUsed.every(function(value) { return value > 0; }), "RDM-181 layout-capable browser executed the render gate");
-
-  var legitimateSparse = null;
-  for (var bodyCount = 35; bodyCount <= 90 && !legitimateSparse; bodyCount += 1) {
-    var compactLines = ["Alex Exact", "alex.exact@example.test", "", "SUMMARY"];
-    for (var bodyLine = 0; bodyLine < bodyCount; bodyLine += 1) compactLines.push("Supported compact body line " + bodyLine + ".");
-    var compactText = compactLines.join("\n");
-    var compactRender = api.renderCheck(api.build(compactText));
-    if (compactRender.ok && compactRender.pageCount === 2 && compactRender.sparseTrailingPage) {
-      var compactPrepared = api.prepare(compactText, fileName, api.mime);
-      if (compactPrepared.ok && compactPrepared.balanceDisposition === "sparse_tail_not_proven_avoidable") legitimateSparse = { text: compactText, prepared: compactPrepared };
-    }
-  }
-  check(legitimateSparse, "RDM-182A a legitimate sparse tail is not rejected without a safe alternative");
-  check(extractedText(legitimateSparse.prepared.bytes) === legitimateSparse.text, "RDM-182A accepted compact artifact remains content-exact");
-
-  var avoidableSparse = null;
-  for (var extraWords = 0; extraWords <= 500 && !avoidableSparse; extraWords += 1) {
-    var candidateText = liveFixture(extraWords);
-    var candidateInitial = api.renderCheck(api.build(candidateText));
-    if (candidateInitial.ok && candidateInitial.pageCount === 2 && candidateInitial.sparseTrailingPage) {
-      var candidatePrepared = api.prepare(candidateText, fileName, api.mime);
-      if (candidatePrepared.ok && candidatePrepared.balanceDisposition === "rebalanced") avoidableSparse = { text: candidateText, initial: candidateInitial, prepared: candidatePrepared };
-    }
-  }
-  check(avoidableSparse, "RDM-182B an avoidable sparse tail has a safe balanced alternative");
-  check(avoidableSparse.prepared.renderCheck.minimumPageUseRatio >= 0.25, "RDM-182B both balanced pages have substantive occupancy");
-  check(avoidableSparse.prepared.renderCheck.pageBalanceSpread < avoidableSparse.initial.pageBalanceSpread, "RDM-182B automatic break improves page balance");
-  check(avoidableSparse.prepared.renderCheck.orphan === false, "RDM-183 heading-role-metadata-first-bullet chains remain transitive");
-  check(extractedText(avoidableSparse.prepared.bytes) === avoidableSparse.text, "RDM-184 balancing preserves exact content and order");
-  check(api.validate(avoidableSparse.prepared.bytes, avoidableSparse.text, fileName, api.mime, avoidableSparse.prepared.options).ok, "RDM-184 final balanced DOCX revalidates byte-exact");
+  var spacerIndex = fixtures.liveSixRole.split("\n").indexOf("");
+  var spacerBreakAttempt = api.build(fixtures.liveSixRole, { presentationProfile: "compact_one_page", pageBreakBeforeParagraph: spacerIndex });
+  check(topsResumeDocxParagraphs(spacerBreakAttempt).filter(function(paragraph) { return paragraph.pageBreakBefore; }).length === 0, "RDM-191 ResumeSpacer cannot receive pageBreakBefore");
 
   var clippingText = ["Alex Exact", "alex.exact@example.test", "", "SUMMARY", Array(1200).join("X")].join("\n");
   var clippingRender = api.renderCheck(api.build(clippingText));
-  check(!clippingRender.ok && clippingRender.overflow, "RDM-185 clipping remains blocked");
+  check(!clippingRender.ok && clippingRender.overflow, "RDM-192 browser preflight blocks clipping");
 
   var hiddenStyle = document.createElement("style");
   hiddenStyle.textContent = 'div[aria-hidden="true"] > div { display:none !important; }';
   document.head.appendChild(hiddenStyle);
-  var hiddenRender = api.renderCheck(baseBytes);
+  var hiddenRender = api.renderCheck(api.build(fixtures.short));
   hiddenStyle.remove();
-  check(!hiddenRender.ok && hiddenRender.hiddenText, "RDM-185 hidden text remains blocked");
+  check(!hiddenRender.ok && hiddenRender.hiddenText, "RDM-192 browser preflight blocks hidden text");
 
   var overlapStyle = document.createElement("style");
   overlapStyle.textContent = 'div[aria-hidden="true"] > div { position:absolute !important; top:0 !important; }';
   document.head.appendChild(overlapStyle);
-  var overlapRender = api.renderCheck(baseBytes);
+  var overlapRender = api.renderCheck(api.build(fixtures.short));
   overlapStyle.remove();
-  check(!overlapRender.ok && overlapRender.overlap, "RDM-185 overlapping text remains blocked");
+  check(!overlapRender.ok && overlapRender.overlap, "RDM-192 browser preflight blocks overlap");
 
   var longLines = ["Alex Exact", "alex.exact@example.test", "", "SUMMARY"];
   for (var longIndex = 0; longIndex < 220; longIndex += 1) longLines.push("Supported overflow control line " + longIndex + ".");
   var longRender = api.renderCheck(api.build(longLines.join("\n")));
-  check(!longRender.ok && longRender.tooManyPages && longRender.pageCount > 2, "RDM-185 artifacts over two pages remain blocked");
+  check(!longRender.ok && longRender.tooManyPages && longRender.pageCount > 2, "RDM-192 browser preflight blocks artifacts over two pages");
 
-  var orphanText = ["Alex Exact", "alex.exact@example.test", "", "PROFESSIONAL EXPERIENCE", "Orphan Title | Orphan Employer", "2024", "\u2022 Supported duty."].join("\n");
-  var orphanIndex = orphanText.split("\n").indexOf("Orphan Title | Orphan Employer");
-  var orphanRender = api.renderCheck(api.build(orphanText, { pageBreakBeforeParagraph: orphanIndex }));
-  check(!orphanRender.ok && orphanRender.orphan, "RDM-185 orphaned role headers remain blocked");
-
-  var compressedRender = api.renderCheck(tamperStyleSize(baseBytes, "ResumeBody", "19", "12"));
-  check(!compressedRender.ok && compressedRender.unreadableCompression, "RDM-185 unreadable compression remains blocked");
-
-  check(api.mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "RDM-186 DOCX MIME remains exact");
-  return "PASS: RDM-179..RDM-186 actual browser layout; live-shaped DOCX, role grammar, evidence-based sparse-tail handling, safe balancing, transitive keeps, exact content, and negative gates verified";
+  check(api.mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "RDM-194 DOCX MIME remains exact");
+  return "PASS: RDM-175 and RDM-187..RDM-194 browser preflight, natural profiles, guarded overrides, exact content, and negative layout controls";
 }
 
-function buildHarness(docxBlock) {
-  return "<!doctype html><html><head><meta charset=\"utf-8\"><title>Transition OPS DOCX render regression</title></head><body><pre id=\"result\">RUNNING</pre><script>" + docxBlock + "</script><script>(function(){try{var message=(" + browserRegressionBody.toString() + ")();document.documentElement.setAttribute('data-rdm-result','PASS');document.getElementById('result').textContent=message;}catch(error){document.documentElement.setAttribute('data-rdm-result','FAIL');document.getElementById('result').textContent='FAIL: '+String(error&&error.stack||error);}})();</script></body></html>";
+function buildHarness(docxBlock, fixtures) {
+  const fixtureJson = JSON.stringify(fixtures).replace(/</g, "\\u003c");
+  return "<!doctype html><html><head><meta charset=\"utf-8\"><title>Transition OPS DOCX render regression</title></head><body><pre id=\"result\">RUNNING</pre><script>window.__TOPS_RENDER_FIXTURES=" + fixtureJson + ";</script><script>" + docxBlock + "</script><script>(function(){try{var message=(" + browserRegressionBody.toString() + ")();document.documentElement.setAttribute('data-rdm-result','PASS');document.getElementById('result').textContent=message;}catch(error){document.documentElement.setAttribute('data-rdm-result','FAIL');document.getElementById('result').textContent='FAIL: '+String(error&&error.stack||error);}})();</script></body></html>";
 }
 
-async function runRenderRegression() {
-  const browser = findLayoutBrowser();
-  if (!browser) {
-    throw new Error("RDM-181 requires an executable Chrome or Edge browser; set TOPS_CHROME_BIN to its path.");
-  }
-
-  const uiSource = fs.readFileSync(path.join(root, "index.html"), "utf8");
-  const blockMatch = uiSource.match(/\/\/ RESUME_DOCX_START\n([\s\S]*?)\n\/\/ RESUME_DOCX_END/);
-  assert.ok(blockMatch, "index.html contains one isolated resume DOCX implementation block");
-  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "tops-resume-docx-"));
+async function runBrowserRegression(browser, docxBlock, fixtures) {
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "tops-resume-browser-"));
   const harnessPath = path.join(scratch, "render-regression.html");
   const profilePath = path.join(scratch, "chrome-profile");
   try {
-    fs.writeFileSync(harnessPath, buildHarness(blockMatch[1]), "utf8");
+    fs.writeFileSync(harnessPath, buildHarness(docxBlock, fixtures), "utf8");
     const args = [
       "--headless=new",
       "--disable-gpu",
@@ -323,10 +440,159 @@ async function runRenderRegression() {
     assert.ok(messageMatch, "headless browser returned the regression result");
     const message = messageMatch[1].replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
     console.log(message);
-    return { skipped: false, browser, message };
+    return message;
   } finally {
     fs.rmSync(scratch, { recursive: true, force: true });
   }
+}
+
+function runChecked(binary, args, label, options) {
+  const result = childProcess.spawnSync(binary, args, Object.assign({ encoding: "utf8", timeout: 60000, maxBuffer: 10 * 1024 * 1024 }, options || {}));
+  assert.equal(result.error, undefined, label + " failed to start: " + String(result.error || ""));
+  assert.equal(result.status, 0, label + " failed (status " + result.status + "):\n" + String(result.stderr || "") + String(result.stdout || ""));
+  return result;
+}
+
+function parsePgm(filePath) {
+  const bytes = fs.readFileSync(filePath);
+  let offset = 0;
+  function token() {
+    while (offset < bytes.length) {
+      if (bytes[offset] === 35) {
+        while (offset < bytes.length && bytes[offset] !== 10) offset += 1;
+      } else if (bytes[offset] <= 32) {
+        offset += 1;
+      } else {
+        break;
+      }
+    }
+    const start = offset;
+    while (offset < bytes.length && bytes[offset] > 32 && bytes[offset] !== 35) offset += 1;
+    return bytes.slice(start, offset).toString("ascii");
+  }
+  assert.equal(token(), "P5", "LibreOffice PDF raster uses binary PGM");
+  const width = Number(token());
+  const height = Number(token());
+  const maxValue = Number(token());
+  assert.ok(width > 0 && height > 0 && maxValue === 255, "PGM dimensions and depth are valid");
+  while (offset < bytes.length && bytes[offset] <= 32) offset += 1;
+  const pixels = bytes.subarray(offset);
+  assert.equal(pixels.length, width * height, "PGM pixel count is exact");
+  let ink = 0;
+  let minX = width;
+  let maxX = -1;
+  let minY = height;
+  let maxY = -1;
+  for (let index = 0; index < pixels.length; index += 1) {
+    if (pixels[index] >= 245) continue;
+    ink += 1;
+    const x = index % width;
+    const y = Math.floor(index / width);
+    minX = Math.min(minX, x);
+    maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y);
+    maxY = Math.max(maxY, y);
+  }
+  return {
+    width,
+    height,
+    ink,
+    inkRatio: ink / pixels.length,
+    horizontalUse: maxX >= minX ? (maxX - minX + 1) / width : 0,
+    verticalUse: maxY >= minY ? (maxY - minY + 1) / height : 0,
+    clipped: ink > 0 && (minX <= 1 || minY <= 1 || maxX >= width - 2 || maxY >= height - 2)
+  };
+}
+
+function normalizedRenderedContent(value) {
+  return String(value).replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n").replace(/\f/g, "\n").split("\n").map((line) => line.trim().replace(/^([\u2022*-])\s+/, "$1 ")).filter(Boolean).join("\n");
+}
+
+function renderActualDocx(tooling, bytes, resumeText, label, expectedPages, substantiveTwoPage) {
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "tops-resume-libreoffice-"));
+  const docxPath = path.join(scratch, label + ".docx");
+  const outputDir = path.join(scratch, "rendered");
+  const profileDir = path.join(scratch, "profile");
+  fs.mkdirSync(outputDir);
+  fs.mkdirSync(profileDir);
+  try {
+    fs.writeFileSync(docxPath, bytes);
+    const profileUri = pathToFileURL(profileDir).href;
+    const conversion = runChecked(tooling.libreOffice, ["-env:UserInstallation=" + profileUri, "--headless", "--convert-to", "pdf", "--outdir", outputDir, docxPath], label + " LibreOffice conversion");
+    assert.doesNotMatch(String(conversion.stderr || "") + String(conversion.stdout || ""), /error|corrupt|repair|damaged/i, label + " has no renderer compatibility error");
+    const pdfPath = path.join(outputDir, label + ".pdf");
+    assert.ok(fs.existsSync(pdfPath) && fs.statSync(pdfPath).size > 0, label + " produced a nonempty PDF");
+    const info = runChecked(tooling.pdfinfo, [pdfPath], label + " pdfinfo").stdout;
+    const pagesMatch = String(info).match(/^Pages:\s+(\d+)$/m);
+    assert.ok(pagesMatch, label + " pdfinfo reports page count");
+    const pageCount = Number(pagesMatch[1]);
+    assert.equal(pageCount, expectedPages, label + " renders the expected page count");
+
+    const textConversion = runChecked(tooling.libreOffice, ["-env:UserInstallation=" + profileUri, "--headless", "--convert-to", "txt:Text", "--outdir", outputDir, docxPath], label + " LibreOffice text export");
+    assert.doesNotMatch(String(textConversion.stderr || "") + String(textConversion.stdout || ""), /error|corrupt|repair|damaged/i, label + " text export has no compatibility error");
+    const renderedTextPath = path.join(outputDir, label + ".txt");
+    assert.ok(fs.existsSync(renderedTextPath), label + " produced renderer-extracted text");
+    assert.equal(normalizedRenderedContent(fs.readFileSync(renderedTextPath, "utf8")), normalizedRenderedContent(resumeText), label + " Word-compatible rendering preserves every candidate-content line in order");
+
+    const rasterPrefix = path.join(scratch, "page");
+    runChecked(tooling.pdftoppm, ["-gray", "-r", "72", pdfPath, rasterPrefix], label + " PDF rasterization");
+    const pageMetrics = Array.from({ length: pageCount }, (_, index) => parsePgm(rasterPrefix + "-" + (index + 1) + ".pgm"));
+    pageMetrics.forEach((metrics, index) => {
+      assert.ok(metrics.inkRatio > 0.001, label + " page " + (index + 1) + " contains visible content");
+      assert.equal(metrics.clipped, false, label + " page " + (index + 1) + " keeps rendered ink inside page edges");
+    });
+    if (substantiveTwoPage) {
+      pageMetrics.forEach((metrics, index) => {
+        assert.ok(metrics.verticalUse >= 0.35, label + " page " + (index + 1) + " is substantive rather than sparse (vertical use " + metrics.verticalUse.toFixed(3) + ")");
+      });
+      const verticalUse = pageMetrics.map((metrics) => metrics.verticalUse);
+      assert.ok(Math.max.apply(Math, verticalUse) - Math.min.apply(Math, verticalUse) <= 0.55, label + " pages remain reasonably balanced without a forced break");
+    }
+    return { pageCount, pageMetrics };
+  } finally {
+    fs.rmSync(scratch, { recursive: true, force: true });
+  }
+}
+
+function runLibreOfficeRegression(docxBlock, fixtures) {
+  const libreOffice = findLibreOffice();
+  assert.ok(libreOffice, "RDM-192 requires local LibreOffice; set TOPS_LIBREOFFICE_BIN when it is not on the standard path");
+  const tooling = {
+    libreOffice,
+    pdfinfo: requiredPdfTool("TOPS_PDFINFO_BIN", "pdfinfo", ["pdfinfo"]),
+    pdftoppm: requiredPdfTool("TOPS_PDFTOPPM_BIN", "pdftoppm", ["pdftoppm"])
+  };
+  assert.ok(tooling.pdfinfo && tooling.pdftoppm, "RDM-192 requires local PDF inspection tools; renderer checks may not skip");
+
+  const api = nodeDocxApi(docxBlock);
+  const cases = [
+    { label: "short-adaptive", text: fixtures.short, options: { presentationProfile: "compact_one_page" }, pages: 1, substantive: false },
+    { label: "substantive-two-page-preference", text: fixtures.substantiveOnePage, options: { presentationProfile: "compact_one_page" }, pages: 1, substantive: false },
+    { label: "nine-bullet-fallback-control", text: fixtures.nineBulletLong, options: { presentationProfile: "compact_one_page" }, pages: 2, substantive: false },
+    { label: "senior-adaptive", text: fixtures.senior, options: { presentationProfile: "readable_two_page" }, pages: 2, substantive: true },
+    { label: "senior-one-page-preference", text: fixtures.senior, options: { presentationProfile: "compact_one_page" }, pages: 2, substantive: false },
+    { label: "live-six-role", text: fixtures.liveSixRole, options: { presentationProfile: "compact_one_page" }, pages: 1, substantive: false }
+  ];
+  const evidence = {};
+  cases.forEach((fixture) => {
+    const bytes = api.build(fixture.text, fixture.options);
+    assert.equal(extractedDocxText(bytes), fixture.text, fixture.label + " DOCX content is byte-exact after extraction");
+    assert.equal(pageBreakCount(bytes), 0, fixture.label + " contains zero forced page breaks");
+    assert.equal(api.validate(bytes, fixture.text, "Resume_Draft.docx", api.mime, fixture.options).ok, true, fixture.label + " validates as genuine DOCX");
+    evidence[fixture.label] = renderActualDocx(tooling, bytes, fixture.text, fixture.label, fixture.pages, fixture.substantive);
+  });
+  console.log("PASS: RDM-192 actual LibreOffice DOCX rendering; one/two-page counts, substantive visible pages, exact renderer-extracted content, no clipping, no forced breaks, and prior six-role one-page fixture");
+  return { libreOffice, evidence };
+}
+
+async function runRenderRegression() {
+  const browser = findLayoutBrowser();
+  assert.ok(browser, "RDM-181 requires an executable Chrome or Edge browser; set TOPS_CHROME_BIN to its path");
+  const docxBlock = docxBlockFromIndex();
+  const fixtures = buildRenderFixtures();
+  const browserMessage = await runBrowserRegression(browser, docxBlock, fixtures);
+  const libreOfficeEvidence = runLibreOfficeRegression(docxBlock, fixtures);
+  return { skipped: false, browser, browserMessage, libreOffice: libreOfficeEvidence.libreOffice, libreOfficeEvidence: libreOfficeEvidence.evidence };
 }
 
 if (require.main === module) {
@@ -336,4 +602,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { findLayoutBrowser, runRenderRegression };
+module.exports = { buildRenderFixtures, findLayoutBrowser, findLibreOffice, runRenderRegression };
