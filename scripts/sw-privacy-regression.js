@@ -43,9 +43,30 @@ const index = read("index.html");
 const pwaWorker = read("pwa-sw.js");
 const ergHandoff = read("erg-handoff.html");
 const ergEmployerBrief = read("erg-employer-brief.html");
+const ergIntranetLaunchKit = read("erg-intranet-launch-kit.html");
 const dedicatedWorker = read("push/onesignal/OneSignalSDKWorker.js");
 const headers = read("_headers");
 const packageJson = JSON.parse(read("package.json"));
+const launchInlineScripts = Array.from(
+  ergIntranetLaunchKit.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi),
+  function(match) { return match[1]; }
+).join("\n");
+const launchAnchorTags = Array.from(
+  ergIntranetLaunchKit.matchAll(/<a\b[^>]*>/gi),
+  function(match) { return match[0]; }
+);
+const launchPublicAnchorTags = launchAnchorTags.filter(function(tag) {
+  return /\bhref=["']https?:\/\//i.test(tag);
+});
+const launchImageTags = Array.from(
+  ergIntranetLaunchKit.matchAll(/<img\b[^>]*>/gi),
+  function(match) { return match[0]; }
+);
+const launchTagSurface = Array.from(
+  ergIntranetLaunchKit.matchAll(/<[^!][^>]*>/g),
+  function(match) { return match[0]; }
+).join("\n");
+const launchActiveSurface = launchInlineScripts + "\n" + launchTagSurface;
 
 const helperStart = index.indexOf("const TOPS_PUSH_ENABLED = true;");
 const helperEnd = index.indexOf("// ═══════════════════════════════════════════════════════════════\n// TRANSITION OPS", helperStart);
@@ -152,7 +173,8 @@ check(
 );
 check(
   pwaWorker.indexOf('url.pathname === "/erg-handoff.html"') !== -1 &&
-    pwaWorker.indexOf('url.pathname === "/erg-employer-brief.html"') !== -1,
+    pwaWorker.indexOf('url.pathname === "/erg-employer-brief.html"') !== -1 &&
+    pwaWorker.indexOf('url.pathname === "/erg-intranet-launch-kit.html"') !== -1,
   "ERG static pages use distinct navigation cache keys"
 );
 check(
@@ -183,6 +205,71 @@ check(
   !/(?:URLSearchParams|location\.search|location\.hash|@veteranbridgesolutions\.com)/i.test(ergHandoff) &&
     !/(?:URLSearchParams|location\.search|location\.hash|@veteranbridgesolutions\.com)/i.test(ergEmployerBrief),
   "ERG static pages contain no personalization reader or VBS contact route"
+);
+check(
+  countMatches(ergIntranetLaunchKit, /ISOLATED CLONE TEST - NOT APPROVED FOR EMPLOYER DISTRIBUTION/) === 1,
+  "intranet launch kit retains one clone-only distribution warning"
+);
+check(
+  countMatches(ergIntranetLaunchKit, /<form\b/i) === 0 &&
+    countMatches(ergIntranetLaunchKit, /<(?:input|textarea|select)\b/i) === 0 &&
+    countMatches(ergIntranetLaunchKit, /<(?:iframe|embed)\b/i) === 0,
+  "intranet launch kit contains no collection or embedded-app surface"
+);
+check(
+  countMatches(ergIntranetLaunchKit, /<script\b[^>]*\bsrc=/i) === 0 &&
+    countMatches(ergIntranetLaunchKit, /<link\b[^>]*\brel=["']stylesheet["']/i) === 0 &&
+    !/(?:@import|@font-face|url\(\s*["']?(?:https?:|\/\/|data:))/i.test(ergIntranetLaunchKit) &&
+    launchImageTags.length === 1 &&
+    /\bsrc=["']\/transition-ops-public-qr\.png["']/i.test(launchImageTags[0]),
+  "intranet launch kit has no external script, style, font, or image asset"
+);
+check(
+  !/(?:fetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|EventSource|navigator\.share|window\.open|window\.__trackEvent|gtag\s*\(|GoogleAnalyticsObject|OneSignal|Mixpanel|Segment|Amplitude|Hotjar|Plausible|PostHog|Intercom|HubSpot)/i.test(launchActiveSurface),
+  "intranet launch kit has no network, analytics, provider, or automatic-share integration"
+);
+check(
+  !/(?:localStorage|sessionStorage|indexedDB|document\.cookie|CacheStorage|caches\.|URLSearchParams|location\.(?:search|hash)|document\.referrer|history\.(?:pushState|replaceState))/i.test(launchActiveSurface),
+  "intranet launch kit has no storage or query/hash personalization flow"
+);
+check(
+  !/(?:mailto:|tel:|@veteranbridgesolutions\.com|veteranbridgesolutions\.com)/i.test(ergIntranetLaunchKit) &&
+    !/(?:oauth|saml|openid|sign[-_ ]?in|\/login\b|\/auth(?:\/|\b)|client[_-]?id|utm_(?:source|medium|campaign|content|term)|gclid|fbclid|msclkid)/i.test(launchActiveSurface),
+  "intranet launch kit has no VBS contact, SSO, client-ID, or tracking-parameter flow"
+);
+check(
+  !/\bdata[- ]free\b|\buntracked\b/i.test(ergIntranetLaunchKit),
+  "intranet launch kit avoids universal data-free and untracked wording"
+);
+check(
+  launchImageTags.length === 1 &&
+    launchImageTags[0].indexOf('src="/transition-ops-public-qr.png"') !== -1 &&
+    launchImageTags[0].indexOf('alt="QR code for Transition Ops. The destination is https://transitionops.org."') !== -1,
+  "intranet launch kit uses one local QR image with the approved alternative text"
+);
+check(
+  countMatches(
+    ergIntranetLaunchKit,
+    /<a class="download-button" href="\/transition-ops-public-qr\.png" download="transition-ops-public-qr\.png">DOWNLOAD QR PNG<\/a>/
+  ) === 1 &&
+    fs.existsSync(path.join(ROOT, "transition-ops-public-qr.png")) &&
+    fs.readFileSync(path.join(ROOT, "transition-ops-public-qr.png")).subarray(0, 8)
+      .equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])),
+  "intranet launch kit provides one local PNG download"
+);
+check(
+  launchPublicAnchorTags.length === 3 &&
+    launchPublicAnchorTags.every(function(tag) {
+      return /\bhref=["']https:\/\/transitionops\.org["']/.test(tag) &&
+        /\brel=["']noopener noreferrer["']/.test(tag) &&
+        /\breferrerpolicy=["']no-referrer["']/.test(tag);
+    }),
+  "every intranet launch-kit public anchor uses the exact hardened public link"
+);
+check(
+  !/https:\/\/transitionops\.org[/?#]/.test(ergIntranetLaunchKit) &&
+    !/https?:\/\/(?!transitionops\.org(?:["'<\s)]|\.(?=["'<\s])|$))/i.test(ergIntranetLaunchKit),
+  "intranet launch kit contains no alternate, slash, query, or fragment URL"
 );
 check(
   pwaWorker.indexOf("key.indexOf(CACHE_PREFIX) === 0 && key !== CACHE_NAME") !== -1,
@@ -311,14 +398,22 @@ check(
   "enabled clone status is bounded and distinguishes production"
 );
 check(
-  pwaWorker.indexOf('const CACHE_NAME = "transition-ops-v142";') !== -1,
-  "active-worker cache advances beyond prior v141"
+  pwaWorker.indexOf('const CACHE_NAME = "transition-ops-v143";') !== -1,
+  "active-worker cache advances beyond prior v142"
 );
 check(
   countMatches(headers, /^\/(?:pwa-sw\.js|sw\.js|OneSignalSDKWorker\.js|push\/onesignal\/OneSignalSDKWorker\.js)$/m) === 4 &&
     countMatches(headers, /^  Content-Type: application\/javascript; charset=utf-8$/m) === 4 &&
     countMatches(headers, /^  Cache-Control: no-cache$/m) === 4,
   "all worker routes have explicit JavaScript and no-cache headers"
+);
+check(
+  countMatches(headers, /^  X-Frame-Options: DENY$/m) === 1 &&
+    countMatches(headers, /^  Content-Security-Policy: frame-ancestors 'none'$/m) === 1 &&
+    countMatches(headers, /^  Access-Control-Allow-Origin: \*$/m) === 1 &&
+    countMatches(headers, /^  X-Frame-Options: ALLOWALL$/m) === 0 &&
+    countMatches(headers, /^  Content-Security-Policy: frame-ancestors \*$/m) === 0,
+  "frame-blocking headers are exact and permissive predecessors are absent"
 );
 check(
   packageJson.scripts && packageJson.scripts["test:sw-privacy"] === "node scripts/sw-privacy-regression.js",

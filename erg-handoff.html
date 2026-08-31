@@ -170,6 +170,8 @@
 
     .action:hover { filter: brightness(1.12); }
 
+    .action.launch-kit { grid-column: 1 / -1; }
+
     .status {
       min-height: 1.6em;
       margin: 10px 0 0;
@@ -277,6 +279,7 @@
       <div class="actions" aria-label="Sharing actions">
         <button class="action" id="copy-note" type="button">COPY A SHORT NOTE</button>
         <a class="action secondary" href="/erg-employer-brief.html" target="_blank" rel="noopener">OPEN EMPLOYER BRIEF</a>
+        <a class="action launch-kit" href="/erg-intranet-launch-kit.html">OPEN INTRANET LAUNCH KIT</a>
         <button class="action secondary" id="copy-link" type="button">COPY THE PUBLIC LINK</button>
       </div>
       <p class="status" id="copy-status" role="status" aria-live="polite"></p>
