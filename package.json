@@ -7,9 +7,13 @@
   },
   "scripts": {
     "test:openai-migration": "node scripts/openai-migration-regression.js",
-    "test:sw-privacy": "node scripts/sw-privacy-regression.js"
+    "test:sw-privacy": "node scripts/sw-privacy-regression.js",
+    "test:privacy-network": "node scripts/privacy-network-regression.js",
+    "test:runtime-ai-spend": "node scripts/runtime-ai-spend-regression.js",
+    "test:accessibility-release": "node scripts/accessibility-release-regression.js"
   },
   "dependencies": {
+    "@netlify/blobs": "10.7.13",
     "openai": "7.8.0"
   }
 }

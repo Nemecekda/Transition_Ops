@@ -18,12 +18,12 @@ const RULES = `You are the Transition OPS Navigator (PILOT) — grounded AI guid
 9. TOOL ROUTING PRECISION: FIND YOUR VSO is for claims help ONLY — never route employment or career questions through it. Keep corpus programs DISTINCT: priority of service, ENPP, and resume review are separate benefits; never merge them into one. Generic routing to official channels (command S-1/personnel, transition office, TAP coordinator, VA.gov, state workforce agencies) is permitted; inventing specific mechanisms or contact paths is not.
 10. CLOSED WINDOWS: when the user's timeline shows a window closed (e.g., BDD at under 90 days), never suggest filing under that window — state the applicable alternative path plainly. When corpus gives guidance timelines (e.g., SkillBridge 8-12 months), do not declare late cases flatly impossible — state the guidance and route feasibility to their command.
 11. The user is ALREADY INSIDE the Transition OPS app — never tell them to download or install it; point them to tabs and tools by name instead.
-12. This is a PILOT. If asked what you are: a pilot version of the Transition OPS Navigator, educational information only, not affiliated with VA or DoD, nothing stored.
+12. This is a PILOT. If asked what you are: a pilot version of the Transition OPS Navigator, educational information only, not affiliated with VA or DoD.
 13. TOOL MANIFEST IS AUTHORITATIVE. A separate TOOL MANIFEST states what every tool in this app does and does NOT do. It overrides any impression you form from a tool's name or from corpus phrasing. NEVER attribute a capability the manifest does not list — do not assume a tool searches, locates, calculates, files, submits, books, or notifies unless the manifest says so. If the app has no tool for what was asked, say so plainly in the answer ("Transition OPS doesn't have a tool for that") and route to the authoritative source by NAME per rule 6d — never invent a feature, and never soften "we don't have that" into a vague suggestion to "check the app."
 14. TOOL RECOMMENDATIONS CARRY THEIR LINK AND ASK FOR WHAT THEY NEED. When you recommend an app tool: (a) attach its in-app citation token from the manifest's live-token list, spelled exactly, so it renders as a tappable link. EVERY tab has one, so there is no tool you may recommend without citing it — we never send a user looking for something we can link them to. Never emit a bracket that is not on that list; it prints as dead text. (b) if the manifest marks that tool NEEDS INPUT, END your answer by asking the user for exactly that input, in one short question — rating percentages for VA MATH, separation or ETS date for TIMELINE and REMINDERS, target role and experience for the Resume Drafter. Ask only for input the manifest says the tool actually takes: never ask for a ZIP code for FIND YOUR VSO, which takes none. A recommendation that leaves the user to guess what the tool wants is an unfinished answer.
 15. VETERANS' PREFERENCE — ASK WHICH SYSTEM BEFORE YOU ANSWER. There are TWO different veterans'-preference point systems in the verified data and both contain a "5": HIRING preference (getting a federal job) and RIF RETENTION preference (keeping one in a reduction in force). They are not interchangeable. NEVER answer a preference-points question without naming which system you are answering about. If the member's question does not make clear which they mean — and "how many points do I get?" does NOT make it clear — ASK: "Are you asking about getting hired, or about keeping your job in a reduction in force?" Answering the wrong system hands a federal-employee veteran a number that does not apply to their situation.
 16. TWO OPM EFFECTIVE DATES — NEVER BLEND THEM. The 2026 OPM federal-civilian changes fall on two different dates, and a member holding a RIF notice in August must be able to tell which regime governs it. CORPUS (c), the performance-rating rule, is IN FORCE NOW as of 6 AUG 2026 — answer in the present tense. CORPUS (b), the four RIF and appeals rules, take effect 2 SEP 2026 — answer in the future tense and state the date. NEVER describe both in one undated present tense. If asked what applies to a RIF notice already in hand, the date on the notice decides: notices issued before 2 SEP 2026 are processed under the prior rules.
-17. GAP TAG — emit it whenever you say something is beyond your verified data. On its own final line, output exactly: [[GAP: <topic>]]. The topic is a SHORT SUBJECT DESCRIPTION IN YOUR OWN WORDS — what the missing information is ABOUT — so we know what to verify next. It is NEVER the user's question, NEVER their words, and NEVER any personal detail: no numbers, no percentages, no dollar figures, no dates, no places, no names, no unit, no rating, no discharge status, no diagnosis. Write "state property tax exemption for disabled veterans", never "he has 70% and wants to know about his property taxes in Waukesha". Fewer than 80 characters, plain letters and spaces. If you cannot write the topic without including something personal, OMIT THE TAG ENTIRELY — a missing tag costs us nothing. NEVER emit the tag on any turn where you are responding to distress or routing to the Veterans Crisis Line. The user never sees this line; it is stripped before your answer is shown.`;
+`;
 
 // TOOL MANIFEST — AUTHORITATIVE. Verified against index.html 5 AUG 2026.
 // REGENERATION RULE: any change to what a tool does, or to renderNavText's MAP in
@@ -76,7 +76,7 @@ DOES: military-to-civilian skill translation, career pathways, and the entry poi
 DOES NOT: apply to jobs on the user's behalf.
 
 AI RESUME DRAFTER — inside [CAREER], no separate token.
-DOES: builds a one-page civilian OR federal (USAJOBS) resume from the user's own words or a pasted military resume; can tailor to a pasted job posting; downloads as a Word document; stores nothing.
+DOES: builds a one-page civilian OR federal (USAJOBS) resume from the user's own words or a pasted military resume; can tailor to a pasted job posting; downloads as a Word document.
 DOES NOT: apply to jobs, guarantee interviews, or verify the user's claims.
 NEEDS INPUT: target role, years of service, skills, certifications, experience; optionally a pasted posting.
 
@@ -107,7 +107,7 @@ READINESS — [READINESS]
 DOES: a transition readiness score.
 DOES NOT: report to anyone, and it is not an official assessment.
 
-NAVIGATOR — you. Educational information from verified content only. Not benefits counseling, not affiliated with VA or DoD, nothing stored.
+NAVIGATOR — you. Educational information from verified content only. Not benefits counseling, not affiliated with VA or DoD.
 
 --- WHEN THE APP HAS NO TOOL ---
 Say so plainly and immediately — "Transition OPS doesn't have a tool for that" — then point to the authoritative external source by NAME (not an invented URL, per rule 6d): VA at 1-800-827-1000 or VA.gov; a VA-accredited VSO or CVSO via [RESOURCES]; Military OneSource 800-342-9647; ESGR at esgr.mil for employer disputes; the user's state veterans affairs department for state benefits; their command S-1, transition office, or TAP coordinator for service-side questions. Naming the right human beats inventing a feature every time. DO NOT include the Veterans Crisis Line in this routine no-tool routing — RULE 2 owns distress and fires on its own.`;
@@ -157,7 +157,7 @@ const CORPUS = `VERIFIED CORPUS (from Transition OPS; verified against 38 CFR / 
 - State taxation of military retirement pay varies by state — the app carries current state-by-state treatment.
 
 [CAREER]
-- AI Resume Drafter (free, in-app): builds a one-page civilian resume from the member's own words or pasted military resume/NCOER — civilian or FEDERAL (USAJOBS) format — can tailor to a pasted job posting, downloads as a Word doc. Nothing stored.
+- AI Resume Drafter (free, in-app): builds a one-page civilian resume from the member's own words or pasted military resume/NCOER — civilian or FEDERAL (USAJOBS) format — can tailor to a pasted job posting, downloads as a Word doc.
 - DOL Employment Navigator (ENPP): FREE one-on-one employment counseling from the Department of Labor during transition, with warm handoffs to 70+ partner orgs. Also FREE professional resume review. ENPP counselors serve transitioning members through TAP at participating installations; where unavailable, American Job Centers provide DOL employment services with priority of service.
 - Priority of Service: by law (Jobs for Veterans Act), veterans and eligible spouses receive PRIORITY over other job seekers at all ~2,400 American Job Centers — priority referrals to jobs and training, plus DVOP specialists for disabled veterans.
 - State Job Banks: every state runs an official job bank; DOL's CareerOneStop directory links all 50 — post a resume and set alerts in a target state before moving.
@@ -208,36 +208,6 @@ SECTION - PROTECT YOUR BENEFITS
 - American Legion service officers: more than 3,000 accredited service officers nationwide provide free claims help. The Legion is listed in the app's RESOURCES directory with a link to legion.org. The app does NOT locate a specific post or service officer by address — use the Legion's own site or the VA accredited-representative search.`;
 
 // ---------------------------------------------------------------------------
-// GAP LOG — Commander-approved 6 AUG 2026. Design + rulings:
-// intel/user-signal-loop-design.md. Privacy design is BINDING, not advisory.
-//
-// WHAT THIS STORES: a model-authored TOPIC, a DATE (never a timestamp), and a
-// count. Nothing else, ever. It does NOT store the question, the conversation,
-// the app context payload, any identifier, or anything the member typed.
-//
-// STANDING RULE (design 0.1) — THE CRISIS-TURN BAN:
-//   Any turn where the crisis path fires logs NOTHING. Not the topic, not a
-//   category, not a counter, not the fact that it happened.
-//   A MEMBER IN DISTRESS IS NOT A DATA POINT.
-// Enforced below by suppressing on any reply mentioning 988. That deliberately
-// OVER-suppresses -- a routine mention also silences the log -- because the
-// error that costs nothing is the one that records nothing.
-//
-// WHAT PROTECTS THIS STORE FROM A FUTURE FUNCTION: not access control. Netlify
-// Blobs are site-scoped and any function in this site can open this store.
-// THE CONTROL IS THAT THERE IS NOTHING HERE WORTH TAKING -- topics and counts,
-// no identifiers, nothing linkable to a person. Same substitution R1 makes:
-// remove the sensitive thing rather than guard it.
-//
-// RETENTION: 90 days, by PRUNE-ON-WRITE over date-bucketed keys. No new
-// scheduled job. Residual limit, stated: if writes stop entirely for 90+ days
-// nothing prunes -- so the read path independently ignores buckets older than
-// 90 days. Deletion is best-effort; exclusion from use is guaranteed.
-//
-// FAILURE POSTURE: logging is BEST-EFFORT AND NEVER BREAKS AN ANSWER. Every
-// path below is wrapped; a store that is missing, unwritable, or absent from
-// the runtime results in no log and a completely normal reply.
-// ---------------------------------------------------------------------------
 // DEAD-TOKEN STRIP. A prompt rule is not a boundary; this is.
 //
 // renderNavText (index.html) linkifies ONLY the tokens in its MAP. Any other
@@ -263,112 +233,24 @@ function stripDeadTokens(text) {
     });
 }
 
-const GAP_STORE = "navigator-gaps";
-const GAP_RETENTION_DAYS = 90;
 const GAP_TAG_RE = /\[\[GAP:\s*([^\]]{1,120})\]\]/i;
+const NAVIGATOR_FAILURE_MESSAGES = Object.freeze({
+  budget_limit: "The Navigator has reached its monthly limit. Try again next month.",
+  upstream_unavailable: "The Navigator is briefly unavailable. Try again in a moment."
+});
 
-// Mechanical scrubber. A prompt is not a boundary; this is.
-// Rejects rather than truncates -- a partial record is worse than none.
-function gapTopicOrNull(raw) {
-  if (typeof raw !== "string") return null;
-  const t = raw.replace(/\s+/g, " ").trim().toLowerCase();
-  if (t.length < 4 || t.length > 80) return null;   // length bound
-  if (/[0-9]/.test(t)) return null;                  // no digits: ratings, %, $, dates, ZIPs
-  if (/[@_<>{}[\]\\/|#$%^*+=~`"]/.test(t)) return null; // no addresses, markup, injection shapes
-  if (!/^[a-z ,'()-]+$/.test(t)) return null;        // allowlist, not a denylist
-  if (/\b(i|my|me|mine|he|she|his|her|they|their)\b/.test(t)) return null; // first/third-person = a person's situation
-  return t;
-}
-
-function gapBucketKey(d) {
-  return "gap/" + d.toISOString().slice(0, 10); // DATE ONLY. Never a timestamp.
-}
-
-async function recordGap(replyText) {
-  try {
-    // CRISIS-TURN BAN, checked before anything else happens.
-    if (/988/.test(replyText)) return;
-
-    // Two diagnostics, approved 6 AUG 2026. They record OUR OWN behaviour and
-    // carry no member data. There is deliberately NO line for the crisis
-    // suppression above: design 0.1 bans recording "the fact that it happened,"
-    // so that path stays completely silent and its failures stay
-    // indistinguishable. That blindness is accepted, not overlooked.
-    const m = GAP_TAG_RE.exec(replyText);
-    if (!m) { console.log("[gap-log] no-tag"); return; }
-    const topic = gapTopicOrNull(m[1]);
-    if (!topic) { console.log("[gap-log] rejected"); return; }
-
-    // MODULE RESOLUTION. The previous shape assumed require() either works or
-    // throws. It has a third outcome, and that third outcome is what happened:
-    // require RESOLVES but the destructured getStore is undefined (ESM-only
-    // package, or an exports map with no CJS binding). Nothing threw, nothing
-    // logged, and the TypeError only fired one line later inside the outer
-    // catch -- silent. Both remaining candidates produced identical silence.
-    let getStore;
-    try { ({ getStore } = require("@netlify/blobs")); } catch (e) { /* fall through to import */ }
-    if (typeof getStore !== "function") {
-      // CommonJS require could not produce it. Try the ESM path: recordGap is
-      // already async, so dynamic import is free here.
-      try { ({ getStore } = await import("@netlify/blobs")); }
-      catch (e) {
-        console.log("[gap-log] blobs module unavailable via require AND import: " +
-          (e && e.name) + " " + String(e && e.message).slice(0, 120));
-        return;
-      }
-    }
-    if (typeof getStore !== "function") {
-      console.log("[gap-log] module resolved but getStore is not a function - ESM/CJS shape");
-      return;
-    }
-    const store = getStore(GAP_STORE);
-    const now = new Date();
-    const key = gapBucketKey(now);
-
-    let bucket = {};
-    try { bucket = (await store.get(key, { type: "json" })) || {}; } catch (e) { bucket = {}; }
-    bucket[topic] = (bucket[topic] || 0) + 1;
-    await store.setJSON(key, bucket);
-
-    // READ-BACK. "The store is its own proof" made mechanical. setJSON
-    // resolving is not evidence the blob exists; reading the key is. Gaps are
-    // rare, so this costs one extra read on an uncommon path. It logs the
-    // COUNT only -- never the topic, which would put member-derived content
-    // into a second store.
-    try {
-      const back = await store.get(key, { type: "json" });
-      if (back && typeof back === "object") {
-        console.log("[gap-log] wrote " + key + " (" + Object.keys(back).length + " topics)");
-      } else {
-        console.log("[gap-log] write NOT confirmed on read-back: " + key);
-      }
-    } catch (e) {
-      console.log("[gap-log] read-back failed: " + (e && e.name));
-    }
-
-    // PRUNE-ON-WRITE. Retention enforced here, not by a job.
-    try {
-      const cutoff = new Date(now.getTime() - GAP_RETENTION_DAYS * 86400000)
-        .toISOString().slice(0, 10);
-      const { blobs } = await store.list({ prefix: "gap/" });
-      for (const b of (blobs || [])) {
-        if (b.key.slice(4) < cutoff) { try { await store.delete(b.key); } catch (e) {} }
-      }
-    } catch (e) { /* prune is best-effort; never fails a reply */ }
-  } catch (e) {
-    // THE CORRECTION. "Logging can never break an answer" and "logging must say
-    // nothing" are DIFFERENT PROPERTIES, and collapsing them is what hid this
-    // failure twice. Swallowing the error preserves the guarantee -- nothing is
-    // rethrown, the reply is unaffected. Staying silent about it was a separate
-    // choice, and it was wrong.
-    //
-    // A SWALLOWED ERROR MUST STILL BE COUNTED.
-    //
-    // Library error name and message only. No topic, no question, no member
-    // data. Cannot fire on a crisis turn: that path returns before any of this.
-    console.log("[gap-log] error " + (e && e.name) + ": " +
-      String(e && e.message).slice(0, 140));
-  }
+function navigatorFailure(headers, reasonCategory) {
+  const safeCategory = Object.prototype.hasOwnProperty.call(NAVIGATOR_FAILURE_MESSAGES, reasonCategory)
+    ? reasonCategory
+    : "upstream_unavailable";
+  return {
+    statusCode: 502,
+    headers,
+    body: JSON.stringify({
+      error: NAVIGATOR_FAILURE_MESSAGES[safeCategory],
+      reasonCategory: safeCategory
+    })
+  };
 }
 
 exports.handler = async (event) => {
@@ -381,8 +263,13 @@ exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers, body: "" };
   if (event.httpMethod !== "POST") return { statusCode: 405, headers, body: JSON.stringify({ error: "POST only" }) };
 
+  const rawBody = typeof event.body === "string" ? event.body : "";
+  if (Buffer.byteLength(rawBody, "utf8") > 32768) {
+    return { statusCode: 413, headers, body: JSON.stringify({ error: "Request too large" }) };
+  }
+
   let body;
-  try { body = JSON.parse(event.body || "{}"); } catch (e) {
+  try { body = JSON.parse(rawBody || "{}"); } catch (e) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: "Bad request" }) };
   }
 
@@ -398,7 +285,7 @@ exports.handler = async (event) => {
 
   try {
     const { createOpenAIClient, responseText } = require("./openai-client");
-    const client = createOpenAIClient();
+    const client = createOpenAIClient("navigator");
     const response = await client.responses.create({
       model: "gpt-5.6-luna",
       max_output_tokens: 800,
@@ -439,15 +326,12 @@ exports.handler = async (event) => {
 
     const rawReply = response.status === "completed" ? responseText(response) : "";
     if (!rawReply) throw new Error("generation incomplete");
-    // Record BEFORE stripping (the tag is the signal), then strip so the member
-    // never sees it. Awaited so the write is not cut off when the function
-    // freezes, but it can only ever resolve -- recordGap swallows everything.
-    await recordGap(rawReply);
     const reply = stripDeadTokens(
       rawReply.replace(GAP_TAG_RE, "").replace(/\n{3,}/g, "\n\n").trim()
     ) || "No response — try again.";
     return { statusCode: 200, headers, body: JSON.stringify({ reply }) };
   } catch (e) {
-    return { statusCode: 502, headers, body: JSON.stringify({ error: "The Navigator is briefly unavailable. Try again in a moment." }) };
+    const reasonCategory = e && e.code === "budget_limit" ? "budget_limit" : "upstream_unavailable";
+    return navigatorFailure(headers, reasonCategory);
   }
 };

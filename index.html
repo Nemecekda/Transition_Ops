@@ -101,31 +101,6 @@
 }
 </script>
 
-<!-- Google Analytics 4 ───────────────────────────────────── -->
-<!-- Respects iframe embedding — no tracking when app is embedded elsewhere -->
-<script>
-(function() {
-  var isIframe = false;
-  try { isIframe = (window.self !== window.top); } catch(e) { isIframe = true; }
-  if (isIframe) return;
-  var s = document.createElement('script');
-  s.async = true;
-  s.src = 'https://www.googletagmanager.com/gtag/js?id=G-RE7CRR2ZBB';
-  document.head.appendChild(s);
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function(){ window.dataLayer.push(arguments); };
-  window.gtag('js', new Date());
-  window.gtag('config', 'G-RE7CRR2ZBB', {
-    'anonymize_ip': true,
-    'send_page_view': true
-  });
-  // Helper for custom event tracking from React components
-  window.__trackEvent = function(name, params) {
-    if (window.gtag) { window.gtag('event', name, params || {}); }
-  };
-})();
-</script>
-
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--t-bg:#0E120B;--t-bg-card:#161B11;--t-border:#222A19;--t-nav-bg:#0f120b;--t-overlay:rgba(10,12,8,0.95);--t-body-text:#d4cbb3}
@@ -133,11 +108,10 @@
 html,body,#root{height:100%;width:100%;margin:0;padding:0}
 body{background:var(--t-bg);font-family:"Courier Prime","Courier New",monospace;color:var(--t-body-text);-webkit-font-smoothing:antialiased}
 #root{width:100%;max-width:100%}
-/* Desktop: full width with readable content */
-@media(min-width:641px){
-  .bottom-nav{max-width:900px;left:50%;transform:translateX(-50%)}
-  .more-overlay{max-width:900px;left:50%;transform:translateX(-50%)}
-}
+:focus{outline:3px solid #E8C547!important;outline-offset:2px}
+:focus-visible{position:relative;z-index:400}
+input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px #E8C547!important}
+.sr-only{position:absolute!important;left:0!important;top:0!important;width:1px!important;height:1px!important;padding:0!important;margin:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important}
 /* Mobile: unchanged */
 @media(max-width:640px){
   .bottom-nav{left:0;right:0}
@@ -150,6 +124,9 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,0,0,0.4)}50%{box-shadow:0 0 12px 4px rgba(139,0,0,0.2)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;scroll-behavior:auto!important}
+}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--t-nav-bg);border-top:1px solid var(--t-border);z-index:200;padding-bottom:env(safe-area-inset-bottom,0)}
 .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 6px;background:none;border:none;cursor:pointer;transition:all 0.2s}
 .bottom-nav button .nav-icon{font-size:20px;line-height:1}
@@ -160,6 +137,8 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 .dash-card{background:var(--t-bg-card);border:1px solid var(--t-border);border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s}
 .dash-card:active{border-color:#4A5D23}
 @media(min-width:641px){
+  .bottom-nav{width:auto;max-width:900px;left:0;right:0;margin:0 auto;transform:none}
+  .more-overlay{width:auto;max-width:900px;left:0;right:0;margin:0 auto;transform:none}
   .dash-card:hover{border-color:#4A5D23;filter:brightness(0.97)}
   .content-area{padding-left:28px !important;padding-right:28px !important}
   .bottom-nav button .nav-icon{font-size:22px}
@@ -509,15 +488,12 @@ const {
   useRef
 } = React;
 
-const TOPS_PUSH_ENABLED = true;
+const TOPS_PUSH_ENABLED = false;
 const TOPS_PUSH_NOTICE_VERSION = "sw-privacy-01-v1";
 const TOPS_PUSH_TIMING_MODE = "exact-day";
 const TOPS_PUSH_CHOICE_KEY = "tops_push_choice_v1";
-const TOPS_PUSH_ALLOWED_ORIGIN = "https://transition-ops-openai-clone.netlify.app";
-const TOPS_CLONE_ONESIGNAL_APP_ID = "6b0400ce-cb2f-44d2-990d-c6ffb7a5db3a";
-const TOPS_ONESIGNAL_WITHDRAWAL_SYNC_MS = 2500;
 const TOPS_PRIVACY_CONTACT = "dean@veteranbridgesolutions.com";
-const TOPS_PUSH_DISABLED_COPY = "Push setup is being updated on this test site.";
+const TOPS_PUSH_DISABLED_COPY = "Push alerts are currently disabled.";
 const TOPS_PUSH_CHOICE_FIELDS = ["noticeVersion", "state", "timingMode"];
 const TOPS_PUSH_CHOICE_STATES = ["accepted", "browser-denied", "declined", "withdrawn"];
 
@@ -564,9 +540,7 @@ function topsPushChoiceAccepted() {
 }
 
 function topsPushConfigReady() {
-  if (window.__IS_IFRAME || TOPS_PUSH_ENABLED !== true) return false;
-  if (!TOPS_PUSH_ALLOWED_ORIGIN || !TOPS_CLONE_ONESIGNAL_APP_ID) return false;
-  return window.location.origin === TOPS_PUSH_ALLOWED_ORIGIN;
+  return false;
 }
 
 function topsPriorRootWorkerIsLegacy(scriptURL) {
@@ -601,142 +575,34 @@ function topsRemoveOneSignalScript() {
   if (script && script.parentNode) script.parentNode.removeChild(script);
 }
 
-function topsLoadOneSignalSdk() {
-  if (window.__IS_IFRAME) return Promise.reject(new Error("iframe-blocked"));
-  if (!topsPushChoiceAccepted()) return Promise.reject(new Error("push-choice-required"));
-  if (!topsPushConfigReady()) return Promise.reject(new Error("clone-push-disabled"));
-  if (window.__TOPS_ONESIGNAL_INSTANCE) return Promise.resolve(window.__TOPS_ONESIGNAL_INSTANCE);
-  if (window.__TOPS_ONESIGNAL_PROMISE) return window.__TOPS_ONESIGNAL_PROMISE;
-
-  window.__TOPS_ONESIGNAL_PROMISE = new Promise(function(resolve, reject) {
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    window.OneSignalDeferred.push(function(OneSignal) {
-      window.__TOPS_ONESIGNAL_INSTANCE = OneSignal;
-      resolve(OneSignal);
-    });
-
-    var existing = document.getElementById("tops-onesignal-sdk");
-    if (existing) return;
-    var script = document.createElement("script");
-    script.id = "tops-onesignal-sdk";
-    script.async = true;
-    script.src = "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";
-    script.onerror = function() {
-      window.__TOPS_ONESIGNAL_PROMISE = null;
-      topsRemoveOneSignalScript();
-      reject(new Error("onesignal-sdk-load-failed"));
-    };
-    document.head.appendChild(script);
-  });
-  return window.__TOPS_ONESIGNAL_PROMISE;
-}
-
-async function topsInitializeOneSignal() {
-  if (!topsPushChoiceAccepted() || !topsPushConfigReady()) throw new Error("clone-push-disabled");
-  var OneSignal = await topsLoadOneSignalSdk();
-  await OneSignal.setConsentRequired(true);
-  await OneSignal.init({
-    appId: TOPS_CLONE_ONESIGNAL_APP_ID,
-    requiresUserPrivacyConsent: true,
-    serviceWorkerPath: "push/onesignal/OneSignalSDKWorker.js",
-    serviceWorkerParam: { scope: "/push/onesignal/" },
-    welcomeNotification: { disable: true },
-    autoResubscribe: false
-  });
-  await OneSignal.setConsentGiven(true);
-  return OneSignal;
-}
-
-function topsDateToEpochDay(dateString) {
-  var match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateString || "");
-  if (!match) return null;
-  var year = Number(match[1]);
-  var month = Number(match[2]);
-  var day = Number(match[3]);
-  var utc = Date.UTC(year, month - 1, day);
-  var parsed = new Date(utc);
-  if (parsed.getUTCFullYear() !== year || parsed.getUTCMonth() !== month - 1 || parsed.getUTCDate() !== day) return null;
-  return Math.floor(utc / 86400000);
-}
-
-function topsPushFullyEnabled(OneSignal) {
-  return topsPushChoiceAccepted() &&
-    !!OneSignal &&
-    !!OneSignal.Notifications &&
-    OneSignal.Notifications.permission === true &&
-    !!OneSignal.User &&
-    !!OneSignal.User.PushSubscription &&
-    OneSignal.User.PushSubscription.optedIn === true;
-}
-
-async function topsWriteExactDayTag(OneSignal, dateString) {
-  if (!topsPushFullyEnabled(OneSignal)) return false;
-  var epochDay = topsDateToEpochDay(dateString);
-  if (epochDay === null) return false;
-  await OneSignal.User.addTag("ets_epoch_day", String(epochDay));
-  return true;
-}
-
-async function topsStopPushProcessing(nextState, OneSignal) {
-  var provider = OneSignal || window.__TOPS_ONESIGNAL_INSTANCE || null;
-  if (provider) {
-    try { await provider.User.removeTag("ets_epoch_day"); } catch (e) {}
-    try { await provider.User.PushSubscription.optOut(); } catch (e) {}
-    // OneSignal v16 queues both provider writes after updating its local model.
-    // Keep the SDK alive for a bounded window so those writes can leave the browser.
-    try { await new Promise(function(resolve) { window.setTimeout(resolve, TOPS_ONESIGNAL_WITHDRAWAL_SYNC_MS); }); } catch (e) {}
-    try { await provider.setConsentGiven(false); } catch (e) {}
-  }
-  await topsUnregisterDedicatedPushWorker();
-  if (nextState) topsWritePushChoice(nextState);
-  else topsRemovePushChoice();
+async function topsEnforcePushOff() {
+  topsRemovePushChoice();
   topsRemoveOneSignalScript();
   window.__TOPS_ONESIGNAL_INSTANCE = null;
   window.__TOPS_ONESIGNAL_PROMISE = null;
+  await topsUnregisterDedicatedPushWorker();
 }
 
-async function topsStartPushEnrollment(dateString) {
-  if (!topsPushChoiceAccepted()) throw new Error("push-choice-required");
-  if (!topsPushConfigReady()) throw new Error("clone-push-disabled");
-  var OneSignal = await topsInitializeOneSignal();
-  await OneSignal.Notifications.requestPermission();
-  var permissionGranted = OneSignal.Notifications.permission === true;
-  if (!permissionGranted) {
-    await topsStopPushProcessing("browser-denied", OneSignal);
-    return { state: "browser-denied", permission: false, optedIn: false };
-  }
-  await OneSignal.User.PushSubscription.optIn();
-  if (OneSignal.User.PushSubscription.optedIn !== true) {
-    await topsStopPushProcessing(null, OneSignal);
-    throw new Error("push-opt-in-failed");
-  }
-  await topsWriteExactDayTag(OneSignal, dateString);
-  return { state: "enabled", permission: true, optedIn: true };
+async function topsStopPushProcessing() {
+  await topsEnforcePushOff();
 }
 
-async function topsResumeAcceptedPush(dateString) {
-  if (!topsPushChoiceAccepted()) return { state: "missing" };
-  if (!topsPushConfigReady()) return { state: "disabled" };
-  var OneSignal = await topsInitializeOneSignal();
-  if (window.Notification && window.Notification.permission === "denied") {
-    await topsStopPushProcessing("browser-denied", OneSignal);
-    return { state: "browser-denied" };
-  }
-  if (!topsPushFullyEnabled(OneSignal)) return { state: "accepted" };
-  await topsWriteExactDayTag(OneSignal, dateString);
-  return { state: "enabled" };
+async function topsStartPushEnrollment() {
+  await topsEnforcePushOff();
+  return { state: "disabled", permission: false, optedIn: false };
+}
+
+async function topsResumeAcceptedPush() {
+  await topsEnforcePushOff();
+  return { state: "disabled" };
 }
 
 async function topsDeclinePushChoice() {
-  topsWritePushChoice("declined");
-  await topsUnregisterDedicatedPushWorker();
-  topsRemoveOneSignalScript();
-  window.__TOPS_ONESIGNAL_INSTANCE = null;
-  window.__TOPS_ONESIGNAL_PROMISE = null;
+  await topsEnforcePushOff();
 }
 
 async function topsWithdrawPushChoice() {
-  await topsStopPushProcessing("withdrawn", window.__TOPS_ONESIGNAL_INSTANCE || null);
+  await topsEnforcePushOff();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1028,11 +894,6 @@ const TRANSITION_MILESTONES = [{
 }];
 
 // ═══════════════════════════════════════════════════════════════
-// KIT (CONVERTKIT) EMAIL SIGNUP — Replace with your Kit Form ID
-// Create a form at app.kit.com → Forms → New Form
-// Copy the numeric form ID from the URL and paste it below
-// ═══════════════════════════════════════════════════════════════
-const KIT_FORM_ID = "9111060";
 const NOTIFICATIONS = [{
   id: "n1",
   monthsOut: 18,
@@ -2832,8 +2693,8 @@ const WHATS_NEW = [
   { v: "v81", date: "21 JUL 2026", note: "Jobs in your target state: added every state's official job bank (search \u201Cstate jobs\u201D) and the benefit most veterans never use \u2014 by law you get PRIORITY at all 2,400 American Job Centers. You and your spouse both." },
   { v: "v80", date: "21 JUL 2026", note: "Policy refresh: Patriot Pipeline status updated \u2014 the SkillBridge approval presumption for defense-industrial-base employers is IN EFFECT now; detailed incentive guidance still pending public release. We track it so you don\u2019t have to." },
   { v: "v79", date: "15 JUL 2026", note: "Added the DOL Employment Navigator (ENPP) to resources \u2014 free one-on-one career counseling during transition, for you AND your spouse, with a virtual option that works from anywhere. Search \u201Cnavigator\u201D to find it." },
-  { v: "v78", date: "14 JUL 2026", note: "The AI Resume Drafter now builds a complete one-page civilian resume targeted at the job you want \u2014 summary, skills, experience, the works \u2014 with clear [blanks] for what only you can fill. Nothing you type is stored." },
-  { v: "v77", date: "14 JUL 2026", note: "NEW: free AI Resume Builder on the Career tab \u2014 type what you actually did in your own words and get civilian, ATS-ready resume bullets. 3 free generations a day. Nothing you type is stored." },
+  { v: "v78", date: "14 JUL 2026", note: "The AI Resume Drafter now builds a complete one-page civilian resume targeted at the job you want \u2014 summary, skills, experience, the works \u2014 with clear [blanks] for what only you can fill." },
+  { v: "v77", date: "14 JUL 2026", note: "NEW: free AI Resume Builder on the Career tab \u2014 type what you actually did in your own words and get civilian, ATS-ready resume bullets. 3 free generations a day." },
   { v: "v76", date: "14 JUL 2026", note: "From our call with the American Legion: IDES proposed-vs-final rating guidance on the VA calculator, SBA Boots to Business in resources, and NEED A HUMAN contact numbers (MyVA411, VA Benefits, Crisis Line) on the VSO finder." },
   { v: "v75", date: "10 JUL 2026", note: "Cleaner home screen: your countdown, critical windows, and next action stay front and center \u2014 everything else now lives under MORE TOOLS & INTEL (one tap). First step of a redesign shaped by service-officer feedback." },
   { v: "v73", date: "10 JUL 2026", note: "Fixed the ETS date picker on iPhone (it was closing before you could pick a future date) and added FIND YOUR LOCAL VSO / CVSO \u2014 official locators for free, in-person claims help near you." },
@@ -3260,27 +3121,21 @@ const SCRA_WINDOW = {
 };
 
 // ═══ CAPTURE LAYER — install-path branch detection ═══
-// GA4 recon 9 AUG 2026: install_banner_shown 68 with 66% CTR when seen, but
-// 35% of users are iOS Safari where beforeinstallprompt NEVER fires, and 26
-// are in in-app webviews where install and push are both impossible. So the
-// branch decides what CAN be offered, and email leads regardless because it
-// is the only capture that works in every browser.
-//
 // CAPABILITY FIRST. A captured beforeinstallprompt event is proof the native
 // install is available - it is not a guess about the UA string. UA is used
 // only for the two cases with no capability test: iOS Safari and in-app
 // webviews. Pure function, no globals read, so each branch is forced in the
 // fixture check rather than simulated with a fake browser.
-// Returns "native" | "ios" | "inapp" | "email".
+// Returns "native" | "ios" | "inapp" | null.
 function __captureBranch(hasDeferredPrompt, ua, standalone, maxTouch) {
   if (hasDeferredPrompt) return "native";
-  if (standalone) return "email";
+  if (standalone) return null;
   if (/FBAN|FBAV|Instagram|LinkedInApp|Line\//.test(ua)) return "inapp";
   if (/iPad|iPhone|iPod/.test(ua)) return "ios";
   // iPadOS 13+ reports a Macintosh UA. Touch points are the capability tell,
-  // and a desktop Safari that lacks them correctly falls through to email.
+  // and a desktop Safari that lacks them correctly falls through to no card.
   if (/Macintosh/.test(ua) && (maxTouch || 0) > 1) return "ios";
-  return "email";
+  return null;
 }
 
 // Day-level ETS helper (distinct from month-level moToETS)
@@ -3728,6 +3583,7 @@ function FeedbackFAB(props) {
       alignItems: "center",
       gap: 8,
       padding: "9px 14px",
+      minHeight: 44,
       color: "#0f1208",
       cursor: "pointer",
       fontFamily: "'Oswald', sans-serif",
@@ -4207,6 +4063,51 @@ function handleShareApp(setToast) {
 function AboutModal(props) {
   const C = props.C;
   const onClose = props.onClose;
+  const dialogRef = useRef(null);
+  const returnFocusRef = useRef(props.returnFocus || document.activeElement);
+  React.useLayoutEffect(function() {
+    const dialog = dialogRef.current;
+    if (!dialog) return undefined;
+    const focusableSelector = "a[href],button,input:not([type=hidden]),select,textarea,summary,[tabindex]:not([tabindex='-1'])";
+    const focusable = function() {
+      return Array.from(dialog.querySelectorAll(focusableSelector)).filter(function(element) {
+        const rect = element.getBoundingClientRect();
+        const style = window.getComputedStyle(element);
+        return !element.disabled && rect.width > 0 && rect.height > 0 && style.display !== "none" && style.visibility !== "hidden";
+      });
+    };
+    const first = focusable()[0] || dialog;
+    first.focus();
+    const handleKeyDown = function(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const controls = focusable();
+      if (!controls.length) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+      const firstControl = controls[0];
+      const lastControl = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === firstControl) {
+        event.preventDefault();
+        lastControl.focus();
+      } else if (!event.shiftKey && document.activeElement === lastControl) {
+        event.preventDefault();
+        firstControl.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return function() {
+      document.removeEventListener("keydown", handleKeyDown);
+      const returnTarget = returnFocusRef.current;
+      if (returnTarget && document.contains(returnTarget) && typeof returnTarget.focus === "function") returnTarget.focus();
+    };
+  }, []);
   const overlayStyle = {
     position: "fixed",
     top: 0,
@@ -4260,8 +4161,8 @@ function AboutModal(props) {
     border: "1px solid " + C.border,
     color: C.inactive,
     fontSize: 13,
-    width: 30,
-    height: 30,
+    width: 44,
+    height: 44,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -4293,6 +4194,11 @@ function AboutModal(props) {
     style: overlayStyle,
     onClick: onClose
   }, /*#__PURE__*/React.createElement("div", {
+    ref: dialogRef,
+    role: "dialog",
+    "aria-modal": "true",
+    "aria-labelledby": "tops-about-title",
+    tabIndex: -1,
     style: modalStyle,
     onClick: function (e) {
       e.stopPropagation();
@@ -4302,9 +4208,12 @@ function AboutModal(props) {
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: eyebrowStyle
   }, "\u258CMISSION BRIEF"), /*#__PURE__*/React.createElement("div", {
+    id: "tops-about-title",
     style: titleStyle
   }, "ABOUT TRANSITION OPS")), /*#__PURE__*/React.createElement("button", {
     onClick: onClose,
+    "aria-label": "Close About Transition OPS",
+    autoFocus: true,
     style: closeBtn
   }, "\u2715")), /*#__PURE__*/React.createElement("div", {
     style: bodyStyle
@@ -4328,7 +4237,7 @@ function AboutModal(props) {
     style: {
       color: C.goldBright
     }
-  }, "Privacy."), TOPS_PUSH_ENABLED ? " Push alerts are optional. This isolated clone enables consent-gated push testing; the production app is unchanged. The push boundary and legacy-browser exception are described below." : " Push alerts are optional and currently disabled on this test site. The push boundary and legacy-browser exception are described below.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", {
+  }, "Privacy."), " Push alerts are currently disabled. The push boundary and legacy-browser exception are described below.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", {
     style: {
       color: C.goldBright
     }
@@ -4338,9 +4247,9 @@ function AboutModal(props) {
     }
   }, "Joint-force."), " Tools serve Soldiers, Sailors, Airmen, Marines, Guardians, and Coast Guardsmen. Active duty, Guard, Reserve, veterans, and military families."), /*#__PURE__*/React.createElement("div", {
     style: sectionLabel
-  }, "PUSH ALERTS - CLONE STATUS"), /*#__PURE__*/React.createElement("p", {
+  }, "PUSH ALERTS"), /*#__PURE__*/React.createElement("p", {
     style: bodyText
-  }, TOPS_PUSH_ENABLED ? "This isolated clone enables consent-gated push validation; the production app is unchanged. This clone moves new and migrated browsers to a OneSignal-free app worker. Earlier browsers may still use an older push setup that could have contacted OneSignal before the current choice was available. If you agree, OneSignal will receive browser, device, network, session, notification-permission, and push-subscription data, plus your exact separation date for alert timing. Declining keeps the rest of Transition Ops available. Turning alerts off later stops future Transition Ops push processing on this browser but does not confirm deletion of records OneSignal may already hold. Privacy and deletion questions: " : "Push alerts are disabled on this test site. This build moves new and migrated browsers to a OneSignal-free app worker. Earlier browsers may still use an older push setup that could have contacted OneSignal before the current choice was available. If push is enabled after separate clone validation and you agree, OneSignal will receive browser, device, network, session, notification-permission, and push-subscription data, plus your exact separation date for alert timing. Declining keeps the rest of Transition Ops available. Turning alerts off later stops future Transition Ops push processing on this browser but does not confirm deletion of records OneSignal may already hold. Privacy and deletion questions: ", /*#__PURE__*/React.createElement("strong", {
+  }, "Push alerts are currently disabled. Earlier browsers may still use an older push setup that could have contacted OneSignal before the current choice was available. Privacy and deletion questions: ", /*#__PURE__*/React.createElement("strong", {
     style: { color: C.goldBright }
   }, TOPS_PRIVACY_CONTACT)), /*#__PURE__*/React.createElement("div", {
     style: sectionLabel
@@ -5057,6 +4966,14 @@ function PushConsentModal(props) {
   }, "DECLINE PUSH ALERTS"))));
 }
 
+function topsKeyboardActivate(event) {
+  if (event.target !== event.currentTarget) return;
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    event.currentTarget.click();
+  }
+}
+
 function App() {
   const [theme, setTheme] = useState(() => {
     try {
@@ -5255,6 +5172,7 @@ function App() {
   const [milestones, setMilestones] = useState(TRANSITION_MILESTONES);
   const [selectedMilestone, setSelectedMilestone] = useState(null);
   const [separationDate, setSeparationDate] = useState("");
+  const [separationDateFocused, setSeparationDateFocused] = useState(false);
   const [policyIntelOpen, setPolicyIntelOpen] = useState(false);
   // 2026 Policy Intel — collapsible advisory card.
   // SINGLE SOURCE. Rendered at two sites; edit here only.
@@ -5343,6 +5261,16 @@ function App() {
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const aboutReturnFocusRef = useRef(null);
+  const openAbout = function(event) {
+    aboutReturnFocusRef.current = event && event.currentTarget ? event.currentTarget : document.activeElement;
+    setAboutOpen(true);
+  };
+  React.useLayoutEffect(function() {
+    if (aboutOpen) return;
+    const returnTarget = aboutReturnFocusRef.current;
+    if (returnTarget && document.contains(returnTarget) && typeof returnTarget.focus === "function") returnTarget.focus();
+  }, [aboutOpen]);
   const [userState, setUserState] = useState("");
   const [dismissedNotifs, setDismissedNotifs] = useState(new Set());
   const [toast, setToast] = useState(null);
@@ -5454,22 +5382,8 @@ function App() {
   // user action. Comparing against storage is what separates hydration from a
   // real set/edit without racing the hydration effect.
   const captureBaselineRef = useRef(null);
-  // Armed only when a submit originates from this card, so the hero, vethub,
-  // and footer forms never attribute to the capture layer.
-  const captureEmailArmedRef = useRef(false);
   const [vetScore, setVetScore] = useState({});
-  const [emailSignup, setEmailSignup] = useState({
-    email: "",
-    branch: "",
-    status: ""
-  });
-  const [emailSubmitted, setEmailSubmitted] = useState(false);
-  const [emailSubmitting, setEmailSubmitting] = useState(false);
 
-  // ─── GA4 Event Tracking ───────────────────────────────────
-  // Fires custom events to Google Analytics 4 for tab navigation,
-  // calculator completions, and key conversions. Respects iframe guard
-  // (window.__trackEvent is only defined when not embedded).
   useEffect(function() {
     try {
       var t = new URLSearchParams(window.location.search).get("tool");
@@ -5485,15 +5399,6 @@ function App() {
       });
     }
   }, [activeTab]);
-
-  useEffect(function() {
-    if (window.__trackEvent && emailSubmitted && !window.__safeGet("ga_email_signup_fired")) { window.__safeSet("ga_email_signup_fired", "1");      window.__trackEvent('email_signup', {
-        'branch': emailSignup.branch || 'unset',
-        'status': emailSignup.status || 'unset',
-        'active_tab': activeTab
-      });
-    }
-  }, [emailSubmitted]);
 
   useEffect(function() {
     if (window.__trackEvent && userStatus) {
@@ -5543,215 +5448,6 @@ function App() {
     setTimeout(() => setToast(null), 3000);
   }, []);
 
-  // Email signup handler — posts to Kit (ConvertKit) form API
-  const handleEmailSubmit = useCallback(async () => {
-    if (!emailSignup.email || !emailSignup.email.includes("@") || !emailSignup.email.includes(".")) {
-      showToast("Enter a valid email address.");
-      return;
-    }
-    setEmailSubmitting(true);
-    try {
-      const res = await fetch("https://api.convertkit.com/v3/forms/" + KIT_FORM_ID + "/subscribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          api_key: "bUz3DaUnBxM8x9Y1JhMNhg",
-          email: emailSignup.email,
-          fields: {
-            branch: emailSignup.branch || "Not specified",
-            military_status: emailSignup.status || "Not specified"
-          }
-        })
-      });
-      const data = await res.json();
-      if (data.subscription || data.subscriber) {
-        setEmailSubmitted(true);
-        try {
-          window.__safeSet("emailSubscribed", "true");
-        } catch (e) {}
-        showToast("SIGNED UP — Stand by for weekly intel.");
-      } else if (data.error || data.message) {
-        showToast("ERROR: " + (data.error || data.message));
-      } else {
-        showToast("ERROR: Unexpected response. Try again.");
-      }
-    } catch (err) {
-      showToast("NETWORK ERROR: " + err.message + " — Check connection and try again.");
-    }
-    setEmailSubmitting(false);
-  }, [emailSignup, showToast]);
-
-  // Reusable email signup component
-  const renderEmailSignup = variant => {
-    if (emailSubmitted) return /*#__PURE__*/React.createElement("div", {
-      style: {
-        ...S.card,
-        padding: 14,
-        borderColor: C.greenBright,
-        textAlign: "center"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 16,
-        marginBottom: 4
-      }
-    }, "\u2705"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: "'Oswald', sans-serif",
-        fontSize: 13,
-        color: C.greenBright,
-        letterSpacing: 1
-      }
-    }, "YOU'RE ON THE LIST"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 11,
-        color: C.textSecondary,
-        marginTop: 4
-      }
-    }, "Weekly transition intel inbound. Check your inbox."));
-    return /*#__PURE__*/React.createElement("div", {
-      style: {
-        ...S.card,
-        padding: 16,
-        borderColor: variant === "hero" ? C.gold : C.border,
-        borderWidth: variant === "hero" ? 2 : 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: "'Oswald', sans-serif",
-        fontSize: 10,
-        letterSpacing: 3,
-        color: C.gold,
-        marginBottom: 4
-      }
-    }, "POLICY CHANGE ALERTS"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: "'Oswald', sans-serif",
-        fontSize: 15,
-        fontWeight: 700,
-        color: C.textPrimary,
-        marginBottom: 6
-      }
-    }, variant === "vethub" ? "Get notified when policy changes affect your benefits" : userStatus === "guard" ? "Get notified when policy changes affect your benefits" : "Get notified when policy changes affect your benefits"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 13,
-        color: C.textSecondary,
-        lineHeight: 1.6,
-        marginBottom: 12
-      }
-    }, variant === "vethub" ? "VA disability rules, GI Bill changes, VR&E updates, employer programs \u2014 when something changes that affects your benefits, you get an email. The kind of changes that cost money if missed. No marketing. No spam." : userStatus === "guard" ? "TA rules and caps, GI Bill changes, deployment benefits \u2014 when something changes that affects your benefits, you get an email. The kind of changes that cost money if missed. No marketing. No spam." : "VA rules, SkillBridge eligibility, TA caps, BDD windows \u2014 when something changes that affects your benefits, you get an email. The kind of changes that cost money if missed. No marketing. No spam."), /*#__PURE__*/React.createElement("input", {
-      type: "email",
-      value: emailSignup.email,
-      onChange: e => setEmailSignup(prev => ({
-        ...prev,
-        email: e.target.value
-      })),
-      placeholder: "Your email address",
-      style: {
-        ...S.input,
-        fontSize: 14,
-        marginBottom: 8
-      }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        gap: 8,
-        marginBottom: 8
-      }
-    }, /*#__PURE__*/React.createElement("select", {
-      value: emailSignup.branch,
-      onChange: e => setEmailSignup(prev => ({
-        ...prev,
-        branch: e.target.value
-      })),
-      style: {
-        flex: 1,
-        padding: "10px 8px",
-        background: C.bg,
-        border: "1px solid " + C.border,
-        borderRadius: 4,
-        color: emailSignup.branch ? C.textPrimary : C.inactive,
-        fontFamily: "'Oswald', sans-serif",
-        fontSize: 11,
-        letterSpacing: 1,
-        appearance: "none",
-        WebkitAppearance: "none"
-      }
-    }, /*#__PURE__*/React.createElement("option", {
-      value: ""
-    }, "BRANCH"), /*#__PURE__*/React.createElement("option", {
-      value: "army"
-    }, "ARMY"), /*#__PURE__*/React.createElement("option", {
-      value: "navy"
-    }, "NAVY"), /*#__PURE__*/React.createElement("option", {
-      value: "air_force"
-    }, "AIR FORCE"), /*#__PURE__*/React.createElement("option", {
-      value: "marines"
-    }, "MARINES"), /*#__PURE__*/React.createElement("option", {
-      value: "coast_guard"
-    }, "COAST GUARD"), /*#__PURE__*/React.createElement("option", {
-      value: "space_force"
-    }, "SPACE FORCE"), /*#__PURE__*/React.createElement("option", {
-      value: "spouse"
-    }, "MILITARY SPOUSE")), /*#__PURE__*/React.createElement("select", {
-      value: emailSignup.status,
-      onChange: e => setEmailSignup(prev => ({
-        ...prev,
-        status: e.target.value
-      })),
-      style: {
-        flex: 1,
-        padding: "10px 8px",
-        background: C.bg,
-        border: "1px solid " + C.border,
-        borderRadius: 4,
-        color: emailSignup.status ? C.textPrimary : C.inactive,
-        fontFamily: "'Oswald', sans-serif",
-        fontSize: 11,
-        letterSpacing: 1,
-        appearance: "none",
-        WebkitAppearance: "none"
-      }
-    }, /*#__PURE__*/React.createElement("option", {
-      value: ""
-    }, "STATUS"), /*#__PURE__*/React.createElement("option", {
-      value: "active"
-    }, "ACTIVE DUTY"), /*#__PURE__*/React.createElement("option", {
-      value: "guard_reserve"
-    }, "GUARD / RESERVE"), /*#__PURE__*/React.createElement("option", {
-      value: "veteran"
-    }, "VETERAN"), /*#__PURE__*/React.createElement("option", {
-      value: "spouse"
-    }, "MILITARY SPOUSE"), /*#__PURE__*/React.createElement("option", {
-      value: "retiring"
-    }, "RETIRING"))), /*#__PURE__*/React.createElement("button", {
-      onClick: handleEmailSubmit,
-      disabled: emailSubmitting,
-      style: {
-        width: "100%",
-        padding: "12px 16px",
-        background: emailSubmitting ? C.inactive : C.green,
-        border: "none",
-        borderRadius: 4,
-        color: C.textPrimary,
-        fontFamily: "'Oswald', sans-serif",
-        fontSize: 14,
-        letterSpacing: 2,
-        cursor: emailSubmitting ? "default" : "pointer",
-        opacity: emailSubmitting ? 0.6 : 1
-      }
-    }, emailSubmitting ? "SUBSCRIBING..." : "GET POLICY ALERTS"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 10,
-        color: C.inactive,
-        textAlign: "center",
-        marginTop: 6
-      }
-    }, "No marketing. No spam. Unsubscribe anytime. Just the changes that matter to your benefits."));
-  };
-
   // Load saved data from localStorage on mount
   useEffect(() => {
     if (window.__IS_IFRAME) return;
@@ -5764,19 +5460,23 @@ function App() {
       if (savedDocs) setDocuments(JSON.parse(savedDocs));
       const savedDismissed = window.__safeGet("dismissedNotifs");
       if (savedDismissed) setDismissedNotifs(new Set(JSON.parse(savedDismissed)));
-      const savedEmail = window.__safeGet("emailSubscribed");
-      if (savedEmail === "true") setEmailSubmitted(true);
       if ("Notification" in window) setBrowserPermission(window.Notification.permission);
-      const savedChoice = topsReadPushChoice();
-      setPushChoiceState(savedChoice ? savedChoice.state : "missing");
-      if (TOPS_PUSH_ENABLED && savedChoice && savedChoice.state === "accepted") {
-        topsResumeAcceptedPush(savedETS || "").then(function(result) {
-          setPushFlowState(result.state);
-        }).catch(function() {
-          setPushFlowState("error");
-        });
+      if (!TOPS_PUSH_ENABLED) {
+        setPushChoiceState("missing");
+        setPushFlowState("disabled");
+        topsEnforcePushOff().catch(function() {});
       } else {
-        setPushFlowState(TOPS_PUSH_ENABLED ? "idle" : "disabled");
+        const savedChoice = topsReadPushChoice();
+        setPushChoiceState(savedChoice ? savedChoice.state : "missing");
+        if (savedChoice && savedChoice.state === "accepted") {
+          topsResumeAcceptedPush(savedETS || "").then(function(result) {
+            setPushFlowState(result.state);
+          }).catch(function() {
+            setPushFlowState("error");
+          });
+        } else {
+          setPushFlowState("idle");
+        }
       }
     } catch (e) {
       console.log("Load error:", e);
@@ -5862,9 +5562,6 @@ function App() {
     try {
       window.__safeSet("etsDate", dateStr);
     } catch (e) {}
-    if (TOPS_PUSH_ENABLED && pushFlowState === "enabled" && window.__TOPS_ONESIGNAL_INSTANCE && dateStr) {
-      topsWriteExactDayTag(window.__TOPS_ONESIGNAL_INSTANCE, dateStr).catch(function() {});
-    }
   }, [pushFlowState]);
   const handleInstall = useCallback(() => {
     if (deferredPrompt) {
@@ -5958,15 +5655,14 @@ function App() {
       standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
     } catch (e) {}
     var branch = __captureBranch(!!deferredPrompt, navigator.userAgent || "", standalone, navigator.maxTouchPoints);
-    // Already installed and already on the list: nothing left to ask for.
-    if (branch === "email" && standalone && emailSubmitted) return;
+    if (!branch) return;
 
     setCaptureCard({ branch: branch });
     if (window.__trackEvent) {
       window.__trackEvent("capture_card_shown", { branch: branch });
       if (branch === "ios") window.__trackEvent("capture_install_ios_shown", {});
     }
-  }, [separationDate, deferredPrompt, emailSubmitted]);
+  }, [separationDate, deferredPrompt]);
 
   // Measure the nav when the card opens, and on resize while it is open
   // (rotation and browser-chrome collapse both change the nav height).
@@ -5984,22 +5680,6 @@ function App() {
       window.removeEventListener("orientationchange", measure);
     };
   }, [captureCard]);
-
-  // capture_email_submitted rides the shared emailSubmitted flag, because
-  // handleEmailSubmit is async and signals success only by flipping it. The
-  // armed ref is what keeps this event attributable to the card.
-  useEffect(() => {
-    if (!emailSubmitted) return;
-    if (!captureEmailArmedRef.current) return;
-    captureEmailArmedRef.current = false;
-    if (window.__trackEvent) window.__trackEvent("capture_email_submitted", {});
-    try { window.__safeSet("tops_capture_done", "1"); } catch (e) {}
-  }, [emailSubmitted]);
-
-  const handleCaptureEmail = useCallback(() => {
-    captureEmailArmedRef.current = true;
-    handleEmailSubmit();
-  }, [handleEmailSubmit]);
 
   const handleCaptureInstall = useCallback(() => {
     if (window.__trackEvent) window.__trackEvent("capture_install_native", {});
@@ -6118,26 +5798,6 @@ function App() {
           style: { background: "none", border: "none", color: C.textSecondary, fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer", padding: "2px 4px", flexShrink: 0 }
         }, "Not now")
       ),
-      emailSubmitted ? React.createElement("div", {
-        style: { marginTop: 8, fontSize: 12.5, color: C.greenBright, lineHeight: 1.45 }
-      }, "✓ You are on the list. Deadline alerts are timed to your date.")
-        : React.createElement("div", { style: { marginTop: 8 } },
-          React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.5, marginBottom: 9 } }, "Get your deadline alerts by email — BDD, SGLI, TAP windows, timed to YOUR date."),
-          React.createElement("div", { style: { display: "flex", gap: 8 } },
-            React.createElement("input", {
-              type: "email", inputMode: "email", autoComplete: "email",
-              placeholder: "you@example.com",
-              value: emailSignup.email || "",
-              onChange: function (e) { setEmailSignup(function (p) { return Object.assign({}, p, { email: e.target.value }); }); },
-              style: { flex: 1, minWidth: 0, padding: "11px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, fontSize: 15, fontFamily: "'JetBrains Mono', monospace" }
-            }),
-            React.createElement("button", {
-              onClick: handleCaptureEmail,
-              disabled: emailSubmitting,
-              style: { flexShrink: 0, padding: "11px 14px", background: "linear-gradient(135deg, #4A5D23, #2D5016)", border: "none", borderRadius: 8, color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 1.5, cursor: emailSubmitting ? "default" : "pointer", opacity: emailSubmitting ? 0.5 : 1 }
-            }, emailSubmitting ? "…" : "GET ALERTS")
-          )
-        ),
       installBlock
     );
   };
@@ -6707,10 +6367,11 @@ function App() {
             onClick: handleInstallBannerClick,
             style: {
               padding: "7px 12px",
+              minHeight: 44,
               background: C.gold,
               border: "none",
               borderRadius: 4,
-              color: C.textOnFill,
+              color: C.bg,
               fontFamily: "'Oswald', sans-serif",
               fontSize: 11,
               fontWeight: 700,
@@ -6724,7 +6385,9 @@ function App() {
             onClick: handleInstallBannerDismiss,
             "aria-label": "Dismiss",
             style: {
-              padding: "10px 12px",
+              padding: 0,
+              minWidth: 44,
+              minHeight: 44,
               background: "transparent",
               border: "1px solid " + C.border,
               borderRadius: 4,
@@ -6759,7 +6422,7 @@ function App() {
       letterSpacing: 4,
       color: theme === "tactical" ? C.gold : "#A8D5B5"
     }
-  }, "VETERAN BRIDGE SOLUTIONS"), /*#__PURE__*/React.createElement("div", {
+  }, "VETERAN BRIDGE SOLUTIONS"), /*#__PURE__*/React.createElement("h1", {
     style: {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 22,
@@ -6767,7 +6430,8 @@ function App() {
       color: theme === "tactical" ? C.textPrimary : "#FFFFFF",
       letterSpacing: 2,
       lineHeight: 1.1,
-      marginTop: 2
+      marginTop: 2,
+      marginBottom: 0
     }
   }, "TRANSITION OPS™")), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -6783,6 +6447,7 @@ function App() {
       border: "1px solid transparent",
       borderRadius: 8,
       padding: "10px 12px",
+      minHeight: 44,
       cursor: "pointer",
       color: theme === "tactical" ? C.gold : "#1A1A1A",
       fontFamily: "'Oswald', sans-serif",
@@ -6797,6 +6462,7 @@ function App() {
       border: "1px solid transparent",
       borderRadius: 8,
       padding: "8px 14px",
+      minHeight: 44,
       cursor: "pointer",
       color: C.textPrimary,
       fontFamily: "'Oswald', sans-serif",
@@ -6810,6 +6476,7 @@ function App() {
       border: "1px solid transparent",
       borderRadius: 8,
       padding: "8px 14px",
+      minHeight: 44,
       cursor: "pointer",
       position: "relative",
       color: C.textPrimary,
@@ -6821,8 +6488,8 @@ function App() {
     style: {
       position: "absolute",
       top: -6,
-      right: -6,
-      background: C.danger,
+      right: 0,
+      background: "#8B0000",
       color: "#fff",
       borderRadius: "50%",
       width: 16,
@@ -6979,7 +6646,7 @@ function App() {
     return React.createElement("button", { key: t.id, onClick: function() { setActiveTab(t.id); setSelectedMilestone(null); }, style: { padding: "10px 12px", background: activeTab === t.id ? C.border : "transparent", border: "none", borderBottom: activeTab === t.id ? "2px solid " + C.gold : "2px solid transparent", color: activeTab === t.id ? C.textPrimary : C.inactive, fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.5, cursor: "pointer", whiteSpace: "nowrap" } }, t.label);
   }))),
 
-  /*#__PURE__*/React.createElement("div", {
+  /*#__PURE__*/React.createElement("main", {
     className: "content-area",
     style: {
       padding: "14px 14px 120px"
@@ -6991,14 +6658,14 @@ function App() {
     var sa = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
     if (sa || installStripX) return null;
     return /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, background: "rgba(212,175,55,0.10)", border: "1px solid " + C.gold, borderRadius: 8, padding: "9px 12px", marginBottom: 12 } },
-      React.createElement("div", { onClick: handleInstallBannerClick, style: { fontSize: 11.5, color: C.textPrimary, lineHeight: 1.45, flex: 1, cursor: "pointer" } },
+      React.createElement("div", { onClick: handleInstallBannerClick, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { fontSize: 11.5, color: C.textPrimary, lineHeight: 1.45, flex: 1, minWidth: 0, minHeight: 44, display: "flex", alignItems: "center", cursor: "pointer" } },
         "\uD83D\uDCF2 ", React.createElement("strong", null, "Get deadline alerts \u2014 tap here to install."), " iPhone: ", React.createElement("strong", { style: { color: C.goldBright } }, "Share \u2192 Add to Home Screen"), " (not Bookmark). Android: one tap."),
-      React.createElement("div", { onClick: function() { setInstallStripX(true); try { window.__safeSet("tops_install_strip_x", "1"); } catch(e) {} }, style: { color: C.inactive, fontSize: 15, cursor: "pointer", padding: "2px 4px", flexShrink: 0 } }, "\u2715"));
+      React.createElement("div", { onClick: function() { setInstallStripX(true); try { window.__safeSet("tops_install_strip_x", "1"); } catch(e) {} }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, "aria-label": "Dismiss install prompt", style: { color: C.inactive, fontSize: 15, cursor: "pointer", minWidth: 44, minHeight: 44, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 } }, "\u2715"));
   })(), activeTab === "navigator" && /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "70vh" } },
     React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 6 } },
       React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 17, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "AI TRANSITION NAVIGATOR"),
       React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 1.5, color: "#0E120B", background: C.goldBright, borderRadius: 4, padding: "2px 7px" } }, "BETA")),
-    React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.45, marginBottom: 10 } }, "Answers only from Transition OPS verified content. Educational information \u2014 not benefits counseling, not affiliated with VA or DoD. Nothing stored. Beta: spot something off? Tap FEEDBACK IS A GIFT. In crisis: Veterans Crisis Line 988, press 1."),
+    React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.45, marginBottom: 10 } }, "Answers only from Transition OPS verified content. Educational information \u2014 not benefits counseling, not affiliated with VA or DoD. Beta: spot something off? Tap FEEDBACK IS A GIFT. In crisis: Veterans Crisis Line 988, press 1."),
     React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 } },
       navMsgs.length === 0 && React.createElement("div", { style: { ...S.card, padding: 12, borderLeft: "3px solid " + C.gold, fontSize: 13, lineHeight: 1.55, color: C.textSecondary } }, (function(){ try { var sd = window.__safeGet("tops_sep_date"); if (sd) { var dd = Math.round((new Date(sd + "T00:00:00") - new Date()) / 86400000); return "Navigator online \u2014 your timeline is loaded (" + (dd >= 0 ? "T-" + dd + " days to separation" : Math.abs(dd) + " days post-separation") + "). Ask me anything, or add context \u2014 component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook."; } } catch(e) {} return "Navigator online. Tell me where you are in your transition \u2014 time remaining, component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook. Anything beyond my data, I\u2019ll route you to a human."; })()),
       navMsgs.map(function(m, i2) {
@@ -7015,8 +6682,8 @@ function App() {
     React.createElement("div", { style: { display: "flex", gap: 8 } },
       React.createElement("input", { value: navInput, onChange: function(e){ setNavInput(e.target.value); }, onKeyDown: function(e){ if (e.key === "Enter") sendNavigator(); }, placeholder: "Ask about your transition\u2026", style: { flex: 1, background: "#1A2114", border: "1px solid #4A5A35", borderRadius: 8, color: "#F2EFE4", caretColor: "#E8C547", fontWeight: 600, padding: 12, fontSize: 16, fontFamily: "inherit", WebkitTextFillColor: "#F2EFE4", opacity: 1 } }),
       React.createElement("div", { onClick: function(){ sendNavigator(); }, style: { background: C.goldBright, color: "#0E120B", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: "pointer", opacity: navBusy ? 0.5 : 1 } }, "SEND"))),
-  navUnlocked && activeTab !== "navigator" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { position: "fixed", right: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: "#0E120B", borderRadius: 22, padding: "10px 16px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
-  navUnlocked && activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { ...S.card, padding: 14, borderColor: C.gold, cursor: "pointer", marginBottom: 12 } },
+  navUnlocked && activeTab !== "navigator" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: "#0E120B", borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
+  navUnlocked && activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { ...S.card, padding: 14, borderColor: C.gold, cursor: "pointer", marginBottom: 12 } },
     React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: C.goldBright, letterSpacing: 1, marginBottom: 4 } }, "\u2726 ASK THE NAVIGATOR"),
     React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "Not sure what to do next? Tell it your situation \u2014 it sequences your moves from this app\u2019s verified content and routes you to humans.")),
   activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, whatsNewOpen && React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
@@ -7053,7 +6720,7 @@ function App() {
       React.createElement("div", { onClick: function() { setPolicyPanelOpen(false); setActiveTab("vapay"); }, style: { marginTop: 12, fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.greenBright, cursor: "pointer" } }, "FULL ANALYSIS: VA PAY \u2192 2026 POLICY INTEL \u2192")
     )
   ), React.createElement("div", { style: { marginBottom: 14 } },
-    React.createElement("input", { type: "text", value: searchQ, onChange: function(e) { setSearchQ(e.target.value); }, placeholder: "\uD83D\uDD0D FIND: VGLI, SkillBridge, GI Bill, terminal leave...", style: { width: "100%", boxSizing: "border-box", padding: "13px 16px", background: C.bgCard, border: "1px solid transparent", borderRadius: 12, color: C.textPrimary, fontSize: 14, fontFamily: "'JetBrains Mono', monospace", outline: "none" } }),
+    React.createElement("input", { type: "text", "aria-label": "Search Transition OPS", value: searchQ, onChange: function(e) { setSearchQ(e.target.value); }, placeholder: "\uD83D\uDD0D FIND: VGLI, SkillBridge, GI Bill, terminal leave...", style: { width: "100%", boxSizing: "border-box", padding: "13px 16px", background: C.bgCard, border: "1px solid transparent", borderRadius: 12, color: C.textPrimary, fontSize: 14, fontFamily: "'JetBrains Mono', monospace", outline: "none" } }),
     searchQ.length >= 2 && (function() {
       var q = searchQ.toLowerCase().split(/\s+/).filter(function(t) { return t.length > 0; });
       function score(fields) {
@@ -7113,7 +6780,8 @@ function App() {
       React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "Set your date to arm the mission clock, timeline, and deadline reminders.")
     ),
     React.createElement("span", { style: { color: C.goldBright, fontSize: 18, flexShrink: 0 } }, "\u203A")
-  ), !sitrepDismissed && React.createElement("div", { style: { background: C.bgElevated, borderRadius: 12, padding: "12px 14px", marginBottom: 12, display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }, onClick: function() { setPolicyPanelOpen(true); } },
+  ), !sitrepDismissed && React.createElement("div", { style: { background: C.bgElevated, borderRadius: 12, padding: "12px 14px", marginBottom: 12, display: "flex", alignItems: "center", gap: 12 } },
+    React.createElement("div", { onClick: function() { setPolicyPanelOpen(true); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0, minHeight: 44, cursor: "pointer" } },
     (function() {
       var chip = "IN EFFECT";
       return React.createElement("div", { style: { background: C.bg === "#FFFFFF" ? "rgba(122,90,6,0.12)" : "rgba(240,196,25,0.14)", color: C.accent, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 12, padding: "7px 11px", borderRadius: 8, whiteSpace: "nowrap", flexShrink: 0 } }, chip);
@@ -7121,8 +6789,8 @@ function App() {
     React.createElement("div", { style: { minWidth: 0 } },
       React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.textPrimary, letterSpacing: 0.5 } }, "Patriot Pipeline is LIVE \u2014 SkillBridge approval presumption in effect"),
       React.createElement("div", { style: { fontSize: 13, color: C.gold, marginTop: 2, lineHeight: 1.4 } }, "DIB requests approved absent readiness impact \u00B7 incentive guidance pending release \u00B7 Tap for sources")
-    ),
-    React.createElement("button", { onClick: function(e) { e.stopPropagation(); setSitrepDismissed(true); try { localStorage.setItem("tops_sitrep_jul2026", "1"); } catch (err) {} }, "aria-label": "Dismiss", style: { background: "none", border: "none", marginLeft: "auto", color: C.textSecondary, fontSize: 16, padding: 12, flexShrink: 0, cursor: "pointer" } }, "\u2715")
+    )),
+    React.createElement("button", { onClick: function(e) { e.stopPropagation(); setSitrepDismissed(true); try { localStorage.setItem("tops_sitrep_jul2026", "1"); } catch (err) {} }, "aria-label": "Dismiss", style: { background: "none", border: "none", marginLeft: "auto", color: C.textSecondary, fontSize: 16, padding: 0, minWidth: 44, minHeight: 44, flexShrink: 0, cursor: "pointer" } }, "\u2715")
   ), (function() {
 
     // ═══════════ GUARD / RESERVE DASHBOARD ═══════════
@@ -7388,9 +7056,6 @@ function App() {
           )
         ),
 
-        // Email signup
-        renderEmailSignup("hero"),
-
         // Share + VBS
         React.createElement("button", { onClick: function() {
           if (navigator.share) { navigator.share({ title: "Transition OPS", text: "Military career tools \u2014 translate your training into civilian careers.", url: window.location.href }); }
@@ -7428,7 +7093,7 @@ function App() {
         if (!separationDate) {
           return React.createElement("div", { style: { background: C.bgCard, borderRadius: 12, padding: "22px 18px", marginBottom: 14, textAlign: "center" } },
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 4, color: C.gold, marginBottom: 12 } }, "SET YOUR ETS DATE TO ARM THE MISSION CLOCK"),
-            React.createElement("input", { type: "date", defaultValue: separationDate, min: "1990-01-01", max: "2040-12-31", onBlur: function(e) { if (e.target.value && e.target.value !== separationDate) { setSeparationDate(e.target.value); try { window.__safeSet("tops_sep_date", e.target.value); window.__safeSet("etsDate", e.target.value); } catch (ex) {} } }, style: { width: "80%", padding: 12, background: C.bg, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, fontSize: 14, fontFamily: "'JetBrains Mono', monospace" } })
+            React.createElement("input", { type: "date", "aria-label": "Separation date", defaultValue: separationDate, min: "1990-01-01", max: "2040-12-31", onFocus: function() { setSeparationDateFocused(true); }, onBlur: function(e) { setSeparationDateFocused(false); if (e.target.value && e.target.value !== separationDate) { setSeparationDate(e.target.value); try { window.__safeSet("tops_sep_date", e.target.value); window.__safeSet("etsDate", e.target.value); } catch (ex) {} } }, style: { width: "80%", padding: 12, background: C.bg, border: "1px solid " + C.border, borderRadius: 8, boxShadow: separationDateFocused ? "0 0 0 3px #E8C547" : "none", color: C.textPrimary, fontSize: 14, fontFamily: "'JetBrains Mono', monospace" } })
           );
         }
         var RUNWAY = 540;
@@ -7489,6 +7154,9 @@ function App() {
 // are the operational core, and a changelog does not outrank them.
 whatsNewUnseen && React.createElement("div", {
   onClick: function() { setWhatsNewOpen(true); setWhatsNewUnseen(false); try { window.__safeSet("tops_whatsnew_seen", APP_VERSION); } catch (e) {} },
+  role: "button",
+  tabIndex: 0,
+  onKeyDown: topsKeyboardActivate,
   style: { background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, padding: "12px 16px", marginBottom: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 11 }
 }, React.createElement("span", { style: { fontSize: 15, flexShrink: 0 } }, "\u2728"),
    React.createElement("div", { style: { minWidth: 0, flex: 1 } },
@@ -7535,12 +7203,12 @@ whatsNewUnseen && React.createElement("div", {
       React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 } },
         (function() {
           var due = etsMonths !== null ? SMART_REMINDERS.filter(function(r) { return !dismissedReminders[r.id] && r.mo === etsMonths; }).length : (remTotal - remDismissed);
-          return React.createElement("div", { style: { background: C.bgCard, borderRadius: 12, padding: 16, cursor: "pointer" }, onClick: function() { setActiveTab("reminders"); } },
+          return React.createElement("div", { style: { background: C.bgCard, borderRadius: 12, padding: 16, cursor: "pointer" }, onClick: function() { setActiveTab("reminders"); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate },
             React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 30, lineHeight: 1, color: due > 0 ? C.textPrimary : C.inactive } }, due),
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.gold, marginTop: 6 } }, etsMonths !== null ? "REMINDERS DUE THIS MONTH" : "REMINDERS OPEN")
           );
         })(),
-        React.createElement("div", { style: { background: C.bgCard, borderRadius: 12, padding: 16, cursor: "pointer" }, onClick: function() { setPolicyPanelOpen(true); } },
+        React.createElement("div", { style: { background: C.bgCard, borderRadius: 12, padding: 16, cursor: "pointer" }, onClick: function() { setPolicyPanelOpen(true); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate },
           React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 30, lineHeight: 1, color: C.textPrimary } }, POLICY_CHANGES.length, React.createElement("span", { style: { fontSize: 15, color: C.inactive, fontWeight: 400 } }, "\u2009tracked")),
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.gold, marginTop: 6 } }, "POLICY CHANGES \u2014 TAP FOR SOURCES")
         )
@@ -7781,7 +7449,7 @@ whatsNewUnseen && React.createElement("div", {
         color: C.textSecondary
       }
     }, "Running in standalone mode"))));
-  })(), React.createElement("div", { onClick: function() { setDashMoreOpen(!dashMoreOpen); if (window.__trackEvent) window.__trackEvent("dash_more_toggled", { open: !dashMoreOpen }); }, style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "13px 16px", background: "#161B11", border: "1px solid #222A19", borderRadius: 10, marginBottom: 12, cursor: "pointer" } },
+  })(), React.createElement("div", { onClick: function() { setDashMoreOpen(!dashMoreOpen); if (window.__trackEvent) window.__trackEvent("dash_more_toggled", { open: !dashMoreOpen }); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "13px 16px", background: "#161B11", border: "1px solid #222A19", borderRadius: 10, marginBottom: 12, cursor: "pointer" } },
         React.createElement("div", null,
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 2, color: C.gold, fontWeight: 600 } }, "MORE TOOLS & INTEL"),
           React.createElement("div", { style: { fontSize: 10.5, color: "#8A8468", marginTop: 2 } }, "SkillBridge feed \u00B7 career maps \u00B7 documents \u00B7 spouse resources \u00B7 app updates")
@@ -7856,7 +7524,7 @@ whatsNewUnseen && React.createElement("div", {
           React.createElement("span", { style: { fontSize: 22 } }, "\uD83D\uDCE3"),
           React.createElement("span", { style: { fontSize: 10, color: C.goldBright, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", fontWeight: 700 } }, "SHARE APP")
         ),
-        React.createElement("button", { onClick: function() { setAboutOpen(true); }, style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "14px 4px", background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" } },
+        React.createElement("button", { onClick: openAbout, style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "14px 4px", background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" } },
           React.createElement("span", { style: { fontSize: 22 } }, "\u2139\uFE0F"),
           React.createElement("span", { style: { fontSize: 10, color: C.inactive, letterSpacing: 1, fontFamily: "'Oswald', sans-serif", fontWeight: 600, textAlign: "center", lineHeight: 1.25 } }, "ABOUT & PRIVACY")
         )
@@ -7936,11 +7604,11 @@ whatsNewUnseen && React.createElement("div", {
       marginLeft: 10
     }
   }, "\u2192")), /*#__PURE__*/React.createElement("div", {
-    onClick: function() { setAboutOpen(true); },
+    onClick: openAbout,
     style: { marginTop: 14, marginBottom: 4, padding: "11px 14px", background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" }
   }, /*#__PURE__*/React.createElement("div", {
     style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.6 }
-  }, /*#__PURE__*/React.createElement("strong", { style: { color: C.gold } }, "Independent tool, not a government service."), " Not affiliated with or endorsed by the VA or DoD. Figures are estimates to help you plan \u2014 verify with a VSO or official sources before any irrevocable decision. ", /*#__PURE__*/React.createElement("span", { style: { color: C.gold } }, "Tap for details \u203A"))), renderEmailSignup("hero"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("strong", { style: { color: C.gold } }, "Independent tool, not a government service."), " Not affiliated with or endorsed by the VA or DoD. Figures are estimates to help you plan \u2014 verify with a VSO or official sources before any irrevocable decision. ", /*#__PURE__*/React.createElement("span", { style: { color: C.gold } }, "Tap for details \u203A"))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -8401,7 +8069,7 @@ whatsNewUnseen && React.createElement("div", {
       }, React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1, color: C.goldBright, fontWeight: 700 } }, "\uD83C\uDFAF FREE NEXT STEP: HUMAN REVIEW"),
         React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.55 } }, "A DOL Employment Navigator will review this with you 1-on-1, free \u2014 then connect you to 70+ partner orgs for mentoring, hiring events, and placement. Virtual option works from anywhere, spouses included. \u2192"))),
       React.createElement("div", { style: { marginTop: 14, paddingTop: 12, borderTop: "1px solid " + C.border } }, React.createElement("a", { href: "https://www.missionready.jobs/start", target: "_blank", rel: "noopener noreferrer", onClick: function() { if (window.__trackEvent) window.__trackEvent("missionready_start_tapped", {}); }, style: { display: "block", padding: "11px 13px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8, textDecoration: "none" } }, React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "ANOTHER WAY TO DO THIS: REELWORX MISSIONREADY \u2192", React.createElement("span", { style: { marginLeft: 7, fontSize: 9, padding: "2px 5px", background: C.bg, color: C.inactive, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, fontWeight: 400, border: "1px solid " + C.border, verticalAlign: "middle", whiteSpace: "nowrap" } }, "PARTNER")), React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.55 } }, "Build a guided profile in about five minutes instead of writing a resume. It prints to a clean ATS-ready resume and works as a single link on any application. Nothing is public and no contact details move until you approve it. Free for you, always."))),
-      React.createElement("div", { style: { marginTop: 10, fontSize: 10, color: C.inactive, lineHeight: 1.5 } }, "Private by design: your text is used only to build your fact sheet and draft. It is never stored or logged."))), /*#__PURE__*/React.createElement("div", { style: { ...S.card, borderLeft: "3px solid " + C.gold, marginBottom: 14 } },
+      React.createElement("div", { style: { marginTop: 10, fontSize: 10, color: C.inactive, lineHeight: 1.5 } }, "Your text is used to build your fact sheet and draft."))), /*#__PURE__*/React.createElement("div", { style: { ...S.card, borderLeft: "3px solid " + C.gold, marginBottom: 14 } },
     React.createElement("div", { onClick: function() { setJobsQ(function(p){ return Object.assign({}, p, { open: !p.open }); }); if (window.__trackEvent) window.__trackEvent("jobs_search_opened", {}); }, style: { display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" } },
       React.createElement("div", null,
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.goldBright, fontWeight: 700 } }, "\uD83C\uDFAF LIVE JOBS IN YOUR TARGET STATE"),
@@ -11302,7 +10970,7 @@ whatsNewUnseen && React.createElement("div", {
       letterSpacing: 2,
       cursor: "pointer"
     }
-  }, "SHARE WITH A VETERAN")), renderEmailSignup("vethub")), activeTab === "resources" && /*#__PURE__*/React.createElement("div", null, navUnlocked && React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { ...S.card, padding: "10px 14px", borderColor: C.gold, cursor: "pointer", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 } },
+  }, "SHARE WITH A VETERAN"))), activeTab === "resources" && /*#__PURE__*/React.createElement("div", null, navUnlocked && React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { ...S.card, padding: "10px 14px", borderColor: C.gold, cursor: "pointer", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 } },
     React.createElement("span", { style: { color: C.goldBright, fontSize: 15 } }, "\u2726"),
     React.createElement("span", { style: { fontSize: 12.5, color: C.textSecondary, lineHeight: 1.5 } }, "A lot of resources live below. Or skip the scrolling: tell the Navigator your situation and it will point you.")),
   /*#__PURE__*/React.createElement("a", {
@@ -15229,12 +14897,7 @@ whatsNewUnseen && React.createElement("div", {
     );
   })()),
 
-
   /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: "0 14px 14px"
-    }
-  }, renderEmailSignup("footer")), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "20px 14px 24px",
       borderTop: "1px solid " + C.border,
@@ -15323,6 +14986,8 @@ whatsNewUnseen && React.createElement("div", {
     onDecline: handleDeclinePush
   }),
 
+  /*#__PURE__*/React.createElement("div", { className: "sr-only", role: "status", "aria-live": "polite", "aria-atomic": "true" }, toast || ""),
+
   toast && /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
@@ -15353,11 +15018,14 @@ whatsNewUnseen && React.createElement("div", {
   /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", padding: "18px 12px 26px" }
   }, /*#__PURE__*/React.createElement("span", {
-    onClick: function() { setAboutOpen(true); if (window.__trackEvent) window.__trackEvent("privacy_link_opened"); },
-    style: { fontSize: 11, color: C.inactive, cursor: "pointer", borderBottom: "1px dotted " + C.border, paddingBottom: 1 }
+    onClick: function(event) { openAbout(event); if (window.__trackEvent) window.__trackEvent("privacy_link_opened"); },
+    role: "button",
+    tabIndex: 0,
+    onKeyDown: topsKeyboardActivate,
+    style: { display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 44, minHeight: 44, fontSize: 11, color: C.inactive, cursor: "pointer", borderBottom: "1px dotted " + C.border }
   }, "Privacy")),
 
-  aboutOpen && /*#__PURE__*/React.createElement(AboutModal, { C: C, onClose: function() { setAboutOpen(false); } })
+  aboutOpen && /*#__PURE__*/React.createElement(AboutModal, { C: C, returnFocus: aboutReturnFocusRef.current, onClose: function() { setAboutOpen(false); } })
   );
 }
 ReactDOM.render(/*#__PURE__*/React.createElement(App, null), document.getElementById("root"));

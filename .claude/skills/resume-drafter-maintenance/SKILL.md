@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.18"
+  version: "0.19"
   status: PENDING
 ---
 
@@ -13,9 +13,9 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.18 is PENDING until the synthetic RDM regression suite and live-clone
-validation execute against the app. Specification approval and approved live
-evidence are not v0.18 execution evidence.
+Version 0.19 is PENDING until the synthetic RDM regression suite and live-clone
+validation execute against the app. Specification approval and governance
+calibration are not v0.19 application execution evidence.
 
 ## TRIGGERS AND GATE
 
@@ -587,12 +587,51 @@ percentages, states, locations, or outcomes may become candidate facts.
 - Preserve hard input bounds, output-token caps, retry limits, member-facing
   usage limits, and provider/account spending controls. A new model call must be
   included in the worst-case cost calculation before approval.
-- **External monthly budget cap: UNVERIFIED.** Repository code and friendly
-  limit copy do not prove an account-level cap. It remains UNVERIFIED until
-  Dean supplies direct account evidence. Do not represent it as active or PASS.
-- A missing or unverified cap blocks any claim that budget-cap equivalence has
-  been proven. It does not authorize inspection or mutation of external account
-  settings without Dean's approval.
+- **External provider project control: ACCOUNT-VERIFIED on 2026-08-31.** The
+  dated `intel/privacy-account-evidence-2026-08-31.md` artifact records a
+  configured USD 5 monthly project spend limit and 100 percent alert. The
+  provider warned that timing can allow actual cost to exceed the displayed
+  limit, so this is not a guaranteed real-time hard stop or a statement about
+  another project, key, endpoint, or account.
+- Account evidence does not authorize inspection or mutation of external
+  settings. Any account, model, price, key, project, endpoint, or provider
+  change places the current status on hold for revalidation.
+
+## SHARED RUNTIME SPEND GUARD - VERSION 0.19
+
+Every Resume provider call must pass through `runtime-ai-spend-governance`
+immediately before the call. This includes initial Luna fact extraction,
+conditional Terra fact repair, civilian generation, federal generation, and
+structured audit. There is no direct-client or unguarded fallback.
+
+The Resume call graph remains unchanged. The maximum repair path is exactly four
+calls: initial facts, one conditional repair, one civilian or federal generation,
+and one audit. The exact output caps remain initial 3500, repair 3500, civilian
+2200, federal 1900, and audit 4000. Provider retries remain zero. The shared
+guard may deny a call; it may not add, repeat, reorder, substitute, or combine a
+Resume stage.
+
+A valid cutoff denial is `budget_limit` and returns only the approved
+content-free member wording. Denial before initial extraction releases no fact
+sheet. Denial before a required repair withholds the partial fact sheet. Denial
+before generation releases no draft. Denial before audit withholds the draft,
+artifact, trace, and scorecard. An accounting or pricing fault follows the
+shared content-free `upstream_unavailable` contract. No path exposes or stores
+the resume, source, header, confirmed ledger, posting, target, draft, trace,
+scorecard, provider error, request/response ID, token detail, identity, or IP in
+the spend ledger, logs, analytics, or failure response.
+
+The repository guard is a USD 4.00 internal UTC-month aggregate for requests
+that pass through it after activation. It is distinct from the dated
+`ACCOUNT-VERIFIED` provider project control and does not prove full-project or
+full-account spend. Navigator shares the aggregate budget but remains an
+independent route: Navigator evidence cannot clear any Resume stage, and Resume
+evidence cannot clear Navigator.
+
+Version 0.19 changes no model, Resume output cap, provider retry, grounding,
+trace, score, export, privacy, or call-count rule. Historical version statements
+remain records of their own approved boundaries; this section is the controlling
+current-version spend contract.
 
 ## CONTENT-FREE FAILURE CONTRACT
 
@@ -1278,6 +1317,34 @@ all existing hard input bounds.
   unchanged. Version 0.18 adds no model call or retry, exceeds no cap, and has
   maximum incremental API exposure of $0; the external monthly cap remains
   `UNVERIFIED`.
+- **RDM-199 Guard coverage:** initial facts, conditional repair, civilian,
+  federal, and audit must each enter the shared guard immediately before the
+  provider call; a direct provider-client path must fail.
+- **RDM-200 Exact operational limits:** initial/repair/civilian/federal/audit
+  caps remain 3500/3500/2200/1900/4000, provider retries remain zero, and the
+  guard adds no stage or call.
+- **RDM-201 Four-call repair worst case:** the maximum conditional-repair path
+  must remain exactly initial facts, one repair, one selected-mode generation,
+  and one audit, with a distinct reservation before each actual call.
+- **RDM-202 Budget denial:** a synthetic cutoff denial before any stage must
+  return only `budget_limit` and approved safe wording and must make zero calls
+  for the denied stage.
+- **RDM-203 Partial withholding:** denial before repair must withhold a partial
+  fact sheet; denial before generation must release no draft; denial before
+  audit must release no draft, artifact, trace, or scorecard.
+- **RDM-204 Spend privacy:** synthetic resume, header, ledger, posting, target,
+  trace, identity, IP, and request/response-ID sentinels must appear in neither
+  the aggregate spend record, application logs, analytics, nor failure output.
+- **RDM-205 Navigator independence:** Navigator and Resume must share aggregate
+  spend, but Navigator success or denial must not satisfy any Resume guard case
+  or alter the Resume call graph.
+- **RDM-206 Control truth:** the dated USD 5 provider project control remains
+  `ACCOUNT-VERIFIED` only for its recorded 2026-08-31 scope and warning; the USD
+  4 repository guard remains a distinct post-activation internal control and
+  never becomes full-account proof.
+- **RDM-207 Governance-only execution:** RDM-199 through RDM-206 may pass
+  synthetic governance calibration without implying application wiring,
+  provider execution, hosted validation, or promotion of this PENDING skill.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -1288,8 +1355,10 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.18 until all synthetic cases execute
-and live-clone evidence, including actual DOCX rendering in a Word-compatible
-renderer, passes. After successful execution and live evidence, force-mod
-proposes the smallest evidence-supported revision and Commander rules on
-promotion to CODIFIED 1.0.
+Keep registry item #6 PENDING at version 0.19 until all synthetic application
+cases execute and live-clone evidence, including actual DOCX rendering in a
+Word-compatible renderer, passes. RDM-199 through RDM-207 governance calibration
+executed 9/9 PASS on 2026-08-31; no application, provider, hosted, or Word
+execution is claimed by that result. After successful application execution and
+live evidence, force-mod proposes the smallest evidence-supported revision and
+Commander rules on promotion to CODIFIED 1.0.

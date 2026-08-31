@@ -1,5 +1,7 @@
-// Shared OpenAI client factory for Transition OPS serverless functions.
-// No client, prompt, response, or member content is stored at module scope.
+// Shared guarded OpenAI boundary for Transition OPS serverless functions.
+// Provider and platform handling remain separate from the aggregate repository guard.
+
+const { createSpendGuard } = require("./openai-budget");
 
 function readOpenAIKey() {
   if (typeof Netlify !== "undefined" && Netlify.env && typeof Netlify.env.get === "function") {
@@ -8,12 +10,25 @@ function readOpenAIKey() {
   return process.env.OPENAI_API_KEY;
 }
 
-function createOpenAIClient() {
-  const OpenAI = require("openai");
-  return new OpenAI({
-    apiKey: readOpenAIKey(),
-    maxRetries: 0,
-    timeout: 25000
+function createOpenAIClient(stage) {
+  let provider;
+  try {
+    const OpenAI = require("openai");
+    provider = new OpenAI({
+      apiKey: readOpenAIKey(),
+      maxRetries: 0,
+      timeout: 25000
+    });
+  } catch (error) {
+    throw Object.freeze({ code: "upstream_unavailable" });
+  }
+  const guard = createSpendGuard({
+    providerCreate: function (request) { return provider.responses.create(request); }
+  });
+  return Object.freeze({
+    responses: Object.freeze({
+      create: function (request) { return guard.create(stage, request); }
+    })
   });
 }
 

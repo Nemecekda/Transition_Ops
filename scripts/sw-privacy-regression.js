@@ -1,9 +1,9 @@
 "use strict";
 
-const crypto = require("crypto");
-const fs = require("fs");
-const path = require("path");
-const vm = require("vm");
+const crypto = require("node:crypto");
+const fs = require("node:fs");
+const path = require("node:path");
+const { execFileSync } = require("node:child_process");
 
 const ROOT = path.resolve(__dirname, "..");
 const LEGACY_HASHES = Object.freeze({
@@ -22,31 +22,44 @@ function sha256(relativePath) {
 }
 
 function countMatches(source, pattern) {
-  const flags = pattern.flags.indexOf("g") === -1 ? pattern.flags + "g" : pattern.flags;
+  const flags = pattern.flags.includes("g") ? pattern.flags : pattern.flags + "g";
   return Array.from(source.matchAll(new RegExp(pattern.source, flags))).length;
 }
 
 function functionBlock(source, name) {
-  const start = source.indexOf("function " + name + "(");
-  if (start === -1) return "";
+  const startPattern = new RegExp("(?:async\\s+)?function\\s+" + name + "\\s*\\(");
+  const startMatch = startPattern.exec(source);
+  if (!startMatch) return "";
+  const start = startMatch.index;
   const rest = source.slice(start + 1);
-  const next = /\n(?:async\s+)?function /.exec(rest);
+  const next = /\n(?:async\s+)?function\s+[A-Za-z_$][\w$]*\s*\(/.exec(rest);
   return source.slice(start, next ? start + 1 + next.index : source.length);
 }
 
-function check(condition, label) {
-  if (!condition) throw new Error("FAIL " + label);
+function check(condition, label, detail) {
+  if (!condition) throw new Error("FAIL " + label + (detail ? ": " + detail : ""));
   console.log("PASS " + label);
+}
+
+function cacheVersion(source, label) {
+  const matches = Array.from(source.matchAll(/const CACHE_NAME\s*=\s*["']transition-ops-v([0-9]+)["']\s*;/g));
+  check(matches.length === 1, label + " has one extractable cache name", "matches=" + matches.length);
+  const version = Number(matches[0][1]);
+  check(Number.isSafeInteger(version) && version > 0, label + " cache version is a positive integer");
+  return version;
 }
 
 const index = read("index.html");
 const pwaWorker = read("pwa-sw.js");
+const legacyWorker = read("sw.js");
+const dedicatedWorker = read("push/onesignal/OneSignalSDKWorker.js");
+const rootDedicatedWorker = read("OneSignalSDKWorker.js");
+const headers = read("_headers");
+const packageJson = JSON.parse(read("package.json"));
 const ergHandoff = read("erg-handoff.html");
 const ergEmployerBrief = read("erg-employer-brief.html");
 const ergIntranetLaunchKit = read("erg-intranet-launch-kit.html");
-const dedicatedWorker = read("push/onesignal/OneSignalSDKWorker.js");
-const headers = read("_headers");
-const packageJson = JSON.parse(read("package.json"));
+
 const launchInlineScripts = Array.from(
   ergIntranetLaunchKit.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi),
   function(match) { return match[1]; }
@@ -68,115 +81,158 @@ const launchTagSurface = Array.from(
 ).join("\n");
 const launchActiveSurface = launchInlineScripts + "\n" + launchTagSurface;
 
-const helperStart = index.indexOf("const TOPS_PUSH_ENABLED = true;");
-const helperEnd = index.indexOf("// ═══════════════════════════════════════════════════════════════\n// TRANSITION OPS", helperStart);
-check(helperStart !== -1 && helperEnd > helperStart, "push helper block is extractable for closed-state tests");
-
-let storedChoice = null;
-let createdProviderScripts = 0;
-const sandbox = {
-  console: console,
-  URL: URL,
-  localStorage: { removeItem: function() { storedChoice = null; } },
-  navigator: {
-    serviceWorker: { getRegistrations: function() { return Promise.resolve([]); } }
-  },
-  document: {
-    getElementById: function() { return null; },
-    createElement: function() { createdProviderScripts += 1; return {}; },
-    head: { appendChild: function() {} }
-  },
-  window: {
-    __IS_IFRAME: false,
-    __safeGet: function() { return storedChoice; },
-    __safeSet: function(key, value) { storedChoice = value; },
-    location: { origin: "http://127.0.0.1:4173" }
-  }
-};
-sandbox.window.window = sandbox.window;
-vm.createContext(sandbox);
-vm.runInContext(
-  index.slice(helperStart, helperEnd) +
-    "\nthis.__topsHarness = { parse: topsParsePushChoice, accepted: topsPushChoiceAccepted, configReady: topsPushConfigReady, epochDay: topsDateToEpochDay, workerPathMatches: topsWorkerURLMatchesPath };",
-  sandbox,
-  { filename: "index-push-helpers.js" }
+const pushDeclarations = countMatches(index, /\b(?:const|let|var)\s+TOPS_PUSH_ENABLED\s*=/);
+const literalPushOff = countMatches(index, /const TOPS_PUSH_ENABLED = false;/);
+check(
+  pushDeclarations === 1 && literalPushOff === 1,
+  "global production push is exactly one literal false declaration",
+  "declarations=" + pushDeclarations + " literalOff=" + literalPushOff
 );
 
-const acceptedChoice = JSON.stringify({
-  state: "accepted",
-  noticeVersion: "sw-privacy-01-v1",
-  timingMode: "exact-day"
-});
-check(sandbox.__topsHarness.parse(acceptedChoice).state === "accepted", "current exact-day choice parses");
+const uuidPattern = /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/i;
+check(!uuidPattern.test(index), "production browser source has no static UUID-shaped App ID");
+
+const clonePatterns = [
+  /\bTOPS_(?:CLONE|PUSH_ALLOWED_ORIGIN)\b/i,
+  /https?:\/\/[^\s"']*(?:clone|test)[^\s"']*/i,
+  /\bisolated clone\b/i,
+  /\bclone (?:status|push|testing|validation)\b/i,
+  /\btest[- ]site\b/i,
+  /\bproduction app is unchanged\b/i,
+  /\bclone-push-disabled\b/i
+];
 check(
-  sandbox.__topsHarness.parse(JSON.stringify({ state: "accepted", noticeVersion: "old", timingMode: "exact-day" })) === null,
-  "stale notice fails closed"
-);
-check(
-  sandbox.__topsHarness.parse(JSON.stringify({ state: "accepted", noticeVersion: "sw-privacy-01-v1", timingMode: "exact-day", extra: true })) === null,
-  "unknown local-choice field fails closed"
-);
-check(sandbox.__topsHarness.parse("not-json") === null, "malformed local choice fails closed");
-storedChoice = acceptedChoice;
-check(sandbox.__topsHarness.accepted() === true, "accepted current choice is recognized");
-check(sandbox.__topsHarness.configReady() === false && createdProviderScripts === 0, "unapproved origin creates no provider element");
-check(
-  sandbox.__topsHarness.epochDay("2027-01-15") === Math.floor(Date.UTC(2027, 0, 15) / 86400000),
-  "exact date converts to one UTC epoch-day value"
-);
-check(
-  sandbox.__topsHarness.workerPathMatches(
-    "https://transition-ops-openai-clone.netlify.app/push/onesignal/OneSignalSDKWorker.js?appId=synthetic&sdkVersion=160609",
-    "https://transition-ops-openai-clone.netlify.app/push/onesignal/OneSignalSDKWorker.js"
-  ) === true &&
-    sandbox.__topsHarness.workerPathMatches(
-      "https://transition-ops-openai-clone.netlify.app/pwa-sw.js",
-      "https://transition-ops-openai-clone.netlify.app/push/onesignal/OneSignalSDKWorker.js"
-    ) === false &&
-    sandbox.__topsHarness.workerPathMatches(
-      "https://example.com/push/onesignal/OneSignalSDKWorker.js",
-      "https://transition-ops-openai-clone.netlify.app/push/onesignal/OneSignalSDKWorker.js"
-    ) === false,
-  "dedicated-worker cleanup accepts provider query parameters only on the approved origin and path"
+  clonePatterns.every(function(pattern) { return !pattern.test(index); }),
+  "production browser source has no clone/test origin, configuration, or status copy"
 );
 
-check(
-  countMatches(index, /<script[^>]+src=["']https:\/\/cdn\.onesignal\.com\/sdks\/web\/v16\/OneSignalSDK\.page\.js["'][^>]*>/i) === 0,
-  "no static OneSignal page SDK element"
+const literalRegistrations = Array.from(
+  index.matchAll(/navigator\.serviceWorker\.register\s*\(\s*(["'`])([^"'`]+)\1/g),
+  function(match) { return match[2]; }
 );
 check(
-  countMatches(index, /navigator\.serviceWorker\.register\(\s*["']\/sw\.js["']/) === 0,
+  literalRegistrations.length === 1 && literalRegistrations[0] === "/pwa-sw.js",
+  "current app registers only the active PWA worker",
+  JSON.stringify(literalRegistrations)
+);
+check(
+  countMatches(index, /navigator\.serviceWorker\.register\s*\(\s*["'`]\/sw\.js["'`]/) === 0,
   "current app never registers the legacy root worker"
 );
+
+const pushConfigBlock = functionBlock(index, "topsPushConfigReady");
+const offBlock = functionBlock(index, "topsEnforcePushOff");
+const loaderBlock = functionBlock(index, "topsLoadOneSignalSdk");
+const initBlock = functionBlock(index, "topsInitializeOneSignal");
+const enrollmentBlock = functionBlock(index, "topsStartPushEnrollment");
+const resumeBlock = functionBlock(index, "topsResumeAcceptedPush");
+const guardedRetainedHelpers =
+  loaderBlock.indexOf("topsPushConfigReady()") !== -1 &&
+  loaderBlock.indexOf("topsPushConfigReady()") < loaderBlock.indexOf("document.createElement") &&
+  initBlock.indexOf("topsPushConfigReady()") !== -1 &&
+  initBlock.indexOf("topsPushConfigReady()") < initBlock.indexOf("topsLoadOneSignalSdk()") &&
+  enrollmentBlock.indexOf("topsPushConfigReady()") !== -1 &&
+  enrollmentBlock.indexOf("topsPushConfigReady()") < enrollmentBlock.indexOf("topsInitializeOneSignal()") &&
+  resumeBlock.indexOf("topsPushConfigReady()") !== -1 &&
+  resumeBlock.indexOf("topsPushConfigReady()") < resumeBlock.indexOf("topsInitializeOneSignal()");
+const removedActivationHelpers =
+  loaderBlock === "" &&
+  initBlock === "" &&
+  !/OneSignalSDK\.page\.js|\bOneSignalDeferred\b|\.User\s*\.\s*addTags?\s*\(/.test(index) &&
+  enrollmentBlock.includes("topsEnforcePushOff()") &&
+  resumeBlock.includes("topsEnforcePushOff()");
 check(
-  countMatches(index, /navigator\.serviceWorker\.register\(\s*["']\/pwa-sw\.js["']/) === 1,
-  "current app registers one active PWA worker"
+  /return\s+false\s*;/.test(pushConfigBlock) &&
+    offBlock.includes("topsUnregisterDedicatedPushWorker()") &&
+    (guardedRetainedHelpers || removedActivationHelpers),
+  "OneSignal activation is removed or fail-closed before every primitive"
 );
+check(
+  countMatches(index, /<script[^>]+src=["'][^"']*onesignal[^"']*["'][^>]*>/i) === 0 &&
+    countMatches(index, /navigator\.serviceWorker\.register\s*\(\s*["'`]\/push\/onesignal\//i) === 0 &&
+    countMatches(index, /fetch\s*\(\s*["'`]\/push\/onesignal\//i) === 0,
+  "current app has no static SDK element or dedicated-worker registration/fetch"
+);
+
 check(
   /scope:\s*["']\/["']/.test(index) && /updateViaCache:\s*["']none["']/.test(index),
-  "active worker uses root scope and bypasses HTTP cache on update"
+  "active PWA worker uses root scope and bypasses HTTP cache on update"
 );
 check(
-  !/(onesignal|importScripts|notificationclick|SHOW_NOTIFICATION|push)/i.test(pwaWorker),
+  !/(?:onesignal|importScripts|notificationclick|SHOW_NOTIFICATION|\bpush\b)/i.test(pwaWorker),
   "active PWA worker is provider-free"
 );
 check(
-  pwaWorker.indexOf('/.netlify/functions/') !== -1 &&
-    pwaWorker.indexOf('/api/') !== -1 &&
-    pwaWorker.indexOf('url.search === ""') !== -1 &&
-    pwaWorker.indexOf("REVIEWED_LOCAL_PATHS.has(url.pathname)") !== -1,
-  "active worker excludes API routes and query-bearing non-navigation requests"
+  pwaWorker.includes('/.netlify/functions/') &&
+    pwaWorker.includes('/api/') &&
+    pwaWorker.includes('url.search === ""') &&
+    pwaWorker.includes("REVIEWED_LOCAL_PATHS.has(url.pathname)"),
+  "active worker excludes APIs and query-bearing non-navigation requests"
 );
 check(
-  pwaWorker.indexOf('return "/";') !== -1 && pwaWorker.indexOf("cache.put(cacheKey, clone)") !== -1,
+  pwaWorker.includes('return "/";') && pwaWorker.includes("cache.put(cacheKey, clone)"),
   "navigation cache keys cannot retain member query values"
 );
 check(
-  pwaWorker.indexOf('url.pathname === "/erg-handoff.html"') !== -1 &&
-    pwaWorker.indexOf('url.pathname === "/erg-employer-brief.html"') !== -1 &&
-    pwaWorker.indexOf('url.pathname === "/erg-intranet-launch-kit.html"') !== -1,
-  "ERG static pages use distinct navigation cache keys"
+  pwaWorker.includes('url.pathname === "/erg-handoff.html"') &&
+    pwaWorker.includes('url.pathname === "/erg-employer-brief.html"') &&
+    pwaWorker.includes('url.pathname === "/erg-intranet-launch-kit.html"'),
+  "ERG static pages retain distinct navigation cache keys"
 );
+check(
+  pwaWorker.includes("key.indexOf(CACHE_PREFIX) === 0 && key !== CACHE_NAME"),
+  "activation deletes only prior app caches and preserves unrelated caches"
+);
+
+const currentCache = cacheVersion(pwaWorker, "active PWA worker");
+const legacyCache = cacheVersion(legacyWorker, "legacy root worker");
+let historyText;
+try {
+  historyText = execFileSync("git", ["log", "-p", "--", "pwa-sw.js", "sw.js"], {
+    cwd: ROOT,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"]
+  });
+} catch (error) {
+  throw new Error("FAIL cache history could not be read locally: " + String(error && error.message || error));
+}
+const historicalVersions = Array.from(
+  historyText.matchAll(/transition-ops-v([0-9]+)/g),
+  function(match) { return Number(match[1]); }
+).filter(Number.isSafeInteger);
+check(historicalVersions.length > 0, "cache history contains extractable shipped versions");
+const historicalMax = Math.max.apply(Math, historicalVersions);
+const priorVersions = historicalVersions.filter(function(version) { return version < currentCache; });
+const priorMax = priorVersions.length ? Math.max.apply(Math, priorVersions) : legacyCache;
+check(
+  currentCache >= historicalMax && currentCache > priorMax && currentCache > legacyCache,
+  "active cache is the extracted monotonic bumped value",
+  "current=v" + currentCache + " historyMax=v" + historicalMax + " priorMax=v" + priorMax + " legacy=v" + legacyCache
+);
+console.log("CACHE EXPECTATION extracted transition-ops-v" + currentCache);
+
+check(
+  countMatches(dedicatedWorker, /importScripts\s*\(/) === 1 &&
+    /importScripts\s*\(\s*["']https:\/\/cdn\.onesignal\.com\/sdks\/web\/v16\/OneSignalSDK\.sw\.js["']\s*\)/.test(dedicatedWorker),
+  "dedicated worker imports only the provider worker"
+);
+check(
+  dedicatedWorker.includes("tops-intent") && dedicatedWorker.includes("notificationclick"),
+  "dedicated worker retains cold-launch intent handling"
+);
+check(
+  !/(?:CACHE_NAME|const\s+ASSETS|addEventListener\s*\(\s*["']fetch["']|SHOW_NOTIFICATION)/.test(dedicatedWorker),
+  "dedicated worker contains no app-cache or local-notification logic"
+);
+check(
+  countMatches(rootDedicatedWorker, /importScripts\s*\(/) === 1,
+  "legacy root dedicated-worker shim remains separately bounded"
+);
+
+Object.entries(LEGACY_HASHES).forEach(function(entry) {
+  check(sha256(entry[0]) === entry[1], entry[0] + " legacy hash preserved");
+});
+
 check(
   countMatches(ergHandoff, /<form\b/i) === 0 &&
     countMatches(ergEmployerBrief, /<form\b/i) === 0 &&
@@ -197,18 +253,9 @@ check(
   "ERG static pages use only the exact public Transition Ops URL"
 );
 check(
-  countMatches(ergHandoff, /ISOLATED CLONE TEST - NOT APPROVED FOR EMPLOYER DISTRIBUTION/) === 1 &&
-    countMatches(ergEmployerBrief, /ISOLATED CLONE TEST - NOT APPROVED FOR EMPLOYER DISTRIBUTION/) === 1,
-  "ERG static pages retain the clone-only distribution warning"
-);
-check(
   !/(?:URLSearchParams|location\.search|location\.hash|@veteranbridgesolutions\.com)/i.test(ergHandoff) &&
     !/(?:URLSearchParams|location\.search|location\.hash|@veteranbridgesolutions\.com)/i.test(ergEmployerBrief),
   "ERG static pages contain no personalization reader or VBS contact route"
-);
-check(
-  countMatches(ergIntranetLaunchKit, /ISOLATED CLONE TEST - NOT APPROVED FOR EMPLOYER DISTRIBUTION/) === 1,
-  "intranet launch kit retains one clone-only distribution warning"
 );
 check(
   countMatches(ergIntranetLaunchKit, /<form\b/i) === 0 &&
@@ -243,9 +290,9 @@ check(
 );
 check(
   launchImageTags.length === 1 &&
-    launchImageTags[0].indexOf('src="/transition-ops-public-qr.png"') !== -1 &&
-    launchImageTags[0].indexOf('alt="QR code for Transition Ops. The destination is https://transitionops.org."') !== -1,
-  "intranet launch kit uses one local QR image with the approved alternative text"
+    launchImageTags[0].includes('src="/transition-ops-public-qr.png"') &&
+    launchImageTags[0].includes('alt="QR code for Transition Ops. The destination is https://transitionops.org."'),
+  "intranet launch kit uses one local QR image with approved alternative text"
 );
 check(
   countMatches(
@@ -258,12 +305,11 @@ check(
   "intranet launch kit provides one local PNG download"
 );
 check(
-  launchPublicAnchorTags.length === 3 &&
-    launchPublicAnchorTags.every(function(tag) {
-      return /\bhref=["']https:\/\/transitionops\.org["']/.test(tag) &&
-        /\brel=["']noopener noreferrer["']/.test(tag) &&
-        /\breferrerpolicy=["']no-referrer["']/.test(tag);
-    }),
+  launchPublicAnchorTags.length === 3 && launchPublicAnchorTags.every(function(tag) {
+    return /\bhref=["']https:\/\/transitionops\.org["']/.test(tag) &&
+      /\brel=["']noopener noreferrer["']/.test(tag) &&
+      /\breferrerpolicy=["']no-referrer["']/.test(tag);
+  }),
   "every intranet launch-kit public anchor uses the exact hardened public link"
 );
 check(
@@ -271,136 +317,7 @@ check(
     !/https?:\/\/(?!transitionops\.org(?:["'<\s)]|\.(?=["'<\s])|$))/i.test(ergIntranetLaunchKit),
   "intranet launch kit contains no alternate, slash, query, or fragment URL"
 );
-check(
-  pwaWorker.indexOf("key.indexOf(CACHE_PREFIX) === 0 && key !== CACHE_NAME") !== -1,
-  "activation deletes only prior app caches and preserves the intent cache"
-);
-check(
-  countMatches(dedicatedWorker, /importScripts\(["']https:\/\/cdn\.onesignal\.com\/sdks\/web\/v16\/OneSignalSDK\.sw\.js["']\)/) === 1,
-  "dedicated worker imports the provider worker exactly once"
-);
-check(
-  dedicatedWorker.indexOf("tops-intent") !== -1 && dedicatedWorker.indexOf("notificationclick") !== -1,
-  "dedicated worker retains cold-launch intent handling"
-);
-check(
-  !/(CACHE_NAME|const ASSETS|addEventListener\(["']fetch["']|SHOW_NOTIFICATION)/.test(dedicatedWorker),
-  "dedicated worker contains no app-cache or local-notification logic"
-);
-check(
-  /const TOPS_PUSH_ENABLED = true;/.test(index),
-  "clone push feature gate is on"
-);
-check(
-  /const TOPS_CLONE_ONESIGNAL_APP_ID = "6b0400ce-cb2f-44d2-990d-c6ffb7a5db3a";/.test(index) &&
-    /const TOPS_PUSH_ALLOWED_ORIGIN = "https:\/\/transition-ops-openai-clone\.netlify\.app";/.test(index),
-  "clone provider identifiers are exact"
-);
-check(
-  index.indexOf("5b25d308-645b-4459-8810-36ac09da88f5") === -1,
-  "production OneSignal App ID is absent"
-);
-check(
-  /const TOPS_PUSH_TIMING_MODE = "exact-day";/.test(index) && /const TOPS_PUSH_NOTICE_VERSION = "sw-privacy-01-v1";/.test(index),
-  "exact-day notice version is pinned"
-);
-check(
-  /const TOPS_PUSH_CHOICE_FIELDS = \["noticeVersion", "state", "timingMode"\];/.test(index),
-  "local choice parser uses the closed three-field schema"
-);
 
-const loaderBlock = functionBlock(index, "topsLoadOneSignalSdk");
-const initBlock = functionBlock(index, "topsInitializeOneSignal");
-const enrollmentBlock = functionBlock(index, "topsStartPushEnrollment");
-const resumeBlock = functionBlock(index, "topsResumeAcceptedPush");
-const stopBlock = functionBlock(index, "topsStopPushProcessing");
-const declineBlock = functionBlock(index, "topsDeclinePushChoice");
-const withdrawBlock = functionBlock(index, "topsWithdrawPushChoice");
-
-check(
-  loaderBlock.indexOf("topsPushChoiceAccepted()") !== -1 && loaderBlock.indexOf("topsPushConfigReady()") !== -1,
-  "SDK loader requires accepted current choice and approved clone configuration"
-);
-check(
-  countMatches(index, /topsLoadOneSignalSdk\(/) === 2 && initBlock.indexOf("topsLoadOneSignalSdk()") !== -1,
-  "SDK loader has one guarded call site"
-);
-check(
-  enrollmentBlock.indexOf("topsPushChoiceAccepted()") !== -1 && enrollmentBlock.indexOf("topsPushConfigReady()") !== -1,
-  "fresh enrollment fails closed before provider initialization"
-);
-check(
-  resumeBlock.indexOf("topsPushChoiceAccepted()") !== -1 && resumeBlock.indexOf("topsPushConfigReady()") !== -1,
-  "returning enrollment fails closed for stale or missing choice"
-);
-check(
-  stopBlock.indexOf('removeTag("ets_epoch_day")') < stopBlock.indexOf("PushSubscription.optOut()") &&
-    stopBlock.indexOf("PushSubscription.optOut()") < stopBlock.indexOf("setConsentGiven(false)") &&
-    stopBlock.indexOf("setConsentGiven(false)") < stopBlock.indexOf("topsUnregisterDedicatedPushWorker()"),
-  "denial and withdrawal cleanup uses the approved provider order"
-);
-check(
-  /const TOPS_ONESIGNAL_WITHDRAWAL_SYNC_MS = 2500;/.test(index) &&
-    stopBlock.indexOf("TOPS_ONESIGNAL_WITHDRAWAL_SYNC_MS") > stopBlock.indexOf("PushSubscription.optOut()") &&
-    stopBlock.indexOf("TOPS_ONESIGNAL_WITHDRAWAL_SYNC_MS") < stopBlock.indexOf("setConsentGiven(false)"),
-  "withdrawal leaves a bounded provider-sync window before consent teardown"
-);
-check(
-  declineBlock.indexOf("topsUnregisterDedicatedPushWorker()") !== -1 &&
-    declineBlock.indexOf("topsLoadOneSignalSdk") === -1 &&
-    declineBlock.indexOf("topsInitializeOneSignal") === -1,
-  "decline removes stale dedicated state without loading the provider"
-);
-check(
-  withdrawBlock.indexOf('topsStopPushProcessing("withdrawn"') !== -1 &&
-    index.indexOf("window.location.reload();") !== -1,
-  "withdrawal revokes processing before the page reloads"
-);
-check(
-  initBlock.indexOf("setConsentRequired(true)") < initBlock.indexOf(".init({") && initBlock.indexOf("setConsentRequired(true)") !== -1,
-  "consent-required mode is set before initialization"
-);
-check(
-  initBlock.indexOf('serviceWorkerPath: "push/onesignal/OneSignalSDKWorker.js"') !== -1 &&
-    initBlock.indexOf('scope: "/push/onesignal/"') !== -1 &&
-    initBlock.indexOf("requiresUserPrivacyConsent: true") !== -1 &&
-    initBlock.indexOf("autoResubscribe: false") !== -1,
-  "provider initialization names the dedicated path, scope, and privacy controls"
-);
-check(
-  countMatches(index, /\.User\.addTag\(\s*["']ets_epoch_day["']/) === 1 && countMatches(index, /\.User\.addTags\(/) === 0,
-  "only the approved exact-day field is written"
-);
-check(
-  !/(last_active|ets_date|days_out|months_out)/.test(index) && !/\.User\.addTag\(\s*["']status["']/.test(index),
-  "prohibited provider timing and status tags are absent"
-);
-check(
-  index.indexOf("notif_enable_tapped") === -1 && index.indexOf("notif_blocked_ios_install") === -1 && index.indexOf("notif_permission_result") === -1,
-  "push-choice analytics events are absent"
-);
-check(
-  functionBlock(index, "topsLoadOneSignalSdk").indexOf("window.__IS_IFRAME") !== -1 &&
-    /if \(!__EMBED_MODE && "serviceWorker" in navigator\)/.test(index),
-  "iframe mode blocks worker registration and provider loading"
-);
-check(
-  index.indexOf("dean@veteranbridgesolutions.com") !== -1 && index.indexOf("Choose whether to use push alerts") !== -1,
-  "approved privacy contact and pre-permission title are present"
-);
-check(
-  index.indexOf("Push setup is being updated on this test site.") !== -1,
-  "disabled-gate fallback state is truthful"
-);
-check(
-  index.indexOf("This isolated clone enables consent-gated push validation; the production app is unchanged.") !== -1 &&
-    index.indexOf("This isolated clone enables consent-gated push testing; the production app is unchanged.") !== -1,
-  "enabled clone status is bounded and distinguishes production"
-);
-check(
-  pwaWorker.indexOf('const CACHE_NAME = "transition-ops-v143";') !== -1,
-  "active-worker cache advances beyond prior v142"
-);
 check(
   countMatches(headers, /^\/(?:pwa-sw\.js|sw\.js|OneSignalSDKWorker\.js|push\/onesignal\/OneSignalSDKWorker\.js)$/m) === 4 &&
     countMatches(headers, /^  Content-Type: application\/javascript; charset=utf-8$/m) === 4 &&
@@ -417,11 +334,7 @@ check(
 );
 check(
   packageJson.scripts && packageJson.scripts["test:sw-privacy"] === "node scripts/sw-privacy-regression.js",
-  "package exposes the deterministic privacy regression"
+  "package preserves the service-worker privacy regression command"
 );
-
-Object.keys(LEGACY_HASHES).forEach(function(relativePath) {
-  check(sha256(relativePath) === LEGACY_HASHES[relativePath], relativePath + " legacy hash preserved");
-});
 
 console.log("SW-PRIVACY REGRESSION PASS");

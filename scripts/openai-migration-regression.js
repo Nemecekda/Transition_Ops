@@ -9,6 +9,7 @@ const { runRenderRegression } = require("./resume-docx-render-regression.js");
 const root = path.resolve(__dirname, "..");
 const helperPath = path.join(root, "netlify/functions/openai-client.js");
 const calls = [];
+const clientStages = [];
 let nextResponse = { status: "completed", output_text: "SYNTHETIC OUTPUT" };
 let responseQueue = [];
 let auditResponseQueue = [];
@@ -146,20 +147,23 @@ require.cache[helperPath] = {
   filename: helperPath,
   loaded: true,
   exports: {
-    createOpenAIClient: () => ({
-      responses: {
-        create: async (request) => {
-          calls.push(request);
-          if (nextError) throw nextError;
-          if (request.text && request.text.format && request.text.format.name === "resume_quality_audit") {
-            const queuedAudit = auditResponseQueue.length ? auditResponseQueue.shift() : null;
-            const audit = typeof queuedAudit === "function" ? queuedAudit(request) : (queuedAudit || passingAudit(request));
-            return audit && audit.status ? audit : { status: "completed", output_text: JSON.stringify(audit) };
+    createOpenAIClient: (stage) => {
+      clientStages.push(stage);
+      return {
+        responses: {
+          create: async (request) => {
+            calls.push(request);
+            if (nextError) throw nextError;
+            if (request.text && request.text.format && request.text.format.name === "resume_quality_audit") {
+              const queuedAudit = auditResponseQueue.length ? auditResponseQueue.shift() : null;
+              const audit = typeof queuedAudit === "function" ? queuedAudit(request) : (queuedAudit || passingAudit(request));
+              return audit && audit.status ? audit : { status: "completed", output_text: JSON.stringify(audit) };
+            }
+            return responseQueue.length ? responseQueue.shift() : nextResponse;
           }
-          return responseQueue.length ? responseQueue.shift() : nextResponse;
         }
-      }
-    }),
+      };
+    },
     responseText: (response) => String(response.output_text || "").trim()
   }
 };
@@ -175,6 +179,7 @@ async function run() {
   const facts = "ROLE 1\nJOB TITLE (EXACT): Synthetic Logistics Leader\nEMPLOYER OR UNIT (EXACT): Synthetic Unit\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led a 15-person team and managed a $2M equipment inventory.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 15-person; $2M\nTARGET ROLE (EXACT OR MISSING): Operations manager";
   nextResponse = { status: "completed", output_text: facts };
   const callsBeforeCleanFacts = calls.length;
+  const stagesBeforeCleanFacts = clientStages.length;
   let result = await resume.handler(post({
     action: "facts",
     role: "Synthetic logistics leader",
@@ -186,6 +191,7 @@ async function run() {
   }));
   assert.equal(result.statusCode, 200, result.body);
   assert.equal(calls.length - callsBeforeCleanFacts, 1);
+  assert.deepEqual(clientStages.slice(stagesBeforeCleanFacts), ["resume_facts"]);
   assert.equal(JSON.parse(result.body).factSheet, facts);
   assert.deepEqual(JSON.parse(result.body).warnings, []);
   assert.equal(calls.at(-1).model, "gpt-5.6-luna");
@@ -270,12 +276,14 @@ async function run() {
     { status: "completed", output_text: multiRoleFacts }
   ];
   const callsBeforeSuccessfulRepair = calls.length;
+  const stagesBeforeSuccessfulRepair = clientStages.length;
   result = await resume.handler(post(factsRequest));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).factSheet, multiRoleFacts);
   assert.equal(JSON.parse(result.body).suggestedTarget, "Talent Development Manager");
   assert.deepEqual(JSON.parse(result.body).warnings, []);
   assert.equal(calls.length - callsBeforeSuccessfulRepair, 2);
+  assert.deepEqual(clientStages.slice(stagesBeforeSuccessfulRepair), ["resume_facts", "resume_fact_repair"]);
   const repairCall = calls[callsBeforeSuccessfulRepair + 1];
   assert.equal(repairCall.model, "gpt-5.6-terra");
   assert.equal(repairCall.max_output_tokens, 3500);
@@ -361,6 +369,7 @@ async function run() {
 
   nextResponse = { status: "completed", output_text: "HR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director - Synthetic Command\nManaged Workday reporting." };
   const callsBeforeCorrectedDraft = calls.length;
+  const stagesBeforeCorrectedDraft = clientStages.length;
   result = await resume.handler(post({
     action: "draft",
     target: "Human Resources Director",
@@ -369,6 +378,12 @@ async function run() {
   }));
   assert.equal(result.statusCode, 200);
   assert.equal(calls.length - callsBeforeCorrectedDraft, 2);
+  assert.deepEqual(clientStages.slice(stagesBeforeCorrectedDraft), ["resume_civilian", "resume_audit"]);
+  assert.deepEqual(
+    clientStages.slice(stagesBeforeSuccessfulRepair, stagesBeforeSuccessfulRepair + 2)
+      .concat(clientStages.slice(stagesBeforeCorrectedDraft, stagesBeforeCorrectedDraft + 2)),
+    ["resume_facts", "resume_fact_repair", "resume_civilian", "resume_audit"]
+  );
   assert.equal(calls[callsBeforeCorrectedDraft].max_output_tokens, 2200);
   assert.equal(calls[callsBeforeCorrectedDraft + 1].max_output_tokens, 4000);
   assert.equal(calls.at(-1).model, "gpt-5.6-terra");
@@ -1461,8 +1476,10 @@ async function run() {
     assert.doesNotMatch(federalGenerationCall.instructions, /REQUEST-LOCAL LENGTH PROFILE|regardless of page count/);
     return passingAudit(request);
   });
+  const stagesBeforeFederalCore = clientStages.length;
   result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: coreLedger, confirmedFacts: coreLedger }));
   assert.equal(result.statusCode, 200);
+  assert.deepEqual(clientStages.slice(stagesBeforeFederalCore), ["resume_federal", "resume_audit"]);
   assert.equal(JSON.parse(result.body).bullets, federalCoreDraft);
 
   const boundaryLedger = "ROLE 1\nJOB TITLE (EXACT): Boundary Role 1\nEMPLOYER OR UNIT (EXACT): Boundary Employer 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and delivered 1100 hires.\n\nROLE 2\nJOB TITLE (EXACT): Boundary Role 2\nEMPLOYER OR UNIT (EXACT): Boundary Employer 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and managed 22 specialists.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 22 specialists; shared 44-unit scale; 110; 77 sites\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
@@ -1789,7 +1806,7 @@ async function run() {
   result = await resume.handler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "output_limit");
-  assert.equal(JSON.parse(result.body).error, "We could not safely extract every fact into a complete fact sheet. Nothing was drafted or stored. Your source text is not the problem; this fact-sheet review needs a different workflow.");
+  assert.equal(JSON.parse(result.body).error, "We could not safely extract every fact into a complete fact sheet. No draft was released. Your source text is not the problem; this fact-sheet review needs a different workflow.");
   assert.equal(JSON.parse(result.body).stage, "facts");
   assert.equal(Object.hasOwn(JSON.parse(result.body), "factSheet"), false);
   assert.equal(calls.length - callsBeforeOutputLimit, 1);
@@ -1808,7 +1825,7 @@ async function run() {
   result = await resume.handler(post(factsRequest));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "output_limit");
-  assert.equal(JSON.parse(result.body).error, "We could not safely extract every fact into a complete fact sheet. Nothing was drafted or stored. Your source text is not the problem; this fact-sheet review needs a different workflow.");
+  assert.equal(JSON.parse(result.body).error, "We could not safely extract every fact into a complete fact sheet. No draft was released. Your source text is not the problem; this fact-sheet review needs a different workflow.");
   assert.equal(JSON.parse(result.body).stage, "facts");
   assert.equal(Object.hasOwn(JSON.parse(result.body), "factSheet"), false);
   assert.equal(calls.length - callsBeforeIncompleteRepair, 2);
@@ -1872,8 +1889,10 @@ async function run() {
 
   nextError = null;
   nextResponse = { status: "incomplete", output_text: "" };
+  const stagesBeforeNavigator = clientStages.length;
   result = await navigator.handler(post({ messages: [{ role: "user", content: "Synthetic request" }] }));
   assert.equal(result.statusCode, 502);
+  assert.deepEqual(clientStages.slice(stagesBeforeNavigator), ["navigator"]);
 
   const auditCalls = calls.filter((call) => call.text && call.text.format && call.text.format.name === "resume_quality_audit");
   assert.ok(auditCalls.length > 0);
@@ -1881,11 +1900,16 @@ async function run() {
   assert.ok(auditCalls.every((call) => call.model === "gpt-5.6-terra" && call.max_output_tokens === 4000 && call.reasoning.effort === "none"));
   assert.ok(auditCalls.every((call) => /Cite only the minimum facts necessary/.test(call.instructions) && /do not add redundant references/.test(call.instructions) && /same role/.test(call.instructions)));
   const resumeSource = fs.readFileSync(path.join(root, "netlify/functions/resume.js"), "utf8");
+  const navigatorSource = fs.readFileSync(path.join(root, "netlify/functions/navigator.js"), "utf8");
   const regressionSource = fs.readFileSync(__filename, "utf8");
   const clientSource = fs.readFileSync(path.join(root, "netlify/functions/openai-client.js"), "utf8");
+  const budgetPath = path.join(root, "netlify/functions/openai-budget.js");
+  const budgetSource = fs.readFileSync(budgetPath, "utf8");
+  const budgetContract = require(budgetPath).__testing;
   const uiSource = fs.readFileSync(path.join(root, "index.html"), "utf8");
   const packageData = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   assert.equal(packageData.dependencies.openai, "7.8.0");
+  assert.equal(packageData.dependencies["@netlify/blobs"], "10.7.13");
   assert.doesNotMatch(resumeSource, /battalion -> "600-person organization"|Every bullet names scale/);
   assert.doesNotMatch(resumeSource, /1,200\+? employees across 18 states|7,000\+? Soldiers|110 people and a \$9M budget/);
   const civilianPrompt = resumeSource.match(/const system = `([\s\S]*?)`;/)[1];
@@ -1896,9 +1920,28 @@ async function run() {
   assert.match(civilianPrompt, /Each experience bullet may use only facts owned by that exact role/);
   const quantityPlacementRule = civilianPrompt.match(/^2A\..*$/m)[0];
   assert.doesNotMatch(quantityPlacementRule, /\b(?:use|include|preserve)\s+every\b/i);
-  assert.match(resumeSource, /AUDIT_INCREMENTAL_CEILING_USD = 0\.08/);
-  assert.match(resumeSource, /BROWSER_DAILY_AUDIT_CEILING_USD = 0\.24/);
-  assert.match(resumeSource, /EXTERNAL_MONTHLY_HARD_CAP_STATUS = "UNVERIFIED"/);
+  assert.doesNotMatch(resumeSource, /AUDIT_INCREMENTAL_CEILING_USD|BROWSER_DAILY_AUDIT_CEILING_USD|EXTERNAL_MONTHLY_HARD_CAP_STATUS|PROVIDER_PROJECT_CONTROL_STATUS/);
+  assert.match(resumeSource, /Dated provider-account evidence and the repository spend guard are distinct controls/);
+  assert.match(clientSource, /function createOpenAIClient\(stage\)/);
+  assert.match(clientSource, /createSpendGuard\(\{/);
+  assert.match(clientSource, /return guard\.create\(stage, request\)/);
+  assert.match(clientSource, /maxRetries: 0/);
+  assert.doesNotMatch(clientSource, /module\.exports\s*=\s*\{[^}]*\b(?:OpenAI|provider)\b/);
+  assert.equal(budgetContract.CUTOFF_MICRO_USD, 4000000);
+  assert.deepEqual(budgetContract.PRICE_TABLE, {
+    "gpt-5.6-luna": { input: 20, cached_input: 2, cache_write: 25, output: 120 },
+    "gpt-5.6-terra": { input: 200, cached_input: 20, cache_write: 250, output: 1200 }
+  });
+  assert.deepEqual(budgetContract.STAGE_TABLE, {
+    navigator: { model: "gpt-5.6-luna", max_output_tokens: 800 },
+    resume_facts: { model: "gpt-5.6-luna", max_output_tokens: 3500 },
+    resume_fact_repair: { model: "gpt-5.6-terra", max_output_tokens: 3500 },
+    resume_civilian: { model: "gpt-5.6-terra", max_output_tokens: 2200 },
+    resume_federal: { model: "gpt-5.6-terra", max_output_tokens: 1900 },
+    resume_audit: { model: "gpt-5.6-terra", max_output_tokens: 4000 }
+  });
+  assert.match(budgetSource, /getStore\(\{ name: STORE_NAME, consistency: "strong" \}\)/);
+  assert.match(budgetSource, /result\.modified !== true/);
   const failureMessagesBlock = resumeSource.match(/const FAILURE_MESSAGES = \{([\s\S]*?)\n  \};/)[1];
   const publicCategories = Array.from(failureMessagesBlock.matchAll(/^    ([a-z_]+):/gm), (match) => match[1]);
   assert.deepEqual(publicCategories, ["output_limit", "timeout", "rate_limit", "budget_limit", "upstream_unavailable", "quality_gate", "incomplete_unknown", "civilian_format", "filler_language", "unsupported_number", "role_structure", "unlinked_global_number"]);
@@ -1940,6 +1983,7 @@ async function run() {
   for (const forbiddenSourceMarker of ["/" + "Users/", ".codex/" + "attachments", "pasted " + "member source"]) assert.doesNotMatch(regressionSource, new RegExp(forbiddenSourceMarker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"));
   assert.doesNotMatch(resumeSource, /\.message/);
   assert.match(clientSource, /maxRetries: 0/);
+  assert.match(resumeSource, /const primaryStage = action === "facts" \? "resume_facts" : \(mode === "federal" \? "resume_federal" : "resume_civilian"\)/);
   assert.match(resumeSource, /action === "facts" \? 3500 : \(mode === "federal" \? 1900 : 2200\)/);
   assert.equal((resumeSource.match(/max_output_tokens: 3500/g) || []).length, 1);
   assert.match(resumeSource, /AUDIT_MAX_OUTPUT_TOKENS = 4000/);
@@ -1957,8 +2001,20 @@ async function run() {
   assert.equal((3500 * 12 / 1000000).toFixed(5), "0.04200");
   assert.equal(((3500 * 1.2 + 3500 * 12) / 1000000).toFixed(5), "0.04620");
   assert.equal((((3500 - 1300) * (1.2 + 12)) / 1000000).toFixed(5), "0.02904");
+  const expectedStages = calls.map(function (call) {
+    if (call.text && call.text.format && call.text.format.name === "resume_quality_audit") return "resume_audit";
+    if (call.model === "gpt-5.6-luna" && call.max_output_tokens === 800) return "navigator";
+    if (call.model === "gpt-5.6-luna" && call.max_output_tokens === 3500) return "resume_facts";
+    if (call.model === "gpt-5.6-terra" && call.max_output_tokens === 3500) return "resume_fact_repair";
+    if (call.model === "gpt-5.6-terra" && call.max_output_tokens === 2200) return "resume_civilian";
+    if (call.model === "gpt-5.6-terra" && call.max_output_tokens === 1900) return "resume_federal";
+    assert.fail("Every mocked provider call must match one closed v0.19 stage.");
+  });
+  assert.equal(clientStages.length, calls.length, "Every mocked provider call must have exactly one guarded stage.");
+  assert.deepEqual(clientStages, expectedStages, "Guard stages must preserve provider-call order across all fixtures.");
   assert.doesNotMatch(resumeSource + uiSource, /(?:three|3)\s+(?:fact|fact-sheet)\s+(?:requests|reviews).*day|daily\s+fact/i);
-  assert.match(fs.readFileSync(path.join(root, "netlify/functions/navigator.js"), "utf8"), /max_output_tokens: 800/);
+  assert.match(navigatorSource, /max_output_tokens: 800/);
+  assert.match(navigatorSource, /createOpenAIClient\("navigator"\)/);
   assert.match(uiSource, /QUALITY SCORECARD/);
   assert.match(uiSource, /DRAFT WITHHELD/);
   assert.match(uiSource, /SHOW CLAIM TRACE/);
@@ -2027,14 +2083,17 @@ async function run() {
   assert.doesNotMatch(uiSource, /Federal_Resume_Draft\.docx/);
   assert.match(uiSource, /details go only to the Transition OPS resume function, are excluded from AI-provider calls, are not stored by the app/);
 
-  // RDM-178, RDM-186, RDM-194, and RDM-198: calls, models, ceilings, retries, privacy, storage, analytics, federal behavior, and cost controls stay fixed.
-  assert.equal((resumeSource.match(/client\.responses\.create\(/g) || []).length, 3);
+  // RDM-199 through RDM-206: v0.19 preserves the call graph while routing every closed stage through the shared guard.
+  assert.equal((resumeSource.match(/createOpenAIClient\(/g) || []).length, 3);
+  assert.equal((resumeSource.match(/\.responses\.create\(/g) || []).length, 3);
+  assert.equal((resumeSource.match(/createOpenAIClient\("resume_fact_repair"\)/g) || []).length, 1);
+  assert.equal((resumeSource.match(/createOpenAIClient\("resume_audit"\)/g) || []).length, 1);
   assert.equal((resumeSource.match(/store: false/g) || []).length, 3);
   assert.equal((uiSource.match(/__trackEvent\("ai_resume_doc_downloaded", \{\}\)/g) || []).length, 1);
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)|localStorage|sessionStorage/);
 
   await runRenderRegression();
-  console.log("PASS: synthetic RDM-1..RDM-198 control paths; adaptive civilian length, fixed senior readability, semantic role-boundary balance, honest one-page evidence exceptions, canonical sections, true DOCX exactness, browser preflight, actual LibreOffice rendering, federal isolation, and unchanged caps/calls/privacy controls verified locally");
+  console.log("PASS: synthetic RDM-1..RDM-206 integration paths; all prior grounding, DOCX, federal, and adaptive-length fixtures plus v0.19 guarded stage/call order verified locally");
 }
 
 run().catch((error) => {

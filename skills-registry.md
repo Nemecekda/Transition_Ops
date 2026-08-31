@@ -9,12 +9,12 @@ written) · DEPRECATED (superseded — note by what)
 
 | # | Skill | Owner | Status | Version | Validated | Location |
 |---|-------|-------|--------|---------|-----------|----------|
-| 1 | validation-gate | s3-devops | CODIFIED | 1.4 | 2026-08-05 | .claude/skills/validation-gate/ |
-| 2 | deploy-discipline | s3-devops | CODIFIED | 1.4 | 2026-08-03 | .claude/skills/deploy-discipline/ (1.3 BURNED - see change log) |
+| 1 | validation-gate | s3-devops | CODIFIED | 1.6 | 2026-08-31 | .claude/skills/validation-gate/ (canonical); .agents/skills/validation-gate/ (Codex project mirror) |
+| 2 | deploy-discipline | s3-devops | CODIFIED | 1.6 | 2026-08-31 | .claude/skills/deploy-discipline/ (Claude copy); .agents/skills/deploy-discipline/ (Codex copy; environment wording intentionally differs); 1.3 BURNED - see change log |
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.18 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.19 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -22,6 +22,10 @@ written) · DEPRECATED (superseded — note by what)
 | 11 | push-worthy | pao-content | PENDING | — | — | **CRITERIA** for recommending a user push: gates G1–G5, criteria P1–P4, disqualifiers X1–X5, governors U1–U5. Doctrine drafted at `intel/scheduled-ops-design.md` §F, awaiting Commander ruling. PENDING until regression set PW-1…PW-9 + PW-X1…PW-X4 executes |
 | 12 | member-impact | s2-intel | PENDING | — | 2026-08-06 (MI-1…MI-9 executed 9/9) | .claude/skills/member-impact/ |
 | 13 | member-return-benchmarking | force-mod | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/member-return-benchmarking/ (canonical); .agents/skills/member-return-benchmarking/ (Codex project mirror) |
+| 14 | erg-client-plugin-governance | force-mod | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/erg-client-plugin-governance/ (canonical); .agents/skills/erg-client-plugin-governance/ (Codex project mirror) |
+| 15 | privacy-truth-to-implementation | force-mod | CODIFIED | 0.2 | 2026-08-31 | .claude/skills/privacy-truth-to-implementation/ (canonical); .agents/skills/privacy-truth-to-implementation/ (Codex project mirror) |
+| 16 | runtime-ai-spend-governance | force-mod | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/runtime-ai-spend-governance/ (canonical); .agents/skills/runtime-ai-spend-governance/ (Codex project mirror) |
+| 17 | accessibility-release-validation | s3-devops | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/accessibility-release-validation/ (canonical); .agents/skills/accessibility-release-validation/ (Codex project mirror) |
 
 **Scope fence between #3 and #12 — read before extending either.**
 `policy-verification` (#3) owns whether a claim is **TRUE**. Its OUTPUT field
@@ -53,7 +57,141 @@ agent. **The decision about what interrupts every user's phone must not end up
 owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
+**Fourth fence - #6 and #16.** `resume-drafter-maintenance` owns the Resume
+call graph, grounding, stage meaning, exact caps, partial-artifact withholding,
+and output quality. `runtime-ai-spend-governance` owns shared site-wide admission,
+aggregate accounting, pricing, and request-option enforcement. **Neither skill's
+PASS clears the other**, and Navigator remains independently tested even though
+it shares the aggregate ledger.
+
+**Fifth fence - #1, #17, and #2.** `validation-gate` owns repository commands
+and local evidence. `accessibility-release-validation` owns the WCAG 2.2 AA
+project verdict and required manual assistive-technology matrix.
+`deploy-discipline` owns artifact identity, preview, rollback, handoff, and
+production. **Local automation is not manual AT or hosted release acceptance.**
+
 ## CHANGE LOG
+- 2026-08-31 - **PRE-MAIN REMEDIATION PHASE 2 clone implementation completed
+  with LOCAL AUTOMATION PASS; manual AT and hosted acceptance remain
+  PENDING.** Under the Commander's exact clone-only approval, the manifest
+  portrait lock and two stale `Nothing you type is stored.` clauses in
+  `WHATS_NEW` v77/v78 were removed without changing `APP_VERSION`, the
+  `WHATS_NEW` version sequence, or the PWA build comment. Reduced-motion and
+  focus-visible behavior, one content-scoped main landmark and level-one
+  heading, persistent input labels, keyboard-operable cards, 44-pixel targets,
+  corrected contrast, a content-free live status region, zoom/reflow-safe
+  navigation, and modal naming/focus entry/trap/Escape/restoration were added.
+  `test:openai-migration`, `test:sw-privacy`, `test:privacy-network`,
+  `test:runtime-ai-spend`, and `test:accessibility-release` all passed locally;
+  the accessibility command covered twelve portrait/landscape scenarios at
+  default, 200%, and 400% zoom, keyboard traversal, dialog behavior, the browser
+  accessibility tree, and zero attempted external provider requests. The same
+  uncommitted Phase 1 packet retains active cache v144; no second cache number
+  was consumed. Changes remain staged only. No provider setting, live model
+  call, commit, push, merge, deployment, hosted preview, manual assistive-
+  technology acceptance, or production change occurred. Registry versions are
+  unchanged. Lane: COMMANDER.
+- 2026-08-31 - **PRE-MAIN REMEDIATION PHASE 1 clone implementation staged for
+  review; release gate remains BLOCKED.** Under the Commander's isolated-clone
+  approval, browser GA and Kit collection paths and client-side Kit material
+  were removed; production push is one literal OFF state with clone origin,
+  App ID, SDK activation, permission, subscription, and tag paths absent;
+  member-derived Navigator Blob logging was removed; and the legacy worker
+  exception was preserved unchanged. Navigator and Resume now enter the shared
+  USD 4.00 UTC-month aggregate-only guard with closed model/price tables,
+  request and stage-output caps, zero provider calls on denied or failed
+  accounting, conservative reservation/settlement, and a content-free ledger.
+  The active PWA cache moved from v143 to v144. OpenAI migration, worker
+  privacy, privacy/network, and runtime-spend commands passed locally; npm
+  audit reported zero vulnerabilities. The accessibility command correctly
+  blocks on the existing forced-portrait manifest before it can issue local
+  automation acceptance, so there is no `GATE PASS`, manual assistive-
+  technology acceptance, hosted acceptance, or release clearance. Changes are
+  staged only. No provider setting, live model call, commit, push, merge,
+  deployment, or production change occurred. Lane: COMMANDER.
+- 2026-08-31 - **PRE-MAIN REMEDIATION GOVERNANCE PACKET v1.0: #16
+  `runtime-ai-spend-governance` 1.0 and #17
+  `accessibility-release-validation` 1.0 added CODIFIED; #1
+  `validation-gate` 1.5 -> 1.6 and #2 `deploy-discipline` 1.5 -> 1.6; #6
+  `resume-drafter-maintenance` 0.18 -> 0.19 and remains PENDING.** The Commander
+  approved the governance slice for a site-wide aggregate USD 4.00 UTC-month
+  internal OpenAI guard, closed Luna/Terra price/model/stage controls, atomic
+  reservation and conservative settlement, content-free denial, production
+  push OFF with clone configuration prohibited, and a WCAG 2.2 AA release gate.
+  RDM retains the Resume call graph and exact 3500/3500/2200/1900/4000 caps;
+  #16 owns shared admission/accounting; #15 retains privacy/account truth; #1,
+  #17, and #2 retain repository, accessibility, and deployment authority.
+  Dated account evidence keeps the configured USD 5 provider project limit and
+  alert `ACCOUNT-VERIFIED` for its 2026-08-31 scope and overage warning; it is
+  distinct from the repository guard and is not full-account hard-cap proof.
+  Synthetic governance calibration executed RSG 14/14, ARV 12/12, RDM 9/9,
+  VG-16 6/6, and DD-16 6/6 PASS; fixed-point spend state transitions executed
+  10/10 PASS. System skill-creator `quick_validate` passed all nine changed
+  skill folders. Runtime, accessibility, and validation mirrors are
+  byte-identical; deploy copies retain only their documented
+  environment-specific wording. Required application privacy/network, budget,
+  Resume, worker, and accessibility commands are prescribed but were not run:
+  app, runtime, test, and package files were explicitly outside this slice.
+  Manual AT and hosted acceptance remain PENDING. No application code, provider
+  state, live model call, hosted preview, staging, commit, push, merge, or
+  deployment was used or authorized. Lane: COMMANDER.
+- 2026-08-31 - **SW-PRIVACY-01 governance package: #15
+  `privacy-truth-to-implementation` 0.1 -> 0.2, #2 `deploy-discipline`
+  1.4 -> 1.5, and #1 `validation-gate` 1.4 -> 1.5.** The Commander approved
+  prospective zero-OneSignal-request behavior for new and migrated browsers,
+  an OneSignal-free active PWA worker, post-consent dedicated push scope under
+  `/push/onesignal/`, and a bounded legacy root-worker exception through a
+  sunset no earlier than one year after production cutover. Privacy governance
+  now separates NEW, MIGRATED, LEGACY, and RETIRED states and withholds
+  universal claims until retirement and validation. Deploy governance owns the
+  worker-role record, cache ownership, migration, cohort validation, rollback,
+  and sunset execution. Validation-gate generalizes only its hardcoded worker
+  anchor and standalone-JavaScript inventory; it gains no privacy or deployment
+  authority. PTI-SW1...PTI-SW4 and the complete privacy suite executed 4/4 and
+  24/24 PASS. Two independent forward tests passed, all six skill packages
+  passed skill-creator validation, privacy and validation mirrors remain
+  byte-identical, and deploy copies preserve their environment-specific wording.
+  No app code, provider setting, account, staging, commit, push, merge,
+  deployment, or production authority was granted. Lane: COMMANDER.
+- 2026-08-31 - **#15 `privacy-truth-to-implementation` 0.1 added as
+  CODIFIED.** Commander explicitly approved codification after force-mod found
+  no existing owner for outward claims about Transition OPS or VBS privacy,
+  data handling, retention, logging, deletion, and member controls. The skill
+  requires distinct code, runtime, provider-documentation, and account evidence;
+  universal language fails on any unknown path; provider/account settings,
+  user controls, clear/delete boundaries, drift triggers, and claim-release
+  rows remain explicit. PTI-1...PTI-16, PTI-X1, PTI-X2, and two cross-skill
+  seam cases executed 20/20 PASS on synthetic inputs; skill-creator
+  `quick_validate` passed both copies, and canonical/Codex skill and calibration
+  mirrors are byte-identical. An independent fresh-context forward test also
+  passed: it withheld all universal claims, distinguished missing
+  owner/scope/artifact/drift evidence, and preserved every external authority
+  seam. `policy-verification`, `member-impact`,
+  `brand-voice`, `erg-client-plugin-governance`, `member-return-benchmarking`,
+  `resume-drafter-maintenance`, `resource-vetting`, qualified privacy/legal
+  review, `validation-gate`, and `deploy-discipline` retain independent blocking
+  authority. No app, provider account, client, contract, external action,
+  product change, staging, commit, push, merge, deployment, or production
+  authority was used or granted. Lane: COMMANDER. Owner: force-mod.
+- 2026-08-31 — **#14 `erg-client-plugin-governance` 1.0 added as CODIFIED.**
+  Commander explicitly approved the capability after force-mod found NONE
+  coverage for employer-sponsored ERG product governance. The skill requires a
+  closed delivery-model classification, field-level data/access matrix, content
+  authority separation, tenant isolation, review question log, evidence-based
+  business model, synthetic pilot measures, sponsor-report limits, RACI, risk
+  register, and explicit offboarding. Hard red lines bar employer access to
+  individual plans, resumes, prompts, benefits activity, or inferred readiness;
+  data sale, ads, and leads; loss of free public access; unsupported ROI or
+  retention claims; and unapproved accounts, SSO, HRIS, analytics, storage,
+  integrations, spend, deployment, outreach, contracts, or code. Client copy
+  cannot override verified federal policy. `member-return-benchmarking`,
+  `policy-verification`, `member-impact`, `resource-vetting`, `brand-voice`,
+  `resume-drafter-maintenance`, `validation-gate`, and `deploy-discipline`
+  retain independent blocking authority. Canonical and Codex mirror files are
+  byte-identical. EPG-1…EPG-11 and EPG-X1 executed 12/12 PASS on synthetic
+  inputs; skill-creator `quick_validate` passed both copies. No client,
+  platform, product code, member data, external action, or deployment was used
+  or authorized. Lane: COMMANDER. Owner: force-mod.
 - 2026-08-31 — **#13 `member-return-benchmarking` 1.0 added as CODIFIED.**
   Commander approved the capability after force-mod found NONE coverage for
   evidence-governed product benchmarking and privacy-compatible member-return
