@@ -21,6 +21,7 @@ written) · DEPRECATED (superseded — note by what)
 | 10 | brand-assets | pao-content | PENDING | — | — | Pillow pipeline, Poppins fonts, draw_letterspaced helper |
 | 11 | push-worthy | pao-content | PENDING | — | — | **CRITERIA** for recommending a user push: gates G1–G5, criteria P1–P4, disqualifiers X1–X5, governors U1–U5. Doctrine drafted at `intel/scheduled-ops-design.md` §F, awaiting Commander ruling. PENDING until regression set PW-1…PW-9 + PW-X1…PW-X4 executes |
 | 12 | member-impact | s2-intel | PENDING | — | 2026-08-06 (MI-1…MI-9 executed 9/9) | .claude/skills/member-impact/ |
+| 13 | member-return-benchmarking | force-mod | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/member-return-benchmarking/ (canonical); .agents/skills/member-return-benchmarking/ (Codex project mirror) |
 
 **Scope fence between #3 and #12 — read before extending either.**
 `policy-verification` (#3) owns whether a claim is **TRUE**. Its OUTPUT field
@@ -53,6 +54,18 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-31 — **#13 `member-return-benchmarking` 1.0 added as CODIFIED.**
+  Commander approved the capability after force-mod found NONE coverage for
+  evidence-governed product benchmarking and privacy-compatible member-return
+  recommendations. The skill preserves `OBSERVED`, `REPORTED`, `CORROBORATED`,
+  and `NONCOMPARABLE`; blocks unsupported retention rankings and no-data
+  regressions; and returns only ADOPT / LOCAL SYNTHETIC TEST / WATCH / REJECT.
+  Scope fences leave resource legitimacy, policy truth, member impact, outward
+  voice, push-worthiness, Resume Drafter controls, general privacy self-claims,
+  validation, and deployment with their existing owners. Canonical and Codex
+  mirror files are byte-identical. MRB-1…MRB-12 and MRB-X1 executed 13/13 PASS,
+  including realistic resume, policy/member-impact, push, and deploy seam cases.
+  Lane: COMMANDER. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.17 -> 0.18, remains
   PENDING.** Dean approved v0.18 after the live-clone `Resume_Draft3.docx`
   exposed PARTIAL v0.17 coverage: a senior, broad candidate with six roles,
