@@ -217,6 +217,12 @@ check(
   "denial and withdrawal cleanup uses the approved provider order"
 );
 check(
+  /const TOPS_ONESIGNAL_WITHDRAWAL_SYNC_MS = 2500;/.test(index) &&
+    stopBlock.indexOf("TOPS_ONESIGNAL_WITHDRAWAL_SYNC_MS") > stopBlock.indexOf("PushSubscription.optOut()") &&
+    stopBlock.indexOf("TOPS_ONESIGNAL_WITHDRAWAL_SYNC_MS") < stopBlock.indexOf("setConsentGiven(false)"),
+  "withdrawal leaves a bounded provider-sync window before consent teardown"
+);
+check(
   declineBlock.indexOf("topsUnregisterDedicatedPushWorker()") !== -1 &&
     declineBlock.indexOf("topsLoadOneSignalSdk") === -1 &&
     declineBlock.indexOf("topsInitializeOneSignal") === -1,
