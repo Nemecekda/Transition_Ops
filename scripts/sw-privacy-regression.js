@@ -245,7 +245,12 @@ check(
 );
 check(
   index.indexOf("Push setup is being updated on this test site.") !== -1,
-  "disabled clone state is truthful"
+  "disabled-gate fallback state is truthful"
+);
+check(
+  index.indexOf("This isolated clone enables consent-gated push validation; the production app is unchanged.") !== -1 &&
+    index.indexOf("This isolated clone enables consent-gated push testing; the production app is unchanged.") !== -1,
+  "enabled clone status is bounded and distinguishes production"
 );
 check(
   pwaWorker.indexOf('const CACHE_NAME = "transition-ops-v141";') !== -1,

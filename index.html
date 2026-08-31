@@ -4314,7 +4314,7 @@ function AboutModal(props) {
     style: {
       color: C.goldBright
     }
-  }, "Privacy."), " Push alerts are optional and currently disabled on this test site. The push boundary and legacy-browser exception are described below.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", {
+  }, "Privacy."), TOPS_PUSH_ENABLED ? " Push alerts are optional. This isolated clone enables consent-gated push testing; the production app is unchanged. The push boundary and legacy-browser exception are described below." : " Push alerts are optional and currently disabled on this test site. The push boundary and legacy-browser exception are described below.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", {
     style: {
       color: C.goldBright
     }
@@ -4326,7 +4326,7 @@ function AboutModal(props) {
     style: sectionLabel
   }, "PUSH ALERTS - CLONE STATUS"), /*#__PURE__*/React.createElement("p", {
     style: bodyText
-  }, "Push alerts are disabled on this test site. This build moves new and migrated browsers to a OneSignal-free app worker. Earlier browsers may still use an older push setup that could have contacted OneSignal before the current choice was available. If push is enabled after separate clone validation and you agree, OneSignal will receive browser, device, network, session, notification-permission, and push-subscription data, plus your exact separation date for alert timing. Declining keeps the rest of Transition Ops available. Turning alerts off later stops future Transition Ops push processing on this browser but does not confirm deletion of records OneSignal may already hold. Privacy and deletion questions: ", /*#__PURE__*/React.createElement("strong", {
+  }, TOPS_PUSH_ENABLED ? "This isolated clone enables consent-gated push validation; the production app is unchanged. This clone moves new and migrated browsers to a OneSignal-free app worker. Earlier browsers may still use an older push setup that could have contacted OneSignal before the current choice was available. If you agree, OneSignal will receive browser, device, network, session, notification-permission, and push-subscription data, plus your exact separation date for alert timing. Declining keeps the rest of Transition Ops available. Turning alerts off later stops future Transition Ops push processing on this browser but does not confirm deletion of records OneSignal may already hold. Privacy and deletion questions: " : "Push alerts are disabled on this test site. This build moves new and migrated browsers to a OneSignal-free app worker. Earlier browsers may still use an older push setup that could have contacted OneSignal before the current choice was available. If push is enabled after separate clone validation and you agree, OneSignal will receive browser, device, network, session, notification-permission, and push-subscription data, plus your exact separation date for alert timing. Declining keeps the rest of Transition Ops available. Turning alerts off later stops future Transition Ops push processing on this browser but does not confirm deletion of records OneSignal may already hold. Privacy and deletion questions: ", /*#__PURE__*/React.createElement("strong", {
     style: { color: C.goldBright }
   }, TOPS_PRIVACY_CONTACT)), /*#__PURE__*/React.createElement("div", {
     style: sectionLabel
