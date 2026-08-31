@@ -1210,6 +1210,7 @@ async function run() {
     assert.equal(calls.length - callsBefore, 2, config.label + " uses the existing generation and audit calls only");
     const generationCall = calls[callsBefore];
     const body = JSON.parse(adaptiveResult.body);
+    assert.equal(body.lengthPlan.version, "v0.18", config.label + " uses the approved v0.18 planner contract");
     assert.equal(body.lengthPlan.relevantYears, config.relevantYears === null || config.relevantYears === undefined ? null : config.relevantYears, config.label + " exposes explicit relevant years only");
     const expectedRelevantRoles = config.expectedRelevantRoles == null ? config.roles : config.expectedRelevantRoles;
     const expectedRelevantAtoms = config.expectedRelevantAtoms == null ? config.atoms : config.expectedRelevantAtoms;
@@ -1965,7 +1966,7 @@ async function run() {
   assert.match(uiSource, /HONEST GAPS/);
   assert.match(uiSource, /Civilian format omits optional details/);
   assert.match(uiSource, /aiR\.mode === "federal" \? "RESUME COPIED \\u2014 fill the \[brackets\]/);
-  assert.match(fs.readFileSync(path.join(root, "sw.js"), "utf8"), /transition-ops-v139/);
+  assert.match(fs.readFileSync(path.join(root, "sw.js"), "utf8"), /transition-ops-v140/);
   assert.ok(auditCalls.every((call) => call.max_output_tokens === 4000) && calls.every((call) => call.store === false), "v0.8 preserves call caps and store:false");
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
@@ -1981,7 +1982,19 @@ async function run() {
   assert.match(uiSource, /function prepareTransitionOpsResumeDocx/);
   assert.match(uiSource, /window\.__TOPS_RESUME_DOCX\.prepare\(aiR\.out, fileName, window\.__TOPS_RESUME_DOCX\.mime, aiR\.lengthPlan\)/);
   assert.match(uiSource, /presetName: "ats_resume_readable_two_page"/);
+  assert.match(uiSource, /marginTopDxa: 1080, marginRightDxa: 1080, marginBottomDxa: 1080, marginLeftDxa: 1080/);
+  assert.match(uiSource, /bodyHalfPoints: 21[\s\S]*?bulletHalfPoints: 21/);
   assert.match(uiSource, /function topsResumePreflightSelection/);
+  assert.match(uiSource, /function topsResumeSemanticRoleRebalance/);
+  assert.match(uiSource, /semantic_role_rebalance/);
+  assert.match(uiSource, /unbalanced_two_page_withheld/);
+  assert.match(uiSource, /candidateCheck\.sparseTrailingPage/);
+  assert.match(uiSource, /candidateCheck\.minimumPageUseRatio < 0\.25/);
+  assert.match(uiSource, /intentionalRoleBoundary/);
+  assert.match(uiSource, /one_page_evidence_exception/);
+  assert.match(uiSource, /function topsResumeScorecardWithLengthPlan/);
+  assert.match(uiSource, /scorecardWithLengthPlan: topsResumeScorecardWithLengthPlan/);
+  assert.match(uiSource, /status: "NEEDS MEMBER FACT", evidence: TOPS_RESUME_MORE_DETAIL_EVIDENCE/);
   assert.match(uiSource, /fallback_non_substantive_two_page/);
   assert.doesNotMatch(uiSource, /sparse_tail_not_proven_avoidable|balanceDisposition: "rebalanced"|topsResumeSafeBreakCandidates|balanceCandidates/);
   assert.match(uiSource, /pageBreakBeforeParagraph === paragraphIndex && \(styleId === "ResumeSection" \|\| styleId === "ResumeRole"\)/);
@@ -1994,7 +2007,7 @@ async function run() {
   assert.match(uiSource, /var roleIndex = \(i - 1\) \/ 2;/);
   assert.doesNotMatch(uiSource, /!employer \|\| \/\^MISSING\$\/i\.test\(employer\)/);
   assert.doesNotMatch(uiSource, /topsResumeConfirmedRoleChoices\(nextFactSheet\)\.map/);
-  assert.match(uiSource, /No roles selected\. Adaptive length will use the one-page plan\./);
+  assert.match(uiSource, /Adaptive cannot evaluate career breadth until you select the roles that support this target\. With no roles selected, it must use the one-page plan\./);
   assert.doesNotMatch(uiSource, /aiR\.lengthPlan\.rationale|Y = confirmed target-relevant years|APPLIED BROWSER PREFLIGHT/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:lengthPreference|relevantYears|relevantRoleIndexes|lengthPlan)/);
   assert.match(resumeSource, /function civilianPreGenerationLengthPlan/);
@@ -2015,14 +2028,14 @@ async function run() {
   assert.doesNotMatch(uiSource, /Federal_Resume_Draft\.docx/);
   assert.match(uiSource, /details go only to the Transition OPS resume function, are excluded from AI-provider calls, are not stored by the app/);
 
-  // RDM-178 and RDM-186: calls, models, ceilings, retries, privacy, storage, analytics, federal behavior, and cost controls stay fixed.
+  // RDM-178, RDM-186, RDM-194, and RDM-198: calls, models, ceilings, retries, privacy, storage, analytics, federal behavior, and cost controls stay fixed.
   assert.equal((resumeSource.match(/client\.responses\.create\(/g) || []).length, 3);
   assert.equal((resumeSource.match(/store: false/g) || []).length, 3);
   assert.equal((uiSource.match(/__trackEvent\("ai_resume_doc_downloaded", \{\}\)/g) || []).length, 1);
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)|localStorage|sessionStorage/);
 
   await runRenderRegression();
-  console.log("PASS: synthetic RDM-1..RDM-194 control paths; pre-generation adaptive civilian length, guarded request-local preferences, canonical sections, true DOCX exactness, browser preflight, actual LibreOffice rendering, federal isolation, and unchanged caps/calls/privacy controls verified locally");
+  console.log("PASS: synthetic RDM-1..RDM-198 control paths; adaptive civilian length, fixed senior readability, semantic role-boundary balance, honest one-page evidence exceptions, canonical sections, true DOCX exactness, browser preflight, actual LibreOffice rendering, federal isolation, and unchanged caps/calls/privacy controls verified locally");
 }
 
 run().catch((error) => {

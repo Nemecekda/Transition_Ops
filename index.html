@@ -4153,18 +4153,18 @@ var ATS_RESUME_READABLE_TWO_PAGE = Object.freeze({
   headerPattern: "ats_resume_identity",
   page: {
     widthDxa: 12240, heightDxa: 15840, orientation: "portrait",
-    marginTopDxa: 864, marginRightDxa: 864, marginBottomDxa: 864, marginLeftDxa: 864,
-    headerDistanceDxa: 432, footerDistanceDxa: 432, gutterDxa: 0, contentWidthDxa: 10512
+    marginTopDxa: 1080, marginRightDxa: 1080, marginBottomDxa: 1080, marginLeftDxa: 1080,
+    headerDistanceDxa: 540, footerDistanceDxa: 540, gutterDxa: 0, contentWidthDxa: 10080
   },
   typography: {
     font: "Calibri",
-    bodyHalfPoints: 20, bodyBeforeTwips: 0, bodyAfterTwips: 30, bodyLineTwips: 240,
-    nameHalfPoints: 34, nameBeforeTwips: 0, nameAfterTwips: 30, nameLineTwips: 260,
-    contactHalfPoints: 19, contactBeforeTwips: 0, contactAfterTwips: 20, contactLineTwips: 228,
-    sectionHalfPoints: 22, sectionBeforeTwips: 90, sectionAfterTwips: 30, sectionLineTwips: 252,
-    roleHalfPoints: 21, roleBeforeTwips: 30, roleAfterTwips: 10, roleLineTwips: 240,
-    metadataHalfPoints: 19, metadataBeforeTwips: 0, metadataAfterTwips: 20, metadataLineTwips: 228,
-    bulletHalfPoints: 20, bulletBeforeTwips: 0, bulletAfterTwips: 20, bulletLineTwips: 240,
+    bodyHalfPoints: 21, bodyBeforeTwips: 0, bodyAfterTwips: 40, bodyLineTwips: 252,
+    nameHalfPoints: 36, nameBeforeTwips: 0, nameAfterTwips: 40, nameLineTwips: 280,
+    contactHalfPoints: 20, contactBeforeTwips: 0, contactAfterTwips: 30, contactLineTwips: 240,
+    sectionHalfPoints: 23, sectionBeforeTwips: 120, sectionAfterTwips: 40, sectionLineTwips: 264,
+    roleHalfPoints: 22, roleBeforeTwips: 50, roleAfterTwips: 10, roleLineTwips: 252,
+    metadataHalfPoints: 20, metadataBeforeTwips: 0, metadataAfterTwips: 20, metadataLineTwips: 240,
+    bulletHalfPoints: 21, bulletBeforeTwips: 0, bulletAfterTwips: 30, bulletLineTwips: 252,
     spacerHalfPoints: 2, spacerBeforeTwips: 0, spacerAfterTwips: 0, spacerLineTwips: 20
   },
   bullets: {
@@ -4172,7 +4172,7 @@ var ATS_RESUME_READABLE_TWO_PAGE = Object.freeze({
     hyphenAbstractNumId: 42, hyphenNumId: 42,
     asteriskAbstractNumId: 43, asteriskNumId: 43,
     markerAlignedAtDxa: 180, textIndentAtDxa: 360, hangingDxa: 180, tabStopDxa: 360,
-    afterTwips: 20, lineTwips: 240
+    afterTwips: 30, lineTwips: 252
   }
 });
 
@@ -4516,7 +4516,10 @@ function renderTransitionOpsResumeDocxCheck(bytes) {
     pageAssignments[index] = pageIndex;
   });
   root.remove();
-  var orphan = keepNext.some(function(kept, index) { return kept && index + 1 < pageAssignments.length && pageAssignments[index] !== pageAssignments[index + 1]; });
+  var orphan = keepNext.some(function(kept, index) {
+    var intentionalRoleBoundary = breakBefore[index + 1] && paragraphs[index].styleId === "ResumeSpacer" && paragraphs[index + 1] && paragraphs[index + 1].styleId === "ResumeRole";
+    return kept && index + 1 < pageAssignments.length && !intentionalRoleBoundary && pageAssignments[index] !== pageAssignments[index + 1];
+  });
   var sparseTrailingPage = pageUsed.length > 1 && pageUsed[pageUsed.length - 1] < pageHeight * 0.25;
   var tooManyPages = pageUsed.length > 2;
   var minimumPageUseRatio = pageUsed.length ? Math.min.apply(Math, pageUsed) / pageHeight : 0;
@@ -4553,22 +4556,28 @@ function validateTransitionOpsResumeDocx(bytes, resumeText, fileName, mime, opti
   return { ok: ok, contentEquivalence: exactBytes, formatIntegrity: structural && truthful };
 }
 
-function topsResumeLengthPlanWithPreflight(lengthPlan, renderCheck, requestedProfile, appliedProfile, fallbackUsed, fallbackRequired, fallbackCouldNotFit) {
+function topsResumeLengthPlanWithPreflight(lengthPlan, renderCheck, requestedProfile, appliedProfile, fallbackUsed, fallbackRequired, fallbackCouldNotFit, onePageEvidenceException, semanticRebalanced, unbalancedTwoPage) {
   if (!lengthPlan || typeof lengthPlan !== "object" || Array.isArray(lengthPlan)) return null;
   var plan = Object.assign({}, lengthPlan);
   var browserPages = renderCheck && typeof renderCheck.pageCount === "number" ? renderCheck.pageCount : null;
   var disposition = "natural_match";
   if (fallbackCouldNotFit) disposition = "fallback_withheld";
+  else if (unbalancedTwoPage) disposition = "unbalanced_two_page_withheld";
   else if (renderCheck && !renderCheck.ok) disposition = "preflight_held";
   else if (fallbackRequired) disposition = "fallback_non_substantive_two_page";
+  else if (semanticRebalanced) disposition = "semantic_role_rebalance";
+  else if (onePageEvidenceException) disposition = "one_page_evidence_exception";
   else if (appliedProfile === "compact_one_page" && browserPages > 1) disposition = "content_preserved_two_pages";
   else if (appliedProfile === "compact_one_page" && plan.preference === "two_pages" && browserPages === 1) disposition = "no_padding_one_page";
   plan.browserPreflightPages = browserPages;
-  plan.appliedPages = renderCheck && renderCheck.ok && !fallbackCouldNotFit ? browserPages : null;
+  plan.appliedPages = renderCheck && renderCheck.ok && !fallbackCouldNotFit && !unbalancedTwoPage ? browserPages : null;
   plan.requestedPresentationProfile = requestedProfile;
   plan.appliedPresentationProfile = appliedProfile;
   plan.pagination = "natural_word";
   plan.preflightDisposition = disposition;
+  plan.needsMoreConfirmedDetail = !!onePageEvidenceException;
+  plan.semanticPageBreakApplied = !!semanticRebalanced;
+  plan.unbalancedTwoPageWithheld = !!unbalancedTwoPage;
   return plan;
 }
 
@@ -4576,20 +4585,39 @@ function topsResumeDesiredPresentationProfile(lengthPlan) {
   return lengthPlan && lengthPlan.presentationProfile === "readable_two_page" && lengthPlan.postAuditEvidenceFit === "PASS" ? "readable_two_page" : "compact_one_page";
 }
 
+function topsResumeSemanticRoleRebalance(resumeText, requestedProfile, requestedBytes, requestedCheck) {
+  if (requestedProfile !== "readable_two_page" || !requestedCheck || !requestedCheck.ok || requestedCheck.pageCount !== 2 || !requestedCheck.sparseTrailingPage) return null;
+  var paragraphs = topsResumeDocxParagraphs(requestedBytes);
+  var best = null;
+  paragraphs.forEach(function(paragraph, paragraphIndex) {
+    if (!paragraph || paragraph.styleId !== "ResumeRole" || paragraphIndex < 1 || paragraphs[paragraphIndex - 1].styleId !== "ResumeSpacer") return;
+    var candidateOptions = { presentationProfile: requestedProfile, pageBreakBeforeParagraph: paragraphIndex };
+    var candidateBytes = buildTransitionOpsResumeDocx(resumeText, candidateOptions);
+    var candidateCheck = renderTransitionOpsResumeDocxCheck(candidateBytes);
+    if (!candidateCheck.ok || candidateCheck.pageCount !== 2 || candidateCheck.sparseTrailingPage || candidateCheck.minimumPageUseRatio < 0.25 || candidateCheck.minimumPageUseRatio <= requestedCheck.minimumPageUseRatio || candidateCheck.pageBalanceSpread >= requestedCheck.pageBalanceSpread) return;
+    if (!best || candidateCheck.minimumPageUseRatio > best.renderCheck.minimumPageUseRatio || (candidateCheck.minimumPageUseRatio === best.renderCheck.minimumPageUseRatio && candidateCheck.pageBalanceSpread < best.renderCheck.pageBalanceSpread)) {
+      best = { options: candidateOptions, bytes: candidateBytes, renderCheck: candidateCheck };
+    }
+  });
+  return best;
+}
+
 function topsResumePreflightSelection(resumeText, lengthPlan) {
   var requestedProfile = topsResumeDesiredPresentationProfile(lengthPlan);
   var requestedOptions = { presentationProfile: requestedProfile };
   var requestedBytes = buildTransitionOpsResumeDocx(resumeText, requestedOptions);
   var requestedCheck = renderTransitionOpsResumeDocxCheck(requestedBytes);
-  var requestedTwoPageSubstantive = requestedCheck.ok && requestedCheck.pageCount === 2 && requestedCheck.minimumPageUseRatio >= 0.25;
-  var fallbackUsed = requestedProfile === "readable_two_page" && !requestedTwoPageSubstantive;
-  var appliedProfile = fallbackUsed ? "compact_one_page" : requestedProfile;
-  var options = fallbackUsed ? { presentationProfile: appliedProfile } : requestedOptions;
-  var bytes = fallbackUsed ? buildTransitionOpsResumeDocx(resumeText, options) : requestedBytes;
-  var renderCheck = fallbackUsed ? renderTransitionOpsResumeDocxCheck(bytes) : requestedCheck;
+  var semanticRebalance = topsResumeSemanticRoleRebalance(resumeText, requestedProfile, requestedBytes, requestedCheck);
   var postAuditFallback = !!(lengthPlan && lengthPlan.postAuditDisposition === "fallback_one_page_insufficient_supported_bullets");
-  var fallbackRequired = postAuditFallback || fallbackUsed;
+  var fallbackUsed = postAuditFallback;
+  var appliedProfile = fallbackUsed ? "compact_one_page" : requestedProfile;
+  var options = fallbackUsed ? { presentationProfile: appliedProfile } : semanticRebalance ? semanticRebalance.options : requestedOptions;
+  var bytes = fallbackUsed ? buildTransitionOpsResumeDocx(resumeText, options) : semanticRebalance ? semanticRebalance.bytes : requestedBytes;
+  var renderCheck = fallbackUsed ? renderTransitionOpsResumeDocxCheck(bytes) : semanticRebalance ? semanticRebalance.renderCheck : requestedCheck;
+  var fallbackRequired = postAuditFallback;
   var fallbackCouldNotFit = fallbackRequired && (!renderCheck.ok || renderCheck.pageCount !== 1);
+  var onePageEvidenceException = !fallbackRequired && requestedProfile === "readable_two_page" && requestedCheck.ok && requestedCheck.pageCount === 1;
+  var unbalancedTwoPage = !fallbackRequired && requestedProfile === "readable_two_page" && requestedCheck.ok && requestedCheck.pageCount === 2 && requestedCheck.sparseTrailingPage && !semanticRebalance;
   return {
     bytes: bytes,
     options: options,
@@ -4598,7 +4626,10 @@ function topsResumePreflightSelection(resumeText, lengthPlan) {
     fallbackUsed: fallbackUsed,
     fallbackRequired: fallbackRequired,
     fallbackCouldNotFit: fallbackCouldNotFit,
-    lengthPlan: topsResumeLengthPlanWithPreflight(lengthPlan, renderCheck, requestedProfile, appliedProfile, fallbackUsed, fallbackRequired, fallbackCouldNotFit)
+    onePageEvidenceException: onePageEvidenceException,
+    semanticRebalanced: !!semanticRebalance,
+    unbalancedTwoPage: unbalancedTwoPage,
+    lengthPlan: topsResumeLengthPlanWithPreflight(lengthPlan, renderCheck, requestedProfile, appliedProfile, fallbackUsed, fallbackRequired, fallbackCouldNotFit, onePageEvidenceException, !!semanticRebalance, unbalancedTwoPage)
   };
 }
 
@@ -4611,6 +4642,7 @@ function prepareTransitionOpsResumeDocx(resumeText, fileName, mime, lengthPlan) 
   var artifactCheck = validateTransitionOpsResumeDocx(selection.bytes, resumeText, fileName, mime, selection.options);
   if (!artifactCheck.ok) return { ok: false, reason: "The Word artifact failed its content and format check." };
   if (selection.fallbackCouldNotFit) return { ok: false, reason: "The audited content could not fit safely in the required one-page fallback profile.", artifactCheck: artifactCheck, renderCheck: selection.renderCheck, lengthPlan: selection.lengthPlan };
+  if (selection.unbalancedTwoPage) return { ok: false, reason: TOPS_RESUME_UNBALANCED_EVIDENCE, artifactCheck: artifactCheck, renderCheck: selection.renderCheck, lengthPlan: selection.lengthPlan };
   if (!selection.renderCheck.ok) return { ok: false, reason: selection.renderCheck.reason, artifactCheck: artifactCheck, renderCheck: selection.renderCheck, lengthPlan: selection.lengthPlan };
   return {
     ok: true,
@@ -4619,12 +4651,24 @@ function prepareTransitionOpsResumeDocx(resumeText, fileName, mime, lengthPlan) 
     artifactCheck: artifactCheck,
     renderCheck: selection.renderCheck,
     requestedRenderCheck: selection.requestedRenderCheck,
-    balanceDisposition: selection.fallbackUsed ? "natural_profile_fallback" : "natural_pagination",
+    balanceDisposition: selection.fallbackUsed ? "post_audit_evidence_fallback" : selection.semanticRebalanced ? "semantic_role_rebalance" : selection.onePageEvidenceException ? "one_page_evidence_exception" : "natural_pagination",
     lengthPlan: selection.lengthPlan
   };
 }
 
-if (typeof window !== "undefined") window.__TOPS_RESUME_DOCX = { build: buildTransitionOpsResumeDocx, validate: validateTransitionOpsResumeDocx, renderCheck: renderTransitionOpsResumeDocxCheck, preflight: preflightTransitionOpsResumeLength, prepare: prepareTransitionOpsResumeDocx, mime: TOPS_DOCX_MIME, style: ATS_RESUME_COMPACT, profiles: { compactOnePage: ATS_RESUME_COMPACT, readableTwoPage: ATS_RESUME_READABLE_TWO_PAGE } };
+var TOPS_RESUME_MORE_DETAIL_EVIDENCE = "The senior-readable Word profile still fits on one page. Add more confirmed, role-specific accomplishments if you want a substantive two-page resume.";
+var TOPS_RESUME_UNBALANCED_EVIDENCE = "The senior-readable Word layout could not produce two substantive, balanced pages without changing supported content.";
+
+function topsResumeScorecardWithLengthPlan(scorecard, lengthPlan) {
+  var items = Array.isArray(scorecard) ? scorecard : [];
+  if (!lengthPlan || lengthPlan.preflightDisposition !== "one_page_evidence_exception") return items;
+  return items.map(function(item) {
+    if (!item || item.dimension !== "length_and_readability" || item.status === "FAIL") return item;
+    return Object.assign({}, item, { status: "NEEDS MEMBER FACT", evidence: TOPS_RESUME_MORE_DETAIL_EVIDENCE });
+  });
+}
+
+if (typeof window !== "undefined") window.__TOPS_RESUME_DOCX = { build: buildTransitionOpsResumeDocx, validate: validateTransitionOpsResumeDocx, renderCheck: renderTransitionOpsResumeDocxCheck, preflight: preflightTransitionOpsResumeLength, prepare: prepareTransitionOpsResumeDocx, scorecardWithLengthPlan: topsResumeScorecardWithLengthPlan, mime: TOPS_DOCX_MIME, style: ATS_RESUME_COMPACT, profiles: { compactOnePage: ATS_RESUME_COMPACT, readableTwoPage: ATS_RESUME_READABLE_TWO_PAGE } };
 // RESUME_DOCX_END
 
 function topsResumeConfirmedRoleChoices(facts) {
@@ -7844,7 +7888,7 @@ whatsNewUnseen && React.createElement("div", {
               }); } }),
               React.createElement("span", null, roleChoice.label));
           }),
-          aiR.relevantRoleIndexes.length === 0 && React.createElement("div", { style: { fontSize: 10.5, color: C.goldBright, lineHeight: 1.4, marginTop: 4 } }, "No roles selected. Adaptive length will use the one-page plan."))),
+          aiR.relevantRoleIndexes.length === 0 && React.createElement("div", { style: { fontSize: 10.5, color: C.goldBright, lineHeight: 1.4, marginTop: 4, fontWeight: 700 } }, "Adaptive cannot evaluate career breadth until you select the roles that support this target. With no roles selected, it must use the one-page plan."))),
       aiR.mode !== "federal" && React.createElement("div", { style: { marginBottom: 10, padding: "11px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.greenBright, fontWeight: 700, marginBottom: 4 } }, "RESUME HEADER (OPTIONAL FOR DRAFTING)"),
         React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.5, marginBottom: 7 } }, "Add what you have now. These details go only to the Transition OPS resume function, are excluded from AI-provider calls, are not stored by the app, and are added after the civilian draft passes review."),
@@ -7893,7 +7937,8 @@ whatsNewUnseen && React.createElement("div", {
             try { window.__safeSet("tops_air_uses", JSON.stringify({ d: new Date().toISOString().slice(0,10), n: used + 1 })); } catch(e) {}
             var nextLengthPlan = res.d.lengthPlan && typeof res.d.lengthPlan === "object" ? res.d.lengthPlan : null;
             if (nextLengthPlan && res.d.bullets && window.__TOPS_RESUME_DOCX) nextLengthPlan = window.__TOPS_RESUME_DOCX.preflight(res.d.bullets, nextLengthPlan);
-            setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets, lengthPlan: nextLengthPlan, auditScorecard: Array.isArray(res.d.scorecard) ? res.d.scorecard : [], auditTrace: Array.isArray(res.d.trace) ? res.d.trace : [], auditBlockers: [], supportedKeywords: Array.isArray(res.d.supportedKeywords) ? res.d.supportedKeywords : [], auditGaps: Array.isArray(res.d.gaps) ? res.d.gaps : [] }); });
+            var nextScorecard = topsResumeScorecardWithLengthPlan(Array.isArray(res.d.scorecard) ? res.d.scorecard : [], nextLengthPlan);
+            setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets, lengthPlan: nextLengthPlan, auditScorecard: nextScorecard, auditTrace: Array.isArray(res.d.trace) ? res.d.trace : [], auditBlockers: [], supportedKeywords: Array.isArray(res.d.supportedKeywords) ? res.d.supportedKeywords : [], auditGaps: Array.isArray(res.d.gaps) ? res.d.gaps : [] }); });
           })
           .catch(function(){ setAiR(function(p){ return Object.assign({}, p, { loading: false, err: "Still warming up \u2014 give it 10 seconds and tap GENERATE once more." }); }); });
       }, style: { width: "100%", background: aiR.loading ? C.border : C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? (aiR.facts ? "DRAFTING\u2026 (10-15 SEC)" : "CHECKING FACTS\u2026") : (aiR.facts ? "DRAFT FROM CONFIRMED FACTS" : "BUILD MY FACT SHEET")),
@@ -7917,7 +7962,9 @@ whatsNewUnseen && React.createElement("div", {
         React.createElement("div", { style: { fontSize: 10.5, color: C.textSecondary, lineHeight: 1.45, marginTop: 3 } }, topsResumeLengthPlanSummary(aiR.lengthPlan)),
         aiR.lengthPlan.preflightDisposition === "content_preserved_two_pages" && React.createElement("div", { style: { fontSize: 10.5, color: C.goldBright, lineHeight: 1.45, marginTop: 3 } }, "One page was not forced because supported content must remain complete and readable."),
         aiR.lengthPlan.preflightDisposition === "no_padding_one_page" && React.createElement("div", { style: { fontSize: 10.5, color: C.goldBright, lineHeight: 1.45, marginTop: 3 } }, "Two pages were not forced because this candidate fits naturally without padding or an artificial break."),
-        aiR.lengthPlan.preflightDisposition === "fallback_non_substantive_two_page" && React.createElement("div", { style: { fontSize: 10.5, color: C.goldBright, lineHeight: 1.45, marginTop: 3 } }, "The two-page profile was not substantive in preflight, so the same audited content used the compact profile without another generation call.")),
+        aiR.lengthPlan.preflightDisposition === "fallback_non_substantive_two_page" && React.createElement("div", { style: { fontSize: 10.5, color: C.goldBright, lineHeight: 1.45, marginTop: 3 } }, "The reviewed draft did not retain enough supported role detail for the two-page profile, so the same audited content used the compact profile without another generation call."),
+        aiR.lengthPlan.preflightDisposition === "semantic_role_rebalance" && React.createElement("div", { style: { fontSize: 10.5, color: C.textSecondary, lineHeight: 1.45, marginTop: 3 } }, "A role boundary was moved to page two to balance the Word layout. No resume content changed."),
+        aiR.lengthPlan.preflightDisposition === "one_page_evidence_exception" && React.createElement("div", { style: { fontSize: 10.5, color: C.goldBright, lineHeight: 1.45, marginTop: 3, fontWeight: 700 } }, TOPS_RESUME_MORE_DETAIL_EVIDENCE)),
       aiR.auditTrace.length > 0 && React.createElement("div", { style: { marginTop: 10 } },
         React.createElement("button", { onClick: function(){ setAiR(function(p){ return Object.assign({}, p, { showTrace: !p.showTrace }); }); }, style: { background: "transparent", color: C.greenBright, border: "1px solid " + C.greenBright, borderRadius: 7, padding: "7px 10px", fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: 1, cursor: "pointer" } }, aiR.showTrace ? "HIDE CLAIM TRACE" : "SHOW CLAIM TRACE"),
         aiR.showTrace && React.createElement("div", { style: { marginTop: 7, padding: "10px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } }, aiR.auditTrace.map(function(item, i){ return React.createElement("div", { key: item.claim_id || i, style: { marginBottom: i < aiR.auditTrace.length - 1 ? 9 : 0, paddingBottom: i < aiR.auditTrace.length - 1 ? 9 : 0, borderBottom: i < aiR.auditTrace.length - 1 ? "1px solid " + C.border : "none" } },
@@ -7960,7 +8007,7 @@ whatsNewUnseen && React.createElement("div", {
             showToast("WORD EXPORT HELD \u2014 " + preparedDocx.reason);
             return;
           }
-          if (preparedDocx.lengthPlan) setAiR(function(p){ return Object.assign({}, p, { lengthPlan: preparedDocx.lengthPlan }); });
+          if (preparedDocx.lengthPlan) setAiR(function(p){ return Object.assign({}, p, { lengthPlan: preparedDocx.lengthPlan, auditScorecard: topsResumeScorecardWithLengthPlan(p.auditScorecard, preparedDocx.lengthPlan) }); });
           var docxBytes = preparedDocx.bytes;
           var blob = new Blob([docxBytes], { type: window.__TOPS_RESUME_DOCX.mime });
           var objectUrl = URL.createObjectURL(blob);

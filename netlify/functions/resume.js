@@ -824,7 +824,7 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     const selectionReason = preference === "adaptive" ? "adaptive_recommendation" : preference === "one_page" ? "guarded_one_page_preference" : evidenceFit ? "guarded_two_page_preference" : "two_page_preference_evidence_guard";
     const rationale = "Y=" + (yearsAvailable ? String(relevantYears) : "unavailable") + "; R=" + relevantRoles + "; A=" + draftEligibleAtoms + "; E=" + (evidenceFit ? "PASS" : "FAIL") + "; branch=" + branch + "; recommendation=" + (recommendTwoPages ? "two_pages" : "one_page") + "; selected=" + (selectedPages === 2 ? "two_pages" : "one_page");
     return {
-      version: "v0.17",
+      version: "v0.18",
       preference: preference,
       relevantYears: relevantYears,
       relevantRoles: relevantRoles,

@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.17 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.18 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -53,6 +53,31 @@ owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
 ## CHANGE LOG
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.17 -> 0.18, remains
+  PENDING.** Dean approved v0.18 after the live-clone `Resume_Draft3.docx`
+  exposed PARTIAL v0.17 coverage: a senior, broad candidate with six roles,
+  14 supported role bullets, four certifications, and four education items
+  still received the compact one-page profile. Force-mod classified this as a
+  narrow skill amendment, not a new skill. Version 0.18 keeps a fixed
+  senior-readable profile for a selected two-page candidate with `B >= 10`;
+  compact fallback remains limited to insufficient post-audit evidence. A
+  naturally two-page candidate may receive one presentation-only break at a
+  deterministic semantic role boundary when executed layout checks prove it
+  improves balance and produces substantive pages; `ResumeSpacer` remains
+  prohibited, the EXPERIENCE heading remains with its first role, candidate
+  content remains byte-exact, and an unresolved sparse result is withheld
+  rather than released or compacted. A fixed-profile candidate that safely
+  fits on one page is released as an honest one-page evidence exception, with Length and
+  Readability marked `NEEDS MEMBER FACT` and no filler, padding, compression,
+  or forced second page. RDM-195…198 cover the senior live shape, fallback
+  separation, honest one-page exception, and unchanged federal/API/cap/privacy
+  boundary. Synthetic RDM-1…RDM-198, browser preflight, and actual LibreOffice
+  rendering passed locally on 2026-08-30. Models, calls, retries, caps, storage,
+  logging, persistence, analytics, privacy, usage limits, budget, and costs are
+  unchanged; maximum incremental API exposure is $0 and the external monthly
+  cap remains `UNVERIFIED`. Live-clone validation is not yet claimed, so
+  registration remains PENDING. Lane: AUTO for internal governance; app
+  implementation remains Commander-gated. Owner: force-mod.
 - 2026-08-30 — **#6 `resume-drafter-maintenance` 0.16 -> 0.17, remains
   PENDING.** Commander-approved live evidence established that civilian length
   must adapt to confirmed target-relevant experience, distinct relevant-role

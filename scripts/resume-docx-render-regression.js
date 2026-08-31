@@ -129,6 +129,35 @@ function buildRenderFixtures() {
     "EDUCATION", "MBA, Human Resource Management, Synthetic University, 2008", "B.B.A., Business Administration, Synthetic College, 2002", "M.A., Strategic Studies, Synthetic War College", "Doctoral candidate, Applied Leadership, Synthetic University"
   ].join("\n");
 
+  const seniorLiveShape14 = [
+    "Riley Senior", "Green Bay, WI | riley.senior@example.test | (555) 010-2400", "",
+    "SUMMARY", "Talent strategy; Workforce planning; Recruiting operations; Leadership development.", "",
+    "CORE SKILLS", "Succession planning, Talent analytics, Hiring leader advisory, Process design, Workday, Performance coaching", "",
+    "PROFESSIONAL EXPERIENCE",
+    "Founder and Principal | Bridgeway Workforce Studio", "Remote | 2024 - Present",
+    "\u2022 Advise employers on recruiting strategy, sourcing programs, and documented hiring workflows for technical talent pipelines.",
+    "\u2022 Built a transition-planning application and documented AI-enabled sourcing research, market mapping, screening support, and funnel analysis.", "",
+    "Talent Program Manager | Synthetic Energy Systems", "17 U.S. sites | 2024 - 2026",
+    "\u2022 Managed full-cycle recruiting for technical, production, maintenance, and engineering-adjacent roles across confirmed manufacturing sites.",
+    "\u2022 Built market-specific sourcing strategies and connected approved recruitment marketing activity to documented funnel data.",
+    "\u2022 Reported pipeline health, time to fill, source effectiveness, and quality signals to confirmed executive sponsors.", "",
+    "HR Director | Regional Home Services", "2024",
+    "\u2022 Led employee relations, investigations, performance coaching, succession planning, and leadership development for confirmed leaders.", "",
+    "Talent Acquisition Leader | Consumer Products Group", "2021 - 2024",
+    "\u2022 Led recruiters through a documented high-volume growth year across engineering, corporate, retail, and operations functions.",
+    "\u2022 Built a talent acquisition structure using confirmed competencies, interview training, and documented hiring debriefs.",
+    "\u2022 Directed the recruiting workstream for a Workday implementation, including requisition workflow, data standards, and reporting design.", "",
+    "Recruiting and Retention Commander | State Defense Organization",
+    "\u2022 Led a recruiting operation against documented monthly production targets and accountable workforce requirements.",
+    "\u2022 Managed staff activity, approved resources, and recurring recruiting performance reviews.",
+    "\u2022 Developed leaders and maintained documented workforce planning practices across the supported organization.", "",
+    "Deputy Personnel Director | State Defense Organization",
+    "\u2022 Directed talent management, succession planning, workforce planning, and analytics for a confirmed statewide workforce.",
+    "\u2022 Coordinated personnel planning and leadership decisions across documented operating locations.", "",
+    "CERTIFICATIONS", "Senior HR Certification", "Professional HR Certification", "Emotional Intelligence Certification", "Lean Six Sigma Green Belt", "",
+    "EDUCATION", "MBA, Human Resource Management, Synthetic University", "B.B.A., Business Administration, Synthetic College", "M.A., Strategic Studies, Synthetic War College", "Doctoral candidate, Applied Leadership, Synthetic University"
+  ].join("\n");
+
   const substantiveOnePage = [
     "Morgan Grounded", "Milwaukee, WI | morgan.grounded@example.test", "",
     "SUMMARY", "Operations planning; reporting; team coordination.", "",
@@ -190,7 +219,7 @@ function buildRenderFixtures() {
   seniorLines.push("CERTIFICATIONS", "Project Management Professional", "Lean Six Sigma Green Belt", "Certified Manager", "Change Management Practitioner", "");
   seniorLines.push("EDUCATION", "M.S., Operations Management, Synthetic University", "B.S., Business Administration, Synthetic College");
 
-  return { short, substantiveOnePage, nineBulletLong: nineBulletLongLines.join("\n"), liveSixRole, senior: seniorLines.join("\n") };
+  return { short, substantiveOnePage, nineBulletLong: nineBulletLongLines.join("\n"), liveSixRole, seniorLiveShape14, senior: seniorLines.join("\n") };
 }
 
 function docxBlockFromIndex() {
@@ -290,11 +319,21 @@ function browserRegressionBody() {
   check(exactText(shortPrepared.bytes) === fixtures.short, "RDM-193 short candidate content is exact");
 
   var substantiveOnePagePrepared = api.prepare(fixtures.substantiveOnePage, fileName, api.mime, substantiveOnePagePlan);
-  check(substantiveOnePagePrepared.ok && substantiveOnePagePrepared.renderCheck.pageCount === 1, "RDM-190 substantive one-page candidate stays one page");
-  check(substantiveOnePagePrepared.requestedRenderCheck.pageCount === 1, "RDM-190 readable profile does not manufacture a second page");
-  check(substantiveOnePagePrepared.options.presentationProfile === "compact_one_page", "RDM-190 two-page preference falls back without filler or an artificial break");
-  check(substantiveOnePagePrepared.lengthPlan.preflightDisposition === "fallback_non_substantive_two_page", "RDM-190 guarded fallback is transparent");
-  check(exactText(substantiveOnePagePrepared.bytes) === fixtures.substantiveOnePage, "RDM-193 substantive one-page candidate content is exact");
+  check(substantiveOnePagePrepared.ok && substantiveOnePagePrepared.renderCheck.pageCount === 1, "RDM-197 fixed senior profile may remain one natural page");
+  check(substantiveOnePagePrepared.requestedRenderCheck.pageCount === 1, "RDM-197 browser estimate reports the fixed profile truthfully");
+  check(substantiveOnePagePrepared.options.presentationProfile === "readable_two_page", "RDM-196 B-pass candidate never falls back to the compact profile");
+  check(substantiveOnePagePrepared.lengthPlan.preflightDisposition === "one_page_evidence_exception", "RDM-197 one-page evidence exception is transparent");
+  check(substantiveOnePagePrepared.lengthPlan.needsMoreConfirmedDetail === true, "RDM-197 requests more confirmed role detail outside the resume");
+  check(exactText(substantiveOnePagePrepared.bytes) === fixtures.substantiveOnePage, "RDM-197 one-page exception content is exact");
+  var onePageScorecardInput = [
+    { dimension: "length_and_readability", status: "PASS", evidence: "Original length finding." },
+    { dimension: "format_compliance", status: "PASS", evidence: "Original format finding." }
+  ];
+  var onePageScorecard = api.scorecardWithLengthPlan(onePageScorecardInput, substantiveOnePagePrepared.lengthPlan);
+  check(onePageScorecard[0].status === "NEEDS MEMBER FACT" && /more confirmed, role-specific accomplishments/i.test(onePageScorecard[0].evidence), "RDM-197 runtime scorecard marks the natural one-page exception NEEDS MEMBER FACT");
+  check(onePageScorecard[1] === onePageScorecardInput[1] && onePageScorecardInput[0].status === "PASS", "RDM-197 scorecard update leaves unrelated dimensions and source data unchanged");
+  var preservedFailure = api.scorecardWithLengthPlan([{ dimension: "length_and_readability", status: "FAIL", evidence: "Existing blocking failure." }], substantiveOnePagePrepared.lengthPlan);
+  check(preservedFailure[0].status === "FAIL" && preservedFailure[0].evidence === "Existing blocking failure.", "RDM-197 scorecard preserves an existing FAIL");
 
   var failedFallbackPrepared = api.prepare(fixtures.nineBulletLong, fileName, api.mime, failedPostAuditFallbackPlan);
   check(!failedFallbackPrepared.ok, "RDM-192 B=9 fallback is withheld when the same audited content still needs two pages");
@@ -318,10 +357,38 @@ function browserRegressionBody() {
   check(livePrepared.ok && livePrepared.renderCheck.pageCount === 1, "RDM-175 prior six-role fixture remains one natural page");
   check(exactText(livePrepared.bytes) === fixtures.liveSixRole, "RDM-175 prior fixture remains exact");
 
+  var seniorLiveShapePrepared = api.prepare(fixtures.seniorLiveShape14, fileName, api.mime, seniorPlan);
+  var seniorLiveRoleIndexes = topsResumeDocxParagraphs(api.build(fixtures.seniorLiveShape14, { presentationProfile: "readable_two_page" })).map(function(paragraph, paragraphIndex) { return paragraph.styleId === "ResumeRole" ? paragraphIndex : -1; }).filter(function(paragraphIndex) { return paragraphIndex >= 0; });
+  var seniorLiveBalanceMetrics = seniorLiveRoleIndexes.map(function(paragraphIndex) {
+    var candidateCheck = api.renderCheck(api.build(fixtures.seniorLiveShape14, { presentationProfile: "readable_two_page", pageBreakBeforeParagraph: paragraphIndex }));
+    return { paragraphIndex: paragraphIndex, ok: candidateCheck.ok, pageCount: candidateCheck.pageCount, minimumPageUseRatio: candidateCheck.minimumPageUseRatio, pageBalanceSpread: candidateCheck.pageBalanceSpread };
+  });
+  check(seniorLiveShapePrepared.ok && seniorLiveShapePrepared.renderCheck.pageCount === 2, "RDM-195 six-role 14-bullet senior candidate reaches two browser-preflight pages");
+  check(seniorLiveShapePrepared.options.presentationProfile === "readable_two_page", "RDM-195 senior live-shape keeps the fixed readable profile");
+  check(seniorLiveShapePrepared.renderCheck.minimumPageUseRatio >= 0.25 && !seniorLiveShapePrepared.renderCheck.sparseTrailingPage, "RDM-195 both browser-preflight pages are substantive after semantic rebalancing");
+  check(seniorLiveShapePrepared.lengthPlan.preflightDisposition === "semantic_role_rebalance", "RDM-195 a semantic role boundary balances the already-two-page candidate: " + JSON.stringify(seniorLiveBalanceMetrics));
+  check(seniorLiveShapePrepared.lengthPlan.semanticPageBreakApplied === true, "RDM-195 reports the presentation-only role-boundary break");
+  check(seniorLiveShapePrepared.options.pageBreakBeforeParagraph === 25, "RDM-195 deterministic balance boundary expected paragraph 25, received " + String(seniorLiveShapePrepared.options.pageBreakBeforeParagraph));
+  check(exactText(seniorLiveShapePrepared.bytes) === fixtures.seniorLiveShape14, "RDM-195 senior live-shape content is exact");
+  var firstRoleBreakCheck = api.renderCheck(api.build(fixtures.seniorLiveShape14, { presentationProfile: "readable_two_page", pageBreakBeforeParagraph: seniorLiveRoleIndexes[0] }));
+  check(!firstRoleBreakCheck.ok && firstRoleBreakCheck.orphan, "RDM-195 a semantic break cannot orphan PROFESSIONAL EXPERIENCE from its first role");
+  var originalSemanticRebalance = topsResumeSemanticRoleRebalance;
+  var unresolvedSparsePrepared;
+  try {
+    topsResumeSemanticRoleRebalance = function() { return null; };
+    unresolvedSparsePrepared = api.prepare(fixtures.seniorLiveShape14, fileName, api.mime, seniorPlan);
+  } finally {
+    topsResumeSemanticRoleRebalance = originalSemanticRebalance;
+  }
+  check(!unresolvedSparsePrepared.ok && unresolvedSparsePrepared.lengthPlan.preflightDisposition === "unbalanced_two_page_withheld", "RDM-195 unresolved sparse two-page output is withheld instead of released or compacted");
+  check(unresolvedSparsePrepared.lengthPlan.appliedPages === null && unresolvedSparsePrepared.lengthPlan.unbalancedTwoPageWithheld === true, "RDM-195 withheld sparse output is never reported as applied");
+
   [shortPrepared, substantiveOnePagePrepared, seniorPrepared, onePageSeniorPrepared, livePrepared].forEach(function(prepared) {
     var paragraphs = topsResumeDocxParagraphs(prepared.bytes);
     check(paragraphs.filter(function(paragraph) { return paragraph.pageBreakBefore; }).length === 0, "RDM-191 released profiles contain zero automatic page breaks");
   });
+  var seniorLiveBreaks = topsResumeDocxParagraphs(seniorLiveShapePrepared.bytes).filter(function(paragraph) { return paragraph.pageBreakBefore; });
+  check(seniorLiveBreaks.length === 1 && seniorLiveBreaks[0].styleId === "ResumeRole", "RDM-195 rebalancing uses one semantic role boundary and never a spacer");
   var spacerIndex = fixtures.liveSixRole.split("\n").indexOf("");
   var spacerBreakAttempt = api.build(fixtures.liveSixRole, { presentationProfile: "compact_one_page", pageBreakBeforeParagraph: spacerIndex });
   check(topsResumeDocxParagraphs(spacerBreakAttempt).filter(function(paragraph) { return paragraph.pageBreakBefore; }).length === 0, "RDM-191 ResumeSpacer cannot receive pageBreakBefore");
@@ -349,8 +416,8 @@ function browserRegressionBody() {
   var longRender = api.renderCheck(api.build(longLines.join("\n")));
   check(!longRender.ok && longRender.tooManyPages && longRender.pageCount > 2, "RDM-192 browser preflight blocks artifacts over two pages");
 
-  check(api.mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "RDM-194 DOCX MIME remains exact");
-  return "PASS: RDM-175 and RDM-187..RDM-194 browser preflight, natural profiles, guarded overrides, exact content, and negative layout controls";
+  check(api.mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "RDM-198 DOCX MIME remains exact");
+  return "PASS: RDM-175 and RDM-187..RDM-198 browser preflight, fixed senior profile, honest one-page exception, exact content, and negative layout controls";
 }
 
 function buildHarness(docxBlock, fixtures) {
@@ -546,7 +613,7 @@ function renderActualDocx(tooling, bytes, resumeText, label, expectedPages, subs
         assert.ok(metrics.verticalUse >= 0.35, label + " page " + (index + 1) + " is substantive rather than sparse (vertical use " + metrics.verticalUse.toFixed(3) + ")");
       });
       const verticalUse = pageMetrics.map((metrics) => metrics.verticalUse);
-      assert.ok(Math.max.apply(Math, verticalUse) - Math.min.apply(Math, verticalUse) <= 0.55, label + " pages remain reasonably balanced without a forced break");
+      assert.ok(Math.max.apply(Math, verticalUse) - Math.min.apply(Math, verticalUse) <= 0.55, label + " pages remain reasonably balanced without content padding or distortion");
     }
     return { pageCount, pageMetrics };
   } finally {
@@ -567,21 +634,22 @@ function runLibreOfficeRegression(docxBlock, fixtures) {
   const api = nodeDocxApi(docxBlock);
   const cases = [
     { label: "short-adaptive", text: fixtures.short, options: { presentationProfile: "compact_one_page" }, pages: 1, substantive: false },
-    { label: "substantive-two-page-preference", text: fixtures.substantiveOnePage, options: { presentationProfile: "compact_one_page" }, pages: 1, substantive: false },
+    { label: "substantive-one-page-evidence-exception", text: fixtures.substantiveOnePage, options: { presentationProfile: "readable_two_page" }, pages: 1, substantive: false },
     { label: "nine-bullet-fallback-control", text: fixtures.nineBulletLong, options: { presentationProfile: "compact_one_page" }, pages: 2, substantive: false },
     { label: "senior-adaptive", text: fixtures.senior, options: { presentationProfile: "readable_two_page" }, pages: 2, substantive: true },
     { label: "senior-one-page-preference", text: fixtures.senior, options: { presentationProfile: "compact_one_page" }, pages: 2, substantive: false },
-    { label: "live-six-role", text: fixtures.liveSixRole, options: { presentationProfile: "compact_one_page" }, pages: 1, substantive: false }
+    { label: "live-six-role", text: fixtures.liveSixRole, options: { presentationProfile: "compact_one_page" }, pages: 1, substantive: false },
+    { label: "senior-live-shape-14", text: fixtures.seniorLiveShape14, options: { presentationProfile: "readable_two_page", pageBreakBeforeParagraph: 25 }, pages: 2, substantive: true, pageBreaks: 1 }
   ];
   const evidence = {};
   cases.forEach((fixture) => {
     const bytes = api.build(fixture.text, fixture.options);
     assert.equal(extractedDocxText(bytes), fixture.text, fixture.label + " DOCX content is byte-exact after extraction");
-    assert.equal(pageBreakCount(bytes), 0, fixture.label + " contains zero forced page breaks");
+    assert.equal(pageBreakCount(bytes), fixture.pageBreaks || 0, fixture.label + " contains only its expected semantic page break");
     assert.equal(api.validate(bytes, fixture.text, "Resume_Draft.docx", api.mime, fixture.options).ok, true, fixture.label + " validates as genuine DOCX");
     evidence[fixture.label] = renderActualDocx(tooling, bytes, fixture.text, fixture.label, fixture.pages, fixture.substantive);
   });
-  console.log("PASS: RDM-192 actual LibreOffice DOCX rendering; one/two-page counts, substantive visible pages, exact renderer-extracted content, no clipping, no forced breaks, and prior six-role one-page fixture");
+  console.log("PASS: RDM-192 and RDM-195 actual LibreOffice DOCX rendering; one/two-page counts, fixed senior profile, substantive visible pages, exact renderer-extracted content, no clipping, and only the expected semantic role-boundary break");
   return { libreOffice, evidence };
 }
 

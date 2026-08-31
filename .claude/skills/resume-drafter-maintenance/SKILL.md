@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.17"
+  version: "0.18"
   status: PENDING
 ---
 
@@ -13,9 +13,9 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.17 is PENDING until the synthetic RDM regression suite and live-clone
+Version 0.18 is PENDING until the synthetic RDM regression suite and live-clone
 validation execute against the app. Specification approval and approved live
-evidence are not v0.17 execution evidence.
+evidence are not v0.18 execution evidence.
 
 ## TRIGGERS AND GATE
 
@@ -367,17 +367,21 @@ pagination or compatibility. Regression evidence must render the actual
 exported `.docx` through Microsoft Word or another Word-compatible renderer;
 only that rendered artifact can prove final compatibility and page behavior.
 
-Second-page occupancy alone is not proof that a trailing page is avoidably
-sparse. A numeric occupancy threshold, including the prior 25% heuristic, may
-flag a layout for review but may not withhold the artifact by itself. Call a
-trailing page avoidable only when the renderer demonstrates a safe,
-content-equivalent layout alternative that removes the avoidable sparsity while
-preserving readability. Rebalancing may change presentation-only properties,
-including safe spacing, pagination, and page-break placement; it may not add,
-remove, rewrite, merge, split, reorder, duplicate, conceal, or compress
-candidate content. When no safe content-equivalent alternative exists, release
-a readable, balanced two-page artifact rather than delete supported content,
-even if the final page is below an occupancy threshold.
+Outside the v0.18 selected two-page `B >= 10` contract, second-page occupancy
+alone is not proof that a trailing page is avoidably sparse. A numeric
+occupancy threshold, including the prior 25% heuristic, may flag those other
+layouts for review but may not withhold the artifact by itself. Call a trailing
+page avoidable only when the renderer demonstrates a safe, content-equivalent
+layout alternative that removes the avoidable sparsity while preserving
+readability. Rebalancing may change presentation-only properties, including
+safe spacing, pagination, and page-break placement; it may not add, remove,
+rewrite, merge, split, reorder, duplicate, conceal, or compress candidate
+content. When no safe content-equivalent alternative exists in those other
+layouts, preserve the supported content rather than delete it solely to satisfy
+an occupancy threshold. For a v0.18 selected two-page candidate with `B >= 10`,
+the fixed substantive-page rule controls instead: use a non-sparse semantic
+role-boundary result or withhold the unresolved sparse artifact without
+compacting it.
 
 Keep-with-next behavior is transitive across each logical opening chain: a
 section heading, its role header, optional role metadata, and the first role
@@ -470,12 +474,30 @@ audited candidate, counting each bullet once under its exact role owner. A
 selected two-page output is release-eligible only when `B >= 10` and the actual
 exported DOCX renders as two substantive, readable, balanced pages in a
 Word-compatible renderer. Browser estimation remains conservative preflight,
-not proof. If either post-audit check fails, apply only the approved one-page
-presentation profile to the same audited candidate and re-render, preserving
-every released candidate-content byte. If that content cannot render safely on
-one page, withhold the artifact. Never make another model call, delete or
-rewrite audited content, conceal content, or weaken a blocking gate during
-fallback.
+not proof. If `B < 10`, apply only the approved one-page presentation profile
+to the same audited candidate and re-render, preserving every released
+candidate-content byte. If that content cannot render safely on one page,
+withhold the artifact.
+
+For a selected two-page plan with `B >= 10`, keep one fixed senior-readable
+profile through preflight and export; do not compact it merely because the
+render is not exactly two pages. If that fixed profile already renders as two
+pages but leaves an avoidably sparse trailing page, a single
+presentation-only `pageBreakBefore` may be attached to the best semantic role
+boundary only when the unmodified candidate already rendered as two pages and
+the executed check demonstrates a more balanced, non-sparse two-page result.
+If no eligible semantic role boundary produces two substantive pages, withhold
+the artifact; never release the unresolved sparse result or compact it. Never
+attach the break to `ResumeSpacer`, separate PROFESSIONAL EXPERIENCE from its
+first role, alter candidate content, or manufacture a second page from a
+natural one-page result. If the fixed profile safely renders one
+natural page, release that readable one-page exception, mark Length and
+Readability `NEEDS MEMBER FACT`, and request additional confirmed,
+role-specific accomplishments outside the resume. Do not add filler, padding,
+or a forced second page, and do not report the exception as satisfying the
+two-page plan. Unsafe or more-than-two-page results remain withheld. Never make
+another model call, delete or rewrite audited content, conceal content, or
+weaken a blocking gate during fallback or rebalancing.
 
 Content exactness compares each export to its own released audited candidate,
 not a one-page candidate to a two-page candidate. A valid two-page candidate may
@@ -1128,10 +1150,12 @@ all existing hard input bounds.
   static source match, function-presence assertion, OOXML byte check, or
   extracted-text check alone cannot satisfy this case, and browser execution
   cannot satisfy the actual-DOCX render case.
-- **RDM-182A Low occupancy is not avoidability:** a legitimate readable,
-  content-complete artifact whose second page falls below the occupancy
-  threshold must not fail solely because of that percentage when no safe
-  content-equivalent one-page or better-balanced alternative exists.
+- **RDM-182A Low occupancy is not avoidability:** occupancy alone remains
+  insufficient proof for general layout decisions. Version 0.18 narrows this
+  rule for a selected two-page candidate with `B >= 10`: release eligibility
+  requires two substantive fixed-profile pages, so an unresolved sparse result
+  is withheld rather than released or compacted when no non-sparse semantic
+  role-boundary candidate exists.
 - **RDM-182B Demonstrated avoidability:** a trailing page made sparse only by
   presentation spacing must be safely rebalanced or withheld when an executed
   render demonstrates a readable content-equivalent alternative; occupancy
@@ -1201,11 +1225,13 @@ all existing hard input bounds.
   Word or another Word-compatible renderer. A selected two-page output must
   have post-audit `B >= 10` and two substantive, readable, balanced rendered
   pages with no clipping, overlap, hidden text, orphaned chain, or compatibility
-  error. A `B = 9` fixture and a non-substantive render fixture must each apply
-  the one-page presentation profile to the same audited content and re-render
-  with no model call or model retry; if that content cannot fit safely, the
-  artifact is withheld. The conservative browser estimator must execute as
-  preflight, but its result alone cannot satisfy this case.
+  error. A `B = 9` fixture must apply the one-page presentation profile to the
+  same audited content and re-render with no model call or model retry; if that
+  content cannot fit safely, the artifact is withheld. A `B >= 10` sparse
+  two-page fixture must retain the fixed senior-readable profile and either
+  rebalance to two substantive pages at an eligible semantic role boundary or
+  be withheld; it must never compact. The conservative browser estimator must
+  execute as preflight, but its result alone cannot satisfy this case.
 - **RDM-193 Per-output content exactness:** one- and two-page candidates from the
   same catalog need not contain the same number of grounded role bullets. Each
   extracted DOCX and Word-compatible render must match its own released audited
@@ -1221,6 +1247,37 @@ all existing hard input bounds.
   unchanged. Planning, profile selection, post-audit validation, and fallback
   add no model call or retry and exceed no cap. Maximum incremental API exposure
   is $0, and the external monthly cap remains `UNVERIFIED`.
+- **RDM-195 Senior live-shape substantive pages:** a synthetic civilian
+  candidate with exactly six roles, 14 supported role bullets, four
+  certifications, and four education items must keep the fixed
+  senior-readable profile and render as two substantive, balanced pages in the
+  browser preflight and an actual Word-compatible renderer. When natural
+  pagination leaves the trailing page sparse, one deterministic
+  presentation-only break may rebalance at a semantic role boundary only; the
+  extracted candidate content must remain byte-exact. The break may not
+  separate PROFESSIONAL EXPERIENCE from its first role, and an unresolved
+  sparse result must be withheld.
+- **RDM-196 Fallback separation:** a selected two-page candidate with `B = 9`
+  must use the existing one-page fallback and be withheld if the unchanged
+  audited content cannot fit safely. A selected two-page candidate with
+  `B >= 10` must never fall back to the compact profile solely because the
+  fixed senior-readable render is not exactly two pages; it must use an honest
+  one-page exception, two substantive fixed-profile pages, or a withheld
+  disposition as applicable.
+- **RDM-197 Honest one-page evidence exception:** when a selected two-page
+  candidate with `B >= 10` safely renders as one natural page under the fixed
+  senior-readable profile, release that one readable page without filler,
+  padding, compression, or a forced break. Mark Length and Readability
+  `NEEDS MEMBER FACT`, preserve any existing failure, and request more
+  confirmed role detail outside the resume.
+- **RDM-198 Unchanged operational boundary:** federal generation, content,
+  brackets, audit, export, pagination, and scoring remain unchanged. Models,
+  API calls, retries, facts/repair 3500, civilian 2200, federal 1900, audit
+  4000, input bounds, budget and cost ceilings, draft and usage limits,
+  `store: false`, privacy, logging, storage, persistence, and analytics remain
+  unchanged. Version 0.18 adds no model call or retry, exceeds no cap, and has
+  maximum incremental API exposure of $0; the external monthly cap remains
+  `UNVERIFIED`.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -1231,7 +1288,7 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.17 until all synthetic cases execute
+Keep registry item #6 PENDING at version 0.18 until all synthetic cases execute
 and live-clone evidence, including actual DOCX rendering in a Word-compatible
 renderer, passes. After successful execution and live evidence, force-mod
 proposes the smallest evidence-supported revision and Commander rules on
