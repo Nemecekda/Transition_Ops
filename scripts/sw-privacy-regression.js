@@ -53,6 +53,7 @@ let storedChoice = null;
 let createdProviderScripts = 0;
 const sandbox = {
   console: console,
+  URL: URL,
   localStorage: { removeItem: function() { storedChoice = null; } },
   navigator: {
     serviceWorker: { getRegistrations: function() { return Promise.resolve([]); } }
@@ -73,7 +74,7 @@ sandbox.window.window = sandbox.window;
 vm.createContext(sandbox);
 vm.runInContext(
   index.slice(helperStart, helperEnd) +
-    "\nthis.__topsHarness = { parse: topsParsePushChoice, accepted: topsPushChoiceAccepted, configReady: topsPushConfigReady, epochDay: topsDateToEpochDay };",
+    "\nthis.__topsHarness = { parse: topsParsePushChoice, accepted: topsPushChoiceAccepted, configReady: topsPushConfigReady, epochDay: topsDateToEpochDay, workerPathMatches: topsWorkerURLMatchesPath };",
   sandbox,
   { filename: "index-push-helpers.js" }
 );
@@ -99,6 +100,21 @@ check(sandbox.__topsHarness.configReady() === false && createdProviderScripts ==
 check(
   sandbox.__topsHarness.epochDay("2027-01-15") === Math.floor(Date.UTC(2027, 0, 15) / 86400000),
   "exact date converts to one UTC epoch-day value"
+);
+check(
+  sandbox.__topsHarness.workerPathMatches(
+    "https://transition-ops-openai-clone.netlify.app/push/onesignal/OneSignalSDKWorker.js?appId=synthetic&sdkVersion=160609",
+    "https://transition-ops-openai-clone.netlify.app/push/onesignal/OneSignalSDKWorker.js"
+  ) === true &&
+    sandbox.__topsHarness.workerPathMatches(
+      "https://transition-ops-openai-clone.netlify.app/pwa-sw.js",
+      "https://transition-ops-openai-clone.netlify.app/push/onesignal/OneSignalSDKWorker.js"
+    ) === false &&
+    sandbox.__topsHarness.workerPathMatches(
+      "https://example.com/push/onesignal/OneSignalSDKWorker.js",
+      "https://transition-ops-openai-clone.netlify.app/push/onesignal/OneSignalSDKWorker.js"
+    ) === false,
+  "dedicated-worker cleanup accepts provider query parameters only on the approved origin and path"
 );
 
 check(

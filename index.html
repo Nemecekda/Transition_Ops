@@ -572,6 +572,16 @@ function topsPriorRootWorkerIsLegacy(scriptURL) {
   return /\/(?:sw|OneSignalSDKWorker)\.js$/.test(scriptURL || "");
 }
 
+function topsWorkerURLMatchesPath(scriptURL, expectedURL) {
+  try {
+    var actual = new URL(scriptURL);
+    var expected = new URL(expectedURL);
+    return actual.origin === expected.origin && actual.pathname === expected.pathname;
+  } catch (e) {
+    return scriptURL === expectedURL;
+  }
+}
+
 async function topsUnregisterDedicatedPushWorker() {
   if (window.__IS_IFRAME || !("serviceWorker" in navigator)) return;
   var dedicatedScope = new URL("/push/onesignal/", window.location.origin).href;
@@ -580,7 +590,7 @@ async function topsUnregisterDedicatedPushWorker() {
   await Promise.all(registrations.map(function(registration) {
     if (registration.scope !== dedicatedScope) return false;
     var workers = [registration.active, registration.waiting, registration.installing].filter(Boolean);
-    if (workers.length && !workers.some(function(worker) { return worker.scriptURL === dedicatedScript; })) return false;
+    if (workers.length && !workers.some(function(worker) { return topsWorkerURLMatchesPath(worker.scriptURL, dedicatedScript); })) return false;
     return registration.unregister();
   }));
 }
