@@ -45,7 +45,7 @@ const dedicatedWorker = read("push/onesignal/OneSignalSDKWorker.js");
 const headers = read("_headers");
 const packageJson = JSON.parse(read("package.json"));
 
-const helperStart = index.indexOf("const TOPS_PUSH_ENABLED = false;");
+const helperStart = index.indexOf("const TOPS_PUSH_ENABLED = true;");
 const helperEnd = index.indexOf("// ═══════════════════════════════════════════════════════════════\n// TRANSITION OPS", helperStart);
 check(helperStart !== -1 && helperEnd > helperStart, "push helper block is extractable for closed-state tests");
 
@@ -95,7 +95,7 @@ check(
 check(sandbox.__topsHarness.parse("not-json") === null, "malformed local choice fails closed");
 storedChoice = acceptedChoice;
 check(sandbox.__topsHarness.accepted() === true, "accepted current choice is recognized");
-check(sandbox.__topsHarness.configReady() === false && createdProviderScripts === 0, "gate-off clone creates no provider element");
+check(sandbox.__topsHarness.configReady() === false && createdProviderScripts === 0, "unapproved origin creates no provider element");
 check(
   sandbox.__topsHarness.epochDay("2027-01-15") === Math.floor(Date.UTC(2027, 0, 15) / 86400000),
   "exact date converts to one UTC epoch-day value"
@@ -149,12 +149,13 @@ check(
   "dedicated worker contains no app-cache or local-notification logic"
 );
 check(
-  /const TOPS_PUSH_ENABLED = false;/.test(index),
-  "push feature gate is off"
+  /const TOPS_PUSH_ENABLED = true;/.test(index),
+  "clone push feature gate is on"
 );
 check(
-  /const TOPS_CLONE_ONESIGNAL_APP_ID = "";/.test(index) && /const TOPS_PUSH_ALLOWED_ORIGIN = "";/.test(index),
-  "clone provider identifiers fail closed"
+  /const TOPS_CLONE_ONESIGNAL_APP_ID = "6b0400ce-cb2f-44d2-990d-c6ffb7a5db3a";/.test(index) &&
+    /const TOPS_PUSH_ALLOWED_ORIGIN = "https:\/\/transition-ops-openai-clone\.netlify\.app";/.test(index),
+  "clone provider identifiers are exact"
 );
 check(
   index.indexOf("5b25d308-645b-4459-8810-36ac09da88f5") === -1,
