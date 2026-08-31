@@ -6,7 +6,8 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "test:openai-migration": "node scripts/openai-migration-regression.js"
+    "test:openai-migration": "node scripts/openai-migration-regression.js",
+    "test:sw-privacy": "node scripts/sw-privacy-regression.js"
   },
   "dependencies": {
     "openai": "7.8.0"

@@ -1966,7 +1966,6 @@ async function run() {
   assert.match(uiSource, /HONEST GAPS/);
   assert.match(uiSource, /Civilian format omits optional details/);
   assert.match(uiSource, /aiR\.mode === "federal" \? "RESUME COPIED \\u2014 fill the \[brackets\]/);
-  assert.match(fs.readFileSync(path.join(root, "sw.js"), "utf8"), /transition-ops-v140/);
   assert.ok(auditCalls.every((call) => call.max_output_tokens === 4000) && calls.every((call) => call.store === false), "v0.8 preserves call caps and store:false");
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);

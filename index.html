@@ -126,18 +126,6 @@
 })();
 </script>
 
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "5b25d308-645b-4459-8810-36ac09da88f5",
-      allowLocalhostAsSecureOrigin: true,
-      serviceWorkerPath: "sw.js",
-      serviceWorkerParam: { scope: "/" }
-    });
-  });
-</script>
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--t-bg:#0E120B;--t-bg-card:#161B11;--t-border:#222A19;--t-nav-bg:#0f120b;--t-overlay:rgba(10,12,8,0.95);--t-body-text:#d4cbb3}
@@ -474,10 +462,42 @@ window.__IS_IFRAME = __EMBED_MODE;
 window.__safeGet = function(key) { if (__EMBED_MODE) return null; try { return localStorage.getItem(key); } catch(e) { return null; } };
 window.__safeSet = function(key, val) { if (__EMBED_MODE) return; try { localStorage.setItem(key, val); } catch(e) {} };
 
-// Service Worker — only outside iframe
+// Active app worker - only outside iframe. The prior root worker URL is kept
+// in memory for bounded migration evidence and is never persisted.
+window.__TOPS_PREVIOUS_ROOT_SW_URL = "";
+window.__TOPS_PWA_READY = null;
+window.__TOPS_PWA_ERROR = "";
 if (!__EMBED_MODE && "serviceWorker" in navigator) {
   window.addEventListener("load", function() {
-    navigator.serviceWorker.register("/sw.js").then(function(r){console.log("SW OK")}).catch(function(e){console.log("SW fail",e)});
+    window.__TOPS_PWA_READY = navigator.serviceWorker.getRegistration("/").then(function(existing) {
+      var priorWorker = existing && (existing.active || existing.waiting || existing.installing);
+      window.__TOPS_PREVIOUS_ROOT_SW_URL = priorWorker ? priorWorker.scriptURL : "";
+      try {
+        window.dispatchEvent(new CustomEvent("tops:previous-root-worker", {
+          detail: { scriptURL: window.__TOPS_PREVIOUS_ROOT_SW_URL }
+        }));
+      } catch (e) {}
+      return navigator.serviceWorker.register("/pwa-sw.js", {
+        scope: "/",
+        updateViaCache: "none"
+      });
+    }).then(function(registration) {
+      var controller = navigator.serviceWorker.controller;
+      if (controller && /\/pwa-sw\.js$/.test(controller.scriptURL)) return registration;
+      return new Promise(function(resolve) {
+        var onControllerChange = function() {
+          var next = navigator.serviceWorker.controller;
+          if (!next || !/\/pwa-sw\.js$/.test(next.scriptURL)) return;
+          navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
+          resolve(registration);
+        };
+        navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
+      });
+    }).catch(function(error) {
+      window.__TOPS_PWA_ERROR = String(error && error.message ? error.message : error);
+      console.log("SW fail", error);
+      return null;
+    });
   });
 }
 
@@ -488,6 +508,222 @@ const {
   useCallback,
   useRef
 } = React;
+
+const TOPS_PUSH_ENABLED = false;
+const TOPS_PUSH_NOTICE_VERSION = "sw-privacy-01-v1";
+const TOPS_PUSH_TIMING_MODE = "exact-day";
+const TOPS_PUSH_CHOICE_KEY = "tops_push_choice_v1";
+const TOPS_PUSH_ALLOWED_ORIGIN = "";
+const TOPS_CLONE_ONESIGNAL_APP_ID = "";
+const TOPS_PRIVACY_CONTACT = "dean@veteranbridgesolutions.com";
+const TOPS_PUSH_DISABLED_COPY = "Push setup is being updated on this test site.";
+const TOPS_PUSH_CHOICE_FIELDS = ["noticeVersion", "state", "timingMode"];
+const TOPS_PUSH_CHOICE_STATES = ["accepted", "browser-denied", "declined", "withdrawn"];
+
+function topsParsePushChoice(raw) {
+  if (!raw || typeof raw !== "string") return null;
+  try {
+    var choice = JSON.parse(raw);
+    if (!choice || typeof choice !== "object" || Array.isArray(choice)) return null;
+    var keys = Object.keys(choice).sort();
+    if (keys.join("|") !== TOPS_PUSH_CHOICE_FIELDS.join("|")) return null;
+    if (TOPS_PUSH_CHOICE_STATES.indexOf(choice.state) === -1) return null;
+    if (choice.noticeVersion !== TOPS_PUSH_NOTICE_VERSION) return null;
+    if (choice.timingMode !== TOPS_PUSH_TIMING_MODE) return null;
+    return choice;
+  } catch (e) {
+    return null;
+  }
+}
+
+function topsReadPushChoice() {
+  if (window.__IS_IFRAME) return null;
+  return topsParsePushChoice(window.__safeGet(TOPS_PUSH_CHOICE_KEY));
+}
+
+function topsWritePushChoice(state) {
+  if (window.__IS_IFRAME || TOPS_PUSH_CHOICE_STATES.indexOf(state) === -1) return null;
+  var choice = {
+    state: state,
+    noticeVersion: TOPS_PUSH_NOTICE_VERSION,
+    timingMode: TOPS_PUSH_TIMING_MODE
+  };
+  window.__safeSet(TOPS_PUSH_CHOICE_KEY, JSON.stringify(choice));
+  return choice;
+}
+
+function topsRemovePushChoice() {
+  if (window.__IS_IFRAME) return;
+  try { localStorage.removeItem(TOPS_PUSH_CHOICE_KEY); } catch (e) {}
+}
+
+function topsPushChoiceAccepted() {
+  var choice = topsReadPushChoice();
+  return !!choice && choice.state === "accepted";
+}
+
+function topsPushConfigReady() {
+  if (window.__IS_IFRAME || TOPS_PUSH_ENABLED !== true) return false;
+  if (!TOPS_PUSH_ALLOWED_ORIGIN || !TOPS_CLONE_ONESIGNAL_APP_ID) return false;
+  return window.location.origin === TOPS_PUSH_ALLOWED_ORIGIN;
+}
+
+function topsPriorRootWorkerIsLegacy(scriptURL) {
+  return /\/(?:sw|OneSignalSDKWorker)\.js$/.test(scriptURL || "");
+}
+
+async function topsUnregisterDedicatedPushWorker() {
+  if (window.__IS_IFRAME || !("serviceWorker" in navigator)) return;
+  var dedicatedScope = new URL("/push/onesignal/", window.location.origin).href;
+  var dedicatedScript = new URL("/push/onesignal/OneSignalSDKWorker.js", window.location.origin).href;
+  var registrations = await navigator.serviceWorker.getRegistrations();
+  await Promise.all(registrations.map(function(registration) {
+    if (registration.scope !== dedicatedScope) return false;
+    var workers = [registration.active, registration.waiting, registration.installing].filter(Boolean);
+    if (workers.length && !workers.some(function(worker) { return worker.scriptURL === dedicatedScript; })) return false;
+    return registration.unregister();
+  }));
+}
+
+function topsRemoveOneSignalScript() {
+  var script = document.getElementById("tops-onesignal-sdk");
+  if (script && script.parentNode) script.parentNode.removeChild(script);
+}
+
+function topsLoadOneSignalSdk() {
+  if (window.__IS_IFRAME) return Promise.reject(new Error("iframe-blocked"));
+  if (!topsPushChoiceAccepted()) return Promise.reject(new Error("push-choice-required"));
+  if (!topsPushConfigReady()) return Promise.reject(new Error("clone-push-disabled"));
+  if (window.__TOPS_ONESIGNAL_INSTANCE) return Promise.resolve(window.__TOPS_ONESIGNAL_INSTANCE);
+  if (window.__TOPS_ONESIGNAL_PROMISE) return window.__TOPS_ONESIGNAL_PROMISE;
+
+  window.__TOPS_ONESIGNAL_PROMISE = new Promise(function(resolve, reject) {
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(function(OneSignal) {
+      window.__TOPS_ONESIGNAL_INSTANCE = OneSignal;
+      resolve(OneSignal);
+    });
+
+    var existing = document.getElementById("tops-onesignal-sdk");
+    if (existing) return;
+    var script = document.createElement("script");
+    script.id = "tops-onesignal-sdk";
+    script.async = true;
+    script.src = "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";
+    script.onerror = function() {
+      window.__TOPS_ONESIGNAL_PROMISE = null;
+      topsRemoveOneSignalScript();
+      reject(new Error("onesignal-sdk-load-failed"));
+    };
+    document.head.appendChild(script);
+  });
+  return window.__TOPS_ONESIGNAL_PROMISE;
+}
+
+async function topsInitializeOneSignal() {
+  if (!topsPushChoiceAccepted() || !topsPushConfigReady()) throw new Error("clone-push-disabled");
+  var OneSignal = await topsLoadOneSignalSdk();
+  await OneSignal.setConsentRequired(true);
+  await OneSignal.init({
+    appId: TOPS_CLONE_ONESIGNAL_APP_ID,
+    requiresUserPrivacyConsent: true,
+    serviceWorkerPath: "push/onesignal/OneSignalSDKWorker.js",
+    serviceWorkerParam: { scope: "/push/onesignal/" },
+    welcomeNotification: { disable: true },
+    autoResubscribe: false
+  });
+  await OneSignal.setConsentGiven(true);
+  return OneSignal;
+}
+
+function topsDateToEpochDay(dateString) {
+  var match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateString || "");
+  if (!match) return null;
+  var year = Number(match[1]);
+  var month = Number(match[2]);
+  var day = Number(match[3]);
+  var utc = Date.UTC(year, month - 1, day);
+  var parsed = new Date(utc);
+  if (parsed.getUTCFullYear() !== year || parsed.getUTCMonth() !== month - 1 || parsed.getUTCDate() !== day) return null;
+  return Math.floor(utc / 86400000);
+}
+
+function topsPushFullyEnabled(OneSignal) {
+  return topsPushChoiceAccepted() &&
+    !!OneSignal &&
+    !!OneSignal.Notifications &&
+    OneSignal.Notifications.permission === true &&
+    !!OneSignal.User &&
+    !!OneSignal.User.PushSubscription &&
+    OneSignal.User.PushSubscription.optedIn === true;
+}
+
+async function topsWriteExactDayTag(OneSignal, dateString) {
+  if (!topsPushFullyEnabled(OneSignal)) return false;
+  var epochDay = topsDateToEpochDay(dateString);
+  if (epochDay === null) return false;
+  await OneSignal.User.addTag("ets_epoch_day", String(epochDay));
+  return true;
+}
+
+async function topsStopPushProcessing(nextState, OneSignal) {
+  var provider = OneSignal || window.__TOPS_ONESIGNAL_INSTANCE || null;
+  if (provider) {
+    try { await provider.User.removeTag("ets_epoch_day"); } catch (e) {}
+    try { await provider.User.PushSubscription.optOut(); } catch (e) {}
+    try { await provider.setConsentGiven(false); } catch (e) {}
+  }
+  await topsUnregisterDedicatedPushWorker();
+  if (nextState) topsWritePushChoice(nextState);
+  else topsRemovePushChoice();
+  topsRemoveOneSignalScript();
+  window.__TOPS_ONESIGNAL_INSTANCE = null;
+  window.__TOPS_ONESIGNAL_PROMISE = null;
+}
+
+async function topsStartPushEnrollment(dateString) {
+  if (!topsPushChoiceAccepted()) throw new Error("push-choice-required");
+  if (!topsPushConfigReady()) throw new Error("clone-push-disabled");
+  var OneSignal = await topsInitializeOneSignal();
+  await OneSignal.Notifications.requestPermission();
+  var permissionGranted = OneSignal.Notifications.permission === true;
+  if (!permissionGranted) {
+    await topsStopPushProcessing("browser-denied", OneSignal);
+    return { state: "browser-denied", permission: false, optedIn: false };
+  }
+  await OneSignal.User.PushSubscription.optIn();
+  if (OneSignal.User.PushSubscription.optedIn !== true) {
+    await topsStopPushProcessing(null, OneSignal);
+    throw new Error("push-opt-in-failed");
+  }
+  await topsWriteExactDayTag(OneSignal, dateString);
+  return { state: "enabled", permission: true, optedIn: true };
+}
+
+async function topsResumeAcceptedPush(dateString) {
+  if (!topsPushChoiceAccepted()) return { state: "missing" };
+  if (!topsPushConfigReady()) return { state: "disabled" };
+  var OneSignal = await topsInitializeOneSignal();
+  if (window.Notification && window.Notification.permission === "denied") {
+    await topsStopPushProcessing("browser-denied", OneSignal);
+    return { state: "browser-denied" };
+  }
+  if (!topsPushFullyEnabled(OneSignal)) return { state: "accepted" };
+  await topsWriteExactDayTag(OneSignal, dateString);
+  return { state: "enabled" };
+}
+
+async function topsDeclinePushChoice() {
+  topsWritePushChoice("declined");
+  await topsUnregisterDedicatedPushWorker();
+  topsRemoveOneSignalScript();
+  window.__TOPS_ONESIGNAL_INSTANCE = null;
+  window.__TOPS_ONESIGNAL_PROMISE = null;
+}
+
+async function topsWithdrawPushChoice() {
+  await topsStopPushProcessing("withdrawn", window.__TOPS_ONESIGNAL_INSTANCE || null);
+}
 
 // ═══════════════════════════════════════════════════════════════
 // TRANSITION OPS — PWA BUILD v3.0
@@ -4078,7 +4314,7 @@ function AboutModal(props) {
     style: {
       color: C.goldBright
     }
-  }, "Private."), " Your planning data — dates, ratings, checklists — stays on your device; we never see it. Anonymous usage analytics only. Optional email signup is used solely for update alerts and never sold.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", {
+  }, "Privacy."), " Push alerts are optional and currently disabled on this test site. The push boundary and legacy-browser exception are described below.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", {
     style: {
       color: C.goldBright
     }
@@ -4087,6 +4323,12 @@ function AboutModal(props) {
       color: C.goldBright
     }
   }, "Joint-force."), " Tools serve Soldiers, Sailors, Airmen, Marines, Guardians, and Coast Guardsmen. Active duty, Guard, Reserve, veterans, and military families."), /*#__PURE__*/React.createElement("div", {
+    style: sectionLabel
+  }, "PUSH ALERTS - CLONE STATUS"), /*#__PURE__*/React.createElement("p", {
+    style: bodyText
+  }, "Push alerts are disabled on this test site. This build moves new and migrated browsers to a OneSignal-free app worker. Earlier browsers may still use an older push setup that could have contacted OneSignal before the current choice was available. If push is enabled after separate clone validation and you agree, OneSignal will receive browser, device, network, session, notification-permission, and push-subscription data, plus your exact separation date for alert timing. Declining keeps the rest of Transition Ops available. Turning alerts off later stops future Transition Ops push processing on this browser but does not confirm deletion of records OneSignal may already hold. Privacy and deletion questions: ", /*#__PURE__*/React.createElement("strong", {
+    style: { color: C.goldBright }
+  }, TOPS_PRIVACY_CONTACT)), /*#__PURE__*/React.createElement("div", {
     style: sectionLabel
   }, "DISTRIBUTION"), /*#__PURE__*/React.createElement("p", {
     style: bodyText
@@ -4697,6 +4939,103 @@ function topsResumeLengthPlanSummary(plan) {
   return "Based on " + years + ", " + roles + " selected role" + (roles === 1 ? "" : "s") + ", and " + details + " confirmed experience detail" + (details === 1 ? "" : "s") + ", the adaptive setting recommends " + (plan.recommendedPages === 2 ? "two pages" : "one page") + ". The reviewed draft retained " + bullets + " supported experience bullet" + (bullets === 1 ? "" : "s") + ".";
 }
 
+function PushConsentModal(props) {
+  var C = props.C;
+  return React.createElement("div", {
+    role: "presentation",
+    style: {
+      position: "fixed",
+      inset: 0,
+      zIndex: 520,
+      background: "rgba(0,0,0,0.88)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 16
+    }
+  }, React.createElement("div", {
+    role: "dialog",
+    "aria-modal": "true",
+    "aria-labelledby": "tops-push-consent-title",
+    style: {
+      width: "100%",
+      maxWidth: 620,
+      maxHeight: "calc(100vh - 32px)",
+      overflowY: "auto",
+      background: C.bgCard,
+      border: "1px solid " + C.gold,
+      borderTop: "4px solid " + C.goldBright,
+      borderRadius: 8,
+      padding: 20,
+      boxShadow: "0 20px 60px rgba(0,0,0,0.75)"
+    }
+  }, React.createElement("div", {
+    id: "tops-push-consent-title",
+    style: {
+      fontFamily: "'Oswald', sans-serif",
+      fontSize: 22,
+      fontWeight: 700,
+      letterSpacing: 1,
+      color: C.textPrimary,
+      marginBottom: 14
+    }
+  }, "Choose whether to use push alerts"), React.createElement("p", {
+    style: { fontSize: 14, color: C.textBody, lineHeight: 1.65, marginBottom: 12 }
+  }, "Transition Ops can send time-sensitive transition alerts to this browser. If you continue, Transition Ops will connect this browser to OneSignal. OneSignal will receive browser, device, network, session, notification-permission, and push-subscription data, plus your exact separation date, so alerts can be timed to your transition."), React.createElement("p", {
+    style: { fontSize: 14, color: C.textBody, lineHeight: 1.65, marginBottom: 14 }
+  }, "You can decline and keep using Transition Ops. You can turn alerts off later. Your choice to let Transition Ops use OneSignal is separate from your browser's notification permission; your browser will ask next whether notifications may appear."), props.legacyDetected && React.createElement("div", {
+    style: {
+      background: C.bgWarning,
+      border: "1px solid " + C.gold,
+      borderRadius: 6,
+      padding: 12,
+      marginBottom: 14
+    }
+  }, React.createElement("div", {
+    style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.goldBright, letterSpacing: 1, marginBottom: 5 }
+  }, "Earlier push setup detected"), React.createElement("div", {
+    style: { fontSize: 12, color: C.textBody, lineHeight: 1.55 }
+  }, "This browser previously used an older Transition Ops push setup that may have contacted OneSignal before the current choice was available. Declining or turning alerts off may stop existing alerts. This choice does not confirm deletion of records OneSignal may already hold.")), React.createElement("div", {
+    style: { display: "flex", gap: 10, flexWrap: "wrap" }
+  }, React.createElement("button", {
+    onClick: props.onAgree,
+    disabled: props.busy,
+    style: {
+      flex: "1 1 250px",
+      minHeight: 52,
+      padding: "11px 14px",
+      background: C.green,
+      border: "1px solid " + C.greenBright,
+      borderRadius: 6,
+      color: "#FFFFFF",
+      fontFamily: "'Oswald', sans-serif",
+      fontSize: 11,
+      fontWeight: 700,
+      letterSpacing: 1,
+      cursor: props.busy ? "default" : "pointer",
+      opacity: props.busy ? 0.6 : 1
+    }
+  }, props.busy ? "STARTING..." : "AGREE AND CONTINUE TO BROWSER PERMISSION"), React.createElement("button", {
+    onClick: props.onDecline,
+    disabled: props.busy,
+    style: {
+      flex: "1 1 250px",
+      minHeight: 52,
+      padding: "11px 14px",
+      background: C.bgWarning,
+      border: "1px solid " + C.gold,
+      borderRadius: 6,
+      color: C.goldBright,
+      fontFamily: "'Oswald', sans-serif",
+      fontSize: 11,
+      fontWeight: 700,
+      letterSpacing: 1,
+      cursor: props.busy ? "default" : "pointer",
+      opacity: props.busy ? 0.6 : 1
+    }
+  }, "DECLINE PUSH ALERTS"))));
+}
+
 function App() {
   const [theme, setTheme] = useState(() => {
     try {
@@ -4991,7 +5330,20 @@ function App() {
   const [resourceFilter, setResourceFilter] = useState({ category: "ALL", cost: "ALL", eligibility: "ALL" });
   const [subTab, setSubTab] = useState("vsos");
   const [showInstallBanner, setShowInstallBanner] = useState(false);
-  const [notifStatus, setNotifStatus] = useState("default");
+  const [pushChoiceState, setPushChoiceState] = useState(function() {
+    var choice = topsReadPushChoice();
+    return choice ? choice.state : "missing";
+  });
+  const [pushFlowState, setPushFlowState] = useState(TOPS_PUSH_ENABLED ? "idle" : "disabled");
+  const [showPushConsent, setShowPushConsent] = useState(false);
+  const [pushBusy, setPushBusy] = useState(false);
+  const [browserPermission, setBrowserPermission] = useState(function() {
+    if (window.__IS_IFRAME || !("Notification" in window)) return "unsupported";
+    return window.Notification.permission;
+  });
+  const [legacyPushDetected, setLegacyPushDetected] = useState(function() {
+    return topsPriorRootWorkerIsLegacy(window.__TOPS_PREVIOUS_ROOT_SW_URL || "");
+  });
   const [exploredOnly] = useState(function() { try { return window.__safeGet("tops_onboarded") === "explored"; } catch (e) { return false; } });
   // v72 SITREP delta — computed once per app load, then the snapshot advances
   const [sitrepDelta] = useState(function() {
@@ -5393,19 +5745,33 @@ function App() {
       if (savedDismissed) setDismissedNotifs(new Set(JSON.parse(savedDismissed)));
       const savedEmail = window.__safeGet("emailSubscribed");
       if (savedEmail === "true") setEmailSubmitted(true);
-      if (window.OneSignal) {
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        window.OneSignalDeferred.push(async function (OneSignal) {
-          try {
-            if (OneSignal.Notifications.permission) setNotifStatus("granted");
-          } catch (e) {}
+      if ("Notification" in window) setBrowserPermission(window.Notification.permission);
+      const savedChoice = topsReadPushChoice();
+      setPushChoiceState(savedChoice ? savedChoice.state : "missing");
+      if (TOPS_PUSH_ENABLED && savedChoice && savedChoice.state === "accepted") {
+        topsResumeAcceptedPush(savedETS || "").then(function(result) {
+          setPushFlowState(result.state);
+        }).catch(function() {
+          setPushFlowState("error");
         });
-      } else if ("Notification" in window) {
-        setNotifStatus(Notification.permission);
+      } else {
+        setPushFlowState(TOPS_PUSH_ENABLED ? "idle" : "disabled");
       }
     } catch (e) {
       console.log("Load error:", e);
     }
+  }, []);
+
+  useEffect(function() {
+    if (window.__IS_IFRAME) return;
+    var handlePriorWorker = function(event) {
+      var scriptURL = event && event.detail ? event.detail.scriptURL : "";
+      setLegacyPushDetected(topsPriorRootWorkerIsLegacy(scriptURL));
+    };
+    window.addEventListener("tops:previous-root-worker", handlePriorWorker);
+    return function() {
+      window.removeEventListener("tops:previous-root-worker", handlePriorWorker);
+    };
   }, []);
 
   // Save task progress
@@ -5469,101 +5835,16 @@ function App() {
     window.addEventListener("appinstalled", handler);
     return () => window.removeEventListener("appinstalled", handler);
   }, []);
-  // Save ETS date and schedule notifications
-  // Centralized OneSignal tagging — refreshes all tags based on current state
-  // Called on app mount and any time ETS changes. Self-healing: keeps days_out/months_out accurate.
-  const __updateOneSignalTags = useCallback(() => {
-    if (window.__IS_IFRAME) return;
-    if (!window.OneSignal) return;
-
-    let etsDate = "";
-    try {
-      etsDate = window.__safeGet("etsDate") || window.__safeGet("tops_sep_date") || "";
-    } catch (e) {}
-
-    const nowIso = new Date().toISOString();
-    const tags = { last_active: nowIso };
-
-    if (etsDate) {
-      const ets = new Date(etsDate);
-      const now = new Date();
-      const diffDays = Math.ceil((ets - now) / (1000 * 60 * 60 * 24));
-      const diffMonths = Math.ceil((ets - now) / (1000 * 60 * 60 * 24 * 30));
-      tags.ets_date = etsDate;
-      tags.ets_epoch_day = String(Math.floor(ets.getTime() / 86400000));
-      tags.days_out = String(diffDays);
-      tags.months_out = String(diffMonths);
-      tags.status = diffMonths <= 0 ? "post-sep" : "active";
-    }
-
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    window.OneSignalDeferred.push(async function(OneSignal) {
-      try {
-        await OneSignal.User.addTags(tags);
-      } catch (e) {}
-    });
-  }, []);
-  // Mount-time tag refresh — fires ~1500ms after app loads to give OneSignal SDK time to init
-  // This is what makes tags self-healing: every app open re-syncs days_out, months_out, status
-  useEffect(() => {
-    if (window.__IS_IFRAME) return;
-    const t = setTimeout(() => {
-      __updateOneSignalTags();
-    }, 1500);
-    return () => clearTimeout(t);
-  }, [__updateOneSignalTags]);
   const handleETSChange = useCallback(dateStr => {
     setSeparationDate(dateStr);
     if (window.__IS_IFRAME) return;
     try {
       window.__safeSet("etsDate", dateStr);
     } catch (e) {}
-    // Tag user in OneSignal with ETS data for segmented push notifications
-    if (dateStr && window.OneSignal) {
-      const ets = new Date(dateStr);
-      const now = new Date();
-      const diffMonths = Math.ceil((ets - now) / (1000 * 60 * 60 * 24 * 30));
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      window.OneSignalDeferred.push(async function (OneSignal) {
-        try {
-          await OneSignal.User.addTags({
-            ets_date: dateStr,
-            months_out: String(diffMonths),
-            status: diffMonths <= 0 ? "post-sep" : "active"
-          });
-        } catch (e) {}
-      });
+    if (TOPS_PUSH_ENABLED && pushFlowState === "enabled" && window.__TOPS_ONESIGNAL_INSTANCE && dateStr) {
+      topsWriteExactDayTag(window.__TOPS_ONESIGNAL_INSTANCE, dateStr).catch(function() {});
     }
-    if (!window.__IS_IFRAME && notifStatus === "granted" && dateStr && navigator.serviceWorker && navigator.serviceWorker.controller) {
-      const ets = new Date(dateStr);
-      const now = new Date();
-      const diffMonths = Math.ceil((ets - now) / (1000 * 60 * 60 * 24 * 30));
-      const alerts = NOTIFICATIONS.filter(n => n.monthsOut >= diffMonths - 1 && n.monthsOut <= diffMonths + 1);
-      const lastShown = function () {
-        try {
-          return window.__safeGet("lastNotifDate");
-        } catch (e) {
-          return null;
-        }
-      }();
-      const today = new Date().toDateString();
-      if (lastShown !== today && alerts.length > 0) {
-        try {
-          window.__safeSet("lastNotifDate", today);
-        } catch (e) {}
-        alerts.slice(0, 0).forEach((n, i) => { // v72: on-open OS notification burst disabled — the in-app ALERTS panel carries these; push is reserved for real threshold crossings
-          setTimeout(() => {
-            navigator.serviceWorker.controller.postMessage({
-              type: "SHOW_NOTIFICATION",
-              title: n.title,
-              body: n.body,
-              tag: "ets-" + n.id
-            });
-          }, (i + 1) * 2000);
-        });
-      }
-    }
-  }, [notifStatus]);
+  }, [pushFlowState]);
   const handleInstall = useCallback(() => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
@@ -5839,43 +6120,179 @@ function App() {
       installBlock
     );
   };
-  const handleEnableNotifs = useCallback(() => {
-    // Step 1: Confirm button works
-    if (window.__trackEvent) window.__trackEvent('notif_enable_tapped', {});
-    showToast("Requesting notification permission...");
+  const beginPushEnrollment = useCallback(async function() {
+    if (window.__IS_IFRAME || !topsPushConfigReady()) {
+      setPushFlowState("disabled");
+      showToast(TOPS_PUSH_DISABLED_COPY);
+      return;
+    }
+    setPushBusy(true);
+    setPushFlowState("starting");
+    try {
+      var result = await topsStartPushEnrollment(separationDate);
+      setBrowserPermission(result.permission ? "granted" : "denied");
+      setPushChoiceState(result.state === "enabled" ? "accepted" : result.state);
+      setPushFlowState(result.state);
+      if (result.state === "enabled") {
+        showToast("Push alerts are on for this browser.");
+      } else {
+        showToast("Your browser blocked notifications. Change browser settings before trying again.");
+      }
+    } catch (error) {
+      await topsStopPushProcessing(null, window.__TOPS_ONESIGNAL_INSTANCE || null);
+      setPushChoiceState("missing");
+      setPushFlowState("error");
+      showToast("Push setup could not be completed. No alert subscription was kept.");
+    } finally {
+      setPushBusy(false);
+      setShowPushConsent(false);
+    }
+  }, [separationDate, showToast]);
 
-    // Step 2: Check iOS standalone
+  const handleEnableNotifs = useCallback(function() {
+    if (window.__IS_IFRAME) return;
+    if (!TOPS_PUSH_ENABLED || !topsPushConfigReady()) {
+      setPushFlowState("disabled");
+      showToast(TOPS_PUSH_DISABLED_COPY);
+      return;
+    }
     var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     var isStandalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
     if (isIOS && !isStandalone) {
-      if (window.__trackEvent) window.__trackEvent('notif_blocked_ios_install', {});
-      setTimeout(function () {
-        showToast("INSTALL APP FIRST — Add to Home Screen, then enable alerts.");
-      }, 500);
+      showToast("INSTALL APP FIRST - Add to Home Screen, then enable alerts.");
       return;
     }
-
-    // Step 3: Request permission using native API
-    if ("Notification" in window) {
-      Notification.requestPermission().then(function (perm) {
-        setNotifStatus(perm);
-        if (window.__trackEvent) window.__trackEvent('notif_permission_result', { result: perm });
-        if (perm === "granted") {
-          showToast("ALERTS ENABLED — You will receive transition reminders.");
-        } else if (perm === "denied") {
-          showToast("BLOCKED — Go to Settings > Notifications to allow.");
-        } else {
-          showToast("Permission dismissed. Try again.");
-        }
-      }).catch(function (err) {
-        showToast("Error: " + err.message);
-      });
-    } else {
-      setTimeout(function () {
-        showToast("Notifications not available on this browser.");
-      }, 500);
+    if (topsPushChoiceAccepted()) {
+      beginPushEnrollment();
+      return;
     }
+    setShowPushConsent(true);
+  }, [beginPushEnrollment, showToast]);
+
+  const handleConfirmPush = useCallback(async function() {
+    if (window.__IS_IFRAME || !topsPushConfigReady()) {
+      setShowPushConsent(false);
+      setPushFlowState("disabled");
+      showToast(TOPS_PUSH_DISABLED_COPY);
+      return;
+    }
+    topsWritePushChoice("accepted");
+    setPushChoiceState("accepted");
+    await beginPushEnrollment();
+  }, [beginPushEnrollment, showToast]);
+
+  const handleDeclinePush = useCallback(async function() {
+    if (window.__IS_IFRAME) return;
+    setPushBusy(true);
+    await topsDeclinePushChoice();
+    setPushChoiceState("declined");
+    setPushFlowState("declined");
+    setShowPushConsent(false);
+    setPushBusy(false);
+    showToast("Push alerts are off for this browser. You can keep using Transition Ops.");
   }, [showToast]);
+
+  const handleWithdrawPush = useCallback(async function() {
+    if (window.__IS_IFRAME) return;
+    setPushBusy(true);
+    await topsWithdrawPushChoice();
+    setPushChoiceState("withdrawn");
+    setPushFlowState("withdrawn");
+    setBrowserPermission("Notification" in window ? window.Notification.permission : "unsupported");
+    setPushBusy(false);
+    showToast("Transition Ops alerts are off. Browser permission and existing OneSignal records were not deleted.");
+    setTimeout(function() { window.location.reload(); }, 900);
+  }, [showToast]);
+
+  const renderPushDashboardControl = function() {
+    if (window.__IS_IFRAME) return null;
+    if (!TOPS_PUSH_ENABLED) {
+      return React.createElement("div", {
+        style: {
+          flex: 1,
+          padding: "10px 12px",
+          background: C.bgWarning,
+          border: "1px solid #8B6914",
+          borderRadius: 8,
+          display: "flex",
+          alignItems: "center",
+          gap: 8
+        }
+      }, React.createElement("span", { style: { fontSize: 16 } }, "\uD83D\uDD14"), React.createElement("div", null,
+        React.createElement("div", {
+          style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.goldBright, letterSpacing: 1 }
+        }, "PUSH ALERTS PAUSED"),
+        React.createElement("div", { style: { fontSize: 10, color: C.textSecondary } }, TOPS_PUSH_DISABLED_COPY)
+      ));
+    }
+    if (pushFlowState === "enabled") {
+      return React.createElement("div", {
+        style: {
+          flex: 1,
+          padding: "10px 12px",
+          background: C.gradStart,
+          border: "1px solid " + C.green,
+          borderRadius: 8,
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 8,
+          flexWrap: "wrap"
+        }
+      }, React.createElement("span", { style: { fontSize: 16 } }, "\u2705"), React.createElement("div", { style: { flex: 1 } },
+        React.createElement("div", {
+          style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.greenBright, letterSpacing: 1 }
+        }, "ALERTS ACTIVE"),
+        React.createElement("div", { style: { fontSize: 10, color: C.textSecondary, lineHeight: 1.45 } }, "Push alerts are on for this browser. Transition Ops uses OneSignal to deliver them. Your Transition Ops push choice and browser notification permission can be changed separately.")
+      ), React.createElement("button", {
+        onClick: handleWithdrawPush,
+        disabled: pushBusy,
+        style: {
+          flexBasis: "100%",
+          padding: "8px 10px",
+          background: "transparent",
+          border: "1px solid " + C.green,
+          borderRadius: 5,
+          color: C.greenBright,
+          fontFamily: "'Oswald', sans-serif",
+          fontSize: 10,
+          fontWeight: 700,
+          letterSpacing: 1,
+          cursor: pushBusy ? "default" : "pointer"
+        }
+      }, "TURN OFF TRANSITION OPS ALERTS"), React.createElement("div", {
+        style: { flexBasis: "100%", fontSize: 9.5, color: C.inactive, lineHeight: 1.4 }
+      }, "Stops Transition Ops from using OneSignal for alerts on this browser. Browser notification permission is managed separately."));
+    }
+    var recoveryCopy = pushFlowState === "browser-denied" || browserPermission === "denied"
+      ? "Your browser blocked notifications, so alerts are off for this device. Transition Ops has also stopped OneSignal push processing for this browser. Browser notification permission is separate; change it in browser settings before trying again."
+      : pushChoiceState === "withdrawn"
+        ? "Transition Ops alerts are off for this browser. Transition Ops will not restart OneSignal push processing unless you enable alerts again. Your browser notification permission has not changed. This action does not confirm deletion of records OneSignal may already hold."
+        : pushChoiceState === "declined"
+          ? "Push alerts are off for this browser. You can keep using Transition Ops and enable alerts later from the alerts control."
+          : "Review the data notice, then choose whether to continue.";
+    return React.createElement("button", {
+      onClick: handleEnableNotifs,
+      disabled: pushBusy,
+      style: {
+        flex: 1,
+        padding: "10px 12px",
+        background: C.bgWarning,
+        border: "1px solid #8B6914",
+        borderRadius: 8,
+        cursor: pushBusy ? "default" : "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+        opacity: pushBusy ? 0.6 : 1
+      }
+    }, React.createElement("span", { style: { fontSize: 16 } }, "\uD83D\uDD14"), React.createElement("div", { style: { textAlign: "left" } },
+      React.createElement("div", {
+        style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.goldBright, letterSpacing: 1 }
+      }, "ENABLE ALERTS"),
+      React.createElement("div", { style: { fontSize: 10, color: C.textSecondary } }, recoveryCopy)
+    ));
+  };
   const toggleTask = useCallback((milestoneId, taskId) => {
     setMilestones(prev => prev.map(m => m.id === milestoneId ? {
       ...m,
@@ -7508,68 +7925,7 @@ whatsNewUnseen && React.createElement("div", {
       gap: 8,
       marginBottom: 12
     }
-  }, notifStatus !== "granted" && /*#__PURE__*/React.createElement("button", {
-    onClick: handleEnableNotifs,
-    style: {
-      flex: 1,
-      padding: "10px 12px",
-      background: C.bgWarning,
-      border: "1px solid #8B6914",
-      borderRadius: 8,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 8
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 16
-    }
-  }, "\uD83D\uDD14"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "left"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: "'Oswald', sans-serif",
-      fontSize: 12,
-      color: C.goldBright,
-      letterSpacing: 1
-    }
-  }, "ENABLE ALERTS"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: C.textSecondary
-    }
-  }, "Install app first, then enable"))), notifStatus === "granted" && /*#__PURE__*/React.createElement("div", {
-    style: {
-      flex: 1,
-      padding: "10px 12px",
-      background: C.gradStart,
-      border: "1px solid " + C.green,
-      borderRadius: 8,
-      display: "flex",
-      alignItems: "center",
-      gap: 8
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 16
-    }
-  }, "\u2705"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: "'Oswald', sans-serif",
-      fontSize: 12,
-      color: "#6B8E23",
-      letterSpacing: 1
-    }
-  }, "ALERTS ACTIVE"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: C.textSecondary
-    }
-  }, "Notifications synced to your ETS date"))), /*#__PURE__*/React.createElement("button", {
+  }, renderPushDashboardControl(), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       if (navigator.share) {
         navigator.share({
@@ -14060,9 +14416,9 @@ whatsNewUnseen && React.createElement("div", {
   activeTab === "critical" && /*#__PURE__*/React.createElement("div", null, (function() {
     var daysOut = daysToETSDate(separationDate);
     var windows = filterCriticalWindows(userStatus);
-    var pushNudge = (separationDate && notifStatus !== "granted") ? /*#__PURE__*/React.createElement("div", {
+    var pushNudge = (separationDate && !window.__IS_IFRAME && pushFlowState !== "enabled") ? /*#__PURE__*/React.createElement("div", {
       style: { background: "rgba(240,196,25,0.08)", border: "1px solid " + C.border, borderLeft: "3px solid " + C.accent, borderRadius: 12, padding: "13px 15px", marginBottom: 14, display: "flex", alignItems: "center", gap: 12 }
-    }, /*#__PURE__*/React.createElement("div", { style: { minWidth: 0, flex: 1 } }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.textPrimary, fontWeight: 600, letterSpacing: 0.5 } }, "DON'T MISS THESE WINDOWS"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.5, marginTop: 3 } }, "Get a reminder before each window closes \u2014 timed to your date. Some can't be reopened once they pass.")), /*#__PURE__*/React.createElement("button", { onClick: handleEnableNotifs, style: { flexShrink: 0, background: C.accent, color: C.bg, border: "none", borderRadius: 8, padding: "10px 14px", fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: "pointer" } }, "REMIND ME")) : null;
+    }, /*#__PURE__*/React.createElement("div", { style: { minWidth: 0, flex: 1 } }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.textPrimary, fontWeight: 600, letterSpacing: 0.5 } }, "DON'T MISS THESE WINDOWS"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.5, marginTop: 3 } }, TOPS_PUSH_ENABLED ? "Get a reminder before each window closes - timed to your date. Review the data notice before choosing." : TOPS_PUSH_DISABLED_COPY)), TOPS_PUSH_ENABLED ? /*#__PURE__*/React.createElement("button", { onClick: handleEnableNotifs, disabled: pushBusy, style: { flexShrink: 0, background: C.accent, color: C.bg, border: "none", borderRadius: 8, padding: "10px 14px", fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: pushBusy ? "default" : "pointer", opacity: pushBusy ? 0.6 : 1 } }, "REMIND ME") : /*#__PURE__*/React.createElement("span", { style: { flexShrink: 0, border: "1px solid " + C.border, borderRadius: 8, padding: "9px 12px", fontFamily: "'Oswald', sans-serif", fontSize: 10, color: C.inactive, letterSpacing: 1 } }, "UPDATE IN PROGRESS")) : null;
     var visible = criticalFilter === "ALL" ? windows.concat([SCRA_WINDOW]) : windows.filter(function(w) {
       var s = getCriticalWindowStatus(w, daysOut, C);
       if (criticalFilter === "OPEN") return s.state === "open" || s.state === "open_early" || s.state === "closing" || s.state === "closing_critical";
@@ -14899,6 +15255,14 @@ whatsNewUnseen && React.createElement("div", {
       );
     })
   ),
+
+  !window.__IS_IFRAME && TOPS_PUSH_ENABLED && showPushConsent && /*#__PURE__*/React.createElement(PushConsentModal, {
+    C: C,
+    busy: pushBusy,
+    legacyDetected: legacyPushDetected,
+    onAgree: handleConfirmPush,
+    onDecline: handleDeclinePush
+  }),
 
   toast && /*#__PURE__*/React.createElement("div", {
     style: {
