@@ -1,4 +1,4 @@
-const CACHE_NAME = "transition-ops-v141";
+const CACHE_NAME = "transition-ops-v142";
 const CACHE_PREFIX = "transition-ops-v";
 const NETWORK_TIMEOUT_MS = 3500;
 
@@ -74,7 +74,10 @@ function isReviewedRequest(request) {
 function cacheKeyFor(request) {
   if (request.mode !== "navigate") return request;
   var url = new URL(request.url);
-  if (url.pathname === "/va-math/" || url.pathname === "/bdd-timeline/") {
+  if (url.pathname === "/va-math/" ||
+      url.pathname === "/bdd-timeline/" ||
+      url.pathname === "/erg-handoff.html" ||
+      url.pathname === "/erg-employer-brief.html") {
     return url.pathname;
   }
   return "/";

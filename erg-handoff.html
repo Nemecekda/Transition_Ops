@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Bring Transition Ops to Your ERG or BRG</title>
+  <meta name="description" content="A self-serve, client-neutral way to share Transition Ops with an ERG, BRG, veteran network, or people team.">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0d1209;
+      --panel: #171d12;
+      --panel-soft: #202817;
+      --text: #f5f0e1;
+      --body: #d4cbb3;
+      --muted: #aaa38f;
+      --gold: #c9b45a;
+      --gold-bright: #daa520;
+      --green: #8bb83c;
+      --border: #3b432f;
+      --focus: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--body);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    a { color: var(--green); }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -80px;
+      padding: 10px 14px;
+      background: var(--text);
+      color: var(--bg);
+      z-index: 10;
+    }
+
+    .skip-link:focus { top: 12px; }
+
+    .test-banner {
+      background: #5a4310;
+      color: #ffffff;
+      padding: 9px 16px;
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    header,
+    main,
+    footer {
+      width: min(880px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    header { padding: 28px 0 18px; }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 26px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: var(--text);
+      line-height: 1.18;
+    }
+
+    h1 {
+      margin: 8px 0 14px;
+      font-size: clamp(2rem, 6vw, 3.4rem);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.45rem;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .lede {
+      max-width: 720px;
+      margin: 0;
+      font-size: 1.08rem;
+    }
+
+    .panel {
+      margin: 18px 0;
+      padding: clamp(20px, 4vw, 32px);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--gold);
+      border-radius: 8px;
+    }
+
+    .privacy-line {
+      margin: 18px 0 0;
+      padding: 14px 16px;
+      background: var(--panel-soft);
+      border-left: 4px solid var(--green);
+      color: var(--text);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 22px 0 12px;
+    }
+
+    .action {
+      display: flex;
+      min-height: 54px;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 14px;
+      border: 2px solid var(--gold);
+      border-radius: 6px;
+      background: var(--gold);
+      color: #111508;
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      line-height: 1.25;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .action.secondary {
+      background: transparent;
+      color: var(--text);
+    }
+
+    .action:hover { filter: brightness(1.12); }
+
+    .status {
+      min-height: 1.6em;
+      margin: 10px 0 0;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .message-preview {
+      margin-top: 16px;
+      padding: 18px;
+      background: #0a0e07;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--body);
+      white-space: pre-line;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid .panel { margin: 0; }
+
+    ul,
+    ol { padding-left: 1.35rem; }
+
+    li + li { margin-top: 8px; }
+
+    .boundary-list strong { color: var(--text); }
+
+    .fine-print {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    footer {
+      padding: 24px 0 44px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      text-align: center;
+    }
+
+    @media (max-width: 720px) {
+      .actions,
+      .grid { grid-template-columns: 1fr; }
+
+      .action { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+
+    @media print {
+      .skip-link,
+      .test-banner,
+      .actions,
+      .status,
+      .back-link { display: none !important; }
+
+      body {
+        background: #ffffff;
+        color: #111111;
+      }
+
+      header,
+      main,
+      footer { width: 100%; }
+
+      h1,
+      h2,
+      h3,
+      .privacy-line { color: #111111; }
+
+      .panel,
+      .message-preview,
+      .privacy-line {
+        background: #ffffff;
+        border-color: #555555;
+      }
+
+      a { color: #111111; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="test-banner" role="status">ISOLATED CLONE TEST - NOT APPROVED FOR EMPLOYER DISTRIBUTION</div>
+
+  <header>
+    <a class="back-link" href="/">&larr; Back to Transition Ops</a>
+    <div class="eyebrow">Military-connected workplace resource</div>
+    <h1>Bring Transition Ops to Your ERG / BRG</h1>
+    <p class="lede">Give your employee resource group, business resource group, veteran network, or people team a client-neutral brief to review.</p>
+  </header>
+
+  <main id="main">
+    <section class="panel" aria-labelledby="start-heading">
+      <h2 id="start-heading">Start the conversation without becoming a lead</h2>
+      <p>Transition Ops is a free public planning resource for service members, veterans, Guard and Reserve members, military spouses, caregivers, and families.</p>
+      <p class="privacy-line">This handoff does not ask for your name, employer, employee ID, or group contact. You choose where to send the material. Through this package, your employer does not receive your Transition Ops plan, resume, prompts, benefits activity, readiness, or usage.</p>
+
+      <div class="actions" aria-label="Sharing actions">
+        <button class="action" id="copy-note" type="button">COPY A SHORT NOTE</button>
+        <a class="action secondary" href="/erg-employer-brief.html" target="_blank" rel="noopener">OPEN EMPLOYER BRIEF</a>
+        <button class="action secondary" id="copy-link" type="button">COPY THE PUBLIC LINK</button>
+      </div>
+      <p class="status" id="copy-status" role="status" aria-live="polite"></p>
+      <noscript><p class="fine-print">Copy controls require JavaScript. The employer brief and public Transition Ops link remain available.</p></noscript>
+    </section>
+
+    <section class="panel" aria-labelledby="message-heading">
+      <h2 id="message-heading">The note your ERG or BRG receives</h2>
+      <div class="message-preview" id="message-preview">Subject: Resource for [COMPANY / ERG-BRG NAME] to review
+
+I found Transition Ops, a free public transition-planning resource for service members, veterans, Guard and Reserve members, military spouses, caregivers, and families. Could [COMPANY / ERG-BRG NAME] review the employer brief and consider adding the direct public link to our existing resources?
+
+The proposed employer package is static content and a direct public link. It does not give the employer access to an individual's Transition Ops plan, resume, prompts, benefits activity, readiness, or usage. Transition Ops remains separate from employer systems.</div>
+      <p class="fine-print">Copy the note, then replace the bracketed company or group name inside your own email or collaboration tool. Transition Ops does not collect that value.</p>
+    </section>
+
+    <div class="grid">
+      <section class="panel" aria-labelledby="next-heading">
+        <h2 id="next-heading">What happens next</h2>
+        <ol>
+          <li>You send the note and client-neutral brief through a channel you choose.</li>
+          <li>Your organization identifies its ERG/BRG owner and normal reviewers.</li>
+          <li>The organization may add an approved static resource card and direct public link.</li>
+          <li>No VBS account, member list, or Transition Ops usage report is required.</li>
+        </ol>
+      </section>
+
+      <section class="panel" aria-labelledby="no-group-heading">
+        <h2 id="no-group-heading">No ERG or BRG yet?</h2>
+        <p>Send the same brief to an existing veteran or military hiring program, employee-experience team, people or HR partner, or another workplace resource owner.</p>
+        <p>This handoff asks the organization to review a public resource. It does not promise to create or operate a new employee group.</p>
+      </section>
+    </div>
+
+    <section class="panel boundary-list" aria-labelledby="boundary-heading">
+      <h2 id="boundary-heading">The boundary stays intact</h2>
+      <ul>
+        <li><strong>No form or referral record:</strong> Transition Ops does not ask where you work or who leads your group.</li>
+        <li><strong>No personalized link:</strong> the public link is exactly <a href="https://transitionops.org">https://transitionops.org</a>.</li>
+        <li><strong>No employer dashboard:</strong> the package does not report individual or group activity.</li>
+        <li><strong>No required disclosure:</strong> sharing and use remain optional.</li>
+        <li><strong>No anonymity promise:</strong> an employer-managed device, browser, network, collaboration platform, or security tool may create ordinary employer-side records outside this package.</li>
+      </ul>
+      <p class="fine-print">Transition Ops is a separate public service with its own provider and privacy practices. This employer-package boundary does not mean the public app has no data flows. Review About &amp; Privacy in the app before using online features.</p>
+    </section>
+  </main>
+
+  <footer>
+    Transition Ops remains free to the public. This clone fixture creates no client tenant, member report, or employer integration.
+  </footer>
+
+  <script>
+    (function() {
+      "use strict";
+
+      var publicLink = "https://transitionops.org";
+      var memberNote = "Subject: Resource for [COMPANY / ERG-BRG NAME] to review\n\n" +
+        "I found Transition Ops, a free public transition-planning resource for service members, veterans, Guard and Reserve members, military spouses, caregivers, and families. Could [COMPANY / ERG-BRG NAME] review the employer brief and consider adding the direct public link to our existing resources?\n\n" +
+        "The proposed employer package is static content and a direct public link. It does not give the employer access to an individual's Transition Ops plan, resume, prompts, benefits activity, readiness, or usage. Transition Ops remains separate from employer systems.";
+
+      var status = document.getElementById("copy-status");
+
+      function fallbackCopy(value) {
+        var helper = document.createElement("textarea");
+        helper.value = value;
+        helper.setAttribute("readonly", "");
+        helper.style.position = "fixed";
+        helper.style.opacity = "0";
+        document.body.appendChild(helper);
+        helper.select();
+        var copied = document.execCommand("copy");
+        document.body.removeChild(helper);
+        return copied;
+      }
+
+      function copyValue(value, successMessage) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(value).then(function() {
+            status.textContent = successMessage;
+          }).catch(function() {
+            status.textContent = fallbackCopy(value) ? successMessage : "Copy failed. Select the text above and copy it manually.";
+          });
+          return;
+        }
+        status.textContent = fallbackCopy(value) ? successMessage : "Copy failed. Select the text above and copy it manually.";
+      }
+
+      document.getElementById("copy-note").addEventListener("click", function() {
+        copyValue(memberNote, "NOTE COPIED - YOU CHOOSE WHERE TO SEND IT");
+      });
+
+      document.getElementById("copy-link").addEventListener("click", function() {
+        copyValue(publicLink, "PUBLIC LINK COPIED - NO REFERRAL OR CLIENT CODE ADDED");
+      });
+    }());
+  </script>
+</body>
+</html>

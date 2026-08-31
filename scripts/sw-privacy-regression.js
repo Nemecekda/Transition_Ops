@@ -41,6 +41,8 @@ function check(condition, label) {
 
 const index = read("index.html");
 const pwaWorker = read("pwa-sw.js");
+const ergHandoff = read("erg-handoff.html");
+const ergEmployerBrief = read("erg-employer-brief.html");
 const dedicatedWorker = read("push/onesignal/OneSignalSDKWorker.js");
 const headers = read("_headers");
 const packageJson = JSON.parse(read("package.json"));
@@ -147,6 +149,40 @@ check(
 check(
   pwaWorker.indexOf('return "/";') !== -1 && pwaWorker.indexOf("cache.put(cacheKey, clone)") !== -1,
   "navigation cache keys cannot retain member query values"
+);
+check(
+  pwaWorker.indexOf('url.pathname === "/erg-handoff.html"') !== -1 &&
+    pwaWorker.indexOf('url.pathname === "/erg-employer-brief.html"') !== -1,
+  "ERG static pages use distinct navigation cache keys"
+);
+check(
+  countMatches(ergHandoff, /<form\b/i) === 0 &&
+    countMatches(ergEmployerBrief, /<form\b/i) === 0 &&
+    countMatches(ergHandoff, /<(?:input|textarea|select)\b/i) === 0 &&
+    countMatches(ergEmployerBrief, /<(?:input|textarea|select)\b/i) === 0,
+  "ERG static pages contain no collection form or editable field"
+);
+check(
+  !/(?:<script[^>]+src=|<link[^>]+rel=["']stylesheet|<img[^>]+src=|fetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|EventSource|navigator\.share|mailto:|window\.__trackEvent|gtag\s*\(|OneSignal)/i.test(ergHandoff) &&
+    !/(?:<script|<link[^>]+rel=["']stylesheet|<img[^>]+src=|fetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|EventSource|navigator\.share|mailto:|window\.__trackEvent|gtag\s*\(|OneSignal)/i.test(ergEmployerBrief),
+  "ERG static pages add no network, analytics, provider, or automatic-share integration"
+);
+check(
+  !/https:\/\/transitionops\.org[/?#]/.test(ergHandoff) &&
+    !/https:\/\/transitionops\.org[/?#]/.test(ergEmployerBrief) &&
+    countMatches(ergHandoff, /https:\/\/transitionops\.org/) === 3 &&
+    countMatches(ergEmployerBrief, /https:\/\/transitionops\.org/) === 1,
+  "ERG static pages use only the exact public Transition Ops URL"
+);
+check(
+  countMatches(ergHandoff, /ISOLATED CLONE TEST - NOT APPROVED FOR EMPLOYER DISTRIBUTION/) === 1 &&
+    countMatches(ergEmployerBrief, /ISOLATED CLONE TEST - NOT APPROVED FOR EMPLOYER DISTRIBUTION/) === 1,
+  "ERG static pages retain the clone-only distribution warning"
+);
+check(
+  !/(?:URLSearchParams|location\.search|location\.hash|@veteranbridgesolutions\.com)/i.test(ergHandoff) &&
+    !/(?:URLSearchParams|location\.search|location\.hash|@veteranbridgesolutions\.com)/i.test(ergEmployerBrief),
+  "ERG static pages contain no personalization reader or VBS contact route"
 );
 check(
   pwaWorker.indexOf("key.indexOf(CACHE_PREFIX) === 0 && key !== CACHE_NAME") !== -1,
@@ -275,8 +311,8 @@ check(
   "enabled clone status is bounded and distinguishes production"
 );
 check(
-  pwaWorker.indexOf('const CACHE_NAME = "transition-ops-v141";') !== -1,
-  "first active-worker cache advances beyond prior v140"
+  pwaWorker.indexOf('const CACHE_NAME = "transition-ops-v142";') !== -1,
+  "active-worker cache advances beyond prior v141"
 );
 check(
   countMatches(headers, /^\/(?:pwa-sw\.js|sw\.js|OneSignalSDKWorker\.js|push\/onesignal\/OneSignalSDKWorker\.js)$/m) === 4 &&
