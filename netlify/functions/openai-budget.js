@@ -52,18 +52,35 @@ const DIAGNOSTIC_PHASES = Object.freeze([
   "ledger_write"
 ]);
 
-const diagnosticPhaseByFailure = new WeakMap();
+const BLOB_STORE_LOAD_SUBPHASES = Object.freeze([
+  "module_load",
+  "api_shape",
+  "store_construct"
+]);
 
-function diagnosticFailure(phase) {
+const diagnosticPhaseByFailure = new WeakMap();
+const diagnosticSubphaseByFailure = new WeakMap();
+
+function diagnosticFailure(phase, subphase) {
   if (DIAGNOSTIC_PHASES.indexOf(phase) === -1) return guardFailure("upstream_unavailable");
+  if (typeof subphase !== "undefined" &&
+      (phase !== "blob_store_load" || BLOB_STORE_LOAD_SUBPHASES.indexOf(subphase) === -1)) {
+    return guardFailure("upstream_unavailable");
+  }
   const failure = guardFailure("upstream_unavailable");
   diagnosticPhaseByFailure.set(failure, phase);
+  if (typeof subphase !== "undefined") diagnosticSubphaseByFailure.set(failure, subphase);
   return failure;
 }
 
 function diagnosticPhase(error) {
   if (!error || (typeof error !== "object" && typeof error !== "function")) return "";
   return diagnosticPhaseByFailure.get(error) || "";
+}
+
+function diagnosticSubphase(error) {
+  if (!error || (typeof error !== "object" && typeof error !== "function")) return "";
+  return diagnosticSubphaseByFailure.get(error) || "";
 }
 
 function preserveDiagnosticFailure(error, phase) {
@@ -76,7 +93,19 @@ function emitPhaseDiagnostic(error) {
       console.error("runtime-ai-spend phase=prepare");
       break;
     case "blob_store_load":
-      console.error("runtime-ai-spend phase=blob_store_load");
+      switch (diagnosticSubphase(error)) {
+        case "module_load":
+          console.error("runtime-ai-spend phase=blob_store_load subphase=module_load");
+          break;
+        case "api_shape":
+          console.error("runtime-ai-spend phase=blob_store_load subphase=api_shape");
+          break;
+        case "store_construct":
+          console.error("runtime-ai-spend phase=blob_store_load subphase=store_construct");
+          break;
+        default:
+          console.error("runtime-ai-spend phase=blob_store_load");
+      }
       break;
     case "ledger_read":
       console.error("runtime-ai-spend phase=ledger_read");
@@ -431,15 +460,17 @@ function sanitizedIncomplete(response) {
 async function loadStrongStore() {
   let blobs;
   try {
-    blobs = await import("@netlify/blobs");
+    blobs = require("@netlify/blobs");
   } catch (error) {
-    throw guardFailure("upstream_unavailable");
+    throw diagnosticFailure("blob_store_load", "module_load");
   }
-  if (!blobs || typeof blobs.getStore !== "function") throw guardFailure("upstream_unavailable");
+  if (!blobs || typeof blobs.getStore !== "function") {
+    throw diagnosticFailure("blob_store_load", "api_shape");
+  }
   try {
     return blobs.getStore({ name: STORE_NAME, consistency: "strong" });
   } catch (error) {
-    throw guardFailure("upstream_unavailable");
+    throw diagnosticFailure("blob_store_load", "store_construct");
   }
 }
 

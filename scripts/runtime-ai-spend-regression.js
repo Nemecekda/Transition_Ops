@@ -2,6 +2,7 @@
 
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
+const Module = require("node:module");
 const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
@@ -33,6 +34,16 @@ const DIAGNOSTIC_LINES = Object.freeze([
   "runtime-ai-spend phase=ledger_read",
   "runtime-ai-spend phase=ledger_write"
 ]);
+
+const BLOB_STORE_LOAD_SUBPHASE_LINES = Object.freeze([
+  "runtime-ai-spend phase=blob_store_load subphase=module_load",
+  "runtime-ai-spend phase=blob_store_load subphase=api_shape",
+  "runtime-ai-spend phase=blob_store_load subphase=store_construct"
+]);
+
+const CONTENT_FREE_DIAGNOSTIC_LINES = Object.freeze(
+  DIAGNOSTIC_LINES.concat(BLOB_STORE_LOAD_SUBPHASE_LINES)
+);
 
 function clone(value) {
   return value === null || typeof value === "undefined" ? value : JSON.parse(JSON.stringify(value));
@@ -172,10 +183,23 @@ async function captureConsoleErrors(action) {
   }
 }
 
+async function withBlobsModule(loader, action) {
+  const originalLoad = Module._load;
+  Module._load = function (request) {
+    if (request === "@netlify/blobs") return loader();
+    return originalLoad.apply(this, arguments);
+  };
+  try {
+    return await action();
+  } finally {
+    Module._load = originalLoad;
+  }
+}
+
 function assertContentFreeDiagnostics(calls) {
   calls.forEach((call) => {
     assert.equal(call.length, 1);
-    assert.ok(DIAGNOSTIC_LINES.indexOf(call[0]) !== -1);
+    assert.ok(CONTENT_FREE_DIAGNOSTIC_LINES.indexOf(call[0]) !== -1);
   });
   const serialized = JSON.stringify(calls);
   SENTINELS.forEach((sentinel) => assert.doesNotMatch(serialized, new RegExp(sentinel)));
@@ -199,6 +223,7 @@ function seededLedger(changes) {
 
 async function testContractTablesAndArithmetic() {
   assert.equal(__testing.CUTOFF_MICRO_USD, 4000000);
+  assert.equal(__testing.STORE_NAME, "runtime-ai-spend-v1");
   assert.equal(__testing.CAS_ATTEMPTS, 3);
   assert.deepEqual(__testing.LEDGER_FIELDS, [
     "schema_version", "month_utc", "cutoff_micro_usd", "reserved_micro_usd",
@@ -396,6 +421,73 @@ async function testContentFreePhaseDiagnostics() {
   const blobCalls = await expectCode(() => blobGuard.create("navigator", request), "upstream_unavailable");
   assert.deepEqual(blobCalls, [[DIAGNOSTIC_LINES[1]]]);
   assert.equal(blobProviderCalls, 0);
+
+  let moduleLoadCalls = 0;
+  let moduleProviderCalls = 0;
+  const moduleCalls = await withBlobsModule(
+    () => {
+      moduleLoadCalls += 1;
+      throw blobFailure;
+    },
+    () => {
+      const guard = createSpendGuard({
+        now: () => NOW,
+        providerCreate: async () => { moduleProviderCalls += 1; return completedResponse(); }
+      });
+      return expectCode(() => guard.create("navigator", request), "upstream_unavailable");
+    }
+  );
+  assert.deepEqual(moduleCalls, [[BLOB_STORE_LOAD_SUBPHASE_LINES[0]]]);
+  assert.equal(moduleLoadCalls, 1);
+  assert.equal(moduleProviderCalls, 0);
+
+  let apiShapeLoadCalls = 0;
+  let apiShapeProviderCalls = 0;
+  const apiShapeCalls = await withBlobsModule(
+    () => {
+      apiShapeLoadCalls += 1;
+      return { raw_error: blobFailure };
+    },
+    () => {
+      const guard = createSpendGuard({
+        now: () => NOW,
+        providerCreate: async () => { apiShapeProviderCalls += 1; return completedResponse(); }
+      });
+      return expectCode(() => guard.create("navigator", request), "upstream_unavailable");
+    }
+  );
+  assert.deepEqual(apiShapeCalls, [[BLOB_STORE_LOAD_SUBPHASE_LINES[1]]]);
+  assert.equal(apiShapeLoadCalls, 1);
+  assert.equal(apiShapeProviderCalls, 0);
+
+  let storeConstructLoadCalls = 0;
+  let storeConstructCalls = 0;
+  let storeConstructOptions = null;
+  let storeConstructProviderCalls = 0;
+  const storeConstructDiagnosticCalls = await withBlobsModule(
+    () => {
+      storeConstructLoadCalls += 1;
+      return {
+        getStore: (options) => {
+          storeConstructCalls += 1;
+          storeConstructOptions = options;
+          throw blobFailure;
+        }
+      };
+    },
+    () => {
+      const guard = createSpendGuard({
+        now: () => NOW,
+        providerCreate: async () => { storeConstructProviderCalls += 1; return completedResponse(); }
+      });
+      return expectCode(() => guard.create("navigator", request), "upstream_unavailable");
+    }
+  );
+  assert.deepEqual(storeConstructDiagnosticCalls, [[BLOB_STORE_LOAD_SUBPHASE_LINES[2]]]);
+  assert.equal(storeConstructLoadCalls, 1);
+  assert.equal(storeConstructCalls, 1);
+  assert.deepEqual(storeConstructOptions, { name: "runtime-ai-spend-v1", consistency: "strong" });
+  assert.equal(storeConstructProviderCalls, 0);
 
   const readFailure = Object.assign(new Error(SENTINELS.join(" ")), {
     request_id: SENTINELS[9],
@@ -788,7 +880,7 @@ async function run() {
   await testFourCallPathAndSentinelExclusion();
   await testResumeBodyBoundaryAndStageWiring();
   await testNavigatorBodyBoundaryAndStageWiring();
-  console.log("PASS: runtime AI spend governance synthetic suite - fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free Navigator budget/accounting failures, strict options, cutoff equality/overage, @netlify/blobs 10.7.13 { modified } CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, and four fixed content-free phase diagnostics");
+  console.log("PASS: runtime AI spend governance synthetic suite - fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free Navigator budget/accounting failures, strict options, cutoff equality/overage, @netlify/blobs 10.7.13 CommonJS loading, { modified } CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, four fixed content-free phase diagnostics, and three fixed blob-store-load subphase diagnostics");
 }
 
 run().catch((error) => {
