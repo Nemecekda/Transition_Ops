@@ -468,6 +468,7 @@ async function testContentFreePhaseDiagnostics() {
     () => {
       storeConstructLoadCalls += 1;
       return {
+        connectLambda: () => {},
         getStore: (options) => {
           storeConstructCalls += 1;
           storeConstructOptions = options;
@@ -488,6 +489,76 @@ async function testContentFreePhaseDiagnostics() {
   assert.equal(storeConstructCalls, 1);
   assert.deepEqual(storeConstructOptions, { name: "runtime-ai-spend-v1", consistency: "strong" });
   assert.equal(storeConstructProviderCalls, 0);
+
+  const validLambdaEvent = Object.freeze({
+    blobs: "synthetic-blob-context",
+    headers: Object.freeze({
+      "x-nf-deploy-id": "synthetic-deploy",
+      "x-nf-site-id": "synthetic-site"
+    })
+  });
+  const validContextStore = new FakeCasStore();
+  const validContextSequence = [];
+  let validContextProviderCalls = 0;
+  const validContextCapture = await withBlobsModule(
+    () => ({
+      connectLambda: (lambdaEvent) => {
+        assert.equal(lambdaEvent, validLambdaEvent);
+        validContextSequence.push("connectLambda");
+      },
+      getStore: (options) => {
+        validContextSequence.push("getStore");
+        assert.deepEqual(options, { name: "runtime-ai-spend-v1", consistency: "strong" });
+        return validContextStore;
+      }
+    }),
+    () => {
+      const guard = createSpendGuard({
+        lambdaEvent: validLambdaEvent,
+        now: () => NOW,
+        providerCreate: async () => { validContextProviderCalls += 1; return completedResponse(); }
+      });
+      return captureConsoleErrors(() => guard.create("navigator", request));
+    }
+  );
+  assert.deepEqual(validContextSequence, ["connectLambda", "getStore"]);
+  assert.deepEqual(validContextCapture.calls, []);
+  assert.equal(validContextProviderCalls, 1);
+
+  const invalidLambdaContexts = [
+    { label: "missing", event: undefined },
+    { label: "malformed", event: Object.freeze({ blobs: SENTINELS[0], headers: null }) }
+  ];
+  for (const invalidContext of invalidLambdaContexts) {
+    let invalidConnectCalls = 0;
+    let invalidGetStoreCalls = 0;
+    let invalidProviderCalls = 0;
+    const invalidContextCalls = await withBlobsModule(
+      () => ({
+        connectLambda: (lambdaEvent) => {
+          invalidConnectCalls += 1;
+          assert.equal(lambdaEvent, invalidContext.event, invalidContext.label);
+          throw blobFailure;
+        },
+        getStore: () => {
+          invalidGetStoreCalls += 1;
+          return new FakeCasStore();
+        }
+      }),
+      () => {
+        const guard = createSpendGuard({
+          lambdaEvent: invalidContext.event,
+          now: () => NOW,
+          providerCreate: async () => { invalidProviderCalls += 1; return completedResponse(); }
+        });
+        return expectCode(() => guard.create("navigator", request), "upstream_unavailable");
+      }
+    );
+    assert.deepEqual(invalidContextCalls, [[BLOB_STORE_LOAD_SUBPHASE_LINES[2]]]);
+    assert.equal(invalidConnectCalls, 1, invalidContext.label);
+    assert.equal(invalidGetStoreCalls, 0, invalidContext.label);
+    assert.equal(invalidProviderCalls, 0, invalidContext.label);
+  }
 
   const readFailure = Object.assign(new Error(SENTINELS.join(" ")), {
     request_id: SENTINELS[9],
@@ -756,13 +827,15 @@ async function testResumeBodyBoundaryAndStageWiring() {
   const resumeSource = fs.readFileSync(resumePath, "utf8");
   const clientSource = fs.readFileSync(clientPath, "utf8");
   assert.match(resumeSource, /"resume_facts"[\s\S]*"resume_federal"[\s\S]*"resume_civilian"/);
-  assert.match(resumeSource, /createOpenAIClient\("resume_fact_repair"\)/);
-  assert.match(resumeSource, /createOpenAIClient\("resume_audit"\)/);
+  assert.match(resumeSource, /createOpenAIClient\(primaryStage, event\)/);
+  assert.match(resumeSource, /createOpenAIClient\("resume_fact_repair", event\)/);
+  assert.match(resumeSource, /createOpenAIClient\("resume_audit", event\)/);
   assert.doesNotMatch(resumeSource, /createOpenAIClient\(\)/);
   assert.match(resumeSource, /const RESUME_BODY_MAX_BYTES = 65536/);
   assert.doesNotMatch(resumeSource, /nothing stored|nothing logged|EXTERNAL_MONTHLY_HARD_CAP_STATUS|PROVIDER_PROJECT_CONTROL_STATUS|AUDIT_INCREMENTAL_CEILING_USD|BROWSER_DAILY_AUDIT_CEILING_USD|UNVERIFIED/i);
   assert.match(resumeSource, /Dated provider-account evidence and the repository spend guard are distinct controls/);
-  assert.match(clientSource, /function createOpenAIClient\(stage\)/);
+  assert.match(clientSource, /function createOpenAIClient\(stage, lambdaEvent\)/);
+  assert.match(clientSource, /lambdaEvent,[\s\S]*providerCreate/);
   assert.match(clientSource, /maxRetries: 0/);
   assert.match(clientSource, /guard\.create\(stage, request\)/);
   assert.doesNotMatch(clientSource, /return new OpenAI/);
@@ -865,7 +938,7 @@ async function testNavigatorBodyBoundaryAndStageWiring() {
 
   const navigatorSource = fs.readFileSync(navigatorPath, "utf8");
   assert.match(navigatorSource, /Buffer\.byteLength\(rawBody, "utf8"\) > 32768/);
-  assert.match(navigatorSource, /createOpenAIClient\("navigator"\)/);
+  assert.match(navigatorSource, /createOpenAIClient\("navigator", event\)/);
 }
 
 async function run() {
@@ -880,7 +953,7 @@ async function run() {
   await testFourCallPathAndSentinelExclusion();
   await testResumeBodyBoundaryAndStageWiring();
   await testNavigatorBodyBoundaryAndStageWiring();
-  console.log("PASS: runtime AI spend governance synthetic suite - fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free Navigator budget/accounting failures, strict options, cutoff equality/overage, @netlify/blobs 10.7.13 CommonJS loading, { modified } CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, four fixed content-free phase diagnostics, and three fixed blob-store-load subphase diagnostics");
+  console.log("PASS: runtime AI spend governance synthetic suite - fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free Navigator budget/accounting failures, strict options, cutoff equality/overage, @netlify/blobs 10.7.13 CommonJS loading, valid/missing/malformed Lambda Blob context handling, { modified } CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, four fixed content-free phase diagnostics, and three fixed blob-store-load subphase diagnostics");
 }
 
 run().catch((error) => {

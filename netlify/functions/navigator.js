@@ -285,7 +285,7 @@ exports.handler = async (event) => {
 
   try {
     const { createOpenAIClient, responseText } = require("./openai-client");
-    const client = createOpenAIClient("navigator");
+    const client = createOpenAIClient("navigator", event);
     const response = await client.responses.create({
       model: "gpt-5.6-luna",
       max_output_tokens: 800,

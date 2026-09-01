@@ -10,7 +10,7 @@ function readOpenAIKey() {
   return process.env.OPENAI_API_KEY;
 }
 
-function createOpenAIClient(stage) {
+function createOpenAIClient(stage, lambdaEvent) {
   let provider;
   try {
     const OpenAI = require("openai");
@@ -23,6 +23,7 @@ function createOpenAIClient(stage) {
     throw Object.freeze({ code: "upstream_unavailable" });
   }
   const guard = createSpendGuard({
+    lambdaEvent,
     providerCreate: function (request) { return provider.responses.create(request); }
   });
   return Object.freeze({

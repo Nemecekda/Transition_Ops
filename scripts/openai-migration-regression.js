@@ -1922,7 +1922,7 @@ async function run() {
   assert.doesNotMatch(quantityPlacementRule, /\b(?:use|include|preserve)\s+every\b/i);
   assert.doesNotMatch(resumeSource, /AUDIT_INCREMENTAL_CEILING_USD|BROWSER_DAILY_AUDIT_CEILING_USD|EXTERNAL_MONTHLY_HARD_CAP_STATUS|PROVIDER_PROJECT_CONTROL_STATUS/);
   assert.match(resumeSource, /Dated provider-account evidence and the repository spend guard are distinct controls/);
-  assert.match(clientSource, /function createOpenAIClient\(stage\)/);
+  assert.match(clientSource, /function createOpenAIClient\(stage, lambdaEvent\)/);
   assert.match(clientSource, /createSpendGuard\(\{/);
   assert.match(clientSource, /return guard\.create\(stage, request\)/);
   assert.match(clientSource, /maxRetries: 0/);
@@ -2014,7 +2014,7 @@ async function run() {
   assert.deepEqual(clientStages, expectedStages, "Guard stages must preserve provider-call order across all fixtures.");
   assert.doesNotMatch(resumeSource + uiSource, /(?:three|3)\s+(?:fact|fact-sheet)\s+(?:requests|reviews).*day|daily\s+fact/i);
   assert.match(navigatorSource, /max_output_tokens: 800/);
-  assert.match(navigatorSource, /createOpenAIClient\("navigator"\)/);
+  assert.match(navigatorSource, /createOpenAIClient\("navigator", event\)/);
   assert.match(uiSource, /QUALITY SCORECARD/);
   assert.match(uiSource, /DRAFT WITHHELD/);
   assert.match(uiSource, /SHOW CLAIM TRACE/);
@@ -2086,8 +2086,9 @@ async function run() {
   // RDM-199 through RDM-206: v0.19 preserves the call graph while routing every closed stage through the shared guard.
   assert.equal((resumeSource.match(/createOpenAIClient\(/g) || []).length, 3);
   assert.equal((resumeSource.match(/\.responses\.create\(/g) || []).length, 3);
-  assert.equal((resumeSource.match(/createOpenAIClient\("resume_fact_repair"\)/g) || []).length, 1);
-  assert.equal((resumeSource.match(/createOpenAIClient\("resume_audit"\)/g) || []).length, 1);
+  assert.equal((resumeSource.match(/createOpenAIClient\(primaryStage, event\)/g) || []).length, 1);
+  assert.equal((resumeSource.match(/createOpenAIClient\("resume_fact_repair", event\)/g) || []).length, 1);
+  assert.equal((resumeSource.match(/createOpenAIClient\("resume_audit", event\)/g) || []).length, 1);
   assert.equal((resumeSource.match(/store: false/g) || []).length, 3);
   assert.equal((uiSource.match(/__trackEvent\("ai_resume_doc_downloaded", \{\}\)/g) || []).length, 1);
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)|localStorage|sessionStorage/);

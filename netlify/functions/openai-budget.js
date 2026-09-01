@@ -457,17 +457,18 @@ function sanitizedIncomplete(response) {
   };
 }
 
-async function loadStrongStore() {
+async function loadStrongStore(lambdaEvent) {
   let blobs;
   try {
     blobs = require("@netlify/blobs");
   } catch (error) {
     throw diagnosticFailure("blob_store_load", "module_load");
   }
-  if (!blobs || typeof blobs.getStore !== "function") {
+  if (!blobs || typeof blobs.connectLambda !== "function" || typeof blobs.getStore !== "function") {
     throw diagnosticFailure("blob_store_load", "api_shape");
   }
   try {
+    blobs.connectLambda(lambdaEvent);
     return blobs.getStore({ name: STORE_NAME, consistency: "strong" });
   } catch (error) {
     throw diagnosticFailure("blob_store_load", "store_construct");
@@ -477,10 +478,11 @@ async function loadStrongStore() {
 function createSpendGuard(options) {
   const settings = options || {};
   const providerCreate = settings.providerCreate;
+  const lambdaEvent = settings.lambdaEvent;
   const now = typeof settings.now === "function" ? settings.now : function () { return new Date(); };
   let storePromise = null;
   async function resolveStore() {
-    if (!storePromise) storePromise = settings.store ? Promise.resolve(settings.store) : loadStrongStore();
+    if (!storePromise) storePromise = settings.store ? Promise.resolve(settings.store) : loadStrongStore(lambdaEvent);
     try {
       return await storePromise;
     } catch (error) {
