@@ -979,6 +979,15 @@ async function testRsg18SilenceAndDrift() {
   }
   assert.match(budgetSource, /throw diagnosticFailure\(failurePhase, undefined, safeCode\);/);
   assert.doesNotMatch(clientSource, /clientInitializationFailure\(\)/);
+  assert.match(
+    clientSource,
+    /function loadOpenAIModule\(\) \{\s+return require\(\"openai\"\);\s+\}/
+  );
+  assert.equal((clientSource.match(/require\(\"openai\"\)/g) || []).length, 1);
+  assert.match(
+    clientSource,
+    /try \{\s+OpenAI = loadOpenAIModule\(\);\s+\} catch \(error\) \{\s+throw clientInitializationFailure\(\"module_load\"\);\s+\}/
+  );
   for (const fixture of [
     ["module_load", 1],
     ["api_shape", 1],

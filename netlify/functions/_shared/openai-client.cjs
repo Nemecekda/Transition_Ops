@@ -10,10 +10,14 @@ function readOpenAIKey() {
   return process.env.OPENAI_API_KEY;
 }
 
+function loadOpenAIModule() {
+  return require("openai");
+}
+
 function createOpenAIClient(stage) {
   let OpenAI;
   try {
-    OpenAI = require("openai");
+    OpenAI = loadOpenAIModule();
   } catch (error) {
     throw clientInitializationFailure("module_load");
   }
