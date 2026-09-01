@@ -24,7 +24,7 @@ written) · DEPRECATED (superseded — note by what)
 | 13 | member-return-benchmarking | force-mod | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/member-return-benchmarking/ (canonical); .agents/skills/member-return-benchmarking/ (Codex project mirror) |
 | 14 | erg-client-plugin-governance | force-mod | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/erg-client-plugin-governance/ (canonical); .agents/skills/erg-client-plugin-governance/ (Codex project mirror) |
 | 15 | privacy-truth-to-implementation | force-mod | CODIFIED | 0.2 | 2026-08-31 | .claude/skills/privacy-truth-to-implementation/ (canonical); .agents/skills/privacy-truth-to-implementation/ (Codex project mirror) |
-| 16 | runtime-ai-spend-governance | force-mod | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/runtime-ai-spend-governance/ (canonical); .agents/skills/runtime-ai-spend-governance/ (Codex project mirror) |
+| 16 | runtime-ai-spend-governance | force-mod | CODIFIED | 1.1 | 2026-09-01 | .claude/skills/runtime-ai-spend-governance/ (canonical); .agents/skills/runtime-ai-spend-governance/ (Codex project mirror) |
 | 17 | accessibility-release-validation | s3-devops | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/accessibility-release-validation/ (canonical); .agents/skills/accessibility-release-validation/ (Codex project mirror) |
 
 **Scope fence between #3 and #12 — read before extending either.**
@@ -71,6 +71,29 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-01 - **#16 `runtime-ai-spend-governance` 1.0 -> 1.1 remains
+  CODIFIED.** A fail-closed but unclassified clone invocation exposed PARTIAL
+  governance coverage: the existing four content-free phases did not cover
+  every `upstream_unavailable` origin. Under the Commander's exact governance-
+  only authorization, v1.1 closes the phase set at `prepare`,
+  `blob_store_load`, `ledger_read`, `ledger_write`, `client_init`,
+  `provider_call`, `provider_result`, and `settlement`. Every such terminal
+  origin requires exactly one compile-time-literal marker; the four new phases
+  have no subphases; terminal precedence suppresses earlier markers; success
+  and valid internal-cutoff budget denial remain silent; and the marker
+  prohibition covers the caught error, stack, message, code, status, request,
+  response, usage, ledger,
+  secret, cookie, identity, IP, provider identifier, model, stage, amount, URL,
+  and timestamp. A marker identifies application execution location only and
+  creates no provider- or account-observability claim. Written synthetic cases
+  RSG-1...RSG-18 classified 18/18 PASS against the approved contract; both
+  skill copies passed skill-creator `quick_validate`, and canonical/mirror skill
+  and calibration files are byte-identical. This validates governance text,
+  not application instrumentation, runtime wiring, hosted behavior, or root
+  cause. This force-mod slice changed no application code and made no
+  provider/account inspection or change, live model or external network request,
+  staging, commit, push, deployment, merge, or production action. Lane:
+  COMMANDER. Owner: force-mod.
 - 2026-08-31 - **PRE-MAIN REMEDIATION PHASE 2 clone implementation completed
   with LOCAL AUTOMATION PASS; manual AT and hosted acceptance remain
   PENDING.** Under the Commander's exact clone-only approval, the manifest

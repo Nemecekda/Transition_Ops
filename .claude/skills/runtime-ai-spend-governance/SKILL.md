@@ -1,11 +1,11 @@
 ---
 name: runtime-ai-spend-governance
-description: Govern Transition OPS server-side OpenAI admission, aggregate monthly spend accounting, model and request limits, and content-free budget failures. Use for changes to shared AI calls, pricing, the cutoff, the spend ledger, request options, or model/output caps; this skill authorizes no provider-account or deployment action.
+description: Govern Transition OPS server-side OpenAI admission, aggregate monthly spend accounting, model and request limits, and content-free failure diagnostics. Use for changes to shared AI calls, pricing, the cutoff, the spend ledger, request options, model/output caps, or diagnostic origins; this skill authorizes no provider-account or deployment action.
 metadata:
-  version: "1.0"
+  version: "1.1"
   status: CODIFIED
   owner: force-mod
-  validated: "2026-08-31"
+  validated: "2026-09-01"
 ---
 
 # RUNTIME AI SPEND GOVERNANCE
@@ -151,15 +151,57 @@ the model output, retain the reservation, and make no additional provider call.
   response. An accounting, price, or ledger fault maps to a content-free
   `upstream_unavailable` response. Neither response exposes amounts, usage,
   identifiers, member content, or internals.
-- Do not application-log the request, response, usage object, ledger mutation,
-  denial details, raw error, or reason category. Platform and provider handling
-  remains a separate evidence question under `privacy-truth-to-implementation`.
+- Outside the closed diagnostic-origin marker below, do not application-log the
+  request, response, usage object, ledger mutation, denial details, raw error,
+  or reason category. Platform and provider handling remains a separate evidence
+  question under `privacy-truth-to-implementation`.
 - `store: false` is mandatory but is not Zero Data Retention and does not prove
   that platform or provider logs do not exist.
 - Changing the cutoff, month definition, models, prices, stage table, request
   ceilings, options, ledger fields, atomic primitive, retry bound, rounding,
   reservation, settlement, or public failure semantics requires Commander
   approval and complete revalidation.
+
+## CLOSED CONTENT-FREE DIAGNOSTIC-ORIGIN CONTRACT
+
+Every execution origin that maps to an endpoint's `upstream_unavailable`
+response emits exactly one server-side diagnostic marker. The phase set is
+closed:
+
+| Phase | Boundary |
+|---|---|
+| `prepare` | Closed-request and admission preparation |
+| `blob_store_load` | Blob module, API, and store construction |
+| `ledger_read` | Strong ledger read and record intake |
+| `ledger_write` | Conditional ledger mutation |
+| `client_init` | Provider-client initialization |
+| `provider_call` | Admitted provider invocation |
+| `provider_result` | Validation of the returned provider result before settlement |
+| `settlement` | Non-ledger settlement processing after a provider result |
+
+Existing subphases under `prepare`, `blob_store_load`, `ledger_read`, and
+`ledger_write` remain unchanged. `client_init`, `provider_call`,
+`provider_result`, and `settlement` have no subphases.
+
+Each marker emission is one application-log call with exactly one compile-time
+string-literal argument. It contains only the fixed phase marker and, where an
+unchanged existing subphase applies, its fixed subphase marker. The marker
+literal and call must never log, interpolate, or pass the caught error, stack,
+message, code, status, request, response, usage, ledger, secret, cookie,
+identity, IP, provider identifier, model, stage, amount, URL, or timestamp.
+
+Terminal precedence is mandatory. When handling continues after an initial
+failure, do not emit that initial marker. If a later failure determines the
+`upstream_unavailable` response, emit only the later terminal phase. A terminal
+ledger read or write failure remains `ledger_read` or `ledger_write`, including
+during settlement; `settlement` identifies only a non-ledger settlement origin.
+
+Success and a valid internal-cutoff `budget_limit` denial emit no
+diagnostic-origin marker. A
+marker identifies only the application execution location; it is not an error
+reason and makes no provider- or account-observability claim. A missing,
+duplicate, dynamic, nonliteral, out-of-set, subphase-invalid, or prohibited-data
+marker is a regression failure and force-mod STOP.
 
 ## SKILL SEAMS
 

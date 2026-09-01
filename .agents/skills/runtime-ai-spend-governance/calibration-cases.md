@@ -1,14 +1,15 @@
 # RUNTIME AI SPEND GOVERNANCE - CALIBRATION CASES
 
-Execution date: 2026-08-31
+Execution date: 2026-09-01
 Executor: force-mod
-Skill version: 1.0
+Skill version: 1.1
 Method: Apply the closed model/stage table, fixed-point price table, aggregate
-ledger schema, atomic admission/settlement rules, privacy exclusions, and skill
-seams to synthetic state transitions. No application code, provider, account,
-credential, member data, network, or production system was used.
+ledger schema, atomic admission/settlement rules, closed diagnostic-origin
+contract, privacy exclusions, and skill seams to synthetic state transitions.
+No application code, provider, account, credential, member data, network, or
+production system was used.
 
-Result: 14 / 14 PASS
+Result: 18 / 18 PASS
 
 ## RSG-1 - Below-cutoff admission
 
@@ -176,8 +177,72 @@ remained with `privacy-truth-to-implementation`.
 
 Result: PASS
 
+## RSG-15 - Diagnostic phase completeness
+
+Input: Eight synthetic `upstream_unavailable` paths terminate once at
+`prepare`, `blob_store_load`, `ledger_read`, `ledger_write`, `client_init`,
+`provider_call`, `provider_result`, and `settlement`. Each fixture carries its
+pre-established zero- or one-provider-call state.
+
+Expected: Emit exactly one approved compile-time-literal marker, preserve the
+fixture's provider-call count with no retry, keep the public response unchanged,
+and attach no subphase to any of the four new phases.
+
+Actual: The closed phase matrix mapped every synthetic origin exactly once;
+none was unmarked or outside the set, and the four new phases remained
+subphase-free.
+
+Result: PASS
+
+## RSG-16 - Diagnostic sentinel exclusion
+
+Input: Synthetic failures seed the caught error, stack, message, code, status,
+request, response, usage, ledger, secret, cookie, identity, IP, provider
+identifier, model, stage, amount, URL, and timestamp with distinct sentinels.
+
+Expected: The application-log call receives one compile-time phase literal;
+none of the sentinels appears in any marker argument or public response.
+
+Actual: Only the approved fixed phase literal, or an unchanged approved
+phase-plus-subphase literal, was eligible; every seeded value remained excluded.
+
+Result: PASS
+
+## RSG-17 - Terminal diagnostic precedence
+
+Input: A provider call fails after reservation and the conservative settlement
+path then fails on a ledger write; a second synthetic path reaches a non-ledger
+settlement failure.
+
+Expected: Suppress the initial `provider_call` marker. Emit only
+`ledger_write` for the terminal ledger failure and only `settlement` for the
+terminal non-ledger failure; retain the conservative charge, withhold output,
+and make no retry or additional provider call.
+
+Actual: Each path selected its one terminal phase; no initial or duplicate
+marker was eligible, and no capacity-release or provider-retry path opened.
+
+Result: PASS
+
+## RSG-18 - Diagnostic silence and drift
+
+Input: A successful request, a valid cutoff denial, and a new synthetic
+`upstream_unavailable` branch lacking an approved fixed marker are evaluated.
+
+Expected: Success and `budget_limit` remain silent. The unmarked branch is a
+regression failure and force-mod STOP; no diagnostic result is treated as
+provider- or account-observability evidence.
+
+Actual: The first two fixtures emitted no diagnostic-origin marker, while the
+unmarked branch failed the closed contract without creating an observability
+claim.
+
+Result: PASS
+
 ## CROSS-SKILL RESULT
 
 RSG-13 exercised `resume-drafter-maintenance`; RSG-10 and RSG-14 exercised
 `privacy-truth-to-implementation`; RSG-12 preserved the `validation-gate` and
-`deploy-discipline` seams. Each retained independent blocking authority.
+`deploy-discipline` seams. RSG-15 through RSG-18 added no provider-account,
+runtime-wiring, or deployment claim. Each retained independent blocking
+authority.

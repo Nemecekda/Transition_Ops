@@ -47,14 +47,22 @@ const SENTINELS = [
   "IP_SENTINEL_7Q",
   "REQUEST_ID_SENTINEL_7Q",
   "RESPONSE_ID_SENTINEL_7Q",
-  "MODEL_CONTENT_SENTINEL_7Q"
+  "MODEL_CONTENT_SENTINEL_7Q",
+  "SECRET_SENTINEL_7Q",
+  "COOKIE_SENTINEL_7Q",
+  "STACK_SENTINEL_7Q",
+  "PROVIDER_DATA_SENTINEL_7Q"
 ];
 
 const DIAGNOSTIC_LINES = Object.freeze([
   "runtime-ai-spend phase=prepare",
   "runtime-ai-spend phase=blob_store_load",
   "runtime-ai-spend phase=ledger_read",
-  "runtime-ai-spend phase=ledger_write"
+  "runtime-ai-spend phase=ledger_write",
+  "runtime-ai-spend phase=client_init",
+  "runtime-ai-spend phase=provider_call",
+  "runtime-ai-spend phase=provider_result",
+  "runtime-ai-spend phase=settlement"
 ]);
 
 const BLOB_STORE_LOAD_SUBPHASE_LINES = Object.freeze([
@@ -102,6 +110,7 @@ class FakeCasStore {
     assert.equal(key, __testing.RECORD_KEY);
     assert.deepEqual(options, { type: "json" });
     if (this.options.readUnavailable) throw this.options.readFailure || { code: "store_unavailable" };
+    if (this.options.failGetAt === this.getCalls) throw this.options.readFailure || { code: "store_unavailable" };
     if (this.options.missingEtag && this.record !== null) return { data: clone(this.record) };
     const captured = this.snapshot();
     const barrierReads = this.options.barrierReads || 0;
@@ -227,6 +236,23 @@ async function withBlobsModule(loader, action) {
   }
 }
 
+async function withOpenAIModule(loader, action) {
+  const originalLoad = Module._load;
+  const cachedClient = require.cache[clientPath];
+  delete require.cache[clientPath];
+  Module._load = function (request) {
+    if (request === "openai") return loader();
+    return originalLoad.apply(this, arguments);
+  };
+  try {
+    return await action(require(clientPath));
+  } finally {
+    Module._load = originalLoad;
+    delete require.cache[clientPath];
+    if (cachedClient) require.cache[clientPath] = cachedClient;
+  }
+}
+
 async function withBlobsContext(context, action) {
   const hadContext = Object.prototype.hasOwnProperty.call(globalThis, "netlifyBlobsContext");
   const previousContext = globalThis.netlifyBlobsContext;
@@ -248,15 +274,19 @@ function assertContentFreeDiagnostics(calls) {
   SENTINELS.forEach((sentinel) => assert.doesNotMatch(serialized, new RegExp(sentinel)));
 }
 
-async function expectCode(action, code) {
+async function expectCode(action, code, expectedDiagnosticCount) {
   const captured = await captureConsoleErrors(() => assert.rejects(action, (error) => {
       assert.deepEqual(Object.keys(error), ["code"]);
       assert.equal(error.code, code);
       const serialized = JSON.stringify(error);
       SENTINELS.forEach((sentinel) => assert.doesNotMatch(serialized, new RegExp(sentinel)));
       return true;
-    }));
+  }));
   assertContentFreeDiagnostics(captured.calls);
+  const expectedCount = Number.isInteger(expectedDiagnosticCount)
+    ? expectedDiagnosticCount
+    : (code === "budget_limit" ? 0 : 1);
+  assert.equal(captured.calls.length, expectedCount);
   return captured.calls;
 }
 
@@ -677,8 +707,224 @@ async function testContentFreePhaseDiagnostics() {
 
   const provider = harness({ providerCreate: async () => { throw new Error(SENTINELS.join(" ")); } });
   const providerCalls = await expectCode(() => provider.guard.create("navigator", request), "upstream_unavailable");
-  assert.deepEqual(providerCalls, []);
+  assert.deepEqual(providerCalls, [[DIAGNOSTIC_LINES[5]]]);
   assert.equal(provider.state.providerCalls, 1);
+}
+
+function sentinelFailure(changes) {
+  const failure = new Error(SENTINELS.join(" "));
+  failure.stack = SENTINELS[14];
+  return Object.assign(failure, {
+    secret: SENTINELS[12],
+    cookie: SENTINELS[13],
+    provider_data: SENTINELS[15],
+    request_id: SENTINELS[9],
+    response_id: SENTINELS[10],
+    request: { content: SENTINELS[0] },
+    response: { content: SENTINELS[1] }
+  }, changes || {});
+}
+
+async function testRsg15PhaseCompleteness() {
+  assert.deepEqual(__testing.DIAGNOSTIC_PHASES, [
+    "prepare", "blob_store_load", "ledger_read", "ledger_write",
+    "client_init", "provider_call", "provider_result", "settlement"
+  ]);
+  const request = stageRequest("navigator", { instructions: SENTINELS.join(" ") });
+
+  const prepare = harness();
+  const prepareCalls = await expectCode(
+    () => prepare.guard.create("navigator", Object.assign({}, request, { max_output_tokens: 801 })),
+    "upstream_unavailable"
+  );
+  assert.deepEqual(prepareCalls, [[DIAGNOSTIC_LINES[0]]]);
+  assert.equal(prepare.state.providerCalls, 0);
+
+  let blobProviderCalls = 0;
+  const blobGuard = createSpendGuard({
+    store: Promise.reject(sentinelFailure()),
+    now: () => NOW,
+    providerCreate: async () => { blobProviderCalls += 1; return completedResponse(); }
+  });
+  const blobCalls = await expectCode(() => blobGuard.create("navigator", request), "upstream_unavailable");
+  assert.deepEqual(blobCalls, [[DIAGNOSTIC_LINES[1]]]);
+  assert.equal(blobProviderCalls, 0);
+
+  const ledgerRead = harness({
+    store: new FakeCasStore(undefined, { readUnavailable: true, readFailure: sentinelFailure() })
+  });
+  const ledgerReadCalls = await expectCode(() => ledgerRead.guard.create("navigator", request), "upstream_unavailable");
+  assert.deepEqual(ledgerReadCalls, [[LEDGER_READ_SUBPHASE_LINES[2]]]);
+  assert.equal(ledgerRead.state.providerCalls, 0);
+
+  const ledgerWrite = harness({
+    store: new FakeCasStore(undefined, { failSetAt: 1, writeFailure: sentinelFailure() })
+  });
+  const ledgerWriteCalls = await expectCode(() => ledgerWrite.guard.create("navigator", request), "upstream_unavailable");
+  assert.deepEqual(ledgerWriteCalls, [[DIAGNOSTIC_LINES[3]]]);
+  assert.equal(ledgerWrite.state.providerCalls, 0);
+
+  const clientInitCalls = await withOpenAIModule(
+    () => function FailingOpenAI() { throw sentinelFailure(); },
+    (clientModule) => expectCode(
+      () => Promise.resolve().then(() => clientModule.createOpenAIClient("navigator")),
+      "upstream_unavailable"
+    )
+  );
+  assert.deepEqual(clientInitCalls, [[DIAGNOSTIC_LINES[4]]]);
+
+  const provider = harness({ providerCreate: async () => { throw sentinelFailure(); } });
+  const providerCalls = await expectCode(() => provider.guard.create("navigator", request), "upstream_unavailable");
+  assert.deepEqual(providerCalls, [[DIAGNOSTIC_LINES[5]]]);
+  assert.equal(provider.state.providerCalls, 1);
+
+  const providerBudget = harness({
+    providerCreate: async () => { throw sentinelFailure({ code: "insufficient_quota" }); }
+  });
+  const providerBudgetCalls = await expectCode(
+    () => providerBudget.guard.create("navigator", request),
+    "budget_limit"
+  );
+  assert.deepEqual(providerBudgetCalls, []);
+  assert.equal(providerBudget.state.providerCalls, 1);
+
+  for (const fixture of [
+    [sentinelFailure({ status: 429 }), "rate_limit"],
+    [sentinelFailure({ code: "ETIMEDOUT" }), "timeout"]
+  ]) {
+    const categorized = harness({ providerCreate: async () => { throw fixture[0]; } });
+    const categorizedCalls = await expectCode(
+      () => categorized.guard.create("navigator", request),
+      fixture[1],
+      1
+    );
+    assert.deepEqual(categorizedCalls, [[DIAGNOSTIC_LINES[5]]]);
+    assert.equal(categorized.state.providerCalls, 1);
+  }
+
+  const providerResult = harness({
+    providerCreate: async () => ({
+      status: "incomplete",
+      incomplete_details: { reason: "server_error" },
+      output_text: SENTINELS.join(" "),
+      provider_data: SENTINELS[15]
+    })
+  });
+  const providerResultCapture = await captureConsoleErrors(() => providerResult.guard.create("navigator", request));
+  assertContentFreeDiagnostics(providerResultCapture.calls);
+  assert.deepEqual(providerResultCapture.calls, [[DIAGNOSTIC_LINES[6]]]);
+  assert.deepEqual(providerResultCapture.value, {
+    status: "incomplete",
+    incomplete_details: { reason: "server_error" }
+  });
+  assert.equal(providerResult.state.providerCalls, 1);
+
+  const settlement = harness({
+    providerCreate: async (providerRequest, store) => {
+      store.record.reserved_micro_usd = 0;
+      return completedResponse();
+    }
+  });
+  const settlementCalls = await expectCode(() => settlement.guard.create("navigator", request), "upstream_unavailable");
+  assert.deepEqual(settlementCalls, [[DIAGNOSTIC_LINES[7]]]);
+  assert.equal(settlement.state.providerCalls, 1);
+}
+
+async function testRsg16SentinelExclusion() {
+  const request = stageRequest("navigator", { instructions: SENTINELS.join(" ") });
+  const provider = harness({ providerCreate: async () => { throw sentinelFailure(); } });
+  const providerCalls = await expectCode(() => provider.guard.create("navigator", request), "upstream_unavailable");
+  assert.deepEqual(providerCalls, [[DIAGNOSTIC_LINES[5]]]);
+  assertContentFreeDiagnostics(providerCalls);
+
+  const unusable = harness({
+    providerCreate: async () => completedResponse({
+      output_text: "   ",
+      provider_data: SENTINELS[15],
+      id: SENTINELS[10]
+    })
+  });
+  const reservation = __testing.prepareProviderRequest("navigator", request).reservation_micro_usd;
+  const unusableCapture = await captureConsoleErrors(() => unusable.guard.create("navigator", request));
+  assertContentFreeDiagnostics(unusableCapture.calls);
+  assert.deepEqual(unusableCapture.calls, [[DIAGNOSTIC_LINES[6]]]);
+  assert.equal(unusableCapture.value.output_text, "   ");
+  assert.equal(unusable.store.record.reserved_micro_usd, 0);
+  assert.equal(unusable.store.record.settled_micro_usd, reservation);
+  const publicSurface = JSON.stringify({ code: "upstream_unavailable", result: { status: "incomplete" } });
+  SENTINELS.forEach((sentinel) => assert.doesNotMatch(publicSurface, new RegExp(sentinel)));
+}
+
+async function testRsg17TerminalPrecedence() {
+  const request = stageRequest("navigator", { instructions: SENTINELS.join(" ") });
+
+  const readStore = new FakeCasStore(undefined, { failGetAt: 2, readFailure: sentinelFailure() });
+  const terminalRead = harness({
+    store: readStore,
+    providerCreate: async () => { throw sentinelFailure(); }
+  });
+  const readCalls = await expectCode(() => terminalRead.guard.create("navigator", request), "upstream_unavailable");
+  assert.deepEqual(readCalls, [[LEDGER_READ_SUBPHASE_LINES[2]]]);
+  assert.equal(terminalRead.state.providerCalls, 1);
+  assert.ok(readStore.record.reserved_micro_usd > 0);
+  assert.equal(readStore.record.settled_micro_usd, 0);
+
+  const writeStore = new FakeCasStore(undefined, { failSetAt: 2, writeFailure: sentinelFailure() });
+  const terminalWrite = harness({
+    store: writeStore,
+    providerCreate: async () => { throw sentinelFailure(); }
+  });
+  const writeCalls = await expectCode(() => terminalWrite.guard.create("navigator", request), "upstream_unavailable");
+  assert.deepEqual(writeCalls, [[DIAGNOSTIC_LINES[3]]]);
+  assert.equal(terminalWrite.state.providerCalls, 1);
+  assert.ok(writeStore.record.reserved_micro_usd > 0);
+  assert.equal(writeStore.record.settled_micro_usd, 0);
+}
+
+async function testRsg18SilenceAndDrift() {
+  const request = stageRequest("navigator");
+  const success = harness();
+  const successCapture = await captureConsoleErrors(() => success.guard.create("navigator", request));
+  assertContentFreeDiagnostics(successCapture.calls);
+  assert.deepEqual(successCapture.calls, []);
+  assert.equal(success.state.providerCalls, 1);
+
+  const reservation = __testing.prepareProviderRequest("navigator", request).reservation_micro_usd;
+  const cutoff = harness({
+    store: new FakeCasStore(seededLedger({ settled_micro_usd: __testing.CUTOFF_MICRO_USD - reservation + 1 }))
+  });
+  const cutoffCalls = await expectCode(() => cutoff.guard.create("navigator", request), "budget_limit");
+  assert.deepEqual(cutoffCalls, []);
+  assert.equal(cutoff.state.providerCalls, 0);
+
+  for (const phase of ["client_init", "provider_call", "provider_result", "settlement"]) {
+    const tagged = __testing.diagnosticFailure(phase);
+    assert.equal(__testing.diagnosticPhase(tagged), phase);
+    assert.equal(__testing.diagnosticSubphase(tagged), "");
+    const rejectedSubphase = __testing.diagnosticFailure(phase, "not_allowed");
+    assert.equal(__testing.diagnosticPhase(rejectedSubphase), "");
+    assert.equal(__testing.diagnosticSubphase(rejectedSubphase), "");
+  }
+
+  const budgetSource = fs.readFileSync(budgetPath, "utf8");
+  const clientSource = fs.readFileSync(clientPath, "utf8");
+  const markerArguments = Array.from(
+    budgetSource.matchAll(/console\.error\(([^;\n]+)\);/g),
+    (match) => match[1].trim()
+  );
+  assert.equal(markerArguments.length, CONTENT_FREE_DIAGNOSTIC_LINES.length);
+  markerArguments.forEach((argument) => assert.match(argument, /^"[^"]+"$/));
+  assert.deepEqual(
+    markerArguments.map((argument) => JSON.parse(argument)).sort(),
+    CONTENT_FREE_DIAGNOSTIC_LINES.slice().sort()
+  );
+  assert.match(budgetSource, /let failurePhase = "prepare";/);
+  for (const phase of ["blob_store_load", "ledger_read", "provider_call", "provider_result", "settlement"]) {
+    assert.match(budgetSource, new RegExp("failurePhase = \\\"" + phase + "\\\";"));
+  }
+  assert.match(budgetSource, /throw diagnosticFailure\(failurePhase, undefined, safeCode\);/);
+  assert.match(clientSource, /throw clientInitializationFailure\(\);/);
+  assert.doesNotMatch(clientSource, /console\.(?:error|warn|log)\(/);
 }
 
 async function testFailureAndConservativeSettlement() {
@@ -708,7 +954,10 @@ async function testFailureAndConservativeSettlement() {
       id: SENTINELS[9]
     })
   });
-  const incompleteResult = await incomplete.guard.create("navigator", request);
+  const incompleteCapture = await captureConsoleErrors(() => incomplete.guard.create("navigator", request));
+  const incompleteResult = incompleteCapture.value;
+  assertContentFreeDiagnostics(incompleteCapture.calls);
+  assert.deepEqual(incompleteCapture.calls, [[DIAGNOSTIC_LINES[6]]]);
   assert.deepEqual(incompleteResult, { status: "incomplete", incomplete_details: { reason: "max_output_tokens" } });
   assert.equal(incomplete.store.record.settled_micro_usd, reservation);
 
@@ -717,7 +966,10 @@ async function testFailureAndConservativeSettlement() {
     completedResponse({ usage: { input_tokens: 10, input_tokens_details: { cached_tokens: 11, cache_write_tokens: 0 }, output_tokens: 1 } })
   ]) {
     const missingUsage = harness({ providerCreate: async () => response });
-    const released = await missingUsage.guard.create("navigator", request);
+    const missingUsageCapture = await captureConsoleErrors(() => missingUsage.guard.create("navigator", request));
+    const released = missingUsageCapture.value;
+    assertContentFreeDiagnostics(missingUsageCapture.calls);
+    assert.deepEqual(missingUsageCapture.calls, []);
     assert.equal(released.status, "completed");
     assert.equal(missingUsage.store.record.settled_micro_usd, reservation);
     assert.equal(missingUsage.store.record.reserved_micro_usd, 0);
@@ -735,7 +987,8 @@ async function testFailureAndConservativeSettlement() {
       usage: { input_tokens: 1, input_tokens_details: { cached_tokens: 0, cache_write_tokens: 0 }, output_tokens: reservation * 100 }
     })
   });
-  await expectCode(() => overUsage.guard.create("navigator", request), "upstream_unavailable");
+  const overUsageCalls = await expectCode(() => overUsage.guard.create("navigator", request), "upstream_unavailable");
+  assert.deepEqual(overUsageCalls, [[DIAGNOSTIC_LINES[6]]]);
   assert.equal(overUsage.store.record.halted, true);
   assert.equal(overUsage.store.record.reserved_micro_usd, 0);
   assert.equal(overUsage.store.record.settled_micro_usd, reservation);
@@ -746,7 +999,8 @@ async function testFailureAndConservativeSettlement() {
       return completedResponse();
     }
   });
-  await expectCode(() => impossible.guard.create("navigator", request), "upstream_unavailable");
+  const impossibleCalls = await expectCode(() => impossible.guard.create("navigator", request), "upstream_unavailable");
+  assert.deepEqual(impossibleCalls, [[DIAGNOSTIC_LINES[7]]]);
   assert.equal(impossible.store.record.halted, true);
 }
 
@@ -768,7 +1022,8 @@ async function testUtcRolloverAndLateSettlement() {
   const olderBefore = clone(olderStore.record);
   await expectCode(
     () => __testing.settleReservation(olderStore, { month_utc: "2026-02", reservation_micro_usd: reservation }, 1, false, false),
-    "upstream_unavailable"
+    "upstream_unavailable",
+    0
   );
   assert.deepEqual(olderStore.record, olderBefore);
   assert.equal(olderStore.setCalls, 0);
@@ -978,12 +1233,16 @@ async function run() {
   await testCutoffAndCas();
   await testPreCallAccountingFailures();
   await testContentFreePhaseDiagnostics();
+  await testRsg15PhaseCompleteness();
+  await testRsg16SentinelExclusion();
+  await testRsg17TerminalPrecedence();
+  await testRsg18SilenceAndDrift();
   await testFailureAndConservativeSettlement();
   await testUtcRolloverAndLateSettlement();
   await testFourCallPathAndSentinelExclusion();
   await testResumeBodyBoundaryAndStageWiring();
   await testNavigatorBodyBoundaryAndStageWiring();
-  console.log("PASS: runtime AI spend governance synthetic suite - modern withLambda wiring for Navigator and Resume, zero-config strong-consistency @netlify/blobs 10.7.13 loading, fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free budget/accounting failures, strict options, ledger initialization, corrupt-ledger denial, cutoff equality/overage, { modified } ETag CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, four fixed content-free phase diagnostics, three fixed blob-store-load subphase diagnostics, and six fixed ledger-read subphase diagnostics");
+  console.log("PASS: runtime AI spend governance synthetic suite - modern withLambda wiring for Navigator and Resume, zero-config strong-consistency @netlify/blobs 10.7.13 loading, fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free budget/accounting failures, strict options, ledger initialization, corrupt-ledger denial, cutoff equality/overage, { modified } ETag CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, eight fixed content-free phase diagnostics, three fixed blob-store-load subphase diagnostics, six fixed ledger-read subphase diagnostics, and executable RSG-15 through RSG-18 diagnostic-origin coverage");
 }
 
 run().catch((error) => {

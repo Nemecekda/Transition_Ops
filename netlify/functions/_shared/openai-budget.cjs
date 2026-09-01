@@ -47,11 +47,22 @@ const REQUEST_FIELDS = Object.freeze([
   "text"
 ]);
 
+const PUBLIC_FAILURE_CODES = Object.freeze([
+  "budget_limit",
+  "rate_limit",
+  "timeout",
+  "upstream_unavailable"
+]);
+
 const DIAGNOSTIC_PHASES = Object.freeze([
   "prepare",
   "blob_store_load",
   "ledger_read",
-  "ledger_write"
+  "ledger_write",
+  "client_init",
+  "provider_call",
+  "provider_result",
+  "settlement"
 ]);
 
 const BLOB_STORE_LOAD_SUBPHASES = Object.freeze([
@@ -72,14 +83,15 @@ const LEDGER_READ_SUBPHASES = Object.freeze([
 const diagnosticPhaseByFailure = new WeakMap();
 const diagnosticSubphaseByFailure = new WeakMap();
 
-function diagnosticFailure(phase, subphase) {
+function diagnosticFailure(phase, subphase, code) {
   if (DIAGNOSTIC_PHASES.indexOf(phase) === -1) return guardFailure("upstream_unavailable");
   const validSubphase = (phase === "blob_store_load" && BLOB_STORE_LOAD_SUBPHASES.indexOf(subphase) !== -1) ||
     (phase === "ledger_read" && LEDGER_READ_SUBPHASES.indexOf(subphase) !== -1);
   if (typeof subphase !== "undefined" && !validSubphase) {
     return guardFailure("upstream_unavailable");
   }
-  const failure = guardFailure("upstream_unavailable");
+  const safeCode = PUBLIC_FAILURE_CODES.indexOf(code) !== -1 ? code : "upstream_unavailable";
+  const failure = guardFailure(safeCode);
   diagnosticPhaseByFailure.set(failure, phase);
   if (typeof subphase !== "undefined") diagnosticSubphaseByFailure.set(failure, subphase);
   return failure;
@@ -146,6 +158,18 @@ function emitPhaseDiagnostic(error) {
     case "ledger_write":
       console.error("runtime-ai-spend phase=ledger_write");
       break;
+    case "client_init":
+      console.error("runtime-ai-spend phase=client_init");
+      break;
+    case "provider_call":
+      console.error("runtime-ai-spend phase=provider_call");
+      break;
+    case "provider_result":
+      console.error("runtime-ai-spend phase=provider_result");
+      break;
+    case "settlement":
+      console.error("runtime-ai-spend phase=settlement");
+      break;
   }
 }
 
@@ -155,9 +179,28 @@ function publicGuardFailure(error) {
   } catch (diagnosticError) {
     // Diagnostics must never change the fail-closed result.
   }
-  const allowed = ["budget_limit", "rate_limit", "timeout", "upstream_unavailable"];
-  const code = error && allowed.indexOf(error.code) !== -1 ? error.code : "upstream_unavailable";
+  const code = error && PUBLIC_FAILURE_CODES.indexOf(error.code) !== -1 ? error.code : "upstream_unavailable";
   return guardFailure(code);
+}
+
+function clientInitializationFailure() {
+  return publicGuardFailure(diagnosticFailure("client_init"));
+}
+
+function emitProviderResultDiagnostic() {
+  try {
+    emitPhaseDiagnostic(diagnosticFailure("provider_result"));
+  } catch (diagnosticError) {
+    // Diagnostics must never change the existing sanitized result path.
+  }
+}
+
+function emitSettlementDiagnostic() {
+  try {
+    emitPhaseDiagnostic(diagnosticFailure("settlement"));
+  } catch (diagnosticError) {
+    // Diagnostics must never change the existing sanitized result path.
+  }
 }
 
 function guardFailure(code) {
@@ -543,6 +586,8 @@ function createSpendGuard(options) {
   }
 
   async function guardedCreate(stage, request) {
+    let failurePhase = "prepare";
+    try {
       let prepared;
       let month;
       try {
@@ -552,57 +597,102 @@ function createSpendGuard(options) {
         throw diagnosticFailure("prepare");
       }
       if (typeof providerCreate !== "function") throw diagnosticFailure("prepare");
+      failurePhase = "blob_store_load";
       const store = await resolveStore();
-      let admission;
-      try {
-        admission = await admitReservation(store, month, prepared.reservation_micro_usd);
-      } catch (error) {
-        if (error && error.code === "budget_limit") throw guardFailure("budget_limit");
-        if (diagnosticPhase(error)) throw error;
-        throw guardFailure("upstream_unavailable");
-      }
+      failurePhase = "ledger_read";
+      const admission = await admitReservation(store, month, prepared.reservation_micro_usd);
 
+      failurePhase = "provider_call";
       let response;
       try {
         response = await providerCreate(prepared.request);
       } catch (providerError) {
-        try {
-          await settleReservation(store, admission, admission.reservation_micro_usd, true, false);
-        } catch (settlementError) {
-          if (diagnosticPhase(settlementError)) throw settlementError;
-          throw guardFailure("upstream_unavailable");
+        failurePhase = "settlement";
+        const failedSettlement = await settleReservation(
+          store,
+          admission,
+          admission.reservation_micro_usd,
+          true,
+          false
+        );
+        failurePhase = "provider_call";
+        const providerCode = providerFailureCode(providerError);
+        if (providerCode === "budget_limit" && !failedSettlement.halted && !failedSettlement.impossible) {
+          throw guardFailure("budget_limit");
         }
-        throw guardFailure(providerFailureCode(providerError));
+        if (failedSettlement.halted || failedSettlement.impossible) {
+          throw diagnosticFailure("settlement", undefined, providerCode);
+        }
+        throw diagnosticFailure("provider_call", undefined, providerCode);
       }
 
+      failurePhase = "provider_result";
       if (!response || response.status !== "completed") {
-        try {
-          await settleReservation(store, admission, admission.reservation_micro_usd, true, false);
-        } catch (settlementError) {
-          if (diagnosticPhase(settlementError)) throw settlementError;
-          throw guardFailure("upstream_unavailable");
+        failurePhase = "settlement";
+        const incompleteSettlement = await settleReservation(
+          store,
+          admission,
+          admission.reservation_micro_usd,
+          true,
+          false
+        );
+        failurePhase = "provider_result";
+        const sanitizedResult = sanitizedIncomplete(response);
+        if (incompleteSettlement.halted || incompleteSettlement.impossible) {
+          emitSettlementDiagnostic();
+        } else {
+          emitProviderResultDiagnostic();
         }
-        return sanitizedIncomplete(response);
+        return sanitizedResult;
       }
 
+      let usableCompletedOutput = false;
+      try {
+        usableCompletedOutput = typeof response.output_text === "string" && Boolean(response.output_text.trim());
+      } catch (outputError) {
+        usableCompletedOutput = false;
+      }
+      if (!usableCompletedOutput) {
+        failurePhase = "settlement";
+        const unusableSettlement = await settleReservation(
+          store,
+          admission,
+          admission.reservation_micro_usd,
+          true,
+          false
+        );
+        if (unusableSettlement.halted || unusableSettlement.impossible) {
+          emitSettlementDiagnostic();
+        } else {
+          emitProviderResultDiagnostic();
+        }
+        failurePhase = "provider_result";
+        return response;
+      }
+
+      failurePhase = "provider_result";
       const actualMicroUsd = usageChargeMicroUsd(response.usage, prepared.price);
       const missingUsage = actualMicroUsd === null;
       const usageOverReservation = !missingUsage && actualMicroUsd > admission.reservation_micro_usd;
-      let settlement;
-      try {
-        settlement = await settleReservation(
-          store,
-          admission,
-          missingUsage || usageOverReservation ? admission.reservation_micro_usd : actualMicroUsd,
-          missingUsage || usageOverReservation,
-          usageOverReservation
-        );
-      } catch (settlementError) {
-        if (diagnosticPhase(settlementError)) throw settlementError;
-        throw guardFailure("upstream_unavailable");
-      }
-      if (usageOverReservation || settlement.halted || settlement.impossible) throw guardFailure("upstream_unavailable");
+      failurePhase = "settlement";
+      const settlement = await settleReservation(
+        store,
+        admission,
+        missingUsage || usageOverReservation ? admission.reservation_micro_usd : actualMicroUsd,
+        missingUsage || usageOverReservation,
+        usageOverReservation
+      );
+      if (usageOverReservation) throw diagnosticFailure("provider_result");
+      if (settlement.halted || settlement.impossible) throw diagnosticFailure("settlement");
       return response;
+    } catch (error) {
+      if (diagnosticPhase(error)) throw error;
+      if (error && error.code === "budget_limit") throw guardFailure("budget_limit");
+      const safeCode = error && PUBLIC_FAILURE_CODES.indexOf(error.code) !== -1
+        ? error.code
+        : "upstream_unavailable";
+      throw diagnosticFailure(failurePhase, undefined, safeCode);
+    }
   }
 
   return Object.freeze({
@@ -618,6 +708,7 @@ function createSpendGuard(options) {
 
 module.exports = {
   createSpendGuard,
+  clientInitializationFailure,
   __testing: Object.freeze({
     CUTOFF_MICRO_USD,
     SCHEMA_VERSION,
@@ -628,6 +719,10 @@ module.exports = {
     LEDGER_FIELDS,
     PRICE_TABLE,
     STAGE_TABLE,
+    DIAGNOSTIC_PHASES,
+    diagnosticFailure,
+    diagnosticPhase,
+    diagnosticSubphase,
     prepareProviderRequest,
     usageChargeMicroUsd,
     emptyLedger,
