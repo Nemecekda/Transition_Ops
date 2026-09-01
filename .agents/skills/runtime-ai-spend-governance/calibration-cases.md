@@ -2,14 +2,14 @@
 
 Execution date: 2026-09-01
 Executor: force-mod
-Skill version: 1.2
+Skill version: 1.3
 Method: Apply the closed model/stage table, fixed-point price table, aggregate
 ledger schema, atomic admission/settlement rules, closed diagnostic-origin
 contract, privacy exclusions, and skill seams to synthetic state transitions.
 No application code, provider, account, credential, member data, network, or
 production system was used.
 
-Result: 24 / 24 PASS
+Result: 25 / 25 PASS
 
 ## RSG-1 - Below-cutoff admission
 
@@ -182,7 +182,7 @@ Result: PASS
 Input: Eight synthetic `upstream_unavailable` paths terminate once at
 `prepare`, `blob_store_load`, `ledger_read`, `ledger_write`, `client_init`,
 `provider_call`, `provider_result`, and `settlement`. The `client_init` fixture
-uses the valid `module_load` subphase. Each fixture carries its pre-established
+uses the valid `module_load_other` subphase. Each fixture carries its pre-established
 zero- or one-provider-call state.
 
 Expected: Emit exactly one approved compile-time-literal marker, preserve the
@@ -241,18 +241,21 @@ claim.
 
 Result: PASS
 
-## RSG-19 - Client initialization module load
+## RSG-19 - Client initialization resolution-code signal
 
-Input: The provider SDK module load fails before an export is available. The
-caught error carries raw-error, stack, secret, and member-data sentinels.
+Input: The static provider SDK load throws once with `MODULE_NOT_FOUND` and once
+with `ERR_MODULE_NOT_FOUND`. Each caught value also carries raw-error, stack,
+secret, identity, IP, and member-data sentinels.
 
-Expected: Emit exactly one fixed literal
-`runtime-ai-spend phase=client_init subphase=module_load`, return the unchanged
-content-free `upstream_unavailable` response, emit no sentinel, and make zero
-provider calls.
+Expected: Each variant emits exactly one fixed literal
+`runtime-ai-spend phase=client_init subphase=module_load_resolution_code`,
+returns the unchanged content-free `upstream_unavailable` response, emits no
+sentinel or error code, and makes zero provider calls. The marker does not prove
+which package failed resolution or whether the OpenAI SDK was inlined.
 
-Actual: The fixture selected only `module_load`; the public response remained
-unchanged, every sentinel stayed excluded, and the provider-call count was zero.
+Actual: Both allowlisted codes selected only `module_load_resolution_code`; the
+public response remained unchanged, every sentinel and code stayed excluded,
+and the provider-call count was zero.
 
 Result: PASS
 
@@ -323,12 +326,35 @@ Input: Synthetic `client_init` failures use a missing subphase, an unknown
 subphase, a runtime variable, string concatenation, interpolation, and duplicate
 marker calls.
 
-Expected: Reject every variant as a regression and force-mod STOP. Only one of
-the five complete compile-time fixed literals is allowed per initialization
-failure; no fallback phase-only marker or dynamic construction is accepted.
+Expected: Reject every variant, including the retired `module_load` subphase, as
+a regression and force-mod STOP. Only one of the six complete compile-time fixed
+literals is allowed per initialization failure; no fallback phase-only marker or
+dynamic construction is accepted.
 
 Actual: Every missing, invalid, dynamic, or duplicated variant failed the closed
 contract without changing the public response or opening a provider-call path.
+
+Result: PASS
+
+## RSG-25 - Client initialization residual module-load failure
+
+Input: The single static provider SDK load throws without an allowlisted
+resolution code. Variants use a generic evaluation exception, a missing code,
+an unknown code, a non-string code, a throwing `code` accessor,
+`ERR_PACKAGE_PATH_NOT_EXPORTED`, `ERR_PACKAGE_IMPORT_NOT_DEFINED`,
+`ERR_REQUIRE_ESM`, and `ERR_REQUIRE_ASYNC_MODULE`. Each caught value carries
+raw-error, stack, secret, identity, IP, and member-data sentinels.
+
+Expected: Every variant emits exactly one fixed literal
+`runtime-ai-spend phase=client_init subphase=module_load_other`, returns the
+unchanged content-free `upstream_unavailable` response, emits no sentinel or
+error code, and makes zero provider calls. The marker is a residual
+load/evaluation category and does not prove that SDK evaluation began or that
+the SDK was physically present.
+
+Actual: Every non-allowlisted or inaccessible code selected only
+`module_load_other`; the public response remained unchanged, all caught-error
+properties stayed excluded, and the provider-call count was zero.
 
 Result: PASS
 
@@ -336,6 +362,6 @@ Result: PASS
 
 RSG-13 exercised `resume-drafter-maintenance`; RSG-10 and RSG-14 exercised
 `privacy-truth-to-implementation`; RSG-12 preserved the `validation-gate` and
-`deploy-discipline` seams. RSG-15 through RSG-24 added no provider-account,
+`deploy-discipline` seams. RSG-15 through RSG-25 added no provider-account,
 runtime-wiring, or deployment claim. Each retained independent blocking
 authority.

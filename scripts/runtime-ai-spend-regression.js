@@ -71,7 +71,8 @@ const BLOB_STORE_LOAD_SUBPHASE_LINES = Object.freeze([
 ]);
 
 const CLIENT_INIT_SUBPHASE_LINES = Object.freeze([
-  "runtime-ai-spend phase=client_init subphase=module_load",
+  "runtime-ai-spend phase=client_init subphase=module_load_resolution_code",
+  "runtime-ai-spend phase=client_init subphase=module_load_other",
   "runtime-ai-spend phase=client_init subphase=api_shape",
   "runtime-ai-spend phase=client_init subphase=key_lookup",
   "runtime-ai-spend phase=client_init subphase=client_construct",
@@ -810,7 +811,7 @@ async function testRsg15PhaseCompleteness() {
       )
     )
   );
-  assert.deepEqual(clientInitCalls, [[CLIENT_INIT_SUBPHASE_LINES[3]]]);
+  assert.deepEqual(clientInitCalls, [[CLIENT_INIT_SUBPHASE_LINES[4]]]);
 
   const provider = harness({ providerCreate: async () => { throw sentinelFailure(); } });
   const providerCalls = await expectCode(() => provider.guard.create("navigator", request), "upstream_unavailable");
@@ -945,14 +946,15 @@ async function testRsg18SilenceAndDrift() {
     assert.equal(__testing.diagnosticSubphase(rejectedSubphase), "");
   }
   assert.deepEqual(__testing.CLIENT_INIT_SUBPHASES, [
-    "module_load", "api_shape", "key_lookup", "client_construct", "guard_construct"
+    "module_load_resolution_code", "module_load_other", "api_shape", "key_lookup",
+    "client_construct", "guard_construct"
   ]);
   __testing.CLIENT_INIT_SUBPHASES.forEach((subphase) => {
     const tagged = __testing.diagnosticFailure("client_init", subphase);
     assert.equal(__testing.diagnosticPhase(tagged), "client_init");
     assert.equal(__testing.diagnosticSubphase(tagged), subphase);
   });
-  for (const subphase of [undefined, "", "not_allowed"]) {
+  for (const subphase of [undefined, "", "not_allowed", "module_load"]) {
     const rejected = __testing.diagnosticFailure("client_init", subphase);
     assert.equal(__testing.diagnosticPhase(rejected), "");
     assert.equal(__testing.diagnosticSubphase(rejected), "");
@@ -984,12 +986,25 @@ async function testRsg18SilenceAndDrift() {
     /function loadOpenAIModule\(\) \{\s+return require\(\"openai\"\);\s+\}/
   );
   assert.equal((clientSource.match(/require\(\"openai\"\)/g) || []).length, 1);
+  assert.doesNotMatch(clientSource, /require\.resolve\s*\(/);
+  assert.doesNotMatch(clientSource, /\brequire\s*\(\s*(?!["'])/);
+  assert.doesNotMatch(clientSource, /\bimport\s*\(/);
   assert.match(
     clientSource,
-    /try \{\s+OpenAI = loadOpenAIModule\(\);\s+\} catch \(error\) \{\s+throw clientInitializationFailure\(\"module_load\"\);\s+\}/
+    /const MODULE_RESOLUTION_CODES = Object\.freeze\(\[\s+"MODULE_NOT_FOUND",\s+"ERR_MODULE_NOT_FOUND"\s+\]\);/
   );
+  assert.equal((clientSource.match(/error\.code/g) || []).length, 1);
+  for (const prohibitedProperty of ["message", "stack", "name", "cause", "requireStack"]) {
+    assert.doesNotMatch(clientSource, new RegExp("error\\." + prohibitedProperty + "\\b"));
+  }
+  assert.match(
+    clientSource,
+    /try \{\s+OpenAI = loadOpenAIModule\(\);\s+\} catch \(error\) \{\s+if \(hasModuleResolutionCode\(error\)\) \{\s+throw clientInitializationFailure\(\"module_load_resolution_code\"\);\s+\}\s+throw clientInitializationFailure\(\"module_load_other\"\);\s+\}/
+  );
+  assert.doesNotMatch(clientSource, /clientInitializationFailure\(\"module_load\"\)/);
   for (const fixture of [
-    ["module_load", 1],
+    ["module_load_resolution_code", 1],
+    ["module_load_other", 1],
     ["api_shape", 1],
     ["key_lookup", 2],
     ["client_construct", 1],
@@ -1017,19 +1032,53 @@ async function testRsg19ClientInitializationSubphases() {
     };
   }
 
-  let moduleKeyLookups = 0;
-  const moduleLoadCalls = await withSyntheticNetlifyKey(
-    () => { moduleKeyLookups += 1; return "synthetic-openai-key"; },
-    () => withOpenAIModule(
-      () => { throw sentinelFailure(); },
-      (clientModule) => expectCode(
-        () => Promise.resolve().then(() => clientModule.createOpenAIClient("navigator")),
-        "upstream_unavailable"
+  async function captureModuleLoadFailure(failure) {
+    let moduleLoads = 0;
+    let keyLookups = 0;
+    const calls = await withSyntheticNetlifyKey(
+      () => { keyLookups += 1; return "synthetic-openai-key"; },
+      () => withOpenAIModule(
+        () => { moduleLoads += 1; throw failure; },
+        (clientModule) => expectCode(
+          () => Promise.resolve().then(() => clientModule.createOpenAIClient("navigator")),
+          "upstream_unavailable"
+        )
       )
-    )
-  );
-  assert.deepEqual(moduleLoadCalls, [[CLIENT_INIT_SUBPHASE_LINES[0]]]);
-  assert.equal(moduleKeyLookups, 0);
+    );
+    assert.equal(moduleLoads, 1);
+    assert.equal(keyLookups, 0);
+    return calls;
+  }
+
+  for (const code of ["MODULE_NOT_FOUND", "ERR_MODULE_NOT_FOUND"]) {
+    const resolutionCalls = await captureModuleLoadFailure(sentinelFailure({ code: code }));
+    assert.deepEqual(resolutionCalls, [[CLIENT_INIT_SUBPHASE_LINES[0]]]);
+  }
+
+  let throwingCodeAccesses = 0;
+  const throwingCodeFailure = sentinelFailure();
+  Object.defineProperty(throwingCodeFailure, "code", {
+    configurable: true,
+    get: function () {
+      throwingCodeAccesses += 1;
+      throw sentinelFailure();
+    }
+  });
+  const residualFailures = [
+    sentinelFailure(),
+    sentinelFailure({ code: "UNKNOWN_MODULE_CODE" }),
+    sentinelFailure({ code: 7 }),
+    throwingCodeFailure,
+    sentinelFailure({ code: "ERR_PACKAGE_PATH_NOT_EXPORTED" }),
+    sentinelFailure({ code: "ERR_PACKAGE_IMPORT_NOT_DEFINED" }),
+    sentinelFailure({ code: "ERR_REQUIRE_ESM" }),
+    sentinelFailure({ code: "ERR_REQUIRE_ASYNC_MODULE" })
+  ];
+  for (const failure of residualFailures) {
+    const residualCalls = await captureModuleLoadFailure(failure);
+    assert.deepEqual(residualCalls, [[CLIENT_INIT_SUBPHASE_LINES[1]]]);
+  }
+  assert.equal(throwingCodeAccesses, 1);
 
   let apiShapeKeyLookups = 0;
   const apiShapeCalls = await withSyntheticNetlifyKey(
@@ -1042,7 +1091,7 @@ async function testRsg19ClientInitializationSubphases() {
       )
     )
   );
-  assert.deepEqual(apiShapeCalls, [[CLIENT_INIT_SUBPHASE_LINES[1]]]);
+  assert.deepEqual(apiShapeCalls, [[CLIENT_INIT_SUBPHASE_LINES[2]]]);
   assert.equal(apiShapeKeyLookups, 0);
 
   const keyLookupState = { clientConstructs: 0, providerCalls: 0 };
@@ -1057,7 +1106,7 @@ async function testRsg19ClientInitializationSubphases() {
       )
     )
   );
-  assert.deepEqual(keyLookupCalls, [[CLIENT_INIT_SUBPHASE_LINES[2]]]);
+  assert.deepEqual(keyLookupCalls, [[CLIENT_INIT_SUBPHASE_LINES[3]]]);
   assert.equal(failedKeyLookups, 1);
   assert.equal(keyLookupState.clientConstructs, 0);
   assert.equal(keyLookupState.providerCalls, 0);
@@ -1073,7 +1122,7 @@ async function testRsg19ClientInitializationSubphases() {
       )
     )
   );
-  assert.deepEqual(missingKeyCalls, [[CLIENT_INIT_SUBPHASE_LINES[2]]]);
+  assert.deepEqual(missingKeyCalls, [[CLIENT_INIT_SUBPHASE_LINES[3]]]);
   assert.equal(missingKeyState.clientConstructs, 0);
   assert.equal(missingKeyState.providerCalls, 0);
 
@@ -1088,7 +1137,7 @@ async function testRsg19ClientInitializationSubphases() {
       )
     )
   );
-  assert.deepEqual(emptyKeyCalls, [[CLIENT_INIT_SUBPHASE_LINES[2]]]);
+  assert.deepEqual(emptyKeyCalls, [[CLIENT_INIT_SUBPHASE_LINES[3]]]);
   assert.equal(emptyKeyState.clientConstructs, 0);
   assert.equal(emptyKeyState.providerCalls, 0);
 
@@ -1106,7 +1155,7 @@ async function testRsg19ClientInitializationSubphases() {
       )
     )
   );
-  assert.deepEqual(clientConstructCalls, [[CLIENT_INIT_SUBPHASE_LINES[3]]]);
+  assert.deepEqual(clientConstructCalls, [[CLIENT_INIT_SUBPHASE_LINES[4]]]);
   assert.equal(clientConstructState.clientConstructs, 1);
   assert.equal(clientConstructState.providerCalls, 0);
 
@@ -1131,7 +1180,7 @@ async function testRsg19ClientInitializationSubphases() {
       )
     )
   );
-  assert.deepEqual(guardConstructCalls, [[CLIENT_INIT_SUBPHASE_LINES[4]]]);
+  assert.deepEqual(guardConstructCalls, [[CLIENT_INIT_SUBPHASE_LINES[5]]]);
   assert.equal(guardConstructState.clientConstructs, 1);
   assert.equal(guardConstructs, 1);
   assert.equal(guardConstructState.providerCalls, 0);
@@ -1476,7 +1525,7 @@ async function run() {
   await testFourCallPathAndSentinelExclusion();
   await testResumeBodyBoundaryAndStageWiring();
   await testNavigatorBodyBoundaryAndStageWiring();
-  console.log("PASS: runtime AI spend governance synthetic suite - modern withLambda wiring for Navigator and Resume, zero-config strong-consistency @netlify/blobs 10.7.13 loading, fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free budget/accounting failures, strict options, ledger initialization, corrupt-ledger denial, cutoff equality/overage, { modified } ETag CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, seven fixed content-free phase diagnostics, three fixed blob-store-load subphase diagnostics, five fixed client-init subphase diagnostics, six fixed ledger-read subphase diagnostics, and executable RSG-15 through RSG-19 diagnostic-origin coverage");
+  console.log("PASS: runtime AI spend governance synthetic suite - modern withLambda wiring for Navigator and Resume, zero-config strong-consistency @netlify/blobs 10.7.13 loading, fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free budget/accounting failures, strict options, ledger initialization, corrupt-ledger denial, cutoff equality/overage, { modified } ETag CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, seven fixed content-free phase diagnostics, three fixed blob-store-load subphase diagnostics, six fixed client-init subphase diagnostics, six fixed ledger-read subphase diagnostics, and executable RSG-15 through RSG-25 diagnostic-origin coverage");
 }
 
 run().catch((error) => {

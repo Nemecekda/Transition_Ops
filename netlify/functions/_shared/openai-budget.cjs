@@ -72,7 +72,8 @@ const BLOB_STORE_LOAD_SUBPHASES = Object.freeze([
 ]);
 
 const CLIENT_INIT_SUBPHASES = Object.freeze([
-  "module_load",
+  "module_load_resolution_code",
+  "module_load_other",
   "api_shape",
   "key_lookup",
   "client_construct",
@@ -170,8 +171,11 @@ function emitPhaseDiagnostic(error) {
       break;
     case "client_init":
       switch (diagnosticSubphase(error)) {
-        case "module_load":
-          console.error("runtime-ai-spend phase=client_init subphase=module_load");
+        case "module_load_resolution_code":
+          console.error("runtime-ai-spend phase=client_init subphase=module_load_resolution_code");
+          break;
+        case "module_load_other":
+          console.error("runtime-ai-spend phase=client_init subphase=module_load_other");
           break;
         case "api_shape":
           console.error("runtime-ai-spend phase=client_init subphase=api_shape");

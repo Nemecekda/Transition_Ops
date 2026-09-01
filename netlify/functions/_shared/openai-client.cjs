@@ -14,12 +14,31 @@ function loadOpenAIModule() {
   return require("openai");
 }
 
+const MODULE_RESOLUTION_CODES = Object.freeze([
+  "MODULE_NOT_FOUND",
+  "ERR_MODULE_NOT_FOUND"
+]);
+
+function hasModuleResolutionCode(error) {
+  let code;
+  try {
+    if (!error || (typeof error !== "object" && typeof error !== "function")) return false;
+    code = error.code;
+  } catch (codeAccessError) {
+    return false;
+  }
+  return typeof code === "string" && MODULE_RESOLUTION_CODES.indexOf(code) !== -1;
+}
+
 function createOpenAIClient(stage) {
   let OpenAI;
   try {
     OpenAI = loadOpenAIModule();
   } catch (error) {
-    throw clientInitializationFailure("module_load");
+    if (hasModuleResolutionCode(error)) {
+      throw clientInitializationFailure("module_load_resolution_code");
+    }
+    throw clientInitializationFailure("module_load_other");
   }
   if (typeof OpenAI !== "function") {
     throw clientInitializationFailure("api_shape");

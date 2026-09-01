@@ -2,7 +2,7 @@
 name: runtime-ai-spend-governance
 description: Govern Transition OPS server-side OpenAI admission, aggregate monthly spend accounting, model and request limits, and content-free failure diagnostics. Use for changes to shared AI calls, pricing, the cutoff, the spend ledger, request options, model/output caps, or diagnostic origins; this skill authorizes no provider-account or deployment action.
 metadata:
-  version: "1.2"
+  version: "1.3"
   status: CODIFIED
   owner: force-mod
   validated: "2026-09-01"
@@ -184,7 +184,8 @@ Existing subphases under `prepare`, `blob_store_load`, `ledger_read`, and
 
 | `client_init` subphase | Boundary |
 |---|---|
-| `module_load` | Loading the provider SDK module |
+| `module_load_resolution_code` | The static provider SDK load threw with exactly `MODULE_NOT_FOUND` or `ERR_MODULE_NOT_FOUND` |
+| `module_load_other` | The static provider SDK load threw without an allowlisted resolution code |
 | `api_shape` | Validating the loaded SDK export and constructor interface |
 | `key_lookup` | Reading and validating server-side credential presence |
 | `client_construct` | Constructing the provider client without invoking it |
@@ -193,7 +194,8 @@ Existing subphases under `prepare`, `blob_store_load`, `ledger_read`, and
 `provider_call`, `provider_result`, and `settlement` have no subphases. Every
 `client_init` failure emits exactly one of these complete fixed literals:
 
-- `runtime-ai-spend phase=client_init subphase=module_load`
+- `runtime-ai-spend phase=client_init subphase=module_load_resolution_code`
+- `runtime-ai-spend phase=client_init subphase=module_load_other`
 - `runtime-ai-spend phase=client_init subphase=api_shape`
 - `runtime-ai-spend phase=client_init subphase=key_lookup`
 - `runtime-ai-spend phase=client_init subphase=client_construct`
@@ -203,6 +205,22 @@ Existing subphases under `prepare`, `blob_store_load`, `ledger_read`, and
 identifies only that boundary; the credential value is never logged, persisted,
 returned, normalized into a marker, or used to construct a diagnostic. No
 `client_init` failure may begin a provider call.
+
+The module-load classifier preserves exactly one static `require("openai")` and
+does not add `require.resolve`, dynamic `require`, dynamic `import`, or package
+externalization. It reads only the caught value's `code` property. Exact string
+equality with `MODULE_NOT_FOUND` or `ERR_MODULE_NOT_FOUND` selects
+`module_load_resolution_code`; a missing, inaccessible, non-string, throwing,
+or other value selects `module_load_other`. Neither marker may contain or pass
+that code or any other caught-error property.
+
+`module_load_resolution_code` proves only that a resolution-coded failure
+escaped the static load boundary. It does not prove that the root `openai`
+package was absent, identify a transitive dependency, or establish whether
+`openai@7.8.0` was inlined. `module_load_other` is a residual load/evaluation
+bucket; it does not prove that SDK evaluation began or that the SDK was
+physically present. Neither marker is an artifact inventory or provider-state
+claim.
 
 Each marker emission is one application-log call with exactly one compile-time
 string-literal argument. It contains only the fixed phase marker and, where a
@@ -244,7 +262,10 @@ subphase is also a regression failure and force-mod STOP.
 Execute [calibration-cases.md](calibration-cases.md) after any change. All cases
 must pass. These synthetic governance cases do not prove application wiring,
 atomic behavior in a hosted store, provider billing, provider-account limits,
-or production behavior. Version 1.2 requires an independent case for each of the
-five `client_init` subphases and a drift case that rejects missing, invalid, or
-dynamic `client_init` subphases. Every initialization-failure fixture must retain
-the unchanged public response and record zero provider calls.
+or production behavior. Version 1.3 requires an independent case for each of the
+six `client_init` subphases and a drift case that rejects the retired
+`module_load` subphase plus missing, invalid, or dynamic `client_init`
+subphases. Module-load fixtures must cover both allowlisted resolution codes and
+missing, unknown, non-string, throwing, package-export, and module-format code
+variants. Every initialization-failure fixture must retain the unchanged public
+response and record zero provider calls.

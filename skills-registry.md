@@ -24,7 +24,7 @@ written) · DEPRECATED (superseded — note by what)
 | 13 | member-return-benchmarking | force-mod | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/member-return-benchmarking/ (canonical); .agents/skills/member-return-benchmarking/ (Codex project mirror) |
 | 14 | erg-client-plugin-governance | force-mod | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/erg-client-plugin-governance/ (canonical); .agents/skills/erg-client-plugin-governance/ (Codex project mirror) |
 | 15 | privacy-truth-to-implementation | force-mod | CODIFIED | 0.2 | 2026-08-31 | .claude/skills/privacy-truth-to-implementation/ (canonical); .agents/skills/privacy-truth-to-implementation/ (Codex project mirror) |
-| 16 | runtime-ai-spend-governance | force-mod | CODIFIED | 1.2 | 2026-09-01 | .claude/skills/runtime-ai-spend-governance/ (canonical); .agents/skills/runtime-ai-spend-governance/ (Codex project mirror) |
+| 16 | runtime-ai-spend-governance | force-mod | CODIFIED | 1.3 | 2026-09-01 | .claude/skills/runtime-ai-spend-governance/ (canonical); .agents/skills/runtime-ai-spend-governance/ (Codex project mirror) |
 | 17 | accessibility-release-validation | s3-devops | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/accessibility-release-validation/ (canonical); .agents/skills/accessibility-release-validation/ (Codex project mirror) |
 
 **Scope fence between #3 and #12 — read before extending either.**
@@ -71,6 +71,26 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-01 - **#16 `runtime-ai-spend-governance` 1.2 -> 1.3 remains
+  CODIFIED.** The hosted clone's `client_init/module_load` marker combined
+  resolution-coded failures with every other SDK load or evaluation failure.
+  Version 1.3 retires that ambiguous subphase and closes the boundary at
+  `module_load_resolution_code` and `module_load_other`. The first is selected
+  only when the existing static `require("openai")` throws with exactly
+  `MODULE_NOT_FOUND` or `ERR_MODULE_NOT_FOUND`; every missing, inaccessible,
+  non-string, unknown, package-export, module-format, or other code selects the
+  residual bucket. The classifier reads no caught-error property except `code`,
+  emits only fixed literal markers, and preserves the content-free
+  `upstream_unavailable` response and zero provider calls on initialization
+  failure. It preserves exactly one static OpenAI require and adds no
+  `require.resolve`, dynamic require/import, package externalization, package
+  change, public-response change, or spend-control change. Neither marker proves
+  root-package absence, artifact inventory, SDK evaluation, provider state, or
+  the identity of a transitive dependency. Written synthetic cases RSG-1 through
+  RSG-25 classify 25/25 PASS, including both allowlisted codes, residual and
+  inaccessible-code variants, retired-subphase drift, sentinel exclusion, and
+  zero-provider-call behavior. Canonical and Codex mirrors remain byte-identical.
+  Lane: COMMANDER. Owner: force-mod.
 - 2026-09-01 - **#16 `runtime-ai-spend-governance` 1.1 -> 1.2 remains
   CODIFIED.** The hosted clone's content-free `client_init` marker narrowed the
   failure to provider-client initialization but could not identify the failing
