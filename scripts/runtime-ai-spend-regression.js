@@ -838,18 +838,18 @@ async function testResumeBodyBoundaryAndStageWiring() {
   });
   const resume = await import(pathToFileURL(resumePath).href + "?runtime-ai-spend-resume");
   assert.equal(typeof resume.default, "function");
-  assert.equal(typeof resume.handler, "function");
+  assert.equal(typeof resume.lambdaHandler, "function");
   const modernOptions = await resume.default(new Request("https://clone.invalid/.netlify/functions/resume", {
     method: "OPTIONS"
   }), { requestId: "synthetic-resume-options" });
   assert.equal(modernOptions.status, 204);
   assert.equal(await modernOptions.text(), "");
   assert.equal(modernOptions.headers.get("access-control-allow-origin"), "https://transitionops.org");
-  const exact = await resume.handler({ httpMethod: "POST", body: bodyAtBytes(65536) });
+  const exact = await resume.lambdaHandler({ httpMethod: "POST", body: bodyAtBytes(65536) });
   assert.equal(exact.statusCode, 200);
   assert.deepEqual(stages, ["resume_facts"]);
   const beforeOverage = stages.length;
-  const over = await resume.handler({ httpMethod: "POST", body: bodyAtBytes(65537) });
+  const over = await resume.lambdaHandler({ httpMethod: "POST", body: bodyAtBytes(65537) });
   assert.equal(over.statusCode, 413);
   assert.deepEqual(JSON.parse(over.body), { error: "Request is too large." });
   assert.equal(stages.length, beforeOverage);
@@ -862,7 +862,9 @@ async function testResumeBodyBoundaryAndStageWiring() {
   assert.match(resumeSource, /createOpenAIClient\("resume_audit"\)/);
   assert.doesNotMatch(resumeSource, /createOpenAIClient\(\)/);
   assert.match(resumeSource, /import \{ withLambda \} from "@netlify\/aws-lambda-compat";/);
-  assert.match(resumeSource, /export default withLambda\(handler\);/);
+  assert.match(resumeSource, /export const lambdaHandler = async/);
+  assert.match(resumeSource, /export default withLambda\(lambdaHandler\);/);
+  assert.doesNotMatch(resumeSource, /\bexport\s+const\s+handler\b/);
   assert.doesNotMatch(resumeSource, /exports\.handler/);
   assert.match(resumeSource, /const RESUME_BODY_MAX_BYTES = 65536/);
   assert.doesNotMatch(resumeSource, /nothing stored|nothing logged|EXTERNAL_MONTHLY_HARD_CAP_STATUS|PROVIDER_PROJECT_CONTROL_STATUS|AUDIT_INCREMENTAL_CEILING_USD|BROWSER_DAILY_AUDIT_CEILING_USD|UNVERIFIED/i);
@@ -895,7 +897,7 @@ async function testNavigatorBodyBoundaryAndStageWiring() {
   });
   const navigator = await import(pathToFileURL(navigatorPath).href + "?runtime-ai-spend-navigator");
   assert.equal(typeof navigator.default, "function");
-  assert.equal(typeof navigator.handler, "function");
+  assert.equal(typeof navigator.lambdaHandler, "function");
   const modernOptions = await navigator.default(new Request("https://clone.invalid/.netlify/functions/navigator", {
     method: "OPTIONS"
   }), { requestId: "synthetic-navigator-options" });
@@ -916,7 +918,7 @@ async function testNavigatorBodyBoundaryAndStageWiring() {
     const guardedRequestsBeforeFailure = guardedRequests.length;
     const providerCallsBeforeFailure = providerCalls;
     guardedFailures.push(thrownError);
-    const failure = await navigator.handler({
+    const failure = await navigator.lambdaHandler({
       httpMethod: "POST",
       body: JSON.stringify({ messages: [{ role: "user", content: "Synthetic guarded failure request." }] })
     });
@@ -939,13 +941,13 @@ async function testNavigatorBodyBoundaryAndStageWiring() {
     assert.doesNotMatch(serializedFailure, /accounting_fault|raw accounting detail|stack|request_id|response_id/i);
   }
 
-  const exact = await navigator.handler({ httpMethod: "POST", body: navigatorBodyAtBytes(32768) });
+  const exact = await navigator.lambdaHandler({ httpMethod: "POST", body: navigatorBodyAtBytes(32768) });
   assert.equal(exact.statusCode, 200);
   assert.deepEqual(stages, ["navigator"]);
   assert.equal(providerCalls, 1);
   const stageCountBeforeOverage = stages.length;
   const providerCallsBeforeOverage = providerCalls;
-  const over = await navigator.handler({ httpMethod: "POST", body: navigatorBodyAtBytes(32769) });
+  const over = await navigator.lambdaHandler({ httpMethod: "POST", body: navigatorBodyAtBytes(32769) });
   assert.equal(over.statusCode, 413);
   assert.deepEqual(JSON.parse(over.body), { error: "Request too large" });
   assert.equal(stages.length, stageCountBeforeOverage);
@@ -963,7 +965,9 @@ async function testNavigatorBodyBoundaryAndStageWiring() {
   assert.match(navigatorSource, /Buffer\.byteLength\(rawBody, "utf8"\) > 32768/);
   assert.match(navigatorSource, /createOpenAIClient\("navigator"\)/);
   assert.match(navigatorSource, /import \{ withLambda \} from "@netlify\/aws-lambda-compat";/);
-  assert.match(navigatorSource, /export default withLambda\(handler\);/);
+  assert.match(navigatorSource, /export const lambdaHandler = async/);
+  assert.match(navigatorSource, /export default withLambda\(lambdaHandler\);/);
+  assert.doesNotMatch(navigatorSource, /\bexport\s+const\s+handler\b/);
   assert.doesNotMatch(navigatorSource, /exports\.handler/);
 }
 

@@ -258,7 +258,7 @@ function navigatorFailure(headers, reasonCategory) {
   };
 }
 
-export const handler = async (event) => {
+export const lambdaHandler = async (event) => {
   const headers = {
     "Access-Control-Allow-Origin": "https://transitionops.org",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -340,4 +340,4 @@ export const handler = async (event) => {
   }
 };
 
-export default withLambda(handler);
+export default withLambda(lambdaHandler);

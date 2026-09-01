@@ -183,9 +183,9 @@ async function run() {
   resume = await import(pathToFileURL(resumePath).href);
   navigator = await import(pathToFileURL(navigatorPath).href);
   assert.equal(typeof resume.default, "function");
-  assert.equal(typeof resume.handler, "function");
+  assert.equal(typeof resume.lambdaHandler, "function");
   assert.equal(typeof navigator.default, "function");
-  assert.equal(typeof navigator.handler, "function");
+  assert.equal(typeof navigator.lambdaHandler, "function");
   const modernResumePreflight = await resume.default(new Request("https://clone.invalid/.netlify/functions/resume", {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -205,7 +205,7 @@ async function run() {
   nextResponse = { status: "completed", output_text: facts };
   const callsBeforeCleanFacts = calls.length;
   const stagesBeforeCleanFacts = clientStages.length;
-  let result = await resume.handler(post({
+  let result = await resume.lambdaHandler(post({
     action: "facts",
     role: "Synthetic logistics leader",
     years: "12",
@@ -229,7 +229,7 @@ async function run() {
 
   const combinedTargetFacts = facts.replace("TARGET ROLE (EXACT OR MISSING): Operations manager", "TARGET ROLE (EXACT OR MISSING): Talent Management; Talent Development Manager");
   nextResponse = { status: "completed", output_text: combinedTargetFacts };
-  result = await resume.handler(post({
+  result = await resume.lambdaHandler(post({
     action: "facts",
     target: "Talent Management",
     experience: "Led a synthetic 15-person team and managed a $2M equipment inventory."
@@ -240,18 +240,18 @@ async function run() {
   const fillerIdentityLedger = "ROLE 1\nJOB TITLE (EXACT): Results-driven Officer\nEMPLOYER OR UNIT (EXACT): Dynamic Synergy LLC\nLOCATION (EXACT OR MISSING): Leveraged, WI\nDATES (EXACT OR MISSING): March 2020 - Present (Ensured)\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led planning work.\n\nEDUCATION (EXACT OR MISSING): B.S., Results-driven Studies, Synergy University\nCERTIFICATIONS (EXACT OR MISSING): Leveraged Certified; Utilize License\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Operations Manager";
   nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nResults-driven Officer - Dynamic Synergy LLC\nLeveraged, WI | March 2020 - Present (Ensured)\nLed planning work.\nEDUCATION\nB.S., Results-driven Studies, Synergy University\nCERTIFICATIONS\nLeveraged Certified\nUtilize License" };
   auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Results-driven Officer led planning work for Dynamic Synergy LLC.", confirmedFacts: fillerIdentityLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Results-driven Officer led planning work for Dynamic Synergy LLC.", confirmedFacts: fillerIdentityLedger }));
   assert.equal(result.statusCode, 200);
 
   nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nResults-driven Officer - Dynamic Synergy LLC\nLed leveraged planning work." };
   const callsBeforeFillerProse = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Results-driven Officer led planning work for Dynamic Synergy LLC.", confirmedFacts: fillerIdentityLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Results-driven Officer led planning work for Dynamic Synergy LLC.", confirmedFacts: fillerIdentityLedger }));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "filler_language");
   assert.equal(calls.length - callsBeforeFillerProse, 1);
 
   nextResponse = { status: "completed", output_text: combinedTargetFacts };
-  result = await resume.handler(post({
+  result = await resume.lambdaHandler(post({
     action: "facts",
     target: "Program Analyst",
     experience: "Led a synthetic 15-person team and managed a $2M equipment inventory."
@@ -261,7 +261,7 @@ async function run() {
 
   const broadOnlyTargetFacts = facts.replace("TARGET ROLE (EXACT OR MISSING): Operations manager", "TARGET ROLE (EXACT OR MISSING): Talent Management");
   nextResponse = { status: "completed", output_text: broadOnlyTargetFacts };
-  result = await resume.handler(post({
+  result = await resume.lambdaHandler(post({
     action: "facts",
     target: "Talent Management",
     experience: "Led a synthetic 15-person team and managed a $2M equipment inventory."
@@ -272,7 +272,7 @@ async function run() {
   const multiRoleFacts = "ROLE 1\nJOB TITLE (EXACT): HR Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led personnel operations.\n\nROLE 2\nJOB TITLE (EXACT): Deputy Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Managed Workday reporting.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): Workday\nNUMBERS AND SCALE (EXACT OR MISSING): 26 years of service\nTARGET ROLE (EXACT OR MISSING): Talent Management; Talent Development Manager";
   nextResponse = { status: "completed", output_text: multiRoleFacts };
   const callsBeforeComplexStandardFacts = calls.length;
-  result = await resume.handler(post({
+  result = await resume.lambdaHandler(post({
     action: "facts",
     target: "Human Resources Director",
     experience: "Served as HR Director at Synthetic Command and later served as Deputy Director. Used Workday across 26 years of service.",
@@ -302,7 +302,7 @@ async function run() {
   ];
   const callsBeforeSuccessfulRepair = calls.length;
   const stagesBeforeSuccessfulRepair = clientStages.length;
-  result = await resume.handler(post(factsRequest));
+  result = await resume.lambdaHandler(post(factsRequest));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).factSheet, multiRoleFacts);
   assert.equal(JSON.parse(result.body).suggestedTarget, "Talent Development Manager");
@@ -327,7 +327,7 @@ async function run() {
     { status: "completed", output_text: unresolvedFacts }
   ];
   const callsBeforeFailedRepair = calls.length;
-  result = await resume.handler(post(factsRequest));
+  result = await resume.lambdaHandler(post(factsRequest));
   assert.equal(result.statusCode, 200);
   assert.equal(calls.length - callsBeforeFailedRepair, 2);
   const unresolvedBody = JSON.parse(result.body);
@@ -340,7 +340,7 @@ async function run() {
   assert.doesNotMatch(unresolvedBody.warnings.join(" "), /quality check failed|Workday misclassified|invalid date|missing distinct|Synthetic/);
 
   const callsBeforeBlockedDraft = calls.length;
-  result = await resume.handler(post({
+  result = await resume.lambdaHandler(post({
     action: "draft",
     target: "Human Resources Director",
     experience: factsRequest.experience,
@@ -353,7 +353,7 @@ async function run() {
   assert.match(JSON.parse(result.body).error, /Resolve the fact-sheet warnings before drafting/);
 
   nextResponse = { status: "completed", output_text: "```text\n**Synthetic Logistics Leader - Synthetic Unit**\n# PROFESSIONAL EXPERIENCE\nLed a 15-person team managing a $2M equipment inventory.\n```" };
-  result = await resume.handler(post({
+  result = await resume.lambdaHandler(post({
     action: "draft",
     role: "Synthetic logistics leader",
     years: "12",
@@ -369,7 +369,7 @@ async function run() {
 
   const callsBeforeTargetChecks = calls.length;
   for (const vagueTarget of ["", "manager", "not sure", "Talent Management", "Human Resources"]) {
-    result = await resume.handler(post({
+    result = await resume.lambdaHandler(post({
       action: "draft",
       target: vagueTarget,
       experience: "Synthetic Logistics Leader at Synthetic Unit with enough source detail.",
@@ -382,7 +382,7 @@ async function run() {
 
   for (const specificTarget of ["Talent Development Manager", "Program Analyst", "Recruiter", "Head of Talent"]) {
     nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed a 15-person team managing a $2M equipment inventory." };
-    result = await resume.handler(post({
+    result = await resume.lambdaHandler(post({
       action: "draft",
       target: specificTarget,
       experience: "Synthetic Logistics Leader at Synthetic Unit. Led a 15-person team and managed a $2M equipment inventory.",
@@ -395,7 +395,7 @@ async function run() {
   nextResponse = { status: "completed", output_text: "HR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director - Synthetic Command\nManaged Workday reporting." };
   const callsBeforeCorrectedDraft = calls.length;
   const stagesBeforeCorrectedDraft = clientStages.length;
-  result = await resume.handler(post({
+  result = await resume.lambdaHandler(post({
     action: "draft",
     target: "Human Resources Director",
     experience: "Served as HR Director at Synthetic Command and later served as Deputy Director. Used Workday across 26 years of service.",
@@ -418,7 +418,7 @@ async function run() {
   const colonRoleFacts = multiRoleFacts.replace("JOB TITLE (EXACT): Deputy Director", "JOB TITLE (EXACT): Deputy Director of Personnel");
   nextResponse = { status: "completed", output_text: "HR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director of Personnel - Synthetic Command\nManaged talent programs." };
   const callsBeforeColonRoleDraft = calls.length;
-  result = await resume.handler(post({
+  result = await resume.lambdaHandler(post({
     action: "draft",
     target: "Human Resources Director",
     experience: colonRoleSource,
@@ -432,7 +432,7 @@ async function run() {
   assert.equal(calls.at(-1).model, "gpt-5.6-terra");
 
   const callsBeforeMissingColonRole = calls.length;
-  result = await resume.handler(post({
+  result = await resume.lambdaHandler(post({
     action: "draft",
     target: "Human Resources Director",
     experience: colonRoleSource,
@@ -466,7 +466,7 @@ async function run() {
     audit.scorecard.find((item) => item.dimension === "grounding_and_claim_trace").status = "FAIL";
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Planning duties completed.", confirmedFacts: facts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Planning duties completed.", confirmedFacts: facts }));
   assert.equal(result.statusCode, 422);
   assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
   assert.equal(Object.hasOwn(JSON.parse(result.body), "bullets"), false);
@@ -474,14 +474,14 @@ async function run() {
 
   nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work." };
   auditResponseQueue.push((request) => passingAudit(request, { audit_verdict: "withhold" }));
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
   assert.equal(result.statusCode, 422);
   assert.equal(Object.hasOwn(JSON.parse(result.body), "bullets"), false);
   assert.deepEqual(JSON.parse(result.body).blockers, ["The quality review determined this draft should not be released."]);
 
   nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nManaged maintenance for a 600-person organization." };
   const callsBeforeUnsupported600 = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Battalion maintenance leader.", confirmedFacts: facts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Battalion maintenance leader.", confirmedFacts: facts }));
   assert.equal(result.statusCode, 502);
   assert.equal(calls.length - callsBeforeUnsupported600, 1);
   assert.equal(calls.slice(callsBeforeUnsupported600).filter((call) => call.text && call.text.format).length, 0);
@@ -492,7 +492,7 @@ async function run() {
     audit.claim_trace.pop();
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
   assert.equal(result.statusCode, 502);
   assert.match(JSON.parse(result.body).blockers.join(" "), /not traced/);
 
@@ -502,7 +502,7 @@ async function run() {
   ]) {
     nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work." };
     auditResponseQueue.push((request) => { const audit = passingAudit(request); mutateIds(audit); return audit; });
-    result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+    result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
     assert.equal(result.statusCode, 502);
     assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
     assert.deepEqual(JSON.parse(result.body).blockers, ["One or more draft claims were not traced to confirmed facts."]);
@@ -511,7 +511,7 @@ async function run() {
   const duplicateClause = "Led planning work.";
   nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\n" + duplicateClause + "\n" + duplicateClause };
   auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
   assert.equal(result.statusCode, 200);
   const duplicateTraces = JSON.parse(result.body).trace.filter((item) => item.claim_text === duplicateClause);
   assert.equal(duplicateTraces.length, 2);
@@ -521,7 +521,7 @@ async function run() {
   const emptyInventoryFacts = facts.replace("JOB TITLE (EXACT): Synthetic Logistics Leader", "JOB TITLE (EXACT): SUMMARY").replace("EMPLOYER OR UNIT (EXACT): Synthetic Unit", "EMPLOYER OR UNIT (EXACT): MISSING");
   nextResponse = { status: "completed", output_text: "SUMMARY\nPROFESSIONAL EXPERIENCE\nCERTIFICATIONS\nEDUCATION" };
   const callsBeforeEmptyInventory = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "SUMMARY role placeholder text.", confirmedFacts: emptyInventoryFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "SUMMARY role placeholder text.", confirmedFacts: emptyInventoryFacts }));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
   assert.deepEqual(JSON.parse(result.body).blockers, ["One or more draft claims were not traced to confirmed facts."]);
@@ -534,7 +534,7 @@ async function run() {
   const liveCivilianDraft = "PROFESSIONAL EXPERIENCE\n" + syntheticRoleDuties.map((duty, index) => "Synthetic Role " + (index + 1) + " - Synthetic Employer " + (index + 1) + "\n" + duty).join("\n\n") + "\n\nEDUCATION\nM.B.A., Synthetic Management, Synthetic University\n\nCERTIFICATIONS\nSynthetic Certified Professional\nSynthetic Leadership License";
   nextResponse = { status: "completed", output_text: liveCivilianDraft };
   auditResponseQueue.push((request) => passingAudit(request, { unmet_gaps: ["Dates for roles where none were confirmed"], scorecard: auditDimensions.map((dimension) => ({ dimension, status: dimension === "date_completeness" ? "NEEDS MEMBER FACT" : "PASS", evidence: "Synthetic v0.8 fixture." })) }));
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 200);
   const liveBody = JSON.parse(result.body);
   assert.doesNotMatch(liveBody.bullets, /\[|\bMISSING\b|TIP:|1,200 employees|18 states/);
@@ -558,7 +558,7 @@ async function run() {
   for (const malformedDraft of malformedRoleDrafts) {
     nextResponse = { status: "completed", output_text: malformedDraft };
     const callsBeforeMalformedRole = calls.length;
-    result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+    result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
     assert.equal(result.statusCode, 502);
     assert.equal(JSON.parse(result.body).reasonCategory, "role_structure");
     assert.equal(calls.length - callsBeforeMalformedRole, 1);
@@ -572,7 +572,7 @@ async function run() {
     assert.deepEqual(inventory.map((item) => item.owner), ["R1", "R1", "R2", "R2"]);
     return passingAudit(request);
   });
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: ownershipLedger, confirmedFacts: ownershipLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: ownershipLedger, confirmedFacts: ownershipLedger }));
   assert.equal(result.statusCode, 200);
 
   const headingLedger = ownershipLedger.replace("EDUCATION (EXACT OR MISSING): MISSING", "EDUCATION (EXACT OR MISSING): B.S., Synthetic University").replace("CERTIFICATIONS (EXACT OR MISSING): MISSING", "CERTIFICATIONS (EXACT OR MISSING): Synthetic License");
@@ -583,7 +583,7 @@ async function run() {
     assert.doesNotMatch(candidateDraftFromAuditRequest(request), /Synthetic License|Synthetic University|CERTIFICATIONS|EDUCATION/);
     return passingAudit(request);
   });
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: headingLedger, confirmedFacts: headingLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: headingLedger, confirmedFacts: headingLedger }));
   assert.equal(result.statusCode, 200);
   assert.equal((JSON.parse(result.body).bullets.match(/Synthetic License/g) || []).length, 1);
   assert.equal((JSON.parse(result.body).bullets.match(/B\.S\., Synthetic University/g) || []).length, 1);
@@ -591,7 +591,7 @@ async function run() {
   const missingEmployerLedger = "ROLE 4\nJOB TITLE (EXACT): Synthetic Solo Role\nEMPLOYER OR UNIT (EXACT): MISSING\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led planning work.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
   nextResponse = { status: "completed", output_text: "EXPERIENCE\nSynthetic Solo Role\nLed planning work." };
   auditResponseQueue.push((request) => { assert.deepEqual(clauseInventoryFromAuditRequest(request).map((item) => item.owner), ["R1", "R1"]); return passingAudit(request); });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: missingEmployerLedger, confirmedFacts: missingEmployerLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: missingEmployerLedger, confirmedFacts: missingEmployerLedger }));
   assert.equal(result.statusCode, 200);
 
   const nonsequentialLedger = ownershipLedger.replace("ROLE 2", "ROLE 7");
@@ -602,7 +602,7 @@ async function run() {
     assert.deepEqual(clauseInventoryFromAuditRequest(request).map((item) => item.owner), ["R1", "R1", "R2", "R2"]);
     return passingAudit(request);
   });
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: nonsequentialLedger, confirmedFacts: nonsequentialLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: nonsequentialLedger, confirmedFacts: nonsequentialLedger }));
   assert.equal(result.statusCode, 200);
 
   const metadataLedger = [
@@ -631,7 +631,7 @@ async function run() {
   nextResponse = { status: "completed", output_text: incompleteMetadataDraft };
   auditResponseQueue.push((request) => { completedAuditCandidate = candidateDraftFromAuditRequest(request); return metadataAudit(request); });
   const callsBeforeMetadataCompletion = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
   assert.equal(result.statusCode, 200);
   assert.equal(calls.length - callsBeforeMetadataCompletion, 2);
   const completedMetadataDraft = JSON.parse(result.body).bullets;
@@ -652,14 +652,14 @@ async function run() {
 
   nextResponse = { status: "completed", output_text: completedMetadataDraft };
   auditResponseQueue.push((request) => metadataAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).bullets, completedMetadataDraft);
 
   const separateMetadataDraft = completedMetadataDraft.replace("Fort Alpha, VA | Jan 2018 - Feb 2019", "Fort Alpha, VA\nJan 2018 - Feb 2019");
   nextResponse = { status: "completed", output_text: separateMetadataDraft };
   auditResponseQueue.push((request) => metadataAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
   assert.equal(result.statusCode, 200);
   assert.equal((JSON.parse(result.body).bullets.match(/Fort Alpha, VA/g) || []).length, 1);
   assert.equal((JSON.parse(result.body).bullets.match(/Jan 2018 - Feb 2019/g) || []).length, 1);
@@ -675,20 +675,20 @@ async function run() {
     assert.match(candidateDraftFromAuditRequest(request), /Metadata Role 1 - Metadata Unit 1\nFort Alpha, VA \| Jan 2018 - Feb 2019\nUnknown Harbor \| Undated/);
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
   assert.equal(result.statusCode, 422);
 
   const duplicateMetadataLedger = "ROLE 1\nJOB TITLE (EXACT): Program Lead\nEMPLOYER OR UNIT (EXACT): Shared Unit\nLOCATION (EXACT OR MISSING): Alpha Site\nDATES (EXACT OR MISSING): 2018 - 2019\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led alpha work.\n\nROLE 7\nJOB TITLE (EXACT): Program Lead\nEMPLOYER OR UNIT (EXACT): Shared Unit\nLOCATION (EXACT OR MISSING): Bravo Site\nDATES (EXACT OR MISSING): 2020 - 2021\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led bravo work.\n\nROLE 9\nJOB TITLE (EXACT): Program Leader\nEMPLOYER OR UNIT (EXACT): Shared Unit\nLOCATION (EXACT OR MISSING): Charlie Site\nDATES (EXACT OR MISSING): 2022 - 2023\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led charlie work.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
   const duplicateMetadataDraft = "WORK EXPERIENCE —\nProgram Lead - Shared Unit\nLed alpha work.\nProgram Lead - Shared Unit\nLed bravo work.\nProgram Leader - Shared Unit\nLed charlie work.";
   nextResponse = { status: "completed", output_text: duplicateMetadataDraft };
   auditResponseQueue.push((request) => metadataAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: duplicateMetadataLedger, confirmedFacts: duplicateMetadataLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: duplicateMetadataLedger, confirmedFacts: duplicateMetadataLedger }));
   assert.equal(result.statusCode, 200);
   assert.match(JSON.parse(result.body).bullets, /Program Lead - Shared Unit\nAlpha Site \| 2018 - 2019\nLed alpha work\.[\s\S]*Program Lead - Shared Unit\nBravo Site \| 2020 - 2021\nLed bravo work\.[\s\S]*Program Leader - Shared Unit\nCharlie Site \| 2022 - 2023\nLed charlie work\./);
 
   nextResponse = { status: "completed", output_text: incompleteMetadataDraft };
   auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).bullets, incompleteMetadataDraft);
 
@@ -718,7 +718,7 @@ async function run() {
     assert.match(request.instructions, /server owns and separately grounds the intentionally omitted Summary/);
     return passingAudit(request);
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", posting: "Cross-functional pipeline leadership required.", experience: summaryLedger, confirmedFacts: summaryLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", posting: "Cross-functional pipeline leadership required.", experience: summaryLedger, confirmedFacts: summaryLedger }));
   assert.equal(result.statusCode, 200);
   assert.equal(calls.length - callsBeforeCanonicalSummary, 2);
   const canonicalSummaryBody = JSON.parse(result.body);
@@ -739,20 +739,20 @@ async function run() {
 
   nextResponse = { status: "completed", output_text: canonicalSummaryBody.bullets };
   auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: summaryLedger, confirmedFacts: summaryLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: summaryLedger, confirmedFacts: summaryLedger }));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).bullets, canonicalSummaryBody.bullets);
 
   nextResponse = { status: "completed", output_text: summaryBaseDraft };
   auditResponseQueue.push((request) => { assert.doesNotMatch(candidateDraftFromAuditRequest(request), /SUMMARY/); return passingAudit(request); });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: summaryLedger, confirmedFacts: summaryLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: summaryLedger, confirmedFacts: summaryLedger }));
   assert.equal(result.statusCode, 200);
   assert.match(JSON.parse(result.body).bullets, new RegExp("^SUMMARY\\n" + canonicalSummaryText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\n\\nCORE SKILLS"));
 
   const noSafeSummaryLedger = summaryLedger.replace(/^SKILLS AND TOOLS.*$/m, "SKILLS AND TOOLS (EXACT OR MISSING): MISSING; 12 years; $5M; 25%; March 2020; twenty-six years");
   nextResponse = { status: "completed", output_text: "PROFESSIONAL SUMMARY\nUnsupported aggregate claim.\n\n" + summaryBaseDraft };
   auditResponseQueue.push((request) => { assert.equal(summarySupportFromAuditRequest(request), null); return passingAudit(request); });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: noSafeSummaryLedger, confirmedFacts: noSafeSummaryLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: noSafeSummaryLedger, confirmedFacts: noSafeSummaryLedger }));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).bullets, summaryRemainingDraft);
   assert.equal(JSON.parse(result.body).trace.some((trace) => trace.section === "summary"), false);
@@ -767,14 +767,14 @@ async function run() {
     dutyTrace.verdict = "unsupported";
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: summaryLedger, confirmedFacts: summaryLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: summaryLedger, confirmedFacts: summaryLedger }));
   assert.equal(result.statusCode, 422);
   assert.match(JSON.parse(result.body).blockers.join(" "), /unsupported/i);
 
   const federalSummaryDraft = "PROFESSIONAL SUMMARY\nFederal generated summary remains byte-exact.\n\nPROFESSIONAL EXPERIENCE\nSummary Role - Summary Unit\n[Month Year - Month Year]\nLed confirmed planning work.";
   nextResponse = { status: "completed", output_text: federalSummaryDraft };
   auditResponseQueue.push((request) => { assert.equal(summarySupportFromAuditRequest(request), null); assert.equal(candidateDraftFromAuditRequest(request), federalSummaryDraft); return passingAudit(request); });
-  result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: summaryLedger, confirmedFacts: summaryLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: summaryLedger, confirmedFacts: summaryLedger }));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).bullets, federalSummaryDraft);
 
@@ -796,7 +796,7 @@ async function run() {
   nextResponse = { status: "completed", output_text: collisionDraft("Led operations in 2026.") };
   const callsBeforeBoundary26 = calls.length;
   auditResponseQueue.push((request) => sameRoleAudit(request, /2026/, [/2026/]));
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
   assert.equal(result.statusCode, 200);
   assert.equal(calls.length - callsBeforeBoundary26, 2);
 
@@ -810,7 +810,7 @@ async function run() {
     assert.equal(collisionUnlinkedIds.some((id) => schemaIds.includes(id)), false);
     return sameRoleAudit(request, /Led a 110-person operation\.$/, [/110-person recruiting operation in 2026/]);
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
   assert.equal(result.statusCode, 200);
   assert.equal(calls.length - callsBeforeSameRoleCollision, 2);
   const sameRoleBody = JSON.parse(result.body);
@@ -826,18 +826,18 @@ async function run() {
     trace.verdict = "unsupported";
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
   assert.equal(result.statusCode, 422);
 
   nextResponse = { status: "completed", output_text: collisionDraft("Led operations in 2026.", "CORE SKILLS\n110-person operation\n\n") };
   auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
   assert.equal(result.statusCode, 200);
   assert.doesNotMatch(JSON.parse(result.body).bullets, /110-person operation\n\nPROFESSIONAL EXPERIENCE/);
 
   nextResponse = { status: "completed", output_text: collisionDraft("Led operations in 2026.", "UNRESOLVED SECTION\n110-person operation\n\n") };
   const callsBeforeGlobalCollision = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "unlinked_global_number");
   assert.equal(calls.length - callsBeforeGlobalCollision, 1);
@@ -846,7 +846,7 @@ async function run() {
     nextResponse = { status: "completed", output_text: collisionDraft("Led operations in 2026.", "CORE SKILLS\n" + unsupportedGlobal + "\n\n") };
     const callsBeforeUnsupportedGlobal = calls.length;
     auditResponseQueue.push((request) => passingAudit(request));
-    result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+    result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
     assert.equal(result.statusCode, 200);
     assert.equal(calls.length - callsBeforeUnsupportedGlobal, 2);
     assert.doesNotMatch(JSON.parse(result.body).bullets, new RegExp(unsupportedGlobal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
@@ -854,14 +854,14 @@ async function run() {
 
   nextResponse = { status: "completed", output_text: collisionDraft("Led a 110-person operation across 18 states.") };
   const callsBeforeMixedCollision = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
   assert.equal(result.statusCode, 502);
   assert.equal(calls.length - callsBeforeMixedCollision, 1);
 
   for (const inexactQuantity of ["Achieved 95 readiness.", "Supported 65 sites.", "Processed 1,200.5 cases.", "Processed 1200.50 cases."]) {
     nextResponse = { status: "completed", output_text: collisionDraft(inexactQuantity) };
     const callsBeforeInexactQuantity = calls.length;
-    result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+    result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
     assert.equal(result.statusCode, 502);
     assert.equal(JSON.parse(result.body).reasonCategory, "unlinked_global_number");
     assert.equal(calls.length - callsBeforeInexactQuantity, 1);
@@ -870,7 +870,7 @@ async function run() {
   for (const wrongRoleForm of ["Managed $9 million.", "Managed 9 million.", "Served Twenty-six years."]) {
     nextResponse = { status: "completed", output_text: collisionDraft(wrongRoleForm) };
     const callsBeforeWrongRole = calls.length;
-    result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+    result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
     assert.equal(result.statusCode, 502);
     assert.equal(calls.length - callsBeforeWrongRole, 1);
   }
@@ -878,17 +878,17 @@ async function run() {
   const exactMultiFactClaim = "Led a 110-person operation with a $9M budget, 95% readiness, 65+ sites, and 1,200.50 cases.";
   nextResponse = { status: "completed", output_text: collisionDraft(exactMultiFactClaim) };
   auditResponseQueue.push((request) => sameRoleAudit(request, /1,200\.50 cases/, [/110-person recruiting operation in 2026/, /\$9M budget/, /95% readiness/, /65\+ sites/, /1,200\.50 cases/]));
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
   assert.equal(result.statusCode, 200);
 
   for (const range of ["1,100–1,300 hires", "1,100-1,300 hires"]) {
     nextResponse = { status: "completed", output_text: collisionDraft("Led a 110-person operation and delivered " + range + ".") };
     auditResponseQueue.push((request) => sameRoleAudit(request, /delivered 1,100/, [/110-person recruiting operation in 2026/, /1,100 to 1,300 hires/]));
-    result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+    result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
     assert.equal(result.statusCode, 200);
   }
   nextResponse = { status: "completed", output_text: collisionDraft("Led a 110-person operation and delivered 1,100-1,301 hires.") };
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
   assert.equal(result.statusCode, 502);
 
   nextResponse = { status: "completed", output_text: collisionDraft("Led a 110-person operation.") };
@@ -898,14 +898,14 @@ async function run() {
     audit.claim_trace.find((trace) => trace.claim_id === clauseInventoryFromAuditRequest(request).find((claim) => claim.claim_text === "Led a 110-person operation.").claim_id).fact_refs = [catalog.find((fact) => fact.unlinked_number && fact.text === "110-person operation").fact_id];
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
   assert.equal(result.statusCode, 502);
   assert.match(JSON.parse(result.body).blockers.join(" "), /unavailable_fact_reference/);
 
   const federalCollisionDraft = "PROFESSIONAL EXPERIENCE\nCollision Role 1 - Collision Unit 1\nLed confirmed planning work.\n\nCollision Role 2 - Collision Unit 2\nLed confirmed work.\n\nCollision Role 3 - Collision Unit 3\nManaged confirmed work.";
   nextResponse = { status: "completed", output_text: federalCollisionDraft };
   auditResponseQueue.push((request) => { assert.equal(candidateDraftFromAuditRequest(request), federalCollisionDraft); return passingAudit(request); });
-  result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: collisionFacts, confirmedFacts: collisionFacts }));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).bullets, federalCollisionDraft);
 
@@ -919,7 +919,7 @@ async function run() {
     const boundedLedger = coreLedgerWithSkills(coreAtoms.slice(0, atomCount).join("; "));
     nextResponse = { status: "completed", output_text: coreRoleDraft };
     auditResponseQueue.push((request) => passingAudit(request));
-    result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: boundedLedger, confirmedFacts: boundedLedger }));
+    result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: boundedLedger, confirmedFacts: boundedLedger }));
     assert.equal(result.statusCode, 200);
     const expectedSummaryAtoms = coreAtoms.slice(0, Math.min(atomCount, 4));
     const expectedRemainingAtoms = coreAtoms.slice(4, atomCount);
@@ -953,7 +953,7 @@ async function run() {
     assert.match(request.instructions, /Posting references may support alignment only and cannot cure unsupported or partially supported member claims/);
     return passingAudit(request, { unmet_gaps: ["Workforce-development, onboarding, and candidate-support experience were not confirmed."], supported_keywords: [] });
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", posting: "Workforce-development onboarding candidate-support required", experience: coreLedger, confirmedFacts: coreLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", posting: "Workforce-development onboarding candidate-support required", experience: coreLedger, confirmedFacts: coreLedger }));
   assert.equal(result.statusCode, 200);
   const canonicalCoreBody = JSON.parse(result.body);
   assert.equal(canonicalCoreCandidate, modelCandidateWithoutGeneratedCore);
@@ -982,27 +982,27 @@ async function run() {
     assert.equal(supportFact.text, coreLedger.split("\n").find((line) => /^SKILLS AND TOOLS/.test(line)).trim());
     return passingAudit(request);
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: roleDecoyCoreLedger, confirmedFacts: roleDecoyCoreLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: roleDecoyCoreLedger, confirmedFacts: roleDecoyCoreLedger }));
   assert.equal(result.statusCode, 200);
   assert.doesNotMatch(JSON.parse(result.body).bullets, /Decoy Candidate Support/);
 
   const duplicateGlobalSkillsLedger = coreLedger.replace("NUMBERS AND SCALE (EXACT OR MISSING):", "SKILLS AND TOOLS (EXACT OR MISSING): Duplicate Global Skill\nNUMBERS AND SCALE (EXACT OR MISSING):");
   nextResponse = { status: "completed", output_text: broadGeneratedCore };
   auditResponseQueue.push((request) => { assert.equal(summarySupportFromAuditRequest(request), null); assert.equal(coreSkillsSupportFromAuditRequest(request), null); return passingAudit(request); });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: duplicateGlobalSkillsLedger, confirmedFacts: duplicateGlobalSkillsLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: duplicateGlobalSkillsLedger, confirmedFacts: duplicateGlobalSkillsLedger }));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).bullets, coreRoleDraft);
 
   nextResponse = { status: "completed", output_text: canonicalCoreBody.bullets };
   auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", posting: "Transition-planning software experience preferred", experience: coreLedger, confirmedFacts: coreLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", posting: "Transition-planning software experience preferred", experience: coreLedger, confirmedFacts: coreLedger }));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).bullets, canonicalCoreBody.bullets);
 
   const noSafeCoreLedger = coreLedgerWithSkills("MISSING; 3 programs; $5M; 25%; March 2020; two markets");
   nextResponse = { status: "completed", output_text: "CORE COMPETENCIES\nBroad generated capability\n\n" + coreRoleDraft };
   auditResponseQueue.push((request) => { assert.equal(coreSkillsSupportFromAuditRequest(request), null); assert.doesNotMatch(candidateDraftFromAuditRequest(request), /CORE|SKILLS|COMPETENCIES|Broad generated capability/); return passingAudit(request); });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: noSafeCoreLedger, confirmedFacts: noSafeCoreLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: noSafeCoreLedger, confirmedFacts: noSafeCoreLedger }));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).bullets, coreRoleDraft);
   assert.equal(JSON.parse(result.body).trace.some((trace) => trace.section === "core_skills"), false);
@@ -1020,7 +1020,7 @@ async function run() {
     audit.blockers = ["posting_only_claim"];
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", posting: "Candidate support and workforce onboarding required", experience: coreLedger, confirmedFacts: coreLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", posting: "Candidate support and workforce onboarding required", experience: coreLedger, confirmedFacts: coreLedger }));
   assert.equal(result.statusCode, 422);
 
   // RDM-168B: the exact member-owned candidate-support fact is a positive control.
@@ -1034,7 +1034,7 @@ async function run() {
     trace.fact_refs = [catalog.find((fact) => fact.owner === claim.owner && /candidate support/.test(fact.text)).fact_id];
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", posting: "Candidate support and workforce onboarding required", experience: exactCandidateSupportLedger, confirmedFacts: exactCandidateSupportLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", posting: "Candidate support and workforce onboarding required", experience: exactCandidateSupportLedger, confirmedFacts: exactCandidateSupportLedger }));
   assert.equal(result.statusCode, 200);
 
   // RDM-169A: a narrow, same-role civilian translation remains releasable.
@@ -1050,7 +1050,7 @@ async function run() {
     trace.transform = "civilian_translation";
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", posting: "Transition-planning software experience preferred", experience: coreLedger, confirmedFacts: coreLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", posting: "Transition-planning software experience preferred", experience: coreLedger, confirmedFacts: coreLedger }));
   assert.equal(result.statusCode, 200);
 
   // RDM-169B: adding one unsupported beneficiary/purpose element is withheld.
@@ -1066,7 +1066,7 @@ async function run() {
     trace.verdict = "unsupported";
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", posting: "Candidate onboarding support required", experience: coreLedger, confirmedFacts: coreLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", posting: "Candidate onboarding support required", experience: coreLedger, confirmedFacts: coreLedger }));
   assert.equal(result.statusCode, 422);
 
   // RDM-170A: even a falsely cooperative audit cannot use posting-only terms to cure partial support.
@@ -1078,7 +1078,7 @@ async function run() {
     trace.posting_refs = ["candidate support", "workforce onboarding"];
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", posting: "Candidate support and workforce onboarding required", experience: coreLedger, confirmedFacts: coreLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", posting: "Candidate support and workforce onboarding required", experience: coreLedger, confirmedFacts: coreLedger }));
   assert.equal(result.statusCode, 422);
   assert.match(JSON.parse(result.body).blockers.join(" "), /job-posting requirement/i);
 
@@ -1094,7 +1094,7 @@ async function run() {
     trace.fact_refs = [catalog.find((fact) => fact.owner === claim.owner && /workforce onboarding support/.test(fact.text)).fact_id];
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", posting: "Workforce onboarding support for candidates required", experience: workforceOnboardingLedger, confirmedFacts: workforceOnboardingLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", posting: "Workforce onboarding support for candidates required", experience: workforceOnboardingLedger, confirmedFacts: workforceOnboardingLedger }));
   assert.equal(result.statusCode, 200);
 
   // RDM-170A: a single posting-only tool remains unsupported when the trace labels it exact.
@@ -1109,7 +1109,7 @@ async function run() {
     trace.transform = "civilian_translation";
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", posting: "Workday required", experience: postingOnlyToolLedger, confirmedFacts: postingOnlyToolLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", posting: "Workday required", experience: postingOnlyToolLedger, confirmedFacts: postingOnlyToolLedger }));
   assert.equal(result.statusCode, 422);
   assert.match(JSON.parse(result.body).blockers.join(" "), /job-posting requirement/i);
 
@@ -1127,7 +1127,7 @@ async function run() {
     trace.transform = "civilian_translation";
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", posting: "Preventive maintenance experience required", experience: pmcsLedger, confirmedFacts: pmcsLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", posting: "Preventive maintenance experience required", experience: pmcsLedger, confirmedFacts: pmcsLedger }));
   assert.equal(result.statusCode, 200);
 
   // RDM-172: Summary and Core Skills are stable, idempotent, and exactly nonduplicative.
@@ -1157,7 +1157,7 @@ async function run() {
     exactHeaderAuditInventory = clauseInventoryFromAuditRequest(request);
     return passingAudit(request);
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger, header: exactHeader }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger, header: exactHeader }));
   assert.equal(result.statusCode, 200, result.body);
   Object.values(exactHeader).forEach((value) => {
     assert.doesNotMatch(exactHeaderGenerationInput, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
@@ -1176,7 +1176,7 @@ async function run() {
 
   nextResponse = { status: "completed", output_text: generatedExactSections };
   auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger, header: { email: "alex.exact@example.test" } }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger, header: { email: "alex.exact@example.test" } }));
   assert.equal(result.statusCode, 200);
   let incompleteHeaderBody = JSON.parse(result.body);
   assert.equal(incompleteHeaderBody.scorecard.find((item) => item.dimension === "format_compliance").status, "NEEDS MEMBER FACT");
@@ -1185,7 +1185,7 @@ async function run() {
 
   nextResponse = { status: "completed", output_text: generatedExactSections };
   auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger, header: { name: "Alex Exact", location: "Ephraim, WI" } }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger, header: { name: "Alex Exact", location: "Ephraim, WI" } }));
   assert.equal(result.statusCode, 200);
   incompleteHeaderBody = JSON.parse(result.body);
   assert.equal(incompleteHeaderBody.scorecard.find((item) => item.dimension === "format_compliance").status, "NEEDS MEMBER FACT");
@@ -1236,7 +1236,7 @@ async function run() {
     const lengthInputs = {};
     if (config.relevantYears !== null && config.relevantYears !== undefined) lengthInputs.relevantYears = String(config.relevantYears);
     lengthInputs.relevantRoleIndexes = Array.isArray(config.selectedRoleIndexes) ? config.selectedRoleIndexes : Array.from({ length: config.roles }, (_, roleIndex) => roleIndex);
-    const adaptiveResult = await resume.handler(post({
+    const adaptiveResult = await resume.lambdaHandler(post({
       action: "draft",
       target: "Operations Manager",
       posting: "The operations manager coordinates target operations workflows and approved handoffs.",
@@ -1362,7 +1362,7 @@ async function run() {
   nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nOperations Manager - Synthetic Engine Group\n\u2022 Calibrated equipment and repaired engine records." };
   auditResponseQueue.push((request) => passingAudit(request));
   const titleOnlyCallsBefore = calls.length;
-  result = await resume.handler(post({
+  result = await resume.lambdaHandler(post({
     action: "draft",
     target: "Operations Manager",
     posting: "Seeking an operations manager with PostingOnlySentinel expertise.",
@@ -1502,7 +1502,7 @@ async function run() {
     return passingAudit(request);
   });
   const stagesBeforeFederalCore = clientStages.length;
-  result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: coreLedger, confirmedFacts: coreLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: coreLedger, confirmedFacts: coreLedger }));
   assert.equal(result.statusCode, 200);
   assert.deepEqual(clientStages.slice(stagesBeforeFederalCore), ["resume_federal", "resume_audit"]);
   assert.equal(JSON.parse(result.body).bullets, federalCoreDraft);
@@ -1517,18 +1517,18 @@ async function run() {
     assert.equal(catalog.find((fact) => fact.text === "77 sites").unlinked_number, true);
     return passingAudit(request);
   });
-  result = await resume.handler(post({ action: "draft", target: "Program Analyst", experience: boundaryLedger, confirmedFacts: boundaryLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: boundaryLedger, confirmedFacts: boundaryLedger }));
   assert.equal(result.statusCode, 200);
 
   nextResponse = { status: "completed", output_text: "SUMMARY\nSynthetic summary claim.\nPROFESSIONAL EXPERIENCE\nSynthetic Role 1 - Synthetic Employer 1\nWorked with Synthetic Role 2 without changing ownership.\nSynthetic Role 2 - Synthetic Employer 2\nLed synthetic function 2." };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.unlinked_number).fact_id]; return audit; });
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: ownershipLedger, confirmedFacts: ownershipLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: ownershipLedger, confirmedFacts: ownershipLedger }));
   assert.equal(result.statusCode, 502);
 
   for (const contamination of ["[email]", "MISSING", "TIP: Add dates."]) {
     nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\n" + contamination };
     const before = calls.length;
-    result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit with planning duties.", confirmedFacts: facts }));
+    result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit with planning duties.", confirmedFacts: facts }));
     assert.equal(result.statusCode, 502);
     assert.equal(JSON.parse(result.body).reasonCategory, "civilian_format");
     assert.equal(calls.length - before, 1);
@@ -1538,7 +1538,7 @@ async function run() {
   for (const transformedNumber of ["1,301 hires", "1.2K hires", "nine specialists", "eighteen states", "twenty-six years"]) {
     nextResponse = { status: "completed", output_text: liveCivilianDraft.replace("1,200 hires", transformedNumber) };
     const before = calls.length;
-    result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+    result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
     assert.equal(result.statusCode, 502);
     assert.equal(JSON.parse(result.body).reasonCategory, "unsupported_number");
     assert.equal(calls.length - before, 1);
@@ -1547,19 +1547,19 @@ async function run() {
 
   nextResponse = { status: "completed", output_text: "SUMMARY\nPlanning is one of the organization priorities.\n" + liveCivilianDraft };
   auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 200);
 
   for (const supportedRange of ["1,100–1,300 hires", "1,100-1,300 hires"]) {
     nextResponse = { status: "completed", output_text: liveCivilianDraft.replace("1,100 to 1,300 hires", supportedRange) };
     auditResponseQueue.push((request) => passingAudit(request));
-    result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+    result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
     assert.equal(result.statusCode, 200);
   }
 
   nextResponse = { status: "completed", output_text: liveCivilianDraft.replace("1,100 to 1,300 hires", "1,100 to 1,301 hires") };
   const callsBeforeAlteredRange = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "unsupported_number");
   assert.equal(calls.length - callsBeforeAlteredRange, 1);
@@ -1567,7 +1567,7 @@ async function run() {
   const attributedSummary = "SUMMARY\nSynthetic Role 5 led a 110-person operation.\n" + liveCivilianDraft;
   nextResponse = { status: "completed", output_text: attributedSummary };
   auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 200);
   assert.match(JSON.parse(result.body).bullets, /^SUMMARY\nPlanning; Analytics\./);
   assert.doesNotMatch(JSON.parse(result.body).bullets, /Synthetic Role 5 led a 110-person operation/);
@@ -1575,52 +1575,52 @@ async function run() {
   for (const nonnumericSummary of ["Operations leadership.", "Operations leadership across complex organizations with distributed teams."]) {
     nextResponse = { status: "completed", output_text: "SUMMARY\n" + nonnumericSummary + "\n" + liveCivilianDraft };
     auditResponseQueue.push((request) => passingAudit(request));
-    result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+    result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
     assert.equal(result.statusCode, 200);
   }
 
   nextResponse = { status: "completed", output_text: "ADDITIONAL INFORMATION\nOperations leadership\n" + liveCivilianDraft };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); const claimId = clauseInventoryFromAuditRequest(request).find((claim) => claim.claim_text === "Operations leadership").claim_id; audit.claim_trace.find((trace) => trace.claim_id === claimId).fact_refs = [catalog.find((fact) => fact.owner === "R5" && /110-person/.test(fact.text)).fact_id]; return audit; });
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 200);
 
   nextResponse = { status: "completed", output_text: "ADDITIONAL INFORMATION\nLed a 110-person operation.\n" + liveCivilianDraft };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); const claimId = clauseInventoryFromAuditRequest(request).find((claim) => claim.claim_text === "Led a 110-person operation.").claim_id; audit.claim_trace.find((trace) => trace.claim_id === claimId).fact_refs = [catalog.find((fact) => fact.owner === "R5" && /110-person/.test(fact.text)).fact_id]; return audit; });
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 502);
 
   nextResponse = { status: "completed", output_text: "ADDITIONAL INFORMATION\nSynthetic Employer 5 led a 110-person operation.\n" + liveCivilianDraft };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); const claimId = clauseInventoryFromAuditRequest(request).find((claim) => claim.claim_text === "Synthetic Employer 5 led a 110-person operation.").claim_id; audit.claim_trace.find((trace) => trace.claim_id === claimId).fact_refs = [catalog.find((fact) => fact.owner === "R5" && /110-person/.test(fact.text)).fact_id]; return audit; });
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 200);
 
   const collisionLedger = liveLedger.replace("Coached the top 15 leaders.", "Led a 110-person team.");
   nextResponse = { status: "completed", output_text: ("ADDITIONAL INFORMATION\nLed a 110-person operation.\n" + liveCivilianDraft).replace("Coached the top 15 leaders.", "Led a 110-person team.") };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); const claimId = clauseInventoryFromAuditRequest(request).find((claim) => claim.claim_text === "Led a 110-person operation.").claim_id; audit.claim_trace.find((trace) => trace.claim_id === claimId).fact_refs = [catalog.find((fact) => fact.owner === "R4" && /110-person/.test(fact.text)).fact_id]; return audit; });
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: collisionLedger, confirmedFacts: collisionLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: collisionLedger, confirmedFacts: collisionLedger }));
   assert.equal(result.statusCode, 502);
   assert.deepEqual(JSON.parse(result.body).blockers, ["[global_quantity_owner_mismatch] A global quantified claim did not identify its owning role."]);
 
   nextResponse = { status: "completed", output_text: liveCivilianDraft.replace("Led work across 17 plants.", "Claimed unsupported result.") };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); const claimId = clauseInventoryFromAuditRequest(request).find((claim) => claim.claim_text === "Claimed unsupported result.").claim_id; const trace = audit.claim_trace.find((item) => item.claim_id === claimId); trace.verdict = "unsupported"; trace.fact_refs = []; return audit; });
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 422);
 
   nextResponse = { status: "completed", output_text: "SUMMARY\nPlanning and analytics leader.\n" + liveCivilianDraft };
   auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 200);
 
   nextResponse = { status: "completed", output_text: liveCivilianDraft.replace("Led work across 17 plants.", "Unsupported strategic outcome.") };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); const claimId = clauseInventoryFromAuditRequest(request).find((claim) => claim.claim_text === "Unsupported strategic outcome.").claim_id; const trace = audit.claim_trace.find((item) => item.claim_id === claimId); trace.verdict = "unsupported"; trace.fact_refs = []; return audit; });
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 422);
   assert.match(JSON.parse(result.body).blockers.join(" "), /unsupported/i);
 
   for (const badRef of ["F999", "CROSS_ROLE", "GLOBAL_ROLE", "UNLINKED", "MALFORMED"]) {
     nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nHR Director - Synthetic Command\nLed personnel operations.\n\nDeputy Director - Synthetic Command\nManaged Workday reporting." };
     auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = badRef === "MALFORMED" ? null : [badRef === "F999" ? badRef : badRef === "CROSS_ROLE" ? catalog.find((fact) => fact.owner === "R2").fact_id : badRef === "UNLINKED" ? catalog.find((fact) => fact.unlinked_number).fact_id : catalog.find((fact) => fact.owner === "global" && !fact.unlinked_number).fact_id]; return audit; });
-    result = await resume.handler(post({ action: "draft", target: "Human Resources Director", experience: factsRequest.experience, confirmedFacts: multiRoleFacts }));
+    result = await resume.lambdaHandler(post({ action: "draft", target: "Human Resources Director", experience: factsRequest.experience, confirmedFacts: multiRoleFacts }));
     assert.equal(result.statusCode, 502);
     assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
     const expectedReferenceCode = badRef === "F999" || badRef === "UNLINKED" ? "unavailable_fact_reference" : badRef === "MALFORMED" ? "trace_reference_shape" : badRef === "GLOBAL_ROLE" ? "global_fact_on_role_claim" : "role_cross_reference";
@@ -1636,14 +1636,14 @@ async function run() {
     roleClaim.fact_refs.push(catalog.find((fact) => fact.owner === "global" && /Workday/.test(fact.text)).fact_id);
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Human Resources Director", experience: factsRequest.experience, confirmedFacts: multiRoleFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Human Resources Director", experience: factsRequest.experience, confirmedFacts: multiRoleFacts }));
   assert.equal(result.statusCode, 502);
   assert.match(JSON.parse(result.body).blockers.join(" "), /\[global_fact_on_role_claim\]/);
   assert.doesNotMatch(result.body, /HR Director|Synthetic Command|Workday|F\d+|C\d+/);
 
   nextResponse = { status: "completed", output_text: "ADDITIONAL INFORMATION\nLed 1,200 employees across 18 states.\n" + liveCivilianDraft };
   const callsBeforeUnlinkedGlobal = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 502);
   assert.equal(calls.length - callsBeforeUnlinkedGlobal, 1);
   assert.equal(JSON.parse(result.body).reasonCategory, "unlinked_global_number");
@@ -1652,13 +1652,13 @@ async function run() {
   const fillerIdentityFacts = facts.replace("Synthetic Logistics Leader", "Results-driven Officer");
   nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nResults-driven Officer - Synthetic Unit\nLed planning work." };
   auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Results-driven Officer at Synthetic Unit led planning work.", confirmedFacts: fillerIdentityFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Results-driven Officer at Synthetic Unit led planning work.", confirmedFacts: fillerIdentityFacts }));
   assert.equal(result.statusCode, 200);
 
   nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nClaimed RAW_SOURCE_ONLY_TOOL expertise." };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); audit.claim_trace[1].verdict = "unsupported"; audit.claim_trace[1].fact_refs = []; return audit; });
   const callsBeforeRawOnly = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit used RAW_SOURCE_ONLY_TOOL extensively.", posting: "RAW_SOURCE_ONLY_TOOL preferred", confirmedFacts: facts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit used RAW_SOURCE_ONLY_TOOL extensively.", posting: "RAW_SOURCE_ONLY_TOOL preferred", confirmedFacts: facts }));
   assert.equal(result.statusCode, 422);
   assert.equal(calls.length - callsBeforeRawOnly, 2);
   assert.doesNotMatch(calls[callsBeforeRawOnly].input, /RAW_SOURCE_ONLY_TOOL extensively/);
@@ -1671,7 +1671,7 @@ async function run() {
     audit.scorecard.pop();
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
   assert.equal(result.statusCode, 502);
   assert.match(JSON.parse(result.body).error, /quality review could not be verified/);
 
@@ -1695,7 +1695,7 @@ async function run() {
     audit.supported_keywords = ["talent management", "succession planning"];
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", mode: "standard", target: "Talent Development Manager", experience: threeRoleSource, posting: "Talent management, succession planning, and Workday certification required.", confirmedFacts: threeRoleFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", mode: "standard", target: "Talent Development Manager", experience: threeRoleSource, posting: "Talent management, succession planning, and Workday certification required.", confirmedFacts: threeRoleFacts }));
   assert.equal(result.statusCode, 200, result.body);
   const civilianAuditBody = JSON.parse(result.body);
   assert.equal(civilianAuditBody.scorecard.length, 10);
@@ -1714,12 +1714,12 @@ async function run() {
   for (const rangeDraft of [civilianThreeRoleDraft.replace("Jan 2020 - Dec 2021", "Jan 2020 – Dec 2021"), civilianThreeRoleDraft.replace("2022 - 2023", "2022 to 2023")]) {
     nextResponse = { status: "completed", output_text: rangeDraft };
     auditResponseQueue.push((request) => passingAudit(request));
-    result = await resume.handler(post({ action: "draft", mode: "standard", target: "Talent Development Manager", experience: threeRoleSource, confirmedFacts: threeRoleFacts }));
+    result = await resume.lambdaHandler(post({ action: "draft", mode: "standard", target: "Talent Development Manager", experience: threeRoleSource, confirmedFacts: threeRoleFacts }));
     assert.equal(result.statusCode, 200);
   }
 
   nextResponse = { status: "completed", output_text: civilianThreeRoleDraft.replace("Fort Example | Jan 2020 - Dec 2021", "Fort Example | Jan 2020 - Dec 2021 | [Hours per week: __]\n[Supervisor: Name, Phone - may contact: Yes/No]") };
-  result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: threeRoleSource, confirmedFacts: threeRoleFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: threeRoleSource, confirmedFacts: threeRoleFacts }));
   assert.equal(result.statusCode, 200);
   assert.match(JSON.parse(result.body).bullets, /\[Hours per week: __\]/);
   assert.equal(calls.at(-2).max_output_tokens, 1900);
@@ -1727,7 +1727,7 @@ async function run() {
   const federalSixRoleDraft = liveCivilianDraft.replace("PROFESSIONAL EXPERIENCE", "[Name]\n[Contact information]\nPROFESSIONAL EXPERIENCE");
   nextResponse = { status: "completed", output_text: federalSixRoleDraft };
   auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.handler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: liveLedger, confirmedFacts: liveLedger }));
+  result = await resume.lambdaHandler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: liveLedger, confirmedFacts: liveLedger }));
   assert.equal(result.statusCode, 200);
   assert.match(JSON.parse(result.body).bullets, /\[Name\]/);
   for (let roleNumber = 1; roleNumber <= 6; roleNumber += 1) assert.match(JSON.parse(result.body).bullets, new RegExp("Synthetic Role " + roleNumber + " - Synthetic Employer " + roleNumber));
@@ -1747,7 +1747,7 @@ async function run() {
     audit.unmet_gaps = ["Team size or readiness outcome"];
     return audit;
   });
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning and maintenance work.", confirmedFacts: noMetricFacts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning and maintenance work.", confirmedFacts: noMetricFacts }));
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).scorecard.find((item) => item.dimension === "quantified_impact").status, "NEEDS MEMBER FACT");
   assert.doesNotMatch(JSON.parse(result.body).bullets, /\b\d/);
@@ -1755,7 +1755,7 @@ async function run() {
   const longExperience = "Synthetic Logistics Leader at Synthetic Unit. Led a 15-person team and managed a $2M equipment inventory. " + "A".repeat(9000) + "ENDMARKER";
   nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed a 15-person team and managed a $2M equipment inventory." };
   const callsBeforeLongInput = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: longExperience, posting: "P".repeat(5000), confirmedFacts: facts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: longExperience, posting: "P".repeat(5000), confirmedFacts: facts }));
   assert.equal(result.statusCode, 200);
   assert.equal(calls.length - callsBeforeLongInput, 2);
   assert.doesNotMatch(calls[callsBeforeLongInput].input, /ENDMARKER/);
@@ -1764,14 +1764,14 @@ async function run() {
 
   nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nManaged $777 and achieved an 88% outcome." };
   const callsBeforePostingOnlyGrounding = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", posting: postingOnlySentinel, confirmedFacts: facts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", posting: postingOnlySentinel, confirmedFacts: facts }));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "unsupported_number");
   assert.equal(calls.length - callsBeforePostingOnlyGrounding, 1);
   assert.match(calls[callsBeforePostingOnlyGrounding].input, /POSTING_ONLY_SENTINEL/);
 
   nextResponse = { status: "completed", output_text: "HR Director and Deputy Director - Synthetic Command\nLed personnel operations and managed Workday reporting." };
-  result = await resume.handler(post({
+  result = await resume.lambdaHandler(post({
     action: "draft",
     target: "Human Resources Director",
     experience: "Served as HR Director at Synthetic Command and later served as Deputy Director. Used Workday across 26 years of service.",
@@ -1781,7 +1781,7 @@ async function run() {
   assert.equal(JSON.parse(result.body).reasonCategory, "role_structure");
 
   nextResponse = { status: "completed", output_text: multiRoleFacts };
-  result = await resume.handler(post({
+  result = await resume.lambdaHandler(post({
     action: "facts",
     mode: "federal",
     role: "Human resources leader",
@@ -1795,7 +1795,7 @@ async function run() {
   assert.match(calls.at(-1).instructions, /reviewable fact sheet/);
 
   nextResponse = { status: "completed", output_text: "SYNTHETIC OUTPUT" };
-  result = await navigator.handler(post({
+  result = await navigator.lambdaHandler(post({
     messages: [{ role: "user", content: "Give me a synthetic transition checklist." }],
     context: "Synthetic context only",
     daysOut: 200
@@ -1815,7 +1815,7 @@ async function run() {
   ];
   for (const [badDraft, expectedCategory] of badDrafts.map((draft, index) => [draft, ["unsupported_number", "role_structure", "filler_language"][index]])) {
     nextResponse = { status: "completed", output_text: badDraft };
-    result = await resume.handler(post({
+    result = await resume.lambdaHandler(post({
       action: "draft",
       target: "Operations Manager",
       experience: "Synthetic Logistics Leader at Synthetic Unit. Led a 15-person team and managed a $2M equipment inventory.",
@@ -1828,7 +1828,7 @@ async function run() {
 
   nextResponse = { status: "incomplete", incomplete_details: { reason: "max_output_tokens" }, output_text: "MEMBER SECRET request_id=req_123 token=999" };
   const callsBeforeOutputLimit = calls.length;
-  result = await resume.handler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
+  result = await resume.lambdaHandler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "output_limit");
   assert.equal(JSON.parse(result.body).error, "We could not safely extract every fact into a complete fact sheet. No draft was released. Your source text is not the problem; this fact-sheet review needs a different workflow.");
@@ -1839,7 +1839,7 @@ async function run() {
 
   nextResponse = { status: "incomplete", incomplete_details: { reason: "unrecognized_provider_reason" }, output_text: "PRIVATE DRAFT" };
   const callsBeforeUnknownIncomplete = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "incomplete_unknown");
   assert.equal(calls.length - callsBeforeUnknownIncomplete, 1);
@@ -1847,7 +1847,7 @@ async function run() {
 
   responseQueue = [{ status: "completed", output_text: invalidDateFacts }, { status: "incomplete", incomplete_details: { reason: "max_output_tokens" }, output_text: "PRIVATE REPAIR" }];
   const callsBeforeIncompleteRepair = calls.length;
-  result = await resume.handler(post(factsRequest));
+  result = await resume.lambdaHandler(post(factsRequest));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "output_limit");
   assert.equal(JSON.parse(result.body).error, "We could not safely extract every fact into a complete fact sheet. No draft was released. Your source text is not the problem; this fact-sheet review needs a different workflow.");
@@ -1859,7 +1859,7 @@ async function run() {
   nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work." };
   auditResponseQueue.push({ status: "incomplete", incomplete_details: { reason: "max_output_tokens" }, output_text: "PRIVATE AUDIT request_id=req_audit" });
   const callsBeforeIncompleteAudit = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "output_limit");
   assert.equal(calls.length - callsBeforeIncompleteAudit, 2);
@@ -1872,7 +1872,7 @@ async function run() {
   nextResponse = { status: "completed", output_text: "Synthetic Logistics Leader - Synthetic Unit\nPROFESSIONAL EXPERIENCE\nLed planning work." };
   auditResponseQueue.push(() => { throw Object.assign(new Error("PRIVATE AUDIT TRANSPORT request_id=req_transport"), { name: "APIConnectionTimeoutError", code: "ETIMEDOUT", status: 408, type: "timeout" }); });
   const callsBeforeAuditTransport = calls.length;
-  result = await resume.handler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Synthetic Logistics Leader at Synthetic Unit. Led planning work.", confirmedFacts: facts }));
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).reasonCategory, "timeout");
   assert.equal(calls.length - callsBeforeAuditTransport, 2);
@@ -1881,14 +1881,14 @@ async function run() {
   const timeoutError = Object.assign(new Error("MEMBER SECRET timeout request_id=req_timeout token=777"), { name: "APIConnectionTimeoutError", code: "ETIMEDOUT", status: 408, type: "timeout" });
   nextError = timeoutError;
   const callsBeforeTimeout = calls.length;
-  result = await resume.handler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
+  result = await resume.lambdaHandler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
   assert.equal(JSON.parse(result.body).reasonCategory, "timeout");
   assert.equal(calls.length - callsBeforeTimeout, 1);
   assert.doesNotMatch(result.body, /MEMBER SECRET|req_timeout|777|ETIMEDOUT/);
 
   nextError = Object.assign(new Error("raw provider rate message"), { status: 429, code: "rate_limit_exceeded", type: "rate_limit_error" });
   const callsBeforeRateLimit = calls.length;
-  result = await resume.handler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
+  result = await resume.lambdaHandler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
   assert.equal(JSON.parse(result.body).reasonCategory, "rate_limit");
   assert.equal(calls.length - callsBeforeRateLimit, 1);
   assert.doesNotMatch(result.body, /raw provider rate message|rate_limit_exceeded/);
@@ -1898,7 +1898,7 @@ async function run() {
   console.log = function () { capturedLogs.push(Array.from(arguments).join(" ")); };
   nextError = Object.assign(new Error("MEMBER SECRET billing body request_id=req_budget token=888"), { status: 429, code: "insufficient_quota", type: "billing_error" });
   const callsBeforeBudgetLimit = calls.length;
-  result = await resume.handler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
+  result = await resume.lambdaHandler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
   console.log = originalConsoleLog;
   assert.equal(JSON.parse(result.body).reasonCategory, "budget_limit");
   assert.equal(calls.length - callsBeforeBudgetLimit, 1);
@@ -1907,7 +1907,7 @@ async function run() {
 
   nextError = Object.assign(new Error("raw upstream body"), { status: 503, code: "server_error", type: "server_error" });
   const callsBeforeUpstream = calls.length;
-  result = await resume.handler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
+  result = await resume.lambdaHandler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
   assert.equal(JSON.parse(result.body).reasonCategory, "upstream_unavailable");
   assert.equal(calls.length - callsBeforeUpstream, 1);
   assert.doesNotMatch(result.body, /raw upstream body|server_error/);
@@ -1915,7 +1915,7 @@ async function run() {
   nextError = null;
   nextResponse = { status: "incomplete", output_text: "" };
   const stagesBeforeNavigator = clientStages.length;
-  result = await navigator.handler(post({ messages: [{ role: "user", content: "Synthetic request" }] }));
+  result = await navigator.lambdaHandler(post({ messages: [{ role: "user", content: "Synthetic request" }] }));
   assert.equal(result.statusCode, 502);
   assert.deepEqual(clientStages.slice(stagesBeforeNavigator), ["navigator"]);
 
@@ -1970,8 +1970,9 @@ async function run() {
   assert.match(budgetSource, /result\.modified !== true/);
   [resumeSource, navigatorSource].forEach(function (entrySource) {
     assert.match(entrySource, /import \{ withLambda \} from "@netlify\/aws-lambda-compat";/);
-    assert.match(entrySource, /export const handler = async/);
-    assert.match(entrySource, /export default withLambda\(handler\);/);
+    assert.match(entrySource, /export const lambdaHandler = async/);
+    assert.match(entrySource, /export default withLambda\(lambdaHandler\);/);
+    assert.doesNotMatch(entrySource, /\bexport\s+const\s+handler\b/);
     assert.doesNotMatch(entrySource, /exports\.handler/);
   });
   const failureMessagesBlock = resumeSource.match(/const FAILURE_MESSAGES = \{([\s\S]*?)\n  \};/)[1];

@@ -7,7 +7,7 @@ const { createOpenAIClient, responseText } = openAIClientModule;
 // Requests use the guarded server boundary; provider and platform retention remain separate controls.
 const RESUME_BODY_MAX_BYTES = 65536;
 
-export const handler = async function (event) {
+export const lambdaHandler = async function (event) {
   const headers = {
     "Access-Control-Allow-Origin": "https://transitionops.org",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -1196,4 +1196,4 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
   }
 };
 
-export default withLambda(handler);
+export default withLambda(lambdaHandler);
