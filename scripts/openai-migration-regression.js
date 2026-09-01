@@ -12,6 +12,7 @@ const helperPath = path.join(root, "netlify/functions/_shared/openai-client.cjs"
 const budgetPath = path.join(root, "netlify/functions/_shared/openai-budget.cjs");
 const resumePath = path.join(root, "netlify/functions/resume.mjs");
 const navigatorPath = path.join(root, "netlify/functions/navigator.mjs");
+const netlifyConfigPath = path.join(root, "netlify.toml");
 const calls = [];
 const clientStages = [];
 let nextResponse = { status: "completed", output_text: "SYNTHETIC OUTPUT" };
@@ -177,6 +178,37 @@ let navigator;
 
 function post(body) {
   return { httpMethod: "POST", body: JSON.stringify(body) };
+}
+
+function tomlTableLines(source, tableName) {
+  const lines = String(source).split(/\r?\n/);
+  const sections = [];
+  let active = null;
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    const header = line.match(/^\[([^\]]+)\]$/);
+    if (header) {
+      active = { name: header[1], lines: [] };
+      sections.push(active);
+    } else if (active && line && !line.startsWith("#")) {
+      active.lines.push(line);
+    }
+  }
+  const matches = sections.filter((section) => section.name === tableName);
+  assert.equal(matches.length, 1, "netlify.toml contains exactly one [" + tableName + "] table");
+  return matches[0].lines;
+}
+
+function assertOpenAIPackageInclusion(source) {
+  const exactRule = 'included_files = ["node_modules/openai/**"]';
+  assert.deepEqual(tomlTableLines(source, "functions.navigator"), [exactRule]);
+  assert.deepEqual(tomlTableLines(source, "functions.resume"), [exactRule]);
+  assert.equal((String(source).match(/node_modules\/openai\/\*\*/g) || []).length, 2);
+  assert.doesNotMatch(String(source), /^\s*included_files\s*=\s*\["node_modules\/\*\*"\]/m);
+  assert.doesNotMatch(String(source), /^\s*(?:node_bundler|external_node_modules|ignored_node_modules)\s*=/m);
+
+  const globalFunctions = String(source).match(/(?:^|\n)\[functions\][ \t]*\r?\n([\s\S]*?)(?=\r?\n\[[^\]]+\][ \t]*(?:\r?\n|$)|$)/);
+  if (globalFunctions) assert.doesNotMatch(globalFunctions[1], /^\s*included_files\s*=/m);
 }
 
 async function run() {
@@ -1931,7 +1963,25 @@ async function run() {
   const budgetSource = fs.readFileSync(budgetPath, "utf8");
   const budgetContract = require(budgetPath).__testing;
   const uiSource = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const netlifyConfigSource = fs.readFileSync(netlifyConfigPath, "utf8");
   const packageData = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+  assertOpenAIPackageInclusion(netlifyConfigSource);
+  for (const invalidConfig of [
+    netlifyConfigSource.replace("[functions.navigator]", "[functions.navigator_missing]"),
+    netlifyConfigSource.replace("[functions.resume]", "[functions.resume_missing]"),
+    netlifyConfigSource.replace("[functions.navigator]", "[functions]"),
+    netlifyConfigSource.replace("node_modules/openai/**", "node_modules/**"),
+    netlifyConfigSource.replace("node_modules/openai/**", "node_modules/other-sdk/**"),
+    netlifyConfigSource.replace(
+      'included_files = ["node_modules/openai/**"]',
+      'included_files = ["node_modules/openai/**"]\n  included_files = ["node_modules/openai/**"]'
+    ),
+    netlifyConfigSource + "\n[functions.other]\n  node_bundler = \"esbuild\"\n",
+    netlifyConfigSource + "\n[functions.other]\n  external_node_modules = [\"openai\"]\n",
+    netlifyConfigSource + "\n[functions.other]\n  ignored_node_modules = [\"openai\"]\n"
+  ]) {
+    assert.throws(() => assertOpenAIPackageInclusion(invalidConfig));
+  }
   assert.equal(packageData.dependencies.openai, "7.8.0");
   assert.equal(packageData.dependencies["@netlify/blobs"], "10.7.13");
   assert.equal(packageData.dependencies["@netlify/aws-lambda-compat"], "2.0.0");

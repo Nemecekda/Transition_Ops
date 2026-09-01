@@ -2,10 +2,10 @@
 name: validation-gate
 description: Validation battle drill for Transition OPS. EDIT mode runs pre-commit on any code change and before any PR, and governs how edits are applied - discrete edits, per-edit counts, reviewed scripts. INTEGRITY mode runs against a clean tree for structural and encoding audits. Owner - s3-devops.
 metadata:
-  version: "1.6"
+  version: "1.7"
   status: CODIFIED
   owner: s3-devops
-  validated: "2026-08-31"
+  validated: "2026-09-01"
 ---
 # VALIDATION GATE - BATTLE DRILL
 
@@ -253,8 +253,9 @@ under another name.
 
 4P. **PRE-MAIN Phase 1 semantic regressions.** Fires when the diff touches
     `index.html`, an OpenAI Netlify Function or shared client/guard, an active,
-    legacy, or dedicated worker, `scripts/**`, or `package.json`. Governance-only
-    changes under `.claude/**`, `.agents/**`, and `skills-registry.md` are N/A.
+    legacy, or dedicated worker, `scripts/**`, `package.json`, or `netlify.toml`.
+    Governance-only changes under `.claude/**`, `.agents/**`, and
+    `skills-registry.md` are N/A.
     Run each command separately and unpiped; a missing script, nonzero exit,
     skipped required case, or fallback result is FAIL:
 
@@ -280,6 +281,37 @@ under another name.
     The accessibility command establishes local automated evidence only. It
     cannot report manual assistive-technology or hosted release acceptance;
     those remain owned by `accessibility-release-validation`.
+
+4N. **Netlify AI package boundary - real artifact.** Fires when the diff touches
+    `netlify.toml`, `package.json`, `package-lock.json`, either OpenAI entry
+    function, or the shared OpenAI client. Run after 4P and before step 5.
+    Static source assertions do not clear this step. Package both AI functions
+    with the Netlify CLI's installed packager into a scratch directory, then
+    resolve and load the SDK separately from each generated artifact without
+    constructing a client or invoking a function:
+
+       TOPS_NETLIFY_CLI_ROOT="$(npm root -g)/netlify-cli"
+       TOPS_PACKAGE_SCRATCH="$(mktemp -d /tmp/tops-netlify-package.XXXXXX)"
+       node -e 'console.log(require(process.argv[1]).version)' "$TOPS_NETLIFY_CLI_ROOT/package.json"
+       node -e 'console.log(require(process.argv[1]).version)' "$TOPS_NETLIFY_CLI_ROOT/node_modules/@netlify/zip-it-and-ship-it/package.json"
+       node --input-type=module -e 'import fs from "node:fs";import path from "node:path";import {pathToFileURL} from "node:url";const cli=process.argv[1];const out=process.argv[2];const root=process.cwd();const tomlModule=await import(pathToFileURL(path.join(cli,"node_modules/@iarna/toml/toml.js")));const configModule=await import(pathToFileURL(path.join(cli,"dist/lib/functions/config.js")));const zipModule=await import(pathToFileURL(path.join(cli,"node_modules/@netlify/zip-it-and-ship-it/dist/main.js")));const parsed=(tomlModule.default||tomlModule).parse(fs.readFileSync(path.join(root,"netlify.toml"),"utf8"));const config=configModule.normalizeFunctionsConfig({functionsConfig:parsed.functions,projectRoot:root});await zipModule.zipFunctions(path.join(root,"netlify/functions"),out,{archiveFormat:"none",config,manifest:path.join(out,"manifest.json")});console.log("4N PACKAGE PASS actual netlify.toml");' "$TOPS_NETLIFY_CLI_ROOT" "$TOPS_PACKAGE_SCRATCH"
+       node -e 'const assert=require("node:assert/strict");const fs=require("node:fs");const path=require("node:path");const {createRequire}=require("node:module");const out=process.argv[1];for(const name of ["navigator","resume"]){const base=path.join(out,name);const pkg=require(path.join(base,"node_modules/openai/package.json"));assert.equal(pkg.version,"7.8.0");const loaded=createRequire(path.join(base,"package.json"))("openai");assert.equal(typeof (loaded.OpenAI||loaded.default||loaded),"function");console.log("4N PASS",name,pkg.version);}assert.equal(fs.existsSync(path.join(out,"jobs/node_modules/openai")),false);console.log("4N PASS jobs excluded");' "$TOPS_PACKAGE_SCRATCH"
+
+    `netlify functions:build` alone is prohibited as 4N evidence: CLI 26.1.0
+    was measured to call the packager without normalized per-function config,
+    silently omitting `included_files`. Record both displayed tool versions, the
+    package PASS, and the three artifact PASS lines. Missing CLI/package,
+    configuration parse or normalization failure, packaging failure, absent
+    SDK, version drift, failed resolution, SDK inclusion in `jobs`, or any
+    fallback is FAIL. This smoke test must perform zero credential access,
+    provider calls, network activity, model requests, or function invocations.
+
+    The source regression must also enforce one exact function-scoped
+    `included_files = ["node_modules/openai/**"]` rule for Navigator and Resume;
+    zero global or broad `node_modules/**` inclusion; and zero `node_bundler`,
+    `external_node_modules`, or `ignored_node_modules` override. Artifact PASS
+    proves only local package presence and module resolution. Hosted Navigator
+    and Resume acceptance remain separate deploy-discipline evidence.
 
 5. **Untouched-region check.** `git diff --stat` - confirm ONLY intended
    files/regions changed. Any unexpected diff is a full stop.
@@ -341,22 +373,24 @@ correct mode. Partial re-validation is how corruption ships. A fix writes
 files, so an INTEGRITY run that produces a fix becomes an EDIT run - rerun in
 EDIT MODE.
 
-## VERSION 1.6 GOVERNANCE CALIBRATION
+## VERSION 1.7 GOVERNANCE CALIBRATION
 
-- **VG-16-1:** a GA ID and `OneSignal.init(` are removed from positive anchors;
-  approved production invariants are tested as state and absence. PASS.
-- **VG-16-2:** synthetic GA, Kit, browser credential, static OneSignal UUID, and
-  clone-origin patterns each fail without recording an exact credential. PASS.
-- **VG-16-3:** production push `false` exactly once passes; `true`, dynamic, or
-  duplicate state fails. PASS.
-- **VG-16-4:** each relevant synthetic diff triggers all five commands; a missing
-  or failing command blocks. PASS.
-- **VG-16-5:** request/output, concurrency, ledger-sentinel, and runtime network
-  behavior cannot be cleared by a static source match. PASS.
-- **VG-16-6:** automated accessibility may report only local automation;
-  privacy, spend, accessibility, Resume, and deploy owners remain independent.
-  PASS.
+- **VG-17-1:** the six v1.6 privacy, push-state, semantic-regression, spend, and
+  ownership cases remain PASS without weakening.
+- **VG-17-2:** a `netlify.toml`-only diff triggers 4P and the real-artifact 4N
+  boundary; governance-only skill/registry diffs remain N/A. PASS.
+- **VG-17-3:** exact Navigator and Resume inclusion passes; missing, global,
+  broad, duplicated, or wrong-package inclusion fails. PASS.
+- **VG-17-4:** `node_bundler`, `external_node_modules`, and
+  `ignored_node_modules` overrides fail; the runtime-v2 NFT path remains
+  unchanged. PASS.
+- **VG-17-5:** both generated AI artifacts must contain OpenAI 7.8.0 and resolve
+  a constructor, while `jobs` must exclude it. Static config alone fails. PASS.
+- **VG-17-6:** package smoke performs zero client construction, credential
+  access, function invocation, network activity, provider call, or model
+  request; hosted acceptance stays with deploy discipline. PASS.
 
-Governance calibration executed 6/6 PASS on 2026-08-31. No Phase 1 application
-command, provider path, manual assistive technology, hosted artifact, or
-production behavior was executed or certified by this result.
+Governance calibration executed 6/6 PASS on 2026-09-01. The measured artifact
+smoke packaged and loaded the SDK locally only. No function, provider path,
+model request, network request, manual assistive technology, hosted artifact,
+deployment, merge, or production behavior was executed or certified.

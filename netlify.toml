@@ -1,0 +1,7 @@
+# The modern runtime-v2 NFT bundle cannot infer this guarded CommonJS SDK edge.
+# Keep the package inclusion scoped to the two AI functions.
+[functions.navigator]
+  included_files = ["node_modules/openai/**"]
+
+[functions.resume]
+  included_files = ["node_modules/openai/**"]

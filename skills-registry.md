@@ -9,7 +9,7 @@ written) · DEPRECATED (superseded — note by what)
 
 | # | Skill | Owner | Status | Version | Validated | Location |
 |---|-------|-------|--------|---------|-----------|----------|
-| 1 | validation-gate | s3-devops | CODIFIED | 1.6 | 2026-08-31 | .claude/skills/validation-gate/ (canonical); .agents/skills/validation-gate/ (Codex project mirror) |
+| 1 | validation-gate | s3-devops | CODIFIED | 1.7 | 2026-09-01 | .claude/skills/validation-gate/ (canonical); .agents/skills/validation-gate/ (Codex project mirror) |
 | 2 | deploy-discipline | s3-devops | CODIFIED | 1.6 | 2026-08-31 | .claude/skills/deploy-discipline/ (Claude copy); .agents/skills/deploy-discipline/ (Codex copy; environment wording intentionally differs); 1.3 BURNED - see change log |
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
@@ -71,6 +71,22 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-01 - **#1 `validation-gate` 1.6 -> 1.7 remains CODIFIED.** The
+  hosted clone's fixed `client_init/module_load_resolution_code` marker exposed
+  a package-boundary gap: OpenAI 7.8.0 was installed and pinned, but the modern
+  runtime-v2 NFT artifact omitted it. Version 1.7 makes `netlify.toml` trigger
+  all five PRE-MAIN suites and adds a real-artifact boundary that packages
+  Navigator and Resume separately, requires OpenAI 7.8.0 to exist and resolve
+  from both artifacts, and requires the non-AI `jobs` artifact to exclude it.
+  The source fixture requires exactly two function-scoped inclusion rules and
+  rejects global or broad inclusion plus bundler, externalization, and ignored-
+  module overrides. It expressly rejects `netlify functions:build` alone as
+  evidence because CLI 26.1.0 was measured to omit normalized per-function
+  config on that command. Calibration cases VG-17-1 through VG-17-6 pass 6/6;
+  canonical and Codex mirrors remain byte-identical. The local artifact smoke
+  performs no credential access, client construction, function invocation,
+  provider call, network request, or model request. Hosted acceptance remains
+  owned by deploy discipline. Lane: AUTO. Owner: s3-devops.
 - 2026-09-01 - **#16 `runtime-ai-spend-governance` 1.2 -> 1.3 remains
   CODIFIED.** The hosted clone's `client_init/module_load` marker combined
   resolution-coded failures with every other SDK load or evaluation failure.
