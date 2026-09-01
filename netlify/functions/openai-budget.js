@@ -45,6 +45,59 @@ const REQUEST_FIELDS = Object.freeze([
   "text"
 ]);
 
+const DIAGNOSTIC_PHASES = Object.freeze([
+  "prepare",
+  "blob_store_load",
+  "ledger_read",
+  "ledger_write"
+]);
+
+const diagnosticPhaseByFailure = new WeakMap();
+
+function diagnosticFailure(phase) {
+  if (DIAGNOSTIC_PHASES.indexOf(phase) === -1) return guardFailure("upstream_unavailable");
+  const failure = guardFailure("upstream_unavailable");
+  diagnosticPhaseByFailure.set(failure, phase);
+  return failure;
+}
+
+function diagnosticPhase(error) {
+  if (!error || (typeof error !== "object" && typeof error !== "function")) return "";
+  return diagnosticPhaseByFailure.get(error) || "";
+}
+
+function preserveDiagnosticFailure(error, phase) {
+  return diagnosticPhase(error) ? error : diagnosticFailure(phase);
+}
+
+function emitPhaseDiagnostic(error) {
+  switch (diagnosticPhase(error)) {
+    case "prepare":
+      console.error("runtime-ai-spend phase=prepare");
+      break;
+    case "blob_store_load":
+      console.error("runtime-ai-spend phase=blob_store_load");
+      break;
+    case "ledger_read":
+      console.error("runtime-ai-spend phase=ledger_read");
+      break;
+    case "ledger_write":
+      console.error("runtime-ai-spend phase=ledger_write");
+      break;
+  }
+}
+
+function publicGuardFailure(error) {
+  try {
+    emitPhaseDiagnostic(error);
+  } catch (diagnosticError) {
+    // Diagnostics must never change the fail-closed result.
+  }
+  const allowed = ["budget_limit", "rate_limit", "timeout", "upstream_unavailable"];
+  const code = error && allowed.indexOf(error.code) !== -1 ? error.code : "upstream_unavailable";
+  return guardFailure(code);
+}
+
 function guardFailure(code) {
   return Object.freeze({ code: code });
 }
@@ -245,12 +298,11 @@ function isCasConflict(error) {
 }
 
 async function readSnapshot(store) {
-  if (!store || typeof store.getWithMetadata !== "function" || typeof store.setJSON !== "function") throw guardFailure("upstream_unavailable");
+  if (!store || typeof store.getWithMetadata !== "function" || typeof store.setJSON !== "function") throw diagnosticFailure("ledger_read");
   try {
     return normalizeSnapshot(await store.getWithMetadata(RECORD_KEY, { type: "json" }));
   } catch (error) {
-    if (error && (error.code === "budget_limit" || error.code === "upstream_unavailable")) throw error;
-    throw guardFailure("upstream_unavailable");
+    throw preserveDiagnosticFailure(error, "ledger_read");
   }
 }
 
@@ -261,71 +313,92 @@ async function conditionalWrite(store, snapshot, record) {
     if (!isPlainObject(result) || result.modified !== true) throw { code: "condition_failed" };
   } catch (error) {
     if (isCasConflict(error)) throw { code: "condition_failed" };
-    throw guardFailure("upstream_unavailable");
+    throw diagnosticFailure("ledger_write");
   }
 }
 
 async function admitReservation(store, month, reservationMicroUsd) {
   if (!validMonthUtc(month) || !Number.isSafeInteger(reservationMicroUsd) || reservationMicroUsd < 0) throw guardFailure("upstream_unavailable");
   for (let attempt = 0; attempt < CAS_ATTEMPTS; attempt += 1) {
-    const snapshot = await readSnapshot(store);
-    let record = snapshot.exists ? validateLedger(snapshot.data) : emptyLedger(month);
-    if (record.month_utc > month) throw guardFailure("upstream_unavailable");
-    if (record.month_utc < month) record = emptyLedger(month);
-    if (record.halted) throw guardFailure("upstream_unavailable");
+    let snapshot;
+    let record;
+    try {
+      snapshot = await readSnapshot(store);
+      record = snapshot.exists ? validateLedger(snapshot.data) : emptyLedger(month);
+      if (record.month_utc > month) throw guardFailure("upstream_unavailable");
+      if (record.month_utc < month) record = emptyLedger(month);
+      if (record.halted) throw guardFailure("upstream_unavailable");
+    } catch (error) {
+      throw preserveDiagnosticFailure(error, "ledger_read");
+    }
     const projected = checkedSum([record.settled_micro_usd, record.reserved_micro_usd, reservationMicroUsd]);
     if (projected > CUTOFF_MICRO_USD) throw guardFailure("budget_limit");
-    const next = Object.assign({}, record, {
-      reserved_micro_usd: checkedSum([record.reserved_micro_usd, reservationMicroUsd]),
-      admitted_call_count: checkedSum([record.admitted_call_count, 1])
-    });
-    validateLedger(next);
+    let next;
+    try {
+      next = Object.assign({}, record, {
+        reserved_micro_usd: checkedSum([record.reserved_micro_usd, reservationMicroUsd]),
+        admitted_call_count: checkedSum([record.admitted_call_count, 1])
+      });
+      validateLedger(next);
+    } catch (error) {
+      throw preserveDiagnosticFailure(error, "ledger_write");
+    }
     try {
       await conditionalWrite(store, snapshot, next);
       return Object.freeze({ month_utc: month, reservation_micro_usd: reservationMicroUsd });
     } catch (error) {
       if (error && error.code === "condition_failed" && attempt + 1 < CAS_ATTEMPTS) continue;
-      throw guardFailure("upstream_unavailable");
+      throw preserveDiagnosticFailure(error, "ledger_write");
     }
   }
-  throw guardFailure("upstream_unavailable");
+  throw diagnosticFailure("ledger_write");
 }
 
 async function settleReservation(store, admission, actualMicroUsd, forceFullCharge, forceHalt) {
   if (!isPlainObject(admission) || !validMonthUtc(admission.month_utc) ||
       !Number.isSafeInteger(admission.reservation_micro_usd) || admission.reservation_micro_usd < 0) throw guardFailure("upstream_unavailable");
   for (let attempt = 0; attempt < CAS_ATTEMPTS; attempt += 1) {
-    const snapshot = await readSnapshot(store);
-    if (!snapshot.exists) throw guardFailure("upstream_unavailable");
-    const record = validateLedger(snapshot.data);
-    if (record.month_utc > admission.month_utc) return Object.freeze({ late_month: true, halted: record.halted });
-    if (record.month_utc < admission.month_utc) throw guardFailure("upstream_unavailable");
+    let snapshot;
+    let record;
+    try {
+      snapshot = await readSnapshot(store);
+      if (!snapshot.exists) throw guardFailure("upstream_unavailable");
+      record = validateLedger(snapshot.data);
+      if (record.month_utc > admission.month_utc) return Object.freeze({ late_month: true, halted: record.halted });
+      if (record.month_utc < admission.month_utc) throw guardFailure("upstream_unavailable");
+    } catch (error) {
+      throw preserveDiagnosticFailure(error, "ledger_read");
+    }
     const impossible = record.reserved_micro_usd < admission.reservation_micro_usd ||
       record.settled_call_count >= record.admitted_call_count ||
       !Number.isSafeInteger(actualMicroUsd) || actualMicroUsd < 0;
     let next;
-    if (impossible) {
-      next = Object.assign({}, record, { halted: true });
-    } else {
-      const charge = forceFullCharge ? admission.reservation_micro_usd : actualMicroUsd;
-      next = Object.assign({}, record, {
-        reserved_micro_usd: record.reserved_micro_usd - admission.reservation_micro_usd,
-        settled_micro_usd: checkedSum([record.settled_micro_usd, charge]),
-        settled_call_count: checkedSum([record.settled_call_count, 1]),
-        halted: record.halted || forceHalt
-      });
-      if (checkedSum([next.settled_micro_usd, next.reserved_micro_usd]) > CUTOFF_MICRO_USD) next = Object.assign({}, record, { halted: true });
+    try {
+      if (impossible) {
+        next = Object.assign({}, record, { halted: true });
+      } else {
+        const charge = forceFullCharge ? admission.reservation_micro_usd : actualMicroUsd;
+        next = Object.assign({}, record, {
+          reserved_micro_usd: record.reserved_micro_usd - admission.reservation_micro_usd,
+          settled_micro_usd: checkedSum([record.settled_micro_usd, charge]),
+          settled_call_count: checkedSum([record.settled_call_count, 1]),
+          halted: record.halted || forceHalt
+        });
+        if (checkedSum([next.settled_micro_usd, next.reserved_micro_usd]) > CUTOFF_MICRO_USD) next = Object.assign({}, record, { halted: true });
+      }
+      validateLedger(next);
+    } catch (error) {
+      throw preserveDiagnosticFailure(error, "ledger_write");
     }
-    validateLedger(next);
     try {
       await conditionalWrite(store, snapshot, next);
       return Object.freeze({ late_month: false, halted: next.halted, impossible: impossible });
     } catch (error) {
       if (error && error.code === "condition_failed" && attempt + 1 < CAS_ATTEMPTS) continue;
-      throw guardFailure("upstream_unavailable");
+      throw preserveDiagnosticFailure(error, "ledger_write");
     }
   }
-  throw guardFailure("upstream_unavailable");
+  throw diagnosticFailure("ledger_write");
 }
 
 function providerFailureCode(error) {
@@ -380,27 +453,27 @@ function createSpendGuard(options) {
     try {
       return await storePromise;
     } catch (error) {
-      throw guardFailure("upstream_unavailable");
+      throw preserveDiagnosticFailure(error, "blob_store_load");
     }
   }
 
-  return Object.freeze({
-    create: async function (stage, request) {
+  async function guardedCreate(stage, request) {
       let prepared;
       let month;
       try {
         prepared = prepareProviderRequest(stage, request);
         month = utcMonth(now());
       } catch (error) {
-        throw guardFailure("upstream_unavailable");
+        throw diagnosticFailure("prepare");
       }
-      if (typeof providerCreate !== "function") throw guardFailure("upstream_unavailable");
+      if (typeof providerCreate !== "function") throw diagnosticFailure("prepare");
       const store = await resolveStore();
       let admission;
       try {
         admission = await admitReservation(store, month, prepared.reservation_micro_usd);
       } catch (error) {
         if (error && error.code === "budget_limit") throw guardFailure("budget_limit");
+        if (diagnosticPhase(error)) throw error;
         throw guardFailure("upstream_unavailable");
       }
 
@@ -411,6 +484,7 @@ function createSpendGuard(options) {
         try {
           await settleReservation(store, admission, admission.reservation_micro_usd, true, false);
         } catch (settlementError) {
+          if (diagnosticPhase(settlementError)) throw settlementError;
           throw guardFailure("upstream_unavailable");
         }
         throw guardFailure(providerFailureCode(providerError));
@@ -420,6 +494,7 @@ function createSpendGuard(options) {
         try {
           await settleReservation(store, admission, admission.reservation_micro_usd, true, false);
         } catch (settlementError) {
+          if (diagnosticPhase(settlementError)) throw settlementError;
           throw guardFailure("upstream_unavailable");
         }
         return sanitizedIncomplete(response);
@@ -438,10 +513,20 @@ function createSpendGuard(options) {
           usageOverReservation
         );
       } catch (settlementError) {
+        if (diagnosticPhase(settlementError)) throw settlementError;
         throw guardFailure("upstream_unavailable");
       }
       if (usageOverReservation || settlement.halted || settlement.impossible) throw guardFailure("upstream_unavailable");
       return response;
+  }
+
+  return Object.freeze({
+    create: async function (stage, request) {
+      try {
+        return await guardedCreate(stage, request);
+      } catch (error) {
+        throw publicGuardFailure(error);
+      }
     }
   });
 }
