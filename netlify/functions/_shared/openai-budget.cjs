@@ -60,13 +60,23 @@ const BLOB_STORE_LOAD_SUBPHASES = Object.freeze([
   "store_construct"
 ]);
 
+const LEDGER_READ_SUBPHASES = Object.freeze([
+  "api_shape",
+  "strong_context",
+  "store_request",
+  "snapshot_shape",
+  "missing_etag",
+  "schema"
+]);
+
 const diagnosticPhaseByFailure = new WeakMap();
 const diagnosticSubphaseByFailure = new WeakMap();
 
 function diagnosticFailure(phase, subphase) {
   if (DIAGNOSTIC_PHASES.indexOf(phase) === -1) return guardFailure("upstream_unavailable");
-  if (typeof subphase !== "undefined" &&
-      (phase !== "blob_store_load" || BLOB_STORE_LOAD_SUBPHASES.indexOf(subphase) === -1)) {
+  const validSubphase = (phase === "blob_store_load" && BLOB_STORE_LOAD_SUBPHASES.indexOf(subphase) !== -1) ||
+    (phase === "ledger_read" && LEDGER_READ_SUBPHASES.indexOf(subphase) !== -1);
+  if (typeof subphase !== "undefined" && !validSubphase) {
     return guardFailure("upstream_unavailable");
   }
   const failure = guardFailure("upstream_unavailable");
@@ -110,7 +120,28 @@ function emitPhaseDiagnostic(error) {
       }
       break;
     case "ledger_read":
-      console.error("runtime-ai-spend phase=ledger_read");
+      switch (diagnosticSubphase(error)) {
+        case "api_shape":
+          console.error("runtime-ai-spend phase=ledger_read subphase=api_shape");
+          break;
+        case "strong_context":
+          console.error("runtime-ai-spend phase=ledger_read subphase=strong_context");
+          break;
+        case "store_request":
+          console.error("runtime-ai-spend phase=ledger_read subphase=store_request");
+          break;
+        case "snapshot_shape":
+          console.error("runtime-ai-spend phase=ledger_read subphase=snapshot_shape");
+          break;
+        case "missing_etag":
+          console.error("runtime-ai-spend phase=ledger_read subphase=missing_etag");
+          break;
+        case "schema":
+          console.error("runtime-ai-spend phase=ledger_read subphase=schema");
+          break;
+        default:
+          console.error("runtime-ai-spend phase=ledger_read");
+      }
       break;
     case "ledger_write":
       console.error("runtime-ai-spend phase=ledger_write");
@@ -315,8 +346,13 @@ function validateLedger(record) {
 }
 
 function normalizeSnapshot(snapshot) {
-  if (!snapshot || snapshot.data === null || typeof snapshot.data === "undefined") return { exists: false, data: null, etag: null };
-  if (typeof snapshot.etag !== "string" || !snapshot.etag) throw guardFailure("upstream_unavailable");
+  if (snapshot === null) return { exists: false, data: null, etag: null };
+  if (!isPlainObject(snapshot) || !Object.prototype.hasOwnProperty.call(snapshot, "data")) {
+    throw diagnosticFailure("ledger_read", "snapshot_shape");
+  }
+  if (typeof snapshot.etag !== "string" || !snapshot.etag) {
+    throw diagnosticFailure("ledger_read", "missing_etag");
+  }
   return { exists: true, data: snapshot.data, etag: snapshot.etag };
 }
 
@@ -329,12 +365,20 @@ function isCasConflict(error) {
 }
 
 async function readSnapshot(store) {
-  if (!store || typeof store.getWithMetadata !== "function" || typeof store.setJSON !== "function") throw diagnosticFailure("ledger_read");
-  try {
-    return normalizeSnapshot(await store.getWithMetadata(RECORD_KEY, { type: "json" }));
-  } catch (error) {
-    throw preserveDiagnosticFailure(error, "ledger_read");
+  if (!store || typeof store.getWithMetadata !== "function" || typeof store.setJSON !== "function") {
+    throw diagnosticFailure("ledger_read", "api_shape");
   }
+  let snapshot;
+  try {
+    snapshot = await store.getWithMetadata(RECORD_KEY, { type: "json" });
+  } catch (error) {
+    if (diagnosticPhase(error)) throw error;
+    if (error && error.name === "BlobsConsistencyError") {
+      throw diagnosticFailure("ledger_read", "strong_context");
+    }
+    throw diagnosticFailure("ledger_read", "store_request");
+  }
+  return normalizeSnapshot(snapshot);
 }
 
 async function conditionalWrite(store, snapshot, record) {
@@ -355,12 +399,16 @@ async function admitReservation(store, month, reservationMicroUsd) {
     let record;
     try {
       snapshot = await readSnapshot(store);
+    } catch (error) {
+      throw preserveDiagnosticFailure(error, "ledger_read");
+    }
+    try {
       record = snapshot.exists ? validateLedger(snapshot.data) : emptyLedger(month);
       if (record.month_utc > month) throw guardFailure("upstream_unavailable");
       if (record.month_utc < month) record = emptyLedger(month);
       if (record.halted) throw guardFailure("upstream_unavailable");
     } catch (error) {
-      throw preserveDiagnosticFailure(error, "ledger_read");
+      throw diagnosticFailure("ledger_read", "schema");
     }
     const projected = checkedSum([record.settled_micro_usd, record.reserved_micro_usd, reservationMicroUsd]);
     if (projected > CUTOFF_MICRO_USD) throw guardFailure("budget_limit");
@@ -393,12 +441,16 @@ async function settleReservation(store, admission, actualMicroUsd, forceFullChar
     let record;
     try {
       snapshot = await readSnapshot(store);
+    } catch (error) {
+      throw preserveDiagnosticFailure(error, "ledger_read");
+    }
+    try {
       if (!snapshot.exists) throw guardFailure("upstream_unavailable");
       record = validateLedger(snapshot.data);
       if (record.month_utc > admission.month_utc) return Object.freeze({ late_month: true, halted: record.halted });
       if (record.month_utc < admission.month_utc) throw guardFailure("upstream_unavailable");
     } catch (error) {
-      throw preserveDiagnosticFailure(error, "ledger_read");
+      throw diagnosticFailure("ledger_read", "schema");
     }
     const impossible = record.reserved_micro_usd < admission.reservation_micro_usd ||
       record.settled_call_count >= record.admitted_call_count ||

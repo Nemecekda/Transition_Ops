@@ -63,8 +63,17 @@ const BLOB_STORE_LOAD_SUBPHASE_LINES = Object.freeze([
   "runtime-ai-spend phase=blob_store_load subphase=store_construct"
 ]);
 
+const LEDGER_READ_SUBPHASE_LINES = Object.freeze([
+  "runtime-ai-spend phase=ledger_read subphase=api_shape",
+  "runtime-ai-spend phase=ledger_read subphase=strong_context",
+  "runtime-ai-spend phase=ledger_read subphase=store_request",
+  "runtime-ai-spend phase=ledger_read subphase=snapshot_shape",
+  "runtime-ai-spend phase=ledger_read subphase=missing_etag",
+  "runtime-ai-spend phase=ledger_read subphase=schema"
+]);
+
 const CONTENT_FREE_DIAGNOSTIC_LINES = Object.freeze(
-  DIAGNOSTIC_LINES.concat(BLOB_STORE_LOAD_SUBPHASE_LINES)
+  DIAGNOSTIC_LINES.concat(BLOB_STORE_LOAD_SUBPHASE_LINES, LEDGER_READ_SUBPHASE_LINES)
 );
 
 function clone(value) {
@@ -215,6 +224,18 @@ async function withBlobsModule(loader, action) {
     return await action();
   } finally {
     Module._load = originalLoad;
+  }
+}
+
+async function withBlobsContext(context, action) {
+  const hadContext = Object.prototype.hasOwnProperty.call(globalThis, "netlifyBlobsContext");
+  const previousContext = globalThis.netlifyBlobsContext;
+  globalThis.netlifyBlobsContext = Buffer.from(JSON.stringify(context), "utf8").toString("base64");
+  try {
+    return await action();
+  } finally {
+    if (hadContext) globalThis.netlifyBlobsContext = previousContext;
+    else delete globalThis.netlifyBlobsContext;
   }
 }
 
@@ -541,23 +562,67 @@ async function testContentFreePhaseDiagnostics() {
   const readStore = new FakeCasStore(undefined, { readUnavailable: true, readFailure });
   const read = harness({ store: readStore });
   const readCalls = await expectCode(() => read.guard.create("navigator", request), "upstream_unavailable");
-  assert.deepEqual(readCalls, [[DIAGNOSTIC_LINES[2]]]);
+  assert.deepEqual(readCalls, [[LEDGER_READ_SUBPHASE_LINES[2]]]);
   assert.equal(read.state.providerCalls, 0);
   assert.equal(read.store.setCalls, 0);
 
-  for (const store of [
-    new FakeCasStore(Object.assign(seededLedger(), { unexpected: 1 })),
-    new FakeCasStore(seededLedger(), { missingEtag: true })
-  ]) {
-    const invalidRead = harness({ store });
-    const invalidReadCalls = await expectCode(
-      () => invalidRead.guard.create("navigator", request),
-      "upstream_unavailable"
-    );
-    assert.deepEqual(invalidReadCalls, [[DIAGNOSTIC_LINES[2]]]);
-    assert.equal(invalidRead.state.providerCalls, 0);
-    assert.equal(invalidRead.store.setCalls, 0);
-  }
+  let readApiShapeProviderCalls = 0;
+  const apiShapeReadGuard = createSpendGuard({
+    store: { getWithMetadata: async () => null },
+    now: () => NOW,
+    providerCreate: async () => { readApiShapeProviderCalls += 1; return completedResponse(); }
+  });
+  const apiShapeReadCalls = await expectCode(
+    () => apiShapeReadGuard.create("navigator", request),
+    "upstream_unavailable"
+  );
+  assert.deepEqual(apiShapeReadCalls, [[LEDGER_READ_SUBPHASE_LINES[0]]]);
+  assert.equal(readApiShapeProviderCalls, 0);
+
+  let strongContextProviderCalls = 0;
+  const strongContextCalls = await withBlobsContext(
+    { siteID: SENTINELS[8], token: SENTINELS[9], edgeURL: "https://example.invalid" },
+    () => {
+      const guard = createSpendGuard({
+        now: () => NOW,
+        providerCreate: async () => { strongContextProviderCalls += 1; return completedResponse(); }
+      });
+      return expectCode(() => guard.create("navigator", request), "upstream_unavailable");
+    }
+  );
+  assert.deepEqual(strongContextCalls, [[LEDGER_READ_SUBPHASE_LINES[1]]]);
+  assert.equal(strongContextProviderCalls, 0);
+
+  const malformedSnapshotStore = new FakeCasStore();
+  malformedSnapshotStore.getWithMetadata = async () => ({ unexpected: SENTINELS[3] });
+  const malformedSnapshot = harness({ store: malformedSnapshotStore });
+  const malformedSnapshotCalls = await expectCode(
+    () => malformedSnapshot.guard.create("navigator", request),
+    "upstream_unavailable"
+  );
+  assert.deepEqual(malformedSnapshotCalls, [[LEDGER_READ_SUBPHASE_LINES[3]]]);
+  assert.equal(malformedSnapshot.state.providerCalls, 0);
+  assert.equal(malformedSnapshot.store.setCalls, 0);
+
+  const missingEtag = harness({ store: new FakeCasStore(seededLedger(), { missingEtag: true }) });
+  const missingEtagCalls = await expectCode(
+    () => missingEtag.guard.create("navigator", request),
+    "upstream_unavailable"
+  );
+  assert.deepEqual(missingEtagCalls, [[LEDGER_READ_SUBPHASE_LINES[4]]]);
+  assert.equal(missingEtag.state.providerCalls, 0);
+  assert.equal(missingEtag.store.setCalls, 0);
+
+  const invalidSchema = harness({
+    store: new FakeCasStore(Object.assign(seededLedger(), { unexpected: SENTINELS[3] }))
+  });
+  const invalidSchemaCalls = await expectCode(
+    () => invalidSchema.guard.create("navigator", request),
+    "upstream_unavailable"
+  );
+  assert.deepEqual(invalidSchemaCalls, [[LEDGER_READ_SUBPHASE_LINES[5]]]);
+  assert.equal(invalidSchema.state.providerCalls, 0);
+  assert.equal(invalidSchema.store.setCalls, 0);
 
   const writeFailure = Object.assign(new Error(SENTINELS.join(" ")), {
     request_id: SENTINELS[9],
@@ -914,7 +979,7 @@ async function run() {
   await testFourCallPathAndSentinelExclusion();
   await testResumeBodyBoundaryAndStageWiring();
   await testNavigatorBodyBoundaryAndStageWiring();
-  console.log("PASS: runtime AI spend governance synthetic suite - modern withLambda wiring for Navigator and Resume, zero-config strong-consistency @netlify/blobs 10.7.13 loading, fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free budget/accounting failures, strict options, ledger initialization, corrupt-ledger denial, cutoff equality/overage, { modified } ETag CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, four fixed content-free phase diagnostics, and three fixed blob-store-load subphase diagnostics");
+  console.log("PASS: runtime AI spend governance synthetic suite - modern withLambda wiring for Navigator and Resume, zero-config strong-consistency @netlify/blobs 10.7.13 loading, fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free budget/accounting failures, strict options, ledger initialization, corrupt-ledger denial, cutoff equality/overage, { modified } ETag CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, four fixed content-free phase diagnostics, three fixed blob-store-load subphase diagnostics, and six fixed ledger-read subphase diagnostics");
 }
 
 run().catch((error) => {
