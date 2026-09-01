@@ -11,7 +11,7 @@ const budgetPath = path.join(root, "netlify/functions/_shared/openai-budget.cjs"
 const clientPath = path.join(root, "netlify/functions/_shared/openai-client.cjs");
 const resumePath = path.join(root, "netlify/functions/resume.mjs");
 const navigatorPath = path.join(root, "netlify/functions/navigator.mjs");
-const { createSpendGuard, __testing } = require(budgetPath);
+const { createSpendGuard, clientInitializationFailure, __testing } = require(budgetPath);
 let entryClientFactory = null;
 const entryHelperExports = Object.freeze({
   createOpenAIClient: function (stage) {
@@ -54,21 +54,28 @@ const SENTINELS = [
   "PROVIDER_DATA_SENTINEL_7Q"
 ];
 
-const DIAGNOSTIC_LINES = Object.freeze([
-  "runtime-ai-spend phase=prepare",
-  "runtime-ai-spend phase=blob_store_load",
-  "runtime-ai-spend phase=ledger_read",
-  "runtime-ai-spend phase=ledger_write",
-  "runtime-ai-spend phase=client_init",
-  "runtime-ai-spend phase=provider_call",
-  "runtime-ai-spend phase=provider_result",
-  "runtime-ai-spend phase=settlement"
-]);
+const PHASE_DIAGNOSTIC_LINES = Object.freeze({
+  prepare: "runtime-ai-spend phase=prepare",
+  blob_store_load: "runtime-ai-spend phase=blob_store_load",
+  ledger_read: "runtime-ai-spend phase=ledger_read",
+  ledger_write: "runtime-ai-spend phase=ledger_write",
+  provider_call: "runtime-ai-spend phase=provider_call",
+  provider_result: "runtime-ai-spend phase=provider_result",
+  settlement: "runtime-ai-spend phase=settlement"
+});
 
 const BLOB_STORE_LOAD_SUBPHASE_LINES = Object.freeze([
   "runtime-ai-spend phase=blob_store_load subphase=module_load",
   "runtime-ai-spend phase=blob_store_load subphase=api_shape",
   "runtime-ai-spend phase=blob_store_load subphase=store_construct"
+]);
+
+const CLIENT_INIT_SUBPHASE_LINES = Object.freeze([
+  "runtime-ai-spend phase=client_init subphase=module_load",
+  "runtime-ai-spend phase=client_init subphase=api_shape",
+  "runtime-ai-spend phase=client_init subphase=key_lookup",
+  "runtime-ai-spend phase=client_init subphase=client_construct",
+  "runtime-ai-spend phase=client_init subphase=guard_construct"
 ]);
 
 const LEDGER_READ_SUBPHASE_LINES = Object.freeze([
@@ -81,7 +88,11 @@ const LEDGER_READ_SUBPHASE_LINES = Object.freeze([
 ]);
 
 const CONTENT_FREE_DIAGNOSTIC_LINES = Object.freeze(
-  DIAGNOSTIC_LINES.concat(BLOB_STORE_LOAD_SUBPHASE_LINES, LEDGER_READ_SUBPHASE_LINES)
+  Object.values(PHASE_DIAGNOSTIC_LINES).concat(
+    BLOB_STORE_LOAD_SUBPHASE_LINES,
+    CLIENT_INIT_SUBPHASE_LINES,
+    LEDGER_READ_SUBPHASE_LINES
+  )
 );
 
 function clone(value) {
@@ -236,12 +247,14 @@ async function withBlobsModule(loader, action) {
   }
 }
 
-async function withOpenAIModule(loader, action) {
+async function withOpenAIClientModules(loaders, action) {
+  const settings = loaders || {};
   const originalLoad = Module._load;
   const cachedClient = require.cache[clientPath];
   delete require.cache[clientPath];
   Module._load = function (request) {
-    if (request === "openai") return loader();
+    if (request === "openai" && typeof settings.openai === "function") return settings.openai();
+    if (request === "./openai-budget.cjs" && typeof settings.budget === "function") return settings.budget();
     return originalLoad.apply(this, arguments);
   };
   try {
@@ -250,6 +263,29 @@ async function withOpenAIModule(loader, action) {
     Module._load = originalLoad;
     delete require.cache[clientPath];
     if (cachedClient) require.cache[clientPath] = cachedClient;
+  }
+}
+
+async function withOpenAIModule(loader, action) {
+  return withOpenAIClientModules({ openai: loader }, action);
+}
+
+async function withSyntheticNetlifyKey(reader, action) {
+  const hadNetlify = Object.prototype.hasOwnProperty.call(globalThis, "Netlify");
+  const previousNetlify = globalThis.Netlify;
+  globalThis.Netlify = {
+    env: {
+      get: function (name) {
+        assert.equal(name, "OPENAI_API_KEY");
+        return reader();
+      }
+    }
+  };
+  try {
+    return await action();
+  } finally {
+    if (hadNetlify) globalThis.Netlify = previousNetlify;
+    else delete globalThis.Netlify;
   }
 }
 
@@ -476,7 +512,7 @@ async function testContentFreePhaseDiagnostics() {
     () => prepare.guard.create("navigator", Object.assign({}, request, { max_output_tokens: 801 })),
     "upstream_unavailable"
   );
-  assert.deepEqual(prepareCalls, [[DIAGNOSTIC_LINES[0]]]);
+  assert.deepEqual(prepareCalls, [[PHASE_DIAGNOSTIC_LINES.prepare]]);
   assert.equal(prepare.state.providerCalls, 0);
   assert.equal(prepare.store.getCalls, 0);
   assert.equal(prepare.store.setCalls, 0);
@@ -492,7 +528,7 @@ async function testContentFreePhaseDiagnostics() {
     providerCreate: async () => { blobProviderCalls += 1; return completedResponse(); }
   });
   const blobCalls = await expectCode(() => blobGuard.create("navigator", request), "upstream_unavailable");
-  assert.deepEqual(blobCalls, [[DIAGNOSTIC_LINES[1]]]);
+  assert.deepEqual(blobCalls, [[PHASE_DIAGNOSTIC_LINES.blob_store_load]]);
   assert.equal(blobProviderCalls, 0);
 
   let moduleLoadCalls = 0;
@@ -661,7 +697,7 @@ async function testContentFreePhaseDiagnostics() {
   const writeStore = new FakeCasStore(undefined, { failSetAt: 1, writeFailure });
   const write = harness({ store: writeStore });
   const writeCalls = await expectCode(() => write.guard.create("navigator", request), "upstream_unavailable");
-  assert.deepEqual(writeCalls, [[DIAGNOSTIC_LINES[3]]]);
+  assert.deepEqual(writeCalls, [[PHASE_DIAGNOSTIC_LINES.ledger_write]]);
   assert.equal(write.state.providerCalls, 0);
   assert.equal(write.store.setCalls, 1);
 
@@ -670,7 +706,7 @@ async function testContentFreePhaseDiagnostics() {
     () => exhausted.guard.create("navigator", request),
     "upstream_unavailable"
   );
-  assert.deepEqual(exhaustedCalls, [[DIAGNOSTIC_LINES[3]]]);
+  assert.deepEqual(exhaustedCalls, [[PHASE_DIAGNOSTIC_LINES.ledger_write]]);
   assert.equal(exhausted.state.providerCalls, 0);
   assert.equal(exhausted.store.setCalls, 3);
 
@@ -686,7 +722,7 @@ async function testContentFreePhaseDiagnostics() {
     () => settlement.guard.create("navigator", request),
     "upstream_unavailable"
   );
-  assert.deepEqual(settlementCalls, [[DIAGNOSTIC_LINES[3]]]);
+  assert.deepEqual(settlementCalls, [[PHASE_DIAGNOSTIC_LINES.ledger_write]]);
   assert.equal(settlement.state.providerCalls, 1);
   assert.ok(settlement.store.record.reserved_micro_usd > 0);
   assert.equal(settlement.store.record.settled_micro_usd, 0);
@@ -707,7 +743,7 @@ async function testContentFreePhaseDiagnostics() {
 
   const provider = harness({ providerCreate: async () => { throw new Error(SENTINELS.join(" ")); } });
   const providerCalls = await expectCode(() => provider.guard.create("navigator", request), "upstream_unavailable");
-  assert.deepEqual(providerCalls, [[DIAGNOSTIC_LINES[5]]]);
+  assert.deepEqual(providerCalls, [[PHASE_DIAGNOSTIC_LINES.provider_call]]);
   assert.equal(provider.state.providerCalls, 1);
 }
 
@@ -737,7 +773,7 @@ async function testRsg15PhaseCompleteness() {
     () => prepare.guard.create("navigator", Object.assign({}, request, { max_output_tokens: 801 })),
     "upstream_unavailable"
   );
-  assert.deepEqual(prepareCalls, [[DIAGNOSTIC_LINES[0]]]);
+  assert.deepEqual(prepareCalls, [[PHASE_DIAGNOSTIC_LINES.prepare]]);
   assert.equal(prepare.state.providerCalls, 0);
 
   let blobProviderCalls = 0;
@@ -747,7 +783,7 @@ async function testRsg15PhaseCompleteness() {
     providerCreate: async () => { blobProviderCalls += 1; return completedResponse(); }
   });
   const blobCalls = await expectCode(() => blobGuard.create("navigator", request), "upstream_unavailable");
-  assert.deepEqual(blobCalls, [[DIAGNOSTIC_LINES[1]]]);
+  assert.deepEqual(blobCalls, [[PHASE_DIAGNOSTIC_LINES.blob_store_load]]);
   assert.equal(blobProviderCalls, 0);
 
   const ledgerRead = harness({
@@ -761,21 +797,24 @@ async function testRsg15PhaseCompleteness() {
     store: new FakeCasStore(undefined, { failSetAt: 1, writeFailure: sentinelFailure() })
   });
   const ledgerWriteCalls = await expectCode(() => ledgerWrite.guard.create("navigator", request), "upstream_unavailable");
-  assert.deepEqual(ledgerWriteCalls, [[DIAGNOSTIC_LINES[3]]]);
+  assert.deepEqual(ledgerWriteCalls, [[PHASE_DIAGNOSTIC_LINES.ledger_write]]);
   assert.equal(ledgerWrite.state.providerCalls, 0);
 
-  const clientInitCalls = await withOpenAIModule(
-    () => function FailingOpenAI() { throw sentinelFailure(); },
-    (clientModule) => expectCode(
-      () => Promise.resolve().then(() => clientModule.createOpenAIClient("navigator")),
-      "upstream_unavailable"
+  const clientInitCalls = await withSyntheticNetlifyKey(
+    () => "synthetic-openai-key",
+    () => withOpenAIModule(
+      () => function FailingOpenAI() { throw sentinelFailure(); },
+      (clientModule) => expectCode(
+        () => Promise.resolve().then(() => clientModule.createOpenAIClient("navigator")),
+        "upstream_unavailable"
+      )
     )
   );
-  assert.deepEqual(clientInitCalls, [[DIAGNOSTIC_LINES[4]]]);
+  assert.deepEqual(clientInitCalls, [[CLIENT_INIT_SUBPHASE_LINES[3]]]);
 
   const provider = harness({ providerCreate: async () => { throw sentinelFailure(); } });
   const providerCalls = await expectCode(() => provider.guard.create("navigator", request), "upstream_unavailable");
-  assert.deepEqual(providerCalls, [[DIAGNOSTIC_LINES[5]]]);
+  assert.deepEqual(providerCalls, [[PHASE_DIAGNOSTIC_LINES.provider_call]]);
   assert.equal(provider.state.providerCalls, 1);
 
   const providerBudget = harness({
@@ -798,7 +837,7 @@ async function testRsg15PhaseCompleteness() {
       fixture[1],
       1
     );
-    assert.deepEqual(categorizedCalls, [[DIAGNOSTIC_LINES[5]]]);
+    assert.deepEqual(categorizedCalls, [[PHASE_DIAGNOSTIC_LINES.provider_call]]);
     assert.equal(categorized.state.providerCalls, 1);
   }
 
@@ -812,7 +851,7 @@ async function testRsg15PhaseCompleteness() {
   });
   const providerResultCapture = await captureConsoleErrors(() => providerResult.guard.create("navigator", request));
   assertContentFreeDiagnostics(providerResultCapture.calls);
-  assert.deepEqual(providerResultCapture.calls, [[DIAGNOSTIC_LINES[6]]]);
+  assert.deepEqual(providerResultCapture.calls, [[PHASE_DIAGNOSTIC_LINES.provider_result]]);
   assert.deepEqual(providerResultCapture.value, {
     status: "incomplete",
     incomplete_details: { reason: "server_error" }
@@ -826,7 +865,7 @@ async function testRsg15PhaseCompleteness() {
     }
   });
   const settlementCalls = await expectCode(() => settlement.guard.create("navigator", request), "upstream_unavailable");
-  assert.deepEqual(settlementCalls, [[DIAGNOSTIC_LINES[7]]]);
+  assert.deepEqual(settlementCalls, [[PHASE_DIAGNOSTIC_LINES.settlement]]);
   assert.equal(settlement.state.providerCalls, 1);
 }
 
@@ -834,7 +873,7 @@ async function testRsg16SentinelExclusion() {
   const request = stageRequest("navigator", { instructions: SENTINELS.join(" ") });
   const provider = harness({ providerCreate: async () => { throw sentinelFailure(); } });
   const providerCalls = await expectCode(() => provider.guard.create("navigator", request), "upstream_unavailable");
-  assert.deepEqual(providerCalls, [[DIAGNOSTIC_LINES[5]]]);
+  assert.deepEqual(providerCalls, [[PHASE_DIAGNOSTIC_LINES.provider_call]]);
   assertContentFreeDiagnostics(providerCalls);
 
   const unusable = harness({
@@ -847,7 +886,7 @@ async function testRsg16SentinelExclusion() {
   const reservation = __testing.prepareProviderRequest("navigator", request).reservation_micro_usd;
   const unusableCapture = await captureConsoleErrors(() => unusable.guard.create("navigator", request));
   assertContentFreeDiagnostics(unusableCapture.calls);
-  assert.deepEqual(unusableCapture.calls, [[DIAGNOSTIC_LINES[6]]]);
+  assert.deepEqual(unusableCapture.calls, [[PHASE_DIAGNOSTIC_LINES.provider_result]]);
   assert.equal(unusableCapture.value.output_text, "   ");
   assert.equal(unusable.store.record.reserved_micro_usd, 0);
   assert.equal(unusable.store.record.settled_micro_usd, reservation);
@@ -875,7 +914,7 @@ async function testRsg17TerminalPrecedence() {
     providerCreate: async () => { throw sentinelFailure(); }
   });
   const writeCalls = await expectCode(() => terminalWrite.guard.create("navigator", request), "upstream_unavailable");
-  assert.deepEqual(writeCalls, [[DIAGNOSTIC_LINES[3]]]);
+  assert.deepEqual(writeCalls, [[PHASE_DIAGNOSTIC_LINES.ledger_write]]);
   assert.equal(terminalWrite.state.providerCalls, 1);
   assert.ok(writeStore.record.reserved_micro_usd > 0);
   assert.equal(writeStore.record.settled_micro_usd, 0);
@@ -897,13 +936,26 @@ async function testRsg18SilenceAndDrift() {
   assert.deepEqual(cutoffCalls, []);
   assert.equal(cutoff.state.providerCalls, 0);
 
-  for (const phase of ["client_init", "provider_call", "provider_result", "settlement"]) {
+  for (const phase of ["provider_call", "provider_result", "settlement"]) {
     const tagged = __testing.diagnosticFailure(phase);
     assert.equal(__testing.diagnosticPhase(tagged), phase);
     assert.equal(__testing.diagnosticSubphase(tagged), "");
     const rejectedSubphase = __testing.diagnosticFailure(phase, "not_allowed");
     assert.equal(__testing.diagnosticPhase(rejectedSubphase), "");
     assert.equal(__testing.diagnosticSubphase(rejectedSubphase), "");
+  }
+  assert.deepEqual(__testing.CLIENT_INIT_SUBPHASES, [
+    "module_load", "api_shape", "key_lookup", "client_construct", "guard_construct"
+  ]);
+  __testing.CLIENT_INIT_SUBPHASES.forEach((subphase) => {
+    const tagged = __testing.diagnosticFailure("client_init", subphase);
+    assert.equal(__testing.diagnosticPhase(tagged), "client_init");
+    assert.equal(__testing.diagnosticSubphase(tagged), subphase);
+  });
+  for (const subphase of [undefined, "", "not_allowed"]) {
+    const rejected = __testing.diagnosticFailure("client_init", subphase);
+    assert.equal(__testing.diagnosticPhase(rejected), "");
+    assert.equal(__testing.diagnosticSubphase(rejected), "");
   }
 
   const budgetSource = fs.readFileSync(budgetPath, "utf8");
@@ -918,13 +970,185 @@ async function testRsg18SilenceAndDrift() {
     markerArguments.map((argument) => JSON.parse(argument)).sort(),
     CONTENT_FREE_DIAGNOSTIC_LINES.slice().sort()
   );
+  CLIENT_INIT_SUBPHASE_LINES.forEach((line) => {
+    assert.equal(markerArguments.filter((argument) => JSON.parse(argument) === line).length, 1);
+  });
   assert.match(budgetSource, /let failurePhase = "prepare";/);
   for (const phase of ["blob_store_load", "ledger_read", "provider_call", "provider_result", "settlement"]) {
     assert.match(budgetSource, new RegExp("failurePhase = \\\"" + phase + "\\\";"));
   }
   assert.match(budgetSource, /throw diagnosticFailure\(failurePhase, undefined, safeCode\);/);
-  assert.match(clientSource, /throw clientInitializationFailure\(\);/);
+  assert.doesNotMatch(clientSource, /clientInitializationFailure\(\)/);
+  for (const fixture of [
+    ["module_load", 1],
+    ["api_shape", 1],
+    ["key_lookup", 2],
+    ["client_construct", 1],
+    ["guard_construct", 1]
+  ]) {
+    const matches = clientSource.match(new RegExp('clientInitializationFailure\\("' + fixture[0] + '"\\)', "g")) || [];
+    assert.equal(matches.length, fixture[1]);
+  }
   assert.doesNotMatch(clientSource, /console\.(?:error|warn|log)\(/);
+}
+
+async function testRsg19ClientInitializationSubphases() {
+  function validOpenAI(state) {
+    return function SyntheticOpenAI(options) {
+      state.clientConstructs += 1;
+      assert.equal(options.apiKey, "synthetic-openai-key");
+      assert.equal(options.maxRetries, 0);
+      assert.equal(options.timeout, 25000);
+      this.responses = {
+        create: async function () {
+          state.providerCalls += 1;
+          return completedResponse();
+        }
+      };
+    };
+  }
+
+  let moduleKeyLookups = 0;
+  const moduleLoadCalls = await withSyntheticNetlifyKey(
+    () => { moduleKeyLookups += 1; return "synthetic-openai-key"; },
+    () => withOpenAIModule(
+      () => { throw sentinelFailure(); },
+      (clientModule) => expectCode(
+        () => Promise.resolve().then(() => clientModule.createOpenAIClient("navigator")),
+        "upstream_unavailable"
+      )
+    )
+  );
+  assert.deepEqual(moduleLoadCalls, [[CLIENT_INIT_SUBPHASE_LINES[0]]]);
+  assert.equal(moduleKeyLookups, 0);
+
+  let apiShapeKeyLookups = 0;
+  const apiShapeCalls = await withSyntheticNetlifyKey(
+    () => { apiShapeKeyLookups += 1; return "synthetic-openai-key"; },
+    () => withOpenAIModule(
+      () => ({ OpenAI: sentinelFailure() }),
+      (clientModule) => expectCode(
+        () => Promise.resolve().then(() => clientModule.createOpenAIClient("navigator")),
+        "upstream_unavailable"
+      )
+    )
+  );
+  assert.deepEqual(apiShapeCalls, [[CLIENT_INIT_SUBPHASE_LINES[1]]]);
+  assert.equal(apiShapeKeyLookups, 0);
+
+  const keyLookupState = { clientConstructs: 0, providerCalls: 0 };
+  let failedKeyLookups = 0;
+  const keyLookupCalls = await withSyntheticNetlifyKey(
+    () => { failedKeyLookups += 1; throw sentinelFailure(); },
+    () => withOpenAIModule(
+      () => validOpenAI(keyLookupState),
+      (clientModule) => expectCode(
+        () => Promise.resolve().then(() => clientModule.createOpenAIClient("navigator")),
+        "upstream_unavailable"
+      )
+    )
+  );
+  assert.deepEqual(keyLookupCalls, [[CLIENT_INIT_SUBPHASE_LINES[2]]]);
+  assert.equal(failedKeyLookups, 1);
+  assert.equal(keyLookupState.clientConstructs, 0);
+  assert.equal(keyLookupState.providerCalls, 0);
+
+  const missingKeyState = { clientConstructs: 0, providerCalls: 0 };
+  const missingKeyCalls = await withSyntheticNetlifyKey(
+    () => undefined,
+    () => withOpenAIModule(
+      () => validOpenAI(missingKeyState),
+      (clientModule) => expectCode(
+        () => Promise.resolve().then(() => clientModule.createOpenAIClient("navigator")),
+        "upstream_unavailable"
+      )
+    )
+  );
+  assert.deepEqual(missingKeyCalls, [[CLIENT_INIT_SUBPHASE_LINES[2]]]);
+  assert.equal(missingKeyState.clientConstructs, 0);
+  assert.equal(missingKeyState.providerCalls, 0);
+
+  const emptyKeyState = { clientConstructs: 0, providerCalls: 0 };
+  const emptyKeyCalls = await withSyntheticNetlifyKey(
+    () => "   ",
+    () => withOpenAIModule(
+      () => validOpenAI(emptyKeyState),
+      (clientModule) => expectCode(
+        () => Promise.resolve().then(() => clientModule.createOpenAIClient("navigator")),
+        "upstream_unavailable"
+      )
+    )
+  );
+  assert.deepEqual(emptyKeyCalls, [[CLIENT_INIT_SUBPHASE_LINES[2]]]);
+  assert.equal(emptyKeyState.clientConstructs, 0);
+  assert.equal(emptyKeyState.providerCalls, 0);
+
+  const clientConstructState = { clientConstructs: 0, providerCalls: 0 };
+  const clientConstructCalls = await withSyntheticNetlifyKey(
+    () => "synthetic-openai-key",
+    () => withOpenAIModule(
+      () => function FailingOpenAI() {
+        clientConstructState.clientConstructs += 1;
+        throw sentinelFailure();
+      },
+      (clientModule) => expectCode(
+        () => Promise.resolve().then(() => clientModule.createOpenAIClient("navigator")),
+        "upstream_unavailable"
+      )
+    )
+  );
+  assert.deepEqual(clientConstructCalls, [[CLIENT_INIT_SUBPHASE_LINES[3]]]);
+  assert.equal(clientConstructState.clientConstructs, 1);
+  assert.equal(clientConstructState.providerCalls, 0);
+
+  const guardConstructState = { clientConstructs: 0, providerCalls: 0 };
+  let guardConstructs = 0;
+  const guardConstructCalls = await withSyntheticNetlifyKey(
+    () => "synthetic-openai-key",
+    () => withOpenAIClientModules(
+      {
+        openai: () => validOpenAI(guardConstructState),
+        budget: () => ({
+          createSpendGuard: function () {
+            guardConstructs += 1;
+            throw sentinelFailure();
+          },
+          clientInitializationFailure: clientInitializationFailure
+        })
+      },
+      (clientModule) => expectCode(
+        () => Promise.resolve().then(() => clientModule.createOpenAIClient("navigator")),
+        "upstream_unavailable"
+      )
+    )
+  );
+  assert.deepEqual(guardConstructCalls, [[CLIENT_INIT_SUBPHASE_LINES[4]]]);
+  assert.equal(guardConstructState.clientConstructs, 1);
+  assert.equal(guardConstructs, 1);
+  assert.equal(guardConstructState.providerCalls, 0);
+
+  const successState = { clientConstructs: 0, providerCalls: 0 };
+  const successCapture = await withSyntheticNetlifyKey(
+    () => "synthetic-openai-key",
+    () => withOpenAIModule(
+      () => validOpenAI(successState),
+      (clientModule) => captureConsoleErrors(async () => clientModule.createOpenAIClient("navigator"))
+    )
+  );
+  assert.deepEqual(successCapture.calls, []);
+  assert.equal(typeof successCapture.value.responses.create, "function");
+  assert.equal(successState.clientConstructs, 1);
+  assert.equal(successState.providerCalls, 0);
+
+  for (const invalidFailure of [
+    () => clientInitializationFailure(),
+    () => clientInitializationFailure("not_allowed")
+  ]) {
+    const invalidCapture = await captureConsoleErrors(async () => invalidFailure());
+    assert.deepEqual(invalidCapture.calls, []);
+    assert.deepEqual(Object.keys(invalidCapture.value), ["code"]);
+    assert.equal(invalidCapture.value.code, "upstream_unavailable");
+  }
 }
 
 async function testFailureAndConservativeSettlement() {
@@ -957,7 +1181,7 @@ async function testFailureAndConservativeSettlement() {
   const incompleteCapture = await captureConsoleErrors(() => incomplete.guard.create("navigator", request));
   const incompleteResult = incompleteCapture.value;
   assertContentFreeDiagnostics(incompleteCapture.calls);
-  assert.deepEqual(incompleteCapture.calls, [[DIAGNOSTIC_LINES[6]]]);
+  assert.deepEqual(incompleteCapture.calls, [[PHASE_DIAGNOSTIC_LINES.provider_result]]);
   assert.deepEqual(incompleteResult, { status: "incomplete", incomplete_details: { reason: "max_output_tokens" } });
   assert.equal(incomplete.store.record.settled_micro_usd, reservation);
 
@@ -988,7 +1212,7 @@ async function testFailureAndConservativeSettlement() {
     })
   });
   const overUsageCalls = await expectCode(() => overUsage.guard.create("navigator", request), "upstream_unavailable");
-  assert.deepEqual(overUsageCalls, [[DIAGNOSTIC_LINES[6]]]);
+  assert.deepEqual(overUsageCalls, [[PHASE_DIAGNOSTIC_LINES.provider_result]]);
   assert.equal(overUsage.store.record.halted, true);
   assert.equal(overUsage.store.record.reserved_micro_usd, 0);
   assert.equal(overUsage.store.record.settled_micro_usd, reservation);
@@ -1000,7 +1224,7 @@ async function testFailureAndConservativeSettlement() {
     }
   });
   const impossibleCalls = await expectCode(() => impossible.guard.create("navigator", request), "upstream_unavailable");
-  assert.deepEqual(impossibleCalls, [[DIAGNOSTIC_LINES[7]]]);
+  assert.deepEqual(impossibleCalls, [[PHASE_DIAGNOSTIC_LINES.settlement]]);
   assert.equal(impossible.store.record.halted, true);
 }
 
@@ -1237,12 +1461,13 @@ async function run() {
   await testRsg16SentinelExclusion();
   await testRsg17TerminalPrecedence();
   await testRsg18SilenceAndDrift();
+  await testRsg19ClientInitializationSubphases();
   await testFailureAndConservativeSettlement();
   await testUtcRolloverAndLateSettlement();
   await testFourCallPathAndSentinelExclusion();
   await testResumeBodyBoundaryAndStageWiring();
   await testNavigatorBodyBoundaryAndStageWiring();
-  console.log("PASS: runtime AI spend governance synthetic suite - modern withLambda wiring for Navigator and Resume, zero-config strong-consistency @netlify/blobs 10.7.13 loading, fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free budget/accounting failures, strict options, ledger initialization, corrupt-ledger denial, cutoff equality/overage, { modified } ETag CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, eight fixed content-free phase diagnostics, three fixed blob-store-load subphase diagnostics, six fixed ledger-read subphase diagnostics, and executable RSG-15 through RSG-18 diagnostic-origin coverage");
+  console.log("PASS: runtime AI spend governance synthetic suite - modern withLambda wiring for Navigator and Resume, zero-config strong-consistency @netlify/blobs 10.7.13 loading, fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free budget/accounting failures, strict options, ledger initialization, corrupt-ledger denial, cutoff equality/overage, { modified } ETag CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, seven fixed content-free phase diagnostics, three fixed blob-store-load subphase diagnostics, five fixed client-init subphase diagnostics, six fixed ledger-read subphase diagnostics, and executable RSG-15 through RSG-19 diagnostic-origin coverage");
 }
 
 run().catch((error) => {

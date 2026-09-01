@@ -71,6 +71,14 @@ const BLOB_STORE_LOAD_SUBPHASES = Object.freeze([
   "store_construct"
 ]);
 
+const CLIENT_INIT_SUBPHASES = Object.freeze([
+  "module_load",
+  "api_shape",
+  "key_lookup",
+  "client_construct",
+  "guard_construct"
+]);
+
 const LEDGER_READ_SUBPHASES = Object.freeze([
   "api_shape",
   "strong_context",
@@ -86,8 +94,10 @@ const diagnosticSubphaseByFailure = new WeakMap();
 function diagnosticFailure(phase, subphase, code) {
   if (DIAGNOSTIC_PHASES.indexOf(phase) === -1) return guardFailure("upstream_unavailable");
   const validSubphase = (phase === "blob_store_load" && BLOB_STORE_LOAD_SUBPHASES.indexOf(subphase) !== -1) ||
+    (phase === "client_init" && CLIENT_INIT_SUBPHASES.indexOf(subphase) !== -1) ||
     (phase === "ledger_read" && LEDGER_READ_SUBPHASES.indexOf(subphase) !== -1);
-  if (typeof subphase !== "undefined" && !validSubphase) {
+  if ((phase === "client_init" && !validSubphase) ||
+      (typeof subphase !== "undefined" && !validSubphase)) {
     return guardFailure("upstream_unavailable");
   }
   const safeCode = PUBLIC_FAILURE_CODES.indexOf(code) !== -1 ? code : "upstream_unavailable";
@@ -159,7 +169,23 @@ function emitPhaseDiagnostic(error) {
       console.error("runtime-ai-spend phase=ledger_write");
       break;
     case "client_init":
-      console.error("runtime-ai-spend phase=client_init");
+      switch (diagnosticSubphase(error)) {
+        case "module_load":
+          console.error("runtime-ai-spend phase=client_init subphase=module_load");
+          break;
+        case "api_shape":
+          console.error("runtime-ai-spend phase=client_init subphase=api_shape");
+          break;
+        case "key_lookup":
+          console.error("runtime-ai-spend phase=client_init subphase=key_lookup");
+          break;
+        case "client_construct":
+          console.error("runtime-ai-spend phase=client_init subphase=client_construct");
+          break;
+        case "guard_construct":
+          console.error("runtime-ai-spend phase=client_init subphase=guard_construct");
+          break;
+      }
       break;
     case "provider_call":
       console.error("runtime-ai-spend phase=provider_call");
@@ -183,8 +209,8 @@ function publicGuardFailure(error) {
   return guardFailure(code);
 }
 
-function clientInitializationFailure() {
-  return publicGuardFailure(diagnosticFailure("client_init"));
+function clientInitializationFailure(subphase) {
+  return publicGuardFailure(diagnosticFailure("client_init", subphase));
 }
 
 function emitProviderResultDiagnostic() {
@@ -720,6 +746,7 @@ module.exports = {
     PRICE_TABLE,
     STAGE_TABLE,
     DIAGNOSTIC_PHASES,
+    CLIENT_INIT_SUBPHASES,
     diagnosticFailure,
     diagnosticPhase,
     diagnosticSubphase,

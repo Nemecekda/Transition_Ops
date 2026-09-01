@@ -2,7 +2,7 @@
 name: runtime-ai-spend-governance
 description: Govern Transition OPS server-side OpenAI admission, aggregate monthly spend accounting, model and request limits, and content-free failure diagnostics. Use for changes to shared AI calls, pricing, the cutoff, the spend ledger, request options, model/output caps, or diagnostic origins; this skill authorizes no provider-account or deployment action.
 metadata:
-  version: "1.1"
+  version: "1.2"
   status: CODIFIED
   owner: force-mod
   validated: "2026-09-01"
@@ -180,12 +180,33 @@ closed:
 | `settlement` | Non-ledger settlement processing after a provider result |
 
 Existing subphases under `prepare`, `blob_store_load`, `ledger_read`, and
-`ledger_write` remain unchanged. `client_init`, `provider_call`,
-`provider_result`, and `settlement` have no subphases.
+`ledger_write` remain unchanged. `client_init` has this closed subphase set:
+
+| `client_init` subphase | Boundary |
+|---|---|
+| `module_load` | Loading the provider SDK module |
+| `api_shape` | Validating the loaded SDK export and constructor interface |
+| `key_lookup` | Reading and validating server-side credential presence |
+| `client_construct` | Constructing the provider client without invoking it |
+| `guard_construct` | Constructing the shared guarded wrapper |
+
+`provider_call`, `provider_result`, and `settlement` have no subphases. Every
+`client_init` failure emits exactly one of these complete fixed literals:
+
+- `runtime-ai-spend phase=client_init subphase=module_load`
+- `runtime-ai-spend phase=client_init subphase=api_shape`
+- `runtime-ai-spend phase=client_init subphase=key_lookup`
+- `runtime-ai-spend phase=client_init subphase=client_construct`
+- `runtime-ai-spend phase=client_init subphase=guard_construct`
+
+`key_lookup` covers an accessor failure and an absent or blank credential. It
+identifies only that boundary; the credential value is never logged, persisted,
+returned, normalized into a marker, or used to construct a diagnostic. No
+`client_init` failure may begin a provider call.
 
 Each marker emission is one application-log call with exactly one compile-time
-string-literal argument. It contains only the fixed phase marker and, where an
-unchanged existing subphase applies, its fixed subphase marker. The marker
+string-literal argument. It contains only the fixed phase marker and, where a
+closed subphase applies, its fixed subphase marker. The marker
 literal and call must never log, interpolate, or pass the caught error, stack,
 message, code, status, request, response, usage, ledger, secret, cookie,
 identity, IP, provider identifier, model, stage, amount, URL, or timestamp.
@@ -201,7 +222,9 @@ diagnostic-origin marker. A
 marker identifies only the application execution location; it is not an error
 reason and makes no provider- or account-observability claim. A missing,
 duplicate, dynamic, nonliteral, out-of-set, subphase-invalid, or prohibited-data
-marker is a regression failure and force-mod STOP.
+marker is a regression failure and force-mod STOP. For `client_init`, a missing,
+unknown, duplicated, computed, concatenated, interpolated, or otherwise dynamic
+subphase is also a regression failure and force-mod STOP.
 
 ## SKILL SEAMS
 
@@ -221,4 +244,7 @@ marker is a regression failure and force-mod STOP.
 Execute [calibration-cases.md](calibration-cases.md) after any change. All cases
 must pass. These synthetic governance cases do not prove application wiring,
 atomic behavior in a hosted store, provider billing, provider-account limits,
-or production behavior.
+or production behavior. Version 1.2 requires an independent case for each of the
+five `client_init` subphases and a drift case that rejects missing, invalid, or
+dynamic `client_init` subphases. Every initialization-failure fixture must retain
+the unchanged public response and record zero provider calls.

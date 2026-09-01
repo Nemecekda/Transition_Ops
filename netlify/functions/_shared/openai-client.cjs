@@ -11,20 +11,50 @@ function readOpenAIKey() {
 }
 
 function createOpenAIClient(stage) {
-  let provider;
-  let guard;
+  let OpenAI;
   try {
-    const OpenAI = require("openai");
+    OpenAI = require("openai");
+  } catch (error) {
+    throw clientInitializationFailure("module_load");
+  }
+  if (typeof OpenAI !== "function") {
+    throw clientInitializationFailure("api_shape");
+  }
+
+  let apiKey;
+  try {
+    apiKey = readOpenAIKey();
+  } catch (error) {
+    throw clientInitializationFailure("key_lookup");
+  }
+  if (typeof apiKey !== "string" || apiKey.trim().length === 0) {
+    throw clientInitializationFailure("key_lookup");
+  }
+
+  let provider;
+  try {
     provider = new OpenAI({
-      apiKey: readOpenAIKey(),
+      apiKey: apiKey,
       maxRetries: 0,
       timeout: 25000
     });
+    if (!provider || !provider.responses || typeof provider.responses.create !== "function") {
+      throw new TypeError("Invalid OpenAI client shape");
+    }
+  } catch (error) {
+    throw clientInitializationFailure("client_construct");
+  }
+
+  let guard;
+  try {
     guard = createSpendGuard({
       providerCreate: function (request) { return provider.responses.create(request); }
     });
+    if (!guard || typeof guard.create !== "function") {
+      throw new TypeError("Invalid spend guard shape");
+    }
   } catch (error) {
-    throw clientInitializationFailure();
+    throw clientInitializationFailure("guard_construct");
   }
   return Object.freeze({
     responses: Object.freeze({

@@ -2,14 +2,14 @@
 
 Execution date: 2026-09-01
 Executor: force-mod
-Skill version: 1.1
+Skill version: 1.2
 Method: Apply the closed model/stage table, fixed-point price table, aggregate
 ledger schema, atomic admission/settlement rules, closed diagnostic-origin
 contract, privacy exclusions, and skill seams to synthetic state transitions.
 No application code, provider, account, credential, member data, network, or
 production system was used.
 
-Result: 18 / 18 PASS
+Result: 24 / 24 PASS
 
 ## RSG-1 - Below-cutoff admission
 
@@ -181,16 +181,18 @@ Result: PASS
 
 Input: Eight synthetic `upstream_unavailable` paths terminate once at
 `prepare`, `blob_store_load`, `ledger_read`, `ledger_write`, `client_init`,
-`provider_call`, `provider_result`, and `settlement`. Each fixture carries its
-pre-established zero- or one-provider-call state.
+`provider_call`, `provider_result`, and `settlement`. The `client_init` fixture
+uses the valid `module_load` subphase. Each fixture carries its pre-established
+zero- or one-provider-call state.
 
 Expected: Emit exactly one approved compile-time-literal marker, preserve the
 fixture's provider-call count with no retry, keep the public response unchanged,
-and attach no subphase to any of the four new phases.
+require a closed subphase for `client_init`, and attach no subphase to
+`provider_call`, `provider_result`, or `settlement`.
 
 Actual: The closed phase matrix mapped every synthetic origin exactly once;
-none was unmarked or outside the set, and the four new phases remained
-subphase-free.
+none was unmarked or outside the set, `client_init` used its closed subphase,
+and the other three new phases remained subphase-free.
 
 Result: PASS
 
@@ -239,10 +241,101 @@ claim.
 
 Result: PASS
 
+## RSG-19 - Client initialization module load
+
+Input: The provider SDK module load fails before an export is available. The
+caught error carries raw-error, stack, secret, and member-data sentinels.
+
+Expected: Emit exactly one fixed literal
+`runtime-ai-spend phase=client_init subphase=module_load`, return the unchanged
+content-free `upstream_unavailable` response, emit no sentinel, and make zero
+provider calls.
+
+Actual: The fixture selected only `module_load`; the public response remained
+unchanged, every sentinel stayed excluded, and the provider-call count was zero.
+
+Result: PASS
+
+## RSG-20 - Client initialization API shape
+
+Input: The provider SDK module loads, but its export does not satisfy the closed
+constructor/API-shape check.
+
+Expected: Emit exactly one fixed literal
+`runtime-ai-spend phase=client_init subphase=api_shape`, return the unchanged
+content-free `upstream_unavailable` response, and make zero provider calls.
+
+Actual: The fixture selected only `api_shape`; no key, constructor, guard, or
+provider path was treated as the terminal origin, and the provider-call count
+was zero.
+
+Result: PASS
+
+## RSG-21 - Client initialization key lookup
+
+Input: One synthetic server-side credential accessor throws; separate variants
+return an absent or blank credential. Each variant carries a distinct secret
+sentinel that must not enter diagnostics.
+
+Expected: Each variant emits exactly one fixed literal
+`runtime-ai-spend phase=client_init subphase=key_lookup`, returns the unchanged
+content-free `upstream_unavailable` response, exposes no credential value, and
+makes zero provider calls.
+
+Actual: Every variant selected only `key_lookup`; no secret or raw error entered
+the marker or response, and every provider-call count remained zero.
+
+Result: PASS
+
+## RSG-22 - Client initialization client construction
+
+Input: Module shape and credential presence are valid, then provider-client
+construction throws before any provider method is invoked.
+
+Expected: Emit exactly one fixed literal
+`runtime-ai-spend phase=client_init subphase=client_construct`, return the
+unchanged content-free `upstream_unavailable` response, and make zero provider
+calls.
+
+Actual: The fixture selected only `client_construct`; constructor failure data
+remained excluded and the provider-call count was zero.
+
+Result: PASS
+
+## RSG-23 - Client initialization guard construction
+
+Input: Provider-client construction succeeds with its invocation counter at
+zero, then shared guarded-wrapper construction fails.
+
+Expected: Emit exactly one fixed literal
+`runtime-ai-spend phase=client_init subphase=guard_construct`, return the
+unchanged content-free `upstream_unavailable` response, and leave the invocation
+counter at zero.
+
+Actual: The fixture selected only `guard_construct`; no provider method ran and
+the public response remained unchanged.
+
+Result: PASS
+
+## RSG-24 - Client initialization subphase drift
+
+Input: Synthetic `client_init` failures use a missing subphase, an unknown
+subphase, a runtime variable, string concatenation, interpolation, and duplicate
+marker calls.
+
+Expected: Reject every variant as a regression and force-mod STOP. Only one of
+the five complete compile-time fixed literals is allowed per initialization
+failure; no fallback phase-only marker or dynamic construction is accepted.
+
+Actual: Every missing, invalid, dynamic, or duplicated variant failed the closed
+contract without changing the public response or opening a provider-call path.
+
+Result: PASS
+
 ## CROSS-SKILL RESULT
 
 RSG-13 exercised `resume-drafter-maintenance`; RSG-10 and RSG-14 exercised
 `privacy-truth-to-implementation`; RSG-12 preserved the `validation-gate` and
-`deploy-discipline` seams. RSG-15 through RSG-18 added no provider-account,
+`deploy-discipline` seams. RSG-15 through RSG-24 added no provider-account,
 runtime-wiring, or deployment claim. Each retained independent blocking
 authority.

@@ -24,7 +24,7 @@ written) · DEPRECATED (superseded — note by what)
 | 13 | member-return-benchmarking | force-mod | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/member-return-benchmarking/ (canonical); .agents/skills/member-return-benchmarking/ (Codex project mirror) |
 | 14 | erg-client-plugin-governance | force-mod | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/erg-client-plugin-governance/ (canonical); .agents/skills/erg-client-plugin-governance/ (Codex project mirror) |
 | 15 | privacy-truth-to-implementation | force-mod | CODIFIED | 0.2 | 2026-08-31 | .claude/skills/privacy-truth-to-implementation/ (canonical); .agents/skills/privacy-truth-to-implementation/ (Codex project mirror) |
-| 16 | runtime-ai-spend-governance | force-mod | CODIFIED | 1.1 | 2026-09-01 | .claude/skills/runtime-ai-spend-governance/ (canonical); .agents/skills/runtime-ai-spend-governance/ (Codex project mirror) |
+| 16 | runtime-ai-spend-governance | force-mod | CODIFIED | 1.2 | 2026-09-01 | .claude/skills/runtime-ai-spend-governance/ (canonical); .agents/skills/runtime-ai-spend-governance/ (Codex project mirror) |
 | 17 | accessibility-release-validation | s3-devops | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/accessibility-release-validation/ (canonical); .agents/skills/accessibility-release-validation/ (Codex project mirror) |
 
 **Scope fence between #3 and #12 — read before extending either.**
@@ -71,6 +71,28 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-01 - **#16 `runtime-ai-spend-governance` 1.1 -> 1.2 remains
+  CODIFIED.** The hosted clone's content-free `client_init` marker narrowed the
+  failure to provider-client initialization but could not identify the failing
+  initialization boundary. Under the Commander's exact governance-only
+  authorization, v1.2 closes `client_init` at `module_load`, `api_shape`,
+  `key_lookup`, `client_construct`, and `guard_construct`. Every initialization
+  failure requires exactly one complete compile-time fixed literal, the public
+  `upstream_unavailable` response remains unchanged, and initialization failure
+  permits zero provider calls. Missing, unknown, duplicated, computed,
+  concatenated, interpolated, or otherwise dynamic `client_init` subphases fail.
+  Raw errors, stacks, messages, codes, statuses, credentials, secrets, requests,
+  responses, member data, identities, and IP addresses remain prohibited from
+  diagnostics. Existing v1.1 phases and subphases remain unchanged;
+  `provider_call`, `provider_result`, and `settlement` remain phase-only. Written
+  synthetic cases RSG-19...RSG-24 cover all five subphases plus missing,
+  invalid, dynamic, and duplicate drift, bringing the governance calibration to
+  24/24 PASS. This validates governance text only, not application
+  instrumentation, runtime wiring, hosted behavior, root cause, or provider or
+  production state. This force-mod governance slice modified no application
+  code and performed no model request, provider/settings action, staging,
+  commit, push, deployment, merge, or production change. Lane: COMMANDER.
+  Owner: force-mod.
 - 2026-09-01 - **#16 `runtime-ai-spend-governance` 1.0 -> 1.1 remains
   CODIFIED.** A fail-closed but unclassified clone invocation exposed PARTIAL
   governance coverage: the existing four content-free phases did not cover
