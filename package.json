@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=22.12.0"
   },
   "scripts": {
     "test:openai-migration": "node scripts/openai-migration-regression.js",
@@ -13,6 +13,7 @@
     "test:accessibility-release": "node scripts/accessibility-release-regression.js"
   },
   "dependencies": {
+    "@netlify/aws-lambda-compat": "2.0.0",
     "@netlify/blobs": "10.7.13",
     "openai": "7.8.0"
   }

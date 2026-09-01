@@ -1,7 +1,7 @@
 // Shared guarded OpenAI boundary for Transition OPS serverless functions.
 // Provider and platform handling remain separate from the aggregate repository guard.
 
-const { createSpendGuard } = require("./openai-budget");
+const { createSpendGuard } = require("./openai-budget.cjs");
 
 function readOpenAIKey() {
   if (typeof Netlify !== "undefined" && Netlify.env && typeof Netlify.env.get === "function") {
@@ -10,7 +10,7 @@ function readOpenAIKey() {
   return process.env.OPENAI_API_KEY;
 }
 
-function createOpenAIClient(stage, lambdaEvent) {
+function createOpenAIClient(stage) {
   let provider;
   try {
     const OpenAI = require("openai");
@@ -23,7 +23,6 @@ function createOpenAIClient(stage, lambdaEvent) {
     throw Object.freeze({ code: "upstream_unavailable" });
   }
   const guard = createSpendGuard({
-    lambdaEvent,
     providerCreate: function (request) { return provider.responses.create(request); }
   });
   return Object.freeze({

@@ -1,5 +1,7 @@
 "use strict";
 
+// Modern Netlify Functions supply the site-scoped Blobs context at invocation time.
+
 const CUTOFF_MICRO_USD = 4000000;
 const SCHEMA_VERSION = 1;
 const PRICE_VERSION = "openai-2026-08-31";
@@ -457,18 +459,17 @@ function sanitizedIncomplete(response) {
   };
 }
 
-async function loadStrongStore(lambdaEvent) {
+async function loadStrongStore() {
   let blobs;
   try {
     blobs = require("@netlify/blobs");
   } catch (error) {
     throw diagnosticFailure("blob_store_load", "module_load");
   }
-  if (!blobs || typeof blobs.connectLambda !== "function" || typeof blobs.getStore !== "function") {
+  if (!blobs || typeof blobs.getStore !== "function") {
     throw diagnosticFailure("blob_store_load", "api_shape");
   }
   try {
-    blobs.connectLambda(lambdaEvent);
     return blobs.getStore({ name: STORE_NAME, consistency: "strong" });
   } catch (error) {
     throw diagnosticFailure("blob_store_load", "store_construct");
@@ -478,11 +479,10 @@ async function loadStrongStore(lambdaEvent) {
 function createSpendGuard(options) {
   const settings = options || {};
   const providerCreate = settings.providerCreate;
-  const lambdaEvent = settings.lambdaEvent;
   const now = typeof settings.now === "function" ? settings.now : function () { return new Date(); };
   let storePromise = null;
   async function resolveStore() {
-    if (!storePromise) storePromise = settings.store ? Promise.resolve(settings.store) : loadStrongStore(lambdaEvent);
+    if (!storePromise) storePromise = settings.store ? Promise.resolve(settings.store) : loadStrongStore();
     try {
       return await storePromise;
     } catch (error) {

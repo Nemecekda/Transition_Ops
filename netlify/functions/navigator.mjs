@@ -1,6 +1,11 @@
+import { withLambda } from "@netlify/aws-lambda-compat";
+import openAIClientModule from "./_shared/openai-client.cjs";
+
+const { createOpenAIClient, responseText } = openAIClientModule;
+
 // TRANSITION OPS — NAVIGATOR PILOT (unlisted)
 // Grounded assistant: answers ONLY from the verified corpus below.
-// Conventions match resume.js: env key, CORS lock, friendly failures.
+// Conventions match resume.mjs: env key, CORS lock, friendly failures.
 // REGENERATION RULE: any deploy that changes app content updates CORPUS here in the same commit.
 
 const RULES = `You are the Transition OPS Navigator (PILOT) — grounded AI guidance inside the free app Transition OPS (transitionops.org), built by a retired Army lieutenant colonel. You answer ONLY from the VERIFIED CORPUS provided. Absolute rules:
@@ -253,14 +258,14 @@ function navigatorFailure(headers, reasonCategory) {
   };
 }
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   const headers = {
     "Access-Control-Allow-Origin": "https://transitionops.org",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Content-Type": "application/json"
   };
-  if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers, body: "" };
+  if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers };
   if (event.httpMethod !== "POST") return { statusCode: 405, headers, body: JSON.stringify({ error: "POST only" }) };
 
   const rawBody = typeof event.body === "string" ? event.body : "";
@@ -284,8 +289,7 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { createOpenAIClient, responseText } = require("./openai-client");
-    const client = createOpenAIClient("navigator", event);
+    const client = createOpenAIClient("navigator");
     const response = await client.responses.create({
       model: "gpt-5.6-luna",
       max_output_tokens: 800,
@@ -335,3 +339,5 @@ exports.handler = async (event) => {
     return navigatorFailure(headers, reasonCategory);
   }
 };
+
+export default withLambda(handler);

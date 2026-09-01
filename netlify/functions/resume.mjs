@@ -1,15 +1,20 @@
+import { withLambda } from "@netlify/aws-lambda-compat";
+import openAIClientModule from "./_shared/openai-client.cjs";
+
+const { createOpenAIClient, responseText } = openAIClientModule;
+
 // TOPS Resume Builder — server-side proxy to OpenAI API
 // Requests use the guarded server boundary; provider and platform retention remain separate controls.
 const RESUME_BODY_MAX_BYTES = 65536;
 
-exports.handler = async function (event) {
+export const handler = async function (event) {
   const headers = {
     "Access-Control-Allow-Origin": "https://transitionops.org",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Content-Type": "application/json"
   };
-  if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers, body: "" };
+  if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers };
   if (event.httpMethod !== "POST") return { statusCode: 405, headers, body: JSON.stringify({ error: "POST only" }) };
 
   const rawBody = typeof event.body === "string" ? event.body : "";
@@ -1048,9 +1053,8 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     const scopedFacts = action === "draft" ? draftEligibleFacts(catalog) : [];
     const preGenerationLengthPlan = action === "draft" && mode !== "federal" ? civilianPreGenerationLengthPlan(lengthPreference, requestLengthInputs, confirmedFacts, scopedFacts) : null;
     const scopedFactRules = mode === "federal" ? `\n\nSCOPED FACT RULES:\nThe supplied draft-eligible fact view is the sole controlling fact source. Use no member fact unless it appears there. Preserve every job title, employer or unit, degree, school, certification, and license byte-for-byte. Include every role's exact title and employer or unit even under one-page pressure. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.` : `\n\nSCOPED FACT RULES:\nThe supplied draft-eligible fact view is the sole controlling fact source. Use no member fact unless it appears there. Preserve every job title, employer or unit, degree, school, certification, and license byte-for-byte. Include every role's exact title and employer or unit regardless of page count. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.`;
-    const { createOpenAIClient, responseText } = require("./openai-client");
     const primaryStage = action === "facts" ? "resume_facts" : (mode === "federal" ? "resume_federal" : "resume_civilian");
-    const client = createOpenAIClient(primaryStage, event);
+    const client = createOpenAIClient(primaryStage);
     const generationMaxOutputTokens = action === "facts" ? 3500 : (mode === "federal" ? 1900 : 2200);
     const response = await client.responses.create({
       model: action === "facts" ? "gpt-5.6-luna" : "gpt-5.6-terra",
@@ -1070,7 +1074,7 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
       const factIssues = factSheetIssues(rawText, factSourceBlock);
       if (!factIssues.length) return { statusCode: 200, headers, body: JSON.stringify(factResponseBody(rawText, [], clip(target, 120))) };
 
-      const repairClient = createOpenAIClient("resume_fact_repair", event);
+      const repairClient = createOpenAIClient("resume_fact_repair");
       const repairResponse = await repairClient.responses.create({
         model: "gpt-5.6-terra",
         instructions: `Repair the fact sheet's structure and classification only. Preserve every source fact exactly; do not add, infer, translate, or improve facts. Split every distinct job title into its own ROLE block, including later or subsequent roles. DATES may contain only explicit calendar dates or date ranges; move tenure to NUMBERS AND SCALE. Put software and tools under SKILLS AND TOOLS unless the source explicitly names a certification. Return the complete corrected fact sheet in the original plain-text field structure, with no markdown or commentary.`,
@@ -1135,7 +1139,7 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     const coreSkillsSupport = coreSkillsClaim ? { claim_id: coreSkillsClaim.claim_id, fact_refs: [coreSkillsFact.fact_id] } : null;
     let auditResponse;
     try {
-      const auditClient = createOpenAIClient("resume_audit", event);
+      const auditClient = createOpenAIClient("resume_audit");
       auditResponse = await auditClient.responses.create({
         model: "gpt-5.6-terra",
         instructions: mode === "federal" ? AUDIT_INSTRUCTIONS_FEDERAL : AUDIT_INSTRUCTIONS_CIVILIAN,
@@ -1191,3 +1195,5 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     return safeFailure(classifyProviderError(e));
   }
 };
+
+export default withLambda(handler);

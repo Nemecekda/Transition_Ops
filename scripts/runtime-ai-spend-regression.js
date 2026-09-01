@@ -4,12 +4,34 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const Module = require("node:module");
 const path = require("node:path");
+const { pathToFileURL } = require("node:url");
 
 const root = path.resolve(__dirname, "..");
-const budgetPath = path.join(root, "netlify/functions/openai-budget.js");
-const clientPath = path.join(root, "netlify/functions/openai-client.js");
-const resumePath = path.join(root, "netlify/functions/resume.js");
+const budgetPath = path.join(root, "netlify/functions/_shared/openai-budget.cjs");
+const clientPath = path.join(root, "netlify/functions/_shared/openai-client.cjs");
+const resumePath = path.join(root, "netlify/functions/resume.mjs");
+const navigatorPath = path.join(root, "netlify/functions/navigator.mjs");
 const { createSpendGuard, __testing } = require(budgetPath);
+let entryClientFactory = null;
+const entryHelperExports = Object.freeze({
+  createOpenAIClient: function (stage) {
+    assert.equal(typeof entryClientFactory, "function");
+    return entryClientFactory(stage);
+  },
+  responseText: function (response) { return String(response.output_text || "").trim(); }
+});
+
+function useEntryClientFactory(factory) {
+  entryClientFactory = factory;
+  if (!require.cache[clientPath]) {
+    require.cache[clientPath] = {
+      id: clientPath,
+      filename: clientPath,
+      loaded: true,
+      exports: entryHelperExports
+    };
+  }
+}
 
 const MONTH = "2026-08";
 const NOW = new Date("2026-08-31T12:00:00.000Z");
@@ -468,7 +490,6 @@ async function testContentFreePhaseDiagnostics() {
     () => {
       storeConstructLoadCalls += 1;
       return {
-        connectLambda: () => {},
         getStore: (options) => {
           storeConstructCalls += 1;
           storeConstructOptions = options;
@@ -490,75 +511,28 @@ async function testContentFreePhaseDiagnostics() {
   assert.deepEqual(storeConstructOptions, { name: "runtime-ai-spend-v1", consistency: "strong" });
   assert.equal(storeConstructProviderCalls, 0);
 
-  const validLambdaEvent = Object.freeze({
-    blobs: "synthetic-blob-context",
-    headers: Object.freeze({
-      "x-nf-deploy-id": "synthetic-deploy",
-      "x-nf-site-id": "synthetic-site"
-    })
-  });
-  const validContextStore = new FakeCasStore();
-  const validContextSequence = [];
-  let validContextProviderCalls = 0;
-  const validContextCapture = await withBlobsModule(
+  const zeroConfigStore = new FakeCasStore();
+  const zeroConfigSequence = [];
+  let zeroConfigProviderCalls = 0;
+  const zeroConfigCapture = await withBlobsModule(
     () => ({
-      connectLambda: (lambdaEvent) => {
-        assert.equal(lambdaEvent, validLambdaEvent);
-        validContextSequence.push("connectLambda");
-      },
       getStore: (options) => {
-        validContextSequence.push("getStore");
+        zeroConfigSequence.push("getStore");
         assert.deepEqual(options, { name: "runtime-ai-spend-v1", consistency: "strong" });
-        return validContextStore;
+        return zeroConfigStore;
       }
     }),
     () => {
       const guard = createSpendGuard({
-        lambdaEvent: validLambdaEvent,
         now: () => NOW,
-        providerCreate: async () => { validContextProviderCalls += 1; return completedResponse(); }
+        providerCreate: async () => { zeroConfigProviderCalls += 1; return completedResponse(); }
       });
       return captureConsoleErrors(() => guard.create("navigator", request));
     }
   );
-  assert.deepEqual(validContextSequence, ["connectLambda", "getStore"]);
-  assert.deepEqual(validContextCapture.calls, []);
-  assert.equal(validContextProviderCalls, 1);
-
-  const invalidLambdaContexts = [
-    { label: "missing", event: undefined },
-    { label: "malformed", event: Object.freeze({ blobs: SENTINELS[0], headers: null }) }
-  ];
-  for (const invalidContext of invalidLambdaContexts) {
-    let invalidConnectCalls = 0;
-    let invalidGetStoreCalls = 0;
-    let invalidProviderCalls = 0;
-    const invalidContextCalls = await withBlobsModule(
-      () => ({
-        connectLambda: (lambdaEvent) => {
-          invalidConnectCalls += 1;
-          assert.equal(lambdaEvent, invalidContext.event, invalidContext.label);
-          throw blobFailure;
-        },
-        getStore: () => {
-          invalidGetStoreCalls += 1;
-          return new FakeCasStore();
-        }
-      }),
-      () => {
-        const guard = createSpendGuard({
-          lambdaEvent: invalidContext.event,
-          now: () => NOW,
-          providerCreate: async () => { invalidProviderCalls += 1; return completedResponse(); }
-        });
-        return expectCode(() => guard.create("navigator", request), "upstream_unavailable");
-      }
-    );
-    assert.deepEqual(invalidContextCalls, [[BLOB_STORE_LOAD_SUBPHASE_LINES[2]]]);
-    assert.equal(invalidConnectCalls, 1, invalidContext.label);
-    assert.equal(invalidGetStoreCalls, 0, invalidContext.label);
-    assert.equal(invalidProviderCalls, 0, invalidContext.label);
-  }
+  assert.deepEqual(zeroConfigSequence, ["getStore"]);
+  assert.deepEqual(zeroConfigCapture.calls, []);
+  assert.equal(zeroConfigProviderCalls, 1);
 
   const readFailure = Object.assign(new Error(SENTINELS.join(" ")), {
     request_id: SENTINELS[9],
@@ -791,25 +765,21 @@ function bodyAtBytes(targetBytes) {
 }
 
 async function testResumeBodyBoundaryAndStageWiring() {
-  const helperPath = path.join(root, "netlify/functions/openai-client.js");
-  const originalHelperCache = require.cache[helperPath];
-  const originalResumeCache = require.cache[resumePath];
   const stages = [];
   const factSheet = "ROLE 1\nJOB TITLE (EXACT): Synthetic Planner\nEMPLOYER OR UNIT (EXACT): Synthetic Unit\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Performed synthetic planning duties.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
-  require.cache[helperPath] = {
-    id: helperPath,
-    filename: helperPath,
-    loaded: true,
-    exports: {
-      createOpenAIClient: (stage) => {
-        stages.push(stage);
-        return { responses: { create: async () => ({ status: "completed", output_text: factSheet }) } };
-      },
-      responseText: (response) => String(response.output_text || "").trim()
-    }
-  };
-  delete require.cache[resumePath];
-  const resume = require(resumePath);
+  useEntryClientFactory((stage) => {
+    stages.push(stage);
+    return { responses: { create: async () => ({ status: "completed", output_text: factSheet }) } };
+  });
+  const resume = await import(pathToFileURL(resumePath).href + "?runtime-ai-spend-resume");
+  assert.equal(typeof resume.default, "function");
+  assert.equal(typeof resume.handler, "function");
+  const modernOptions = await resume.default(new Request("https://clone.invalid/.netlify/functions/resume", {
+    method: "OPTIONS"
+  }), { requestId: "synthetic-resume-options" });
+  assert.equal(modernOptions.status, 204);
+  assert.equal(await modernOptions.text(), "");
+  assert.equal(modernOptions.headers.get("access-control-allow-origin"), "https://transitionops.org");
   const exact = await resume.handler({ httpMethod: "POST", body: bodyAtBytes(65536) });
   assert.equal(exact.statusCode, 200);
   assert.deepEqual(stages, ["resume_facts"]);
@@ -819,23 +789,21 @@ async function testResumeBodyBoundaryAndStageWiring() {
   assert.deepEqual(JSON.parse(over.body), { error: "Request is too large." });
   assert.equal(stages.length, beforeOverage);
 
-  if (originalHelperCache) require.cache[helperPath] = originalHelperCache;
-  else delete require.cache[helperPath];
-  if (originalResumeCache) require.cache[resumePath] = originalResumeCache;
-  else delete require.cache[resumePath];
-
   const resumeSource = fs.readFileSync(resumePath, "utf8");
   const clientSource = fs.readFileSync(clientPath, "utf8");
   assert.match(resumeSource, /"resume_facts"[\s\S]*"resume_federal"[\s\S]*"resume_civilian"/);
-  assert.match(resumeSource, /createOpenAIClient\(primaryStage, event\)/);
-  assert.match(resumeSource, /createOpenAIClient\("resume_fact_repair", event\)/);
-  assert.match(resumeSource, /createOpenAIClient\("resume_audit", event\)/);
+  assert.match(resumeSource, /createOpenAIClient\(primaryStage\)/);
+  assert.match(resumeSource, /createOpenAIClient\("resume_fact_repair"\)/);
+  assert.match(resumeSource, /createOpenAIClient\("resume_audit"\)/);
   assert.doesNotMatch(resumeSource, /createOpenAIClient\(\)/);
+  assert.match(resumeSource, /import \{ withLambda \} from "@netlify\/aws-lambda-compat";/);
+  assert.match(resumeSource, /export default withLambda\(handler\);/);
+  assert.doesNotMatch(resumeSource, /exports\.handler/);
   assert.match(resumeSource, /const RESUME_BODY_MAX_BYTES = 65536/);
   assert.doesNotMatch(resumeSource, /nothing stored|nothing logged|EXTERNAL_MONTHLY_HARD_CAP_STATUS|PROVIDER_PROJECT_CONTROL_STATUS|AUDIT_INCREMENTAL_CEILING_USD|BROWSER_DAILY_AUDIT_CEILING_USD|UNVERIFIED/i);
   assert.match(resumeSource, /Dated provider-account evidence and the repository spend guard are distinct controls/);
-  assert.match(clientSource, /function createOpenAIClient\(stage, lambdaEvent\)/);
-  assert.match(clientSource, /lambdaEvent,[\s\S]*providerCreate/);
+  assert.match(clientSource, /function createOpenAIClient\(stage\)/);
+  assert.doesNotMatch(clientSource, /lambdaEvent|connectLambda/);
   assert.match(clientSource, /maxRetries: 0/);
   assert.match(clientSource, /guard\.create\(stage, request\)/);
   assert.doesNotMatch(clientSource, /return new OpenAI/);
@@ -843,37 +811,32 @@ async function testResumeBodyBoundaryAndStageWiring() {
 }
 
 async function testNavigatorBodyBoundaryAndStageWiring() {
-  const navigatorPath = path.join(root, "netlify/functions/navigator.js");
-  const helperPath = path.join(root, "netlify/functions/openai-client.js");
-  const originalHelperCache = require.cache[helperPath];
-  const originalNavigatorCache = require.cache[navigatorPath];
   const stages = [];
   const guardedRequests = [];
   const guardedFailures = [];
   let providerCalls = 0;
-  require.cache[helperPath] = {
-    id: helperPath,
-    filename: helperPath,
-    loaded: true,
-    exports: {
-      createOpenAIClient: (stage) => {
-        stages.push(stage);
-        return {
-          responses: {
-            create: async (request) => {
-              guardedRequests.push(request);
-              if (guardedFailures.length) throw guardedFailures.shift();
-              providerCalls += 1;
-              return { status: "completed", output_text: "Synthetic Navigator response." };
-            }
-          }
-        };
-      },
-      responseText: (response) => String(response.output_text || "").trim()
-    }
-  };
-  delete require.cache[navigatorPath];
-  const navigator = require(navigatorPath);
+  useEntryClientFactory((stage) => {
+    stages.push(stage);
+    return {
+      responses: {
+        create: async (request) => {
+          guardedRequests.push(request);
+          if (guardedFailures.length) throw guardedFailures.shift();
+          providerCalls += 1;
+          return { status: "completed", output_text: "Synthetic Navigator response." };
+        }
+      }
+    };
+  });
+  const navigator = await import(pathToFileURL(navigatorPath).href + "?runtime-ai-spend-navigator");
+  assert.equal(typeof navigator.default, "function");
+  assert.equal(typeof navigator.handler, "function");
+  const modernOptions = await navigator.default(new Request("https://clone.invalid/.netlify/functions/navigator", {
+    method: "OPTIONS"
+  }), { requestId: "synthetic-navigator-options" });
+  assert.equal(modernOptions.status, 204);
+  assert.equal(await modernOptions.text(), "");
+  assert.equal(modernOptions.headers.get("access-control-allow-origin"), "https://transitionops.org");
   function navigatorBodyAtBytes(targetBytes) {
     const body = { messages: [{ role: "user", content: "Synthetic request." }], padding: "" };
     const base = Buffer.byteLength(JSON.stringify(body), "utf8");
@@ -931,14 +894,12 @@ async function testNavigatorBodyBoundaryAndStageWiring() {
   });
   await assertNavigatorGuardFailure(accountingError, "upstream_unavailable");
 
-  if (originalHelperCache) require.cache[helperPath] = originalHelperCache;
-  else delete require.cache[helperPath];
-  if (originalNavigatorCache) require.cache[navigatorPath] = originalNavigatorCache;
-  else delete require.cache[navigatorPath];
-
   const navigatorSource = fs.readFileSync(navigatorPath, "utf8");
   assert.match(navigatorSource, /Buffer\.byteLength\(rawBody, "utf8"\) > 32768/);
-  assert.match(navigatorSource, /createOpenAIClient\("navigator", event\)/);
+  assert.match(navigatorSource, /createOpenAIClient\("navigator"\)/);
+  assert.match(navigatorSource, /import \{ withLambda \} from "@netlify\/aws-lambda-compat";/);
+  assert.match(navigatorSource, /export default withLambda\(handler\);/);
+  assert.doesNotMatch(navigatorSource, /exports\.handler/);
 }
 
 async function run() {
@@ -953,7 +914,7 @@ async function run() {
   await testFourCallPathAndSentinelExclusion();
   await testResumeBodyBoundaryAndStageWiring();
   await testNavigatorBodyBoundaryAndStageWiring();
-  console.log("PASS: runtime AI spend governance synthetic suite - fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free Navigator budget/accounting failures, strict options, cutoff equality/overage, @netlify/blobs 10.7.13 CommonJS loading, valid/missing/malformed Lambda Blob context handling, { modified } CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, four fixed content-free phase diagnostics, and three fixed blob-store-load subphase diagnostics");
+  console.log("PASS: runtime AI spend governance synthetic suite - modern withLambda wiring for Navigator and Resume, zero-config strong-consistency @netlify/blobs 10.7.13 loading, fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free budget/accounting failures, strict options, ledger initialization, corrupt-ledger denial, cutoff equality/overage, { modified } ETag CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, four fixed content-free phase diagnostics, and three fixed blob-store-load subphase diagnostics");
 }
 
 run().catch((error) => {

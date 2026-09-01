@@ -58,7 +58,7 @@ function prohibitedProvider(url) {
 
 function sourceChecks() {
   const index = read("index.html");
-  const navigatorFunction = read("netlify/functions/navigator.js");
+  const navigatorFunction = read("netlify/functions/navigator.mjs");
   const pwaWorker = read("pwa-sw.js");
   const dedicatedWorker = read("push/onesignal/OneSignalSDKWorker.js");
 

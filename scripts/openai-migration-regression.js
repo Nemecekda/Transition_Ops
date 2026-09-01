@@ -2,12 +2,16 @@ const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
+const { pathToFileURL } = require("node:url");
 const vm = require("node:vm");
 const { TextDecoder, TextEncoder } = require("node:util");
 const { runRenderRegression } = require("./resume-docx-render-regression.js");
 
 const root = path.resolve(__dirname, "..");
-const helperPath = path.join(root, "netlify/functions/openai-client.js");
+const helperPath = path.join(root, "netlify/functions/_shared/openai-client.cjs");
+const budgetPath = path.join(root, "netlify/functions/_shared/openai-budget.cjs");
+const resumePath = path.join(root, "netlify/functions/resume.mjs");
+const navigatorPath = path.join(root, "netlify/functions/navigator.mjs");
 const calls = [];
 const clientStages = [];
 let nextResponse = { status: "completed", output_text: "SYNTHETIC OUTPUT" };
@@ -168,14 +172,35 @@ require.cache[helperPath] = {
   }
 };
 
-const resume = require(path.join(root, "netlify/functions/resume.js"));
-const navigator = require(path.join(root, "netlify/functions/navigator.js"));
+let resume;
+let navigator;
 
 function post(body) {
   return { httpMethod: "POST", body: JSON.stringify(body) };
 }
 
 async function run() {
+  resume = await import(pathToFileURL(resumePath).href);
+  navigator = await import(pathToFileURL(navigatorPath).href);
+  assert.equal(typeof resume.default, "function");
+  assert.equal(typeof resume.handler, "function");
+  assert.equal(typeof navigator.default, "function");
+  assert.equal(typeof navigator.handler, "function");
+  const modernResumePreflight = await resume.default(new Request("https://clone.invalid/.netlify/functions/resume", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: "{}"
+  }), { requestId: "synthetic-resume-wrapper" });
+  assert.equal(modernResumePreflight.status, 400);
+  assert.deepEqual(await modernResumePreflight.json(), { error: "Tell us what you actually did — at least a sentence or two." });
+  const modernNavigatorPreflight = await navigator.default(new Request("https://clone.invalid/.netlify/functions/navigator", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: "{}"
+  }), { requestId: "synthetic-navigator-wrapper" });
+  assert.equal(modernNavigatorPreflight.status, 400);
+  assert.deepEqual(await modernNavigatorPreflight.json(), { error: "No user message" });
+
   const facts = "ROLE 1\nJOB TITLE (EXACT): Synthetic Logistics Leader\nEMPLOYER OR UNIT (EXACT): Synthetic Unit\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led a 15-person team and managed a $2M equipment inventory.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 15-person; $2M\nTARGET ROLE (EXACT OR MISSING): Operations manager";
   nextResponse = { status: "completed", output_text: facts };
   const callsBeforeCleanFacts = calls.length;
@@ -1469,7 +1494,7 @@ async function run() {
     assert.equal(coreSkillsSupportFromAuditRequest(request), null);
     assert.equal(candidateDraftFromAuditRequest(request), federalCoreDraft);
     const federalGenerationCall = calls[calls.length - 2];
-    const federalSystemSource = fs.readFileSync(path.join(root, "netlify/functions/resume.js"), "utf8").match(/const systemFederal = `([\s\S]*?)`;/)[1];
+    const federalSystemSource = fs.readFileSync(resumePath, "utf8").match(/const systemFederal = `([\s\S]*?)`;/)[1];
     const federalScopedFactRules = `\n\nSCOPED FACT RULES:\nThe supplied draft-eligible fact view is the sole controlling fact source. Use no member fact unless it appears there. Preserve every job title, employer or unit, degree, school, certification, and license byte-for-byte. Include every role's exact title and employer or unit even under one-page pressure. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.`;
     assert.equal(crypto.createHash("sha256").update(federalSystemSource).digest("hex"), "194fad7838fa064f0c18ac24b7ecfde0d6d1e04e3507a815dec630dc5a843b92");
     assert.equal(federalGenerationCall.instructions, federalSystemSource + federalScopedFactRules, "RDM-194 preserves the complete assembled federal generation instructions byte-for-byte");
@@ -1899,17 +1924,17 @@ async function run() {
   assert.ok(calls.every((call) => call.store === false));
   assert.ok(auditCalls.every((call) => call.model === "gpt-5.6-terra" && call.max_output_tokens === 4000 && call.reasoning.effort === "none"));
   assert.ok(auditCalls.every((call) => /Cite only the minimum facts necessary/.test(call.instructions) && /do not add redundant references/.test(call.instructions) && /same role/.test(call.instructions)));
-  const resumeSource = fs.readFileSync(path.join(root, "netlify/functions/resume.js"), "utf8");
-  const navigatorSource = fs.readFileSync(path.join(root, "netlify/functions/navigator.js"), "utf8");
+  const resumeSource = fs.readFileSync(resumePath, "utf8");
+  const navigatorSource = fs.readFileSync(navigatorPath, "utf8");
   const regressionSource = fs.readFileSync(__filename, "utf8");
-  const clientSource = fs.readFileSync(path.join(root, "netlify/functions/openai-client.js"), "utf8");
-  const budgetPath = path.join(root, "netlify/functions/openai-budget.js");
+  const clientSource = fs.readFileSync(helperPath, "utf8");
   const budgetSource = fs.readFileSync(budgetPath, "utf8");
   const budgetContract = require(budgetPath).__testing;
   const uiSource = fs.readFileSync(path.join(root, "index.html"), "utf8");
   const packageData = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   assert.equal(packageData.dependencies.openai, "7.8.0");
   assert.equal(packageData.dependencies["@netlify/blobs"], "10.7.13");
+  assert.equal(packageData.dependencies["@netlify/aws-lambda-compat"], "2.0.0");
   assert.doesNotMatch(resumeSource, /battalion -> "600-person organization"|Every bullet names scale/);
   assert.doesNotMatch(resumeSource, /1,200\+? employees across 18 states|7,000\+? Soldiers|110 people and a \$9M budget/);
   const civilianPrompt = resumeSource.match(/const system = `([\s\S]*?)`;/)[1];
@@ -1922,7 +1947,8 @@ async function run() {
   assert.doesNotMatch(quantityPlacementRule, /\b(?:use|include|preserve)\s+every\b/i);
   assert.doesNotMatch(resumeSource, /AUDIT_INCREMENTAL_CEILING_USD|BROWSER_DAILY_AUDIT_CEILING_USD|EXTERNAL_MONTHLY_HARD_CAP_STATUS|PROVIDER_PROJECT_CONTROL_STATUS/);
   assert.match(resumeSource, /Dated provider-account evidence and the repository spend guard are distinct controls/);
-  assert.match(clientSource, /function createOpenAIClient\(stage, lambdaEvent\)/);
+  assert.match(clientSource, /function createOpenAIClient\(stage\)/);
+  assert.doesNotMatch(clientSource + budgetSource, /lambdaEvent|connectLambda/);
   assert.match(clientSource, /createSpendGuard\(\{/);
   assert.match(clientSource, /return guard\.create\(stage, request\)/);
   assert.match(clientSource, /maxRetries: 0/);
@@ -1942,6 +1968,12 @@ async function run() {
   });
   assert.match(budgetSource, /getStore\(\{ name: STORE_NAME, consistency: "strong" \}\)/);
   assert.match(budgetSource, /result\.modified !== true/);
+  [resumeSource, navigatorSource].forEach(function (entrySource) {
+    assert.match(entrySource, /import \{ withLambda \} from "@netlify\/aws-lambda-compat";/);
+    assert.match(entrySource, /export const handler = async/);
+    assert.match(entrySource, /export default withLambda\(handler\);/);
+    assert.doesNotMatch(entrySource, /exports\.handler/);
+  });
   const failureMessagesBlock = resumeSource.match(/const FAILURE_MESSAGES = \{([\s\S]*?)\n  \};/)[1];
   const publicCategories = Array.from(failureMessagesBlock.matchAll(/^    ([a-z_]+):/gm), (match) => match[1]);
   assert.deepEqual(publicCategories, ["output_limit", "timeout", "rate_limit", "budget_limit", "upstream_unavailable", "quality_gate", "incomplete_unknown", "civilian_format", "filler_language", "unsupported_number", "role_structure", "unlinked_global_number"]);
@@ -2014,7 +2046,7 @@ async function run() {
   assert.deepEqual(clientStages, expectedStages, "Guard stages must preserve provider-call order across all fixtures.");
   assert.doesNotMatch(resumeSource + uiSource, /(?:three|3)\s+(?:fact|fact-sheet)\s+(?:requests|reviews).*day|daily\s+fact/i);
   assert.match(navigatorSource, /max_output_tokens: 800/);
-  assert.match(navigatorSource, /createOpenAIClient\("navigator", event\)/);
+  assert.match(navigatorSource, /createOpenAIClient\("navigator"\)/);
   assert.match(uiSource, /QUALITY SCORECARD/);
   assert.match(uiSource, /DRAFT WITHHELD/);
   assert.match(uiSource, /SHOW CLAIM TRACE/);
@@ -2086,9 +2118,9 @@ async function run() {
   // RDM-199 through RDM-206: v0.19 preserves the call graph while routing every closed stage through the shared guard.
   assert.equal((resumeSource.match(/createOpenAIClient\(/g) || []).length, 3);
   assert.equal((resumeSource.match(/\.responses\.create\(/g) || []).length, 3);
-  assert.equal((resumeSource.match(/createOpenAIClient\(primaryStage, event\)/g) || []).length, 1);
-  assert.equal((resumeSource.match(/createOpenAIClient\("resume_fact_repair", event\)/g) || []).length, 1);
-  assert.equal((resumeSource.match(/createOpenAIClient\("resume_audit", event\)/g) || []).length, 1);
+  assert.equal((resumeSource.match(/createOpenAIClient\(primaryStage\)/g) || []).length, 1);
+  assert.equal((resumeSource.match(/createOpenAIClient\("resume_fact_repair"\)/g) || []).length, 1);
+  assert.equal((resumeSource.match(/createOpenAIClient\("resume_audit"\)/g) || []).length, 1);
   assert.equal((resumeSource.match(/store: false/g) || []).length, 3);
   assert.equal((uiSource.match(/__trackEvent\("ai_resume_doc_downloaded", \{\}\)/g) || []).length, 1);
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)|localStorage|sessionStorage/);
