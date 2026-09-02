@@ -224,6 +224,23 @@ function assertOpenAIPackageInclusion(source) {
   if (globalFunctions) assert.doesNotMatch(globalFunctions[1], /^\s*included_files\s*=/m);
 }
 
+function assertSkillBridgeAccuracy(navigatorSource, uiSource) {
+  const combinedSource = String(navigatorSource) + "\n" + String(uiSource);
+  assert.doesNotMatch(combinedSource, /\b(?:last|final)\s+180\s+days\b/i);
+  assert.match(
+    navigatorSource,
+    /Duration and approval are rank-tiered and service-specific: most members rate 60\u2013120 days; Coast Guard retains up to 180 days; senior grades may require O-6 or General Officer approval\./
+  );
+  assert.match(
+    navigatorSource,
+    /Navy members: confirm current rules with your command career counselor or installation SkillBridge office\./
+  );
+  assert.match(
+    uiSource,
+    /Final months of service \(60\\u2013180 days, rank-tiered by service\) \\u2014 get civilian experience while still on active duty pay/
+  );
+}
+
 async function run() {
   resume = await import(pathToFileURL(resumePath).href);
   navigator = await import(pathToFileURL(navigatorPath).href);
@@ -1978,6 +1995,39 @@ async function run() {
   const uiSource = fs.readFileSync(path.join(root, "index.html"), "utf8");
   const netlifyConfigSource = fs.readFileSync(netlifyConfigPath, "utf8");
   const packageData = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+  assertSkillBridgeAccuracy(navigatorSource, uiSource);
+  const skillBridgeBlanketFixtures = ["last 180 days", "Last 180 days", "final 180 days", "FINAL 180 DAYS"];
+  for (const stalePhrase of skillBridgeBlanketFixtures) {
+    assert.throws(
+      () => assertSkillBridgeAccuracy(navigatorSource + "\n" + stalePhrase, uiSource),
+      "SkillBridge blanket-duration guard rejects " + stalePhrase
+    );
+  }
+  assert.throws(
+    () => assertSkillBridgeAccuracy(navigatorSource.replace("rank-tiered and service-specific", "service-specific"), uiSource),
+    "SkillBridge guard requires the rank-tiered marker"
+  );
+  assert.throws(
+    () => assertSkillBridgeAccuracy(navigatorSource.replace("Coast Guard retains up to 180 days; ", ""), uiSource),
+    "SkillBridge guard requires the Coast Guard exception"
+  );
+  assert.throws(
+    () => assertSkillBridgeAccuracy(
+      navigatorSource.replace("Navy members: confirm current rules with your command career counselor or installation SkillBridge office. ", ""),
+      uiSource
+    ),
+    "SkillBridge guard requires the Navy source-gap referral"
+  );
+  assert.throws(
+    () => assertSkillBridgeAccuracy(
+      navigatorSource,
+      uiSource.replace(
+        "Final months of service (60\\u2013180 days, rank-tiered by service) \\u2014 get civilian experience while still on active duty pay",
+        "Last 180 days \\u2014 get civilian experience while still on active duty pay"
+      )
+    ),
+    "SkillBridge guard requires the exact rank-tiered UI marker"
+  );
   assertOpenAIPackageInclusion(netlifyConfigSource);
   const exactPackageRule = 'included_files = ["node_modules/openai/**", "node_modules/@netlify/blobs/**", "node_modules/@netlify/otel/**", "node_modules/@netlify/runtime-utils/**"]';
   for (const [name, invalidConfig] of [
