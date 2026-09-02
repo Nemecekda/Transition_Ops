@@ -9,7 +9,7 @@ written) · DEPRECATED (superseded — note by what)
 
 | # | Skill | Owner | Status | Version | Validated | Location |
 |---|-------|-------|--------|---------|-----------|----------|
-| 1 | validation-gate | s3-devops | CODIFIED | 1.7 | 2026-09-01 | .claude/skills/validation-gate/ (canonical); .agents/skills/validation-gate/ (Codex project mirror) |
+| 1 | validation-gate | s3-devops | CODIFIED | 1.8 | 2026-09-01 | .claude/skills/validation-gate/ (canonical); .agents/skills/validation-gate/ (Codex project mirror) |
 | 2 | deploy-discipline | s3-devops | CODIFIED | 1.6 | 2026-08-31 | .claude/skills/deploy-discipline/ (Claude copy); .agents/skills/deploy-discipline/ (Codex copy; environment wording intentionally differs); 1.3 BURNED - see change log |
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
@@ -71,6 +71,16 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-01 - **#1 `validation-gate` 1.7 -> 1.8 remains CODIFIED.** The 4N
+  real-artifact boundary now requires Navigator and Resume to load OpenAI 7.8.0
+  and Blobs 10.7.13, verify the OpenAI constructor and Blobs `getStore` API
+  shapes, resolve OTel 6.0.6 and runtime-utils 2.3.0, and prove `jobs` excludes
+  all four package paths. The exact function-scoped four-path source rule keeps
+  global or broad inclusion and bundler overrides prohibited. VG-18-1 through
+  VG-18-7 pass 7/7; canonical and mirror remain byte-identical. The module-only
+  calibration used no client, store, credential, function, network, provider,
+  model, hosted, deploy, merge, or production action. Runtime-spend 1.3 and
+  deploy-discipline 1.6 seams remain unchanged. Lane: AUTO. Owner: s3-devops.
 - 2026-09-01 - **#1 `validation-gate` 1.6 -> 1.7 remains CODIFIED.** The
   hosted clone's fixed `client_init/module_load_resolution_code` marker exposed
   a package-boundary gap: OpenAI 7.8.0 was installed and pinned, but the modern

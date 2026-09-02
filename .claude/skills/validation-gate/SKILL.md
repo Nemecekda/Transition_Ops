@@ -2,7 +2,7 @@
 name: validation-gate
 description: Validation battle drill for Transition OPS. EDIT mode runs pre-commit on any code change and before any PR, and governs how edits are applied - discrete edits, per-edit counts, reviewed scripts. INTEGRITY mode runs against a clean tree for structural and encoding audits. Owner - s3-devops.
 metadata:
-  version: "1.7"
+  version: "1.8"
   status: CODIFIED
   owner: s3-devops
   validated: "2026-09-01"
@@ -287,31 +287,38 @@ under another name.
     function, or the shared OpenAI client. Run after 4P and before step 5.
     Static source assertions do not clear this step. Package both AI functions
     with the Netlify CLI's installed packager into a scratch directory, then
-    resolve and load the SDK separately from each generated artifact without
-    constructing a client or invoking a function:
+    load OpenAI and Blobs and resolve the two required Blobs dependencies
+    separately from each generated artifact without constructing a client or
+    store, accessing credentials, or invoking a function:
 
        TOPS_NETLIFY_CLI_ROOT="$(npm root -g)/netlify-cli"
        TOPS_PACKAGE_SCRATCH="$(mktemp -d /tmp/tops-netlify-package.XXXXXX)"
        node -e 'console.log(require(process.argv[1]).version)' "$TOPS_NETLIFY_CLI_ROOT/package.json"
        node -e 'console.log(require(process.argv[1]).version)' "$TOPS_NETLIFY_CLI_ROOT/node_modules/@netlify/zip-it-and-ship-it/package.json"
        node --input-type=module -e 'import fs from "node:fs";import path from "node:path";import {pathToFileURL} from "node:url";const cli=process.argv[1];const out=process.argv[2];const root=process.cwd();const tomlModule=await import(pathToFileURL(path.join(cli,"node_modules/@iarna/toml/toml.js")));const configModule=await import(pathToFileURL(path.join(cli,"dist/lib/functions/config.js")));const zipModule=await import(pathToFileURL(path.join(cli,"node_modules/@netlify/zip-it-and-ship-it/dist/main.js")));const parsed=(tomlModule.default||tomlModule).parse(fs.readFileSync(path.join(root,"netlify.toml"),"utf8"));const config=configModule.normalizeFunctionsConfig({functionsConfig:parsed.functions,projectRoot:root});await zipModule.zipFunctions(path.join(root,"netlify/functions"),out,{archiveFormat:"none",config,manifest:path.join(out,"manifest.json")});console.log("4N PACKAGE PASS actual netlify.toml");' "$TOPS_NETLIFY_CLI_ROOT" "$TOPS_PACKAGE_SCRATCH"
-       node -e 'const assert=require("node:assert/strict");const fs=require("node:fs");const path=require("node:path");const {createRequire}=require("node:module");const out=process.argv[1];for(const name of ["navigator","resume"]){const base=path.join(out,name);const pkg=require(path.join(base,"node_modules/openai/package.json"));assert.equal(pkg.version,"7.8.0");const loaded=createRequire(path.join(base,"package.json"))("openai");assert.equal(typeof (loaded.OpenAI||loaded.default||loaded),"function");console.log("4N PASS",name,pkg.version);}assert.equal(fs.existsSync(path.join(out,"jobs/node_modules/openai")),false);console.log("4N PASS jobs excluded");' "$TOPS_PACKAGE_SCRATCH"
+       node -e 'const assert=require("node:assert/strict");const fs=require("node:fs");const path=require("node:path");const {createRequire}=require("node:module");const out=process.argv[1];const required={openai:"7.8.0","@netlify/blobs":"10.7.13","@netlify/otel":"6.0.6","@netlify/runtime-utils":"2.3.0"};for(const name of ["navigator","resume"]){const base=path.join(out,name);const artifactRequire=createRequire(path.join(base,"package.json"));const openaiPkg=require(path.join(base,"node_modules/openai/package.json"));assert.equal(openaiPkg.version,required.openai);const openai=artifactRequire("openai");assert.equal(typeof (openai.OpenAI||openai.default||openai),"function");const blobsPkg=require(path.join(base,"node_modules/@netlify/blobs/package.json"));assert.equal(blobsPkg.version,required["@netlify/blobs"]);const blobs=artifactRequire("@netlify/blobs");assert.equal(typeof blobs.getStore,"function");for(const moduleName of ["@netlify/otel","@netlify/runtime-utils"]){const modulePkg=require(path.join(base,"node_modules",...moduleName.split("/"),"package.json"));assert.equal(modulePkg.version,required[moduleName]);assert.equal(typeof artifactRequire.resolve(moduleName),"string");}console.log("4N PASS",name,"openai="+openaiPkg.version,"blobs="+blobsPkg.version,"otel="+required["@netlify/otel"],"runtime-utils="+required["@netlify/runtime-utils"]);}for(const packageName of Object.keys(required)){assert.equal(fs.existsSync(path.join(out,"jobs/node_modules",...packageName.split("/"))),false);}console.log("4N PASS jobs excludes all four package paths");' "$TOPS_PACKAGE_SCRATCH"
 
     `netlify functions:build` alone is prohibited as 4N evidence: CLI 26.1.0
     was measured to call the packager without normalized per-function config,
     silently omitting `included_files`. Record both displayed tool versions, the
-    package PASS, and the three artifact PASS lines. Missing CLI/package,
-    configuration parse or normalization failure, packaging failure, absent
-    SDK, version drift, failed resolution, SDK inclusion in `jobs`, or any
-    fallback is FAIL. This smoke test must perform zero credential access,
-    provider calls, network activity, model requests, or function invocations.
+    package PASS, the two AI artifact PASS lines, and the jobs-exclusion PASS
+    line. Missing CLI/package, configuration parse or normalization failure,
+    packaging failure, absent OpenAI or Blobs package, version drift, failed
+    module resolution, failed OpenAI-constructor or Blobs-`getStore` API shape,
+    any of the four package paths in `jobs`, or any fallback is FAIL. This
+    module-only smoke test must perform zero credential access, client or store
+    construction, provider calls, network activity, model requests, function
+    invocations, or hosted actions.
 
     The source regression must also enforce one exact function-scoped
-    `included_files = ["node_modules/openai/**"]` rule for Navigator and Resume;
-    zero global or broad `node_modules/**` inclusion; and zero `node_bundler`,
-    `external_node_modules`, or `ignored_node_modules` override. Artifact PASS
-    proves only local package presence and module resolution. Hosted Navigator
-    and Resume acceptance remain separate deploy-discipline evidence.
+    `included_files = ["node_modules/openai/**", "node_modules/@netlify/blobs/**", "node_modules/@netlify/otel/**", "node_modules/@netlify/runtime-utils/**"]`
+    rule for each of Navigator and Resume; zero global `included_files` rule or
+    broad bare `node_modules/**` inclusion; and zero `node_bundler`,
+    `external_node_modules`, or `ignored_node_modules` override. Missing,
+    reordered, duplicated, extra, or wrong package paths fail the exact rule.
+    Artifact PASS proves only local package presence, API shape, and module
+    resolution. Hosted Navigator and Resume acceptance remain separate
+    deploy-discipline evidence.
 
 5. **Untouched-region check.** `git diff --stat` - confirm ONLY intended
    files/regions changed. Any unexpected diff is a full stop.
@@ -373,24 +380,31 @@ correct mode. Partial re-validation is how corruption ships. A fix writes
 files, so an INTEGRITY run that produces a fix becomes an EDIT run - rerun in
 EDIT MODE.
 
-## VERSION 1.7 GOVERNANCE CALIBRATION
+## VERSION 1.8 GOVERNANCE CALIBRATION
 
-- **VG-17-1:** the six v1.6 privacy, push-state, semantic-regression, spend, and
-  ownership cases remain PASS without weakening.
-- **VG-17-2:** a `netlify.toml`-only diff triggers 4P and the real-artifact 4N
+- **VG-18-1:** all six v1.7 cases and the six v1.6 privacy, push-state,
+  semantic-regression, spend, and ownership cases remain PASS without
+  weakening. PASS.
+- **VG-18-2:** a `netlify.toml`-only diff triggers 4P and the real-artifact 4N
   boundary; governance-only skill/registry diffs remain N/A. PASS.
-- **VG-17-3:** exact Navigator and Resume inclusion passes; missing, global,
-  broad, duplicated, or wrong-package inclusion fails. PASS.
-- **VG-17-4:** `node_bundler`, `external_node_modules`, and
+- **VG-18-3:** the source fixture passes only with one exact ordered four-path
+  function-scoped inclusion rule in each of Navigator and Resume; missing,
+  reordered, duplicated, extra, wrong, global, or broad inclusion fails. PASS.
+- **VG-18-4:** `node_bundler`, `external_node_modules`, and
   `ignored_node_modules` overrides fail; the runtime-v2 NFT path remains
   unchanged. PASS.
-- **VG-17-5:** both generated AI artifacts must contain OpenAI 7.8.0 and resolve
-  a constructor, while `jobs` must exclude it. Static config alone fails. PASS.
-- **VG-17-6:** package smoke performs zero client construction, credential
-  access, function invocation, network activity, provider call, or model
-  request; hosted acceptance stays with deploy discipline. PASS.
+- **VG-18-5:** both generated AI artifacts must load OpenAI 7.8.0 with its
+  constructor shape and Blobs 10.7.13 with its `getStore` API shape, and must
+  resolve OTel 6.0.6 and runtime-utils 2.3.0. Static config alone fails. PASS.
+- **VG-18-6:** the generated `jobs` artifact must exclude all four package
+  paths. Any one present fails. PASS.
+- **VG-18-7:** package smoke performs zero client or store construction,
+  credential access, function invocation, network activity, provider call,
+  model request, or hosted action; hosted acceptance stays with deploy
+  discipline. PASS.
 
-Governance calibration executed 6/6 PASS on 2026-09-01. The measured artifact
-smoke packaged and loaded the SDK locally only. No function, provider path,
-model request, network request, manual assistive technology, hosted artifact,
-deployment, merge, or production behavior was executed or certified.
+Governance calibration executed 7/7 PASS on 2026-09-01. The measured module
+boundary loaded OpenAI and Blobs and resolved OTel and runtime-utils locally
+only. No client, store, credential, function, provider path, model request,
+network request, manual assistive technology, hosted artifact, deployment,
+merge, or production behavior was executed or certified.

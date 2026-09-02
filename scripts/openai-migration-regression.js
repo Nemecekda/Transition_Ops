@@ -200,11 +200,24 @@ function tomlTableLines(source, tableName) {
 }
 
 function assertOpenAIPackageInclusion(source) {
-  const exactRule = 'included_files = ["node_modules/openai/**"]';
+  const packagePaths = [
+    "node_modules/openai/**",
+    "node_modules/@netlify/blobs/**",
+    "node_modules/@netlify/otel/**",
+    "node_modules/@netlify/runtime-utils/**"
+  ];
+  const exactRule = 'included_files = ["' + packagePaths.join('", "') + '"]';
   assert.deepEqual(tomlTableLines(source, "functions.navigator"), [exactRule]);
   assert.deepEqual(tomlTableLines(source, "functions.resume"), [exactRule]);
-  assert.equal((String(source).match(/node_modules\/openai\/\*\*/g) || []).length, 2);
-  assert.doesNotMatch(String(source), /^\s*included_files\s*=\s*\["node_modules\/\*\*"\]/m);
+  for (const packagePath of packagePaths) {
+    assert.equal(
+      String(source).split(packagePath).length - 1,
+      2,
+      "netlify.toml contains exactly two scoped references to " + packagePath
+    );
+  }
+  assert.doesNotMatch(String(source), /node_modules\/\*\*/);
+  assert.doesNotMatch(String(source), /node_modules\/@netlify\/dev-utils\/\*\*/);
   assert.doesNotMatch(String(source), /^\s*(?:node_bundler|external_node_modules|ignored_node_modules)\s*=/m);
 
   const globalFunctions = String(source).match(/(?:^|\n)\[functions\][ \t]*\r?\n([\s\S]*?)(?=\r?\n\[[^\]]+\][ \t]*(?:\r?\n|$)|$)/);
@@ -1966,21 +1979,28 @@ async function run() {
   const netlifyConfigSource = fs.readFileSync(netlifyConfigPath, "utf8");
   const packageData = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   assertOpenAIPackageInclusion(netlifyConfigSource);
-  for (const invalidConfig of [
-    netlifyConfigSource.replace("[functions.navigator]", "[functions.navigator_missing]"),
-    netlifyConfigSource.replace("[functions.resume]", "[functions.resume_missing]"),
-    netlifyConfigSource.replace("[functions.navigator]", "[functions]"),
-    netlifyConfigSource.replace("node_modules/openai/**", "node_modules/**"),
-    netlifyConfigSource.replace("node_modules/openai/**", "node_modules/other-sdk/**"),
-    netlifyConfigSource.replace(
-      'included_files = ["node_modules/openai/**"]',
-      'included_files = ["node_modules/openai/**"]\n  included_files = ["node_modules/openai/**"]'
-    ),
-    netlifyConfigSource + "\n[functions.other]\n  node_bundler = \"esbuild\"\n",
-    netlifyConfigSource + "\n[functions.other]\n  external_node_modules = [\"openai\"]\n",
-    netlifyConfigSource + "\n[functions.other]\n  ignored_node_modules = [\"openai\"]\n"
+  const exactPackageRule = 'included_files = ["node_modules/openai/**", "node_modules/@netlify/blobs/**", "node_modules/@netlify/otel/**", "node_modules/@netlify/runtime-utils/**"]';
+  for (const [name, invalidConfig] of [
+    ["missing navigator table", netlifyConfigSource.replace("[functions.navigator]", "[functions.navigator_missing]")],
+    ["missing resume table", netlifyConfigSource.replace("[functions.resume]", "[functions.resume_missing]")],
+    ["missing scoped rule", netlifyConfigSource.replace(exactPackageRule, "")],
+    ["missing package", netlifyConfigSource.replace(', "node_modules/@netlify/blobs/**"', "")],
+    [
+      "wrong package order",
+      netlifyConfigSource.replace(
+        '"node_modules/@netlify/blobs/**", "node_modules/@netlify/otel/**"',
+        '"node_modules/@netlify/otel/**", "node_modules/@netlify/blobs/**"'
+      )
+    ],
+    ["wrong package", netlifyConfigSource.replace("node_modules/@netlify/runtime-utils/**", "node_modules/@netlify/dev-utils/**")],
+    ["duplicate scoped rule", netlifyConfigSource.replace(exactPackageRule, exactPackageRule + "\n  " + exactPackageRule)],
+    ["global inclusion", netlifyConfigSource + '\n[functions]\n  included_files = ["assets/**"]\n'],
+    ["broad inclusion", netlifyConfigSource + '\n[functions.other]\n  included_files = ["node_modules/**"]\n'],
+    ["node bundler override", netlifyConfigSource + "\n[functions.other]\n  node_bundler = \"esbuild\"\n"],
+    ["external modules override", netlifyConfigSource + "\n[functions.other]\n  external_node_modules = [\"openai\"]\n"],
+    ["ignored modules override", netlifyConfigSource + "\n[functions.other]\n  ignored_node_modules = [\"openai\"]\n"]
   ]) {
-    assert.throws(() => assertOpenAIPackageInclusion(invalidConfig));
+    assert.throws(() => assertOpenAIPackageInclusion(invalidConfig), name);
   }
   assert.equal(packageData.dependencies.openai, "7.8.0");
   assert.equal(packageData.dependencies["@netlify/blobs"], "10.7.13");
