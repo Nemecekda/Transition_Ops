@@ -4869,6 +4869,33 @@ function topsResumeLengthPlanSummary(plan) {
   return "Based on " + years + ", " + roles + " selected role" + (roles === 1 ? "" : "s") + ", and " + details + " confirmed experience detail" + (details === 1 ? "" : "s") + ", the adaptive setting recommends " + (plan.recommendedPages === 2 ? "two pages" : "one page") + ". The reviewed draft retained " + bullets + " supported experience bullet" + (bullets === 1 ? "" : "s") + ".";
 }
 
+// RESUME_HEADER_CAPTURE_START
+function topsResumeExactHeaderFromInputs(refs, fallback) {
+  function current(field) {
+    var node = refs && refs[field] && refs[field].current;
+    if (node && typeof node.value === "string") return node.value;
+    return fallback && typeof fallback[field] === "string" ? fallback[field] : "";
+  }
+  return Object.freeze({
+    name: current("name"),
+    location: current("location"),
+    email: current("email"),
+    phone: current("phone")
+  });
+}
+
+function topsResumeDraftPreservesExactHeader(text, header) {
+  var values = [header && header.name, header && header.location, header && header.email, header && header.phone].filter(function(value) { return typeof value === "string" && value.length > 0; });
+  if (!values.length) return true;
+  var source = String(text || "");
+  var contactLine = [header.location, header.email, header.phone].filter(function(value) { return typeof value === "string" && value.length > 0; }).join(" | ");
+  var expectedLines = [];
+  if (header.name) expectedLines.push(header.name);
+  if (contactLine) expectedLines.push(contactLine);
+  return source.indexOf(expectedLines.join("\n") + "\n\n") === 0 && expectedLines.every(function(line) { return source.split("\n").filter(function(candidate) { return candidate === line; }).length === 1; });
+}
+// RESUME_HEADER_CAPTURE_END
+
 // RESUME_TRANSPORT_START
 var topsResumeTransportRequest = (function() {
   var functionPath = "/.netlify/functions/resume";
@@ -5286,6 +5313,10 @@ function App() {
     });
   };
   const [aiR, setAiR] = useState({ open: false, mode: "standard", role: "", years: "", target: "", skills: "", certs: "", exp: "", headerName: "", headerLocation: "", headerEmail: "", headerPhone: "", lengthPreference: "adaptive", relevantYears: "", relevantRoleIndexes: [], lengthPlan: null, loading: false, out: "", err: "", posting: "", facts: "", factWarnings: [], auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false });
+  const resumeHeaderNameRef = useRef(null);
+  const resumeHeaderLocationRef = useRef(null);
+  const resumeHeaderEmailRef = useRef(null);
+  const resumeHeaderPhoneRef = useRef(null);
   const [jobsQ, setJobsQ] = useState({ open: false, keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "" });
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [whatsNewUnseen, setWhatsNewUnseen] = useState(function() { try { return window.__safeGet("tops_whatsnew_seen") !== APP_VERSION; } catch (e) { return false; } });
@@ -8076,11 +8107,11 @@ whatsNewUnseen && React.createElement("div", {
       aiR.mode !== "federal" && React.createElement("div", { style: { marginBottom: 10, padding: "11px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.greenBright, fontWeight: 700, marginBottom: 4 } }, "RESUME HEADER (OPTIONAL FOR DRAFTING)"),
         React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.5, marginBottom: 7 } }, "Add what you have now. These details go only to the Transition OPS resume function, are excluded from AI-provider calls, are not stored by the app, and are added after the civilian draft passes review."),
-        React.createElement("input", { placeholder: "Name", value: aiR.headerName, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerName: v }); }); }, style: { ...S.input, marginBottom: 7 } }),
-        React.createElement("input", { placeholder: "City, State", value: aiR.headerLocation, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerLocation: v }); }); }, style: { ...S.input, marginBottom: 7 } }),
+        React.createElement("input", { ref: resumeHeaderNameRef, placeholder: "Name", value: aiR.headerName, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerName: v }); }); }, style: { ...S.input, marginBottom: 7 } }),
+        React.createElement("input", { ref: resumeHeaderLocationRef, placeholder: "City, State", value: aiR.headerLocation, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerLocation: v }); }); }, style: { ...S.input, marginBottom: 7 } }),
         React.createElement("div", { style: { display: "flex", gap: 8 } },
-          React.createElement("input", { placeholder: "Email", inputMode: "email", value: aiR.headerEmail, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerEmail: v }); }); }, style: { ...S.input, marginBottom: 0, flex: 1 } }),
-          React.createElement("input", { placeholder: "Phone", inputMode: "tel", value: aiR.headerPhone, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerPhone: v }); }); }, style: { ...S.input, marginBottom: 0, flex: 1 } }))),
+          React.createElement("input", { ref: resumeHeaderEmailRef, placeholder: "Email", inputMode: "email", value: aiR.headerEmail, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerEmail: v }); }); }, style: { ...S.input, marginBottom: 0, flex: 1 } }),
+          React.createElement("input", { ref: resumeHeaderPhoneRef, placeholder: "Phone", inputMode: "tel", value: aiR.headerPhone, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerPhone: v }); }); }, style: { ...S.input, marginBottom: 0, flex: 1 } }))),
       React.createElement("input", { placeholder: "Your MOS / AFSC / rate (e.g. 92A)", defaultValue: aiR.role, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { role: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
       React.createElement("div", { style: { display: "flex", gap: 8 } },
         React.createElement("input", { placeholder: "Years served", defaultValue: aiR.years, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { years: v }); }); }, style: { ...S.input, marginBottom: 8, flex: 1 } }),
@@ -8106,13 +8137,15 @@ whatsNewUnseen && React.createElement("div", {
         var used = 0; try { var rec = JSON.parse(window.__safeGet("tops_air_uses") || "{}"); used = rec.d === today ? rec.n : 0; } catch(e) {}
         if (used >= 3) { setAiR(function(p){ return Object.assign({}, p, { err: "Daily limit reached (3/day) \u2014 resets tomorrow. This keeps the tool free for everyone." }); }); return; }
         var resumeAction = aiR.facts ? "draft" : "facts";
-        setAiR(function(p){ return Object.assign({}, p, { loading: true, err: "", out: "", lengthPlan: null, auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); });
+        var exactResumeHeader = resumeAction === "draft" && aiR.mode !== "federal" ? topsResumeExactHeaderFromInputs({ name: resumeHeaderNameRef, location: resumeHeaderLocationRef, email: resumeHeaderEmailRef, phone: resumeHeaderPhoneRef }, { name: aiR.headerName, location: aiR.headerLocation, email: aiR.headerEmail, phone: aiR.headerPhone }) : null;
+        setAiR(function(p){ return Object.assign({}, p, exactResumeHeader ? { headerName: exactResumeHeader.name, headerLocation: exactResumeHeader.location, headerEmail: exactResumeHeader.email, headerPhone: exactResumeHeader.phone } : {}, { loading: true, err: "", out: "", lengthPlan: null, auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); });
         if (window.__trackEvent) window.__trackEvent(resumeAction === "draft" ? "ai_resume_generated" : "ai_resume_facts_reviewed", {});
         var handleResumeTransportFailure = function() { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: "Still warming up \u2014 give it 10 seconds and tap GENERATE once more." }); }); };
-        topsResumeTransportRequest(Object.assign({ action: resumeAction, mode: aiR.mode, role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp, posting: aiR.posting, confirmedFacts: aiR.facts }, resumeAction === "draft" && aiR.mode !== "federal" ? { header: { name: aiR.headerName, location: aiR.headerLocation, email: aiR.headerEmail, phone: aiR.headerPhone }, lengthPreference: aiR.lengthPreference, lengthInputs: { relevantYears: aiR.relevantYears, relevantRoleIndexes: aiR.relevantRoleIndexes } } : {}))
+        topsResumeTransportRequest(Object.assign({ action: resumeAction, mode: aiR.mode, role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp, posting: aiR.posting, confirmedFacts: aiR.facts }, resumeAction === "draft" && aiR.mode !== "federal" ? { header: exactResumeHeader, lengthPreference: aiR.lengthPreference, lengthInputs: { relevantYears: aiR.relevantYears, relevantRoleIndexes: aiR.relevantRoleIndexes } } : {}))
           .then(function(res) {
             if (!res || !res.transport || res.transport.outcome !== "handler_json") { handleResumeTransportFailure(); return; }
             if (!res.ok) { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: res.d.error || "Try again in a minute.", lengthPlan: null, factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : p.factWarnings, auditScorecard: Array.isArray(res.d.scorecard) ? res.d.scorecard : [], auditBlockers: Array.isArray(res.d.blockers) ? res.d.blockers : [], supportedKeywords: Array.isArray(res.d.supportedKeywords) ? res.d.supportedKeywords : [], auditGaps: Array.isArray(res.d.gaps) ? res.d.gaps : [], auditTrace: [] }); }); return; }
+            if (resumeAction === "draft" && aiR.mode !== "federal" && !topsResumeDraftPreservesExactHeader(res.d.bullets, exactResumeHeader)) { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: "The draft did not preserve your header details exactly. No draft was released. Review those fields and try again.", lengthPlan: null, auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [] }); }); return; }
             if (resumeAction === "facts") {
               var nextFactSheet = res.d.factSheet || "";
               setAiR(function(p){ return Object.assign({}, p, { loading: false, facts: nextFactSheet, factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : [], target: res.d.suggestedTarget || p.target, relevantYears: "", relevantRoleIndexes: [], lengthPlan: null, err: nextFactSheet ? "" : "We could not build a fact sheet. Try again.", auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); });

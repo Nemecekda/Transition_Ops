@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.23 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.24 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -71,6 +71,31 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-02 - **#6 `resume-drafter-maintenance` 0.23 -> 0.24 remains
+  PENDING.** The clean hosted v0.23 senior-resume test exposed two release-gate
+  failures after a ten-of-ten model scorecard: the visible manually entered
+  phone `(202) 555-0100` returned as `202-555-0100`, and two of three confirmed
+  education items were omitted. Force-mod classified coverage as PARTIAL.
+  Version 0.24 snapshots all four visible civilian header fields exactly at
+  activation, uses that immutable request-local snapshot for transport and
+  client release verification, and withholds display/download on a changed
+  canonical header. Education and Certifications now use a closed numbered
+  exact-item grammar with one backward-compatible non-mixed inline form; one
+  shared parser owns validation, individual catalog facts, deterministic
+  insertion, and trace. Known omissions, mutations, duplicates, malformed
+  item structures, or missing deterministic support override any model PASS
+  and stop before audit when already known. RDM-240 through RDM-249 cover exact
+  visible-input capture, parenthesized phone preservation, three-item Education,
+  Certifications, repair/fail-closed behavior, item-level traces,
+  deterministic authority, genuine-DOCX continuity, unchanged controls, and
+  six-file scope. Focused synthetic integration, browser preflight, and actual
+  LibreOffice DOCX render passed locally. Models, call graph, caps, four-call
+  maximum, zero retries, USD 4 guard, privacy, federal behavior, adaptive
+  length, and export contracts remain unchanged. Maximum incremental API
+  exposure is $0. Fresh hosted end-to-end and Word-compatible-renderer evidence
+  remains required before promotion. No hosted function/model invocation,
+  provider/settings change, commit, push, deployment, main merge, or production
+  action occurred. Lane: COMMANDER. Owner: force-mod.
 - 2026-09-02 - **#6 `resume-drafter-maintenance` 0.22 -> 0.23 remains
   PENDING.** Hosted synthetic senior-resume evidence exposed PARTIAL v0.22
   coverage: adaptive planning correctly required `A >= 10`, but fact extraction

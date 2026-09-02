@@ -125,6 +125,19 @@ function resumeTransportApiFromIndex(fetchImpl, options) {
   };
 }
 
+function resumeHeaderCaptureApiFromIndex() {
+  const uiSource = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const match = uiSource.match(/\/\/ RESUME_HEADER_CAPTURE_START\n([\s\S]*?)\n\/\/ RESUME_HEADER_CAPTURE_END/);
+  assert.ok(match, "index.html contains one isolated exact Resume-header capture block");
+  const context = { Object, String };
+  vm.runInNewContext(match[1], context, { timeout: 1000 });
+  return {
+    capture: context.topsResumeExactHeaderFromInputs,
+    preserves: context.topsResumeDraftPreservesExactHeader,
+    source: match[1]
+  };
+}
+
 function syntheticResumeTransportResponse(options) {
   const settings = Object.assign({ status: 200, ok: true, handlerMarker: "1", contentType: "application/json", data: { result: "SYNTHETIC_OK" }, rejectJson: false, jsonImpl: null }, options || {});
   let bodyReadCount = 0;
@@ -365,6 +378,21 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
   const handlerHeader = "X-Transition-Ops-Resume-Handler";
   const closedOutcomes = ["handler_json", "fetch_rejected", "non_handler_response", "handler_non_json", "handler_json_parse", "client_timeout"];
   const observedOutcomes = new Set();
+
+  const headerCaptureApi = resumeHeaderCaptureApiFromIndex();
+  const visibleHeader = {
+    name: { current: { value: "Casey Exact" } },
+    location: { current: { value: "Test City, ZZ" } },
+    email: { current: { value: "casey@example.invalid" } },
+    phone: { current: { value: "(202) 555-0100" } }
+  };
+  const staleHeaderState = { name: "Stale Name", location: "Stale Place", email: "stale@example.invalid", phone: "202-555-0100" };
+  const capturedHeader = headerCaptureApi.capture(visibleHeader, staleHeaderState);
+  assert.deepEqual(JSON.parse(JSON.stringify(capturedHeader)), { name: "Casey Exact", location: "Test City, ZZ", email: "casey@example.invalid", phone: "(202) 555-0100" }, "RDM-240 visible header input bytes override stale React state at activation");
+  assert.equal(Object.isFrozen(capturedHeader), true, "RDM-240 request-local header snapshot is immutable");
+  assert.equal(headerCaptureApi.preserves("Casey Exact\nTest City, ZZ | casey@example.invalid | (202) 555-0100\n\nSUMMARY\nSynthetic summary.", capturedHeader), true, "RDM-241 exact returned header passes the client release gate");
+  assert.equal(headerCaptureApi.preserves("Casey Exact\nTest City, ZZ | casey@example.invalid | 202-555-0100\n\nSUMMARY\nSynthetic summary.", capturedHeader), false, "RDM-242 reformatted phone is withheld before display or download");
+  assert.doesNotMatch(headerCaptureApi.source, /\.trim\(|\.replace\(|localStorage|sessionStorage|indexedDB|__safeSet|__trackEvent|fetch\(/, "RDM-240 capture neither reformats, persists, tracks, nor transports header values");
 
   assert.equal(modernResumePreflight.headers.get(handlerHeader), "1", "RDM-209 modern Resume validation response carries the fixed handler marker");
   assert.equal((resumeSource.match(/"X-Transition-Ops-Resume-Handler": "1"/g) || []).length, 1, "RDM-209 shared handler marker is defined exactly once");
@@ -826,7 +854,7 @@ async function run() {
     atomizedTwoFactSheet.replace("EDUCATION (EXACT OR MISSING): MISSING", "EDUCATION (EXACT OR MISSING): MISSING\nDUTY ATOM 3 (EXACT): Out-of-bound atom.")
   ];
   const callsBeforeMalformedDrafts = calls.length;
-  for (const malformedFacts of malformedDutySheets) {
+  for (const [malformedIndex, malformedFacts] of malformedDutySheets.entries()) {
     result = await resume.lambdaHandler(post({
       action: "draft",
       target: "Operations Manager",
@@ -836,7 +864,9 @@ async function run() {
     }));
     assert.equal(result.statusCode, 400, result.body);
     assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
-    assert.deepEqual(JSON.parse(result.body).warnings, ["Keep each duty or outcome in its own contiguously numbered DUTY ATOM line under the matching role."]);
+    const expectedWarnings = ["Keep each duty or outcome in its own contiguously numbered DUTY ATOM line under the matching role."];
+    if (malformedIndex === malformedDutySheets.length - 1) expectedWarnings.push("Keep every education and certification item in its own contiguously numbered exact-item line, or use one semicolon-delimited legacy field with no continuation lines.");
+    assert.deepEqual(JSON.parse(result.body).warnings, expectedWarnings);
   }
   assert.equal(calls.length, callsBeforeMalformedDrafts, "RDM-237 malformed direct drafts stop before catalog, planning, or provider calls");
 
@@ -1650,10 +1680,10 @@ async function run() {
 
   // RDM-173: confirmed exact global fields and request-local header values survive once, outside model adjudication.
   const exactGlobalLedger = coreLedgerWithSkills(coreAtoms.join("; "))
-    .replace("EDUCATION (EXACT OR MISSING): MISSING", "EDUCATION (EXACT OR MISSING): MBA, Human Resource Management, Synthetic University, 2008; B.B.A., Business Administration, Synthetic College, 2002; M.A., Strategic Studies, Synthetic War College; Doctoral candidate, Applied Leadership, Synthetic University")
-    .replace("CERTIFICATIONS (EXACT OR MISSING): MISSING", "CERTIFICATIONS (EXACT OR MISSING): SHRM-SCP; SPHR; Lean Six Sigma Green Belt");
+    .replace("EDUCATION (EXACT OR MISSING): MISSING", "EDUCATION (EXACT OR MISSING):\nEDUCATION ITEM 1 (EXACT): M.S., Organizational Leadership, Example State University, 2014\nEDUCATION ITEM 2 (EXACT): B.S., Business Administration, Example Polytechnic Institute, 2008\nEDUCATION ITEM 3 (EXACT): Graduate Certificate, Workforce Analytics, Example School of Management, 2021")
+    .replace("CERTIFICATIONS (EXACT OR MISSING): MISSING", "CERTIFICATIONS (EXACT OR MISSING):\nCERTIFICATION ITEM 1 (EXACT): SHRM-SCP\nCERTIFICATION ITEM 2 (EXACT): SPHR\nCERTIFICATION ITEM 3 (EXACT): Lean Six Sigma Green Belt");
   const generatedExactSections = "SUMMARY\nGenerated summary is removed.\n\nCORE SKILLS\nGenerated skills are removed.\n\nPROFESSIONAL EXPERIENCE\nCore Role - Core Unit\n\u2022 Built a transition-planning application for service members.\n\nCERTIFICATIONS\nSHRM-SCP\nInvented Credential\n\nEDUCATION\nMBA, Human Resource Management, Synthetic University, 2008\nInvented Degree";
-  const exactHeader = { name: "Alex Exact", location: "Ephraim, WI", email: "alex.exact@example.test", phone: "(555) 010-2026" };
+  const exactHeader = { name: "Alex Exact", location: "Ephraim, WI", email: "alex.exact@example.test", phone: "(202) 555-0100" };
   let exactHeaderGenerationInput = "";
   let exactHeaderAuditInput = "";
   let exactHeaderAuditCandidate = "";
@@ -1676,13 +1706,16 @@ async function run() {
   assert.doesNotMatch(exactHeaderAuditCandidate, /SUMMARY|CORE SKILLS|CERTIFICATIONS|EDUCATION|Alex Exact|alex\.exact/);
   assert.deepEqual(exactHeaderAuditInventory.filter((claim) => /SHRM-SCP|Synthetic University|Alex Exact/.test(claim.claim_text)), []);
   const exactGlobalBody = JSON.parse(result.body);
-  assert.match(exactGlobalBody.bullets, /^Alex Exact\nEphraim, WI \| alex\.exact@example\.test \| \(555\) 010-2026\n\nSUMMARY/);
-  ["SHRM-SCP", "SPHR", "Lean Six Sigma Green Belt", "MBA, Human Resource Management, Synthetic University, 2008", "B.B.A., Business Administration, Synthetic College, 2002", "M.A., Strategic Studies, Synthetic War College", "Doctoral candidate, Applied Leadership, Synthetic University"].forEach((item) => assert.equal(exactGlobalBody.bullets.split(item).length - 1, 1, item + " appears exactly once"));
+  assert.match(exactGlobalBody.bullets, /^Alex Exact\nEphraim, WI \| alex\.exact@example\.test \| \(202\) 555-0100\n\nSUMMARY/);
+  ["SHRM-SCP", "SPHR", "Lean Six Sigma Green Belt", "M.S., Organizational Leadership, Example State University, 2014", "B.S., Business Administration, Example Polytechnic Institute, 2008", "Graduate Certificate, Workforce Analytics, Example School of Management, 2021"].forEach((item) => assert.equal(exactGlobalBody.bullets.split(item).length - 1, 1, item + " appears exactly once"));
   assert.doesNotMatch(exactGlobalBody.bullets, /Invented Credential|Invented Degree|Generated summary|Generated skills|MISSING/);
   assert.equal(exactGlobalBody.scorecard.find((item) => item.dimension === "format_compliance").status, "PASS");
   assert.equal(exactGlobalBody.trace.filter((item) => item.section === "header").length, 2);
   assert.ok(exactGlobalBody.trace.filter((item) => /^(?:certifications|education)$/.test(item.section)).every((item) => item.fact_refs.length === 1 && /^F\d+$/.test(item.fact_refs[0])));
   assert.ok(exactGlobalBody.trace.filter((item) => item.section === "header").every((item) => item.fact_refs.every((ref) => /^H\d+$/.test(ref))));
+  const exactGlobalTraces = exactGlobalBody.trace.filter((item) => /^(?:certifications|education)$/.test(item.section));
+  assert.equal(exactGlobalTraces.length, 6, "RDM-246 every confirmed exact global item receives one deterministic trace");
+  assert.equal(new Set(exactGlobalTraces.map((item) => item.fact_refs[0])).size, 6, "RDM-246 every exact global item owns an individual catalog fact");
 
   nextResponse = { status: "completed", output_text: generatedExactSections };
   auditResponseQueue.push((request) => passingAudit(request));
@@ -1700,6 +1733,50 @@ async function run() {
   incompleteHeaderBody = JSON.parse(result.body);
   assert.equal(incompleteHeaderBody.scorecard.find((item) => item.dimension === "format_compliance").status, "NEEDS MEMBER FACT");
   assert.match(incompleteHeaderBody.gaps.join(" "), /Add an email address or phone number before submitting this resume\./);
+
+  // RDM-243..RDM-247: exact global items use one closed parser and deterministic release authority outranks a model PASS.
+  const repairableExactItemSheet = exactGlobalLedger.replace("EDUCATION ITEM 2 (EXACT):", "EDUCATION ITEM 3 (EXACT):");
+  responseQueue = [
+    { status: "completed", output_text: repairableExactItemSheet },
+    { status: "completed", output_text: exactGlobalLedger }
+  ];
+  const callsBeforeExactItemRepair = calls.length;
+  const stagesBeforeExactItemRepair = clientStages.length;
+  result = await resume.lambdaHandler(post({ action: "facts", target: "Program Analyst", experience: "Synthetic source contains several exact education and certification records for testing." }));
+  assert.equal(result.statusCode, 200, result.body);
+  assert.equal(JSON.parse(result.body).factSheet, exactGlobalLedger, "RDM-245 one existing repair may correct exact-item structure");
+  assert.deepEqual(JSON.parse(result.body).warnings, []);
+  assert.equal(calls.length - callsBeforeExactItemRepair, 2);
+  assert.deepEqual(clientStages.slice(stagesBeforeExactItemRepair), ["resume_facts", "resume_fact_repair"]);
+  assert.match(calls[callsBeforeExactItemRepair + 1].instructions, /contiguously numbered EDUCATION ITEM n \(EXACT\): and CERTIFICATION ITEM n \(EXACT\): records/);
+
+  const malformedExactItemSheets = [
+    repairableExactItemSheet,
+    exactGlobalLedger.replace("EDUCATION ITEM 2 (EXACT): B.S., Business Administration, Example Polytechnic Institute, 2008", "EDUCATION ITEM 2 (EXACT): M.S., Organizational Leadership, Example State University, 2014"),
+    exactGlobalLedger.replace("EDUCATION ITEM 1 (EXACT): M.S., Organizational Leadership, Example State University, 2014", "EDUCATION ITEM 1 (EXACT): MISSING"),
+    exactGlobalLedger.replace("EDUCATION ITEM 2 (EXACT): ", ""),
+    exactGlobalLedger.replace("CERTIFICATION ITEM 2 (EXACT):", "CERTIFICATION ITEM 3 (EXACT):"),
+    exactGlobalLedger.replace("EDUCATION (EXACT OR MISSING):\n", "EDUCATION (EXACT OR MISSING): M.S., Organizational Leadership, Example State University, 2014\n")
+  ];
+  const callsBeforeMalformedExactItems = calls.length;
+  for (const malformedFacts of malformedExactItemSheets) {
+    result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: malformedFacts, confirmedFacts: malformedFacts }));
+    assert.equal(result.statusCode, 400, result.body);
+    assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
+    assert.deepEqual(JSON.parse(result.body).warnings, ["Keep every education and certification item in its own contiguously numbered exact-item line, or use one semicolon-delimited legacy field with no continuation lines."]);
+  }
+  assert.equal(calls.length, callsBeforeMalformedExactItems, "RDM-245 malformed exact-item direct drafts stop before every provider call");
+
+  const duplicateEducationDraft = generatedExactSections.replace("\u2022 Built a transition-planning application for service members.", "\u2022 Built a transition-planning application for service members.\nM.S., Organizational Leadership, Example State University, 2014");
+  nextResponse = { status: "completed", output_text: duplicateEducationDraft };
+  const callsBeforeDeterministicWithhold = calls.length;
+  const auditsBeforeDeterministicWithhold = auditResponseQueue.length;
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger, header: exactHeader }));
+  assert.equal(result.statusCode, 502, result.body);
+  assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
+  assert.match(JSON.parse(result.body).blockers.join(" "), /personal-header value|education item/);
+  assert.equal(calls.length - callsBeforeDeterministicWithhold, 1, "RDM-247 deterministic exactness failure stops before audit");
+  assert.equal(auditResponseQueue.length, auditsBeforeDeterministicWithhold, "RDM-247 a mocked model PASS cannot override deterministic exactness");
 
   // RDM-187..RDM-190: pre-generation adaptive planning uses explicit Y plus member-selected roles and their same-role draft-eligible atoms only.
   const adaptiveAtomLabels = ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India", "Juliet", "Kilo", "Lima", "Mike", "November", "Oscar", "Papa", "Quebec", "Romeo", "Sierra", "Tango", "Uniform", "Victor", "Whiskey", "Xray"];
@@ -2582,6 +2659,12 @@ async function run() {
   assert.match(resumeSource, /function withoutCoreSkills/);
   assert.match(resumeSource, /function replaceCivilianExactSections/);
   assert.match(resumeSource, /function withoutCivilianExactSections/);
+  assert.equal((resumeSource.match(/globalExactItemRecords\(/g) || []).length, 4, "RDM-243 one shared exact-item parser governs validation, catalog, insertion, and trace");
+  assert.match(resumeSource, /EDUCATION ITEM 1 \(EXACT\):/);
+  assert.match(resumeSource, /CERTIFICATION ITEM 1 \(EXACT\):/);
+  assert.match(resumeSource, /function civilianDeterministicExactContentComplete/);
+  const exactItemParserSource = resumeSource.match(/  function globalExactItemRecords\(facts\) \{[\s\S]*?\n  \}\n\n  function factSheetIssues/)[0];
+  assert.doesNotMatch(exactItemParserSource, /split\(\/[.!?]/, "RDM-243 exact global items are never guessed from sentence punctuation");
   assert.match(resumeSource, /function requestLocalCivilianHeader/);
   assert.match(resumeSource, /function applyCivilianHeaderReadiness/);
   assert.match(resumeSource, /function hasPostingOnlySemanticCure/);
@@ -2651,7 +2734,9 @@ async function run() {
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
   assert.match(uiSource, /RESUME HEADER \(OPTIONAL FOR DRAFTING\)/);
-  assert.match(uiSource, /resumeAction === "draft" && aiR\.mode !== "federal" \? \{ header:/);
+  assert.match(uiSource, /resumeAction === "draft" && aiR\.mode !== "federal" \? \{ header: exactResumeHeader/);
+  assert.equal((uiSource.match(/topsResumeExactHeaderFromInputs\(/g) || []).length, 2, "RDM-240 exact header capture has one definition and one activation site");
+  assert.match(uiSource, /!topsResumeDraftPreservesExactHeader\(res\.d\.bullets, exactResumeHeader\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:headerName|headerLocation|headerEmail|headerPhone)/);
   assert.match(uiSource, /presetName: "ats_resume_compact"/);
   assert.match(uiSource, /basePreset: "compact_reference_guide"/);
@@ -2744,7 +2829,7 @@ async function run() {
   assert.equal((resumeSource.match(/AUDIT_MAX_OUTPUT_TOKENS = 4000/g) || []).length, 1, "RDM-216 audit cap remains unchanged");
 
   await runRenderRegression();
-  console.log("PASS: synthetic RDM-1..RDM-239 integration paths; all prior grounding, DOCX, federal, adaptive-length, guarded-stage, v0.22 Resume transport, and v0.23 atom-boundary fixtures verified locally");
+  console.log("PASS: synthetic RDM-1..RDM-249 integration paths; all prior grounding, DOCX, federal, adaptive-length, guarded-stage, v0.22 Resume transport, v0.23 atom-boundary, and v0.24 exact-header/global-item fixtures verified locally");
 }
 
 run().catch((error) => {

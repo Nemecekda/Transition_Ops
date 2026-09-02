@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.23"
+  version: "0.24"
   status: PENDING
 ---
 
@@ -13,9 +13,9 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.23 is PENDING until the synthetic RDM regression suite and live-clone
+Version 0.24 is PENDING until the synthetic RDM regression suite and live-clone
 validation execute against the app. Specification approval and governance
-calibration are not v0.23 application execution evidence.
+calibration are not v0.24 application execution evidence.
 
 ## TRIGGERS AND GATE
 
@@ -299,6 +299,28 @@ of these sections rather than appending to them, and make the operation
 idempotent. Never infer, translate, abbreviate, merge, split, or source these
 values from duties, roles, the posting, target title, adjacent facts, or raw
 source.
+
+At draft activation, snapshot the four visible civilian header inputs directly
+and synchronously into one immutable request-local object. Name, location,
+email, and phone punctuation are opaque bytes within the existing bounds; do
+not normalize, trim, reformat, persist, log, or analytics-send them. The exact
+snapshot controls both the request and the client release check. If the returned
+candidate does not begin with the canonical exact header or any supplied value
+is absent, changed, or duplicated, release and download fail closed even when
+the model scorecard says PASS.
+
+Newly extracted EDUCATION and CERTIFICATIONS use empty field headers followed
+by contiguous `EDUCATION ITEM n (EXACT)` and `CERTIFICATION ITEM n (EXACT)`
+records starting at 1. Each payload is one opaque, ordered item. Exactly one
+item 1 with `MISSING` represents an empty field. For compatibility, a single
+legacy field line may contain semicolon-delimited items only when it has no
+continuation lines. Bare continuations, numbering gaps, duplicate payloads,
+mixed `MISSING`, empty payloads, or mixed inline/continuation forms are invalid.
+One shared parser controls validation, catalog facts, deterministic insertion,
+and trace ownership. Every confirmed item must be an individual global catalog
+fact, appear exactly once on its own released line, and receive one deterministic
+trace. Deterministic exactness and trace failures override any model audit PASS
+and stop before an audit call whenever the failure is already known.
 
 An essential civilian personal header consists of a confirmed member name and
 at least one confirmed direct contact method: email or phone. Confirmed location
@@ -1605,6 +1627,45 @@ all existing hard input bounds.
   function, OpenAI migration regression, canonical Resume skill, and registry;
   no hosted function or model invocation, provider change, commit, push,
   deployment, main merge, or production action is authorized.
+- **RDM-240 Visible-header capture:** a synthetic visible name, location,
+  email, and phone including `(202) 555-0100` must override deliberately stale
+  React state at activation, remain immutable and request-local, and reach the
+  request without normalization, persistence, tracking, or an added request.
+- **RDM-241 Exact header release:** the final civilian candidate must begin
+  with the exact canonical header, contain every supplied header value exactly
+  once, retain `(202) 555-0100`, and contain no reformatted substitute.
+- **RDM-242 Header fail-closed boundary:** mutation, trimming, truncation,
+  omission, duplication, or delimiter change must prevent browser display and
+  download. The deterministic server and client checks outrank a model PASS.
+- **RDM-243 Numbered education items:** a three-item synthetic Education field
+  must preserve each opaque payload byte-exact, in order, as an individual
+  global catalog fact and exactly one final line. No punctuation heuristic may
+  split or join an item.
+- **RDM-244 Numbered certification items:** Certifications use the same closed,
+  contiguous, byte-opaque completeness contract as Education; item 1
+  `MISSING` is the sole empty representation.
+- **RDM-245 Invalid-item repair boundary:** a numbering gap, duplicate, bare
+  continuation, mixed `MISSING`, empty payload, or mixed legacy/numbered form
+  may use only the existing single structural repair during extraction. An
+  unresolved repair returns member-safe guidance, and a malformed direct draft
+  submission stops before every provider call.
+- **RDM-246 Deterministic item traces:** every released education and
+  certification item must own one global fact and one deterministic trace.
+  Omission, mutation, duplication, missing fact ownership, or missing trace
+  withholds the candidate.
+- **RDM-247 Deterministic authority:** a mocked ten-of-ten model scorecard
+  cannot override a header, Education, Certification, exact-count, catalog, or
+  trace failure. A known deterministic failure must not consume the audit call.
+- **RDM-248 Artifact continuity:** the existing genuine-DOCX regression must
+  preserve a parenthesized phone and multiple education items from released
+  candidate text without content mutation or a sparse trailing page.
+- **RDM-249 Unchanged operational boundary:** federal behavior, models, stage
+  order, facts/repair/civilian/federal/audit caps of 3500/3500/2200/1900/4000,
+  four-call maximum, zero provider retries, shared USD 4 guard, request limits,
+  `store: false`, privacy, public failures, role grounding, adaptive length,
+  export, and DOCX equivalence remain unchanged. Run all five local gates and
+  real-artifact 4N across exactly the six authorized v0.24 files. Maximum
+  incremental API exposure is $0; fresh hosted validation remains mandatory.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -1615,7 +1676,7 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.23 until all synthetic application
+Keep registry item #6 PENDING at version 0.24 until all synthetic application
 cases execute and live-clone evidence, including actual DOCX rendering in a
 Word-compatible renderer, passes. RDM-199 through RDM-207 governance calibration
 executed 9/9 PASS on 2026-08-31; no application, provider, hosted, or Word
@@ -1625,6 +1686,10 @@ results do not substitute for live-clone or Word-compatible-renderer evidence.
 RDM-231 through RDM-239 require the closed duty-atom parser, extraction/repair
 fixtures, senior six-role boundary, and prescribed repository/artifact gates;
 they do not substitute for a fresh live-clone end-to-end Resume validation.
+RDM-240 through RDM-249 additionally require exact visible-header capture,
+closed exact-item parsing, deterministic completeness and trace enforcement,
+and genuine-DOCX continuity; local evidence does not substitute for a fresh
+live-clone end-to-end Resume and Word-compatible-renderer validation.
 After successful application execution and live evidence, force-mod proposes
 the smallest evidence-supported revision and Commander rules on promotion to
 CODIFIED 1.0.
