@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.20 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.21 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -71,6 +71,25 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-02 - **#6 `resume-drafter-maintenance` 0.20 -> 0.21 remains
+  PENDING.** The single Resume request now has one request-wide 35,000-ms
+  `AbortController` deadline covering fetch, handler-marker inspection, and
+  JSON parsing. First-terminal-result wins, every armed timer is cleared once,
+  and late transport completion cannot replace the frozen six-field
+  memory-local diagnostic. `client_timeout` distinguishes pre-header count 0
+  from post-marker count 1 without exposing content. After capability preflight
+  succeeds, one activation still makes exactly one request; missing or invalid
+  `AbortController` fails closed before fetch with zero requests and
+  `fetch_rejected`. Deterministic local fixtures cover normal JSON, both timeout
+  boundaries, ordinary fetch rejection, JSON-parse failure, capability failure,
+  cleanup, and late completion without waiting 35 seconds or reaching a hosted
+  function or provider. Existing member-safe copy, response bodies, models,
+  call graph, caps, shared budget guard, grounding, audit, export, privacy, and
+  zero-retry behavior remain unchanged. The active PWA cache advances from v146
+  to v147. This local evidence does not clear live-clone acceptance and does not
+  promote the skill. No hosted function or model invocation, provider/settings
+  change, commit, push, deployment, merge, or production change occurred. Lane:
+  COMMANDER. Owner: force-mod.
 - 2026-09-02 - **#6 `resume-drafter-maintenance` 0.19 -> 0.20 remains
   PENDING.** The Resume client now makes exactly one request per button
   activation with no automatic replay and classifies the request-local boundary

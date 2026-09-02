@@ -35,14 +35,48 @@ function resumeDocxApiFromIndex() {
   return context.window.__TOPS_RESUME_DOCX;
 }
 
-function resumeTransportApiFromIndex(fetchImpl) {
+function resumeTransportApiFromIndex(fetchImpl, options) {
   const uiSource = fs.readFileSync(path.join(root, "index.html"), "utf8");
   const match = uiSource.match(/\/\/ RESUME_TRANSPORT_START\n([\s\S]*?)\n\/\/ RESUME_TRANSPORT_END/);
   assert.ok(match, "index.html contains one isolated Resume transport implementation block");
+  const settings = Object.assign({ abortControllerAvailable: true, abortControllerConstructs: true, abortControllerShapeValid: true }, options || {});
   let clock = 1000;
+  let nextTimerId = 1;
+  let clearCount = 0;
+  let abortCount = 0;
+  const scheduledDelays = [];
+  const timers = new Map();
+  function SyntheticAbortController() {
+    if (!settings.abortControllerConstructs) throw new TypeError();
+    const listeners = new Set();
+    const signal = settings.abortControllerShapeValid ? {
+      aborted: false,
+      addEventListener: (name, listener) => { if (name === "abort" && typeof listener === "function") listeners.add(listener); },
+      removeEventListener: (name, listener) => { if (name === "abort") listeners.delete(listener); }
+    } : null;
+    this.signal = signal;
+    this.abort = settings.abortControllerShapeValid ? () => {
+      abortCount += 1;
+      if (signal.aborted) return;
+      signal.aborted = true;
+      for (const listener of Array.from(listeners)) listener();
+    } : null;
+  }
   const context = {
     window: {},
     fetch: fetchImpl,
+    AbortController: settings.abortControllerAvailable ? SyntheticAbortController : undefined,
+    setTimeout: (callback, delay) => {
+      const timerId = nextTimerId;
+      nextTimerId += 1;
+      scheduledDelays.push(delay);
+      timers.set(timerId, { callback, delay });
+      return timerId;
+    },
+    clearTimeout: (timerId) => {
+      clearCount += 1;
+      timers.delete(timerId);
+    },
     Date: { now: () => { clock += 7; return clock; } },
     Promise,
     JSON,
@@ -52,11 +86,23 @@ function resumeTransportApiFromIndex(fetchImpl) {
     Math
   };
   vm.runInNewContext(match[1], context, { timeout: 1000 });
-  return { request: context.topsResumeTransportRequest, window: context.window, source: match[1] };
+  return {
+    request: context.topsResumeTransportRequest,
+    window: context.window,
+    source: match[1],
+    fireDeadline: () => {
+      assert.equal(timers.size, 1, "Resume transport has one pending deadline to fire");
+      timers.values().next().value.callback();
+    },
+    pendingTimerCount: () => timers.size,
+    scheduledDelays: () => scheduledDelays.slice(),
+    clearCount: () => clearCount,
+    abortCount: () => abortCount
+  };
 }
 
 function syntheticResumeTransportResponse(options) {
-  const settings = Object.assign({ status: 200, ok: true, handlerMarker: "1", contentType: "application/json", data: { result: "SYNTHETIC_OK" }, rejectJson: false }, options || {});
+  const settings = Object.assign({ status: 200, ok: true, handlerMarker: "1", contentType: "application/json", data: { result: "SYNTHETIC_OK" }, rejectJson: false, jsonImpl: null }, options || {});
   let bodyReadCount = 0;
   return {
     value: {
@@ -72,6 +118,7 @@ function syntheticResumeTransportResponse(options) {
       },
       json: () => {
         bodyReadCount += 1;
+        if (typeof settings.jsonImpl === "function") return settings.jsonImpl();
         return settings.rejectJson ? Promise.reject() : Promise.resolve(settings.data);
       }
     },
@@ -292,7 +339,7 @@ function assertSkillBridgeAccuracy(navigatorSource, uiSource) {
 async function runResumeTransportClassifierRegression(uiSource, resumeSource, modernResumePreflight) {
   const functionPath = "/.netlify/functions/resume";
   const handlerHeader = "X-Transition-Ops-Resume-Handler";
-  const closedOutcomes = ["handler_json", "fetch_rejected", "non_handler_response", "handler_non_json", "handler_json_parse"];
+  const closedOutcomes = ["handler_json", "fetch_rejected", "non_handler_response", "handler_non_json", "handler_json_parse", "client_timeout"];
   const observedOutcomes = new Set();
 
   assert.equal(modernResumePreflight.headers.get(handlerHeader), "1", "RDM-209 modern Resume validation response carries the fixed handler marker");
@@ -301,14 +348,32 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
 
   const sourceHarness = resumeTransportApiFromIndex(() => Promise.reject());
   assert.equal((sourceHarness.source.match(/\bfetch\(/g) || []).length, 1, "RDM-208 transport implementation contains one fetch boundary");
-  assert.doesNotMatch(sourceHarness.source, /setTimeout|\battempt\s*\(|\bretry\b/i, "RDM-208 transport implementation contains no replay, delay, or retry");
+  assert.doesNotMatch(sourceHarness.source, /setInterval|\battempt\s*\(|\bretry\b/i, "RDM-208 transport implementation contains no replay or retry");
   assert.doesNotMatch(uiSource, /\(function attempt\(n\) \{ return fetch\("\/\.netlify\/functions\/resume"/, "RDM-208 legacy Resume replay wrapper is absent");
   assert.equal((uiSource.match(/topsResumeTransportRequest\(Object\.assign\(\{ action: resumeAction/g) || []).length, 1, "RDM-208 button uses the single-request classifier exactly once");
+  assert.equal((sourceHarness.source.match(/requestDeadlineMs = 35000/g) || []).length, 1, "RDM-217 transport has exactly one 35,000-millisecond deadline literal");
+  assert.equal((sourceHarness.source.match(/\bnew AbortController\(\)/g) || []).length, 1, "RDM-217 transport constructs exactly one AbortController");
+  assert.equal((sourceHarness.source.match(/\bsetTimeout\(/g) || []).length, 1, "RDM-217 transport arms exactly one deadline timer");
+  assert.equal((sourceHarness.source.match(/\bclearTimeout\(/g) || []).length, 1, "RDM-217 transport has exactly one timer-clear site");
+  assert.equal((sourceHarness.source.match(/signal: controller\.signal/g) || []).length, 1, "RDM-217 sole fetch receives the controller signal");
+  assert.equal((sourceHarness.source.match(/if \(settled\) return;/g) || []).length, 1, "RDM-218 one request-local guard enforces first-terminal-result wins");
   assert.doesNotMatch(sourceHarness.source, /console\.|localStorage|sessionStorage|indexedDB|__safeSet|__trackEvent|sendBeacon/i, "RDM-214 transport diagnostics have no log, persistence, storage, or analytics sink");
   assert.doesNotMatch(sourceHarness.source, /createOpenAIClient|responses\.create|provider|model|stage/i, "RDM-215 browser transport classifier has no provider boundary");
 
   async function runCase(label, settings) {
-    const response = settings.fetchRejected ? null : syntheticResumeTransportResponse(settings.response);
+    let activeSignal = null;
+    let releaseLateCompletion = null;
+    let reachTimeoutBoundary;
+    const timeoutBoundary = new Promise((resolve) => { reachTimeoutBoundary = resolve; });
+    const responseSettings = Object.assign({}, settings.response || {});
+    if (settings.timeoutPhase === "post_header") {
+      responseSettings.jsonImpl = () => new Promise((resolve, reject) => {
+        releaseLateCompletion = () => resolve({ result: "SYNTHETIC_LATE_RESPONSE" });
+        if (settings.rejectOnAbort) activeSignal.addEventListener("abort", () => reject());
+        reachTimeoutBoundary();
+      });
+    }
+    const response = settings.fetchRejected ? null : syntheticResumeTransportResponse(responseSettings);
     const sentBodies = [];
     let requestCount = 0;
     const api = resumeTransportApiFromIndex((requestPath, requestOptions) => {
@@ -317,26 +382,54 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
       assert.equal(requestOptions.method, "POST", label + " preserves the POST contract");
       assert.equal(requestOptions.redirect, "error", label + " prevents automatic redirect replay");
       assert.deepEqual(plainTransportValue(requestOptions.headers), { "Content-Type": "application/json" }, label + " preserves the request media type");
+      assert.ok(requestOptions.signal && typeof requestOptions.signal.addEventListener === "function", label + " sends one AbortController signal");
       sentBodies.push(requestOptions.body);
+      activeSignal = requestOptions.signal;
+      if (settings.timeoutPhase === "pre_header") {
+        return new Promise((resolve, reject) => {
+          releaseLateCompletion = () => resolve(response.value);
+          if (settings.rejectOnAbort) activeSignal.addEventListener("abort", () => reject());
+          reachTimeoutBoundary();
+        });
+      }
       return settings.fetchRejected ? Promise.reject() : Promise.resolve(response.value);
-    });
-    const result = await api.request({ action: "facts", experience: "SYNTHETIC_RESUME_INPUT_SENTINEL" });
+    }, settings.transportOptions);
+    const resultPromise = api.request({ action: "facts", experience: "SYNTHETIC_RESUME_INPUT_SENTINEL" });
+    if (settings.timeoutPhase) {
+      await timeoutBoundary;
+      assert.equal(api.pendingTimerCount(), 1, "RDM-217 " + label + " has one live request deadline");
+      api.fireDeadline();
+    }
+    const result = await resultPromise;
+    const rawDiagnostic = api.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC;
     const diagnostic = plainTransportValue(result.transport);
-    const exposed = plainTransportValue(api.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC);
+    const exposed = plainTransportValue(rawDiagnostic);
     observedOutcomes.add(diagnostic.outcome);
 
-    assert.equal(requestCount, 1, "RDM-208 " + label + " makes exactly one request");
-    assert.equal(sentBodies.length, 1, "RDM-208 " + label + " records exactly one request body");
-    assert.doesNotMatch(sentBodies[0], /requestAttemptCount|handlerResponseCount|elapsedMs|httpStatus/, "RDM-214 a prior diagnostic never enters a request");
+    const expectedRequestCount = settings.expectedRequestCount === 0 ? 0 : 1;
+    assert.equal(requestCount, expectedRequestCount, "RDM-208 " + label + " makes the required request count");
+    assert.equal(sentBodies.length, expectedRequestCount, "RDM-208 " + label + " records only an invoked request body");
+    if (sentBodies.length) assert.doesNotMatch(sentBodies[0], /requestAttemptCount|handlerResponseCount|elapsedMs|httpStatus/, "RDM-214 a prior diagnostic never enters a request");
     assert.deepEqual(exposed, diagnostic, "RDM-214 the exposed diagnostic is memory-local and contains only the completed request result");
+    assert.equal(Object.isFrozen(rawDiagnostic), true, "RDM-218 the first terminal diagnostic is frozen");
     assert.deepEqual(Object.keys(diagnostic).sort(), ["elapsedMs", "handlerResponseCount", "httpStatus", "outcome", "path", "requestAttemptCount"], "RDM-213 diagnostic has exactly six allowlisted fields");
     assert.equal(diagnostic.path, functionPath, "RDM-213 path is fixed");
     assert.ok(diagnostic.httpStatus === null || Number.isInteger(diagnostic.httpStatus), "RDM-213 status is integer or null");
     assert.ok(Number.isInteger(diagnostic.elapsedMs) && diagnostic.elapsedMs >= 0, "RDM-213 elapsed time is a nonnegative integer");
-    assert.equal(diagnostic.requestAttemptCount, 1, "RDM-213 request-attempt count is exactly one");
+    assert.equal(diagnostic.requestAttemptCount, expectedRequestCount, "RDM-213 request-attempt count matches fetch invocation");
     assert.ok(diagnostic.handlerResponseCount === 0 || diagnostic.handlerResponseCount === 1, "RDM-213 handler-response count is closed at zero or one");
     assert.ok(closedOutcomes.includes(diagnostic.outcome), "RDM-210 outcome is closed");
     assert.doesNotMatch(JSON.stringify(diagnostic), /SYNTHETIC_RESUME_INPUT_SENTINEL|SYNTHETIC_RESPONSE_CONTENT_SENTINEL|SYNTHETIC_HEADER_VALUE_SENTINEL|cookie|secret|identity|provider|model|stage/i, "RDM-214 diagnostic contains no member, response, credential, or provider content");
+    assert.deepEqual(api.scheduledDelays(), expectedRequestCount ? [35000] : [], "RDM-217 " + label + " schedules only the fixed deadline");
+    assert.equal(api.clearCount(), expectedRequestCount, "RDM-223 " + label + " clears each armed deadline exactly once");
+    assert.equal(api.pendingTimerCount(), 0, "RDM-223 " + label + " leaves no deadline pending");
+    assert.equal(api.abortCount(), settings.timeoutPhase ? 1 : 0, "RDM-220 " + label + " abort count is exact");
+    if (releaseLateCompletion) {
+      releaseLateCompletion();
+      await Promise.resolve();
+      await Promise.resolve();
+      assert.equal(api.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC, rawDiagnostic, "RDM-218 " + label + " late completion cannot replace the first diagnostic");
+    }
     return { api, result, diagnostic, response, requestCount };
   }
 
@@ -353,7 +446,23 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
   assert.equal(handlerFailure.result.ok, false);
   assert.deepEqual(plainTransportValue(handlerFailure.result.d), { error: "SYNTHETIC_MEMBER_SAFE_COPY" }, "RDM-211 failure JSON payload reaches existing handling unchanged");
 
-  const fetchRejected = await runCase("fetch rejected", { fetchRejected: true });
+  const preHeaderTimeout = await runCase("pre-header timeout", { timeoutPhase: "pre_header", response: { status: 200 } });
+  assert.equal(preHeaderTimeout.diagnostic.outcome, "client_timeout");
+  assert.equal(preHeaderTimeout.diagnostic.httpStatus, null);
+  assert.equal(preHeaderTimeout.diagnostic.handlerResponseCount, 0);
+
+  const postHeaderTimeout = await runCase("post-header timeout", { timeoutPhase: "post_header", response: { status: 200 } });
+  assert.equal(postHeaderTimeout.diagnostic.outcome, "client_timeout");
+  assert.equal(postHeaderTimeout.diagnostic.httpStatus, 200);
+  assert.equal(postHeaderTimeout.diagnostic.handlerResponseCount, 1);
+  assert.equal(postHeaderTimeout.response.bodyReadCount(), 1);
+
+  const timeoutAbortRejection = await runCase("deadline abort rejection", { timeoutPhase: "pre_header", rejectOnAbort: true, response: { status: 200 } });
+  assert.equal(timeoutAbortRejection.diagnostic.outcome, "client_timeout");
+  assert.equal(timeoutAbortRejection.diagnostic.httpStatus, null);
+  assert.equal(timeoutAbortRejection.diagnostic.handlerResponseCount, 0);
+
+  const fetchRejected = await runCase("ordinary fetch rejection", { fetchRejected: true });
   assert.equal(fetchRejected.diagnostic.outcome, "fetch_rejected");
   assert.equal(fetchRejected.diagnostic.httpStatus, null);
   assert.equal(fetchRejected.diagnostic.handlerResponseCount, 0);
@@ -373,7 +482,13 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
   assert.equal(handlerJsonParse.diagnostic.handlerResponseCount, 1);
   assert.equal(handlerJsonParse.response.bodyReadCount(), 1);
 
-  assert.deepEqual(Array.from(observedOutcomes).sort(), closedOutcomes.slice().sort(), "RDM-210 all and only five closed outcomes execute");
+  const missingAbortController = await runCase("missing AbortController", { expectedRequestCount: 0, transportOptions: { abortControllerAvailable: false } });
+  assert.equal(missingAbortController.diagnostic.outcome, "fetch_rejected");
+  assert.equal(missingAbortController.diagnostic.httpStatus, null);
+  assert.equal(missingAbortController.diagnostic.requestAttemptCount, 0);
+  assert.equal(missingAbortController.diagnostic.handlerResponseCount, 0);
+
+  assert.deepEqual(Array.from(observedOutcomes).sort(), closedOutcomes.slice().sort(), "RDM-210 all and only six closed outcomes execute");
 
   let replacementRequests = 0;
   const replacementResponse = syntheticResumeTransportResponse({ data: { result: "SYNTHETIC_REPLACEMENT" } });
@@ -382,6 +497,9 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
   const firstDiagnostic = replacementApi.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC;
   await replacementApi.request({ action: "facts", experience: "SYNTHETIC_SECOND_REQUEST" });
   assert.equal(replacementRequests, 2, "RDM-208 two deliberate activations make one request each");
+  assert.deepEqual(replacementApi.scheduledDelays(), [35000, 35000], "RDM-217 each deliberate activation owns one deadline");
+  assert.equal(replacementApi.clearCount(), 2, "RDM-223 both deliberate activations clear their deadlines");
+  assert.equal(replacementApi.pendingTimerCount(), 0, "RDM-223 no deadline remains after deliberate activations");
   assert.notEqual(replacementApi.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC, firstDiagnostic, "RDM-214 the next request replaces the prior memory-local diagnostic");
 }
 
@@ -2390,7 +2508,7 @@ async function run() {
   assert.equal((uiSource.match(/__trackEvent\("ai_resume_doc_downloaded", \{\}\)/g) || []).length, 1);
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)|localStorage|sessionStorage/);
 
-  // RDM-208 through RDM-216: one request, fixed handler marker, closed request-local outcomes, and content-free memory-only diagnostics.
+  // RDM-208 through RDM-224: one bounded request, fixed handler marker, closed request-local outcomes, and content-free memory-only diagnostics.
   const providerCallsBeforeTransport = calls.length;
   const guardedStagesBeforeTransport = clientStages.length;
   await runResumeTransportClassifierRegression(uiSource, resumeSource, modernResumePreflight);
@@ -2402,7 +2520,7 @@ async function run() {
   assert.equal((resumeSource.match(/AUDIT_MAX_OUTPUT_TOKENS = 4000/g) || []).length, 1, "RDM-216 audit cap remains unchanged");
 
   await runRenderRegression();
-  console.log("PASS: synthetic RDM-1..RDM-216 integration paths; all prior grounding, DOCX, federal, adaptive-length, guarded-stage, and v0.20 Resume transport fixtures verified locally");
+  console.log("PASS: synthetic RDM-1..RDM-224 integration paths; all prior grounding, DOCX, federal, adaptive-length, guarded-stage, and v0.21 Resume transport fixtures verified locally");
 }
 
 run().catch((error) => {

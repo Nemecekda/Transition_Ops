@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.20"
+  version: "0.21"
   status: PENDING
 ---
 
@@ -13,9 +13,9 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.20 is PENDING until the synthetic RDM regression suite and live-clone
+Version 0.21 is PENDING until the synthetic RDM regression suite and live-clone
 validation execute against the app. Specification approval and governance
-calibration are not v0.20 application execution evidence.
+calibration are not v0.21 application execution evidence.
 
 ## TRIGGERS AND GATE
 
@@ -633,13 +633,25 @@ trace, score, export, privacy, or call-count rule. Historical version statements
 remain records of their own approved boundaries; this section is the controlling
 current-version spend contract.
 
-## CLIENT-TO-FUNCTION TRANSPORT CONTRACT - VERSION 0.20
+## CLIENT-TO-FUNCTION TRANSPORT CONTRACT - VERSION 0.21
 
-One Resume button activation makes exactly one request to the fixed
-`/.netlify/functions/resume` path. The client must not replay, retry, redirect,
-or issue a second request automatically after rejection, timeout, invalid JSON,
-or any other transport result. A member may choose a later button activation;
-that is a new request and not an automatic replay.
+One Resume button activation makes at most one request to the fixed
+`/.netlify/functions/resume` path. After the required deadline capability
+preflight succeeds, the activation makes exactly one request. If
+`AbortController` is missing, non-callable, non-constructible, or lacks the
+required signal and abort API shape, fail closed before fetch with zero request
+attempts. This is the sole zero-request exception. The client must not replay,
+retry, redirect, or issue a second request automatically after rejection,
+timeout, invalid JSON, or any other transport result. A member may choose a
+later button activation; that is a new request and not an automatic replay.
+
+Construct one `AbortController`, arm one request-wide 35,000-millisecond timer,
+and pass the controller signal to the sole fetch. The same deadline covers
+fetch, handler-marker inspection, and JSON parsing. Deadline expiration aborts
+the controller once and settles `client_timeout` directly; classification must
+not depend on a later fetch or body-read rejection. The first terminal result
+wins. Every terminal path clears its timer exactly once, and any late fetch or
+body completion must not overwrite the result or memory-local diagnostic.
 
 Every response produced by the Resume handler carries the fixed, content-free
 `X-Transition-Ops-Resume-Handler: 1` marker through the existing shared response
@@ -660,11 +672,18 @@ Classify each request locally into exactly one closed outcome:
   JSON. Do not read its body.
 - `handler_json_parse`: the marker and JSON media type are present but JSON
   parsing fails.
+- `client_timeout`: the request-wide client deadline expires before another
+  terminal outcome wins. A timeout before a marked response has
+  `httpStatus: null` and `handlerResponseCount: 0`; a timeout after the marker
+  is accepted retains the captured integer status and
+  `handlerResponseCount: 1`. This browser transport outcome is distinct from
+  the server/provider failure category `timeout`.
 
 The request-local transport diagnostic may expose only these six fields: the
 fixed function `path`; `httpStatus` as an integer or `null`; nonnegative integer
 `elapsedMs`; integer `requestAttemptCount`; integer `handlerResponseCount`; and
-the closed `outcome`. `requestAttemptCount` is exactly 1.
+the closed `outcome`. `requestAttemptCount` is 1 after the sole fetch is invoked
+and 0 only for the pre-fetch capability failure described above.
 `handlerResponseCount` is 1 only when the fixed marker is present and otherwise
 0; it is not a total function invocation count. The diagnostic is memory-only,
 is replaced by the next Resume request, and must not enter a log, persistence,
@@ -1391,16 +1410,18 @@ all existing hard input bounds.
   synthetic governance calibration without implying application wiring,
   provider execution, hosted validation, or promotion of this PENDING skill.
 - **RDM-208 One activation, one request:** every synthetic Resume button
-  activation must make exactly one HTTP request. Fetch rejection, a response
-  without the handler marker, marked non-JSON, and marked invalid JSON must make
-  no automatic replay, delay, or retry.
+  activation must make at most one HTTP request and exactly one after deadline
+  capability preflight succeeds. Missing or invalid `AbortController` is the
+  sole zero-request exception. Fetch rejection, timeout, a response without the
+  handler marker, marked non-JSON, and marked invalid JSON must make no
+  automatic replay, delay, or retry.
 - **RDM-209 Fixed handler marker:** every synthetic Resume handler response,
   including validation and failure status responses, must carry exactly
   `X-Transition-Ops-Resume-Handler: 1` through the shared header object.
 - **RDM-210 Closed outcomes:** executable transport fixtures must produce only
   `handler_json`, `fetch_rejected`, `non_handler_response`,
-  `handler_non_json`, or `handler_json_parse`, and each boundary must select its
-  exact outcome.
+  `handler_non_json`, `handler_json_parse`, or `client_timeout`, and each
+  boundary must select its exact outcome.
 - **RDM-211 Existing JSON behavior:** marked valid JSON must preserve the
   existing `ok` status and parsed payload for both success and failure HTTP
   responses so current app handling and member-safe copy remain unchanged.
@@ -1410,7 +1431,8 @@ all existing hard input bounds.
 - **RDM-213 Diagnostic shape:** every outcome must expose exactly fixed `path`,
   integer-or-null `httpStatus`, nonnegative integer `elapsedMs`, integer
   `requestAttemptCount`, integer `handlerResponseCount`, and closed `outcome`.
-  Request attempts must equal 1; handler responses must equal 0 or 1 from the
+  Request attempts must equal 1 after fetch invocation and 0 only on the
+  pre-fetch capability failure. Handler responses must equal 0 or 1 from the
   fixed marker and must not be described as total function invocations.
 - **RDM-214 Content and lifetime boundary:** synthetic sentinels for raw body,
   header value, error, stack, URL/origin, cookie, secret, prompt, response
@@ -1425,8 +1447,35 @@ all existing hard input bounds.
   stage order, zero provider retries, facts/repair 3500, civilian 2200, federal
   1900, audit 4000, request bounds, shared budget guard, `store: false`,
   grounding, audit, export, privacy, logging, persistence, analytics, usage
-  limits, and public response bodies remain unchanged. Run all five local gates
-  and real-artifact 4N; scope is exactly the six approved packet files.
+  limits, public response bodies, and member-safe copy remain unchanged.
+- **RDM-217 One terminal deadline:** the transport source must contain exactly
+  one literal 35000 deadline, one `AbortController` construction, one deadline
+  timer, one timer-clear site, and the controller signal on the sole fetch.
+- **RDM-218 First result wins:** one request-local settlement guard must allow
+  only the first terminal path to publish a result and diagnostic. Every first
+  terminal path clears the timer exactly once; late fetch or body completion is
+  inert.
+- **RDM-219 Capability failure:** missing, non-callable, non-constructible, or
+  malformed `AbortController` must select `fetch_rejected` before timer, fetch,
+  function, budget guard, or provider activity, with request and handler counts
+  both 0.
+- **RDM-220 Timeout precedence:** deadline expiration must abort exactly once
+  and select `client_timeout` before any resulting abort rejection can select
+  `fetch_rejected` or `handler_json_parse`.
+- **RDM-221 Timeout boundary:** a pre-header timeout must expose null status and
+  handler count 0. A post-marker JSON-body timeout must expose its captured
+  integer status and handler count 1. Add no seventh diagnostic field.
+- **RDM-222 Required matrix:** executable synthetic cases must cover normal
+  marked JSON, pre-header timeout, post-marker JSON timeout, ordinary fetch
+  rejection, marked JSON-parse failure, and missing `AbortController`, with the
+  exact outcomes, statuses, request counts, and handler counts required above.
+- **RDM-223 Cleanup and late completion:** handler JSON failure, non-handler,
+  marked non-JSON, and every RDM-222 terminal case must verify timer cleanup.
+  Timeout fixtures must also prove late resolution or rejection cannot replace
+  the frozen diagnostic.
+- **RDM-224 Validation and scope:** run all five local gates and real-artifact
+  4N. Scope is exactly the five Commander-authorized packet files; no hosted
+  function, model, provider, deploy, merge, or production action is authorized.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -1437,11 +1486,11 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.20 until all synthetic application
+Keep registry item #6 PENDING at version 0.21 until all synthetic application
 cases execute and live-clone evidence, including actual DOCX rendering in a
 Word-compatible renderer, passes. RDM-199 through RDM-207 governance calibration
 executed 9/9 PASS on 2026-08-31; no application, provider, hosted, or Word
-execution is claimed by that result. RDM-208 through RDM-216 require executable
+execution is claimed by that result. RDM-208 through RDM-224 require executable
 local transport stubs plus the prescribed repository and artifact gates; those
 results do not substitute for live-clone or Word-compatible-renderer evidence.
 After successful application execution and live evidence, force-mod proposes
