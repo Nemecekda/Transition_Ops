@@ -1030,7 +1030,7 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     const type = error && error.type;
     if (["insufficient_quota", "billing_hard_limit_reached", "billing_limit", "credits_exhausted", "budget_limit"].indexOf(code) !== -1 || ["insufficient_quota", "billing_error"].indexOf(type) !== -1) return "budget_limit";
     if (status === 429 || ["rate_limit", "rate_limit_exceeded"].indexOf(code) !== -1 || type === "rate_limit_error") return "rate_limit";
-    if ([408, 504].indexOf(status) !== -1 || ["ETIMEDOUT", "ECONNABORTED"].indexOf(code) !== -1 || ["APIConnectionTimeoutError", "TimeoutError"].indexOf(name) !== -1 || type === "timeout") return "timeout";
+    if ([408, 504].indexOf(status) !== -1 || code === "timeout" || ["ETIMEDOUT", "ECONNABORTED"].indexOf(code) !== -1 || ["APIConnectionTimeoutError", "TimeoutError"].indexOf(name) !== -1 || type === "timeout") return "timeout";
     return "upstream_unavailable";
   }
 

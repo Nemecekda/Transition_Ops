@@ -2270,6 +2270,19 @@ async function run() {
   assert.equal(calls.length - callsBeforeTimeout, 1);
   assert.doesNotMatch(result.body, /MEMBER SECRET|req_timeout|777|ETIMEDOUT/);
 
+  nextError = Object.freeze({ code: "timeout" });
+  const callsBeforeSanitizedTimeout = calls.length;
+  result = await resume.lambdaHandler(post({
+    action: "facts",
+    experience: "This synthetic sentence is long enough to satisfy validation."
+  }));
+  assert.equal(result.statusCode, 502);
+  assert.deepEqual(JSON.parse(result.body), {
+    error: "The request timed out before completion. Try again in a minute.",
+    reasonCategory: "timeout"
+  });
+  assert.equal(calls.length - callsBeforeSanitizedTimeout, 1);
+
   nextError = Object.assign(new Error("raw provider rate message"), { status: 429, code: "rate_limit_exceeded", type: "rate_limit_error" });
   const callsBeforeRateLimit = calls.length;
   result = await resume.lambdaHandler(post({ action: "facts", experience: "This synthetic sentence is long enough to satisfy validation." }));
@@ -2393,7 +2406,7 @@ async function run() {
   assert.doesNotMatch(clientSource + budgetSource, /lambdaEvent|connectLambda/);
   assert.match(clientSource, /createSpendGuard\(\{/);
   assert.match(clientSource, /return guard\.create\(stage, request\)/);
-  assert.match(clientSource, /maxRetries: 0/);
+  assert.match(clientSource, /maxRetries: 0,\s*timeout: 25000/);
   assert.doesNotMatch(clientSource, /module\.exports\s*=\s*\{[^}]*\b(?:OpenAI|provider)\b/);
   assert.equal(budgetContract.CUTOFF_MICRO_USD, 4000000);
   assert.deepEqual(budgetContract.PRICE_TABLE, {
