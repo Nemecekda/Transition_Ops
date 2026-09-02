@@ -59,6 +59,7 @@ EMPLOYER OR UNIT (EXACT):
 LOCATION (EXACT OR MISSING):
 DATES (EXACT OR MISSING):
 DUTIES AND OUTCOMES (EXACT FACTS ONLY):
+DUTY ATOM 1 (EXACT):
 
 Then include:
 EDUCATION (EXACT OR MISSING):
@@ -68,6 +69,7 @@ NUMBERS AND SCALE (EXACT OR MISSING):
 TARGET ROLE (EXACT OR MISSING):
 
 Use one ROLE block for every distinct job title, even when several titles share one employer or unit. Transition phrases such as "later served as Deputy Director" always start a new ROLE block.
+For every ROLE, put DUTIES AND OUTCOMES (EXACT FACTS ONLY): on its own line with no value after the colon. Follow it with DUTY ATOM 1 (EXACT): and additional contiguously numbered DUTY ATOM n (EXACT): lines, restarting at 1 for each role. Put exactly one explicitly separate source duty or outcome in each atom, in source order. If none is stated, use exactly DUTY ATOM 1 (EXACT): MISSING. The label and structural edge spacing are not part of the fact; preserve every payload's internal bytes exactly. Never split or join payloads by guessing from periods, semicolons, commas, colons, dashes, slashes, parentheses, capitalization, abbreviations, decimals, dates, currency, percentages, or plus signs.
 DATES may contain only calendar dates or calendar date ranges explicitly stated in the source. Tenure such as "26 years of service" is not a date; put it under NUMBERS AND SCALE.
 Software and tools, including Workday, belong under SKILLS AND TOOLS unless the source explicitly identifies a named certification in that software or tool.
 No markdown, bullets, commentary, advice, or resume language.`;
@@ -160,6 +162,70 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     return titles;
   }
 
+  function hasSingleRoleInlineDutyAtomStructure(facts) {
+    const source = String(facts || "");
+    if ((source.match(/^ROLE\s+\d+\s*$/gim) || []).length !== 1 || /^DUTY ATOM\s+/im.test(source)) return false;
+    const lines = source.split("\n");
+    const headerIndexes = [];
+    lines.forEach(function (line, lineIndex) {
+      if (/^DUTIES AND OUTCOMES \(EXACT FACTS ONLY\):/.test(line.replace(/\r$/, "").trim())) headerIndexes.push(lineIndex);
+    });
+    if (headerIndexes.length !== 1) return false;
+    const headerIndex = headerIndexes[0];
+    const rawHeader = lines[headerIndex].replace(/\r$/, "").trim();
+    const inlineMatch = /^DUTIES AND OUTCOMES \(EXACT FACTS ONLY\): (.+)$/.exec(rawHeader);
+    if (!inlineMatch) return false;
+    for (let lineIndex = headerIndex + 1; lineIndex < lines.length; lineIndex += 1) {
+      const line = lines[lineIndex].replace(/\r$/, "").trim();
+      if (/^(?:EDUCATION|CERTIFICATIONS|SKILLS AND TOOLS|NUMBERS AND SCALE|TARGET ROLE) \(/.test(line)) break;
+      if (line) return false;
+    }
+    return true;
+  }
+
+  function roleDutyAtomRecords(facts) {
+    return String(facts || "").split(/^ROLE\s+\d+\s*$/im).slice(1).map(function (block, roleIndex) {
+      const lines = block.replace(/\r/g, "").split("\n");
+      const headerIndexes = [];
+      lines.forEach(function (line, lineIndex) {
+        if (/^DUTIES AND OUTCOMES \(EXACT FACTS ONLY\):/.test(line.trim())) headerIndexes.push(lineIndex);
+      });
+      let valid = headerIndexes.length === 1;
+      const atoms = [];
+      const seenPayloads = new Set();
+      if (!valid) return { owner: "R" + (roleIndex + 1), valid: false, atoms: atoms };
+      const headerIndex = headerIndexes[0];
+      const headerMatch = /^DUTIES AND OUTCOMES \(EXACT FACTS ONLY\):(.*)$/.exec(lines[headerIndex].trim());
+      if (!headerMatch || headerMatch[1] !== "") valid = false;
+      if (lines.slice(0, headerIndex).some(function (line) { return /^DUTY ATOM\s+/i.test(line.trim()); })) valid = false;
+      let expectedNumber = 1;
+      let globalFieldIndex = lines.length;
+      for (let lineIndex = headerIndex + 1; lineIndex < lines.length; lineIndex += 1) {
+        const line = lines[lineIndex].trim();
+        if (/^(?:EDUCATION|CERTIFICATIONS|SKILLS AND TOOLS|NUMBERS AND SCALE|TARGET ROLE) \(/.test(line)) {
+          globalFieldIndex = lineIndex;
+          break;
+        }
+        if (!line) continue;
+        const atomMatch = /^DUTY ATOM ([1-9]\d*) \(EXACT\): (.+)$/.exec(line);
+        if (!atomMatch || Number(atomMatch[1]) !== expectedNumber || seenPayloads.has(atomMatch && atomMatch[2])) {
+          valid = false;
+          continue;
+        }
+        const payload = atomMatch[2];
+        if (/^MISSING$/i.test(payload) && payload !== "MISSING") valid = false;
+        seenPayloads.add(payload);
+        atoms.push({ number: expectedNumber, text: payload });
+        expectedNumber += 1;
+      }
+      if (lines.slice(globalFieldIndex + 1).some(function (line) { return /^DUTY ATOM\s+/i.test(line.trim()); })) valid = false;
+      if (!atoms.length) valid = false;
+      const missingAtoms = atoms.filter(function (atom) { return atom.text === "MISSING"; });
+      if (missingAtoms.length && (atoms.length !== 1 || missingAtoms.length !== 1 || missingAtoms[0].number !== 1)) valid = false;
+      return { owner: "R" + (roleIndex + 1), valid: valid, atoms: atoms };
+    });
+  }
+
   function factSheetIssues(facts, source) {
     const issues = [];
     const roles = factRoles(facts);
@@ -175,6 +241,7 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     const certLine = (/^CERTIFICATIONS \(EXACT OR MISSING\):\s*(.+)$/im.exec(facts) || ["", ""])[1];
     const toolsLine = (/^SKILLS AND TOOLS \(EXACT OR MISSING\):\s*(.+)$/im.exec(facts) || ["", ""])[1];
     if (/\bWorkday\b/i.test(source) && !sourceNamesWorkdayCertification && (/\bWorkday\b/i.test(certLine) || !/\bWorkday\b/i.test(toolsLine))) issues.push("Workday misclassified");
+    if (roleDutyAtomRecords(facts).some(function (record) { return !record.valid; })) issues.push("invalid duty atom structure");
     return issues;
   }
 
@@ -184,6 +251,7 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
       if (issue === "missing distinct later role") warnings.push("Give each distinct job title its own ROLE block.");
       if (issue === "invalid date field") warnings.push("Use calendar dates only in DATES; put tenure under NUMBERS AND SCALE.");
       if (issue === "Workday misclassified") warnings.push("Put Workday under SKILLS AND TOOLS unless your source explicitly names a Workday certification.");
+      if (issue === "invalid duty atom structure") warnings.push("Keep each duty or outcome in its own contiguously numbered DUTY ATOM line under the matching role.");
     });
     return warnings.filter(function (warning, index) { return warnings.indexOf(warning) === index; });
   }
@@ -637,6 +705,7 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
   };
   function factCatalog(facts) {
     const catalog = [];
+    const dutyRecords = roleDutyAtomRecords(facts);
     const roleBlocks = String(facts || "").split(/^ROLE\s+\d+\s*$/im).slice(1).map(function (block) { return block.split(/^EDUCATION\s*\(/im)[0]; });
     let role = "global";
     let roleIndex = 0;
@@ -646,6 +715,14 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
       if (/^EDUCATION\s*\(/i.test(line)) role = "global";
       const value = line.trim();
       if (!value || /^MISSING$/i.test(value) || /^\w[\w ]+\(.*\):\s*MISSING$/i.test(value)) return;
+      if (/^DUTIES AND OUTCOMES \(EXACT FACTS ONLY\):$/.test(value)) {
+        const record = dutyRecords[roleIndex - 1];
+        if (record && record.valid) record.atoms.forEach(function (atom) {
+          if (atom.text !== "MISSING") catalog.push({ fact_id: "F" + (catalog.length + 1), owner: record.owner, text: atom.text, unlinked_number: false });
+        });
+        return;
+      }
+      if (/^DUTY ATOM [1-9]\d* \(EXACT\): /.test(value)) return;
       if (/^NUMBERS AND SCALE/i.test(value)) {
         value.replace(/^NUMBERS AND SCALE\s*\(.*?\):\s*/i, "").split(";").map(function (item) { return item.trim(); }).filter(Boolean).forEach(function (item) {
           const itemTokens = exactQuantityTokens(item);
@@ -759,38 +836,17 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     });
     const atoms = [];
     const seen = new Set();
-    String(facts || "").split(/^ROLE\s+\d+\s*$/im).slice(1).forEach(function (block, roleIndex) {
-      const title = (/^JOB TITLE \(EXACT\):\s*(.+)$/im.exec(block) || ["", ""])[1].trim();
-      if (!title || /^MISSING$/i.test(title)) return;
-      const owner = "R" + (roleIndex + 1);
-      const eligibleFacts = eligibleByOwner.get(owner) || [];
-      const lines = block.replace(/\r/g, "").split("\n");
-      let collecting = false;
-      const dutyLines = [];
-      lines.forEach(function (line) {
-        const dutyMatch = /^DUTIES AND OUTCOMES \(EXACT FACTS ONLY\):\s*(.*)$/i.exec(line.trim());
-        if (dutyMatch) {
-          collecting = true;
-          if (dutyMatch[1]) dutyLines.push(dutyMatch[1]);
-          return;
-        }
-        if (!collecting) return;
-        if (/^(?:EDUCATION|CERTIFICATIONS|SKILLS AND TOOLS|NUMBERS AND SCALE|TARGET ROLE) \(/i.test(line.trim())) {
-          collecting = false;
-          return;
-        }
-        dutyLines.push(line);
-      });
-      dutyLines.join("\n").split(/[;\n]+/).forEach(function (rawAtom) {
-        const atom = rawAtom.trim().replace(/^[\u2022*-]\s*/, "").replace(/\s+/g, " ");
-        const key = owner + "\u0000" + atom;
-        if (!atom || /^MISSING$/i.test(atom) || !/[A-Za-z]/.test(atom) || seen.has(key)) return;
-        const catalogEligible = eligibleFacts.some(function (factText) {
-          return hasExactBoundaryOccurrence(factText, atom) || factText.indexOf(atom) !== -1;
-        });
+    roleDutyAtomRecords(facts).forEach(function (record) {
+      if (!record.valid) return;
+      const eligibleFacts = eligibleByOwner.get(record.owner) || [];
+      record.atoms.forEach(function (dutyAtom) {
+        const atom = dutyAtom.text;
+        const key = record.owner + "\u0000" + atom;
+        if (atom === "MISSING" || !/[A-Za-z]/.test(atom) || seen.has(key)) return;
+        const catalogEligible = eligibleFacts.some(function (factText) { return factText === atom; });
         if (!catalogEligible) return;
         seen.add(key);
-        atoms.push({ owner: owner, text: atom });
+        atoms.push({ owner: record.owner, text: atom });
       });
     });
     return atoms;
@@ -1074,11 +1130,14 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     if (action === "facts") {
       const factIssues = factSheetIssues(rawText, factSourceBlock);
       if (!factIssues.length) return { statusCode: 200, headers, body: JSON.stringify(factResponseBody(rawText, [], clip(target, 120))) };
+      if (factIssues.length === 1 && factIssues[0] === "invalid duty atom structure" && hasSingleRoleInlineDutyAtomStructure(rawText)) {
+        return { statusCode: 200, headers, body: JSON.stringify(factResponseBody(rawText, factIssueWarnings(factIssues), clip(target, 120))) };
+      }
 
       const repairClient = createOpenAIClient("resume_fact_repair");
       const repairResponse = await repairClient.responses.create({
         model: "gpt-5.6-terra",
-        instructions: `Repair the fact sheet's structure and classification only. Preserve every source fact exactly; do not add, infer, translate, or improve facts. Split every distinct job title into its own ROLE block, including later or subsequent roles. DATES may contain only explicit calendar dates or date ranges; move tenure to NUMBERS AND SCALE. Put software and tools under SKILLS AND TOOLS unless the source explicitly names a certification. Return the complete corrected fact sheet in the original plain-text field structure, with no markdown or commentary.`,
+        instructions: `Repair the fact sheet's structure and classification only. Preserve every source fact exactly; do not add, infer, translate, or improve facts. Split every distinct job title into its own ROLE block, including later or subsequent roles. For every ROLE, put DUTIES AND OUTCOMES (EXACT FACTS ONLY): on its own line, then emit contiguously numbered DUTY ATOM n (EXACT): lines starting at 1, one explicitly separate source duty or outcome per line in source order. Use exactly DUTY ATOM 1 (EXACT): MISSING when none is stated. Preserve each atom payload's internal bytes and never split or join payloads by guessing from punctuation, capitalization, abbreviations, decimals, dates, currency, percentages, or plus signs. DATES may contain only explicit calendar dates or date ranges; move tenure to NUMBERS AND SCALE. Put software and tools under SKILLS AND TOOLS unless the source explicitly names a certification. Return the complete corrected fact sheet in the original plain-text field structure, with no markdown or commentary.`,
         input: "ORIGINAL BOUNDED SOURCE:\n" + factSourceBlock + "\n\nFIRST FACT SHEET:\n" + rawText + "\n\nSTRUCTURAL ISSUE LABELS:\n" + factIssues.join(", "),
         max_output_tokens: 3500,
         reasoning: { effort: "none" },

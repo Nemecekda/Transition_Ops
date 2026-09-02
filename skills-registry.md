@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.22 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.23 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -71,6 +71,32 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-02 - **#6 `resume-drafter-maintenance` 0.22 -> 0.23 remains
+  PENDING.** Hosted synthetic senior-resume evidence exposed PARTIAL v0.22
+  coverage: adaptive planning correctly required `A >= 10`, but fact extraction
+  could collapse several duties or outcomes into one line while `A` counted only
+  semicolon/newline-delimited text, producing the observed `Y = 18`, `R = 6`,
+  `A = 6` one-page recommendation from 24 distinct supplied facts. Force-mod
+  added a closed per-role `DUTY ATOM n (EXACT)` grammar with contiguous numbering,
+  opaque byte-preserved payloads, one shared parser for structure, catalog,
+  eligibility, and `A`, and no punctuation-based sentence guessing. A one-role
+  inline payload with no other structural issue remains byte-exact and fails
+  closed with member-safe guidance and no repair call; it is never normalized
+  into evidence. Multi-role or continuation collapse can consume only the
+  existing single repair; an unresolved repair or malformed direct submission
+  blocks before catalog construction, planning, drafting, or a further provider
+  call. RDM-231 through RDM-239 cover grammar,
+  order, byte opacity, role ownership, the six-role `Y = 18`/`A = 24` two-page
+  boundary, repair count, fail-closed behavior, unchanged controls, validation,
+  and four-file scope. The focused synthetic OpenAI migration suite, browser
+  preflight, and actual LibreOffice DOCX render passed locally. Models, stage
+  order, 3500/3500/2200/1900/4000 caps, four-call maximum, zero retries, USD 4
+  guard, privacy, public failures, federal behavior, grounding, audit,
+  pagination, export, and DOCX equivalence remain unchanged. Maximum incremental
+  API exposure is $0. Live-clone end-to-end validation remains required before
+  promotion. No hosted function or model invocation, provider/settings change,
+  commit, push, deployment, merge, or production change occurred. Lane:
+  COMMANDER. Owner: force-mod.
 - 2026-09-02 - **#6 `resume-drafter-maintenance` 0.21 -> 0.22 remains
   PENDING.** The existing content-free six-field Resume transport diagnostic is
   now mirrored into one fixed-ID page-memory DOM node that is hidden,

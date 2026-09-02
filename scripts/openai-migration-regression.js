@@ -585,7 +585,7 @@ async function run() {
   assert.equal(modernNavigatorPreflight.status, 400);
   assert.deepEqual(await modernNavigatorPreflight.json(), { error: "No user message" });
 
-  const facts = "ROLE 1\nJOB TITLE (EXACT): Synthetic Logistics Leader\nEMPLOYER OR UNIT (EXACT): Synthetic Unit\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led a 15-person team and managed a $2M equipment inventory.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 15-person; $2M\nTARGET ROLE (EXACT OR MISSING): Operations manager";
+  const facts = "ROLE 1\nJOB TITLE (EXACT): Synthetic Logistics Leader\nEMPLOYER OR UNIT (EXACT): Synthetic Unit\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led a 15-person team and managed a $2M equipment inventory.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 15-person; $2M\nTARGET ROLE (EXACT OR MISSING): Operations manager";
   nextResponse = { status: "completed", output_text: facts };
   const callsBeforeCleanFacts = calls.length;
   const stagesBeforeCleanFacts = clientStages.length;
@@ -610,6 +610,25 @@ async function run() {
   assert.match(calls.at(-1).instructions, /later served as Deputy Director/);
   assert.match(calls.at(-1).instructions, /Tenure such as "26 years of service" is not a date/);
   assert.match(calls.at(-1).instructions, /including Workday/);
+  assert.match(calls.at(-1).instructions, /DUTY ATOM 1 \(EXACT\):/);
+  assert.match(calls.at(-1).instructions, /contiguously numbered DUTY ATOM n \(EXACT\): lines, restarting at 1 for each role/);
+  assert.match(calls.at(-1).instructions, /Never split or join payloads by guessing from periods, semicolons, commas, colons, dashes, slashes, parentheses, capitalization, abbreviations, decimals, dates, currency, percentages, or plus signs/);
+
+  const legacySingleRoleFacts = facts.replace(
+    "DUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led a 15-person team and managed a $2M equipment inventory.",
+    "DUTIES AND OUTCOMES (EXACT FACTS ONLY): Led a 15-person team and managed a $2M equipment inventory."
+  );
+  nextResponse = { status: "completed", output_text: legacySingleRoleFacts };
+  const callsBeforeLegacyEnvelope = calls.length;
+  result = await resume.lambdaHandler(post({
+    action: "facts",
+    target: "Operations Manager",
+    experience: "Led a synthetic 15-person team and managed a $2M equipment inventory."
+  }));
+  assert.equal(result.statusCode, 200, result.body);
+  assert.equal(calls.length - callsBeforeLegacyEnvelope, 1, "RDM-231 one-role ambiguous inline structure adds no repair call");
+  assert.equal(JSON.parse(result.body).factSheet, legacySingleRoleFacts, "RDM-231 ambiguous inline payload remains byte-exact and is not normalized into evidence");
+  assert.deepEqual(JSON.parse(result.body).warnings, ["Keep each duty or outcome in its own contiguously numbered DUTY ATOM line under the matching role."], "RDM-231 ambiguous inline structure fails closed with member-safe guidance");
 
   const combinedTargetFacts = facts.replace("TARGET ROLE (EXACT OR MISSING): Operations manager", "TARGET ROLE (EXACT OR MISSING): Talent Management; Talent Development Manager");
   nextResponse = { status: "completed", output_text: combinedTargetFacts };
@@ -621,7 +640,7 @@ async function run() {
   assert.equal(result.statusCode, 200);
   assert.equal(JSON.parse(result.body).suggestedTarget, "Talent Development Manager");
 
-  const fillerIdentityLedger = "ROLE 1\nJOB TITLE (EXACT): Results-driven Officer\nEMPLOYER OR UNIT (EXACT): Dynamic Synergy LLC\nLOCATION (EXACT OR MISSING): Leveraged, WI\nDATES (EXACT OR MISSING): March 2020 - Present (Ensured)\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led planning work.\n\nEDUCATION (EXACT OR MISSING): B.S., Results-driven Studies, Synergy University\nCERTIFICATIONS (EXACT OR MISSING): Leveraged Certified; Utilize License\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Operations Manager";
+  const fillerIdentityLedger = "ROLE 1\nJOB TITLE (EXACT): Results-driven Officer\nEMPLOYER OR UNIT (EXACT): Dynamic Synergy LLC\nLOCATION (EXACT OR MISSING): Leveraged, WI\nDATES (EXACT OR MISSING): March 2020 - Present (Ensured)\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led planning work.\n\nEDUCATION (EXACT OR MISSING): B.S., Results-driven Studies, Synergy University\nCERTIFICATIONS (EXACT OR MISSING): Leveraged Certified; Utilize License\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Operations Manager";
   nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nResults-driven Officer - Dynamic Synergy LLC\nLeveraged, WI | March 2020 - Present (Ensured)\nLed planning work.\nEDUCATION\nB.S., Results-driven Studies, Synergy University\nCERTIFICATIONS\nLeveraged Certified\nUtilize License" };
   auditResponseQueue.push((request) => passingAudit(request));
   result = await resume.lambdaHandler(post({ action: "draft", target: "Operations Manager", experience: "Results-driven Officer led planning work for Dynamic Synergy LLC.", confirmedFacts: fillerIdentityLedger }));
@@ -653,7 +672,7 @@ async function run() {
   assert.equal(result.statusCode, 200);
   assert.equal(Object.hasOwn(JSON.parse(result.body), "suggestedTarget"), false);
 
-  const multiRoleFacts = "ROLE 1\nJOB TITLE (EXACT): HR Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led personnel operations.\n\nROLE 2\nJOB TITLE (EXACT): Deputy Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Managed Workday reporting.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): Workday\nNUMBERS AND SCALE (EXACT OR MISSING): 26 years of service\nTARGET ROLE (EXACT OR MISSING): Talent Management; Talent Development Manager";
+  const multiRoleFacts = "ROLE 1\nJOB TITLE (EXACT): HR Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led personnel operations.\n\nROLE 2\nJOB TITLE (EXACT): Deputy Director\nEMPLOYER OR UNIT (EXACT): Synthetic Command\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Managed Workday reporting.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): Workday\nNUMBERS AND SCALE (EXACT OR MISSING): 26 years of service\nTARGET ROLE (EXACT OR MISSING): Talent Management; Talent Development Manager";
   nextResponse = { status: "completed", output_text: multiRoleFacts };
   const callsBeforeComplexStandardFacts = calls.length;
   result = await resume.lambdaHandler(post({
@@ -735,6 +754,113 @@ async function run() {
   assert.equal(calls.length, callsBeforeBlockedDraft);
   assert.deepEqual(JSON.parse(result.body).warnings, unresolvedBody.warnings);
   assert.match(JSON.parse(result.body).error, /Resolve the fact-sheet warnings before drafting/);
+
+  // RDM-231..RDM-237: extraction-to-planner duty atoms use one closed, numbered, byte-opaque role-local grammar.
+  const opaqueDutyOne = "Directed U.S. operations; retained Acme, Inc. terminology.";
+  const opaqueDutyTwo = "Processed 1,200.50 cases from Jan. 2020-Dec. 2022 with a $9M budget and 95%+ readiness.";
+  const atomizedTwoFactSheet = facts.replace(
+    "DUTY ATOM 1 (EXACT): Led a 15-person team and managed a $2M equipment inventory.",
+    "DUTY ATOM 1 (EXACT): " + opaqueDutyOne + "\nDUTY ATOM 2 (EXACT): " + opaqueDutyTwo
+  );
+  const collapsedTwoFactSheet = atomizedTwoFactSheet.replace(
+    "DUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): " + opaqueDutyOne + "\nDUTY ATOM 2 (EXACT): " + opaqueDutyTwo,
+    "DUTIES AND OUTCOMES (EXACT FACTS ONLY): " + opaqueDutyOne + " " + opaqueDutyTwo
+  );
+  const repairSecondDuty = "Coordinated role-owned planning records.";
+  const atomizedRepairFactSheet = atomizedTwoFactSheet.replace(
+    "\n\nEDUCATION (EXACT OR MISSING):",
+    "\n\nROLE 2\nJOB TITLE (EXACT): Synthetic Planning Advisor\nEMPLOYER OR UNIT (EXACT): Synthetic Unit Two\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): " + repairSecondDuty + "\n\nEDUCATION (EXACT OR MISSING):"
+  );
+  const collapsedRepairFactSheet = atomizedRepairFactSheet
+    .replace(
+      "DUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): " + opaqueDutyOne + "\nDUTY ATOM 2 (EXACT): " + opaqueDutyTwo,
+      "DUTIES AND OUTCOMES (EXACT FACTS ONLY): " + opaqueDutyOne + " " + opaqueDutyTwo
+    )
+    .replace(
+      "DUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): " + repairSecondDuty,
+      "DUTIES AND OUTCOMES (EXACT FACTS ONLY): " + repairSecondDuty
+    );
+  responseQueue = [
+    { status: "completed", output_text: collapsedRepairFactSheet },
+    { status: "completed", output_text: atomizedRepairFactSheet }
+  ];
+  const callsBeforeAtomRepair = calls.length;
+  const stagesBeforeAtomRepair = clientStages.length;
+  result = await resume.lambdaHandler(post({
+    action: "facts",
+    target: "Operations Manager",
+    experience: opaqueDutyOne + " " + opaqueDutyTwo
+  }));
+  assert.equal(result.statusCode, 200, result.body);
+  assert.equal(JSON.parse(result.body).factSheet, atomizedRepairFactSheet, "RDM-232 repaired atoms remain separate and ordered");
+  assert.deepEqual(JSON.parse(result.body).warnings, []);
+  assert.equal(calls.length - callsBeforeAtomRepair, 2, "RDM-236 collapsed extraction uses exactly the existing single repair");
+  assert.deepEqual(clientStages.slice(stagesBeforeAtomRepair), ["resume_facts", "resume_fact_repair"]);
+  const atomRepairCall = calls[callsBeforeAtomRepair + 1];
+  assert.match(atomRepairCall.instructions, /contiguously numbered DUTY ATOM n \(EXACT\): lines starting at 1/);
+  assert.match(atomRepairCall.instructions, /Preserve each atom payload's internal bytes/);
+  assert.match(atomRepairCall.input, /invalid duty atom structure/);
+
+  responseQueue = [
+    { status: "completed", output_text: collapsedRepairFactSheet },
+    { status: "completed", output_text: collapsedRepairFactSheet }
+  ];
+  const callsBeforeUnresolvedAtoms = calls.length;
+  result = await resume.lambdaHandler(post({
+    action: "facts",
+    target: "Operations Manager",
+    experience: opaqueDutyOne + " " + opaqueDutyTwo
+  }));
+  assert.equal(result.statusCode, 200, result.body);
+  const unresolvedAtomBody = JSON.parse(result.body);
+  assert.equal(calls.length - callsBeforeUnresolvedAtoms, 2, "RDM-237 unresolved structure receives no second repair");
+  assert.deepEqual(unresolvedAtomBody.warnings, ["Keep each duty or outcome in its own contiguously numbered DUTY ATOM line under the matching role."]);
+
+  const malformedDutySheets = [
+    collapsedTwoFactSheet,
+    atomizedTwoFactSheet.replace("DUTY ATOM 2 (EXACT):", "DUTY ATOM 3 (EXACT):"),
+    atomizedTwoFactSheet.replace("DUTY ATOM 2 (EXACT): " + opaqueDutyTwo, "DUTY ATOM 2 (EXACT): " + opaqueDutyOne),
+    atomizedTwoFactSheet.replace("DUTY ATOM 1 (EXACT): " + opaqueDutyOne, "DUTY ATOM 1 (EXACT): MISSING"),
+    atomizedTwoFactSheet.replace("DUTY ATOM 1 (EXACT): " + opaqueDutyOne, "DUTY ATOM 1 (EXACT): missing"),
+    atomizedTwoFactSheet.replace("DUTY ATOM 1 (EXACT): " + opaqueDutyOne, opaqueDutyOne),
+    atomizedTwoFactSheet.replace("EDUCATION (EXACT OR MISSING): MISSING", "EDUCATION (EXACT OR MISSING): MISSING\nDUTY ATOM 3 (EXACT): Out-of-bound atom.")
+  ];
+  const callsBeforeMalformedDrafts = calls.length;
+  for (const malformedFacts of malformedDutySheets) {
+    result = await resume.lambdaHandler(post({
+      action: "draft",
+      target: "Operations Manager",
+      experience: opaqueDutyOne + " " + opaqueDutyTwo,
+      confirmedFacts: malformedFacts,
+      lengthInputs: { relevantYears: "18", relevantRoleIndexes: [0] }
+    }));
+    assert.equal(result.statusCode, 400, result.body);
+    assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
+    assert.deepEqual(JSON.parse(result.body).warnings, ["Keep each duty or outcome in its own contiguously numbered DUTY ATOM line under the matching role."]);
+  }
+  assert.equal(calls.length, callsBeforeMalformedDrafts, "RDM-237 malformed direct drafts stop before catalog, planning, or provider calls");
+
+  nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nSynthetic Logistics Leader - Synthetic Unit\n\u2022 " + opaqueDutyOne + "\n\u2022 " + opaqueDutyTwo };
+  auditResponseQueue.push((request) => passingAudit(request));
+  const callsBeforeOpaqueDraft = calls.length;
+  result = await resume.lambdaHandler(post({
+    action: "draft",
+    target: "Operations Manager",
+    experience: opaqueDutyOne + " " + opaqueDutyTwo,
+    confirmedFacts: atomizedTwoFactSheet,
+    lengthInputs: { relevantYears: "18", relevantRoleIndexes: [0] }
+  }));
+  assert.equal(result.statusCode, 200, result.body);
+  const opaqueBody = JSON.parse(result.body);
+  const opaqueGenerationCall = calls[callsBeforeOpaqueDraft];
+  const opaqueEligibleView = JSON.parse(opaqueGenerationCall.input.match(/<DRAFT_ELIGIBLE_FACTS>\n([\s\S]*?)\n<\/DRAFT_ELIGIBLE_FACTS>/)[1]);
+  const opaqueRoleFacts = opaqueEligibleView.filter((fact) => fact.owner === "R1" && [opaqueDutyOne, opaqueDutyTwo].includes(fact.text));
+  assert.deepEqual(opaqueRoleFacts.map((fact) => fact.text), [opaqueDutyOne, opaqueDutyTwo], "RDM-233 punctuation and number payload bytes remain exact and ordered");
+  assert.equal(opaqueRoleFacts.every((fact) => fact.unlinked_number === false), true);
+  assert.equal(opaqueBody.lengthPlan.relevantRoles, 1);
+  assert.equal(opaqueBody.lengthPlan.draftEligibleAtoms, 2, "RDM-234 catalog, eligibility, ownership, and A consume the same parsed atoms");
+  assert.doesNotMatch(opaqueGenerationCall.input, /DUTY ATOM [1-9]\d* \(EXACT\)/, "structural labels are not fact payloads");
+  assert.equal(calls.length - callsBeforeOpaqueDraft, 2, "atom-boundary drafting keeps the existing generation and audit calls only");
 
   nextResponse = { status: "completed", output_text: "```text\n**Synthetic Logistics Leader - Synthetic Unit**\n# PROFESSIONAL EXPERIENCE\nLed a 15-person team managing a $2M equipment inventory.\n```" };
   result = await resume.lambdaHandler(post({
@@ -914,7 +1040,7 @@ async function run() {
   assert.equal(calls.slice(callsBeforeEmptyInventory).some((call) => /\"enum\":\[\]/.test(JSON.stringify(call))), false);
 
   const syntheticRoleDuties = ["Led work across 17 plants.", "Delivered 1,200 hires.", "Led a team of 9 specialists.", "Coached the top 15 leaders.", "Led a 110-person operation with a $9M budget and 1,100 to 1,300 hires.", "Planned for 7,000 personnel across 65+ locations."];
-  const liveLedger = syntheticRoleDuties.map((duty, index) => "ROLE " + (index + 1) + "\nJOB TITLE (EXACT): Synthetic Role " + (index + 1) + "\nEMPLOYER OR UNIT (EXACT): Synthetic Employer " + (index + 1) + "\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): " + duty + (index === 0 ? "\nPlanning and analytics." : "")).join("\n\n") + "\n\nEDUCATION (EXACT OR MISSING): M.B.A., Synthetic Management, Synthetic University\nCERTIFICATIONS (EXACT OR MISSING): Synthetic Certified Professional; Synthetic Leadership License\nSKILLS AND TOOLS (EXACT OR MISSING): Planning; Analytics\nNUMBERS AND SCALE (EXACT OR MISSING): 17 plants; 1,200 hires; team of 9 specialists; top 15 leaders; 110-person operation; $9M budget; 1,100 to 1,300 hires; 7,000 personnel; 65+ locations; 26 years of service; 9 corporate recruiters; 1,200 employees; 18 states\nTARGET ROLE (EXACT OR MISSING): Talent Management Manager";
+  const liveLedger = syntheticRoleDuties.map((duty, index) => "ROLE " + (index + 1) + "\nJOB TITLE (EXACT): Synthetic Role " + (index + 1) + "\nEMPLOYER OR UNIT (EXACT): Synthetic Employer " + (index + 1) + "\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): " + duty + (index === 0 ? "\nDUTY ATOM 2 (EXACT): Planning and analytics." : "")).join("\n\n") + "\n\nEDUCATION (EXACT OR MISSING): M.B.A., Synthetic Management, Synthetic University\nCERTIFICATIONS (EXACT OR MISSING): Synthetic Certified Professional; Synthetic Leadership License\nSKILLS AND TOOLS (EXACT OR MISSING): Planning; Analytics\nNUMBERS AND SCALE (EXACT OR MISSING): 17 plants; 1,200 hires; team of 9 specialists; top 15 leaders; 110-person operation; $9M budget; 1,100 to 1,300 hires; 7,000 personnel; 65+ locations; 26 years of service; 9 corporate recruiters; 1,200 employees; 18 states\nTARGET ROLE (EXACT OR MISSING): Talent Management Manager";
   const liveCivilianDraft = "PROFESSIONAL EXPERIENCE\n" + syntheticRoleDuties.map((duty, index) => "Synthetic Role " + (index + 1) + " - Synthetic Employer " + (index + 1) + "\n" + duty).join("\n\n") + "\n\nEDUCATION\nM.B.A., Synthetic Management, Synthetic University\n\nCERTIFICATIONS\nSynthetic Certified Professional\nSynthetic Leadership License";
   nextResponse = { status: "completed", output_text: liveCivilianDraft };
   auditResponseQueue.push((request) => passingAudit(request, { unmet_gaps: ["Dates for roles where none were confirmed"], scorecard: auditDimensions.map((dimension) => ({ dimension, status: dimension === "date_completeness" ? "NEEDS MEMBER FACT" : "PASS", evidence: "Synthetic v0.8 fixture." })) }));
@@ -949,7 +1075,7 @@ async function run() {
   }
 
   const ownershipDraft = "SUMMARY\nSynthetic Role 1 at Synthetic Employer 1 provides context.\nThis summary claim stays global.\n\nPROFESSIONAL EXPERIENCE\nSynthetic Role 1 - Synthetic Employer 1\nWorked with Synthetic Role 2 without changing ownership.\n\nSynthetic Role 2 - Synthetic Employer 2\nLed synthetic function 2.";
-  const ownershipLedger = "ROLE 1\nJOB TITLE (EXACT): Synthetic Role 1\nEMPLOYER OR UNIT (EXACT): Synthetic Employer 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Worked with Synthetic Role 2 without changing ownership.\n\nROLE 2\nJOB TITLE (EXACT): Synthetic Role 2\nEMPLOYER OR UNIT (EXACT): Synthetic Employer 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led synthetic function 2.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 88 sites\nTARGET ROLE (EXACT OR MISSING): Talent Management Manager";
+  const ownershipLedger = "ROLE 1\nJOB TITLE (EXACT): Synthetic Role 1\nEMPLOYER OR UNIT (EXACT): Synthetic Employer 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Worked with Synthetic Role 2 without changing ownership.\n\nROLE 2\nJOB TITLE (EXACT): Synthetic Role 2\nEMPLOYER OR UNIT (EXACT): Synthetic Employer 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led synthetic function 2.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 88 sites\nTARGET ROLE (EXACT OR MISSING): Talent Management Manager";
   nextResponse = { status: "completed", output_text: ownershipDraft };
   auditResponseQueue.push((request) => {
     const inventory = clauseInventoryFromAuditRequest(request);
@@ -972,7 +1098,7 @@ async function run() {
   assert.equal((JSON.parse(result.body).bullets.match(/Synthetic License/g) || []).length, 1);
   assert.equal((JSON.parse(result.body).bullets.match(/B\.S\., Synthetic University/g) || []).length, 1);
 
-  const missingEmployerLedger = "ROLE 4\nJOB TITLE (EXACT): Synthetic Solo Role\nEMPLOYER OR UNIT (EXACT): MISSING\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led planning work.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+  const missingEmployerLedger = "ROLE 4\nJOB TITLE (EXACT): Synthetic Solo Role\nEMPLOYER OR UNIT (EXACT): MISSING\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led planning work.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
   nextResponse = { status: "completed", output_text: "EXPERIENCE\nSynthetic Solo Role\nLed planning work." };
   auditResponseQueue.push((request) => { assert.deepEqual(clauseInventoryFromAuditRequest(request).map((item) => item.owner), ["R1", "R1"]); return passingAudit(request); });
   result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: missingEmployerLedger, confirmedFacts: missingEmployerLedger }));
@@ -996,7 +1122,7 @@ async function run() {
     ["Metadata Role 4", "Metadata Unit 4", "MISSING", "MISSING", "Performed delta planning."],
     ["Metadata Role 5", "Metadata Unit 5", "St. Louis, Mo. (Hybrid)", "May 2021 – Present", "Performed echo planning."],
     ["Metadata Role 6", "Metadata Unit 6", "Pacific Region", "2024 to Present", "Performed foxtrot planning."]
-  ].map((role, index) => "ROLE " + (index + 1) + "\nJOB TITLE (EXACT): " + role[0] + "\nEMPLOYER OR UNIT (EXACT): " + role[1] + "\nLOCATION (EXACT OR MISSING): " + role[2] + "\nDATES (EXACT OR MISSING): " + role[3] + "\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): " + role[4]).join("\n\n") + "\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+  ].map((role, index) => "ROLE " + (index + 1) + "\nJOB TITLE (EXACT): " + role[0] + "\nEMPLOYER OR UNIT (EXACT): " + role[1] + "\nLOCATION (EXACT OR MISSING): " + role[2] + "\nDATES (EXACT OR MISSING): " + role[3] + "\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): " + role[4]).join("\n\n") + "\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
   const metadataDuties = ["Performed alpha planning.", "• Remote / Global", "Performed charlie planning.", "Performed delta planning.", "Performed echo planning.", "Performed foxtrot planning."];
   const incompleteMetadataDraft = "PROFESSIONAL EXPERIENCE:\n" + metadataDuties.map((duty, index) => "Metadata Role " + (index + 1) + " - Metadata Unit " + (index + 1) + "\n" + duty).join("\n\n");
   function metadataAudit(request) {
@@ -1062,7 +1188,7 @@ async function run() {
   result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: metadataLedger, confirmedFacts: metadataLedger }));
   assert.equal(result.statusCode, 422);
 
-  const duplicateMetadataLedger = "ROLE 1\nJOB TITLE (EXACT): Program Lead\nEMPLOYER OR UNIT (EXACT): Shared Unit\nLOCATION (EXACT OR MISSING): Alpha Site\nDATES (EXACT OR MISSING): 2018 - 2019\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led alpha work.\n\nROLE 7\nJOB TITLE (EXACT): Program Lead\nEMPLOYER OR UNIT (EXACT): Shared Unit\nLOCATION (EXACT OR MISSING): Bravo Site\nDATES (EXACT OR MISSING): 2020 - 2021\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led bravo work.\n\nROLE 9\nJOB TITLE (EXACT): Program Leader\nEMPLOYER OR UNIT (EXACT): Shared Unit\nLOCATION (EXACT OR MISSING): Charlie Site\nDATES (EXACT OR MISSING): 2022 - 2023\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led charlie work.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+  const duplicateMetadataLedger = "ROLE 1\nJOB TITLE (EXACT): Program Lead\nEMPLOYER OR UNIT (EXACT): Shared Unit\nLOCATION (EXACT OR MISSING): Alpha Site\nDATES (EXACT OR MISSING): 2018 - 2019\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led alpha work.\n\nROLE 7\nJOB TITLE (EXACT): Program Lead\nEMPLOYER OR UNIT (EXACT): Shared Unit\nLOCATION (EXACT OR MISSING): Bravo Site\nDATES (EXACT OR MISSING): 2020 - 2021\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led bravo work.\n\nROLE 9\nJOB TITLE (EXACT): Program Leader\nEMPLOYER OR UNIT (EXACT): Shared Unit\nLOCATION (EXACT OR MISSING): Charlie Site\nDATES (EXACT OR MISSING): 2022 - 2023\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led charlie work.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
   const duplicateMetadataDraft = "WORK EXPERIENCE —\nProgram Lead - Shared Unit\nLed alpha work.\nProgram Lead - Shared Unit\nLed bravo work.\nProgram Leader - Shared Unit\nLed charlie work.";
   nextResponse = { status: "completed", output_text: duplicateMetadataDraft };
   auditResponseQueue.push((request) => metadataAudit(request));
@@ -1079,7 +1205,7 @@ async function run() {
   // RDM-123..RDM-141: replacement, exact atoms, bound/order, unsafe filters, isolation,
   // omission/insertion, preservation/idempotence, federal isolation, closed support,
   // deterministic trace, remaining-claim withholding, ten dimensions, and controls.
-  const summaryLedger = "ROLE 1\nJOB TITLE (EXACT): Summary Role\nEMPLOYER OR UNIT (EXACT): Summary Unit\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led confirmed planning work.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING):  Planning ; Workday  HCM ; Planning ; ; MISSING ; 12 years ; $5M ; 25% ; March 2020 ; Present ; twenty-six years ; three programs ; one-on-one coaching ; Analytics? ; Coaching ; Facilitation\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+  const summaryLedger = "ROLE 1\nJOB TITLE (EXACT): Summary Role\nEMPLOYER OR UNIT (EXACT): Summary Unit\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led confirmed planning work.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING):  Planning ; Workday  HCM ; Planning ; ; MISSING ; 12 years ; $5M ; 25% ; March 2020 ; Present ; twenty-six years ; three programs ; one-on-one coaching ; Analytics? ; Coaching ; Facilitation\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
   const summaryBaseDraft = "CORE SKILLS\nPlanning\n\nPROFESSIONAL EXPERIENCE\nSummary Role - Summary Unit\nLed confirmed planning work.";
   const generatedUnsafeSummary = "SUMMARY:\nCross-functional career pipeline leader for Program Analyst work.\n\n" + summaryBaseDraft;
   let canonicalSummaryAuditCandidate = "";
@@ -1163,7 +1289,7 @@ async function run() {
   assert.equal(JSON.parse(result.body).bullets, federalSummaryDraft);
 
   // RDM-142..RDM-157: owner-aware unlinked-number collision handling.
-  const collisionFacts = "ROLE 1\nJOB TITLE (EXACT): Collision Role 1\nEMPLOYER OR UNIT (EXACT): Collision Unit 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led a 110-person recruiting operation in 2026.\nManaged a $9M budget.\nAchieved 95% readiness.\nSupported 65+ sites.\nProcessed 1,200.50 cases.\nDelivered 1,100 to 1,300 hires.\n\nROLE 2\nJOB TITLE (EXACT): Collision Role 2\nEMPLOYER OR UNIT (EXACT): Collision Unit 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led a 110-person workforce operation and managed $9 million.\n\nROLE 3\nJOB TITLE (EXACT): Collision Role 3\nEMPLOYER OR UNIT (EXACT): Collision Unit 3\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Managed $9 million.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 26; 110-person operation; 95; 65; 1,200.5; 1200.50; $9 million; 9 million; Twenty-six years; 1,200 employees; 18 states\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+  const collisionFacts = "ROLE 1\nJOB TITLE (EXACT): Collision Role 1\nEMPLOYER OR UNIT (EXACT): Collision Unit 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led a 110-person recruiting operation in 2026.\nDUTY ATOM 2 (EXACT): Managed a $9M budget.\nDUTY ATOM 3 (EXACT): Achieved 95% readiness.\nDUTY ATOM 4 (EXACT): Supported 65+ sites.\nDUTY ATOM 5 (EXACT): Processed 1,200.50 cases.\nDUTY ATOM 6 (EXACT): Delivered 1,100 to 1,300 hires.\n\nROLE 2\nJOB TITLE (EXACT): Collision Role 2\nEMPLOYER OR UNIT (EXACT): Collision Unit 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led a 110-person workforce operation and managed $9 million.\n\nROLE 3\nJOB TITLE (EXACT): Collision Role 3\nEMPLOYER OR UNIT (EXACT): Collision Unit 3\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Managed $9 million.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 26; 110-person operation; 95; 65; 1,200.5; 1200.50; $9 million; 9 million; Twenty-six years; 1,200 employees; 18 states\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
   function collisionDraft(roleOneClaim, prefix) {
     return (prefix || "") + "PROFESSIONAL EXPERIENCE\nCollision Role 1 - Collision Unit 1\n" + roleOneClaim + "\n\nCollision Role 2 - Collision Unit 2\nLed a 110-person workforce operation and managed $9 million.\n\nCollision Role 3 - Collision Unit 3\nManaged $9 million.";
   }
@@ -1296,7 +1422,7 @@ async function run() {
   // RDM-158..RDM-171: civilian canonical Core Skills and whole-claim translation grounding.
   const coreAtoms = ["Planning", "Workday  HCM", "Analytics", "Coaching", "Facilitation", "Recruiting", "Workforce planning", "Process improvement", "Data analysis", "Change management", "Stakeholder engagement"];
   function coreLedgerWithSkills(skillLine) {
-    return "ROLE 1\nJOB TITLE (EXACT): Core Role\nEMPLOYER OR UNIT (EXACT): Core Unit\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Built a transition-planning application for service members.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): " + skillLine + "\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+    return "ROLE 1\nJOB TITLE (EXACT): Core Role\nEMPLOYER OR UNIT (EXACT): Core Unit\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Built a transition-planning application for service members.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): " + skillLine + "\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
   }
   const coreRoleDraft = "PROFESSIONAL EXPERIENCE\nCore Role - Core Unit\nBuilt a transition-planning application for service members.";
   for (let atomCount = 1; atomCount <= 9; atomCount += 1) {
@@ -1353,7 +1479,7 @@ async function run() {
   assert.equal(coreTraces[0].transform, "exact");
   assert.equal(coreTraces[0].verdict, "supported");
 
-  const roleDecoyCoreLedger = coreLedger.replace("DUTIES AND OUTCOMES (EXACT FACTS ONLY): Built a transition-planning application for service members.", "DUTIES AND OUTCOMES (EXACT FACTS ONLY): Built a transition-planning application for service members.\nSKILLS AND TOOLS (EXACT OR MISSING): Decoy Candidate Support; Workday  HCM");
+  const roleDecoyCoreLedger = coreLedger.replace("DUTY ATOM 1 (EXACT): Built a transition-planning application for service members.", "DUTY ATOM 1 (EXACT): Built a transition-planning application for service members.\nSKILLS AND TOOLS (EXACT OR MISSING): Decoy Candidate Support; Workday  HCM");
   nextResponse = { status: "completed", output_text: broadGeneratedCore };
   auditResponseQueue.push((request) => {
     const catalog = factCatalogFromAuditRequest(request);
@@ -1595,7 +1721,8 @@ async function run() {
         "EMPLOYER OR UNIT (EXACT): " + employer,
         "LOCATION (EXACT OR MISSING): MISSING",
         "DATES (EXACT OR MISSING): MISSING",
-        "DUTIES AND OUTCOMES (EXACT FACTS ONLY): " + atoms.map((atom) => atom.text).join("; "),
+        "DUTIES AND OUTCOMES (EXACT FACTS ONLY):",
+        ...atoms.map((atom, atomIndex) => "DUTY ATOM " + (atomIndex + 1) + " (EXACT): " + atom.text),
         ""
       );
       draftLines.push(title + " - " + employer);
@@ -1673,6 +1800,15 @@ async function run() {
   assert.equal(exactTenThree.body.lengthPlan.branch, "confirmed_years_10_3");
   const exactFifteenTwo = await runAdaptiveCase({ label: "RDM-188 15/2", relevantYears: 15, roles: 2, atoms: 10, expectedPages: 2 });
   assert.equal(exactFifteenTwo.body.lengthPlan.branch, "confirmed_years_15_2");
+  const seniorSixRoleAtoms = await runAdaptiveCase({ label: "RDM-235 six-role atom boundary", relevantYears: 18, roles: 6, atoms: 24, expectedPages: 2 });
+  assert.equal(seniorSixRoleAtoms.body.lengthPlan.relevantYears, 18);
+  assert.equal(seniorSixRoleAtoms.body.lengthPlan.relevantRoles, 6);
+  assert.equal(seniorSixRoleAtoms.body.lengthPlan.draftEligibleAtoms, 24);
+  assert.equal(seniorSixRoleAtoms.body.lengthPlan.recommendedPages, 2);
+  assert.equal(seniorSixRoleAtoms.body.lengthPlan.branch, "confirmed_years_10_3");
+  for (const roleBlock of seniorSixRoleAtoms.fixture.facts.split(/^ROLE\s+\d+\s*$/m).slice(1)) {
+    assert.equal((roleBlock.match(/^DUTY ATOM [1-4] \(EXACT\): /gm) || []).length, 4, "RDM-235 each selected role retains four separately countable atoms");
+  }
 
   for (const boundary of [
     { label: "RDM-189 9/3", relevantYears: 9, roles: 3, atoms: 10, expectedPages: 1 },
@@ -1735,7 +1871,8 @@ async function run() {
     "EMPLOYER OR UNIT (EXACT): Synthetic Engine Group",
     "LOCATION (EXACT OR MISSING): MISSING",
     "DATES (EXACT OR MISSING): MISSING",
-    "DUTIES AND OUTCOMES (EXACT FACTS ONLY): Calibrated equipment and repaired engine records.",
+    "DUTIES AND OUTCOMES (EXACT FACTS ONLY):",
+    "DUTY ATOM 1 (EXACT): Calibrated equipment and repaired engine records.",
     "",
     "EDUCATION (EXACT OR MISSING): MISSING",
     "CERTIFICATIONS (EXACT OR MISSING): MISSING",
@@ -1891,7 +2028,7 @@ async function run() {
   assert.deepEqual(clientStages.slice(stagesBeforeFederalCore), ["resume_federal", "resume_audit"]);
   assert.equal(JSON.parse(result.body).bullets, federalCoreDraft);
 
-  const boundaryLedger = "ROLE 1\nJOB TITLE (EXACT): Boundary Role 1\nEMPLOYER OR UNIT (EXACT): Boundary Employer 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and delivered 1100 hires.\n\nROLE 2\nJOB TITLE (EXACT): Boundary Role 2\nEMPLOYER OR UNIT (EXACT): Boundary Employer 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Used shared 44-unit scale and managed 22 specialists.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 22 specialists; shared 44-unit scale; 110; 77 sites\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+  const boundaryLedger = "ROLE 1\nJOB TITLE (EXACT): Boundary Role 1\nEMPLOYER OR UNIT (EXACT): Boundary Employer 1\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Used shared 44-unit scale and delivered 1100 hires.\n\nROLE 2\nJOB TITLE (EXACT): Boundary Role 2\nEMPLOYER OR UNIT (EXACT): Boundary Employer 2\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Used shared 44-unit scale and managed 22 specialists.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): 22 specialists; shared 44-unit scale; 110; 77 sites\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
   nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nBoundary Role 1 - Boundary Employer 1\nDelivered hiring work.\nBoundary Role 2 - Boundary Employer 2\nManaged specialist work." };
   auditResponseQueue.push((request) => {
     const catalog = factCatalogFromAuditRequest(request);
@@ -2059,7 +2196,7 @@ async function run() {
   assert.equal(result.statusCode, 502);
   assert.match(JSON.parse(result.body).error, /quality review could not be verified/);
 
-  const threeRoleFacts = "ROLE 1\nJOB TITLE (EXACT): NCOIC\nEMPLOYER OR UNIT (EXACT): 1st Bn., U.S. Army\nLOCATION (EXACT OR MISSING): Fort Example\nDATES (EXACT OR MISSING): Jan 2020 - Dec 2021\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led PMCS for 15 personnel; managed $2M; maintained 95% readiness.\n\nROLE 2\nJOB TITLE (EXACT): Deputy Director of Personnel\nEMPLOYER OR UNIT (EXACT): 1st Bn., U.S. Army\nLOCATION (EXACT OR MISSING): Fort Example\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Led talent management and succession planning.\n\nROLE 3\nJOB TITLE (EXACT): Senior Advisor\nEMPLOYER OR UNIT (EXACT): 1st Bn., U.S. Army\nLOCATION (EXACT OR MISSING): Fort Example\nDATES (EXACT OR MISSING): 2022 - 2023\nDUTIES AND OUTCOMES (EXACT FACTS ONLY): Advised leaders on workforce planning.\n\nEDUCATION (EXACT OR MISSING): B.S., Example University\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): PMCS; talent management\nNUMBERS AND SCALE (EXACT OR MISSING): 15 personnel; $2M; 95%\nTARGET ROLE (EXACT OR MISSING): Talent Development Manager";
+  const threeRoleFacts = "ROLE 1\nJOB TITLE (EXACT): NCOIC\nEMPLOYER OR UNIT (EXACT): 1st Bn., U.S. Army\nLOCATION (EXACT OR MISSING): Fort Example\nDATES (EXACT OR MISSING): Jan 2020 - Dec 2021\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led PMCS for 15 personnel\nDUTY ATOM 2 (EXACT): managed $2M\nDUTY ATOM 3 (EXACT): maintained 95% readiness.\n\nROLE 2\nJOB TITLE (EXACT): Deputy Director of Personnel\nEMPLOYER OR UNIT (EXACT): 1st Bn., U.S. Army\nLOCATION (EXACT OR MISSING): Fort Example\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led talent management and succession planning.\n\nROLE 3\nJOB TITLE (EXACT): Senior Advisor\nEMPLOYER OR UNIT (EXACT): 1st Bn., U.S. Army\nLOCATION (EXACT OR MISSING): Fort Example\nDATES (EXACT OR MISSING): 2022 - 2023\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Advised leaders on workforce planning.\n\nEDUCATION (EXACT OR MISSING): B.S., Example University\nCERTIFICATIONS (EXACT OR MISSING): PMP\nSKILLS AND TOOLS (EXACT OR MISSING): PMCS; talent management\nNUMBERS AND SCALE (EXACT OR MISSING): 15 personnel; $2M; 95%\nTARGET ROLE (EXACT OR MISSING): Talent Development Manager";
   const threeRoleSource = "NCOIC at 1st Bn., U.S. Army from Jan 2020 - Dec 2021. Led PMCS for 15 personnel, managed $2M, and maintained 95% readiness; later served as Deputy Director of Personnel, then served as Senior Advisor at 1st Bn., U.S. Army from 2022 - 2023. Led talent management, succession planning, and workforce planning. B.S., Example University. PMP.";
   const civilianThreeRoleDraft = "PROFESSIONAL EXPERIENCE\nNCOIC - 1st Bn., U.S. Army\nFort Example | Jan 2020 - Dec 2021\nLed preventive maintenance for 15 personnel and managed $2M while maintaining 95% readiness.\n\nDeputy Director of Personnel - 1st Bn., U.S. Army\nLed talent management and succession planning.\n\nSenior Advisor - 1st Bn., U.S. Army\nFort Example | 2022 - 2023\nAdvised leaders on workforce planning.\n\nCERTIFICATIONS\nPMP\nEDUCATION\nB.S., Example University";
   nextResponse = { status: "completed", output_text: civilianThreeRoleDraft };
@@ -2556,6 +2693,20 @@ async function run() {
   assert.match(resumeSource, /function civilianPreGenerationLengthPlan/);
   assert.match(resumeSource, /const preGenerationLengthPlan = action === "draft" && mode !== "federal"/);
   assert.match(resumeSource, /draftEligibleAtoms >= TWO_PAGE_MIN_DRAFT_ELIGIBLE_ATOMS/);
+  assert.equal((resumeSource.match(/function roleDutyAtomRecords\(/g) || []).length, 1, "RDM-231 one shared duty-atom parser");
+  assert.match(resumeSource, /DUTIES AND OUTCOMES \(EXACT FACTS ONLY\):\nDUTY ATOM 1 \(EXACT\):/);
+  assert.match(resumeSource, /Number\(atomMatch\[1\]\) !== expectedNumber/);
+  assert.match(resumeSource, /seenPayloads\.has\(atomMatch && atomMatch\[2\]\)/);
+  const dutyAtomParserSource = resumeSource.match(/  function roleDutyAtomRecords\(facts\) \{[\s\S]*?\n  \}\n\n  function factSheetIssues/)[0];
+  assert.doesNotMatch(dutyAtomParserSource, /\.split\(\/\[;\\n\]/, "RDM-233 parser does not split payload punctuation");
+  assert.doesNotMatch(dutyAtomParserSource, /\.replace\(\/\\s\+\/g/, "RDM-233 parser does not collapse internal whitespace");
+  const dutyEvidenceSource = resumeSource.match(/  function roleDutyEvidenceAtoms\(facts, scopedFacts\) \{[\s\S]*?\n  \}\n\n  function civilianPreGenerationLengthPlan/)[0];
+  assert.match(dutyEvidenceSource, /roleDutyAtomRecords\(facts\)/, "RDM-234 A consumes the shared parser");
+  assert.match(dutyEvidenceSource, /factText === atom/, "RDM-234 eligibility uses exact payload identity");
+  assert.doesNotMatch(dutyEvidenceSource, /hasExactBoundaryOccurrence|indexOf\(atom\)|replace\(\/\\s\+\/g|split\(\/\[/, "RDM-233 and RDM-234 add no fuzzy or punctuation-based atom reconstruction");
+  const factCatalogSource = resumeSource.match(/  function factCatalog\(facts\) \{[\s\S]*?\n  \}\n\n  function draftEligibleFacts/)[0];
+  assert.match(factCatalogSource, /const dutyRecords = roleDutyAtomRecords\(facts\)/, "RDM-234 catalog consumes the shared parser");
+  assert.match(factCatalogSource, /text: atom\.text/, "RDM-233 catalog retains exact parsed payload bytes");
   assert.match(resumeSource, /function confirmCivilianLengthPlan/);
   assert.match(resumeSource, /function confirmedRelevantRoleIndexes/);
   assert.match(resumeSource, /function confirmedRoleBlockCount/);
@@ -2593,7 +2744,7 @@ async function run() {
   assert.equal((resumeSource.match(/AUDIT_MAX_OUTPUT_TOKENS = 4000/g) || []).length, 1, "RDM-216 audit cap remains unchanged");
 
   await runRenderRegression();
-  console.log("PASS: synthetic RDM-1..RDM-230 integration paths; all prior grounding, DOCX, federal, adaptive-length, guarded-stage, and v0.22 Resume transport fixtures verified locally");
+  console.log("PASS: synthetic RDM-1..RDM-239 integration paths; all prior grounding, DOCX, federal, adaptive-length, guarded-stage, v0.22 Resume transport, and v0.23 atom-boundary fixtures verified locally");
 }
 
 run().catch((error) => {

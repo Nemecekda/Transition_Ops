@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.22"
+  version: "0.23"
   status: PENDING
 ---
 
@@ -13,9 +13,9 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.22 is PENDING until the synthetic RDM regression suite and live-clone
+Version 0.23 is PENDING until the synthetic RDM regression suite and live-clone
 validation execute against the app. Specification approval and governance
-calibration are not v0.22 application execution evidence.
+calibration are not v0.23 application execution evidence.
 
 ## TRIGGERS AND GATE
 
@@ -401,6 +401,54 @@ sparse-page correction does not turn a genuinely defective layout into PASS.
 Federal output and behavior remain unchanged. This contract adds no model call,
 retry, cap, storage, logging, analytics, privacy change, usage-limit change, or
 cost exposure. Maximum incremental API exposure is $0.
+
+## ROLE DUTY/OUTCOME ATOM BOUNDARY - VERSION 0.23
+
+The extraction-to-planner boundary uses a closed, role-local record grammar:
+
+```text
+DUTIES AND OUTCOMES (EXACT FACTS ONLY):
+DUTY ATOM 1 (EXACT): <opaque exact payload>
+DUTY ATOM 2 (EXACT): <opaque exact payload>
+```
+
+Numbering restarts at 1 for each role and remains contiguous. When no duty or
+outcome is stated, use exactly `DUTY ATOM 1 (EXACT): MISSING`. Explicitly
+separate source duties and outcomes remain separate records in source order.
+Only the generated record prefix and structural edge whitespace are outside the
+payload. Preserve every payload's internal bytes exactly.
+
+Treat each payload as opaque. Never split or join it by guessing from periods,
+semicolons, commas, colons, dashes, slashes, parentheses, capitalization,
+abbreviations, decimals, dates, ranges, currency, percentages, or plus signs.
+Undelimited prose inside one otherwise valid record remains one atom; the server
+must not manufacture evidence by sentence guessing. The extraction and repair
+instructions, rather than a punctuation heuristic, require explicitly separate
+source items to remain separate.
+
+Atom identity is exact role owner plus exact payload. An exact duplicate under
+one role is malformed and cannot increase `A`; identical payloads under
+different roles remain distinct role-owned atoms. Catalog construction,
+draft-eligibility filtering, and adaptive `A` counting consume the same parsed
+records. Structural labels are never catalog facts or generator payloads.
+
+An inline duty payload, unnumbered continuation, numbering gap or duplicate,
+duplicate same-role payload, mixed `MISSING`, empty payload, or malformed record
+must not be normalized into evidence. It either triggers only the existing
+single structural repair after initial extraction or fails closed with a
+member-safe warning. A one-role inline payload with no other structural issue
+uses the fail-closed path without a repair call; multi-role or continuation
+collapse may use the existing single repair. The repair must return the complete
+fact sheet in the same closed grammar and may neither add nor retry a model
+call. If that repair remains invalid, the app may return the editable sheet with
+a member-safe warning, but it must block catalog construction, adaptive
+planning, and drafting. A directly submitted invalid confirmed sheet blocks
+before any provider call.
+
+This boundary changes no model, stage, output cap, call order, four-call maximum,
+provider retry, request limit, budget guard, privacy control, public failure,
+federal behavior, grounding rule, audit, export, pagination, or DOCX
+content-equivalence gate. Maximum incremental API exposure is $0.
 
 ## ADAPTIVE CIVILIAN LENGTH CONTRACT
 
@@ -1514,6 +1562,49 @@ all existing hard input bounds.
   `index.html`, `pwa-sw.js`, OpenAI migration regression, and registry files;
   no function or model invocation, provider change, commit, push, deployment,
   main merge, or production action is authorized.
+- **RDM-231 Closed duty-atom grammar:** every role must use one empty duties
+  header followed by contiguous `DUTY ATOM n (EXACT)` records starting at 1,
+  or exactly one numbered `MISSING` record. Inline values, unnumbered lines,
+  gaps, duplicate numbers or payloads, mixed `MISSING`, and empty payloads are
+  structurally invalid. A one-role inline payload with no other structural issue
+  remains byte-exact and fails closed with member-safe guidance and no repair
+  call; it is never normalized into evidence.
+- **RDM-232 Separation and order:** explicitly separate synthetic source duties
+  and outcomes must remain separate role-owned records in source order through
+  initial extraction and the existing single repair.
+- **RDM-233 Byte opacity:** punctuation-heavy synthetic payloads containing
+  abbreviations, semicolons, commas, decimals, calendar ranges, currency,
+  percentages, and plus signs must enter the catalog and eligible view with
+  identical internal bytes. No punctuation or capitalization heuristic may
+  split, join, normalize, or rewrite them.
+- **RDM-234 Shared parser and ownership:** catalog construction,
+  draft-eligibility filtering, and `A` must consume the same parsed atom
+  records. Atom identity is role owner plus exact payload; same-role exact
+  duplicates cannot raise `A`, and identical payloads under different roles
+  remain separately role-owned.
+- **RDM-235 Senior six-role boundary:** a synthetic civilian fixture with six
+  selected roles, explicit `Y = 18`, and four distinct role-owned atoms per
+  role must report `R = 6`, `A = 24`, satisfy the evidence gate, and recommend
+  two pages before generation.
+- **RDM-236 Collapsed extraction:** a multi-role inline duty field, or any
+  collapsed field with a nonblank continuation, must trigger exactly the
+  existing one structural repair. A valid repaired sheet proceeds; no second
+  repair or retry is permitted.
+- **RDM-237 Fail-closed malformed structure:** an invalid repaired sheet may be
+  returned only with member-safe correction guidance and must not reach catalog
+  construction, planning, or drafting. A malformed direct draft submission
+  must stop before any provider call.
+- **RDM-238 Unchanged operational boundary:** models, stage order,
+  facts/repair/civilian/federal/audit caps of 3500/3500/2200/1900/4000, the
+  four-call maximum, zero provider retries, shared USD 4 guard, request limits,
+  `store: false`, privacy, public failures, federal behavior, grounding, audit,
+  pagination, export, and DOCX content-equivalence gates remain unchanged.
+  Maximum incremental API exposure is $0.
+- **RDM-239 v0.23 validation and scope:** run all five local gates and the
+  real-artifact 4N check. Scope is exactly the Commander-authorized Resume
+  function, OpenAI migration regression, canonical Resume skill, and registry;
+  no hosted function or model invocation, provider change, commit, push,
+  deployment, main merge, or production action is authorized.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -1524,13 +1615,16 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.22 until all synthetic application
+Keep registry item #6 PENDING at version 0.23 until all synthetic application
 cases execute and live-clone evidence, including actual DOCX rendering in a
 Word-compatible renderer, passes. RDM-199 through RDM-207 governance calibration
 executed 9/9 PASS on 2026-08-31; no application, provider, hosted, or Word
 execution is claimed by that result. RDM-208 through RDM-230 require executable
 local transport stubs plus the prescribed repository and artifact gates; those
 results do not substitute for live-clone or Word-compatible-renderer evidence.
+RDM-231 through RDM-239 require the closed duty-atom parser, extraction/repair
+fixtures, senior six-role boundary, and prescribed repository/artifact gates;
+they do not substitute for a fresh live-clone end-to-end Resume validation.
 After successful application execution and live evidence, force-mod proposes
 the smallest evidence-supported revision and Commander rules on promotion to
 CODIFIED 1.0.
