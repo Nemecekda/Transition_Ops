@@ -46,6 +46,27 @@ function resumeTransportApiFromIndex(fetchImpl, options) {
   let abortCount = 0;
   const scheduledDelays = [];
   const timers = new Map();
+  const domNodes = [];
+  const syntheticDocument = {
+    body: {
+      appendChild: (node) => {
+        domNodes.push(node);
+        return node;
+      }
+    },
+    createElement: (tagName) => {
+      const attributes = new Map();
+      return {
+        tagName: String(tagName).toUpperCase(),
+        id: "",
+        hidden: false,
+        textContent: "",
+        setAttribute: (name, value) => attributes.set(String(name), String(value)),
+        getAttribute: (name) => attributes.has(String(name)) ? attributes.get(String(name)) : null
+      };
+    },
+    getElementById: (id) => domNodes.find((node) => node.id === id) || null
+  };
   function SyntheticAbortController() {
     if (!settings.abortControllerConstructs) throw new TypeError();
     const listeners = new Set();
@@ -64,6 +85,7 @@ function resumeTransportApiFromIndex(fetchImpl, options) {
   }
   const context = {
     window: {},
+    document: syntheticDocument,
     fetch: fetchImpl,
     AbortController: settings.abortControllerAvailable ? SyntheticAbortController : undefined,
     setTimeout: (callback, delay) => {
@@ -97,7 +119,9 @@ function resumeTransportApiFromIndex(fetchImpl, options) {
     pendingTimerCount: () => timers.size,
     scheduledDelays: () => scheduledDelays.slice(),
     clearCount: () => clearCount,
-    abortCount: () => abortCount
+    abortCount: () => abortCount,
+    domDiagnosticNode: () => syntheticDocument.getElementById("tops-resume-transport-diagnostic"),
+    domDiagnosticNodeCount: () => domNodes.filter((node) => node.id === "tops-resume-transport-diagnostic").length
   };
 }
 
@@ -357,6 +381,13 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
   assert.equal((sourceHarness.source.match(/\bclearTimeout\(/g) || []).length, 1, "RDM-217 transport has exactly one timer-clear site");
   assert.equal((sourceHarness.source.match(/signal: controller\.signal/g) || []).length, 1, "RDM-217 sole fetch receives the controller signal");
   assert.equal((sourceHarness.source.match(/if \(settled\) return;/g) || []).length, 1, "RDM-218 one request-local guard enforces first-terminal-result wins");
+  assert.equal((sourceHarness.source.match(/var diagnosticNodeId = "tops-resume-transport-diagnostic"/g) || []).length, 1, "RDM-225 transport owns one fixed DOM diagnostic node ID");
+  assert.equal((sourceHarness.source.match(/document\.createElement\("div"\)/g) || []).length, 1, "RDM-225 transport has one hidden inert DOM node construction site");
+  assert.equal((sourceHarness.source.match(/node\.hidden = true/g) || []).length, 1, "RDM-225 DOM diagnostic is hidden");
+  assert.equal((sourceHarness.source.match(/node\.setAttribute\("aria-hidden", "true"\)/g) || []).length, 1, "RDM-225 DOM diagnostic is excluded from the accessibility tree");
+  assert.equal((sourceHarness.source.match(/node\.setAttribute\("inert", ""\)/g) || []).length, 1, "RDM-225 DOM diagnostic is inert");
+  assert.equal((sourceHarness.source.match(/mirrorDiagnostic\(null\)/g) || []).length, 1, "RDM-227 each request has one synchronous DOM-clear site");
+  assert.equal((sourceHarness.source.match(/^    mirrorDiagnostic\(diagnostic\);$/gm) || []).length, 1, "RDM-228 only terminal completion publishes the DOM diagnostic");
   assert.doesNotMatch(sourceHarness.source, /console\.|localStorage|sessionStorage|indexedDB|__safeSet|__trackEvent|sendBeacon/i, "RDM-214 transport diagnostics have no log, persistence, storage, or analytics sink");
   assert.doesNotMatch(sourceHarness.source, /createOpenAIClient|responses\.create|provider|model|stage/i, "RDM-215 browser transport classifier has no provider boundary");
 
@@ -404,6 +435,13 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
     const rawDiagnostic = api.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC;
     const diagnostic = plainTransportValue(result.transport);
     const exposed = plainTransportValue(rawDiagnostic);
+    const domNode = api.domDiagnosticNode();
+    assert.ok(domNode, "RDM-225 " + label + " creates the singleton DOM diagnostic node");
+    assert.equal(api.domDiagnosticNodeCount(), 1, "RDM-225 " + label + " retains exactly one DOM diagnostic node");
+    assert.equal(domNode.hidden, true, "RDM-225 " + label + " keeps the DOM diagnostic hidden");
+    assert.equal(domNode.getAttribute("aria-hidden"), "true", "RDM-225 " + label + " keeps the DOM diagnostic outside the accessibility tree");
+    assert.equal(domNode.getAttribute("inert"), "", "RDM-225 " + label + " keeps the DOM diagnostic inert");
+    const domDiagnostic = JSON.parse(domNode.textContent);
     observedOutcomes.add(diagnostic.outcome);
 
     const expectedRequestCount = settings.expectedRequestCount === 0 ? 0 : 1;
@@ -411,8 +449,10 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
     assert.equal(sentBodies.length, expectedRequestCount, "RDM-208 " + label + " records only an invoked request body");
     if (sentBodies.length) assert.doesNotMatch(sentBodies[0], /requestAttemptCount|handlerResponseCount|elapsedMs|httpStatus/, "RDM-214 a prior diagnostic never enters a request");
     assert.deepEqual(exposed, diagnostic, "RDM-214 the exposed diagnostic is memory-local and contains only the completed request result");
+    assert.deepEqual(domDiagnostic, diagnostic, "RDM-226 the hidden DOM node mirrors the completed six-field diagnostic exactly");
     assert.equal(Object.isFrozen(rawDiagnostic), true, "RDM-218 the first terminal diagnostic is frozen");
     assert.deepEqual(Object.keys(diagnostic).sort(), ["elapsedMs", "handlerResponseCount", "httpStatus", "outcome", "path", "requestAttemptCount"], "RDM-213 diagnostic has exactly six allowlisted fields");
+    assert.deepEqual(Object.keys(domDiagnostic).sort(), ["elapsedMs", "handlerResponseCount", "httpStatus", "outcome", "path", "requestAttemptCount"], "RDM-226 DOM diagnostic has exactly six allowlisted fields");
     assert.equal(diagnostic.path, functionPath, "RDM-213 path is fixed");
     assert.ok(diagnostic.httpStatus === null || Number.isInteger(diagnostic.httpStatus), "RDM-213 status is integer or null");
     assert.ok(Number.isInteger(diagnostic.elapsedMs) && diagnostic.elapsedMs >= 0, "RDM-213 elapsed time is a nonnegative integer");
@@ -425,10 +465,12 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
     assert.equal(api.pendingTimerCount(), 0, "RDM-223 " + label + " leaves no deadline pending");
     assert.equal(api.abortCount(), settings.timeoutPhase ? 1 : 0, "RDM-220 " + label + " abort count is exact");
     if (releaseLateCompletion) {
+      const terminalDomText = domNode.textContent;
       releaseLateCompletion();
       await Promise.resolve();
       await Promise.resolve();
       assert.equal(api.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC, rawDiagnostic, "RDM-218 " + label + " late completion cannot replace the first diagnostic");
+      assert.equal(api.domDiagnosticNode().textContent, terminalDomText, "RDM-228 " + label + " late completion cannot replace the terminal DOM diagnostic");
     }
     return { api, result, diagnostic, response, requestCount };
   }
@@ -491,16 +533,34 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
   assert.deepEqual(Array.from(observedOutcomes).sort(), closedOutcomes.slice().sort(), "RDM-210 all and only six closed outcomes execute");
 
   let replacementRequests = 0;
+  let releaseSecondResponse = null;
   const replacementResponse = syntheticResumeTransportResponse({ data: { result: "SYNTHETIC_REPLACEMENT" } });
-  const replacementApi = resumeTransportApiFromIndex(() => { replacementRequests += 1; return Promise.resolve(replacementResponse.value); });
+  const replacementApi = resumeTransportApiFromIndex(() => {
+    replacementRequests += 1;
+    if (replacementRequests === 1) return Promise.resolve(replacementResponse.value);
+    return new Promise((resolve) => { releaseSecondResponse = () => resolve(replacementResponse.value); });
+  });
   await replacementApi.request({ action: "facts", experience: "SYNTHETIC_FIRST_REQUEST" });
   const firstDiagnostic = replacementApi.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC;
-  await replacementApi.request({ action: "facts", experience: "SYNTHETIC_SECOND_REQUEST" });
+  const firstDomNode = replacementApi.domDiagnosticNode();
+  assert.ok(firstDomNode.textContent, "RDM-226 first terminal result is mirrored into the DOM diagnostic");
+  const secondRequest = replacementApi.request({ action: "facts", experience: "SYNTHETIC_SECOND_REQUEST" });
+  assert.equal(replacementApi.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC, null, "RDM-227 the next request clears the prior memory-local diagnostic synchronously");
+  assert.equal(replacementApi.domDiagnosticNode(), firstDomNode, "RDM-225 deliberate requests reuse the one DOM diagnostic node");
+  assert.equal(replacementApi.domDiagnosticNodeCount(), 1, "RDM-225 deliberate requests never append a second DOM diagnostic node");
+  assert.equal(firstDomNode.textContent, "", "RDM-227 the next request clears prior DOM diagnostic content before fetch");
+  await Promise.resolve();
+  assert.equal(replacementRequests, 2, "RDM-208 the second deliberate activation invokes its sole fetch");
+  assert.equal(typeof releaseSecondResponse, "function", "RDM-228 the second request remains pending under synthetic control");
+  assert.equal(firstDomNode.textContent, "", "RDM-228 the DOM diagnostic remains empty while the request is pending");
+  releaseSecondResponse();
+  await secondRequest;
   assert.equal(replacementRequests, 2, "RDM-208 two deliberate activations make one request each");
   assert.deepEqual(replacementApi.scheduledDelays(), [35000, 35000], "RDM-217 each deliberate activation owns one deadline");
   assert.equal(replacementApi.clearCount(), 2, "RDM-223 both deliberate activations clear their deadlines");
   assert.equal(replacementApi.pendingTimerCount(), 0, "RDM-223 no deadline remains after deliberate activations");
   assert.notEqual(replacementApi.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC, firstDiagnostic, "RDM-214 the next request replaces the prior memory-local diagnostic");
+  assert.deepEqual(JSON.parse(firstDomNode.textContent), plainTransportValue(replacementApi.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC), "RDM-226 the second terminal result replaces the prior DOM diagnostic exactly");
 }
 
 async function run() {
@@ -2508,7 +2568,7 @@ async function run() {
   assert.equal((uiSource.match(/__trackEvent\("ai_resume_doc_downloaded", \{\}\)/g) || []).length, 1);
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)|localStorage|sessionStorage/);
 
-  // RDM-208 through RDM-224: one bounded request, fixed handler marker, closed request-local outcomes, and content-free memory-only diagnostics.
+  // RDM-208 through RDM-230: one bounded request, fixed handler marker, closed request-local outcomes, and content-free memory/DOM diagnostics.
   const providerCallsBeforeTransport = calls.length;
   const guardedStagesBeforeTransport = clientStages.length;
   await runResumeTransportClassifierRegression(uiSource, resumeSource, modernResumePreflight);
@@ -2520,7 +2580,7 @@ async function run() {
   assert.equal((resumeSource.match(/AUDIT_MAX_OUTPUT_TOKENS = 4000/g) || []).length, 1, "RDM-216 audit cap remains unchanged");
 
   await runRenderRegression();
-  console.log("PASS: synthetic RDM-1..RDM-224 integration paths; all prior grounding, DOCX, federal, adaptive-length, guarded-stage, and v0.21 Resume transport fixtures verified locally");
+  console.log("PASS: synthetic RDM-1..RDM-230 integration paths; all prior grounding, DOCX, federal, adaptive-length, guarded-stage, and v0.22 Resume transport fixtures verified locally");
 }
 
 run().catch((error) => {

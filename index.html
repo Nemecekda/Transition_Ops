@@ -4876,6 +4876,33 @@ var topsResumeTransportRequest = (function() {
   var handlerValue = "1";
   var requestDeadlineMs = 35000;
   var closedOutcomes = ["handler_json", "fetch_rejected", "non_handler_response", "handler_non_json", "handler_json_parse", "client_timeout"];
+  var diagnosticNodeId = "tops-resume-transport-diagnostic";
+
+  function diagnosticNode() {
+    if (typeof document === "undefined" || !document.body || typeof document.createElement !== "function") return null;
+    var existing = document.getElementById(diagnosticNodeId);
+    if (existing) return existing;
+    var node = document.createElement("div");
+    node.id = diagnosticNodeId;
+    node.hidden = true;
+    node.setAttribute("aria-hidden", "true");
+    node.setAttribute("inert", "");
+    document.body.appendChild(node);
+    return node;
+  }
+
+  function mirrorDiagnostic(diagnostic) {
+    var node = diagnosticNode();
+    if (!node) return;
+    node.textContent = diagnostic ? JSON.stringify({
+      path: diagnostic.path,
+      httpStatus: diagnostic.httpStatus,
+      elapsedMs: diagnostic.elapsedMs,
+      requestAttemptCount: diagnostic.requestAttemptCount,
+      handlerResponseCount: diagnostic.handlerResponseCount,
+      outcome: diagnostic.outcome
+    }) : "";
+  }
 
   function finish(startedAt, httpStatus, requestAttemptCount, handlerResponseCount, outcome, ok, data) {
     var elapsedMs = Date.now() - startedAt;
@@ -4890,6 +4917,7 @@ var topsResumeTransportRequest = (function() {
       outcome: outcome
     });
     if (typeof window !== "undefined") window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC = diagnostic;
+    mirrorDiagnostic(diagnostic);
     var result = { transport: diagnostic };
     if (outcome === "handler_json") {
       result.ok = !!ok;
@@ -4908,6 +4936,7 @@ var topsResumeTransportRequest = (function() {
     var deadlineId = null;
     var resolveRequest;
     if (typeof window !== "undefined") window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC = null;
+    mirrorDiagnostic(null);
 
     var requestPromise = new Promise(function(resolve) { resolveRequest = resolve; });
     function settle(outcome, ok, data) {

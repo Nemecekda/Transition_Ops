@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.21"
+  version: "0.22"
   status: PENDING
 ---
 
@@ -13,9 +13,9 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.21 is PENDING until the synthetic RDM regression suite and live-clone
+Version 0.22 is PENDING until the synthetic RDM regression suite and live-clone
 validation execute against the app. Specification approval and governance
-calibration are not v0.21 application execution evidence.
+calibration are not v0.22 application execution evidence.
 
 ## TRIGGERS AND GATE
 
@@ -633,7 +633,7 @@ trace, score, export, privacy, or call-count rule. Historical version statements
 remain records of their own approved boundaries; this section is the controlling
 current-version spend contract.
 
-## CLIENT-TO-FUNCTION TRANSPORT CONTRACT - VERSION 0.21
+## CLIENT-TO-FUNCTION TRANSPORT CONTRACT - VERSION 0.22
 
 One Resume button activation makes at most one request to the fixed
 `/.netlify/functions/resume` path. After the required deadline capability
@@ -690,12 +690,25 @@ is replaced by the next Resume request, and must not enter a log, persistence,
 browser storage, analytics event, later request, response body, member-facing
 copy, or download.
 
+Mirror the same completed six-field diagnostic into exactly one fixed-ID DOM
+node. The node must be hidden, `aria-hidden`, and inert; it exists only in the
+current page memory and is not member-facing. Reuse that one node across
+deliberate requests. Clear its text synchronously before every new request,
+including a request that fails capability preflight, and leave it empty while
+the request is pending. Populate it only when the first terminal result wins.
+The DOM payload must be one JSON object with exactly `path`, `httpStatus`,
+`elapsedMs`, `requestAttemptCount`, `handlerResponseCount`, and `outcome`, with
+values identical to the memory-local diagnostic. A late fetch or body result
+must not alter the terminal DOM payload.
+
 Never place a raw body, response-header value, caught error, message, stack,
 URL or origin, cookie, secret, prompt, response content, resume, identity, IP,
-provider, model, or stage in the diagnostic. Classification adds no provider
-call, model call, function replay, retry, storage, logging, analytics, output
-cap, request cap, or cost exposure. All grounding, fact, audit, export, budget,
-privacy, and member-safe failure behavior remains unchanged.
+provider, model, or stage in either diagnostic surface. Neither surface may be
+persisted, logged, analytics-sent, copied into a later request, exposed in a
+response, shown to a member, or included in a download. Classification adds no
+provider call, model call, function replay, retry, storage, logging, analytics,
+output cap, request cap, or cost exposure. All grounding, fact, audit, export,
+budget, privacy, and member-safe failure behavior remains unchanged.
 
 ## CONTENT-FREE FAILURE CONTRACT
 
@@ -1476,6 +1489,31 @@ all existing hard input bounds.
 - **RDM-224 Validation and scope:** run all five local gates and real-artifact
   4N. Scope is exactly the five Commander-authorized packet files; no hosted
   function, model, provider, deploy, merge, or production action is authorized.
+- **RDM-225 Singleton inert node:** the browser transport must have exactly one
+  fixed-ID DOM diagnostic-node construction site. Across multiple deliberate
+  requests, executable fixtures must prove the same node is reused, remains
+  `hidden`, `aria-hidden`, and inert, and no second node is appended.
+- **RDM-226 Exact DOM mirror:** every terminal outcome must serialize one JSON
+  object into the node with exactly the same six allowlisted keys and values as
+  the frozen memory-local diagnostic. No wrapper, seventh field, or altered
+  value is permitted.
+- **RDM-227 Pre-request clearing:** before each request begins, synchronously
+  clear both the prior memory-local diagnostic and the node text. This applies
+  before fetch and before any capability-preflight failure can settle.
+- **RDM-228 Terminal-first publication:** while a synthetic request is pending,
+  the node must remain empty. Only the first terminal result may populate it;
+  late fetch resolution, rejection, or body completion must leave the terminal
+  DOM payload byte-unchanged.
+- **RDM-229 DOM privacy and lifetime:** raw body, header value, error, stack,
+  URL/origin, cookie, secret, prompt, response content, resume, identity, IP,
+  provider, model, and stage sentinels must enter neither DOM payload nor any
+  persistence, storage, console, analytics, later request, response, member
+  copy, or download.
+- **RDM-230 v0.22 validation and scope:** run all five local gates and the
+  real-artifact 4N check. Scope is exactly the Commander-authorized skill,
+  `index.html`, `pwa-sw.js`, OpenAI migration regression, and registry files;
+  no function or model invocation, provider change, commit, push, deployment,
+  main merge, or production action is authorized.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -1486,11 +1524,11 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.21 until all synthetic application
+Keep registry item #6 PENDING at version 0.22 until all synthetic application
 cases execute and live-clone evidence, including actual DOCX rendering in a
 Word-compatible renderer, passes. RDM-199 through RDM-207 governance calibration
 executed 9/9 PASS on 2026-08-31; no application, provider, hosted, or Word
-execution is claimed by that result. RDM-208 through RDM-224 require executable
+execution is claimed by that result. RDM-208 through RDM-230 require executable
 local transport stubs plus the prescribed repository and artifact gates; those
 results do not substitute for live-clone or Word-compatible-renderer evidence.
 After successful application execution and live evidence, force-mod proposes

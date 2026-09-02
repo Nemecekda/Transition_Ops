@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.21 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.22 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -71,6 +71,24 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-02 - **#6 `resume-drafter-maintenance` 0.21 -> 0.22 remains
+  PENDING.** The existing content-free six-field Resume transport diagnostic is
+  now mirrored into one fixed-ID page-memory DOM node that is hidden,
+  `aria-hidden`, and inert. The node is reused across deliberate requests,
+  cleared synchronously before each request, left empty while work is pending,
+  and populated only by the first terminal result. Its JSON payload contains
+  exactly `path`, `httpStatus`, `elapsedMs`, `requestAttemptCount`,
+  `handlerResponseCount`, and `outcome`, with values identical to the frozen
+  memory-local diagnostic. Deterministic fixtures cover exact shape, singleton
+  reuse, pre-request clearing, pending-state emptiness, terminal publication,
+  late-completion immutability, and absence from persistence, analytics, later
+  requests, member-facing copy, or downloads. The 35,000-ms deadline, one
+  activation/one request, zero retries, response contracts, member-safe copy,
+  models, caps, budget guard, grounding, audit, and exports remain unchanged.
+  The active PWA cache advances from v147 to v148. This local evidence does not
+  clear live-clone acceptance or promote the skill. No function or model
+  invocation, provider/settings change, commit, push, deployment, merge, or
+  production change occurred. Lane: COMMANDER. Owner: force-mod.
 - 2026-09-02 - **#6 `resume-drafter-maintenance` 0.20 -> 0.21 remains
   PENDING.** The single Resume request now has one request-wide 35,000-ms
   `AbortController` deadline covering fetch, handler-marker inspection, and
