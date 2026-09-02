@@ -4869,6 +4869,70 @@ function topsResumeLengthPlanSummary(plan) {
   return "Based on " + years + ", " + roles + " selected role" + (roles === 1 ? "" : "s") + ", and " + details + " confirmed experience detail" + (details === 1 ? "" : "s") + ", the adaptive setting recommends " + (plan.recommendedPages === 2 ? "two pages" : "one page") + ". The reviewed draft retained " + bullets + " supported experience bullet" + (bullets === 1 ? "" : "s") + ".";
 }
 
+// RESUME_TRANSPORT_START
+var topsResumeTransportRequest = (function() {
+  var functionPath = "/.netlify/functions/resume";
+  var handlerHeader = "X-Transition-Ops-Resume-Handler";
+  var handlerValue = "1";
+  var closedOutcomes = ["handler_json", "fetch_rejected", "non_handler_response", "handler_non_json", "handler_json_parse"];
+
+  function finish(startedAt, httpStatus, handlerResponseCount, outcome, ok, data) {
+    var elapsedMs = Date.now() - startedAt;
+    if (!Number.isInteger(elapsedMs) || elapsedMs < 0) elapsedMs = 0;
+    if (closedOutcomes.indexOf(outcome) === -1) outcome = "fetch_rejected";
+    var diagnostic = Object.freeze({
+      path: functionPath,
+      httpStatus: Number.isInteger(httpStatus) ? httpStatus : null,
+      elapsedMs: elapsedMs,
+      requestAttemptCount: 1,
+      handlerResponseCount: handlerResponseCount === 1 ? 1 : 0,
+      outcome: outcome
+    });
+    if (typeof window !== "undefined") window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC = diagnostic;
+    var result = { transport: diagnostic };
+    if (outcome === "handler_json") {
+      result.ok = !!ok;
+      result.d = data;
+    }
+    return result;
+  }
+
+  return function(payload) {
+    var startedAt = Date.now();
+    var httpStatus = null;
+    var handlerResponseCount = 0;
+    if (typeof window !== "undefined") window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC = null;
+    return Promise.resolve().then(function() {
+      return fetch(functionPath, {
+        method: "POST",
+        redirect: "error",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    }).then(function(response) {
+      try {
+        httpStatus = Number.isInteger(response.status) ? response.status : null;
+        if (!response.headers || typeof response.headers.get !== "function" || response.headers.get(handlerHeader) !== handlerValue) {
+          return finish(startedAt, httpStatus, 0, "non_handler_response");
+        }
+        handlerResponseCount = 1;
+        var mediaType = String(response.headers.get("Content-Type") || "").split(";")[0].trim().toLowerCase();
+        if (mediaType !== "application/json") return finish(startedAt, httpStatus, handlerResponseCount, "handler_non_json");
+      } catch (ignored) {
+        return finish(startedAt, httpStatus, handlerResponseCount, handlerResponseCount ? "handler_non_json" : "non_handler_response");
+      }
+      return Promise.resolve().then(function() { return response.json(); }).then(function(data) {
+        return finish(startedAt, httpStatus, handlerResponseCount, "handler_json", response.ok, data);
+      }, function() {
+        return finish(startedAt, httpStatus, handlerResponseCount, "handler_json_parse");
+      });
+    }, function() {
+      return finish(startedAt, null, 0, "fetch_rejected");
+    });
+  };
+})();
+// RESUME_TRANSPORT_END
+
 function PushConsentModal(props) {
   var C = props.C;
   return React.createElement("div", {
@@ -7969,10 +8033,10 @@ whatsNewUnseen && React.createElement("div", {
         var resumeAction = aiR.facts ? "draft" : "facts";
         setAiR(function(p){ return Object.assign({}, p, { loading: true, err: "", out: "", lengthPlan: null, auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); });
         if (window.__trackEvent) window.__trackEvent(resumeAction === "draft" ? "ai_resume_generated" : "ai_resume_facts_reviewed", {});
-        (function attempt(n) { return fetch("/.netlify/functions/resume", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({ action: resumeAction, mode: aiR.mode, role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp, posting: aiR.posting, confirmedFacts: aiR.facts }, resumeAction === "draft" && aiR.mode !== "federal" ? { header: { name: aiR.headerName, location: aiR.headerLocation, email: aiR.headerEmail, phone: aiR.headerPhone }, lengthPreference: aiR.lengthPreference, lengthInputs: { relevantYears: aiR.relevantYears, relevantRoleIndexes: aiR.relevantRoleIndexes } } : {})) })
-          .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
-          .catch(function(e){ if (n < 1) { return new Promise(function(res){ setTimeout(res, 1200); }).then(function(){ return attempt(n + 1); }); } throw e; }); })(0)
+        var handleResumeTransportFailure = function() { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: "Still warming up \u2014 give it 10 seconds and tap GENERATE once more." }); }); };
+        topsResumeTransportRequest(Object.assign({ action: resumeAction, mode: aiR.mode, role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp, posting: aiR.posting, confirmedFacts: aiR.facts }, resumeAction === "draft" && aiR.mode !== "federal" ? { header: { name: aiR.headerName, location: aiR.headerLocation, email: aiR.headerEmail, phone: aiR.headerPhone }, lengthPreference: aiR.lengthPreference, lengthInputs: { relevantYears: aiR.relevantYears, relevantRoleIndexes: aiR.relevantRoleIndexes } } : {}))
           .then(function(res) {
+            if (!res || !res.transport || res.transport.outcome !== "handler_json") { handleResumeTransportFailure(); return; }
             if (!res.ok) { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: res.d.error || "Try again in a minute.", lengthPlan: null, factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : p.factWarnings, auditScorecard: Array.isArray(res.d.scorecard) ? res.d.scorecard : [], auditBlockers: Array.isArray(res.d.blockers) ? res.d.blockers : [], supportedKeywords: Array.isArray(res.d.supportedKeywords) ? res.d.supportedKeywords : [], auditGaps: Array.isArray(res.d.gaps) ? res.d.gaps : [], auditTrace: [] }); }); return; }
             if (resumeAction === "facts") {
               var nextFactSheet = res.d.factSheet || "";
@@ -7985,7 +8049,7 @@ whatsNewUnseen && React.createElement("div", {
             var nextScorecard = topsResumeScorecardWithLengthPlan(Array.isArray(res.d.scorecard) ? res.d.scorecard : [], nextLengthPlan);
             setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets, lengthPlan: nextLengthPlan, auditScorecard: nextScorecard, auditTrace: Array.isArray(res.d.trace) ? res.d.trace : [], auditBlockers: [], supportedKeywords: Array.isArray(res.d.supportedKeywords) ? res.d.supportedKeywords : [], auditGaps: Array.isArray(res.d.gaps) ? res.d.gaps : [] }); });
           })
-          .catch(function(){ setAiR(function(p){ return Object.assign({}, p, { loading: false, err: "Still warming up \u2014 give it 10 seconds and tap GENERATE once more." }); }); });
+          .catch(handleResumeTransportFailure);
       }, style: { width: "100%", background: aiR.loading ? C.border : C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? (aiR.facts ? "DRAFTING\u2026 (10-15 SEC)" : "CHECKING FACTS\u2026") : (aiR.facts ? "DRAFT FROM CONFIRMED FACTS" : "BUILD MY FACT SHEET")),
       aiR.err && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, aiR.err),
       aiR.auditBlockers.length > 0 && React.createElement("div", { style: { marginTop: 10, padding: "11px 12px", background: "rgba(190,70,70,0.12)", border: "1px solid " + C.warning, borderRadius: 8 } },

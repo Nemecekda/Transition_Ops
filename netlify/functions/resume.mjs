@@ -12,6 +12,7 @@ export const lambdaHandler = async function (event) {
     "Access-Control-Allow-Origin": "https://transitionops.org",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
+    "X-Transition-Ops-Resume-Handler": "1",
     "Content-Type": "application/json"
   };
   if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers };

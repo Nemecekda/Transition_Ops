@@ -14,7 +14,7 @@ written) · DEPRECATED (superseded — note by what)
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.19 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.20 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -71,6 +71,26 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-02 - **#6 `resume-drafter-maintenance` 0.19 -> 0.20 remains
+  PENDING.** The Resume client now makes exactly one request per button
+  activation with no automatic replay and classifies the request-local boundary
+  into only `handler_json`, `fetch_rejected`, `non_handler_response`,
+  `handler_non_json`, or `handler_json_parse`. One fixed content-free handler
+  response marker distinguishes Resume-handler responses without changing any
+  response body. The memory-only diagnostic is limited to fixed path,
+  integer-or-null HTTP status, integer elapsed milliseconds, request-attempt
+  count, handler-response count, and closed outcome; it enters no log, storage,
+  analytics, later request, member-facing copy, or download. The targeted
+  offline OpenAI migration regression passes RDM-208 through RDM-216 with
+  synthetic fetch and handler-response stubs and zero hosted or provider calls.
+  The remaining four local PRE-MAIN suites and real-artifact 4N are pending
+  parent execution; the active PWA cache advances from v145 to v146. Existing Resume models,
+  call graph, caps, shared budget guard, grounding, audit, export, privacy,
+  public response bodies, and member-safe failure copy remain unchanged. This
+  local evidence does not clear the required live-clone or actual Word-render
+  evidence and does not promote the skill. No live function or model invocation,
+  provider/settings change, commit, push, deployment, merge, or production
+  change occurred. Lane: COMMANDER. Owner: force-mod.
 - 2026-09-01 - **#1 `validation-gate` 1.7 -> 1.8 remains CODIFIED.** The 4N
   real-artifact boundary now requires Navigator and Resume to load OpenAI 7.8.0
   and Blobs 10.7.13, verify the OpenAI constructor and Blobs `getStore` API

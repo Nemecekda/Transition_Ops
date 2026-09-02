@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.19"
+  version: "0.20"
   status: PENDING
 ---
 
@@ -13,9 +13,9 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.19 is PENDING until the synthetic RDM regression suite and live-clone
+Version 0.20 is PENDING until the synthetic RDM regression suite and live-clone
 validation execute against the app. Specification approval and governance
-calibration are not v0.19 application execution evidence.
+calibration are not v0.20 application execution evidence.
 
 ## TRIGGERS AND GATE
 
@@ -632,6 +632,51 @@ Version 0.19 changes no model, Resume output cap, provider retry, grounding,
 trace, score, export, privacy, or call-count rule. Historical version statements
 remain records of their own approved boundaries; this section is the controlling
 current-version spend contract.
+
+## CLIENT-TO-FUNCTION TRANSPORT CONTRACT - VERSION 0.20
+
+One Resume button activation makes exactly one request to the fixed
+`/.netlify/functions/resume` path. The client must not replay, retry, redirect,
+or issue a second request automatically after rejection, timeout, invalid JSON,
+or any other transport result. A member may choose a later button activation;
+that is a new request and not an automatic replay.
+
+Every response produced by the Resume handler carries the fixed, content-free
+`X-Transition-Ops-Resume-Handler: 1` marker through the existing shared response
+header object. The marker identifies only that the response crossed the Resume
+handler response boundary. It does not prove provider, model, stage, budget,
+ledger, or generation execution. A response without the exact marker is not a
+handler response and its body must not be read.
+
+Classify each request locally into exactly one closed outcome:
+
+- `handler_json`: the fixed marker is present, the declared media type is JSON,
+  and JSON parsing succeeds. Preserve the existing success and failure HTTP
+  handling and member-safe response copy.
+- `fetch_rejected`: the single fetch rejects before a response is available.
+- `non_handler_response`: a response is available without the exact fixed
+  handler marker. Do not read its body.
+- `handler_non_json`: the marker is present but the declared media type is not
+  JSON. Do not read its body.
+- `handler_json_parse`: the marker and JSON media type are present but JSON
+  parsing fails.
+
+The request-local transport diagnostic may expose only these six fields: the
+fixed function `path`; `httpStatus` as an integer or `null`; nonnegative integer
+`elapsedMs`; integer `requestAttemptCount`; integer `handlerResponseCount`; and
+the closed `outcome`. `requestAttemptCount` is exactly 1.
+`handlerResponseCount` is 1 only when the fixed marker is present and otherwise
+0; it is not a total function invocation count. The diagnostic is memory-only,
+is replaced by the next Resume request, and must not enter a log, persistence,
+browser storage, analytics event, later request, response body, member-facing
+copy, or download.
+
+Never place a raw body, response-header value, caught error, message, stack,
+URL or origin, cookie, secret, prompt, response content, resume, identity, IP,
+provider, model, or stage in the diagnostic. Classification adds no provider
+call, model call, function replay, retry, storage, logging, analytics, output
+cap, request cap, or cost exposure. All grounding, fact, audit, export, budget,
+privacy, and member-safe failure behavior remains unchanged.
 
 ## CONTENT-FREE FAILURE CONTRACT
 
@@ -1345,6 +1390,43 @@ all existing hard input bounds.
 - **RDM-207 Governance-only execution:** RDM-199 through RDM-206 may pass
   synthetic governance calibration without implying application wiring,
   provider execution, hosted validation, or promotion of this PENDING skill.
+- **RDM-208 One activation, one request:** every synthetic Resume button
+  activation must make exactly one HTTP request. Fetch rejection, a response
+  without the handler marker, marked non-JSON, and marked invalid JSON must make
+  no automatic replay, delay, or retry.
+- **RDM-209 Fixed handler marker:** every synthetic Resume handler response,
+  including validation and failure status responses, must carry exactly
+  `X-Transition-Ops-Resume-Handler: 1` through the shared header object.
+- **RDM-210 Closed outcomes:** executable transport fixtures must produce only
+  `handler_json`, `fetch_rejected`, `non_handler_response`,
+  `handler_non_json`, or `handler_json_parse`, and each boundary must select its
+  exact outcome.
+- **RDM-211 Existing JSON behavior:** marked valid JSON must preserve the
+  existing `ok` status and parsed payload for both success and failure HTTP
+  responses so current app handling and member-safe copy remain unchanged.
+- **RDM-212 Unmarked-body embargo:** a response without the exact handler
+  marker must classify `non_handler_response` without reading or parsing its
+  body. A marked non-JSON response must likewise leave its body unread.
+- **RDM-213 Diagnostic shape:** every outcome must expose exactly fixed `path`,
+  integer-or-null `httpStatus`, nonnegative integer `elapsedMs`, integer
+  `requestAttemptCount`, integer `handlerResponseCount`, and closed `outcome`.
+  Request attempts must equal 1; handler responses must equal 0 or 1 from the
+  fixed marker and must not be described as total function invocations.
+- **RDM-214 Content and lifetime boundary:** synthetic sentinels for raw body,
+  header value, error, stack, URL/origin, cookie, secret, prompt, response
+  content, resume, identity, IP, provider, model, and stage must enter neither
+  the diagnostic nor console, storage, analytics, a later request, response
+  body, member-facing copy, or download. The next request replaces the prior
+  memory-only diagnostic.
+- **RDM-215 Stub-only execution:** all transport cases must execute against
+  synthetic fetch and handler-response stubs with zero provider calls, zero
+  hosted function calls, and no real member data.
+- **RDM-216 Unchanged operational boundary:** Resume models, provider calls,
+  stage order, zero provider retries, facts/repair 3500, civilian 2200, federal
+  1900, audit 4000, request bounds, shared budget guard, `store: false`,
+  grounding, audit, export, privacy, logging, persistence, analytics, usage
+  limits, and public response bodies remain unchanged. Run all five local gates
+  and real-artifact 4N; scope is exactly the six approved packet files.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -1355,10 +1437,13 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.19 until all synthetic application
+Keep registry item #6 PENDING at version 0.20 until all synthetic application
 cases execute and live-clone evidence, including actual DOCX rendering in a
 Word-compatible renderer, passes. RDM-199 through RDM-207 governance calibration
 executed 9/9 PASS on 2026-08-31; no application, provider, hosted, or Word
-execution is claimed by that result. After successful application execution and
-live evidence, force-mod proposes the smallest evidence-supported revision and
-Commander rules on promotion to CODIFIED 1.0.
+execution is claimed by that result. RDM-208 through RDM-216 require executable
+local transport stubs plus the prescribed repository and artifact gates; those
+results do not substitute for live-clone or Word-compatible-renderer evidence.
+After successful application execution and live evidence, force-mod proposes
+the smallest evidence-supported revision and Commander rules on promotion to
+CODIFIED 1.0.

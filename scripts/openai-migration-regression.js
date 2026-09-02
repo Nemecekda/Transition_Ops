@@ -35,6 +35,54 @@ function resumeDocxApiFromIndex() {
   return context.window.__TOPS_RESUME_DOCX;
 }
 
+function resumeTransportApiFromIndex(fetchImpl) {
+  const uiSource = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const match = uiSource.match(/\/\/ RESUME_TRANSPORT_START\n([\s\S]*?)\n\/\/ RESUME_TRANSPORT_END/);
+  assert.ok(match, "index.html contains one isolated Resume transport implementation block");
+  let clock = 1000;
+  const context = {
+    window: {},
+    fetch: fetchImpl,
+    Date: { now: () => { clock += 7; return clock; } },
+    Promise,
+    JSON,
+    Object,
+    Number,
+    String,
+    Math
+  };
+  vm.runInNewContext(match[1], context, { timeout: 1000 });
+  return { request: context.topsResumeTransportRequest, window: context.window, source: match[1] };
+}
+
+function syntheticResumeTransportResponse(options) {
+  const settings = Object.assign({ status: 200, ok: true, handlerMarker: "1", contentType: "application/json", data: { result: "SYNTHETIC_OK" }, rejectJson: false }, options || {});
+  let bodyReadCount = 0;
+  return {
+    value: {
+      status: settings.status,
+      ok: settings.ok,
+      headers: {
+        get: (name) => {
+          const normalized = String(name).toLowerCase();
+          if (normalized === "x-transition-ops-resume-handler") return settings.handlerMarker;
+          if (normalized === "content-type") return settings.contentType;
+          return null;
+        }
+      },
+      json: () => {
+        bodyReadCount += 1;
+        return settings.rejectJson ? Promise.reject() : Promise.resolve(settings.data);
+      }
+    },
+    bodyReadCount: () => bodyReadCount
+  };
+}
+
+function plainTransportValue(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 function regressionCrc32(bytes) {
   let crc = 0xFFFFFFFF;
   for (const byte of bytes) {
@@ -239,6 +287,102 @@ function assertSkillBridgeAccuracy(navigatorSource, uiSource) {
     uiSource,
     /Final months of service \(60\\u2013180 days, rank-tiered by service\) \\u2014 get civilian experience while still on active duty pay/
   );
+}
+
+async function runResumeTransportClassifierRegression(uiSource, resumeSource, modernResumePreflight) {
+  const functionPath = "/.netlify/functions/resume";
+  const handlerHeader = "X-Transition-Ops-Resume-Handler";
+  const closedOutcomes = ["handler_json", "fetch_rejected", "non_handler_response", "handler_non_json", "handler_json_parse"];
+  const observedOutcomes = new Set();
+
+  assert.equal(modernResumePreflight.headers.get(handlerHeader), "1", "RDM-209 modern Resume validation response carries the fixed handler marker");
+  assert.equal((resumeSource.match(/"X-Transition-Ops-Resume-Handler": "1"/g) || []).length, 1, "RDM-209 shared handler marker is defined exactly once");
+  assert.doesNotMatch(resumeSource, /headers:\s*\{[^}]*X-Transition-Ops-Resume-Handler/, "RDM-209 marker remains in the shared header object only");
+
+  const sourceHarness = resumeTransportApiFromIndex(() => Promise.reject());
+  assert.equal((sourceHarness.source.match(/\bfetch\(/g) || []).length, 1, "RDM-208 transport implementation contains one fetch boundary");
+  assert.doesNotMatch(sourceHarness.source, /setTimeout|\battempt\s*\(|\bretry\b/i, "RDM-208 transport implementation contains no replay, delay, or retry");
+  assert.doesNotMatch(uiSource, /\(function attempt\(n\) \{ return fetch\("\/\.netlify\/functions\/resume"/, "RDM-208 legacy Resume replay wrapper is absent");
+  assert.equal((uiSource.match(/topsResumeTransportRequest\(Object\.assign\(\{ action: resumeAction/g) || []).length, 1, "RDM-208 button uses the single-request classifier exactly once");
+  assert.doesNotMatch(sourceHarness.source, /console\.|localStorage|sessionStorage|indexedDB|__safeSet|__trackEvent|sendBeacon/i, "RDM-214 transport diagnostics have no log, persistence, storage, or analytics sink");
+  assert.doesNotMatch(sourceHarness.source, /createOpenAIClient|responses\.create|provider|model|stage/i, "RDM-215 browser transport classifier has no provider boundary");
+
+  async function runCase(label, settings) {
+    const response = settings.fetchRejected ? null : syntheticResumeTransportResponse(settings.response);
+    const sentBodies = [];
+    let requestCount = 0;
+    const api = resumeTransportApiFromIndex((requestPath, requestOptions) => {
+      requestCount += 1;
+      assert.equal(requestPath, functionPath, label + " uses the fixed Resume path");
+      assert.equal(requestOptions.method, "POST", label + " preserves the POST contract");
+      assert.equal(requestOptions.redirect, "error", label + " prevents automatic redirect replay");
+      assert.deepEqual(plainTransportValue(requestOptions.headers), { "Content-Type": "application/json" }, label + " preserves the request media type");
+      sentBodies.push(requestOptions.body);
+      return settings.fetchRejected ? Promise.reject() : Promise.resolve(response.value);
+    });
+    const result = await api.request({ action: "facts", experience: "SYNTHETIC_RESUME_INPUT_SENTINEL" });
+    const diagnostic = plainTransportValue(result.transport);
+    const exposed = plainTransportValue(api.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC);
+    observedOutcomes.add(diagnostic.outcome);
+
+    assert.equal(requestCount, 1, "RDM-208 " + label + " makes exactly one request");
+    assert.equal(sentBodies.length, 1, "RDM-208 " + label + " records exactly one request body");
+    assert.doesNotMatch(sentBodies[0], /requestAttemptCount|handlerResponseCount|elapsedMs|httpStatus/, "RDM-214 a prior diagnostic never enters a request");
+    assert.deepEqual(exposed, diagnostic, "RDM-214 the exposed diagnostic is memory-local and contains only the completed request result");
+    assert.deepEqual(Object.keys(diagnostic).sort(), ["elapsedMs", "handlerResponseCount", "httpStatus", "outcome", "path", "requestAttemptCount"], "RDM-213 diagnostic has exactly six allowlisted fields");
+    assert.equal(diagnostic.path, functionPath, "RDM-213 path is fixed");
+    assert.ok(diagnostic.httpStatus === null || Number.isInteger(diagnostic.httpStatus), "RDM-213 status is integer or null");
+    assert.ok(Number.isInteger(diagnostic.elapsedMs) && diagnostic.elapsedMs >= 0, "RDM-213 elapsed time is a nonnegative integer");
+    assert.equal(diagnostic.requestAttemptCount, 1, "RDM-213 request-attempt count is exactly one");
+    assert.ok(diagnostic.handlerResponseCount === 0 || diagnostic.handlerResponseCount === 1, "RDM-213 handler-response count is closed at zero or one");
+    assert.ok(closedOutcomes.includes(diagnostic.outcome), "RDM-210 outcome is closed");
+    assert.doesNotMatch(JSON.stringify(diagnostic), /SYNTHETIC_RESUME_INPUT_SENTINEL|SYNTHETIC_RESPONSE_CONTENT_SENTINEL|SYNTHETIC_HEADER_VALUE_SENTINEL|cookie|secret|identity|provider|model|stage/i, "RDM-214 diagnostic contains no member, response, credential, or provider content");
+    return { api, result, diagnostic, response, requestCount };
+  }
+
+  const handlerSuccess = await runCase("handler JSON success", { response: { status: 200, ok: true, data: { result: "SYNTHETIC_RESPONSE_CONTENT_SENTINEL" } } });
+  assert.equal(handlerSuccess.diagnostic.outcome, "handler_json");
+  assert.equal(handlerSuccess.diagnostic.handlerResponseCount, 1);
+  assert.deepEqual(plainTransportValue(handlerSuccess.result.d), { result: "SYNTHETIC_RESPONSE_CONTENT_SENTINEL" }, "RDM-211 successful JSON payload reaches existing handling unchanged");
+  assert.equal(handlerSuccess.result.ok, true);
+  assert.equal(handlerSuccess.response.bodyReadCount(), 1);
+
+  const handlerFailure = await runCase("handler JSON failure", { response: { status: 400, ok: false, data: { error: "SYNTHETIC_MEMBER_SAFE_COPY" } } });
+  assert.equal(handlerFailure.diagnostic.outcome, "handler_json");
+  assert.equal(handlerFailure.diagnostic.httpStatus, 400);
+  assert.equal(handlerFailure.result.ok, false);
+  assert.deepEqual(plainTransportValue(handlerFailure.result.d), { error: "SYNTHETIC_MEMBER_SAFE_COPY" }, "RDM-211 failure JSON payload reaches existing handling unchanged");
+
+  const fetchRejected = await runCase("fetch rejected", { fetchRejected: true });
+  assert.equal(fetchRejected.diagnostic.outcome, "fetch_rejected");
+  assert.equal(fetchRejected.diagnostic.httpStatus, null);
+  assert.equal(fetchRejected.diagnostic.handlerResponseCount, 0);
+
+  const nonHandler = await runCase("non-handler response", { response: { status: 502, ok: false, handlerMarker: "SYNTHETIC_HEADER_VALUE_SENTINEL", data: { result: "SYNTHETIC_RESPONSE_CONTENT_SENTINEL" } } });
+  assert.equal(nonHandler.diagnostic.outcome, "non_handler_response");
+  assert.equal(nonHandler.diagnostic.handlerResponseCount, 0);
+  assert.equal(nonHandler.response.bodyReadCount(), 0, "RDM-212 unmarked response body is not read");
+
+  const handlerNonJson = await runCase("handler non-JSON response", { response: { status: 502, ok: false, contentType: "text/html", data: { result: "SYNTHETIC_RESPONSE_CONTENT_SENTINEL" } } });
+  assert.equal(handlerNonJson.diagnostic.outcome, "handler_non_json");
+  assert.equal(handlerNonJson.diagnostic.handlerResponseCount, 1);
+  assert.equal(handlerNonJson.response.bodyReadCount(), 0, "RDM-212 marked non-JSON response body is not read");
+
+  const handlerJsonParse = await runCase("handler JSON parse failure", { response: { status: 502, ok: false, rejectJson: true } });
+  assert.equal(handlerJsonParse.diagnostic.outcome, "handler_json_parse");
+  assert.equal(handlerJsonParse.diagnostic.handlerResponseCount, 1);
+  assert.equal(handlerJsonParse.response.bodyReadCount(), 1);
+
+  assert.deepEqual(Array.from(observedOutcomes).sort(), closedOutcomes.slice().sort(), "RDM-210 all and only five closed outcomes execute");
+
+  let replacementRequests = 0;
+  const replacementResponse = syntheticResumeTransportResponse({ data: { result: "SYNTHETIC_REPLACEMENT" } });
+  const replacementApi = resumeTransportApiFromIndex(() => { replacementRequests += 1; return Promise.resolve(replacementResponse.value); });
+  await replacementApi.request({ action: "facts", experience: "SYNTHETIC_FIRST_REQUEST" });
+  const firstDiagnostic = replacementApi.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC;
+  await replacementApi.request({ action: "facts", experience: "SYNTHETIC_SECOND_REQUEST" });
+  assert.equal(replacementRequests, 2, "RDM-208 two deliberate activations make one request each");
+  assert.notEqual(replacementApi.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC, firstDiagnostic, "RDM-214 the next request replaces the prior memory-local diagnostic");
 }
 
 async function run() {
@@ -2246,8 +2390,19 @@ async function run() {
   assert.equal((uiSource.match(/__trackEvent\("ai_resume_doc_downloaded", \{\}\)/g) || []).length, 1);
   assert.doesNotMatch(resumeSource, /console\.(?:log|info|debug)|localStorage|sessionStorage/);
 
+  // RDM-208 through RDM-216: one request, fixed handler marker, closed request-local outcomes, and content-free memory-only diagnostics.
+  const providerCallsBeforeTransport = calls.length;
+  const guardedStagesBeforeTransport = clientStages.length;
+  await runResumeTransportClassifierRegression(uiSource, resumeSource, modernResumePreflight);
+  assert.equal(calls.length, providerCallsBeforeTransport, "RDM-215 transport stubs make zero provider calls");
+  assert.equal(clientStages.length, guardedStagesBeforeTransport, "RDM-215 transport stubs enter no model or budget-guard stage");
+  assert.equal((uiSource.match(/Still warming up \\u2014 give it 10 seconds and tap GENERATE once more\./g) || []).length, 1, "RDM-211 existing member-safe transport copy remains byte-exact and single");
+  assert.equal((resumeSource.match(/const primaryStage = action === "facts" \? "resume_facts" : \(mode === "federal" \? "resume_federal" : "resume_civilian"\)/g) || []).length, 1, "RDM-216 stage selection remains unchanged");
+  assert.equal((resumeSource.match(/action === "facts" \? 3500 : \(mode === "federal" \? 1900 : 2200\)/g) || []).length, 1, "RDM-216 primary caps remain unchanged");
+  assert.equal((resumeSource.match(/AUDIT_MAX_OUTPUT_TOKENS = 4000/g) || []).length, 1, "RDM-216 audit cap remains unchanged");
+
   await runRenderRegression();
-  console.log("PASS: synthetic RDM-1..RDM-206 integration paths; all prior grounding, DOCX, federal, and adaptive-length fixtures plus v0.19 guarded stage/call order verified locally");
+  console.log("PASS: synthetic RDM-1..RDM-216 integration paths; all prior grounding, DOCX, federal, adaptive-length, guarded-stage, and v0.20 Resume transport fixtures verified locally");
 }
 
 run().catch((error) => {
