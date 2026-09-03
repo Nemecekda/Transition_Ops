@@ -98,6 +98,21 @@ function buildRenderFixtures() {
     "EDUCATION", "A.A.S., Applied Management, Synthetic College"
   ].join("\n");
 
+  const browserOnlyHeader = [
+    "Casey Exact", "Test City, ZZ | casey@example.invalid | (202) 555-0100", "",
+    "SUMMARY", "Grounded synthetic operations leader with confirmed planning and reporting experience.", "",
+    "CORE SKILLS", "Operations planning, Reporting, Team coordination", "",
+    "PROFESSIONAL EXPERIENCE",
+    "Operations Manager | Synthetic Company Alpha", "Test City, ZZ | 2021 - Present",
+    "\u2022 Coordinated documented operating plans for supported teams.",
+    "\u2022 Reported confirmed milestones to accountable leaders.", "",
+    "Program Lead | Synthetic Company Bravo", "Sample City, ZZ | 2017 - 2021",
+    "\u2022 Managed approved program schedules and open actions.",
+    "\u2022 Updated operating procedures after completed reviews.", "",
+    "CERTIFICATIONS", "Project Management Professional", "Lean Six Sigma Green Belt", "",
+    "EDUCATION", "M.S., Operations Leadership, Synthetic University, 2017", "B.S., Business Administration, Synthetic College, 2012", "Graduate Certificate, Workforce Analytics, Synthetic Institute, 2020"
+  ].join("\n");
+
   const liveSixRole = [
     "Alex Exact", "Ephraim, WI | alex.exact@example.test | (555) 010-2026", "",
     "SUMMARY", "Planning; Workday HCM; Analytics; Coaching.", "",
@@ -219,7 +234,7 @@ function buildRenderFixtures() {
   seniorLines.push("CERTIFICATIONS", "Project Management Professional", "Lean Six Sigma Green Belt", "Certified Manager", "Change Management Practitioner", "");
   seniorLines.push("EDUCATION", "M.S., Operations Management, Synthetic University", "B.S., Business Administration, Synthetic College");
 
-  return { short, substantiveOnePage, nineBulletLong: nineBulletLongLines.join("\n"), liveSixRole, seniorLiveShape14, senior: seniorLines.join("\n") };
+  return { short, browserOnlyHeader, substantiveOnePage, nineBulletLong: nineBulletLongLines.join("\n"), liveSixRole, seniorLiveShape14, senior: seniorLines.join("\n") };
 }
 
 function docxBlockFromIndex() {
@@ -357,6 +372,14 @@ function browserRegressionBody() {
   check(livePrepared.ok && livePrepared.renderCheck.pageCount === 1, "RDM-175 prior six-role fixture remains one natural page");
   check(exactText(livePrepared.bytes) === fixtures.liveSixRole, "RDM-175 prior fixture remains exact");
 
+  var browserOnlyHeaderPrepared = api.prepare(fixtures.browserOnlyHeader, fileName, api.mime, livePlan);
+  check(browserOnlyHeaderPrepared.ok && browserOnlyHeaderPrepared.renderCheck.pageCount === 1, "RDM-256 browser-assembled civilian candidate remains a genuine non-sparse DOCX");
+  check(exactText(browserOnlyHeaderPrepared.bytes) === fixtures.browserOnlyHeader, "RDM-256 DOCX preserves the browser-only header and every server-candidate byte");
+  check(exactText(browserOnlyHeaderPrepared.bytes).split("(202) 555-0100").length - 1 === 1, "RDM-256 parenthesized phone remains byte-exact exactly once");
+  ["M.S., Operations Leadership, Synthetic University, 2017", "B.S., Business Administration, Synthetic College, 2012", "Graduate Certificate, Workforce Analytics, Synthetic Institute, 2020", "Project Management Professional", "Lean Six Sigma Green Belt"].forEach(function(item) {
+    check(exactText(browserOnlyHeaderPrepared.bytes).split(item).length - 1 === 1, "RDM-256 exact global item survives browser assembly and DOCX export: " + item);
+  });
+
   var seniorLiveShapePrepared = api.prepare(fixtures.seniorLiveShape14, fileName, api.mime, seniorPlan);
   var seniorLiveRoleIndexes = topsResumeDocxParagraphs(api.build(fixtures.seniorLiveShape14, { presentationProfile: "readable_two_page" })).map(function(paragraph, paragraphIndex) { return paragraph.styleId === "ResumeRole" ? paragraphIndex : -1; }).filter(function(paragraphIndex) { return paragraphIndex >= 0; });
   var seniorLiveBalanceMetrics = seniorLiveRoleIndexes.map(function(paragraphIndex) {
@@ -383,7 +406,7 @@ function browserRegressionBody() {
   check(!unresolvedSparsePrepared.ok && unresolvedSparsePrepared.lengthPlan.preflightDisposition === "unbalanced_two_page_withheld", "RDM-195 unresolved sparse two-page output is withheld instead of released or compacted");
   check(unresolvedSparsePrepared.lengthPlan.appliedPages === null && unresolvedSparsePrepared.lengthPlan.unbalancedTwoPageWithheld === true, "RDM-195 withheld sparse output is never reported as applied");
 
-  [shortPrepared, substantiveOnePagePrepared, seniorPrepared, onePageSeniorPrepared, livePrepared].forEach(function(prepared) {
+  [shortPrepared, browserOnlyHeaderPrepared, substantiveOnePagePrepared, seniorPrepared, onePageSeniorPrepared, livePrepared].forEach(function(prepared) {
     var paragraphs = topsResumeDocxParagraphs(prepared.bytes);
     check(paragraphs.filter(function(paragraph) { return paragraph.pageBreakBefore; }).length === 0, "RDM-191 released profiles contain zero automatic page breaks");
   });
@@ -639,6 +662,7 @@ function runLibreOfficeRegression(docxBlock, fixtures) {
     { label: "senior-adaptive", text: fixtures.senior, options: { presentationProfile: "readable_two_page" }, pages: 2, substantive: true },
     { label: "senior-one-page-preference", text: fixtures.senior, options: { presentationProfile: "compact_one_page" }, pages: 2, substantive: false },
     { label: "live-six-role", text: fixtures.liveSixRole, options: { presentationProfile: "compact_one_page" }, pages: 1, substantive: false },
+    { label: "browser-only-header", text: fixtures.browserOnlyHeader, options: { presentationProfile: "compact_one_page" }, pages: 1, substantive: false },
     { label: "senior-live-shape-14", text: fixtures.seniorLiveShape14, options: { presentationProfile: "readable_two_page", pageBreakBeforeParagraph: 25 }, pages: 2, substantive: true, pageBreaks: 1 }
   ];
   const evidence = {};

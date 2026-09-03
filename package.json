@@ -6,7 +6,9 @@
     "node": ">=22.12.0"
   },
   "scripts": {
+    "build:public": "node scripts/build-public.js",
     "test:openai-migration": "node scripts/openai-migration-regression.js",
+    "test:policy-content": "node scripts/policy-content-regression.js",
     "test:sw-privacy": "node scripts/sw-privacy-regression.js",
     "test:privacy-network": "node scripts/privacy-network-regression.js",
     "test:runtime-ai-spend": "node scripts/runtime-ai-spend-regression.js",

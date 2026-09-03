@@ -2,10 +2,10 @@
 name: validation-gate
 description: Validation battle drill for Transition OPS. EDIT mode runs pre-commit on any code change and before any PR, and governs how edits are applied - discrete edits, per-edit counts, reviewed scripts. INTEGRITY mode runs against a clean tree for structural and encoding audits. Owner - s3-devops.
 metadata:
-  version: "1.8"
+  version: "1.10"
   status: CODIFIED
   owner: s3-devops
-  validated: "2026-09-01"
+  validated: "2026-09-03"
 ---
 # VALIDATION GATE - BATTLE DRILL
 
@@ -286,26 +286,41 @@ under another name.
     `netlify.toml`, `package.json`, `package-lock.json`, either OpenAI entry
     function, or the shared OpenAI client. Run after 4P and before step 5.
     Static source assertions do not clear this step. Package both AI functions
-    with the Netlify CLI's installed packager into a scratch directory, then
-    load OpenAI and Blobs and resolve the two required Blobs dependencies
-    separately from each generated artifact without constructing a client or
-    store, accessing credentials, or invoking a function:
+    with the installed Netlify CLI's packager into a scratch directory. Resolve
+    only the `netlify` executable already on `PATH`, follow its real path, and
+    accept only the nearest ancestor `package.json` when it is a regular file
+    naming `netlify-cli` with a semantic version. A missing executable, broken
+    real path, absent manifest, symlink/nonregular manifest, malformed JSON,
+    wrong package name, or malformed version is a hard failure. Do not search a
+    second installation, call `npm root -g`, invoke `npx`, install, download, or
+    use a fallback. After resolution, load OpenAI and Blobs and resolve the two
+    required Blobs dependencies separately from each generated artifact without
+    constructing a client or store, accessing credentials, or invoking a
+    function:
 
-       TOPS_NETLIFY_CLI_ROOT="$(npm root -g)/netlify-cli"
+       TOPS_NETLIFY_BIN="$(command -v netlify 2>/dev/null)" || {
+         echo "4N FAIL - installed netlify executable not found on PATH"
+         exit 1
+       }
+       TOPS_NETLIFY_CLI_ROOT="$(node -e 'const fs=require("node:fs");const path=require("node:path");try{const executable=fs.realpathSync(process.argv[1]);let cursor=path.dirname(executable);for(;;){const manifest=path.join(cursor,"package.json");if(fs.existsSync(manifest)){const stat=fs.lstatSync(manifest);if(stat.isSymbolicLink()||!stat.isFile())throw new Error();const parsed=JSON.parse(fs.readFileSync(manifest,"utf8"));if(parsed.name!=="netlify-cli"||typeof parsed.version!=="string"||!/^[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$/.test(parsed.version))throw new Error();process.stdout.write(cursor);process.exit(0)}const parent=path.dirname(cursor);if(parent===cursor)throw new Error();cursor=parent}}catch(error){process.exit(1)}' "$TOPS_NETLIFY_BIN")" || {
+         echo "4N FAIL - PATH netlify executable does not resolve to a valid netlify-cli package"
+         exit 1
+       }
        TOPS_PACKAGE_SCRATCH="$(mktemp -d /tmp/tops-netlify-package.XXXXXX)"
        node -e 'console.log(require(process.argv[1]).version)' "$TOPS_NETLIFY_CLI_ROOT/package.json"
        node -e 'console.log(require(process.argv[1]).version)' "$TOPS_NETLIFY_CLI_ROOT/node_modules/@netlify/zip-it-and-ship-it/package.json"
-       node --input-type=module -e 'import fs from "node:fs";import path from "node:path";import {pathToFileURL} from "node:url";const cli=process.argv[1];const out=process.argv[2];const root=process.cwd();const tomlModule=await import(pathToFileURL(path.join(cli,"node_modules/@iarna/toml/toml.js")));const configModule=await import(pathToFileURL(path.join(cli,"dist/lib/functions/config.js")));const zipModule=await import(pathToFileURL(path.join(cli,"node_modules/@netlify/zip-it-and-ship-it/dist/main.js")));const parsed=(tomlModule.default||tomlModule).parse(fs.readFileSync(path.join(root,"netlify.toml"),"utf8"));const config=configModule.normalizeFunctionsConfig({functionsConfig:parsed.functions,projectRoot:root});await zipModule.zipFunctions(path.join(root,"netlify/functions"),out,{archiveFormat:"none",config,manifest:path.join(out,"manifest.json")});console.log("4N PACKAGE PASS actual netlify.toml");' "$TOPS_NETLIFY_CLI_ROOT" "$TOPS_PACKAGE_SCRATCH"
+       node --input-type=module -e 'import fs from "node:fs";import path from "node:path";import {pathToFileURL} from "node:url";const cli=process.argv[1];const out=process.argv[2];const root=process.cwd();const tomlModule=await import(pathToFileURL(path.join(cli,"node_modules/@iarna/toml/toml.js")));const configModule=await import(pathToFileURL(path.join(cli,"dist/lib/functions/config.js")));const zipModule=await import(pathToFileURL(path.join(cli,"node_modules/@netlify/zip-it-and-ship-it/dist/main.js")));const parsed=(tomlModule.default||tomlModule).parse(fs.readFileSync(path.join(root,"netlify.toml"),"utf8"));const isObjectTable=(value)=>value!==null&&typeof value==="object"&&!Array.isArray(value);const shapeFail=()=>{throw new Error("4N_INVALID_FUNCTIONS_CONFIG_SHAPE")};const rawFunctions=parsed.functions;if(!isObjectTable(rawFunctions)||!Object.prototype.hasOwnProperty.call(rawFunctions,"directory")||rawFunctions.directory!=="netlify/functions")shapeFail();const functionEntries=[];for(const [pattern,value] of Object.entries(rawFunctions)){if(pattern==="directory")continue;if(!isObjectTable(value))shapeFail();functionEntries.push([pattern,value])}const functionsConfig=Object.fromEntries(functionEntries);for(const required of ["navigator","resume"]){if(!Object.prototype.hasOwnProperty.call(functionsConfig,required))shapeFail()}const config=configModule.normalizeFunctionsConfig({functionsConfig,projectRoot:root});await zipModule.zipFunctions(path.join(root,"netlify/functions"),out,{archiveFormat:"none",config,manifest:path.join(out,"manifest.json")});console.log("4N PACKAGE PASS actual netlify.toml");' "$TOPS_NETLIFY_CLI_ROOT" "$TOPS_PACKAGE_SCRATCH"
        node -e 'const assert=require("node:assert/strict");const fs=require("node:fs");const path=require("node:path");const {createRequire}=require("node:module");const out=process.argv[1];const required={openai:"7.8.0","@netlify/blobs":"10.7.13","@netlify/otel":"6.0.6","@netlify/runtime-utils":"2.3.0"};for(const name of ["navigator","resume"]){const base=path.join(out,name);const artifactRequire=createRequire(path.join(base,"package.json"));const openaiPkg=require(path.join(base,"node_modules/openai/package.json"));assert.equal(openaiPkg.version,required.openai);const openai=artifactRequire("openai");assert.equal(typeof (openai.OpenAI||openai.default||openai),"function");const blobsPkg=require(path.join(base,"node_modules/@netlify/blobs/package.json"));assert.equal(blobsPkg.version,required["@netlify/blobs"]);const blobs=artifactRequire("@netlify/blobs");assert.equal(typeof blobs.getStore,"function");for(const moduleName of ["@netlify/otel","@netlify/runtime-utils"]){const modulePkg=require(path.join(base,"node_modules",...moduleName.split("/"),"package.json"));assert.equal(modulePkg.version,required[moduleName]);assert.equal(typeof artifactRequire.resolve(moduleName),"string");}console.log("4N PASS",name,"openai="+openaiPkg.version,"blobs="+blobsPkg.version,"otel="+required["@netlify/otel"],"runtime-utils="+required["@netlify/runtime-utils"]);}for(const packageName of Object.keys(required)){assert.equal(fs.existsSync(path.join(out,"jobs/node_modules",...packageName.split("/"))),false);}console.log("4N PASS jobs excludes all four package paths");' "$TOPS_PACKAGE_SCRATCH"
 
     `netlify functions:build` alone is prohibited as 4N evidence: CLI 26.1.0
     was measured to call the packager without normalized per-function config,
     silently omitting `included_files`. Record both displayed tool versions, the
     package PASS, the two AI artifact PASS lines, and the jobs-exclusion PASS
-    line. Missing CLI/package, configuration parse or normalization failure,
-    packaging failure, absent OpenAI or Blobs package, version drift, failed
-    module resolution, failed OpenAI-constructor or Blobs-`getStore` API shape,
-    any of the four package paths in `jobs`, or any fallback is FAIL. This
+    line. Missing or malformed PATH-resolved CLI/package, configuration parse or
+    normalization failure, packaging failure, absent OpenAI or Blobs package,
+    version drift, failed module resolution, failed OpenAI-constructor or
+    Blobs-`getStore` API shape, any of the four package paths in `jobs`, any
+    alternate installation search, download, or fallback is FAIL. This
     module-only smoke test must perform zero credential access, client or store
     construction, provider calls, network activity, model requests, function
     invocations, or hosted actions.
@@ -380,31 +395,60 @@ correct mode. Partial re-validation is how corruption ships. A fix writes
 files, so an INTEGRITY run that produces a fix becomes an EDIT run - rerun in
 EDIT MODE.
 
-## VERSION 1.8 GOVERNANCE CALIBRATION
+## VERSION 1.9 GOVERNANCE CALIBRATION
 
-- **VG-18-1:** all six v1.7 cases and the six v1.6 privacy, push-state,
-  semantic-regression, spend, and ownership cases remain PASS without
-  weakening. PASS.
-- **VG-18-2:** a `netlify.toml`-only diff triggers 4P and the real-artifact 4N
-  boundary; governance-only skill/registry diffs remain N/A. PASS.
-- **VG-18-3:** the source fixture passes only with one exact ordered four-path
-  function-scoped inclusion rule in each of Navigator and Resume; missing,
-  reordered, duplicated, extra, wrong, global, or broad inclusion fails. PASS.
-- **VG-18-4:** `node_bundler`, `external_node_modules`, and
-  `ignored_node_modules` overrides fail; the runtime-v2 NFT path remains
+- **VG-19-1:** all seven v1.8 package-boundary cases and the v1.6 privacy,
+  push-state, semantic-regression, spend, and ownership cases remain PASS
+  without weakening. PASS.
+- **VG-19-2:** a valid installed `netlify` executable is found only through
+  `PATH`; a symlinked executable resolves through its real path to the nearest
+  regular `netlify-cli/package.json` with a semantic version. PASS.
+- **VG-19-3:** missing, broken, empty, relative-to-nowhere, or otherwise
+  unresolvable PATH executables fail closed before packaging. PASS.
+- **VG-19-4:** absent, symlink, nonregular, malformed, misnamed, or
+  malformed-version nearest manifests fail closed; the resolver never skips to
+  another installation. PASS.
+- **VG-19-5:** no discovery branch invokes `npm root -g`, `npx`, package
+  installation, download, network access, or fallback resolution. PASS.
+- **VG-19-6:** both generated AI artifacts still must load OpenAI 7.8.0 and
+  Blobs 10.7.13 with the required API shapes and resolve OTel 6.0.6 and
+  runtime-utils 2.3.0. PASS.
+- **VG-19-7:** `jobs` still must exclude all four package paths, while exact
+  function-scoped source inclusion and bundler-override prohibitions remain
   unchanged. PASS.
-- **VG-18-5:** both generated AI artifacts must load OpenAI 7.8.0 with its
-  constructor shape and Blobs 10.7.13 with its `getStore` API shape, and must
-  resolve OTel 6.0.6 and runtime-utils 2.3.0. Static config alone fails. PASS.
-- **VG-18-6:** the generated `jobs` artifact must exclude all four package
-  paths. Any one present fails. PASS.
-- **VG-18-7:** package smoke performs zero client or store construction,
-  credential access, function invocation, network activity, provider call,
-  model request, or hosted action; hosted acceptance stays with deploy
-  discipline. PASS.
+- **VG-19-8:** package smoke remains module-only with zero client/store
+  construction, credential access, function invocation, network, provider,
+  model, hosted, deploy, merge, or production action. PASS.
 
-Governance calibration executed 7/7 PASS on 2026-09-01. The measured module
-boundary loaded OpenAI and Blobs and resolved OTel and runtime-utils locally
-only. No client, store, credential, function, provider path, model request,
-network request, manual assistive technology, hosted artifact, deployment,
+Governance calibration executed 8/8 PASS on 2026-09-02. PATH and real-path
+fixtures covered valid, missing, broken, malformed, misnamed, and
+malformed-version CLI boundaries. Existing artifact/API/dependency/jobs checks
+remain intact. No package download, client, store, credential, function,
+provider path, model request, network request, hosted artifact, deployment,
 merge, or production behavior was executed or certified.
+
+## VERSION 1.10 GOVERNANCE CALIBRATION
+
+- **VG-110-1:** VG-19-1 through VG-19-8 remain unchanged and PASS.
+- **VG-110-2:** a mixed raw TOML fixture containing `directory`, `navigator`,
+  and `resume` must extract exactly the two function tables and normalize them
+  successfully. PASS.
+- **VG-110-3:** missing, null, or array roots; missing, invalid, or changed
+  directory values; missing required AI tables; null, scalar, or array function
+  values; and unexpected scalar siblings must fail with only
+  `4N_INVALID_FUNCTIONS_CONFIG_SHAPE` before normalizer or packager invocation.
+  PASS.
+- **VG-110-4:** the corrected complete 4N command must pass against the actual
+  `netlify.toml`, including both AI artifacts, all four package/API boundaries,
+  `jobs` exclusion, and module-only zero-credential/zero-provider behavior.
+  PASS.
+
+Governance calibration executed 4/4 PASS on 2026-09-02. Sixteen malformed
+mixed-shape fixtures failed before normalization; the valid mixed fixture
+normalized exactly `navigator` and `resume`; Netlify CLI 26.1.0 with packager
+14.7.1 produced both required artifacts and passed every package/API and `jobs`
+exclusion check. Canonical and mirror are byte-identical. No credential,
+client, store, function, network, provider, model, hosted, deploy, merge, or
+production action was used. Version 1.10 is CODIFIED by Commander approval
+dated 2026-09-03. `deploy-discipline` continues to own hosted artifact
+identity and release authority.

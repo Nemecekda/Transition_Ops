@@ -397,14 +397,6 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 </style>
 </head>
 <body>
-<form name="tops-feedback" netlify netlify-honeypot="bot-field" hidden>
-  <input type="text" name="bot-field">
-  <input type="text" name="category">
-  <input type="text" name="from_name">
-  <input type="email" name="reply_to">
-  <input type="text" name="service_status">
-  <textarea name="message"></textarea>
-</form>
 <div id="root"><div class="seo-content" style="padding:28px 20px;max-width:720px;margin:0 auto;color:#d4cbb3;font-family:'Source Sans 3',-apple-system,sans-serif">
 <div style="text-align:center;margin-bottom:28px">
 <div style="font-family:'Oswald',sans-serif;font-size:13px;color:#C9B45A;letter-spacing:4px;margin-bottom:8px">VETERAN BRIDGE SOLUTIONS</div>
@@ -414,7 +406,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 <p style="font-size:15px;line-height:1.65;color:#d4cbb3;margin-bottom:18px">Free mobile-friendly transition toolkit built for service members, veterans, and Guard/Reserve personnel. Consolidates the scattered resources you need to navigate ETS, separation, retirement, and post-service life into one operationally-focused platform. No subscriptions, no paywalls, no ads.</p>
 <h2 style="font-family:'Oswald',sans-serif;font-size:15px;color:#DAA520;letter-spacing:2px;margin-top:24px;margin-bottom:10px;border-bottom:1px solid #222A19;padding-bottom:6px">CORE CAPABILITIES</h2>
 <ul style="list-style:none;padding:0;font-size:14px;line-height:1.8">
-<li><strong style="color:#F5F0E1">VA Combined Rating Calculator (VA Math)</strong> — Calculate your combined disability rating using the official VA formula</li>
+<li><strong style="color:#F5F0E1">VA Combined Rating Calculator (VA Math)</strong> — Estimate your combined disability rating using the 38 CFR 4.25 Combined Ratings Table</li>
 <li><strong style="color:#F5F0E1">VA Disability Pay Estimator</strong> — Project monthly compensation based on rating and dependents</li>
 <li><strong style="color:#F5F0E1">SkillBridge Employer Feed</strong> — Current opportunities for your military-to-civilian transition</li>
 <li><strong style="color:#F5F0E1">State Tax Intelligence on Military Retired Pay</strong> — All 50 states + DC, color-coded with MSRRA guidance</li>
@@ -627,11 +619,11 @@ const TRANSITION_MILESTONES = [{
     done: false
   }, {
     id: "t1b",
-    text: "START documenting ALL medical conditions NOW \u2014 a longer treatment history makes conditions far easier for VA to rate",
+    text: "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record.",
     done: false
   }, {
     id: "t1c",
-    text: "Schedule appointments for every chronic issue \u2014 referrals and specialist waits can take 1-2 months EACH",
+    text: "Follow up on current conditions, referrals, and specialist appointments; keep your service treatment records current",
     done: false
   }, {
     id: "t1d",
@@ -654,7 +646,7 @@ const TRANSITION_MILESTONES = [{
     text: "Get professional headshot \u2014 Portraits for Patriots offers FREE headshots for military (see Resources \u2192 TAP+)",
     done: false
   }],
-  reminder: "MEDICAL IS YOUR #1 PRIORITY. Conditions with a longer treatment history are far easier for VA to rate \u2014 start documenting every issue now. Appointments take months. Specialist referrals add more time. Start NOW or you risk running out the clock before BDD at 180 days. Also: research VR&E (Ch. 31) \u2014 if you qualify, understand how it interacts with your GI Bill before you choose, because the election affects both."
+  reminder: "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record. Also: research VR&E (Ch. 31) \u2014 if you qualify, understand how it interacts with your GI Bill before you choose, because the election affects both."
 }, {
   id: 2,
   phase: "12 Months Out",
@@ -667,7 +659,7 @@ const TRANSITION_MILESTONES = [{
     done: false
   }, {
     id: "t7",
-    text: "Get all chronic conditions diagnosed and ON RECORD with treatment history",
+    text: "Keep service treatment records current; follow up on active referrals and document current conditions",
     done: false
   }, {
     id: "t7b",
@@ -690,7 +682,7 @@ const TRANSITION_MILESTONES = [{
     text: "Verify SGLI to VGLI conversion timeline",
     done: false
   }],
-  reminder: "BDD opens at 180 days. Medical conditions need treatment history BEFORE you file. The longer your documented treatment history, the easier conditions are to rate \u2014 document early. VR&E (Ch. 31) Consider VR&E before spending GI Bill months if you qualify \u2014 the two interact and the election matters. Ask a VSO which fits your plan."
+  reminder: "BDD opens at 180 days. Gather service treatment records and document current conditions before filing. VA evaluates each claimed condition using the evidence of record. Consider VR&E (Ch. 31) before spending GI Bill months if you qualify \u2014 the two interact and the election matters. Ask a VSO which fits your plan."
 }, {
   id: 3,
   phase: "9 Months Out",
@@ -719,7 +711,7 @@ const TRANSITION_MILESTONES = [{
     done: false
   }, {
     id: "t15",
-    text: "Apply for SkillBridge / Career Skills Program (processing: 60-90 days)",
+    text: "Apply through your service-specific SkillBridge or Career Skills Program process after confirming your maximum days and approval authority.",
     done: false
   }, {
     id: "t15b",
@@ -751,7 +743,7 @@ const TRANSITION_MILESTONES = [{
     done: false
   }, {
     id: "t17c",
-    text: "Military accepts VA physical — keep records current to save time on sep physical",
+    text: "Keep service treatment records current and complete before separation",
     done: false
   }, {
     id: "t17",
@@ -778,7 +770,7 @@ const TRANSITION_MILESTONES = [{
     text: "Secure housing at post-separation location",
     done: false
   }],
-  reminder: "BDD WINDOW IS OPEN. Submit your claim NOW (180-90 days pre-sep). Be available for VA exams within 45 days of filing. The military accepts the VA physical — keep your records current."
+  reminder: "BDD WINDOW IS OPEN. Submit your claim NOW (180-90 days pre-sep). Be available for VA exams within 45 days of filing. Keep your service treatment records current and complete."
 }, {
   id: 5,
   phase: "3 Months Out",
@@ -916,7 +908,7 @@ const NOTIFICATIONS = [{
   id: "n1h",
   monthsOut: 6,
   title: "CRITICAL: Leadership — Protect Your BDD Window",
-  body: "You are inside the BDD window. C&P exams are VA-scheduled and cannot be rescheduled. If leadership pushes back, go to your Transition Center. They have regulatory authority.",
+  body: "You are inside the BDD window. BDD eligibility requires you to be available for VA exams within 45 days after filing. If an exam conflicts with duty, contact the VA medical center or contractor at least 48 hours in advance and coordinate duty coverage; rescheduling may delay the claim.",
   priority: "CRITICAL"
 }, {
   id: "n1i",
@@ -928,7 +920,7 @@ const NOTIFICATIONS = [{
   id: "n1b",
   monthsOut: 18,
   title: "CRITICAL: Start Medical Documentation NOW",
-  body: "Conditions with a longer documented history are easier to rate. Specialist referrals take 1-2 months. Start every appointment NOW or you run out of time before BDD.",
+  body: "Gather service treatment records and document current conditions before filing. VA evaluates each claimed condition using the evidence of record.",
   priority: "CRITICAL"
 }, {
   id: "n1c",
@@ -946,7 +938,7 @@ const NOTIFICATIONS = [{
   id: "n1e",
   monthsOut: 15,
   title: "ACTION: Medical Follow-Up",
-  body: "Check on all referrals and specialist appointments. Every condition needs treatment history. If you haven't started, you're already behind.",
+  body: "Check on active referrals and specialist appointments. Keep your service treatment records current and complete before separation.",
   priority: "HIGH"
 }, {
   id: "n2",
@@ -958,13 +950,13 @@ const NOTIFICATIONS = [{
   id: "n3",
   monthsOut: 12,
   title: "ACTION: Prep for BDD — Medical Records",
-  body: "Get EVERY condition documented now. BDD window opens at 180 days. No record = no claim.",
+  body: "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record.",
   priority: "HIGH"
 }, {
   id: "n3b",
   monthsOut: 4,
   title: "WARNING: BDD Window Closing",
-  body: "BDD closes at 90 days pre-sep. If you haven't filed yet, do it NOW or you'll file post-sep.",
+  body: "BDD closes at 90 days before separation. If fewer than 90 days remain, file a standard pre-discharge claim instead.",
   priority: "CRITICAL"
 }, {
   id: "n4",
@@ -976,7 +968,7 @@ const NOTIFICATIONS = [{
   id: "n5",
   monthsOut: 9,
   title: "INTEL: SkillBridge Window",
-  body: "Submit SkillBridge/CSP application. Processing: 60-90 days.",
+  body: "Submit your service-specific SkillBridge/CSP application after confirming your maximum days and approval authority.",
   priority: "HIGH"
 }, {
   id: "n5b",
@@ -2699,14 +2691,13 @@ const WHATS_NEW = [
   { v: "v75", date: "10 JUL 2026", note: "Cleaner home screen: your countdown, critical windows, and next action stay front and center \u2014 everything else now lives under MORE TOOLS & INTEL (one tap). First step of a redesign shaped by service-officer feedback." },
   { v: "v73", date: "10 JUL 2026", note: "Fixed the ETS date picker on iPhone (it was closing before you could pick a future date) and added FIND YOUR LOCAL VSO / CVSO \u2014 official locators for free, in-person claims help near you." },
   { v: "v72", date: "9 JUL 2026", note: "Deep-dive polish: fixed a Resource Directory crash, completed light-theme coverage on every screen, stronger contrast in both themes, a SITREP card showing what changed since your last check-in, and a new one-tap \u201Cadd my deadlines to calendar\u201D export on Critical Windows. Policy tracker updated: SpouseWorks launch (1 JUL) and the Take Care of America's Veterans Act / Major Richard Star Act now tracked." },
-  { v: "v71", date: "9 JUL 2026", note: "Light theme is here \u2014 tap PRO in the header for a clean professional look (great on laptops and in bright sun). Feedback now transmits directly from the app, screen-reader support improved throughout, and the app no longer depends on any outside server to load." },
+  { v: "v71", date: "9 JUL 2026", note: "Light theme is here \u2014 tap PRO in the header for a clean professional look (great on laptops and in bright sun). Feedback can now open a prepared email draft, screen-reader support improved throughout, and the app's core tools remain available without an account." },
   { v: "v70", date: "9 JUL 2026", note: "Navigation overhaul: your phone's Back button now steps back inside the app instead of exiting, VA calculators moved into the home bar and a new quick-tools row, one clean icon set across the app, larger body text, easier-to-tap controls, and a finish-setup shortcut if you skipped onboarding." },
   { v: "v69", date: "10 JUL 2026", note: "Accuracy and accessibility pass ahead of VSO review: corrected the BDD window (180\u201390 days), PACT Act 10-year healthcare enrollment, VR&E eligibility thresholds, DAF SkillBridge rank caps, and HHG claim deadlines. Plus bigger tap targets, stronger contrast, pinch-zoom restored, and full offline support." },
   { v: "v65", date: "9 JUL 2026", note: "Added a clear independence notice (this is an independent veteran-built tool, not a government service), and tightened benefit accuracy on VR\u0026E and medical-documentation guidance." },
   { v: "v67", date: "14 JUN 2026", note: "Deep links: arriving from a Transition OPS article or shared link now lands you directly inside the right tool." },
   { v: "v66", date: "14 JUN 2026", note: "Explore-first welcome: tappable cards on the landing screen route straight into live tools \u2014 no setup required." },
   { v: "v64", date: "14 JUN 2026", note: "New Resume Starter on every career screen \u2014 turns your military experience into civilian-framed resume bullets you can copy. Plus a clearer install guide." },
-  { v: "v63", date: "14 JUN 2026", note: "Behind-the-scenes: added analytics so we can see which deadline alerts help most and improve them." },
   { v: "v62", date: "14 JUN 2026", note: "On the Critical Windows screen you can now turn on reminders for the exact deadlines you're viewing \u2014 timed to your separation date." },
   { v: "v61", date: "14 JUN 2026", note: "Install screen now explains the deadline alerts you get by adding the app to your home screen." },
   { v: "v60", date: "14 JUN 2026", note: "Added this What's New panel so you can see what changed each update." },
@@ -2957,20 +2948,20 @@ const RESOURCES = [
 const SMART_REMINDERS = [
   {id:"r-24-itp",mo:24,cat:"ADMIN",pri:"ADVISORY",title:"Initiate Individual Transition Plan (ITP)",brief:"Sit down with your commander and establish your ITP. This is the foundation — everything builds from here.",items:["Schedule ITP meeting with chain of command","Attend initial TAP briefing","Request copies of ORB/SRB (or branch equivalent) and review for accuracy","Pull OMPF and verify all service records"],deadline:"No hard deadline — but every day you wait compresses your timeline",why:"Late starts lead to rushed decisions on benefits worth six figures over your lifetime.",link:"https://www.tapevents.mil"},
   {id:"r-24-net",mo:24,cat:"CAREER",pri:"ADVISORY",title:"Begin Building Your Civilian Network",brief:"Your DD214 won't get you hired — your network will. Start now.",items:["Create or update LinkedIn profile","Join veteran networking groups (ACP, MilMentor)","Identify 3-5 mentors in target industry","Attend at least one industry event monthly"],deadline:null,why:"Veterans who network 18+ months out have significantly higher placement rates.",link:"https://www.linkedin.com"},
-  {id:"r-18-sb",mo:18,cat:"CAREER",pri:"HIGH",title:"Research SkillBridge Opportunities",brief:"SkillBridge = civilian internship during your final months while collecting military pay. Duration is now RANK-TIERED by service — most members rate 60–120 days, not 180. Slots fill fast, and approval chains run higher than they used to.",items:["Browse SkillBridge employers in the app feed","KNOW YOUR CEILING: E1–E5 generally rate up to 120 days; mid-grades 90; senior NCOs and senior officers as few as 60 — with O-6 or General Officer approval required. Exact tiers vary by service. Coast Guard retains up to 180. Navy: confirm with your command career counselor.","Identify 3-5 target companies","NEW (JUN 2026): services are directed to APPROVE SkillBridge requests that support the defense industrial base — shipbuilding, missile defense, aircraft, munitions — denying only for readiness reasons. Targeting a defense employer strengthens your packet","Verify commander support and unit manning","Begin application packet (some need 12+ months lead)","Check mypatriotcareer.mil for defense-sector openings and credentialing resources"],deadline:"Applications often due 6-12 months before start",why:"Most SkillBridge participants report job offers from their programs. Missing this window = walking out with no income. If your target employer supports the defense industrial base, the approval presumption now works for you — service-level implementation guidance is still rolling out, so confirm with your Transition Center.",link:"https://skillbridge.osd.mil"},
+  {id:"r-18-sb",mo:18,cat:"CAREER",pri:"HIGH",title:"Research SkillBridge Opportunities",brief:"SkillBridge = civilian experience during your final months while continuing military compensation and benefits. Duration and approval are service- and paygrade-specific. Published ceilings range from 60–180 days; confirm yours before choosing a start date.",items:["Browse SkillBridge employers in the app feed","KNOW YOUR CEILING: Army, Air Force, Space Force, and Marine Corps standard published tiers span 60–120 days; Coast Guard permits up to 180 days; Navy tiers are 90, 120, or 180 days depending on paygrade and qualifying program. Use your current service instruction or MyNavyHR SkillBridge page to confirm your maximum days and approval authority before setting a start date.","Identify 3-5 target companies","NEW (JUN 2026): services are directed to APPROVE SkillBridge requests that support the defense industrial base — shipbuilding, missile defense, aircraft, munitions — denying only for readiness reasons. Targeting a defense employer strengthens your packet","Verify commander support and unit manning","Begin application packet (some need 12+ months lead)","Check mypatriotcareer.mil for defense-sector openings and credentialing resources"],deadline:"Applications often due 6-12 months before start",why:"A late packet can make the requested dates impossible to fit before separation. Confirm your service/paygrade ceiling and approval chain before choosing a start date. If your target employer supports the defense industrial base, the approval presumption now works for you — service-level implementation guidance is still rolling out, so confirm with your Transition Center.",link:"https://skillbridge.osd.mil"},
   {id:"r-18-res",mo:18,cat:"CAREER",pri:"HIGH",title:"Begin Resume Development",brief:"Translating military experience into civilian language takes time. Don't wait.",items:["Use MOS Crosswalk to identify civilian job titles","Draft resume with accomplishment-based bullets","Remove ALL military jargon","Get feedback from a civilian hiring manager"],deadline:"First draft complete no later than 12 months out",why:"Poorly translated resumes get filtered by ATS before a human ever sees them.",link:null},
-  {id:"r-12-bdd",mo:12,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F BDD Claim \u2014 Prep Now, File at 180 Days",brief:"File your VA disability claim in the 180-90 day window before separation. Rating effective the day after separation.",items:["Gather all medical records and Line of Duty (LOD) determinations","Schedule pre-claim consultation with VSO (DAV, VFW, American Legion)","Request complete STRs now \u2014 medical, dental, mental health (separately). Do not file until 180 days out","Get buddy statements for service-connected conditions","Schedule remaining medical appointments for documentation"],deadline:"File between 180 and 90 days before separation",why:"Filing after separation can delay your rating by 6-12+ months. That can mean tens of thousands in delayed compensation.",link:"https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/"},
+  {id:"r-12-bdd",mo:12,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F BDD Claim \u2014 Prep Now, File at 180 Days",brief:"If eligible, file through BDD during the 180\u201390-day window. If VA grants direct service connection, the effective date may be as early as the day after separation.",items:["Gather all medical records and Line of Duty (LOD) determinations","Schedule pre-claim consultation with VSO (DAV, VFW, American Legion)","Request complete STRs now \u2014 medical, dental, mental health (separately). Do not file until 180 days out","Get buddy statements for service-connected conditions","Schedule remaining medical appointments for documentation"],deadline:"File between 180 and 90 days before separation",why:"BDD gives VA time to develop the claim before separation. If fewer than 90 days remain, file a standard pre-discharge claim instead.",link:"https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/"},
   {id:"r-12-tax",mo:12,cat:"FINANCE",pri:"CRITICAL",title:"\u26A0\uFE0F State Tax Residency — Legal RESIDENCE Matters",brief:"Your state of LEGAL RESIDENCE (not Home of Record) determines state tax on retired pay. $5K-$15K+/year impact.",items:["No state income tax: AK, FL, NV, NH, SD, TN, TX, WA, WY","Most other states fully exempt military retired pay — check YOUR state's current status in the Tax Intel tab","Establish legal residency BEFORE separation","MSRRA allows spouses same state for tax"],deadline:"Establish residency before separation date",why:"Wrong state costs retirees thousands annually for life.",link:"https://myarmybenefits.us.army.mil/Benefit-Library/State/Territory-Benefits"},
   {id:"r-12-sbp",mo:12,cat:"FINANCE",pri:"CRITICAL",title:"\u26A0\uFE0F Survivor Benefit Plan (SBP) — IRREVOCABLE",brief:"Retirees must elect or decline SBP. Nearly IRREVOCABLE. Provides up to 55% of retired pay to survivors.",items:["SBP costs 6.5% of retired pay for spouse","Calculate breakeven vs commercial life insurance","Spouse concurrence required to decline","SBP is inflation-adjusted; commercial is not","Consider DIC offset and SBP-DIC interaction"],deadline:"Election must be made before retirement",why:"Declining and dying without adequate life insurance leaves your family exposed. Cannot be undone.",link:null},
   {id:"r-12-rso",mo:12,cat:"GUARD/RESERVE",pri:"ADVISORY",title:"Register for an RSO Retirement Planning Seminar (Guard/Reserve)",brief:"If you are headed for the Retired Reserve, the Retirement Services Office runs free Retirement Planning Seminars that cover SBP elections, gray-area status, and the age 60 retired pay application. Go before you sign anything.",items:["Find the next seminar on the Army-wide calendar: soldierforlife.army.mil/Retirement/Events","Pull your retirement points statement and bring it","Write down your SBP questions in advance. This decision follows you for decades"],deadline:"Before your transfer to the Retired Reserve",why:"SBP and retired pay decisions made blind at the end cost money for decades. The seminar is free and the counselors do this every day."},
   {id:"r-12-tsp",mo:12,cat:"FINANCE",pri:"HIGH",title:"TSP Strategy & Rollover Planning",brief:"TSP expense ratios (~0.05%) are among the lowest anywhere. Don't roll over blindly.",items:["Review current allocation and rebalance","Options: leave in TSP, rollover to IRA, or new 401(k)","TSP expense ratio ~0.05% vs typical civilian 0.5-1.5%","Use DIRECT rollover to avoid 20% withholding","Consider Roth conversion if lower tax bracket post-sep"],deadline:"Have plan before separation",why:"Indirect rollovers trigger 20% withholding and potential early withdrawal penalties.",link:"https://www.tsp.gov"},
-  {id:"r-12-sb365",mo:12,cat:"CAREER",pri:"HIGH",title:"SkillBridge Application Window OPENS — T-365",brief:"You can now formally start your SkillBridge packet. Marines: NCMIS accepts applications 365 days from EAS. All services: the clock on command endorsement starts NOW.",items:["Confirm your rank category and maximum program days under your service instruction","Marines: initiate application in NCMIS","Senior grades (E-8/E-9, O-4/O-5+): your approval may require an O-6 or General Officer — brief your chain NOW","Lock target employer list to 3–5 and open conversations","Map PTDY/PTAD + terminal leave inside your category ceiling"],deadline:"Packets routed through elevated approval chains can take months — T-365 start protects your window",why:"Shorter windows (60–90 days for many grades) mean there is no slack for a late packet. A GO-level approval that starts at T-180 can consume your entire program window.",link:"https://skillbridge.osd.mil"},
+  {id:"r-12-sb365",mo:12,cat:"CAREER",pri:"HIGH",title:"SkillBridge Service-Rule Check — T-365",brief:"Begin service-specific SkillBridge planning. Marines may initiate NCMIS applications up to 365 days before EAS; other services use their own processes and timelines.",items:["Confirm your rank category and maximum program days under your service instruction","Marines: initiate application in NCMIS","Identify the approval authority assigned to your service and paygrade under current guidance; brief your chain now.","Lock target employer list to 3–5 and open conversations","Map PTDY/PTAD + terminal leave inside your category ceiling"],deadline:"Confirm the service-specific application timeline, maximum days, and approval authority before setting a requested start date.",why:"Your authorized ceiling and approval authority determine whether the requested dates can fit before separation; confirm both before routing the packet.",link:"https://skillbridge.osd.mil"},
   {id:"r-8-clr",mo:8,cat:"CAREER",pri:"HIGH",title:"Security Clearance Monetization",brief:"Secret or TS/SCI typically adds $10K-$30K+ to salary offers — but only if you use it before it lapses.",items:["Verify clearance status with SSO/FSO","Target cleared positions in defense/intel/contracting","Booz Allen, SAIC, Leidos, Raytheon recruit cleared vets","Clearance stays active 24 months post-sep if no break"],deadline:"24 months post-sep for most clearances",why:"A lapsed TS/SCI costs $50K+ and 12-18 months to reinvestigate. Use it or lose it.",link:null},
-  {id:"r-6-bdd2",mo:6,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F BDD Window OPEN \u2014 Closes at 90 Days",brief:"The BDD window runs 180 to 90 days out. If you haven't filed yet, move now \u2014 at 90 days you lose the fast-track.",items:["File BDD claim on VA.gov IMMEDIATELY","Ensure all C&P exams scheduled","Submit remaining buddy statements","Confirm VSO submitted your package"],deadline:"Closes 90 days before separation — HARD DEADLINE",why:"Missing BDD means 6-18 months delay on your rating and backpay.",link:"https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/"},
+  {id:"r-6-bdd2",mo:6,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F BDD Window OPEN \u2014 Closes at 90 Days",brief:"The BDD window runs from 180 to 90 days before separation. At 90 days, BDD closes; the standard pre-discharge claim path remains available.",items:["File BDD claim on VA.gov IMMEDIATELY","Ensure all C&P exams scheduled","Submit remaining buddy statements","Confirm VSO submitted your package"],deadline:"Closes 90 days before separation — HARD DEADLINE",why:"Missing BDD removes that pre-discharge processing path, not the ability to file a disability claim.",link:"https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/"},
   {id:"r-6-house",mo:6,cat:"HOUSING",pri:"HIGH",title:"Post-Separation Housing Plan",brief:"Where are you living after ETS? BAH is going away.",items:["Research housing costs in target area","VA Home Loan: $0 down, no PMI — use it","Get pre-approved before separation (active duty income helps)","If renting, budget first/last/deposit without BAH"],deadline:"Housing secured no later than 60 days before ETS",why:"Separating without housing leads to financial stress and family strain.",link:"https://www.va.gov/housing-assistance/home-loans/"},
   {id:"r-6-gi",mo:6,cat:"BENEFITS",pri:"HIGH",title:"GI Bill & Education Planning",brief:"If eligible, evaluate VR&E (Chapter 31) before the GI Bill (Chapter 33) \u2014 it can preserve months of entitlement.",items:["Apply to target schools","Apply for GI Bill COE on VA.gov","If eligible: evaluate VR&E (Ch.31) BEFORE using GI Bill","Research Yellow Ribbon programs","Factor in BAH-equivalent MHA (based on school zip)"],deadline:"School applications 6+ months before start",why:"VR&E does not count against your 36 GI Bill months \u2014 sequencing right can preserve benefits worth tens of thousands.",link:"https://www.va.gov/education/"},
-  {id:"r-5-sb150",mo:5,cat:"CAREER",pri:"HIGH",title:"SkillBridge Execution Check — T-150",brief:"If your packet is not APPROVED yet, you are in the danger zone. Most rank categories cap at 60–120 days — your start date math is now unforgiving.",items:["Packet approved? If not: get status from your SkillBridge coordinator TODAY","Count backward: program days + terminal leave must fit before separation date","Category ceiling check: senior grades at 60–90 days must start soon or lose the opportunity","No packet at all? A shorter program (30–60 days) with a defense-industrial-base employer may still be approvable — the JUN 2026 presumption works in your favor","Fallback: pivot to employer-direct hiring pipelines in the app feed"],deadline:"Unapproved at T-120 with a 90-day category = window functionally closed",why:"The blanket 180-day planning assumption is dead. Members who plan against the old rules discover at T-90 that their real window expired.",link:"https://skillbridge.osd.mil"},
-  {id:"r-4-med",mo:4,cat:"HEALTH",pri:"HIGH",title:"Final Medical & Dental",brief:"Get everything documented while it's still free. Dental alone runs $500-$2K after separation.",items:["Schedule dental cleaning and procedures","Vision exam and updated prescription","Complete all pending referrals","Request complete medical and dental records","Schedule separation physical","Document ANY condition for potential VA claim"],deadline:"Complete all appointments no later than 30 days before ETS",why:"Undocumented conditions are exponentially harder to claim after separation.",link:null},
+  {id:"r-5-sb150",mo:5,cat:"CAREER",pri:"HIGH",title:"SkillBridge Execution Check — T-150",brief:"If your packet is not APPROVED yet, you are in the danger zone. Service/paygrade ceilings are 60, 90, 120, or 180 days — confirm yours before fixing a start date.",items:["Packet approved? If not: get status from your SkillBridge coordinator TODAY","Count backward: program days + terminal leave must fit before separation date","Ceiling check: compare your service/paygrade maximum with the days remaining before separation and your requested program dates.","No packet at all? Ask your service SkillBridge office whether a shorter program can fit your remaining authorized window; if the employer supports the defense industrial base, apply the JUN 2026 approval presumption subject to readiness.","Fallback: pivot to employer-direct hiring pipelines in the app feed"],deadline:"Before the requested start date; approval and all program days must fit before separation.",why:"A 180-day ceiling does not apply to every service/paygrade category. Confirm your ceiling before setting the start date.",link:"https://skillbridge.osd.mil"},
+  {id:"r-4-med",mo:4,cat:"HEALTH",pri:"HIGH",title:"Final Medical & Dental",brief:"Use your remaining time in service to complete medical and dental care and collect your records.",items:["Schedule dental cleaning and procedures","Vision exam and updated prescription","Complete all pending referrals","Request complete medical and dental records","Schedule separation physical","Document current conditions for a potential VA claim"],deadline:"Complete required separation health steps before your service's deadline",why:"VA evaluates each claimed condition using the evidence of record. Keep your service treatment records current and complete.",link:null},
   {id:"r-4-dd214",mo:4,cat:"ADMIN",pri:"CRITICAL",title:"DD214 Worksheet Review",brief:"Your DD214 is the most important document of your military career. Errors take months to correct.",items:["Review worksheet with S-1/admin/personnel office","Verify dates, rank, MOS, awards, deployments","Ensure all schools and qualifications listed","Verify separation code and RE code","Dispute BEFORE signing — correcting after is a nightmare"],deadline:"Review as soon as generated — typically 90 days before ETS",why:"Errors affect VA benefits, employment, and veterans preference for life.",link:null},
   {id:"r-3-va",mo:3,cat:"HEALTH",pri:"HIGH",title:"Register for VA Healthcare",brief:"Apply now so coverage is ready on Day 1.",items:["Apply at VA.gov or nearest VA medical center","Understand your Priority Group","Locate nearest VAMC and CBOC","TAMP (if you qualify): 180 days TRICARE after separation","Retirees: review TRICARE Retired options"],deadline:"Apply before separation for seamless coverage",why:"TAMP (when it applies) only lasts 180 days. Gaps put your family at risk.",link:"https://www.va.gov/health-care/apply/"},
   {id:"r-2-fin",mo:2,cat:"FINANCE",pri:"HIGH",title:"Final Financial Readiness Check",brief:"Do you have 3-6 months saved? Know when the money stops.",items:["Verify final pay date and amount with finance","Calculate terminal leave (sell back vs take leave)","Ensure 3-6 months emergency fund accessible","Budget first 90 days without military pay","Cancel military-specific allotments","File unemployment on Day 1 — most separating members qualify (varies by state)"],deadline:"No later than 60 days before ETS",why:"35% of veterans report financial hardship in Year 1. Don't be a statistic.",link:null},
@@ -3013,29 +3004,29 @@ const CRITICAL_WINDOWS = [
     id:"skillbridge", num:2, name:"SKILLBRIDGE", fullName:"DoD SkillBridge Program",
     authority:"10 U.S.C. § 1143 · DoDI 1322.29 · Service instructions (see sources)",
     startDay:-365, hardStartDay:-180, endDay:0, irrevocable:false,
-    shortDesc:"Civilian employer training in your final months of service. Retain pay, BAH, healthcare. Duration and approval are now RANK-TIERED and SERVICE-SPECIFIC — most members rate 60–120 days, not 180. Senior grades may require General Officer approval.",
-    whyMatters:"Frequently the only practical opportunity to gain civilian work experience before DD214. Approval chains have been ELEVATED: junior enlisted route through the first field-grade commander, but E-8/E-9 and senior officers may require an O-6 or General Officer (Army Category III: first GO with GCMCA — no delegation). Command approval is the rate-limiting step — start conversations 6+ months out, earlier if you are senior grade with a shorter window.",
+    shortDesc:"Civilian employer training in your final months of service while continuing military compensation and benefits. Duration and approval are service- and paygrade-specific; published ceilings range from 60–180 days. Confirm your exact ceiling and approval authority before setting a start date.",
+    whyMatters:"SkillBridge can provide civilian work experience before separation. Maximum days and approval authorities vary by service and paygrade, so confirm both under current guidance before setting requested dates.",
     prerequisites:["TAP Initial Counseling complete","Tier-appropriate Career Readiness Standards met or on track","Unit commander endorsement","Identified approved SkillBridge partner program"],
-    actionSteps:["Confirm YOUR category and maximum days under YOUR service instruction — Army AR 600-81 / AFI 36-2671 / SPFI 36-2672 / MARADMIN 280-24 (Coast Guard retains up to 180 days at command discretion; Navy members: confirm current rules with your command career counselor or installation SkillBridge office)","Begin identifying potential SkillBridge partners at T-365 — Marines can initiate the NCMIS application up to 365 days from EAS","Obtain command endorsement — start the conversation 6+ months out; senior grades requiring GO-level approval should start earlier","Submit package through service-specific process","Coordinate timing so PTDY/PTAD plus terminal leave fits inside your category ceiling and clearing is complete before separation"],
+    actionSteps:["Confirm your maximum days and approval authority under current service guidance: AR 600-81, AFI 36-2671, SPFI 36-2672, MARADMIN 280/24, USCG ALCOAST 202/26, or the MyNavyHR SkillBridge page.","Begin identifying potential SkillBridge partners at T-365 — Marines can initiate the NCMIS application up to 365 days from EAS","Obtain command endorsement through the approval authority required by your service and paygrade.","Submit package through service-specific process","Coordinate timing so PTDY/PTAD plus terminal leave fits inside your category ceiling and clearing is complete before separation"],
     forms:["Service-specific SkillBridge application package"],
     pocs:["Service SkillBridge office","Partner program POC","Installation TAP"],
     consequence:"Entering civilian job market cold — no paid work experience bridge between active duty and first post-service job.",
     guardReserve:"Active-duty program. Guard/Reserve on qualifying Title 10 orders may qualify depending on orders length and command approval.",
-    sources:[{label:"DoD SkillBridge",url:"https://skillbridge.osd.mil"},{label:"AR 600-81 (25 MAR 2026)"},{label:"AFI 36-2671 (31 MAR 2026)",url:"https://www.e-publishing.af.mil"}],
+    sources:[{label:"DoD SkillBridge",url:"https://skillbridge.osd.mil"},{label:"AR 600-81 (25 MAR 2026)"},{label:"AFI 36-2671 (31 MAR 2026)",url:"https://static.e-publishing.af.mil/production/1/af_a1/publication/afi36-2671/afi36-2671.pdf"},{label:"SPFI 36-2672 (31 MAR 2026)",url:"https://static.e-publishing.af.mil/production/1/hqsf/publication/spfi36-2672/spfi36-2672.pdf"},{label:"MARADMIN 280/24",url:"https://www.marines.mil/News/Messages/Messages-Display/Article/3809908/interim-guidance-on-the-implementation-of-the-skillbridge-program/"},{label:"USCG ALCOAST 202/26",url:"https://content.govdelivery.com/accounts/USDHSCG/bulletins/41eb992"},{label:"MyNavyHR SkillBridge",url:"https://www.mynavyhr.navy.mil/Career-Management/Transition/SkillBridge/"}],
     reminderDays:[-365,-270,-180]
   },
   {
     id:"bdd", num:3, name:"BDD CLAIM", fullName:"Benefits Delivery at Discharge",
     authority:"38 U.S.C. § 5101 et seq.",
     startDay:-180, hardStartDay:-180, endDay:-90, irrevocable:true, channelOnly:true,
-    shortDesc:"Pre-discharge VA disability claim. File T-180 to T-90 only. Goal: rating decision within 30 days of separation.",
-    whyMatters:"Often delivers a rating decision within about a month of separation. Standard post-discharge claims take 3–6 months — sometimes 9–12. Highest-leverage pre-separation action for service-connected conditions.",
+    shortDesc:"Pre-discharge VA disability claim. File T-180 to T-90 only. VBA goal: decision within 30 days after separation; not guaranteed.",
+    whyMatters:"BDD lets VA review service treatment records, schedule needed exams, and evaluate the claim before separation. VBA's stated goal is a decision within 30 days after separation, not a guarantee.",
     prerequisites:["Confirmed separation date (180–90 days away)","Complete Service Treatment Records from current period","Completed SHA — Part A Self-Assessment","Availability for VA medical exams 45+ days after filing"],
     actionSteps:["Request complete STRs at T-180 — medical, dental, mental health (separately)","Gather private medical records for service-connected conditions","Complete SHA Part A Self-Assessment","File VA Form 21-526EZ (check BDD box, upper-left) via VA.gov or BDD intake site","Attend every scheduled C&P exam"],
     forms:["VA Form 21-526EZ (BDD)","SHA Part A DBQ"],
     pocs:["VA.gov","Installation TAP VA Benefits Briefing","VA 1-800-827-1000"],
-    consequence:"Before T-180: cannot process. After T-90: drops to Standard or FDC process — no expedited decision. After separation: 3–12 month delay before any compensation begins. Intent to File does NOT preserve effective date for BDD.",
-    guardReserve:"Applies to members activated 180+ days whose DD214 will issue during activation. Verify with local VA rep before filing.",
+    consequence:"After T-90, BDD is unavailable; file a standard pre-discharge claim. BDD's 30-day goal does not apply. Effective dates are governed by 38 CFR 3.400 and the facts of the granted claim.",
+    guardReserve:"Guard and Reserve members on qualifying full-time active duty may use BDD if they have a known separation date 180 to 90 days away and meet VA's other eligibility requirements.",
     sources:[{label:"VA Pre-Discharge Claim",url:"https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/"},{label:"VBA BDD Program",url:"https://benefits.va.gov/BENEFITS/benefits-delivery-discharge-program.asp"}],
     reminderDays:[-210,-180,-150,-120,-90]
   },
@@ -3044,12 +3035,12 @@ const CRITICAL_WINDOWS = [
     authority:"DoDI 6040.46 · 10 U.S.C. § 1145(a)(5) · 2013 VA/DoD MOA",
     startDay:-180, hardStartDay:-180, endDay:-30, irrevocable:false,
     shortDesc:"Single exam satisfying both DoD separation physical and VA disability rating exam. Admin review and validation NLT T-30.",
-    whyMatters:"Tightly coupled to BDD. Conditions not documented here are significantly harder to service-connect later. Cannot separate without a completed separation physical — delays DD214 issuance.",
+    whyMatters:"Tightly coupled to BDD. The assessment documents health status before separation. Complete required separation-health steps and keep a copy for your records.",
     prerequisites:["Access to MHS Genesis or installation medical out-processing portal","List of current medications and supplements","Deployment history","List of claimed conditions"],
     actionSteps:["Complete Part A Self-Assessment (online via military medical portal) BEFORE scheduling Part B","Attend Part B clinical assessment with provider","Obtain copy of completed SHA for personal records","Ensure SHA data transfers to VA via DoD/VA interface if filing BDD"],
     forms:["DBQ SHA Part A Self-Assessment","DD Form 2807-1","DD Form 2808"],
     pocs:["Installation medical","TMIP","Branch health clinic"],
-    consequence:"Cannot separate without completed separation physical. Delays DD214. Makes future VA claims substantially harder to service-connect.",
+    consequence:"An incomplete required separation assessment can delay separation processing. Complete it before your service's deadline and keep a copy for your records.",
     guardReserve:"Required for members separating from 180+ day activation or 30+ day contingency orders.",
     sources:[{label:"DoDI 6040.46",url:"https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/604046p.pdf"},{label:"VA SHA Program",url:"https://benefits.va.gov/BENEFITS/separation-health-assessment.asp"}],
     reminderDays:[-180,-120,-90,-60,-30]
@@ -3309,27 +3300,6 @@ const VA_PAY_2026 = {
 
 // VA Combined Rating Calculator — "VA Math"
 // VA doesn't add ratings. Each rating applies to remaining "healthy" percentage.
-function calcVACombined(ratings) {
-  if (!ratings || ratings.length === 0) return { combined: 0, rounded: 0, exact: 0, steps: [] };
-  // Sort highest to lowest
-  var sorted = ratings.slice().sort(function(a, b) { return b - a; });
-  if (sorted.length === 1) {
-    return { combined: sorted[0], rounded: Math.round(sorted[0] / 10) * 10, exact: sorted[0], steps: [{ rating: sorted[0], label: sorted[0] + "% (highest)", healthy: 100 - sorted[0], taken: sorted[0], running: sorted[0] }] };
-  }
-  var steps = [];
-  var running = 0;
-  for (var i = 0; i < sorted.length; i++) {
-    var r = sorted[i];
-    var healthy = 100 - running;
-    var taken = +(healthy * r / 100).toFixed(2);
-    running = +(running + taken).toFixed(2);
-    steps.push({ rating: r, label: r + "%" + (i === 0 ? " (highest)" : ""), healthy: +(100 - running).toFixed(2), taken: taken, running: running });
-  }
-  var exact = running;
-  var rounded = Math.round(exact / 10) * 10;
-  return { combined: rounded, rounded: rounded, exact: exact, steps: steps };
-}
-
 function calcVAPay(rating, hasSpouse, depParents, childrenU18, childrenSchool, spouseAA) {
   if (!rating || rating < 10) return { monthly: 0, annual: 0, breakdown: [] };
   var bd = [];
@@ -3403,22 +3373,19 @@ function calcVAPay(rating, hasSpouse, depParents, childrenU18, childrenSchool, s
 
 function calcVACombined(conditions) {
   if (!conditions || conditions.length === 0) return { combined: 0, rounded: 0, exact: 0, steps: [] };
-  // Sort highest to lowest
+  // 38 CFR 4.25 Table I: sort highest to lowest and carry each whole-number
+  // combined value into the next step. Convert to the nearest 10 only once.
   var sorted = conditions.slice().sort(function(a, b) { return b.rating - a.rating; });
-  if (sorted.length === 1) {
-    return { combined: sorted[0].rating, rounded: sorted[0].rating, exact: sorted[0].rating, steps: [{ label: sorted[0].name, rating: sorted[0].rating, healthy: 100 - sorted[0].rating, running: sorted[0].rating }] };
-  }
   var steps = [];
-  var healthy = 100;
   var runningDisabled = 0;
   for (var i = 0; i < sorted.length; i++) {
     var r = sorted[i].rating;
-    var taken = Math.round((r / 100) * healthy * 100) / 100;
-    runningDisabled += taken;
-    healthy = 100 - runningDisabled;
-    steps.push({ label: sorted[i].name, rating: r, taken: taken, healthy: Math.round(healthy * 100) / 100, running: Math.round(runningDisabled * 100) / 100 });
+    var healthy = 100 - runningDisabled;
+    var taken = Math.round((r / 100) * healthy);
+    runningDisabled = Math.round(runningDisabled + taken);
+    steps.push({ label: sorted[i].name, rating: r, taken: taken, healthy: 100 - runningDisabled, running: runningDisabled });
   }
-  var exact = Math.round(runningDisabled * 100) / 100;
+  var exact = runningDisabled;
   var rounded = Math.round(exact / 10) * 10;
   return { combined: rounded, rounded: rounded, exact: exact, steps: steps };
 }
@@ -3530,7 +3497,7 @@ function downloadDeadlineICS(sepDate, trackEvent) {
   var stamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
   var EVENTS = [
     [-365, "TAP start deadline (T-365)", "Federally mandated transition assistance begins no later than 365 days before separation."],
-    [-180, "BDD window OPENS (T-180)", "File your VA disability claim 180-90 days before separation for a rating effective day one. va.gov/disability"],
+    [-180, "BDD window OPENS (T-180)", "If eligible, file through BDD 180-90 days before separation. BDD may speed processing, but does not guarantee a decision by separation. va.gov/disability"],
     [-90, "BDD window CLOSES (T-90)", "Last day for Benefits Delivery at Discharge. After this it is a standard claim."],
     [-30, "Final month: DD214 review", "Verify every line of your DD214 worksheet before signing. Errors are costly to fix later."],
     [0, "SEPARATION DAY", "Get certified DD214 copies. File unemployment. Verify sep code, RE code, characterization."],
@@ -3623,8 +3590,6 @@ function FeedbackModal(props) {
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const categories = [{
     k: "feature",
@@ -3648,34 +3613,12 @@ function FeedbackModal(props) {
     const catLabel = (categories.find(function (c) {
       return c.k === category;
     }) || {}).label || "General Feedback";
-    const subject = "[Transition OPS] " + catLabel + (name ? " \u2014 " + name : "");
-    const body = ["CATEGORY: " + catLabel, status ? "STATUS: " + status : null, name ? "FROM: " + name : null, email ? "REPLY TO: " + email : null, "", "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500", "FEEDBACK:", "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500", message, "", "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500", "Submitted: " + new Date().toLocaleString("en-US"), "Source: Transition OPS \u2014 Main App", "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500"].filter(Boolean).join("\n");
+    const subject = "[Transition OPS] " + catLabel;
+    const body = ["CATEGORY: " + catLabel, status ? "STATUS: " + status : null, "", "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500", "FEEDBACK:", "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500", message, "", "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500", "Prepared: " + new Date().toLocaleString("en-US"), "Source: Transition OPS \u2014 Main App", "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500"].filter(Boolean).join("\n");
     const mailto = "mailto:" + FEEDBACK_EMAIL + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-    if (window.__trackEvent) {
-      window.__trackEvent('feedback_submitted', {
-        'category': catLabel,
-        'has_name': !!name,
-        'has_email': !!email,
-        'service_status': status || 'unset'
-      });
-    }
-    var params = new URLSearchParams();
-    params.append("form-name", "tops-feedback");
-    params.append("category", catLabel);
-    params.append("from_name", name || "");
-    params.append("reply_to", email || "");
-    params.append("service_status", status || "");
-    params.append("message", message);
-    fetch("/", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params.toString() }).then(function(res) {
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      setSubmitted("sent");
-      setTimeout(onClose, 2500);
-    }).catch(function() {
-      // Network/endpoint failure: fall back to the user's mail app, pre-filled
-      window.location.href = mailto;
-      setSubmitted("mailto");
-      setTimeout(onClose, 3500);
-    });
+    window.location.href = mailto;
+    setSubmitted("mailto");
+    setTimeout(onClose, 3500);
   };
   const overlayStyle = {
     position: "fixed",
@@ -3844,14 +3787,14 @@ function FeedbackModal(props) {
         color: C.textPrimary,
         marginBottom: 12
       }
-    }, submitted === "sent" ? "TRANSMISSION COMPLETE" : "TRANSMISSION INITIATED"), /*#__PURE__*/React.createElement("div", {
+    }, "EMAIL DRAFT REQUESTED"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontFamily: "'Source Sans 3', sans-serif",
         fontSize: 13,
         color: C.textBody,
         lineHeight: 1.55
       }
-    }, submitted === "sent" ? "Feedback delivered. It goes straight to Dean." : "Your email app should have opened with the message ready to send. If it didn't, email dean@veteranbridgesolutions.com directly.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), "Thank you for making this tool better for the force."), /*#__PURE__*/React.createElement("div", {
+    }, "Your device was asked to open an email draft addressed to Dean. Transition Ops did not send anything. Review the draft and choose whether to send it. If no draft opened, email dean@veteranbridgesolutions.com directly.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), "Thank you for making this tool better for the force."), /*#__PURE__*/React.createElement("div", {
       style: {
         fontFamily: "'Oswald', sans-serif",
         fontSize: 12,
@@ -3876,16 +3819,16 @@ function FeedbackModal(props) {
     style: headerStyle
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: eyebrowStyle
-  }, "\u258CDIRECT CHANNEL"), /*#__PURE__*/React.createElement("div", {
+  }, "\u258CEMAIL HANDOFF"), /*#__PURE__*/React.createElement("div", {
     style: titleStyle
-  }, "FEEDBACK IS A GIFT")), /*#__PURE__*/React.createElement("button", {
+  }, "SEND FEEDBACK BY EMAIL")), /*#__PURE__*/React.createElement("button", {
     onClick: onClose,
     style: closeBtn
   }, "\u2715")), /*#__PURE__*/React.createElement("div", {
     style: bodyStyle
   }, /*#__PURE__*/React.createElement("div", {
     style: introStyle
-  }, "This tool gets better because veterans tell me what's missing, what's broken, and what matters. If you see something \u2014 say something. Every submission lands in my inbox directly."), /*#__PURE__*/React.createElement("div", {
+  }, "See something missing, inaccurate, or broken? Write a short note. Transition Ops will ask your email app to open a draft addressed to Dean. You review it and choose whether to send."), /*#__PURE__*/React.createElement("div", {
     style: formGroup
   }, /*#__PURE__*/React.createElement("label", {
     style: formLabel
@@ -3929,45 +3872,8 @@ function FeedbackModal(props) {
       value: s
     }, s);
   }))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 10,
-      marginBottom: 14,
-      flexWrap: "wrap"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      flex: 1,
-      minWidth: 140
-    }
-  }, /*#__PURE__*/React.createElement("label", {
-    style: formLabel
-  }, "NAME (OPTIONAL)"), /*#__PURE__*/React.createElement("input", {
-    type: "text",
-    value: name,
-    onChange: function (e) {
-      setName(e.target.value);
-    },
-    placeholder: "First name or call sign",
-    style: inputBase
-  })), /*#__PURE__*/React.createElement("div", {
-    style: {
-      flex: 1,
-      minWidth: 140
-    }
-  }, /*#__PURE__*/React.createElement("label", {
-    style: formLabel
-  }, "EMAIL (OPTIONAL)"), /*#__PURE__*/React.createElement("input", {
-    type: "email",
-    value: email,
-    onChange: function (e) {
-      setEmail(e.target.value);
-    },
-    placeholder: "For response",
-    style: inputBase
-  }))), /*#__PURE__*/React.createElement("div", {
     style: privacyStyle
-  }, "\u25B8 Transmits securely to Dean's inbox. If the connection fails, your email app opens with the message pre-filled instead. Only what you type here is sent \u2014 nothing else."), /*#__PURE__*/React.createElement("div", {
+  }, "Transition Ops does not submit or store this message. No name or email field is collected in the app. Your email provider and device apply their own privacy practices if you send."), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 10
@@ -4004,7 +3910,7 @@ function FeedbackModal(props) {
       opacity: message.trim() ? 1 : 0.55,
       borderRadius: 4
     }
-  }, "\u25B6 TRANSMIT FEEDBACK")))));
+  }, "OPEN EMAIL DRAFT")))));
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -4270,7 +4176,7 @@ function AboutModal(props) {
     style: sectionLabel
   }, "GET INVOLVED"), /*#__PURE__*/React.createElement("p", {
     style: bodyText
-  }, "If you're a service member, veteran, or family member using this tool and have feedback, feature requests, or stories \u2014 send them. The FEEDBACK IS A GIFT button (bottom-right of every screen) routes directly to Dean's inbox. If you're a transition counselor, VSO, or veteran-serving organization interested in sharing this with your audience, reach out: ", /*#__PURE__*/React.createElement("strong", {
+  }, "If you're a service member, veteran, or family member using this tool and have feedback, feature requests, or stories \u2014 send them. The FEEDBACK IS A GIFT button (bottom-right of every screen) opens a prepared email draft on your device; you review it and choose whether to send it. Transition Ops does not submit or store that message. If you're a transition counselor, VSO, or veteran-serving organization interested in sharing this with your audience, reach out: ", /*#__PURE__*/React.createElement("strong", {
     style: {
       color: C.goldBright
     }
@@ -4884,15 +4790,55 @@ function topsResumeExactHeaderFromInputs(refs, fallback) {
   });
 }
 
-function topsResumeDraftPreservesExactHeader(text, header) {
-  var values = [header && header.name, header && header.location, header && header.email, header && header.phone].filter(function(value) { return typeof value === "string" && value.length > 0; });
-  if (!values.length) return true;
-  var source = String(text || "");
-  var contactLine = [header.location, header.email, header.phone].filter(function(value) { return typeof value === "string" && value.length > 0; }).join(" | ");
-  var expectedLines = [];
-  if (header.name) expectedLines.push(header.name);
-  if (contactLine) expectedLines.push(contactLine);
-  return source.indexOf(expectedLines.join("\n") + "\n\n") === 0 && expectedLines.every(function(line) { return source.split("\n").filter(function(candidate) { return candidate === line; }).length === 1; });
+function topsResumeAssembleBrowserOnlyHeader(result, header) {
+  function withheld() {
+    return { ok: false, transport: result && result.transport ? result.transport : null, d: { error: "The draft could not safely add your header details. No draft was released. Review those fields and try again." } };
+  }
+  if (!result || result.ok !== true || !result.transport || result.transport.outcome !== "handler_json" || !result.d || typeof result.d.bullets !== "string" || !result.d.bullets.length) return withheld();
+  if (!header || !Object.isFrozen(header)) return withheld();
+  var fields = ["name", "location", "email", "phone"];
+  if (fields.some(function(field) { return typeof header[field] !== "string"; })) return withheld();
+  var presentValues = fields.map(function(field) { return header[field]; }).filter(function(value) { return value.length > 0; });
+  if (presentValues.some(function(value, index) { return presentValues.indexOf(value) !== index || result.d.bullets.indexOf(value) !== -1; })) return withheld();
+  if (Array.isArray(result.d.blockers) && result.d.blockers.length) return withheld();
+
+  var headerLines = [];
+  var headerTrace = [];
+  if (header.name) {
+    headerLines.push(header.name);
+    headerTrace.push({ claim_id: "HC1", section: "header", fact_refs: ["H1"], posting_refs: [], transform: "exact", verdict: "supported", claim_text: header.name });
+  }
+  var contactValues = [header.location, header.email, header.phone];
+  var contactRefs = ["H2", "H3", "H4"].filter(function(ref, index) { return contactValues[index].length > 0; });
+  var contactLine = contactValues.filter(function(value) { return value.length > 0; }).join(" | ");
+  if (contactLine) {
+    headerLines.push(contactLine);
+    headerTrace.push({ claim_id: "HC2", section: "header", fact_refs: contactRefs, posting_refs: [], transform: "exact", verdict: "supported", claim_text: contactLine });
+  }
+
+  var scorecard = Array.isArray(result.d.scorecard) ? result.d.scorecard.map(function(item) { return Object.assign({}, item); }) : [];
+  var gaps = Array.isArray(result.d.gaps) ? result.d.gaps.slice() : [];
+  var readinessGaps = [];
+  if (!header.name) readinessGaps.push("Add your name before submitting this resume.");
+  if (!header.email && !header.phone) readinessGaps.push("Add an email address or phone number before submitting this resume.");
+  if (readinessGaps.length) {
+    var formatFound = false;
+    scorecard = scorecard.map(function(item) {
+      if (item.dimension !== "format_compliance") return item;
+      formatFound = true;
+      return Object.assign({}, item, { status: "NEEDS MEMBER FACT", evidence: readinessGaps.join(" ") });
+    });
+    if (!formatFound) scorecard.push({ dimension: "format_compliance", status: "NEEDS MEMBER FACT", evidence: readinessGaps.join(" ") });
+    readinessGaps.forEach(function(gap) { if (gaps.indexOf(gap) === -1) gaps.push(gap); });
+  }
+
+  var assembledBody = headerLines.length ? headerLines.join("\n") + "\n\n" + result.d.bullets : result.d.bullets;
+  return Object.assign({}, result, { d: Object.assign({}, result.d, {
+    bullets: assembledBody,
+    scorecard: scorecard,
+    trace: headerTrace.concat(Array.isArray(result.d.trace) ? result.d.trace : []),
+    gaps: gaps
+  }) });
 }
 // RESUME_HEADER_CAPTURE_END
 
@@ -6214,7 +6160,7 @@ function App() {
             icon: "🧮",
             route: "vamath",
             label: "VA MATH",
-            desc: "Combine disability ratings using VA's formula"
+            desc: "Estimate a combined rating using 38 CFR 4.25 Table I"
           }, {
             icon: "💵",
             route: "vapay",
@@ -6835,7 +6781,8 @@ function App() {
     React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 6 } },
       React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 17, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "AI TRANSITION NAVIGATOR"),
       React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 1.5, color: "#0E120B", background: C.goldBright, borderRadius: 4, padding: "2px 7px" } }, "BETA")),
-    React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.45, marginBottom: 10 } }, "Answers only from Transition OPS verified content. Educational information \u2014 not benefits counseling, not affiliated with VA or DoD. Beta: spot something off? Tap FEEDBACK IS A GIFT. In crisis: Veterans Crisis Line 988, press 1."),
+    React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.45, marginBottom: 6 } }, "Answers only from Transition OPS verified content. Educational information \u2014 not benefits counseling, not affiliated with VA or DoD. Beta: spot something off? Tap FEEDBACK IS A GIFT. In crisis: Veterans Crisis Line 988, press 1."),
+    React.createElement("div", { style: { fontSize: 10.5, color: C.textSecondary, lineHeight: 1.45, marginBottom: 10, padding: "8px 10px", background: C.bg, border: "1px solid " + C.border, borderRadius: 7 } }, React.createElement("strong", { style: { color: C.goldBright } }, "AI USE NOTICE: "), "Sending a question sends your current question, this chat history, and any saved separation date or service status through Netlify to OpenAI to generate an answer. OpenAI is called with store:false, but this is not a promise of zero provider retention. Do not enter Social Security numbers, medical records, or other sensitive information. The Navigator is optional; the rest of Transition Ops remains available without it."),
     React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 } },
       navMsgs.length === 0 && React.createElement("div", { style: { ...S.card, padding: 12, borderLeft: "3px solid " + C.gold, fontSize: 13, lineHeight: 1.55, color: C.textSecondary } }, (function(){ try { var sd = window.__safeGet("tops_sep_date"); if (sd) { var dd = Math.round((new Date(sd + "T00:00:00") - new Date()) / 86400000); return "Navigator online \u2014 your timeline is loaded (" + (dd >= 0 ? "T-" + dd + " days to separation" : Math.abs(dd) + " days post-separation") + "). Ask me anything, or add context \u2014 component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook."; } } catch(e) {} return "Navigator online. Tell me where you are in your transition \u2014 time remaining, component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook. Anything beyond my data, I\u2019ll route you to a human."; })()),
       navMsgs.map(function(m, i2) {
@@ -7021,7 +6968,7 @@ function App() {
           React.createElement("div", { className: "dash-card", style: { margin: 0, cursor: "pointer" }, onClick: function() { setActiveTab("vamath"); } },
             React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "VA MATH"),
             React.createElement("div", { style: { fontSize: 20, marginBottom: 4 } }, "\uD83E\uDDEE"),
-            React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.4 } }, "Calculate combined disability rating")
+            React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.4 } }, "Estimate combined disability rating")
           ),
           React.createElement("div", { className: "dash-card", style: { margin: 0, cursor: "pointer" }, onClick: function() { setActiveTab("vapay"); } },
             React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "VA PAY"),
@@ -7047,7 +6994,7 @@ function App() {
             "Every drill weekend, Annual Training (AT), and school you attend builds skills that civilian employers pay for. The gap between what you know and what you earn is often a translation problem \u2014 not a skills problem. Use the Career Pathway Planner to see what your training is actually worth in the civilian market."
           ),
           React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.8, marginTop: 10 } },
-            "If you have a VA disability rating (even from one deployment or a Line of Duty determination), use the VA Math and VA Pay tools to verify you're receiving correct compensation. Many Guard/Reserve members are under-rated or never file."
+            "If you have service-connected disability ratings, use the VA Math and VA Pay tools for planning estimates. VA determines official combined ratings and compensation; take questions about a decision to a VA-accredited VSO or CVSO."
           )
         ),
 
@@ -8076,6 +8023,7 @@ whatsNewUnseen && React.createElement("div", {
         })),
       aiR.mode === "federal" && React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.5, marginBottom: 8 } }, "Federal format: longer, more detailed, with [brackets] for hours/week, supervisor contacts, and veterans' preference \u2014 the blanks USAJOBS requires that only you can fill."),
       aiR.mode !== "federal" && React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.5, marginBottom: 8 } }, "Civilian format omits optional details you have not confirmed. Review HONEST GAPS below the draft for facts you may want to add."),
+      React.createElement("div", { style: { fontSize: 10.5, color: C.textSecondary, lineHeight: 1.5, marginBottom: 10, padding: "8px 10px", background: C.bg, border: "1px solid " + C.border, borderRadius: 7 } }, React.createElement("strong", { style: { color: C.goldBright } }, "AI USE NOTICE: "), "Using this tool sends your MOS/AFSC/rate, years served, target job title, skills, certifications, pasted experience, confirmed fact sheet, confirmed relevant years, selected supporting roles, and optional job description through Netlify to OpenAI. Your name, location, email, and phone stay in your browser and are added only after the draft passes review. OpenAI is called with store:false, but this is not a promise of zero provider retention. Do not enter Social Security numbers, medical records, or other sensitive information. This AI tool is optional."),
       aiR.mode !== "federal" && React.createElement("div", { style: { marginBottom: 10, padding: "11px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.greenBright, fontWeight: 700, marginBottom: 4 } }, "CIVILIAN RESUME LENGTH"),
         React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.5, marginBottom: 8 } }, "Choose a request-local preference. Natural Word pagination and supported content control the final page count."),
@@ -8106,7 +8054,7 @@ whatsNewUnseen && React.createElement("div", {
           aiR.relevantRoleIndexes.length === 0 && React.createElement("div", { style: { fontSize: 10.5, color: C.goldBright, lineHeight: 1.4, marginTop: 4, fontWeight: 700 } }, "Adaptive cannot evaluate career breadth until you select the roles that support this target. With no roles selected, it must use the one-page plan."))),
       aiR.mode !== "federal" && React.createElement("div", { style: { marginBottom: 10, padding: "11px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.greenBright, fontWeight: 700, marginBottom: 4 } }, "RESUME HEADER (OPTIONAL FOR DRAFTING)"),
-        React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.5, marginBottom: 7 } }, "Add what you have now. These details go only to the Transition OPS resume function, are excluded from AI-provider calls, are not stored by the app, and are added after the civilian draft passes review."),
+        React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.5, marginBottom: 7 } }, "Add what you have now. These four header fields stay in this browser for this draft and are not included in the resume request."),
         React.createElement("input", { ref: resumeHeaderNameRef, placeholder: "Name", value: aiR.headerName, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerName: v }); }); }, style: { ...S.input, marginBottom: 7 } }),
         React.createElement("input", { ref: resumeHeaderLocationRef, placeholder: "City, State", value: aiR.headerLocation, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerLocation: v }); }); }, style: { ...S.input, marginBottom: 7 } }),
         React.createElement("div", { style: { display: "flex", gap: 8 } },
@@ -8138,18 +8086,27 @@ whatsNewUnseen && React.createElement("div", {
         if (used >= 3) { setAiR(function(p){ return Object.assign({}, p, { err: "Daily limit reached (3/day) \u2014 resets tomorrow. This keeps the tool free for everyone." }); }); return; }
         var resumeAction = aiR.facts ? "draft" : "facts";
         var exactResumeHeader = resumeAction === "draft" && aiR.mode !== "federal" ? topsResumeExactHeaderFromInputs({ name: resumeHeaderNameRef, location: resumeHeaderLocationRef, email: resumeHeaderEmailRef, phone: resumeHeaderPhoneRef }, { name: aiR.headerName, location: aiR.headerLocation, email: aiR.headerEmail, phone: aiR.headerPhone }) : null;
+        var clearExactResumeHeader = function() { exactResumeHeader = null; };
         setAiR(function(p){ return Object.assign({}, p, exactResumeHeader ? { headerName: exactResumeHeader.name, headerLocation: exactResumeHeader.location, headerEmail: exactResumeHeader.email, headerPhone: exactResumeHeader.phone } : {}, { loading: true, err: "", out: "", lengthPlan: null, auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); });
         if (window.__trackEvent) window.__trackEvent(resumeAction === "draft" ? "ai_resume_generated" : "ai_resume_facts_reviewed", {});
-        var handleResumeTransportFailure = function() { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: "Still warming up \u2014 give it 10 seconds and tap GENERATE once more." }); }); };
-        topsResumeTransportRequest(Object.assign({ action: resumeAction, mode: aiR.mode, role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp, posting: aiR.posting, confirmedFacts: aiR.facts }, resumeAction === "draft" && aiR.mode !== "federal" ? { header: exactResumeHeader, lengthPreference: aiR.lengthPreference, lengthInputs: { relevantYears: aiR.relevantYears, relevantRoleIndexes: aiR.relevantRoleIndexes } } : {}))
+        var handleResumeTransportFailure = function() { clearExactResumeHeader(); setAiR(function(p){ return Object.assign({}, p, { loading: false, err: "Still warming up \u2014 give it 10 seconds and tap GENERATE once more." }); }); };
+        topsResumeTransportRequest(Object.assign({ action: resumeAction, mode: aiR.mode, role: aiR.role, years: aiR.years, target: aiR.target, skills: aiR.skills, certs: aiR.certs, experience: aiR.exp, posting: aiR.posting, confirmedFacts: aiR.facts }, resumeAction === "draft" && aiR.mode !== "federal" ? { lengthPreference: aiR.lengthPreference, lengthInputs: { relevantYears: aiR.relevantYears, relevantRoleIndexes: aiR.relevantRoleIndexes } } : {}))
           .then(function(res) {
             if (!res || !res.transport || res.transport.outcome !== "handler_json") { handleResumeTransportFailure(); return; }
-            if (!res.ok) { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: res.d.error || "Try again in a minute.", lengthPlan: null, factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : p.factWarnings, auditScorecard: Array.isArray(res.d.scorecard) ? res.d.scorecard : [], auditBlockers: Array.isArray(res.d.blockers) ? res.d.blockers : [], supportedKeywords: Array.isArray(res.d.supportedKeywords) ? res.d.supportedKeywords : [], auditGaps: Array.isArray(res.d.gaps) ? res.d.gaps : [], auditTrace: [] }); }); return; }
-            if (resumeAction === "draft" && aiR.mode !== "federal" && !topsResumeDraftPreservesExactHeader(res.d.bullets, exactResumeHeader)) { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: "The draft did not preserve your header details exactly. No draft was released. Review those fields and try again.", lengthPlan: null, auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [] }); }); return; }
+            if (!res.ok) { clearExactResumeHeader(); setAiR(function(p){ return Object.assign({}, p, { loading: false, err: res.d.error || "Try again in a minute.", lengthPlan: null, factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : p.factWarnings, auditScorecard: Array.isArray(res.d.scorecard) ? res.d.scorecard : [], auditBlockers: Array.isArray(res.d.blockers) ? res.d.blockers : [], supportedKeywords: Array.isArray(res.d.supportedKeywords) ? res.d.supportedKeywords : [], auditGaps: Array.isArray(res.d.gaps) ? res.d.gaps : [], auditTrace: [] }); }); return; }
             if (resumeAction === "facts") {
+              clearExactResumeHeader();
               var nextFactSheet = res.d.factSheet || "";
               setAiR(function(p){ return Object.assign({}, p, { loading: false, facts: nextFactSheet, factWarnings: Array.isArray(res.d.warnings) ? res.d.warnings : [], target: res.d.suggestedTarget || p.target, relevantYears: "", relevantRoleIndexes: [], lengthPlan: null, err: nextFactSheet ? "" : "We could not build a fact sheet. Try again.", auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); });
               return;
+            }
+            if (aiR.mode !== "federal") {
+              var assembledResume = topsResumeAssembleBrowserOnlyHeader(res, exactResumeHeader);
+              clearExactResumeHeader();
+              if (!assembledResume.ok) { setAiR(function(p){ return Object.assign({}, p, { loading: false, err: assembledResume.d.error, lengthPlan: null, auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [] }); }); return; }
+              res = assembledResume;
+            } else {
+              clearExactResumeHeader();
             }
             try { window.__safeSet("tops_air_uses", JSON.stringify({ d: new Date().toISOString().slice(0,10), n: used + 1 })); } catch(e) {}
             var nextLengthPlan = res.d.lengthPlan && typeof res.d.lengthPlan === "object" ? res.d.lengthPlan : null;
@@ -12271,7 +12228,7 @@ whatsNewUnseen && React.createElement("div", {
       color: C.textBody,
       lineHeight: 1.8
     }
-  }, "\"I need to complete my Individual Transition Plan per [DoD Instruction 1332.35 / Service regulation]. I have medical appointments that need to happen now \u2014 conditions with a longer documented treatment history are easier to rate, so I can't wait on these. I've already started cross-training [NAME] on my primary duties. Here's my proposed timeline for TAP attendance and transition appointments over the next 12 months. I want to make sure this is coordinated and doesn't create gaps.\"")), /*#__PURE__*/React.createElement("div", {
+  }, "\"I need to complete my Individual Transition Plan per [DoD Instruction 1332.35 / Service regulation]. I have current medical appointments and need to keep my service treatment records complete before separation. I've already started cross-training [NAME] on my primary duties. Here's my proposed timeline for TAP attendance and transition appointments over the next 12 months. I want to make sure this is coordinated and doesn't create gaps.\"")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: C.textSecondary,
@@ -12289,7 +12246,7 @@ whatsNewUnseen && React.createElement("div", {
     style: {
       marginBottom: 4
     }
-  }, "\u2192 Explain medical urgency with the 1-year documentation fact"), /*#__PURE__*/React.createElement("div", null, "\u2192 Keep cross-training visible \u2014 it protects you and the unit"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 Explain the timing and purpose of current medical appointments"), /*#__PURE__*/React.createElement("div", null, "\u2192 Keep cross-training visible \u2014 it protects you and the unit"))), /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
   }, "6 MONTHS OUT \u2014 HOLD THE LINE"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -12303,14 +12260,14 @@ whatsNewUnseen && React.createElement("div", {
       fontFamily: "'Oswald', sans-serif",
       marginBottom: 6
     }
-  }, "OBJECTIVE: Protect your BDD window. This is where leadership pushback peaks."), /*#__PURE__*/React.createElement("div", {
+  }, "OBJECTIVE: Protect your BDD window. This is where scheduling conflicts can peak."), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: C.warning,
       lineHeight: 1.8,
       marginBottom: 8
     }
-  }, "This is the critical phase. BDD opens at 180 days. Medical appointments, C&P exams, and transition requirements all compete for your time. Some leaders will try to block or delay \u2014 especially if you're the only one who can do your job."), /*#__PURE__*/React.createElement("div", {
+  }, "This is the critical phase. BDD opens at 180 days. Medical appointments, VA claim exams, and transition requirements can compete for your time, especially when duty coverage is tight."), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 14px",
       background: C.bg,
@@ -12331,7 +12288,7 @@ whatsNewUnseen && React.createElement("div", {
       color: C.textBody,
       lineHeight: 1.8
     }
-  }, "\"I'm now inside the BDD window. I have to file my VA claim in the next 90 days or I lose the ability to have a rating on Day 1 of separation. That directly impacts my family's income. I have C&P exams being scheduled by the VA that I cannot reschedule. I understand the mission requirements and I've ensured [NAME] can cover my duties during appointments. I will continue to perform \u2014 but I need these appointments protected.\"")), /*#__PURE__*/React.createElement("div", {
+  }, "\"I'm inside VA's 180-to-90-day BDD filing window. BDD requires me to be available for VA exams during the 45 days after I file. I will provide appointment information promptly and maintain a duty-coverage plan. If a conflict requires rescheduling, I will contact the VA medical center or contractor at least 48 hours in advance; rescheduling may delay my claim.\"")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: C.textSecondary,
@@ -12341,15 +12298,15 @@ whatsNewUnseen && React.createElement("div", {
     style: {
       marginBottom: 4
     }
-  }, "\u2192 Make it about family financial impact \u2014 leaders understand this"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 State the fixed BDD filing window and the 45-day exam-availability requirement"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 4
     }
-  }, "\u2192 BDD is time-sensitive and cannot be rescheduled \u2014 emphasize this"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 The BDD filing window is fixed; a scheduled VA claim exam can be rescheduled under VA's rules, but rescheduling may delay the claim"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 4
     }
-  }, "\u2192 Show your coverage plan is in place"), /*#__PURE__*/React.createElement("div", null, "\u2192 If blocked: go to your Transition Center / SFL-TAP. They have regulatory authority to support you"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 Show your coverage plan is in place"), /*#__PURE__*/React.createElement("div", null, "\u2192 For duty conflicts, use your chain of command and contact the exam scheduler using the number on the appointment letter"))), /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
   }, "3 MONTHS OUT \u2014 CLOSE IT OUT"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -12413,7 +12370,7 @@ whatsNewUnseen && React.createElement("div", {
       fontFamily: "'Oswald', sans-serif",
       marginBottom: 8
     }
-  }, "KNOW YOUR RIGHTS"), ["DoD Instruction 1332.35 mandates transition preparation for all separating service members", "Commanders are required by law to make you available for mandatory TAP components — attendance is a statutory entitlement", "Your Transition Center / SFL-TAP office has regulatory authority and can intervene", "Medical appointments for BDD claims are VA-scheduled and take priority", "IG complaint is a last resort but available if rights are being denied", "Document everything in writing — emails, counseling statements, signed memos", "Connect with your installation's Transition Services Manager — they are your advocate"].map((r, i) => /*#__PURE__*/React.createElement("div", {
+  }, "KNOW YOUR RIGHTS"), ["DoDI 1332.35 requires transition assistance for eligible service members.", "DoDI 1332.35 directs the Military Services to release eligible members during duty hours for required TAP workshops and briefings.", "Your Transition Assistance Office can help arrange a VA benefits briefing; use your chain of command and exam scheduler to resolve appointment conflicts.", "BDD requires availability for VA exams within 45 days after filing; coordinate each scheduled exam promptly with the scheduler and chain of command.", "Document everything in writing — emails, counseling statements, signed memos", "Connect with your installation's Transition Services Manager — they are your advocate"].map((r, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       padding: "6px 10px",
@@ -14600,7 +14557,7 @@ whatsNewUnseen && React.createElement("div", {
       React.createElement("div", { style: { textAlign: "center", marginBottom: 16 } },
         React.createElement("div", { style: { fontSize: 11, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif" } }, "VA COMBINED RATING"),
         React.createElement("div", { style: { fontSize: 22, fontWeight: 700, color: C.textPrimary, fontFamily: "'Oswald', sans-serif", marginTop: 4 } }, "CALCULATOR"),
-        React.createElement("div", { style: { fontSize: 13, color: C.inactive, marginTop: 6, lineHeight: 1.5 } }, "VA doesn't add ratings. They use \"VA Math\" \u2014 percentages of percentages. Two 50% ratings combine to 75 \u2014 which VA rounds to 80%, not 100%.")
+        React.createElement("div", { style: { fontSize: 13, color: C.inactive, marginTop: 6, lineHeight: 1.5 } }, "VA combines ratings from highest to lowest using the Combined Ratings Table in 38 CFR 4.25. Two 50% ratings combine to 75, which VA converts to 80%, not 100%.")
       ),
 
       renderPolicyIntel(),
@@ -14632,7 +14589,7 @@ whatsNewUnseen && React.createElement("div", {
       // VA MATH STEP-BY-STEP
       vaConditions.length > 1 && React.createElement("div", { style: { background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, padding: 16, marginBottom: 12 } },
         React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 10 } }, "THE VA MATH \u2014 STEP BY STEP"),
-        React.createElement("div", { style: { fontSize: 13, color: C.inactive, marginBottom: 12, lineHeight: 1.5 } }, "VA says: \"If you're " + result.steps[0].rating + "% disabled, you're " + (100 - result.steps[0].rating) + "% healthy. The next rating applies to that healthy portion.\""),
+        React.createElement("div", { style: { fontSize: 13, color: C.inactive, marginBottom: 12, lineHeight: 1.5 } }, "38 CFR 4.25 Table I combines ratings from highest to lowest and carries each whole-number table value into the next step."),
         result.steps.map(function(s, i) {
           return React.createElement("div", { key: i, style: { padding: "10px 12px", background: i === 0 ? "rgba(74,93,35,0.15)" : "rgba(139,125,60,0.08)", border: "1px solid " + (i === 0 ? "rgba(74,93,35,0.3)" : "rgba(139,125,60,0.15)"), borderRadius: 8, marginBottom: 6 } },
             React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } },
@@ -14643,12 +14600,12 @@ whatsNewUnseen && React.createElement("div", {
               React.createElement("span", { style: { fontSize: 14, fontWeight: 700, color: C.greenBright, fontFamily: "'Oswald', sans-serif" } }, s.rating + "%")
             ),
             i === 0 ?
-              React.createElement("div", { style: { fontSize: 13, color: C.greenBright, marginTop: 4, lineHeight: 1.5 } }, "Highest rating applied first: " + s.rating + "% disabled, " + s.healthy + "% \"healthy\" remaining") :
-              React.createElement("div", { style: { fontSize: 13, color: C.gold, marginTop: 4, lineHeight: 1.5 } }, s.rating + "% of " + (result.steps[i-1].healthy).toFixed(1) + "% remaining = " + s.taken.toFixed(2) + "% additional disability", React.createElement("br"), React.createElement("span", { style: { color: C.inactive } }, "Running total: " + s.running.toFixed(2) + "% disabled, " + s.healthy.toFixed(2) + "% remaining"))
+              React.createElement("div", { style: { fontSize: 13, color: C.greenBright, marginTop: 4, lineHeight: 1.5 } }, "First Table I value: " + s.rating + "%") :
+              React.createElement("div", { style: { fontSize: 13, color: C.gold, marginTop: 4, lineHeight: 1.5 } }, "Table I combines " + result.steps[i-1].running + "% with " + s.rating + "% = " + s.running + "%")
           );
         }),
         React.createElement("div", { style: { marginTop: 8, padding: "10px 12px", background: "rgba(74,93,35,0.2)", border: "1px solid " + C.green, borderRadius: 8, textAlign: "center" } },
-          React.createElement("span", { style: { fontSize: 12, color: C.inactive } }, "Final: " + result.exact.toFixed(2) + "% \u2192 "),
+          React.createElement("span", { style: { fontSize: 12, color: C.inactive } }, "Final Table I value: " + result.exact + "% \u2192 "),
           React.createElement("span", { style: { fontSize: 14, fontWeight: 700, color: C.greenBright, fontFamily: "'Oswald', sans-serif" } }, "Rounds to " + result.rounded + "%")
         )
       ),
@@ -14705,7 +14662,7 @@ whatsNewUnseen && React.createElement("div", {
       // INTEL
       React.createElement("div", { style: { background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, padding: 16, marginBottom: 12 } },
         React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 10 } }, "VA MATH INTEL"),
-        [{icon:"\uD83E\uDDEE",text:"VA uses \"whole person theory\" \u2014 each rating reduces your remaining healthy percentage, not your total."},{icon:"\u26A0\uFE0F",text:"Bilateral Factor: Conditions affecting both arms or both legs get a bonus 10% of their combined value added before final calculation."},{icon:"\uD83D\uDCCA",text:"Ratings round to the nearest 10%. If your exact combined is 74.5%, VA rounds to 70%. At 75%, it rounds to 80%."},{icon:"\uD83D\uDCB0",text:"100% P&T is the goal \u2014 unlocks CHAMPVA for dependents, DEA Ch.35, property tax exemptions, and commissary access."},{icon:"\u2705",text:"TDIU (Total Disability Individual Unemployability): If you can't work due to service-connected conditions, you may get paid at the 100% rate even below 100%."}].map(function(item, i) {
+        [{icon:"\uD83E\uDDEE",text:"VA uses \"whole person theory\" \u2014 each rating reduces your remaining healthy percentage, not your total."},{icon:"\u26A0\uFE0F",text:"Bilateral Factor: Conditions affecting both arms or both legs get a bonus 10% of their combined value added before final calculation."},{icon:"\uD83D\uDCCA",text:"VA converts only the final combined value to the nearest 10%; a final value ending in 5 rounds up."},{icon:"\uD83D\uDCB0",text:"VA assigns ratings from the evidence and applicable rating criteria. Use this tool to understand combined-rating math, not to target a particular rating."},{icon:"\u2705",text:"TDIU (Total Disability Individual Unemployability): If you can't work due to service-connected conditions, you may get paid at the 100% rate even below 100%."}].map(function(item, i) {
           return React.createElement("div", { key: i, style: { display: "flex", gap: 10, padding: "8px 0", borderBottom: i < 4 ? "1px solid " + C.border : "none" } },
             React.createElement("span", { style: { fontSize: 16, flexShrink: 0 } }, item.icon),
             React.createElement("span", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.5 } }, item.text)
@@ -14816,7 +14773,7 @@ whatsNewUnseen && React.createElement("div", {
       // Key intel
       React.createElement("div", { style: { background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, padding: 16, marginBottom: 12 } },
         React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 10 } }, "INTEL YOU NEED TO KNOW"),
-        [{icon:"\u2705",text:"VA disability compensation is 100% tax-free — federal AND state."},{icon:"\u2705",text:"No Social Security or Medicare tax withheld on VA disability pay."},{icon:"\u26A0\uFE0F",text:"File your BDD claim 180-90 days before separation for a rating effective Day 1."},{icon:"\uD83D\uDCCA",text:"VA uses \"VA math\" to combine ratings — two 50% ratings combine to 75, which rounds to 80% \u2014 not 100%."},{icon:"\uD83D\uDCB0",text:"100% P&T (Permanent & Total) unlocks CHAMPVA, DEA Ch.35, property tax exemptions."},{icon:"\uD83C\uDFE0",text:"State of legal residence determines state tax — research before you establish residency."}].map(function(item, i) {
+        [{icon:"\u2705",text:"VA disability compensation is 100% tax-free — federal AND state."},{icon:"\u2705",text:"No Social Security or Medicare tax withheld on VA disability pay."},{icon:"\u26A0\uFE0F",text:"BDD runs from 180 to 90 days before separation and may speed processing; it does not guarantee a Day-1 decision."},{icon:"\uD83D\uDCCA",text:"VA uses \"VA math\" to combine ratings — two 50% ratings combine to 75, which rounds to 80% — not 100%."},{icon:"\uD83D\uDCB0",text:"A 100% permanent-and-total designation can affect eligibility for additional federal and state benefits; verify each program's rules separately."},{icon:"\uD83C\uDFE0",text:"State of legal residence determines state tax — research before you establish residency."}].map(function(item, i) {
           return React.createElement("div", { key: i, style: { display: "flex", gap: 10, padding: "8px 0", borderBottom: i < 5 ? "1px solid " + C.border : "none" } },
             React.createElement("span", { style: { fontSize: 16, flexShrink: 0 } }, item.icon),
             React.createElement("span", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.5 } }, item.text)
@@ -15123,7 +15080,7 @@ whatsNewUnseen && React.createElement("div", {
       React.createElement("button", { onClick: function() { setShowMoreMenu(false); }, style: { background: "none", border: "none", color: C.textPrimary, fontSize: 28, cursor: "pointer", padding: "0 4px" } }, "\u2715")
     ),
     React.createElement("div", { style: { fontSize: 11, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif", marginBottom: 14 } }, "MORE TOOLS"),
-    [{id:"reminders",icon:"bell",label:"REMINDERS & ALERTS",desc:"Deadline reminders timed to your separation date"},{id:"critical",icon:"alert",label:"CRITICAL WINDOWS",desc:"Time-bound windows where missing the date costs money or benefits"},{id:"readiness",icon:"gauge",label:"READINESS SCORE",desc:"Self-assessment across transition categories"},{id:"vamath",icon:"calc",label:"VA MATH CALCULATOR",desc:"Combine multiple ratings using VA's formula"},{id:"vapay",icon:"dollar",label:"VA PAY ESTIMATOR",desc:"Calculate your monthly disability compensation"},{id:"finalpcs",icon:"box",label:"FINAL PCS ENTITLEMENTS",desc:"Weight allowances, MALT, move timelines by grade"},{id:"vethub",icon:"medal",label:"VET HUB",desc:"Career score, benefits, employers, entrepreneurship"},{id:"resources",icon:"link",label:"RESOURCES",desc:"VSOs, SkillBridge, healthcare, document vault"},{id:"taxes",icon:"percent",label:"TAX INTEL",desc:"State tax on retired pay, MSRRA, residency"},{id:"dd214",icon:"doc",label:"DD214 GUIDE",desc:"Verification checklist, service record review"}].map(function(m) {
+    [{id:"reminders",icon:"bell",label:"REMINDERS & ALERTS",desc:"Deadline reminders timed to your separation date"},{id:"critical",icon:"alert",label:"CRITICAL WINDOWS",desc:"Time-bound windows where missing the date costs money or benefits"},{id:"readiness",icon:"gauge",label:"READINESS SCORE",desc:"Self-assessment across transition categories"},{id:"vamath",icon:"calc",label:"VA MATH CALCULATOR",desc:"Estimate a combined rating using 38 CFR 4.25 Table I"},{id:"vapay",icon:"dollar",label:"VA PAY ESTIMATOR",desc:"Calculate your monthly disability compensation"},{id:"finalpcs",icon:"box",label:"FINAL PCS ENTITLEMENTS",desc:"Weight allowances, MALT, move timelines by grade"},{id:"vethub",icon:"medal",label:"VET HUB",desc:"Career score, benefits, employers, entrepreneurship"},{id:"resources",icon:"link",label:"RESOURCES",desc:"VSOs, SkillBridge, healthcare, document vault"},{id:"taxes",icon:"percent",label:"TAX INTEL",desc:"State tax on retired pay, MSRRA, residency"},{id:"dd214",icon:"doc",label:"DD214 GUIDE",desc:"Verification checklist, service record review"}].map(function(m) {
       return React.createElement("button", { key: m.id, onClick: function() { setActiveTab(m.id); setShowMoreMenu(false); }, style: undefined },
         React.createElement("span", { style: { color: C.gold, flexShrink: 0 } }, TIcon(m.icon, 24)),
         React.createElement("div", { style: { flex: 1 } },

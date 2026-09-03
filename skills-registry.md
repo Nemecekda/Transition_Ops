@@ -9,12 +9,12 @@ written) · DEPRECATED (superseded — note by what)
 
 | # | Skill | Owner | Status | Version | Validated | Location |
 |---|-------|-------|--------|---------|-----------|----------|
-| 1 | validation-gate | s3-devops | CODIFIED | 1.8 | 2026-09-01 | .claude/skills/validation-gate/ (canonical); .agents/skills/validation-gate/ (Codex project mirror) |
-| 2 | deploy-discipline | s3-devops | CODIFIED | 1.6 | 2026-08-31 | .claude/skills/deploy-discipline/ (Claude copy); .agents/skills/deploy-discipline/ (Codex copy; environment wording intentionally differs); 1.3 BURNED - see change log |
+| 1 | validation-gate | s3-devops | CODIFIED | 1.10 | 2026-09-03 | .claude/skills/validation-gate/ (canonical); .agents/skills/validation-gate/ (Codex project mirror) |
+| 2 | deploy-discipline | s3-devops | CODIFIED | 1.8 | 2026-09-03 | .claude/skills/deploy-discipline/ (Claude copy); .agents/skills/deploy-discipline/ (Codex copy; environment wording intentionally differs); 1.3 BURNED - see change log |
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.24 | — | .claude/skills/resume-drafter-maintenance/ |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.25 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
@@ -71,6 +71,46 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-03 - **#2 `deploy-discipline` 1.7 -> 1.8 is CODIFIED.** Cache
+  consumption is now origin-aware: same-origin integers cannot decrease or
+  identify different worker bytes, while an immutable hosted clone candidate
+  may preserve its validated integer across origins with a documented
+  production gap and a fresh two-origin handoff recheck. The current ruling
+  preserves `transition-ops-v150` over production `v129` and clone `v149`;
+  downward renumbering to `v130` is prohibited. DD-18-1 through DD-18-4 passed
+  4/4 without weakening v1.7 production, rollback, privacy, validation, or
+  release controls. Canonical and Codex copies preserve only the six sanctioned
+  environment-specific line substitutions. Lane: COMMANDER. Owner: s3-devops.
+- 2026-09-03 - **#1 `validation-gate` 1.9 -> 1.10 is CODIFIED.** The 4N
+  command now validates and excludes the global `functions.directory` scalar
+  before passing only per-function object tables to Netlify normalization.
+  VG-110-1 through VG-110-4 passed 4/4, including 16 malformed mixed-shape
+  fixtures and the complete actual-artifact package. Commander promotion was
+  approved on 2026-09-03. Lane: COMMANDER. Owner: s3-devops.
+- 2026-09-02 - **#6 `resume-drafter-maintenance` 0.24 -> 0.25 remains
+  PENDING.** Civilian name, location, email, and phone are now governed as an
+  immutable browser-only header snapshot: the serialized request and server
+  reject boundary exclude those fields, the server candidate remains
+  headerless, and only a successfully released marked-JSON draft may receive
+  byte-exact browser assembly, deterministic local HC1/HC2 traces, readiness
+  guidance, preflight, and DOCX export. RDM-250 through RDM-257 fail closed on
+  transport failure, withholding, mutation, omission, duplication, or stale
+  mutable input without adding calls, retries, storage, logging, or tracking.
+  RDM-258 through RDM-263 establish a separate federal hosted-acceptance matrix;
+  civilian evidence cannot clear it. Local regression and genuine-DOCX evidence
+  do not substitute for fresh civilian and federal immutable-clone validations.
+  Lane: COMMANDER. Owner: force-mod.
+- 2026-09-02 - **#1 `validation-gate` 1.8 -> 1.9 remains CODIFIED.** 4N now
+  resolves only the installed Netlify executable from `PATH`, follows its real
+  path to the nearest valid `netlify-cli` manifest, and fails closed without a
+  download or fallback. VG-19-1 through VG-19-8 preserve the artifact, API,
+  dependency, and `jobs` checks.
+- 2026-09-02 - **#2 `deploy-discipline` 1.6 -> 1.7 remains CODIFIED.** Atomic
+  required local precache is separated from optional reviewed remote runtime
+  assets; navigation uses a closed allowlist with zero unknown writes; cache
+  proof accepts only declaration-level `1-/1+` or first-migration `0-/1+`;
+  DD-17 adds a candidate-bound, hash-recorded, temporary-worktree-tested,
+  privacy-safe rollback artifact with a forward bump and no release authority.
 - 2026-09-02 - **#6 `resume-drafter-maintenance` 0.23 -> 0.24 remains
   PENDING.** The clean hosted v0.23 senior-resume test exposed two release-gate
   failures after a ten-of-ten model scorecard: the visible manually entered

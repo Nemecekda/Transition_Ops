@@ -2,10 +2,10 @@
 name: deploy-discipline
 description: Deployment and rollback procedure for Transition OPS. Governs the path from feature branch to production, the service-worker cache bump, and the authoring rule for CI workflow files under .github/workflows/. Owner - s3-devops.
 metadata:
-  version: "1.6"
+  version: "1.8"
   status: CODIFIED
   owner: s3-devops
-  validated: "2026-08-31"
+  validated: "2026-09-03"
 ---
 # DEPLOY DISCIPLINE — SOP
 
@@ -30,9 +30,10 @@ Treat every merge as a live deployment to serving veterans.
    evidence you cannot have.
 6. Hand off to Dean: branch name, `git log --oneline`, `git diff --stat
    main..<branch>`, validation evidence, cache-bump line (old value -> new
-   value, or "no precached asset changed"), one-line summary of blast radius,
-   and the PREVIEW CALL (see STEP 6 DETAIL). DEAN MERGES AND PUSHES. Agents
-   never merge to main and never push.
+   value, or "no precached asset changed"), the dual-origin cache recheck when
+   a candidate was hosted on a separate origin, one-line summary of blast
+   radius, and the PREVIEW CALL (see STEP 6 DETAIL). DEAN MERGES AND PUSHES.
+   Agents never merge to main and never push.
 
 Step 2 comes BEFORE step 3 on purpose. The bump writes a file. Bumping after
 the gate triggers validation-gate FAILURE RESPONSE (a fix writes files, rerun
@@ -148,9 +149,12 @@ one clean fast load. That is the harm this step prevents. It is narrow and it
 is real. Do not inflate it - an alarmist step gets skipped, and a skipped step
 is worse than no step.
 
-### Bump trigger - the ASSETS list
-Bump if the branch changes ANY file backing an entry in the active PWA
-worker's `ASSETS` list. Mapping from cache entry to repo file:
+### Bump trigger - atomic required local ASSETS
+The active PWA worker's `ASSETS` list is an atomic install contract and contains
+required same-origin local assets only. `cache.addAll(ASSETS)` must either cache
+all of them or fail the install; an unavailable third-party origin must never
+control that result. Bump if the branch changes ANY file backing an `ASSETS`
+entry. Mapping from cache entry to repo file:
 
 | ASSETS entry | Repo file |
 |---|---|
@@ -163,13 +167,33 @@ worker's `ASSETS` list. Mapping from cache entry to repo file:
 | `/bdd-timeline/` | `bdd-timeline/index.html` |
 | `/vendor/react.production.min.js` | `vendor/react.production.min.js` |
 | `/vendor/react-dom.production.min.js` | `vendor/react-dom.production.min.js` |
-| Google Fonts `css2?family=...` URL | remote - no repo file; changing the URL string is itself an active PWA-worker change |
 
 The landing pages `/va-math/` and `/bdd-timeline/` and the two `vendor/` files
 are the ones agents forget. They are triggers. So is `manifest.json`. So are
 the icons. Landing pages are the easiest miss of all: they are static HTML
 nobody thinks of as app code, and they are precached, so a change with no bump
 leaves offline users on the old page indefinitely.
+
+### Optional reviewed remote runtime assets
+
+Remote resources belong only in an explicit reviewed-runtime allowlist such as
+`REVIEWED_REMOTE_URLS`. They are fetched and cached opportunistically after a
+successful runtime request; they are never members of atomic `ASSETS`, and
+their failure must not reject worker installation. Changing the remote
+allowlist or its caching logic still changes the active worker and therefore
+requires a cache bump, but it creates no local-file mapping row.
+
+### Navigation cache-key safety
+
+The navigation cache map is closed. `/` and `/index.html` may map only to `/`;
+each explicitly reviewed standalone route maps only to its own stable pathname.
+Query and fragment values never enter a cache key. Every unknown same-origin
+navigation has no dynamic cache key and performs zero cache writes, including
+after a successful network response. An unknown navigation may read the cached
+`/` shell only as the final offline/timeout fallback; that fallback never grants
+write authority to `/`. Regression evidence must execute known-route mapping,
+unknown-route network success, and unknown-route fallback behavior. Static
+string presence alone is not clearance.
 
 ### THE MAPPING IS PART OF THE ASSETS LIST
 
@@ -225,29 +249,86 @@ One line in the active PWA worker:
 
     const CACHE_NAME = 'transition-ops-v102';
 
-Convention: `transition-ops-vNNN`, integer only, monotonic, never reused. Never
-change the prefix, never add suffixes, never use dates or branch names.
+Convention: `transition-ops-vNNN`, integer only. Cache consumption is
+origin-aware because browser CacheStorage is partitioned by origin. Record each
+served integer against the exact origin and immutable active-worker identity.
+Within one origin, numbers move only forward: never decrease an immutable
+candidate's integer and never reuse an integer for different active-worker
+bytes. Re-serving the exact same immutable candidate on that origin is
+continuation, not reuse. Never change the prefix, add suffixes, or use dates or
+branch names.
 
-The next number is derived from history, not from the current file value:
+For production-origin work, begin with the history floor rather than the
+current file value:
 
     git log -p main -- "$TOPS_PWA_WORKER_FILE" sw.js | grep -oE "transition-ops-v[0-9]+" | sed 's/.*-v//' | sort -n | tail -1
 
-Next = that number + 1. The literal `sw.js` in this history command is the
-legacy path and preserves monotonic numbering across the approved worker-path
-migration. Normally next equals current + 1. After a rollback it does not (see
-ROLLBACK). Scope to `main` - unmerged branches are not shipped numbers.
+The literal `sw.js` preserves the production history across the approved
+worker-path migration. Reconcile this result with the production deploy record;
+the higher evidenced integer is `PRODUCTION_HIGH`. Missing, ambiguous, or
+contradictory evidence is a STOP. A fresh production-only candidate uses
+`PRODUCTION_HIGH + 1`. Normally that equals current + 1. After rollback it
+does not (see ROLLBACK).
 
-If two branches are in flight and both bump to the same number, the second one
-to reach handoff re-bumps. Resolve at PR time, not after merge.
+### Clone-to-production origin ledger and immutable promotion
+
+For a candidate hosted on a separate clone origin, record a two-origin ledger:
+
+- `PRODUCTION_HIGH`: highest integer ever served by the exact production
+  origin, reconciled from `main` history and its deploy record.
+- `CLONE_HIGH`: highest integer ever served by the exact clone origin,
+  reconciled from branch history and its deploy record.
+- `CANDIDATE_ID`: commit SHA, tree SHA, active-worker SHA-256, cache integer,
+  and the exact clone origin that hosted it.
+
+A fresh clone candidate takes an integer greater than both current highs before
+hosted validation. Once that candidate is frozen and validated, do not
+downward-renumber it to `PRODUCTION_HIGH + 1`. A documented production gap is
+valid only when the candidate integer is greater than `PRODUCTION_HIGH`, has
+never been served by the production origin, and the clone ledger maps that
+integer only to the exact `CANDIDATE_ID`. The same integer may cross origins
+only with that byte-identical immutable candidate. It may never identify
+different active-worker bytes on either origin.
+
+Immediately before handoff, re-read both origin deploy records and recompute
+both highs. Require: the production high is unchanged and still has no
+candidate-number owner; the clone high and owner still identify the frozen
+candidate; and the commit, tree, worker hash, cache literal, and clone origin
+still match `CANDIDATE_ID`. Any drift is a STOP. Allocate a fresh integer
+greater than both current highs, host and validate the new candidate, freeze a
+new identity, and rerun the recheck. Never repair drift by renumbering downward.
+
+If two candidates target the same origin with the same integer, the second one
+to reach handoff re-bumps and repeats hosted validation unless both records
+identify the exact same immutable candidate. Resolve before handoff, never
+after merge.
+
+### Commander ruling - current pre-main candidate
+
+For the candidate authorized on 2026-09-03, the recorded baseline is production
+`v129`, clone `v149`, and candidate `transition-ops-v150`. Keep
+`transition-ops-v150`; do not renumber it to `transition-ops-v130`. The
+production gap is authorized only after immutable clone validation and the
+dual-origin recheck above. Candidate identity or origin-ledger drift voids this
+ruling. This ruling authorizes the cache integer only; it grants no stage,
+commit, push, merge, deployment, production, rollback, or release authority.
 
 ### Prove the bump
-    git diff main...HEAD -- "$TOPS_PWA_WORKER_FILE" | grep -E "^[-+].*CACHE_NAME"
+    TOPS_CACHE_PROOF="$(git diff --no-ext-diff --unified=0 main...HEAD -- "$TOPS_PWA_WORKER_FILE" | grep -E "^[-+]const CACHE_NAME = [\"']transition-ops-v[0-9]+[\"'];$" || true)"
+    printf '%s\n' "$TOPS_CACHE_PROOF"
 
-Expect exactly one `-` line and one `+` line, and the `+` integer must be
-GREATER than the `-` integer. On the first migration to a newly added active
-worker path, expect no `-` line and exactly one `+` line; its integer must be
-greater than the highest value returned by the history command. Any other
-shape, a decrease, or no output when the trigger check was non-empty = STOP.
+The filter matches only a complete `CACHE_NAME` declaration; added or removed
+uses such as `caches.open(CACHE_NAME)` and diff headers are not evidence. For an
+existing active-worker path, require exactly one `-` declaration and exactly
+one `+` declaration, with no third matched line, and the `+` integer must be
+GREATER than the `-` integer. For the first migration to a newly added active
+worker path, require exactly zero `-` declarations and exactly one `+`
+declaration; its integer must exceed the highest value returned by the history
+command. The `1-/1+` and `0-/1+` shapes are the only valid shapes. Any other
+shape, a decrease, a same-origin integer already owned by different worker
+bytes, or no output when the trigger check was non-empty = STOP. This
+declaration proof does not clear the origin ledger; a separately hosted
+candidate also requires the dual-origin recheck before handoff.
 
 ## DO NOT TOUCH - APP_VERSION AND THE BUILD COMMENT
 
@@ -317,6 +398,38 @@ worker activation is prohibited. Prepare the smallest safe rollback that removes
 the defect while retaining the Phase 1 OFF and no-clone invariants, then apply
 the mandatory forward cache bump. If no rapid rollback preserves them, STOP and
 obtain a new Commander ruling; never reactivate push as an emergency shortcut.
+
+### Candidate-bound privacy-safe rollback artifact
+
+After the release candidate is frozen, and before release handoff, prepare a
+rollback patch and manifest bound to that exact candidate. Record the candidate
+commit hash and tree hash, the rollback patch SHA-256, the expected result tree
+hash, and SHA-256 hashes for `index.html`, the active PWA worker, retained
+legacy `sw.js`, root OneSignal compatibility worker, and dedicated OneSignal
+worker. Also record the exact push-OFF, worker-registration, SDK, and App-ID
+occurrence counts and the mandatory forward `CACHE_NAME`. Any candidate,
+artifact, manifest, or recorded-hash drift invalidates the artifact.
+
+Prove applicability only in a disposable temporary worktree checked out at the
+recorded candidate. Verify candidate identity, run `git apply --check`, apply
+the artifact only there, and verify the expected result tree and recorded file
+hashes. Then prove one literal `TOPS_PUSH_ENABLED = false`, the approved active
+PWA registration, no current `/sw.js` or dedicated-worker registration, no
+OneSignal SDK or App ID in the production artifact, zero OneSignal behavior for
+new and migrated browsers, and all required local gates. Any failure invalidates
+the artifact. Remove the temporary worktree afterward; the shared tree remains
+untouched.
+
+The rollback artifact keeps legacy compatibility files byte-identical, leaves
+the dedicated worker dormant, and advances `CACHE_NAME` to highest-ever-shipped
+plus one. It never restores or reuses an older cache number. Record any intended
+degraded offline behavior in the manifest.
+
+Artifact preparation and a passing temporary-worktree applicability test are
+readiness evidence only. They authorize no stage, commit, push, merge, deploy,
+production change, or release decision. Applying the artifact and releasing its
+result each require their own explicit authority. Any release-candidate change
+requires a newly generated, newly hashed, newly tested artifact.
 
 ### Cache handling on rollback - MANDATORY FORWARD BUMP
 Revert first. Then bump forward. Never let a revert restore an old
@@ -531,7 +644,12 @@ reputation as an input.
 - Merging with a failed or skipped validation gate
 - Debugging live production
 - Shipping a changed precached asset without a `CACHE_NAME` bump
-- Reusing or decreasing a `CACHE_NAME` integer, including via revert
+- Decreasing or downward-renumbering a `CACHE_NAME` integer, including via
+  revert
+- Reusing a `CACHE_NAME` integer for different active-worker bytes on the same
+  origin, or moving it across origins without the exact immutable candidate
+- Handing off a separately hosted candidate without a fresh two-origin ledger
+  recheck, or after candidate identity or origin evidence drifts
 - Touching `APP_VERSION`, `WHATS_NEW`, or the `PWA BUILD` comment without
   COMMANDER approval
 - Unifying the three version counters
@@ -550,24 +668,68 @@ reputation as an input.
   worker, requesting notification permission, subscribing, opting in, or
   writing tags while the Phase 1 production hold is active
 - Using rollback to reactivate push or restore clone configuration
+- Putting a remote or third-party resource in atomic required local `ASSETS`,
+  or allowing its availability to decide worker installation
+- Mapping an unknown navigation to `/` or another cache key, or dynamically
+  caching any unknown navigation response
+- Using an unhashed, stale, candidate-mismatched, or applicability-untested
+  rollback artifact, or treating rollback readiness as release authority
 
-## VERSION 1.6 GOVERNANCE CALIBRATION
+## VERSION 1.7 GOVERNANCE CALIBRATION
 
-- **DD-16-1:** literal production OFF exactly once passes; true, dynamic,
-  duplicate, or origin-conditional state fails. PASS.
-- **DD-16-2:** synthetic clone/test origins, App-ID assignments, UUID-shaped
-  static IDs, and test-site production copy fail without storing an exact
-  credential in the rule. PASS.
-- **DD-16-3:** a retained dedicated worker file with zero load, initialization,
-  registration, fetch, subscription, or tag path remains dormant. PASS.
-- **DD-16-4:** new and migrated browsers require zero OneSignal network
-  behavior; a legacy root-worker fixture remains separately bounded. PASS.
-- **DD-16-5:** a revert fixture that restores push or clone configuration is
-  rejected in favor of a safe rollback retaining OFF and the forward bump.
-  PASS.
-- **DD-16-6:** handoff preserves validation, privacy, accessibility, push-ops,
-  provider, preview, merge, and production as independent authorities. PASS.
+- **DD-17-1:** all DD-16 production-OFF, clone-absence, dormant-worker,
+  legacy-cohort, privacy-safe rollback, and independent-authority fixtures
+  remain enforced. PASS.
+- **DD-17-2:** required same-origin local precache entries remain atomic, while
+  an unavailable optional reviewed remote resource cannot reject worker
+  installation. A remote resource placed in `ASSETS` fails. PASS.
+- **DD-17-3:** `/` and `/index.html` share only `/`; each reviewed standalone
+  route has its own stable key; query and fragment data are excluded. Unknown
+  navigations receive no key and cause zero cache writes while root fallback
+  remains read-only. PASS.
+- **DD-17-4:** cache proof ignores diff headers and `CACHE_NAME` uses, matches
+  only the complete declaration, accepts exactly the existing-path `1-/1+` or
+  first-migration `0-/1+` shape, and rejects every other shape. PASS.
+- **DD-17-5:** a post-freeze rollback artifact records candidate commit/tree,
+  patch, expected-result, protected-file hashes, privacy counts, and forward
+  cache version; any candidate or artifact drift invalidates it. PASS.
+- **DD-17-6:** applicability is proven in a disposable temporary worktree with
+  candidate identity, `git apply --check`, result hashes, privacy invariants,
+  and required local gates; the shared tree remains untouched. PASS.
+- **DD-17-7:** the rollback fixture retains literal push OFF, preserves legacy
+  compatibility files, leaves the dedicated worker dormant, and advances to
+  highest-ever-shipped cache plus one. PASS.
+- **DD-17-8:** artifact readiness grants no stage, commit, push, merge, deploy,
+  production, or release authority and preserves validation, accessibility,
+  privacy, push-ops, provider, preview, and release seams. PASS.
 
-Governance calibration executed 6/6 PASS on 2026-08-31. No application,
-provider, browser cohort, hosted preview, rollback, merge, or deployment was
-executed or certified by this result.
+Governance calibration executed 8/8 PASS on 2026-09-02. No application,
+provider, browser cohort, hosted preview, rollback artifact, merge, deployment,
+or release was executed or certified by this result.
+
+## VERSION 1.8 GOVERNANCE CALIBRATION
+
+- **DD-18-1:** DD-17-1 through DD-17-8 remain unchanged and PASS, including
+  production push OFF, local/remote cache separation, closed navigation keys,
+  declaration-level proof, candidate-bound rollback, disposable-worktree
+  applicability, mandatory forward rollback bumps, and independent release
+  authority. PASS.
+- **DD-18-2:** the deterministic ledger fixture accepts production `v129`,
+  clone `v149`, and immutable candidate `transition-ops-v150` as a documented
+  production gap; it rejects `v130` downward renumbering, a candidate at or
+  below the production high, and any unfrozen candidate. PASS.
+- **DD-18-3:** a same-origin integer owned by different active-worker bytes is
+  rejected; re-serving the exact immutable candidate is accepted as
+  continuation; cross-origin use is accepted only for the byte-identical frozen
+  candidate. PASS.
+- **DD-18-4:** the pre-handoff fixture passes only when production and clone
+  highs, origin ownership, commit, tree, worker hash, and cache literal match
+  the frozen two-origin record. Drift in either origin or any candidate field
+  fails and requires a fresh integer above both current highs plus repeat hosted
+  validation. PASS.
+
+Governance calibration executed 4/4 PASS on 2026-09-03. Deterministic local
+fixtures exercised the approved gap, downward-renumber, same-origin reuse,
+immutable-continuation, cross-origin identity, and dual-origin drift boundaries.
+No application, browser, provider, hosted, rollback, commit, push, merge,
+deployment, production, or release action was executed or certified.

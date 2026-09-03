@@ -2,7 +2,9 @@
 
 const crypto = require("node:crypto");
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
+const vm = require("node:vm");
 const { execFileSync } = require("node:child_process");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -10,6 +12,51 @@ const LEGACY_HASHES = Object.freeze({
   "sw.js": "45a4f093d7a19d4403cdaa5da0e6d6ae0a7ae497080fe92694046be789108d32",
   "OneSignalSDKWorker.js": "2f213985d10e5c5117acfde4f0cab00ad2c13035577ef38c7f0d86d2dd722fbc"
 });
+const FONT_STYLESHEET_URL = "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap";
+const EXPECTED_PRECACHE_ASSETS = Object.freeze([
+  "/",
+  "/index.html",
+  "/manifest.json",
+  "/icon-192.png",
+  "/icon-512.png",
+  "/va-math/",
+  "/bdd-timeline/",
+  "/vendor/react.production.min.js",
+  "/vendor/react-dom.production.min.js"
+]);
+const EXPECTED_NAVIGATION_CACHE_KEYS = Object.freeze([
+  ["/", "/"],
+  ["/index.html", "/"],
+  ["/va-math/", "/va-math/"],
+  ["/bdd-timeline/", "/bdd-timeline/"],
+  ["/erg-handoff.html", "/erg-handoff.html"],
+  ["/erg-employer-brief.html", "/erg-employer-brief.html"],
+  ["/erg-intranet-launch-kit.html", "/erg-intranet-launch-kit.html"]
+]);
+const EXPECTED_PUBLIC_FILES = Object.freeze([
+  "BingSiteAuth.xml",
+  "OneSignalSDKWorker.js",
+  "_headers",
+  "_redirects",
+  "bdd-timeline/index.html",
+  "erg-employer-brief.html",
+  "erg-handoff.html",
+  "erg-intranet-launch-kit.html",
+  "icon-192.png",
+  "icon-512.png",
+  "index.html",
+  "manifest.json",
+  "og-image.png",
+  "push/onesignal/OneSignalSDKWorker.js",
+  "pwa-sw.js",
+  "robots.txt",
+  "sitemap.xml",
+  "sw.js",
+  "transition-ops-public-qr.png",
+  "va-math/index.html",
+  "vendor/react-dom.production.min.js",
+  "vendor/react.production.min.js"
+]);
 
 function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), "utf8");
@@ -41,6 +88,248 @@ function check(condition, label, detail) {
   console.log("PASS " + label);
 }
 
+function checkThrows(action, label) {
+  let threw = false;
+  try {
+    action();
+  } catch (error) {
+    threw = true;
+  }
+  check(threw, label);
+}
+
+function navigationRequest(pathname) {
+  return {
+    method: "GET",
+    mode: "navigate",
+    url: "https://transitionops.org" + pathname
+  };
+}
+
+function htmlResponse() {
+  return {
+    status: 200,
+    headers: {
+      get: function(name) {
+        return String(name).toLowerCase() === "content-type" ? "text/html; charset=utf-8" : null;
+      }
+    },
+    clone: function() { return this; }
+  };
+}
+
+function createWorkerHarness(options) {
+  const listeners = {};
+  const addAllCalls = [];
+  const cacheWrites = [];
+  const cacheMatches = [];
+  let skipWaitingCalls = 0;
+  let claimCalls = 0;
+  const settings = options || {};
+  const cache = {
+    addAll: function(entries) {
+      const copiedEntries = Array.from(entries);
+      addAllCalls.push(copiedEntries);
+      if (copiedEntries.some(function(entry) { return /^https?:\/\//i.test(entry); })) {
+        return Promise.reject(new Error("simulated remote precache failure"));
+      }
+      return Promise.resolve();
+    },
+    put: function(key) {
+      cacheWrites.push(key);
+      return Promise.resolve();
+    }
+  };
+  const context = {
+    Error,
+    Map,
+    Promise,
+    Set,
+    URL,
+    caches: {
+      delete: function() { return Promise.resolve(true); },
+      keys: function() { return Promise.resolve([]); },
+      match: function(key) {
+        cacheMatches.push(key);
+        return Promise.resolve(key === "/" ? settings.rootFallback : undefined);
+      },
+      open: function() { return Promise.resolve(cache); }
+    },
+    fetch: settings.fetch || function() { return Promise.resolve(htmlResponse()); },
+    setTimeout: function() { return 1; },
+    self: {
+      addEventListener: function(type, listener) { listeners[type] = listener; },
+      clients: {
+        claim: function() {
+          claimCalls += 1;
+          return Promise.resolve();
+        }
+      },
+      location: { origin: "https://transitionops.org" },
+      skipWaiting: function() {
+        skipWaitingCalls += 1;
+        return Promise.resolve();
+      }
+    }
+  };
+  context.globalThis = context;
+  vm.runInNewContext(
+    pwaWorker + "\n;globalThis.__topsWorkerTest = {" +
+      "assets: Array.from(ASSETS)," +
+      "reviewedRemoteUrls: Array.from(REVIEWED_REMOTE_URLS)," +
+      "cacheKeyFor: cacheKeyFor," +
+      "isReviewedRequest: isReviewedRequest" +
+    "};",
+    context,
+    { filename: "pwa-sw.js" }
+  );
+  return {
+    addAllCalls,
+    cacheMatches,
+    cacheWrites,
+    exports: context.__topsWorkerTest,
+    getClaimCalls: function() { return claimCalls; },
+    getSkipWaitingCalls: function() { return skipWaitingCalls; },
+    listeners
+  };
+}
+
+async function dispatchFetch(harness, request) {
+  let responsePromise = null;
+  let lifetimePromise = Promise.resolve();
+  harness.listeners.fetch({
+    request,
+    respondWith: function(promise) { responsePromise = Promise.resolve(promise); },
+    waitUntil: function(promise) { lifetimePromise = Promise.resolve(promise); }
+  });
+  check(responsePromise !== null, "reviewed request is intercepted by the active worker");
+  const response = await responsePromise;
+  await lifetimePromise;
+  return response;
+}
+
+async function runExecutableWorkerChecks() {
+  const installHarness = createWorkerHarness();
+  let installPromise = null;
+  installHarness.listeners.install({
+    waitUntil: function(promise) { installPromise = Promise.resolve(promise); }
+  });
+  check(installPromise !== null, "active worker install supplies a lifetime promise");
+  await installPromise;
+  check(
+    JSON.stringify(installHarness.addAllCalls) === JSON.stringify([EXPECTED_PRECACHE_ASSETS]),
+    "atomic install contains exactly the nine required local assets"
+  );
+  check(
+    installHarness.getSkipWaitingCalls() === 1,
+    "atomic local install completes when remote font precaching is unavailable"
+  );
+  check(
+    JSON.stringify(Array.from(installHarness.exports.reviewedRemoteUrls)) === JSON.stringify([FONT_STYLESHEET_URL]) &&
+      installHarness.exports.isReviewedRequest({ method: "GET", mode: "cors", url: FONT_STYLESHEET_URL }),
+    "Google Fonts remains one optional reviewed runtime URL"
+  );
+
+  EXPECTED_NAVIGATION_CACHE_KEYS.forEach(function(entry) {
+    const actual = installHarness.exports.cacheKeyFor(navigationRequest(entry[0] + "?discarded=1"));
+    check(actual === entry[1], "navigation cache key is closed and query-free for " + entry[0]);
+  });
+  check(
+    installHarness.exports.cacheKeyFor(navigationRequest("/unknown/member-route?private=value")) === null,
+    "unknown same-origin navigation has no cache key or root-key mapping"
+  );
+
+  const networkSuccessHarness = createWorkerHarness({
+    fetch: function() { return Promise.resolve(htmlResponse()); }
+  });
+  await dispatchFetch(networkSuccessHarness, navigationRequest("/unknown/member-route?private=value"));
+  check(
+    networkSuccessHarness.cacheWrites.length === 0,
+    "successful unknown navigation performs zero dynamic cache writes"
+  );
+
+  const rootFallback = { source: "cached-root" };
+  const networkFailureHarness = createWorkerHarness({
+    fetch: function() { return Promise.reject(new Error("synthetic network failure")); },
+    rootFallback
+  });
+  const fallbackResponse = await dispatchFetch(
+    networkFailureHarness,
+    navigationRequest("/unknown/member-route?private=value")
+  );
+  check(
+    fallbackResponse === rootFallback &&
+      JSON.stringify(networkFailureHarness.cacheMatches) === JSON.stringify(["/"]) &&
+      networkFailureHarness.cacheWrites.length === 0,
+    "unknown navigation may read root fallback but never writes or matches a dynamic key"
+  );
+}
+
+function runPublicBuildChecks(publicBuilder) {
+  check(
+    JSON.stringify(publicBuilder.PUBLIC_FILES) === JSON.stringify(EXPECTED_PUBLIC_FILES),
+    "public builder uses the exact 22-file allowlist"
+  );
+
+  const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tops-public-build-fixture-"));
+  try {
+    fs.writeFileSync(path.join(fixtureRoot, "regular.txt"), "fixture\n");
+    fs.mkdirSync(path.join(fixtureRoot, "directory-entry"));
+    fs.symlinkSync("regular.txt", path.join(fixtureRoot, "linked.txt"));
+
+    checkThrows(
+      function() { publicBuilder.validateSources(fixtureRoot, ["missing.txt"]); },
+      "public builder rejects a missing source entry"
+    );
+    checkThrows(
+      function() { publicBuilder.validateManifest(["readme.md"]); },
+      "public builder rejects a Markdown allowlist entry"
+    );
+    checkThrows(
+      function() { publicBuilder.validateSources(fixtureRoot, ["linked.txt"]); },
+      "public builder rejects a symlink source entry"
+    );
+    checkThrows(
+      function() { publicBuilder.validateSources(fixtureRoot, ["directory-entry"]); },
+      "public builder rejects a nonregular source entry"
+    );
+    checkThrows(
+      function() { publicBuilder.validateManifest(["navigator-pilot.html"]); },
+      "public builder rejects the excluded Navigator pilot"
+    );
+
+    const extraOutput = path.join(fixtureRoot, "output");
+    fs.mkdirSync(extraOutput);
+    fs.writeFileSync(path.join(extraOutput, "extra.txt"), "extra\n");
+    checkThrows(
+      function() { publicBuilder.assertExistingOutputSafe(extraOutput, ["regular.txt"]); },
+      "public builder rejects an extra output entry before replacement"
+    );
+  } finally {
+    fs.rmSync(fixtureRoot, { recursive: true });
+  }
+
+  const output = execFileSync(process.execPath, [path.join(ROOT, "scripts/build-public.js")], {
+    cwd: ROOT,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"]
+  });
+  check(
+    output.trim() === "PUBLIC BUILD PASS: 22 files -> dist",
+    "public build command produces the exact validated dist inventory"
+  );
+  const inventory = publicBuilder.assertOutputExact(publicBuilder.DIST, EXPECTED_PUBLIC_FILES);
+  check(
+    inventory.files.every(function(relativePath) {
+      return relativePath !== "navigator-pilot.html" &&
+        !/\.(?:md|markdown)$/i.test(relativePath) &&
+        !/^(?:\.agents|\.claude|\.git|\.github|design|intel|netlify|node_modules|outreach|scripts|tools)(?:\/|$)/.test(relativePath) &&
+        !/^(?:package|package-lock)\.json$/.test(relativePath);
+    }),
+    "dist excludes pilot, internal evidence, scripts, functions, docs, and package metadata"
+  );
+}
+
 function cacheVersion(source, label) {
   const matches = Array.from(source.matchAll(/const CACHE_NAME\s*=\s*["']transition-ops-v([0-9]+)["']\s*;/g));
   check(matches.length === 1, label + " has one extractable cache name", "matches=" + matches.length);
@@ -55,7 +344,9 @@ const legacyWorker = read("sw.js");
 const dedicatedWorker = read("push/onesignal/OneSignalSDKWorker.js");
 const rootDedicatedWorker = read("OneSignalSDKWorker.js");
 const headers = read("_headers");
+const netlifyConfig = read("netlify.toml");
 const packageJson = JSON.parse(read("package.json"));
+const publicBuilder = require(path.join(ROOT, "scripts/build-public.js"));
 const ergHandoff = read("erg-handoff.html");
 const ergEmployerBrief = read("erg-employer-brief.html");
 const ergIntranetLaunchKit = read("erg-intranet-launch-kit.html");
@@ -170,14 +461,21 @@ check(
   "active worker excludes APIs and query-bearing non-navigation requests"
 );
 check(
-  pwaWorker.includes('return "/";') && pwaWorker.includes("cache.put(cacheKey, clone)"),
-  "navigation cache keys cannot retain member query values"
+  pwaWorker.includes("const NAVIGATION_CACHE_KEYS = new Map([") &&
+    pwaWorker.includes("if (!NAVIGATION_CACHE_KEYS.has(url.pathname)) return null;") &&
+    pwaWorker.includes("!canCacheResponse(request, response) || cacheKey === null") &&
+    pwaWorker.includes("cacheKey === null ? Promise.resolve(undefined) : caches.match(cacheKey)"),
+  "navigation caching uses a closed allowlist and suppresses unknown-route writes"
 );
 check(
-  pwaWorker.includes('url.pathname === "/erg-handoff.html"') &&
-    pwaWorker.includes('url.pathname === "/erg-employer-brief.html"') &&
-    pwaWorker.includes('url.pathname === "/erg-intranet-launch-kit.html"'),
+  pwaWorker.includes('["/erg-handoff.html", "/erg-handoff.html"]') &&
+    pwaWorker.includes('["/erg-employer-brief.html", "/erg-employer-brief.html"]') &&
+    pwaWorker.includes('["/erg-intranet-launch-kit.html", "/erg-intranet-launch-kit.html"]'),
   "ERG static pages retain distinct navigation cache keys"
+);
+check(
+  countMatches(pwaWorker, new RegExp(FONT_STYLESHEET_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) === 1,
+  "Google Fonts URL appears once outside the atomic local asset list"
 );
 check(
   pwaWorker.includes("key.indexOf(CACHE_PREFIX) === 0 && key !== CACHE_NAME"),
@@ -336,5 +634,25 @@ check(
   packageJson.scripts && packageJson.scripts["test:sw-privacy"] === "node scripts/sw-privacy-regression.js",
   "package preserves the service-worker privacy regression command"
 );
+check(
+  packageJson.scripts && packageJson.scripts["build:public"] === "node scripts/build-public.js",
+  "package exposes the exact public build command"
+);
+check(
+  countMatches(netlifyConfig, /^\[build\]$/m) === 1 &&
+    countMatches(netlifyConfig, /^  command = "npm run build:public"$/m) === 1 &&
+    countMatches(netlifyConfig, /^  publish = "dist"$/m) === 1 &&
+    countMatches(netlifyConfig, /^\[functions\]$/m) === 1 &&
+    countMatches(netlifyConfig, /^  directory = "netlify\/functions"$/m) === 1,
+  "Netlify uses the exact public build, dist publish boundary, and functions directory"
+);
 
-console.log("SW-PRIVACY REGRESSION PASS");
+runExecutableWorkerChecks()
+  .then(function() {
+    runPublicBuildChecks(publicBuilder);
+    console.log("SW-PRIVACY REGRESSION PASS");
+  })
+  .catch(function(error) {
+    console.error(String(error && error.stack || error));
+    process.exitCode = 1;
+  });

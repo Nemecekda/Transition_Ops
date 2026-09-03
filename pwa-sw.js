@@ -1,4 +1,4 @@
-const CACHE_NAME = "transition-ops-v149";
+const CACHE_NAME = "transition-ops-v150";
 const CACHE_PREFIX = "transition-ops-v";
 const NETWORK_TIMEOUT_MS = 3500;
 
@@ -11,8 +11,7 @@ const ASSETS = [
   "/va-math/",
   "/bdd-timeline/",
   "/vendor/react.production.min.js",
-  "/vendor/react-dom.production.min.js",
-  "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+  "/vendor/react-dom.production.min.js"
 ];
 
 const REVIEWED_LOCAL_PATHS = new Set([
@@ -29,6 +28,16 @@ const REVIEWED_LOCAL_PATHS = new Set([
 
 const REVIEWED_REMOTE_URLS = new Set([
   "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+]);
+
+const NAVIGATION_CACHE_KEYS = new Map([
+  ["/", "/"],
+  ["/index.html", "/"],
+  ["/va-math/", "/va-math/"],
+  ["/bdd-timeline/", "/bdd-timeline/"],
+  ["/erg-handoff.html", "/erg-handoff.html"],
+  ["/erg-employer-brief.html", "/erg-employer-brief.html"],
+  ["/erg-intranet-launch-kit.html", "/erg-intranet-launch-kit.html"]
 ]);
 
 self.addEventListener("install", function(event) {
@@ -74,14 +83,8 @@ function isReviewedRequest(request) {
 function cacheKeyFor(request) {
   if (request.mode !== "navigate") return request;
   var url = new URL(request.url);
-  if (url.pathname === "/va-math/" ||
-      url.pathname === "/bdd-timeline/" ||
-      url.pathname === "/erg-handoff.html" ||
-      url.pathname === "/erg-employer-brief.html" ||
-      url.pathname === "/erg-intranet-launch-kit.html") {
-    return url.pathname;
-  }
-  return "/";
+  if (!NAVIGATION_CACHE_KEYS.has(url.pathname)) return null;
+  return NAVIGATION_CACHE_KEYS.get(url.pathname);
 }
 
 function canCacheResponse(request, response) {
@@ -97,7 +100,7 @@ self.addEventListener("fetch", function(event) {
 
   var cacheKey = cacheKeyFor(request);
   var networkFetch = fetch(request).then(function(response) {
-    if (!canCacheResponse(request, response)) return response;
+    if (!canCacheResponse(request, response) || cacheKey === null) return response;
     var clone = response.clone();
     return caches.open(CACHE_NAME)
       .then(function(cache) { return cache.put(cacheKey, clone); })
@@ -112,7 +115,8 @@ self.addEventListener("fetch", function(event) {
 
   event.respondWith(
     Promise.race([networkFetch, timeout]).catch(function() {
-      return caches.match(cacheKey).then(function(cached) {
+      var cacheMatch = cacheKey === null ? Promise.resolve(undefined) : caches.match(cacheKey);
+      return cacheMatch.then(function(cached) {
         if (cached) return cached;
         if (request.mode === "navigate") return caches.match("/");
         return networkFetch;

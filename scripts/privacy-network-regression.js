@@ -71,8 +71,9 @@ function sourceChecks() {
     /\bG-[A-Z0-9]{6,}\b/
   ];
   check(
-    gaPatterns.every(function(pattern) { return !pattern.test(index); }),
-    "browser source has no GA bootstrap, measurement ID, or tag URL"
+    gaPatterns.every(function(pattern) { return !pattern.test(index); }) &&
+      !/added analytics so we can see which deadline alerts help most/i.test(index),
+    "browser source has no GA bootstrap, measurement ID, tag URL, or obsolete analytics claim"
   );
 
   const kitPatterns = [
@@ -93,6 +94,38 @@ function sourceChecks() {
   check(
     kitPatterns.every(function(pattern) { return !pattern.test(index); }),
     "browser source has no Kit form, credential, email-signup runtime, or signup UI"
+  );
+
+  const feedbackCollectionPatterns = [
+    /<form[^>]+name=["']tops-feedback["']/i,
+    /\bfeedback_submitted\b/,
+    /form-name["']?\s*,\s*["']tops-feedback["']/i,
+    /\bfrom_name\b/,
+    /\breply_to\b/,
+    /fetch\s*\(\s*["']\/["']\s*,\s*\{\s*method:\s*["']POST["']/
+  ];
+  check(
+    feedbackCollectionPatterns.every(function(pattern) { return !pattern.test(index); }),
+    "feedback has no app submission, tracking event, identity fields, or dormant Forms path"
+  );
+  check(
+    /const mailto = "mailto:" \+ FEEDBACK_EMAIL/.test(index) &&
+      /window\.location\.href = mailto;/.test(index) &&
+      /Transition Ops does not submit or store this message\. No name or email field is collected in the app\./.test(index) &&
+      /EMAIL DRAFT REQUESTED/.test(index),
+    "feedback is a truthful member-controlled email handoff"
+  );
+
+  check(
+    /Sending a question sends your current question, this chat history, and any saved separation date or service status through Netlify to OpenAI/.test(index) &&
+      /The Navigator is optional; the rest of Transition Ops remains available without it\./.test(index),
+    "Navigator discloses the request payload and optional provider boundary"
+  );
+  check(
+    /Using this tool sends your MOS\/AFSC\/rate, years served, target job title, skills, certifications, pasted experience, confirmed fact sheet, confirmed relevant years, selected supporting roles, and optional job description through Netlify to OpenAI\./.test(index) &&
+      /These four header fields stay in this browser for this draft and are not included in the resume request\./.test(index) &&
+      !/resumeAction === "draft" && aiR\.mode !== "federal" \? \{ header: exactResumeHeader/.test(index),
+    "Resume discloses provider-bound fields and keeps its personal header out of transport"
   );
 
   const navigatorGapPatterns = [

@@ -2,7 +2,7 @@
 name: resume-drafter-maintenance
 description: Govern changes to the in-app Resume Drafter's prompts, fact ledger, quality scorecard, claim trace, formats, privacy controls, and cost controls. Owner - force-mod.
 metadata:
-  version: "0.24"
+  version: "0.25"
   status: PENDING
 ---
 
@@ -13,9 +13,10 @@ member's source material or a job posting into invented qualifications. This
 skill governs the Resume Drafter only. It does not authorize app changes,
 deployment, or changes to account-level infrastructure.
 
-Version 0.24 is PENDING until the synthetic RDM regression suite and live-clone
-validation execute against the app. Specification approval and governance
-calibration are not v0.24 application execution evidence.
+Version 0.25 is PENDING until the synthetic RDM regression suite and separate
+civilian and federal live-clone validations execute against the app.
+Specification approval and governance calibration are not v0.25 application
+execution evidence.
 
 ## TRIGGERS AND GATE
 
@@ -289,25 +290,45 @@ is $0, and the external monthly cap remains `UNVERIFIED`.
 This gate applies only to civilian candidate text and its downloadable artifact.
 It does not change the federal path.
 
-Before clause inventory and audit, canonicalize member identity sections from
-the closed confirmed ledger. Include every confirmed personal-header value
-exactly once and byte-exact. Include every confirmed education,
-certification, and license item exactly once and byte-exact. An education item
+Before clause inventory and audit, the server canonicalizes member education,
+certification, and license identity sections from the closed confirmed ledger.
+Include every confirmed item exactly once and byte-exact. An education item
 retains each confirmed degree, school, and date component; an unknown component
 is omitted without changing the confirmed components. Replace generated copies
 of these sections rather than appending to them, and make the operation
 idempotent. Never infer, translate, abbreviate, merge, split, or source these
 values from duties, roles, the posting, target title, adjacent facts, or raw
-source.
+source. The civilian personal header is browser-owned and is never part of the
+server candidate, catalog, clause inventory, audit, trace, or response.
 
 At draft activation, snapshot the four visible civilian header inputs directly
-and synchronously into one immutable request-local object. Name, location,
-email, and phone punctuation are opaque bytes within the existing bounds; do
-not normalize, trim, reformat, persist, log, or analytics-send them. The exact
-snapshot controls both the request and the client release check. If the returned
-candidate does not begin with the canonical exact header or any supplied value
-is absent, changed, or duplicated, release and download fail closed even when
-the model scorecard says PASS.
+and synchronously into one immutable browser-request-local object. Name,
+location, email, and phone punctuation are opaque bytes within the existing
+bounds; do not normalize, trim, reformat, persist, log, analytics-send, or
+serialize them. The serialized function request contains neither a `header`
+property nor top-level `name`, `location`, `email`, or `phone` properties. The
+function rejects any request containing one of those properties with one fixed,
+content-free 400 response before constructing a provider client or making a
+provider call. This application boundary does not prove that infrastructure can
+never receive unsolicited request bytes, so do not make that universal claim.
+
+The server generates, deterministically completes, inventories, audits, traces,
+and returns only the headerless candidate body. After an exact marked-JSON
+success and successful server quality release, but before display, scoring
+preflight, or export, the browser prepends the frozen header exactly once. It
+must preserve the returned body byte-for-byte and may generate only the newline
+and ` | ` presentation separators. The browser then applies the exact-header
+release gate. If any supplied value is absent, changed, reformatted, truncated,
+or duplicated, display and download fail closed even when the model scorecard
+says PASS.
+
+Header trace records are deterministic and browser-local. Assign present fields
+`H1` through `H4` in fixed name, location, email, and phone order, and assign the
+rendered name and contact-line claims `HC1` and `HC2` as applicable. Each trace
+uses section `header`, empty posting references, transform `exact`, verdict
+`supported`, and the exact rendered claim text. Merge these records with the
+server trace only after successful assembly; neither the records nor their
+values may enter a request, response, log, persistence, storage, or analytics.
 
 Newly extracted EDUCATION and CERTIFICATIONS use empty field headers followed
 by contiguous `EDUCATION ITEM n (EXACT)` and `CERTIFICATION ITEM n (EXACT)`
@@ -325,19 +346,20 @@ and stop before an audit call whenever the failure is already known.
 An essential civilian personal header consists of a confirmed member name and
 at least one confirmed direct contact method: email or phone. Confirmed location
 is included exactly once but is not a substitute for a direct contact method.
-When any essential header element is unavailable, omit the unknown value and
-all placeholders, score Format Compliance `NEEDS MEMBER FACT`, and give
-member-safe guidance outside the resume identifying the missing header fact.
-Never invent or reconstruct a header value. A missing essential header does not
-turn a truthful, otherwise grounded draft into `PASS` for Format Compliance.
+The browser owns this readiness decision. When any essential header element is
+unavailable, omit the unknown value and all placeholders, score Format
+Compliance `NEEDS MEMBER FACT`, and give member-safe guidance outside the resume
+identifying the missing header fact. Never invent or reconstruct a header value.
+A missing essential header does not turn a truthful, otherwise grounded draft
+into `PASS` for Format Compliance.
 
-After all deterministic and audit checks pass, the released audited candidate
-text is the sole content source for export. The exported artifact must be
-content-equivalent: it preserves every released section, identity, claim,
-value, order, and list relationship with no added, omitted, changed, or
-duplicated candidate content. Presentation-only document structure is allowed;
-it may not alter meaning or hide content. Verify equivalence against the actual
-exported file, not an intended template or pre-export string.
+After all server checks and browser-local header checks pass, the assembled
+candidate text is the sole content source for display and export. The exported
+artifact must be content-equivalent: it preserves every released section,
+identity, claim, value, order, and list relationship with no added, omitted,
+changed, or duplicated candidate content. Presentation-only document structure
+is allowed; it may not alter meaning or hide content. Verify equivalence against
+the actual exported file, not an intended template or pre-export string.
 
 A Word download must be a real Office Open XML document with the `.docx`
 extension and MIME type
@@ -645,6 +667,49 @@ byte-exact identities. Civilian translation is allowed only in summaries and
 duty/accomplishment language, never in an identity field. Runtime prompts must
 not contain unrelated numeric exemplars: no example headcounts, budgets,
 percentages, states, locations, or outcomes may become candidate facts.
+
+## FEDERAL HOSTED ACCEPTANCE MATRIX - VERSION 0.25
+
+Federal validation is independent from civilian validation. A civilian hosted
+PASS, civilian DOCX render, or shared facts-stage result cannot clear the
+federal generation, audit, format, or artifact rows. Run the federal matrix on
+one exact immutable private-clone deploy with a fully synthetic senior fixture:
+six distinct roles; confirmed dates and locations; at least ten separately
+countable role-owned duties or outcomes; role-owned numbers; three education
+items; multiple certifications; and a synthetic bounded USAJOBS announcement.
+Use no real member data.
+
+Execute exactly one fact-sheet activation and one federal draft activation. The
+existing single structural repair may occur only when the first fact sheet
+requires it. The complete workflow may make at most four provider calls: facts,
+optional repair, federal generation, and audit. Make no retry or automatic
+replay. Record the immutable commit and deploy identifiers, UTC execution time,
+call count, mode, disposition, and synthetic-only evidence without recording
+the fixture's content in logs or durable diagnostics.
+
+The hosted matrix must independently verify:
+
+1. exact title, employer or unit, location, date, education, certification, and
+   license identities; six-role separation; same-role claim ownership; exact
+   quantities; complete trace coverage; and all ten score dimensions;
+2. job-announcement language is used only where confirmed facts support the
+   complete claim, and posting-only qualifications remain honest gaps;
+3. missing hours, salary, supervisor, series, grade, citizenship, and veterans'
+   preference are never invented or asserted as confirmed facts; only the
+   existing federal bracket behavior may represent a missing required field;
+4. detailed specialized experience remains grounded in the exact owning role,
+   with no filler, unsupported expansion, or civilian-header dependency;
+5. the downloaded federal artifact's filename, extension, MIME declaration,
+   and file signature are recorded truthfully and the actual file opens and
+   renders in Microsoft Word or another Word-compatible renderer without
+   clipping, overlap, hidden content, orphaned role structure, or content loss;
+   an HTML-backed `.doc` must never be described as native DOCX; and
+6. any failed deterministic, audit, transport, artifact, or render row stops
+   release and export. Do not retry the workflow to manufacture a PASS.
+
+This matrix prepares validation only. It changes no federal prompt, bracket,
+generation, audit, export, pagination, score, model, cap, call, retry, budget,
+privacy, storage, logging, persistence, analytics, or production behavior.
 
 ## PRIVACY AND COST
 
@@ -1629,14 +1694,15 @@ all existing hard input bounds.
   deployment, main merge, or production action is authorized.
 - **RDM-240 Visible-header capture:** a synthetic visible name, location,
   email, and phone including `(202) 555-0100` must override deliberately stale
-  React state at activation, remain immutable and request-local, and reach the
-  request without normalization, persistence, tracking, or an added request.
-- **RDM-241 Exact header release:** the final civilian candidate must begin
-  with the exact canonical header, contain every supplied header value exactly
-  once, retain `(202) 555-0100`, and contain no reformatted substitute.
+  React state at activation and remain immutable and browser-request-local,
+  without normalization, persistence, tracking, transport, or an added request.
+- **RDM-241 Exact header release:** after successful server quality release,
+  the browser-assembled civilian candidate must begin with the exact canonical
+  header, contain every supplied header value exactly once, retain
+  `(202) 555-0100`, and contain no reformatted substitute.
 - **RDM-242 Header fail-closed boundary:** mutation, trimming, truncation,
   omission, duplication, or delimiter change must prevent browser display and
-  download. The deterministic server and client checks outrank a model PASS.
+  download. The deterministic browser gate outranks a model PASS.
 - **RDM-243 Numbered education items:** a three-item synthetic Education field
   must preserve each opaque payload byte-exact, in order, as an individual
   global catalog fact and exactly one final line. No punctuation heuristic may
@@ -1666,6 +1732,65 @@ all existing hard input bounds.
   export, and DOCX equivalence remain unchanged. Run all five local gates and
   real-artifact 4N across exactly the six authorized v0.24 files. Maximum
   incremental API exposure is $0; fresh hosted validation remains mandatory.
+- **RDM-250 Header transport embargo:** the serialized civilian draft request
+  must contain neither a `header` property nor top-level `name`, `location`,
+  `email`, or `phone` properties or values. Synthetic sentinels must be absent
+  from the request body, function processing, provider inputs, responses,
+  diagnostics, logs, persistence, storage, and analytics.
+- **RDM-251 Server rejection boundary:** a direct synthetic request containing
+  any forbidden personal-header property must receive one fixed content-free
+  400 response before guard or provider construction, with zero provider calls
+  and no reflected key or value. A headerless request retains the existing
+  generation and audit call graph.
+- **RDM-252 Headerless server candidate:** civilian generation, deterministic
+  completion, clause inventory, audit, trace hydration, length planning, and
+  response must operate on the headerless candidate. Server output and trace
+  must contain no browser-header claim, fact, or sentinel.
+- **RDM-253 Browser post-release assembly:** only after marked-JSON success and
+  server quality release may the browser prepend the immutable header. It must
+  generate only newlines and ` | ` separators, preserve every server-candidate
+  byte, include each supplied value exactly once, and add no request or call.
+- **RDM-254 Browser-local header trace:** the browser must create only the
+  closed `HC1`/`HC2` claim IDs and fixed-order `H1` through `H4` fact references
+  for present values, merge them only after successful assembly, and send or
+  persist neither traces nor values.
+- **RDM-255 Header readiness and terminal failure:** missing name or both direct
+  contact methods must downgrade Format Compliance to `NEEDS MEMBER FACT` and
+  add only existing member-safe guidance outside the resume. Server failure,
+  withholding, timeout, stale input, mutation, omission, or duplication must
+  create no assembled display or download and must clear the local snapshot.
+- **RDM-256 Browser export continuity:** the assembled candidate, not the
+  headerless server body, must be the sole input to browser preflight and DOCX
+  export. The genuine-DOCX regression must preserve a parenthesized phone,
+  every local header trace, and all server-released content exactly once.
+- **RDM-257 Header operational boundary:** models, calls, stage order, caps,
+  four-call maximum, zero retries, USD 4 guard, `store: false`, grounding,
+  audit, adaptive length, transport diagnostics, public errors, and federal
+  behavior remain unchanged. Browser locality adds zero API cost.
+- **RDM-258 Federal mode isolation:** a civilian hosted PASS, civilian DOCX
+  render, or shared facts-stage result cannot clear any federal generation,
+  audit, format, artifact, or render row.
+- **RDM-259 Federal synthetic call graph:** one immutable private-clone run must
+  use the prescribed six-role synthetic fixture, exactly one fact activation,
+  exactly one federal draft activation, at most the existing single structural
+  repair, at most four provider calls, and zero retries.
+- **RDM-260 Federal grounding and identity:** the hosted result must preserve
+  exact role, employer or unit, date, location, quantity, education,
+  certification, and license facts; maintain same-role ownership and complete
+  trace coverage; and pass all ten dimensions independently.
+- **RDM-261 Federal missing-field truth:** posting-only requirements remain
+  gaps, and missing hours, salary, supervisor, series, grade, citizenship, and
+  veterans' preference are never asserted as confirmed member facts. Only the
+  existing federal bracket behavior may represent a missing required field.
+- **RDM-262 Federal artifact evidence:** record the federal filename,
+  extension, MIME declaration, and file signature, then open and render the
+  actual artifact in Word or another Word-compatible renderer. HTML-backed
+  `.doc` must never be described as native DOCX; clipping, overlap, hidden
+  content, orphaned role structure, or content loss fails.
+- **RDM-263 Federal stop and scope:** any failed deterministic, audit,
+  transport, artifact, or render row stops release and export with no retry.
+  Record only immutable deploy identity and synthetic content-safe evidence.
+  The matrix changes no federal runtime behavior or production state.
 - **RDM-X1 Validation seam:** run `validation-gate`; this skill's semantic PASS
   does not replace structural validation.
 - **RDM-X2 Deployment seam:** run `deploy-discipline` for app changes and keep
@@ -1676,9 +1801,10 @@ all existing hard input bounds.
 
 ## REGISTRATION
 
-Keep registry item #6 PENDING at version 0.24 until all synthetic application
-cases execute and live-clone evidence, including actual DOCX rendering in a
-Word-compatible renderer, passes. RDM-199 through RDM-207 governance calibration
+Keep registry item #6 PENDING at version 0.25 until all synthetic application
+cases execute and separate civilian and federal live-clone evidence, including
+the applicable actual Word-compatible artifact rendering, passes. RDM-199
+through RDM-207 governance calibration
 executed 9/9 PASS on 2026-08-31; no application, provider, hosted, or Word
 execution is claimed by that result. RDM-208 through RDM-230 require executable
 local transport stubs plus the prescribed repository and artifact gates; those
@@ -1686,10 +1812,12 @@ results do not substitute for live-clone or Word-compatible-renderer evidence.
 RDM-231 through RDM-239 require the closed duty-atom parser, extraction/repair
 fixtures, senior six-role boundary, and prescribed repository/artifact gates;
 they do not substitute for a fresh live-clone end-to-end Resume validation.
-RDM-240 through RDM-249 additionally require exact visible-header capture,
-closed exact-item parsing, deterministic completeness and trace enforcement,
-and genuine-DOCX continuity; local evidence does not substitute for a fresh
-live-clone end-to-end Resume and Word-compatible-renderer validation.
+RDM-240 through RDM-257 additionally require browser-only exact visible-header
+capture, a server transport embargo, browser-local trace/readiness enforcement,
+closed exact-item parsing, deterministic completeness, and genuine-DOCX
+continuity. RDM-258 through RDM-263 require an independent federal hosted
+matrix and truthful Word-compatible artifact evidence. Local evidence does not
+substitute for either fresh live-clone end-to-end validation.
 After successful application execution and live evidence, force-mod proposes
 the smallest evidence-supported revision and Commander rules on promotion to
 CODIFIED 1.0.

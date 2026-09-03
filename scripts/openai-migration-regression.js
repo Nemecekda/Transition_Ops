@@ -26,6 +26,18 @@ const auditDimensions = [
   "length_and_readability", "format_compliance"
 ];
 
+const federalHostedAcceptanceMatrixV025 = Object.freeze({
+  status: "PENDING",
+  mode: "federal",
+  immutablePrivateClone: true,
+  syntheticFixture: Object.freeze({ roleCount: 6, minimumDutyAtoms: 10, educationItemCount: 3, multipleCertifications: true, confirmedDates: true, confirmedLocations: true, roleOwnedNumbers: true, boundedUsajobsAnnouncement: true }),
+  activations: Object.freeze({ facts: 1, federalDraft: 1 }),
+  optionalStructuralRepairsMax: 1,
+  providerCallsMax: 4,
+  retries: 0,
+  rows: Object.freeze(["identity_grounding", "announcement_isolation", "missing_field_truth", "specialized_experience", "artifact_truth_and_render", "terminal_stop"])
+});
+
 function resumeDocxApiFromIndex() {
   const uiSource = fs.readFileSync(path.join(root, "index.html"), "utf8");
   const match = uiSource.match(/\/\/ RESUME_DOCX_START\n([\s\S]*?)\n\/\/ RESUME_DOCX_END/);
@@ -133,9 +145,72 @@ function resumeHeaderCaptureApiFromIndex() {
   vm.runInNewContext(match[1], context, { timeout: 1000 });
   return {
     capture: context.topsResumeExactHeaderFromInputs,
+    assemble: context.topsResumeAssembleBrowserOnlyHeader,
     preserves: context.topsResumeDraftPreservesExactHeader,
     source: match[1]
   };
+}
+
+function browserOnlyHeaderIntegrationGaps(uiSource, headerCaptureApi) {
+  const gaps = [];
+  if (typeof headerCaptureApi.assemble !== "function") gaps.push("define topsResumeAssembleBrowserOnlyHeader in RESUME_HEADER_CAPTURE");
+  if ((uiSource.match(/function topsResumeAssembleBrowserOnlyHeader\(/g) || []).length !== 1) gaps.push("keep exactly one browser-only header assembly helper");
+  if (/resumeAction === "draft" && aiR\.mode !== "federal" \? \{ header: exactResumeHeader/.test(uiSource)) gaps.push("remove header from the serialized civilian draft request");
+  if (/topsResumeDraftPreservesExactHeader/.test(uiSource)) gaps.push("replace the response-header preservation gate with post-release browser assembly");
+  if ((uiSource.match(/var assembledResume = topsResumeAssembleBrowserOnlyHeader\(res, exactResumeHeader\);/g) || []).length !== 1) gaps.push("assemble once after marked handler JSON success and server release");
+  if ((uiSource.match(/exactResumeHeader = null;/g) || []).length !== 1) gaps.push("clear the request-local header snapshot on the terminal assembly path");
+  if ((uiSource.match(/res = assembledResume;/g) || []).length !== 1) gaps.push("route display, preflight, trace, and export through the assembled candidate");
+  if (/details go only to the Transition OPS resume function, are excluded from AI-provider calls, are not stored by the app/.test(uiSource)) gaps.push("replace the obsolete header privacy copy");
+  if (!/These four header fields stay in this browser for this draft and are not included in the resume request\./.test(uiSource)) gaps.push("add truthful browser-only header privacy copy");
+  return gaps;
+}
+
+function assertBrowserOnlyHeaderAssembly(headerCaptureApi) {
+  if (typeof headerCaptureApi.assemble !== "function") return;
+  const refs = {
+    name: { current: { value: "Casey Exact" } },
+    location: { current: { value: "Test City, ZZ" } },
+    email: { current: { value: "casey@example.invalid" } },
+    phone: { current: { value: "(202) 555-0100" } }
+  };
+  const header = headerCaptureApi.capture(refs, {});
+  const serverBody = "SUMMARY\nGrounded synthetic summary.\n\nPROFESSIONAL EXPERIENCE\nSynthetic Role | Synthetic Employer\n\u2022 Completed grounded synthetic work.\n\nCERTIFICATIONS\nSynthetic Certification\n\nEDUCATION\nSynthetic Degree, Synthetic University, 2020";
+  const serverResult = Object.freeze({
+    ok: true,
+    transport: Object.freeze({ outcome: "handler_json" }),
+    d: Object.freeze({
+      bullets: serverBody,
+      scorecard: Object.freeze([{ dimension: "format_compliance", status: "PASS", evidence: "Server candidate body is complete." }]),
+      trace: Object.freeze([{ claim_id: "C1", section: "summary", fact_refs: Object.freeze(["F1"]), posting_refs: Object.freeze([]), transform: "exact", verdict: "supported", claim_text: "Grounded synthetic summary." }]),
+      gaps: Object.freeze([])
+    })
+  });
+  const before = JSON.stringify(serverResult);
+  const assembled = headerCaptureApi.assemble(serverResult, header);
+  assert.equal(assembled.ok, true, "RDM-253 released marked JSON may be assembled in the browser");
+  assert.equal(assembled.d.bullets, "Casey Exact\nTest City, ZZ | casey@example.invalid | (202) 555-0100\n\n" + serverBody, "RDM-253 browser assembly preserves every header and server-body byte exactly once");
+  assert.equal(JSON.stringify(serverResult), before, "RDM-253 browser assembly does not mutate the server result");
+  Object.values(header).forEach((value) => assert.equal(assembled.d.bullets.split(value).length - 1, 1, "RDM-253 each supplied header value appears exactly once"));
+  const headerTraces = assembled.d.trace.filter((item) => item.section === "header");
+  assert.deepEqual(JSON.parse(JSON.stringify(headerTraces)), [
+    { claim_id: "HC1", section: "header", fact_refs: ["H1"], posting_refs: [], transform: "exact", verdict: "supported", claim_text: "Casey Exact" },
+    { claim_id: "HC2", section: "header", fact_refs: ["H2", "H3", "H4"], posting_refs: [], transform: "exact", verdict: "supported", claim_text: "Test City, ZZ | casey@example.invalid | (202) 555-0100" }
+  ], "RDM-254 browser-only traces use the closed identities and fixed field order");
+
+  const missingEssential = headerCaptureApi.assemble(serverResult, Object.freeze({ name: "", location: "Test City, ZZ", email: "", phone: "" }));
+  assert.equal(missingEssential.ok, true, "RDM-255 an honestly missing essential header fact does not alter the grounded server body");
+  assert.equal(missingEssential.d.scorecard.find((item) => item.dimension === "format_compliance").status, "NEEDS MEMBER FACT", "RDM-255 missing essential header facts downgrade Format Compliance");
+  assert.match(missingEssential.d.gaps.join(" "), /Add your name before submitting this resume\.|Add an email address or phone number before submitting this resume\./, "RDM-255 member-safe guidance stays outside the resume");
+  assert.doesNotMatch(missingEssential.d.bullets, /\[Your Name\]|\[email\]|MISSING/, "RDM-255 missing values create no resume placeholder");
+
+  const terminalFailures = [
+    headerCaptureApi.assemble({ ok: true, transport: { outcome: "client_timeout" }, d: { bullets: serverBody } }, header),
+    headerCaptureApi.assemble({ ok: false, transport: { outcome: "handler_json" }, d: { error: "Synthetic failure" } }, header),
+    headerCaptureApi.assemble({ ok: true, transport: { outcome: "handler_json" }, d: { bullets: "Casey Exact\n\n" + serverBody, scorecard: [], trace: [], gaps: [] } }, header),
+    headerCaptureApi.assemble(serverResult, { name: "Casey Exact", location: "Test City, ZZ", email: "casey@example.invalid", phone: "(202) 555-0100" })
+  ];
+  assert.ok(terminalFailures.every((entry) => entry && entry.ok === false && !(entry.d && entry.d.bullets)), "RDM-255 transport, withholding, duplicate, or mutable-snapshot failures release no assembled candidate");
+  assert.doesNotMatch(headerCaptureApi.source, /fetch\(|localStorage|sessionStorage|indexedDB|__safeSet|__trackEvent|sendBeacon|console\./, "RDM-253/RDM-254 header assembly adds no request, persistence, analytics, or logging sink");
 }
 
 function syntheticResumeTransportResponse(options) {
@@ -352,8 +427,8 @@ function assertOpenAIPackageInclusion(source) {
   assert.doesNotMatch(String(source), /node_modules\/@netlify\/dev-utils\/\*\*/);
   assert.doesNotMatch(String(source), /^\s*(?:node_bundler|external_node_modules|ignored_node_modules)\s*=/m);
 
-  const globalFunctions = String(source).match(/(?:^|\n)\[functions\][ \t]*\r?\n([\s\S]*?)(?=\r?\n\[[^\]]+\][ \t]*(?:\r?\n|$)|$)/);
-  if (globalFunctions) assert.doesNotMatch(globalFunctions[1], /^\s*included_files\s*=/m);
+  const globalFunctionLines = tomlTableLines(source, "functions");
+  assert.equal(globalFunctionLines.some((line) => /^\s*included_files\s*=/.test(line)), false);
 }
 
 function assertSkillBridgeAccuracy(navigatorSource, uiSource) {
@@ -361,12 +436,13 @@ function assertSkillBridgeAccuracy(navigatorSource, uiSource) {
   assert.doesNotMatch(combinedSource, /\b(?:last|final)\s+180\s+days\b/i);
   assert.match(
     navigatorSource,
-    /Duration and approval are rank-tiered and service-specific: most members rate 60\u2013120 days; Coast Guard retains up to 180 days; senior grades may require O-6 or General Officer approval\./
+    /Duration and approval are service- and paygrade-specific\. Army, Air Force, Space Force, and Marine Corps standard tiers range from 60\u2013120 days; Coast Guard permits up to 180 days; Navy tiers are 90, 120, or 180 days depending on paygrade and qualifying program\./
   );
   assert.match(
     navigatorSource,
-    /Navy members: confirm current rules with your command career counselor or installation SkillBridge office\./
+    /Senior grades may require O-6 or General Officer approval\. Confirm your exact ceiling and approval authority with your service SkillBridge office before setting a start date\./
   );
+  assert.doesNotMatch(navigatorSource, /most members rate|many members rate|Navy members: confirm current rules/i);
   assert.match(
     uiSource,
     /Final months of service \(60\\u2013180 days, rank-tiered by service\) \\u2014 get civilian experience while still on active duty pay/
@@ -390,9 +466,9 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
   const capturedHeader = headerCaptureApi.capture(visibleHeader, staleHeaderState);
   assert.deepEqual(JSON.parse(JSON.stringify(capturedHeader)), { name: "Casey Exact", location: "Test City, ZZ", email: "casey@example.invalid", phone: "(202) 555-0100" }, "RDM-240 visible header input bytes override stale React state at activation");
   assert.equal(Object.isFrozen(capturedHeader), true, "RDM-240 request-local header snapshot is immutable");
-  assert.equal(headerCaptureApi.preserves("Casey Exact\nTest City, ZZ | casey@example.invalid | (202) 555-0100\n\nSUMMARY\nSynthetic summary.", capturedHeader), true, "RDM-241 exact returned header passes the client release gate");
-  assert.equal(headerCaptureApi.preserves("Casey Exact\nTest City, ZZ | casey@example.invalid | 202-555-0100\n\nSUMMARY\nSynthetic summary.", capturedHeader), false, "RDM-242 reformatted phone is withheld before display or download");
   assert.doesNotMatch(headerCaptureApi.source, /\.trim\(|\.replace\(|localStorage|sessionStorage|indexedDB|__safeSet|__trackEvent|fetch\(/, "RDM-240 capture neither reformats, persists, tracks, nor transports header values");
+  const headerIntegrationGaps = browserOnlyHeaderIntegrationGaps(uiSource, headerCaptureApi);
+  assertBrowserOnlyHeaderAssembly(headerCaptureApi);
 
   assert.equal(modernResumePreflight.headers.get(handlerHeader), "1", "RDM-209 modern Resume validation response carries the fixed handler marker");
   assert.equal((resumeSource.match(/"X-Transition-Ops-Resume-Handler": "1"/g) || []).length, 1, "RDM-209 shared handler marker is defined exactly once");
@@ -453,7 +529,8 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
       }
       return settings.fetchRejected ? Promise.reject() : Promise.resolve(response.value);
     }, settings.transportOptions);
-    const resultPromise = api.request({ action: "facts", experience: "SYNTHETIC_RESUME_INPUT_SENTINEL" });
+    const requestBody = Object.hasOwn(settings, "requestBody") ? settings.requestBody : { action: "facts", experience: "SYNTHETIC_RESUME_INPUT_SENTINEL" };
+    const resultPromise = api.request(requestBody);
     if (settings.timeoutPhase) {
       await timeoutBoundary;
       assert.equal(api.pendingTimerCount(), 1, "RDM-217 " + label + " has one live request deadline");
@@ -500,10 +577,31 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
       assert.equal(api.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC, rawDiagnostic, "RDM-218 " + label + " late completion cannot replace the first diagnostic");
       assert.equal(api.domDiagnosticNode().textContent, terminalDomText, "RDM-228 " + label + " late completion cannot replace the terminal DOM diagnostic");
     }
-    return { api, result, diagnostic, response, requestCount };
+    return { api, result, diagnostic, response, requestCount, sentBodies };
   }
 
-  const handlerSuccess = await runCase("handler JSON success", { response: { status: 200, ok: true, data: { result: "SYNTHETIC_RESPONSE_CONTENT_SENTINEL" } } });
+  const browserOnlyHeaderSentinels = {
+    name: "SYNTHETIC_BROWSER_NAME_SENTINEL",
+    location: "SYNTHETIC_BROWSER_LOCATION_SENTINEL",
+    email: "synthetic-browser-email@example.invalid",
+    phone: "(202) 555-0199"
+  };
+  const headerlessDraftRequest = {
+    action: "draft",
+    mode: "standard",
+    target: "Synthetic Program Analyst",
+    experience: "SYNTHETIC_RESUME_INPUT_SENTINEL with enough bounded detail.",
+    confirmedFacts: "SYNTHETIC_CONFIRMED_FACT_SENTINEL",
+    lengthPreference: "adaptive",
+    lengthInputs: { relevantYears: "18", relevantRoleIndexes: [0, 1, 2, 3, 4, 5] }
+  };
+  const handlerSuccess = await runCase("handler JSON success", {
+    requestBody: headerlessDraftRequest,
+    response: { status: 200, ok: true, data: { result: "SYNTHETIC_RESPONSE_CONTENT_SENTINEL" } }
+  });
+  const serializedHeaderlessDraft = handlerSuccess.sentBodies[0];
+  ["header", "name", "location", "email", "phone"].forEach((key) => assert.equal(Object.hasOwn(JSON.parse(serializedHeaderlessDraft), key), false, "RDM-250 serialized civilian draft omits forbidden property " + key));
+  Object.values(browserOnlyHeaderSentinels).forEach((value) => assert.equal(serializedHeaderlessDraft.includes(value), false, "RDM-250 serialized civilian draft excludes browser-only header sentinel"));
   assert.equal(handlerSuccess.diagnostic.outcome, "handler_json");
   assert.equal(handlerSuccess.diagnostic.handlerResponseCount, 1);
   assert.deepEqual(plainTransportValue(handlerSuccess.result.d), { result: "SYNTHETIC_RESPONSE_CONTENT_SENTINEL" }, "RDM-211 successful JSON payload reaches existing handling unchanged");
@@ -589,6 +687,7 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
   assert.equal(replacementApi.pendingTimerCount(), 0, "RDM-223 no deadline remains after deliberate activations");
   assert.notEqual(replacementApi.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC, firstDiagnostic, "RDM-214 the next request replaces the prior memory-local diagnostic");
   assert.deepEqual(JSON.parse(firstDomNode.textContent), plainTransportValue(replacementApi.window.__TOPS_RESUME_TRANSPORT_DIAGNOSTIC), "RDM-226 the second terminal result replaces the prior DOM diagnostic exactly");
+  return headerIntegrationGaps;
 }
 
 async function run() {
@@ -1678,12 +1777,30 @@ async function run() {
   assert.deepEqual(remainingCoreAtoms, coreAtoms.slice(4));
   assert.deepEqual(summaryAtoms.filter((atom) => remainingCoreAtoms.includes(atom)), []);
 
-  // RDM-173: confirmed exact global fields and request-local header values survive once, outside model adjudication.
+  // RDM-243..RDM-257: exact global fields remain server-owned while the civilian personal header stays browser-only.
   const exactGlobalLedger = coreLedgerWithSkills(coreAtoms.join("; "))
     .replace("EDUCATION (EXACT OR MISSING): MISSING", "EDUCATION (EXACT OR MISSING):\nEDUCATION ITEM 1 (EXACT): M.S., Organizational Leadership, Example State University, 2014\nEDUCATION ITEM 2 (EXACT): B.S., Business Administration, Example Polytechnic Institute, 2008\nEDUCATION ITEM 3 (EXACT): Graduate Certificate, Workforce Analytics, Example School of Management, 2021")
     .replace("CERTIFICATIONS (EXACT OR MISSING): MISSING", "CERTIFICATIONS (EXACT OR MISSING):\nCERTIFICATION ITEM 1 (EXACT): SHRM-SCP\nCERTIFICATION ITEM 2 (EXACT): SPHR\nCERTIFICATION ITEM 3 (EXACT): Lean Six Sigma Green Belt");
   const generatedExactSections = "SUMMARY\nGenerated summary is removed.\n\nCORE SKILLS\nGenerated skills are removed.\n\nPROFESSIONAL EXPERIENCE\nCore Role - Core Unit\n\u2022 Built a transition-planning application for service members.\n\nCERTIFICATIONS\nSHRM-SCP\nInvented Credential\n\nEDUCATION\nMBA, Human Resource Management, Synthetic University, 2008\nInvented Degree";
   const exactHeader = { name: "Alex Exact", location: "Ephraim, WI", email: "alex.exact@example.test", phone: "(202) 555-0100" };
+  const forbiddenPersonalHeaderRequests = [
+    { header: exactHeader },
+    { name: exactHeader.name },
+    { location: exactHeader.location },
+    { email: exactHeader.email },
+    { phone: exactHeader.phone }
+  ];
+  const callsBeforeForbiddenPersonalHeaders = calls.length;
+  const stagesBeforeForbiddenPersonalHeaders = clientStages.length;
+  for (const forbiddenFields of forbiddenPersonalHeaderRequests) {
+    result = await resume.lambdaHandler(post(Object.assign({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger }, forbiddenFields)));
+    assert.equal(result.statusCode, 400, "RDM-251 forbidden personal-header property fails before generation");
+    assert.deepEqual(JSON.parse(result.body), { error: "Personal details must stay in your browser." });
+    Object.keys(forbiddenFields).concat(Object.values(forbiddenFields).filter((value) => typeof value === "string")).forEach((sentinel) => assert.equal(result.body.includes(String(sentinel)), false, "RDM-251 fixed rejection reflects no forbidden property or value"));
+  }
+  assert.equal(calls.length, callsBeforeForbiddenPersonalHeaders, "RDM-251 forbidden personal-header requests make zero provider calls");
+  assert.equal(clientStages.length, stagesBeforeForbiddenPersonalHeaders, "RDM-251 forbidden personal-header requests never construct a guarded provider stage");
+
   let exactHeaderGenerationInput = "";
   let exactHeaderAuditInput = "";
   let exactHeaderAuditCandidate = "";
@@ -1697,7 +1814,7 @@ async function run() {
     exactHeaderAuditInventory = clauseInventoryFromAuditRequest(request);
     return passingAudit(request);
   });
-  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger, header: exactHeader }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger }));
   assert.equal(result.statusCode, 200, result.body);
   Object.values(exactHeader).forEach((value) => {
     assert.doesNotMatch(exactHeaderGenerationInput, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
@@ -1706,33 +1823,17 @@ async function run() {
   assert.doesNotMatch(exactHeaderAuditCandidate, /SUMMARY|CORE SKILLS|CERTIFICATIONS|EDUCATION|Alex Exact|alex\.exact/);
   assert.deepEqual(exactHeaderAuditInventory.filter((claim) => /SHRM-SCP|Synthetic University|Alex Exact/.test(claim.claim_text)), []);
   const exactGlobalBody = JSON.parse(result.body);
-  assert.match(exactGlobalBody.bullets, /^Alex Exact\nEphraim, WI \| alex\.exact@example\.test \| \(202\) 555-0100\n\nSUMMARY/);
+  assert.match(exactGlobalBody.bullets, /^SUMMARY\n/);
   ["SHRM-SCP", "SPHR", "Lean Six Sigma Green Belt", "M.S., Organizational Leadership, Example State University, 2014", "B.S., Business Administration, Example Polytechnic Institute, 2008", "Graduate Certificate, Workforce Analytics, Example School of Management, 2021"].forEach((item) => assert.equal(exactGlobalBody.bullets.split(item).length - 1, 1, item + " appears exactly once"));
   assert.doesNotMatch(exactGlobalBody.bullets, /Invented Credential|Invented Degree|Generated summary|Generated skills|MISSING/);
+  Object.values(exactHeader).forEach((value) => assert.equal(result.body.includes(value), false, "RDM-252 server response excludes browser-only header sentinel"));
   assert.equal(exactGlobalBody.scorecard.find((item) => item.dimension === "format_compliance").status, "PASS");
-  assert.equal(exactGlobalBody.trace.filter((item) => item.section === "header").length, 2);
+  assert.equal(exactGlobalBody.trace.filter((item) => item.section === "header").length, 0, "RDM-252 server trace contains no browser-owned header claim");
   assert.ok(exactGlobalBody.trace.filter((item) => /^(?:certifications|education)$/.test(item.section)).every((item) => item.fact_refs.length === 1 && /^F\d+$/.test(item.fact_refs[0])));
-  assert.ok(exactGlobalBody.trace.filter((item) => item.section === "header").every((item) => item.fact_refs.every((ref) => /^H\d+$/.test(ref))));
+  assert.equal(exactGlobalBody.trace.some((item) => item.fact_refs.some((ref) => /^H\d+$/.test(ref))), false, "RDM-252 server trace contains no browser-owned header fact reference");
   const exactGlobalTraces = exactGlobalBody.trace.filter((item) => /^(?:certifications|education)$/.test(item.section));
   assert.equal(exactGlobalTraces.length, 6, "RDM-246 every confirmed exact global item receives one deterministic trace");
   assert.equal(new Set(exactGlobalTraces.map((item) => item.fact_refs[0])).size, 6, "RDM-246 every exact global item owns an individual catalog fact");
-
-  nextResponse = { status: "completed", output_text: generatedExactSections };
-  auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger, header: { email: "alex.exact@example.test" } }));
-  assert.equal(result.statusCode, 200);
-  let incompleteHeaderBody = JSON.parse(result.body);
-  assert.equal(incompleteHeaderBody.scorecard.find((item) => item.dimension === "format_compliance").status, "NEEDS MEMBER FACT");
-  assert.match(incompleteHeaderBody.gaps.join(" "), /Add your name before submitting this resume\./);
-  assert.doesNotMatch(incompleteHeaderBody.bullets, /\[Your Name\]|MISSING/);
-
-  nextResponse = { status: "completed", output_text: generatedExactSections };
-  auditResponseQueue.push((request) => passingAudit(request));
-  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger, header: { name: "Alex Exact", location: "Ephraim, WI" } }));
-  assert.equal(result.statusCode, 200);
-  incompleteHeaderBody = JSON.parse(result.body);
-  assert.equal(incompleteHeaderBody.scorecard.find((item) => item.dimension === "format_compliance").status, "NEEDS MEMBER FACT");
-  assert.match(incompleteHeaderBody.gaps.join(" "), /Add an email address or phone number before submitting this resume\./);
 
   // RDM-243..RDM-247: exact global items use one closed parser and deterministic release authority outranks a model PASS.
   const repairableExactItemSheet = exactGlobalLedger.replace("EDUCATION ITEM 2 (EXACT):", "EDUCATION ITEM 3 (EXACT):");
@@ -1771,10 +1872,10 @@ async function run() {
   nextResponse = { status: "completed", output_text: duplicateEducationDraft };
   const callsBeforeDeterministicWithhold = calls.length;
   const auditsBeforeDeterministicWithhold = auditResponseQueue.length;
-  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger, header: exactHeader }));
+  result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: exactGlobalLedger, confirmedFacts: exactGlobalLedger }));
   assert.equal(result.statusCode, 502, result.body);
   assert.equal(JSON.parse(result.body).reasonCategory, "quality_gate");
-  assert.match(JSON.parse(result.body).blockers.join(" "), /personal-header value|education item/);
+  assert.match(JSON.parse(result.body).blockers.join(" "), /education item/);
   assert.equal(calls.length - callsBeforeDeterministicWithhold, 1, "RDM-247 deterministic exactness failure stops before audit");
   assert.equal(auditResponseQueue.length, auditsBeforeDeterministicWithhold, "RDM-247 a mocked model PASS cannot override deterministic exactness");
 
@@ -2083,6 +2184,26 @@ async function run() {
     assert.equal(Object.hasOwn(artifactCheck, "lengthAndReadability"), false);
     assert.equal(Object.hasOwn(artifactCheck, "formatCompliance"), false);
   }
+
+  // RDM-258..RDM-263: federal hosted acceptance is independently prepared and remains PENDING.
+  assert.equal(federalHostedAcceptanceMatrixV025.status, "PENDING");
+  assert.equal(federalHostedAcceptanceMatrixV025.mode, "federal");
+  assert.equal(federalHostedAcceptanceMatrixV025.immutablePrivateClone, true);
+  assert.deepEqual(federalHostedAcceptanceMatrixV025.syntheticFixture, {
+    roleCount: 6,
+    minimumDutyAtoms: 10,
+    educationItemCount: 3,
+    multipleCertifications: true,
+    confirmedDates: true,
+    confirmedLocations: true,
+    roleOwnedNumbers: true,
+    boundedUsajobsAnnouncement: true
+  });
+  assert.deepEqual(federalHostedAcceptanceMatrixV025.activations, { facts: 1, federalDraft: 1 });
+  assert.equal(federalHostedAcceptanceMatrixV025.optionalStructuralRepairsMax, 1);
+  assert.equal(federalHostedAcceptanceMatrixV025.providerCallsMax, 4);
+  assert.equal(federalHostedAcceptanceMatrixV025.retries, 0);
+  assert.deepEqual(federalHostedAcceptanceMatrixV025.rows, ["identity_grounding", "announcement_isolation", "missing_field_truth", "specialized_experience", "artifact_truth_and_render", "terminal_stop"]);
 
   // RDM-177: federal generation, audit, and released text remain byte-exact.
   const federalCoreDraft = "CORE COMPETENCIES\nFederal generated capability remains byte-exact.\n\n" + coreRoleDraft;
@@ -2542,6 +2663,7 @@ async function run() {
   const budgetSource = fs.readFileSync(budgetPath, "utf8");
   const budgetContract = require(budgetPath).__testing;
   const uiSource = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const resumeSkillSource = fs.readFileSync(path.join(root, ".claude/skills/resume-drafter-maintenance/SKILL.md"), "utf8");
   const netlifyConfigSource = fs.readFileSync(netlifyConfigPath, "utf8");
   const packageData = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   assertSkillBridgeAccuracy(navigatorSource, uiSource);
@@ -2553,19 +2675,19 @@ async function run() {
     );
   }
   assert.throws(
-    () => assertSkillBridgeAccuracy(navigatorSource.replace("rank-tiered and service-specific", "service-specific"), uiSource),
-    "SkillBridge guard requires the rank-tiered marker"
+    () => assertSkillBridgeAccuracy(navigatorSource.replace("service- and paygrade-specific", "service-specific"), uiSource),
+    "SkillBridge guard requires the service-and-paygrade marker"
   );
   assert.throws(
-    () => assertSkillBridgeAccuracy(navigatorSource.replace("Coast Guard retains up to 180 days; ", ""), uiSource),
+    () => assertSkillBridgeAccuracy(navigatorSource.replace("Coast Guard permits up to 180 days; ", ""), uiSource),
     "SkillBridge guard requires the Coast Guard exception"
   );
   assert.throws(
     () => assertSkillBridgeAccuracy(
-      navigatorSource.replace("Navy members: confirm current rules with your command career counselor or installation SkillBridge office. ", ""),
+      navigatorSource.replace("Navy tiers are 90, 120, or 180 days depending on paygrade and qualifying program. ", ""),
       uiSource
     ),
-    "SkillBridge guard requires the Navy source-gap referral"
+    "SkillBridge guard requires the verified Navy tiers"
   );
   assert.throws(
     () => assertSkillBridgeAccuracy(
@@ -2665,8 +2787,16 @@ async function run() {
   assert.match(resumeSource, /function civilianDeterministicExactContentComplete/);
   const exactItemParserSource = resumeSource.match(/  function globalExactItemRecords\(facts\) \{[\s\S]*?\n  \}\n\n  function factSheetIssues/)[0];
   assert.doesNotMatch(exactItemParserSource, /split\(\/[.!?]/, "RDM-243 exact global items are never guessed from sentence punctuation");
-  assert.match(resumeSource, /function requestLocalCivilianHeader/);
-  assert.match(resumeSource, /function applyCivilianHeaderReadiness/);
+  assert.doesNotMatch(resumeSource, /function requestLocalCivilianHeader|function applyCivilianHeaderReadiness|prependCivilianHeader|deterministicHeaderTrace|headerCompletion|headerSupports/);
+  assert.match(resumeSource, /const FORBIDDEN_PERSONAL_HEADER_KEYS = \["header", "name", "location", "email", "phone"\]/);
+  assert.match(resumeSource, /Personal details must stay in your browser\./);
+  assert.doesNotMatch(resumeSource, /input\.(?:header|name|location|email|phone)\b/);
+  assert.match(resumeSource, /The browser owns the civilian personal header and never sends it to this service\./);
+  assert.match(resumeSource, /the browser owns and locally validates the intentionally omitted personal header/);
+  assert.match(resumeSkillSource, /version: "0\.25"/);
+  assert.match(resumeSkillSource, /status:\s+"?PENDING"?/);
+  assert.match(resumeSkillSource, /## FEDERAL HOSTED ACCEPTANCE MATRIX - VERSION 0\.25/);
+  for (let caseNumber = 250; caseNumber <= 263; caseNumber += 1) assert.match(resumeSkillSource, new RegExp("RDM-" + caseNumber + "\\b"), "v0.25 defines RDM-" + caseNumber);
   assert.match(resumeSource, /function hasPostingOnlySemanticCure/);
   assert.match(resumeSource, /SERVER_OWNED_CORE_SKILLS_SUPPORT/);
   assert.match(civilianPrompt, /Transition-planning application work does not establish candidate support unless candidate support is separately confirmed/);
@@ -2734,9 +2864,7 @@ async function run() {
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
   assert.match(uiSource, /RESUME HEADER \(OPTIONAL FOR DRAFTING\)/);
-  assert.match(uiSource, /resumeAction === "draft" && aiR\.mode !== "federal" \? \{ header: exactResumeHeader/);
   assert.equal((uiSource.match(/topsResumeExactHeaderFromInputs\(/g) || []).length, 2, "RDM-240 exact header capture has one definition and one activation site");
-  assert.match(uiSource, /!topsResumeDraftPreservesExactHeader\(res\.d\.bullets, exactResumeHeader\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:headerName|headerLocation|headerEmail|headerPhone)/);
   assert.match(uiSource, /presetName: "ats_resume_compact"/);
   assert.match(uiSource, /basePreset: "compact_reference_guide"/);
@@ -2805,8 +2933,6 @@ async function run() {
   assert.match(uiSource, /Federal_Resume_Draft\.doc/);
   assert.match(uiSource, /<html xmlns:w=/);
   assert.doesNotMatch(uiSource, /Federal_Resume_Draft\.docx/);
-  assert.match(uiSource, /details go only to the Transition OPS resume function, are excluded from AI-provider calls, are not stored by the app/);
-
   // RDM-199 through RDM-206: v0.19 preserves the call graph while routing every closed stage through the shared guard.
   assert.equal((resumeSource.match(/createOpenAIClient\(/g) || []).length, 3);
   assert.equal((resumeSource.match(/\.responses\.create\(/g) || []).length, 3);
@@ -2820,7 +2946,7 @@ async function run() {
   // RDM-208 through RDM-230: one bounded request, fixed handler marker, closed request-local outcomes, and content-free memory/DOM diagnostics.
   const providerCallsBeforeTransport = calls.length;
   const guardedStagesBeforeTransport = clientStages.length;
-  await runResumeTransportClassifierRegression(uiSource, resumeSource, modernResumePreflight);
+  const headerIntegrationGaps = await runResumeTransportClassifierRegression(uiSource, resumeSource, modernResumePreflight);
   assert.equal(calls.length, providerCallsBeforeTransport, "RDM-215 transport stubs make zero provider calls");
   assert.equal(clientStages.length, guardedStagesBeforeTransport, "RDM-215 transport stubs enter no model or budget-guard stage");
   assert.equal((uiSource.match(/Still warming up \\u2014 give it 10 seconds and tap GENERATE once more\./g) || []).length, 1, "RDM-211 existing member-safe transport copy remains byte-exact and single");
@@ -2829,7 +2955,8 @@ async function run() {
   assert.equal((resumeSource.match(/AUDIT_MAX_OUTPUT_TOKENS = 4000/g) || []).length, 1, "RDM-216 audit cap remains unchanged");
 
   await runRenderRegression();
-  console.log("PASS: synthetic RDM-1..RDM-249 integration paths; all prior grounding, DOCX, federal, adaptive-length, guarded-stage, v0.22 Resume transport, v0.23 atom-boundary, and v0.24 exact-header/global-item fixtures verified locally");
+  assert.deepEqual(headerIntegrationGaps, [], "RDM-250..RDM-257 PENDING parent index.html browser-only header integration: " + headerIntegrationGaps.join("; "));
+  console.log("PASS: synthetic RDM-1..RDM-263 integration paths; all prior grounding, DOCX, federal, adaptive-length, guarded-stage, transport, browser-only civilian header, and federal hosted-preparation fixtures verified locally");
 }
 
 run().catch((error) => {
