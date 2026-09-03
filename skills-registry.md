@@ -9,7 +9,7 @@ written) · DEPRECATED (superseded — note by what)
 
 | # | Skill | Owner | Status | Version | Validated | Location |
 |---|-------|-------|--------|---------|-----------|----------|
-| 1 | validation-gate | s3-devops | CODIFIED | 1.11 | 2026-09-03 | .claude/skills/validation-gate/ (canonical); .agents/skills/validation-gate/ (Codex project mirror) |
+| 1 | validation-gate | s3-devops | CODIFIED | 1.12 | 2026-09-03 | .claude/skills/validation-gate/ (canonical); .agents/skills/validation-gate/ (Codex project mirror) |
 | 2 | deploy-discipline | s3-devops | CODIFIED | 1.8 | 2026-09-03 | .claude/skills/deploy-discipline/ (Claude copy); .agents/skills/deploy-discipline/ (Codex copy; environment wording intentionally differs); 1.3 BURNED - see change log |
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
@@ -71,6 +71,15 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-03 - **#1 `validation-gate` 1.11 -> 1.12 is CODIFIED.** The
+  public build now treats a preexisting real-directory `dist` as disposable
+  cached output only after a new exact 22-file tree validates, while root
+  symlinks, dangling root symlinks, and non-directory roots still fail closed.
+  VG-112-1 through VG-112-8 passed 8/8 across fresh, cached-stale,
+  warm-idempotent, nested-symlink sentinel, root-type, failed-assembly,
+  temporary-cleanup, and exact-inventory cases. The Netlify `dist/netlify.toml`
+  failure was reproduced without a hosted retry; canonical and mirror are
+  byte-identical. Lane: COMMANDER. Owner: s3-devops.
 - 2026-09-03 - **#1 `validation-gate` 1.10 -> 1.11 is CODIFIED.** Every
   tracked or intended new `.json` artifact must now pass `JSON.parse`.
   Malformed, truncated, and adversarial payload fixtures must use a non-JSON

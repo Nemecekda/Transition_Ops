@@ -268,7 +268,7 @@ async function runExecutableWorkerChecks() {
 function runPublicBuildChecks(publicBuilder) {
   check(
     JSON.stringify(publicBuilder.PUBLIC_FILES) === JSON.stringify(EXPECTED_PUBLIC_FILES),
-    "public builder uses the exact 22-file allowlist"
+    "VG-112-1 public builder retains the exact 22-file allowlist"
   );
 
   const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tops-public-build-fixture-"));
@@ -298,12 +298,122 @@ function runPublicBuildChecks(publicBuilder) {
       "public builder rejects the excluded Navigator pilot"
     );
 
-    const extraOutput = path.join(fixtureRoot, "output");
-    fs.mkdirSync(extraOutput);
-    fs.writeFileSync(path.join(extraOutput, "extra.txt"), "extra\n");
+    const fixtureEntries = ["regular.txt"];
+    const freshOutput = path.join(fixtureRoot, "fresh-dist");
+    const freshInventory = publicBuilder.buildExactOutput(
+      fixtureRoot,
+      freshOutput,
+      fixtureEntries
+    );
+    check(
+      JSON.stringify(freshInventory) === JSON.stringify({ files: fixtureEntries, directories: [] }),
+      "VG-112-2 fresh absent output becomes one exact validated tree"
+    );
+
+    const externalTarget = path.join(fixtureRoot, "external-target");
+    const externalSentinel = path.join(externalTarget, "sentinel.txt");
+    fs.mkdirSync(externalTarget);
+    fs.writeFileSync(externalSentinel, "external sentinel\n");
+    const staleOutput = path.join(fixtureRoot, "stale-dist");
+    fs.mkdirSync(path.join(staleOutput, "nested"), { recursive: true });
+    fs.writeFileSync(path.join(staleOutput, "netlify.toml"), "stale publish artifact\n");
+    fs.writeFileSync(path.join(staleOutput, "nested", "extra.txt"), "stale nested artifact\n");
+    fs.symlinkSync(externalTarget, path.join(staleOutput, "nested", "external-link"));
+    const staleInventory = publicBuilder.buildExactOutput(
+      fixtureRoot,
+      staleOutput,
+      fixtureEntries
+    );
+    check(
+      JSON.stringify(staleInventory) === JSON.stringify({ files: fixtureEntries, directories: [] }) &&
+        !fs.existsSync(path.join(staleOutput, "netlify.toml")) &&
+        !fs.existsSync(path.join(staleOutput, "nested")),
+      "VG-112-3 cached netlify.toml and nested stale entries are replaced"
+    );
+    check(
+      fs.readFileSync(externalSentinel, "utf8") === "external sentinel\n",
+      "VG-112-4 nested stale symlink removal does not touch its external sentinel"
+    );
+
+    const warmInventory = publicBuilder.buildExactOutput(
+      fixtureRoot,
+      staleOutput,
+      fixtureEntries
+    );
+    check(
+      JSON.stringify(warmInventory) === JSON.stringify(staleInventory),
+      "VG-112-5 warm idempotent rebuild preserves the exact inventory"
+    );
+    check(
+      fs.readdirSync(fixtureRoot).filter(function(name) {
+        return /^\.(?:fresh|stale)-dist-build-/.test(name);
+      }).length === 0,
+      "VG-112-8 successful rebuild removes its temporary tree"
+    );
+
+    const rootTarget = path.join(fixtureRoot, "root-target");
+    const rootSentinel = path.join(rootTarget, "sentinel.txt");
+    fs.mkdirSync(rootTarget);
+    fs.writeFileSync(rootSentinel, "root sentinel\n");
+    const rootSymlink = path.join(fixtureRoot, "root-symlink-dist");
+    fs.symlinkSync(rootTarget, rootSymlink);
     checkThrows(
-      function() { publicBuilder.assertExistingOutputSafe(extraOutput, ["regular.txt"]); },
-      "public builder rejects an extra output entry before replacement"
+      function() { publicBuilder.buildExactOutput(fixtureRoot, rootSymlink, fixtureEntries); },
+      "VG-112-6 public builder rejects a root output symlink"
+    );
+    check(
+      fs.lstatSync(rootSymlink).isSymbolicLink() &&
+        fs.readFileSync(rootSentinel, "utf8") === "root sentinel\n",
+      "VG-112-6 root output symlink rejection leaves its target untouched"
+    );
+
+    const danglingSymlink = path.join(fixtureRoot, "dangling-symlink-dist");
+    fs.symlinkSync(path.join(fixtureRoot, "absent-target"), danglingSymlink);
+    checkThrows(
+      function() { publicBuilder.buildExactOutput(fixtureRoot, danglingSymlink, fixtureEntries); },
+      "VG-112-6 public builder rejects a dangling root output symlink"
+    );
+    check(
+      fs.lstatSync(danglingSymlink).isSymbolicLink(),
+      "VG-112-6 dangling root output symlink remains untouched"
+    );
+
+    const nonDirectoryOutput = path.join(fixtureRoot, "file-dist");
+    fs.writeFileSync(nonDirectoryOutput, "not a directory\n");
+    checkThrows(
+      function() { publicBuilder.buildExactOutput(fixtureRoot, nonDirectoryOutput, fixtureEntries); },
+      "VG-112-6 public builder rejects a non-directory output root"
+    );
+    check(
+      fs.readFileSync(nonDirectoryOutput, "utf8") === "not a directory\n",
+      "VG-112-6 non-directory output rejection leaves the file untouched"
+    );
+
+    const failedOutput = path.join(fixtureRoot, "failed-dist");
+    const priorOutput = path.join(failedOutput, "prior.txt");
+    fs.mkdirSync(failedOutput);
+    fs.writeFileSync(priorOutput, "prior output\n");
+    const originalCopyFileSync = fs.copyFileSync;
+    try {
+      fs.copyFileSync = function() {
+        throw new Error("synthetic assembly failure");
+      };
+      checkThrows(
+        function() { publicBuilder.buildExactOutput(fixtureRoot, failedOutput, fixtureEntries); },
+        "VG-112-7 synthetic assembly failure fails closed"
+      );
+    } finally {
+      fs.copyFileSync = originalCopyFileSync;
+    }
+    check(
+      fs.readFileSync(priorOutput, "utf8") === "prior output\n",
+      "VG-112-7 failed assembly preserves the prior output"
+    );
+    check(
+      fs.readdirSync(fixtureRoot).filter(function(name) {
+        return name.startsWith(".failed-dist-build-");
+      }).length === 0,
+      "VG-112-8 failed assembly removes its temporary tree"
     );
   } finally {
     fs.rmSync(fixtureRoot, { recursive: true });

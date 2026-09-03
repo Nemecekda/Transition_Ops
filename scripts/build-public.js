@@ -191,18 +191,33 @@ function assertSameList(actual, expected, label) {
   }
 }
 
-function assertExistingOutputSafe(outputRoot, entries) {
-  if (!fs.existsSync(outputRoot)) return;
-  const inventory = inventoryTree(outputRoot);
-  const allowedFiles = new Set(entries);
-  const allowedDirectories = new Set(expectedDirectories(entries));
+function lstatOrNull(targetPath) {
+  try {
+    return fs.lstatSync(targetPath);
+  } catch (error) {
+    if (error && error.code === "ENOENT") return null;
+    throw error;
+  }
+}
 
-  inventory.files.forEach(function(relativePath) {
-    if (!allowedFiles.has(relativePath)) fail("Extra publish output is prohibited: " + relativePath);
-  });
-  inventory.directories.forEach(function(relativePath) {
-    if (!allowedDirectories.has(relativePath)) fail("Extra publish directory is prohibited: " + relativePath);
-  });
+function assertReplaceableOutputRoot(outputRoot) {
+  const stat = lstatOrNull(outputRoot);
+  if (stat === null) return false;
+  if (stat.isSymbolicLink()) {
+    fail("Publish output root symlink is prohibited");
+  }
+  if (!stat.isDirectory()) {
+    fail("Publish output root must be a real directory");
+  }
+  return true;
+}
+
+function removeReplaceableOutputRoot(outputRoot) {
+  if (!assertReplaceableOutputRoot(outputRoot)) return;
+  fs.rmSync(outputRoot, { recursive: true });
+  if (lstatOrNull(outputRoot) !== null) {
+    fail("Publish output root removal failed");
+  }
 }
 
 function assertOutputExact(outputRoot, entries) {
@@ -215,30 +230,39 @@ function assertOutputExact(outputRoot, entries) {
   return inventory;
 }
 
-function buildPublic() {
-  validateSources(ROOT, PUBLIC_FILES);
-  assertExistingOutputSafe(DIST, PUBLIC_FILES);
+function buildExactOutput(sourceRoot, outputRoot, entries) {
+  validateSources(sourceRoot, entries);
+  assertReplaceableOutputRoot(outputRoot);
 
-  let temporaryRoot = fs.mkdtempSync(path.join(ROOT, ".dist-build-"));
+  const temporaryPrefix = path.join(
+    path.dirname(outputRoot),
+    "." + path.basename(outputRoot) + "-build-"
+  );
+  let temporaryRoot = fs.mkdtempSync(temporaryPrefix);
   try {
-    PUBLIC_FILES.forEach(function(relativePath) {
-      const source = path.join(ROOT, ...relativePath.split("/"));
+    entries.forEach(function(relativePath) {
+      const source = path.join(sourceRoot, ...relativePath.split("/"));
       const destination = path.join(temporaryRoot, ...relativePath.split("/"));
       fs.mkdirSync(path.dirname(destination), { recursive: true });
       fs.copyFileSync(source, destination);
     });
 
-    assertOutputExact(temporaryRoot, PUBLIC_FILES);
-    if (fs.existsSync(DIST)) fs.rmSync(DIST, { recursive: true });
-    fs.renameSync(temporaryRoot, DIST);
+    assertOutputExact(temporaryRoot, entries);
+    removeReplaceableOutputRoot(outputRoot);
+    fs.renameSync(temporaryRoot, outputRoot);
     temporaryRoot = null;
-    assertOutputExact(DIST, PUBLIC_FILES);
-    console.log("PUBLIC BUILD PASS: " + PUBLIC_FILES.length + " files -> dist");
+    return assertOutputExact(outputRoot, entries);
   } finally {
     if (temporaryRoot && fs.existsSync(temporaryRoot)) {
       fs.rmSync(temporaryRoot, { recursive: true });
     }
   }
+}
+
+function buildPublic() {
+  const inventory = buildExactOutput(ROOT, DIST, PUBLIC_FILES);
+  console.log("PUBLIC BUILD PASS: " + PUBLIC_FILES.length + " files -> dist");
+  return inventory;
 }
 
 module.exports = {
@@ -247,8 +271,9 @@ module.exports = {
   DIST,
   PUBLIC_FILES,
   ROOT,
-  assertExistingOutputSafe,
+  assertReplaceableOutputRoot,
   assertOutputExact,
+  buildExactOutput,
   buildPublic,
   inventoryTree,
   validateManifest,

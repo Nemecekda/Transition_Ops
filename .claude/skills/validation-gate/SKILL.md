@@ -2,7 +2,7 @@
 name: validation-gate
 description: Validation battle drill for Transition OPS. EDIT mode runs pre-commit on any code change and before any PR, and governs how edits are applied - discrete edits, per-edit counts, reviewed scripts. INTEGRITY mode runs against a clean tree for structural and encoding audits. Owner - s3-devops.
 metadata:
-  version: "1.11"
+  version: "1.12"
   status: CODIFIED
   owner: s3-devops
   validated: "2026-09-03"
@@ -286,6 +286,30 @@ under another name.
     cannot report manual assistive-technology or hosted release acceptance;
     those remain owned by `accessibility-release-validation`.
 
+4B. **Deterministic public publish boundary.** Fires when the diff touches
+    `scripts/build-public.js`, its executable regression in
+    `scripts/sw-privacy-regression.js`, the `build:public` package command, or
+    Netlify's build/publish boundary. Run this command separately and unpiped:
+
+       npm run build:public
+
+    The builder must validate the source allowlist before assembly and publish
+    only its exact temporary-tree inventory. An absent `dist` is valid. A
+    preexisting real-directory `dist`, including Netlify-cached stale files or
+    nested directories, is disposable build output and must be replaced only
+    after the new tree validates. A root symlink, dangling root symlink, or
+    non-directory root is a hard failure and must remain untouched. Recursive
+    stale-tree removal must not follow nested symlinks. Any failure before
+    promotion must preserve the prior output and remove its temporary tree;
+    successful promotion must also leave no temporary tree and must pass the
+    exact final-output inventory check.
+
+    `npm run test:sw-privacy` must execute fresh, stale-cache, warm-idempotent,
+    root-type, nested-symlink sentinel, failed-assembly, temporary-cleanup, and
+    exact-inventory cases. A hosted retry without cache is an operational
+    workaround, not deterministic local evidence and not a substitute for this
+    step.
+
 4N. **Netlify AI package boundary - real artifact.** Fires when the diff touches
     `netlify.toml`, `package.json`, `package-lock.json`, either OpenAI entry
     function, or the shared OpenAI client. Run after 4P and before step 5.
@@ -480,3 +504,30 @@ references fail closed without an exception path. Canonical and mirror are
 byte-identical. No function, model, provider, network, hosted, deploy, merge,
 or production action was used. Version 1.11 is CODIFIED by Commander approval
 dated 2026-09-03.
+
+## VERSION 1.12 GOVERNANCE CALIBRATION
+
+- **VG-112-1:** VG-111-1 through VG-111-5 and all earlier controls remain
+  unchanged and PASS; the public allowlist remains exactly 22 files. PASS.
+- **VG-112-2:** an absent output root receives one freshly assembled and exactly
+  validated public tree. PASS.
+- **VG-112-3:** a real-directory output containing cached `netlify.toml`, nested
+  stale files, and stale directories is replaced by the exact public tree only
+  after the temporary tree validates. PASS.
+- **VG-112-4:** removing a stale tree containing a nested symlink leaves the
+  external sentinel and target bytes untouched. PASS.
+- **VG-112-5:** a warm rebuild over an already exact output is idempotent and
+  preserves the exact inventory. PASS.
+- **VG-112-6:** root symlinks, dangling root symlinks, and non-directory roots
+  fail closed and remain untouched. PASS.
+- **VG-112-7:** a synthetic assembly failure preserves the prior output and
+  promotes no partial tree. PASS.
+- **VG-112-8:** successful and failed assembly paths remove temporary trees,
+  while the real public build ends with the exact final inventory. PASS.
+
+Governance calibration executed 8/8 PASS on 2026-09-03. The hosted failure was
+reproduced locally by pre-seeding `dist/netlify.toml`; a clean tree passed and
+the deterministic replacement fixture closed the cache-history dependency.
+Canonical and mirror are byte-identical. No cache clear, hosted retry, function,
+model, provider, network, deploy, merge, cache bump, or production action was
+used. Version 1.12 is CODIFIED by Commander approval dated 2026-09-03.
