@@ -9,18 +9,23 @@ written) · DEPRECATED (superseded — note by what)
 
 | # | Skill | Owner | Status | Version | Validated | Location |
 |---|-------|-------|--------|---------|-----------|----------|
-| 1 | validation-gate | s3-devops | CODIFIED | 1.4 | 2026-08-05 | .claude/skills/validation-gate/ |
-| 2 | deploy-discipline | s3-devops | CODIFIED | 1.4 | 2026-08-03 | .claude/skills/deploy-discipline/ (1.3 BURNED - see change log) |
+| 1 | validation-gate | s3-devops | CODIFIED | 1.12 | 2026-09-03 | .claude/skills/validation-gate/ (canonical); .agents/skills/validation-gate/ (Codex project mirror) |
+| 2 | deploy-discipline | s3-devops | CODIFIED | 1.9 | 2026-09-03 | .claude/skills/deploy-discipline/ (Claude copy); .agents/skills/deploy-discipline/ (Codex copy; environment wording intentionally differs); 1.3 BURNED - see change log |
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
-| 6 | resume-drafter-maintenance | force-mod | PENDING | — | — | prompt QA + integrity rules for the in-app Resume Drafter |
+| 6 | resume-drafter-maintenance | force-mod | PENDING | 0.25 | — | .claude/skills/resume-drafter-maintenance/ |
 | 7 | push-ops | s3-watch-officer | PENDING | — | — | OneSignal segments, test push procedure, delivery checks |
 | 8 | outreach-correspondence | pao-content | PENDING | — | — | partner/employer email patterns (Legion, Michels-style prep) |
 | 9 | proposal-onepager | pao-content | PENDING | — | — | capability statement + one-pager formats |
 | 10 | brand-assets | pao-content | PENDING | — | — | Pillow pipeline, Poppins fonts, draw_letterspaced helper |
 | 11 | push-worthy | pao-content | PENDING | — | — | **CRITERIA** for recommending a user push: gates G1–G5, criteria P1–P4, disqualifiers X1–X5, governors U1–U5. Doctrine drafted at `intel/scheduled-ops-design.md` §F, awaiting Commander ruling. PENDING until regression set PW-1…PW-9 + PW-X1…PW-X4 executes |
 | 12 | member-impact | s2-intel | PENDING | — | 2026-08-06 (MI-1…MI-9 executed 9/9) | .claude/skills/member-impact/ |
+| 13 | member-return-benchmarking | force-mod | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/member-return-benchmarking/ (canonical); .agents/skills/member-return-benchmarking/ (Codex project mirror) |
+| 14 | erg-client-plugin-governance | force-mod | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/erg-client-plugin-governance/ (canonical); .agents/skills/erg-client-plugin-governance/ (Codex project mirror) |
+| 15 | privacy-truth-to-implementation | force-mod | CODIFIED | 0.2 | 2026-08-31 | .claude/skills/privacy-truth-to-implementation/ (canonical); .agents/skills/privacy-truth-to-implementation/ (Codex project mirror) |
+| 16 | runtime-ai-spend-governance | force-mod | CODIFIED | 1.3 | 2026-09-01 | .claude/skills/runtime-ai-spend-governance/ (canonical); .agents/skills/runtime-ai-spend-governance/ (Codex project mirror) |
+| 17 | accessibility-release-validation | s3-devops | CODIFIED | 1.0 | 2026-08-31 | .claude/skills/accessibility-release-validation/ (canonical); .agents/skills/accessibility-release-validation/ (Codex project mirror) |
 
 **Scope fence between #3 and #12 — read before extending either.**
 `policy-verification` (#3) owns whether a claim is **TRUE**. Its OUTPUT field
@@ -52,7 +57,752 @@ agent. **The decision about what interrupts every user's phone must not end up
 owned by the cheapest agent on the roster.** Same seam pattern as
 validation-gate / deploy-discipline 1.1(d).
 
+**Fourth fence - #6 and #16.** `resume-drafter-maintenance` owns the Resume
+call graph, grounding, stage meaning, exact caps, partial-artifact withholding,
+and output quality. `runtime-ai-spend-governance` owns shared site-wide admission,
+aggregate accounting, pricing, and request-option enforcement. **Neither skill's
+PASS clears the other**, and Navigator remains independently tested even though
+it shares the aggregate ledger.
+
+**Fifth fence - #1, #17, and #2.** `validation-gate` owns repository commands
+and local evidence. `accessibility-release-validation` owns the WCAG 2.2 AA
+project verdict and required manual assistive-technology matrix.
+`deploy-discipline` owns artifact identity, preview, rollback, handoff, and
+production. **Local automation is not manual AT or hosted release acceptance.**
+
 ## CHANGE LOG
+- 2026-09-03 - **#2 `deploy-discipline` 1.8 -> 1.9 is CODIFIED.** The
+  build-owned public `dist` contract remains exactly 22 files. A Git-backed
+  Netlify hosted manifest is now a closed union of those 22 collision-free
+  path/size/SHA-1 runtime records plus exactly one `/netlify.toml` control-plane
+  record matching root config at the frozen candidate commit; the config must
+  remain absent from local `dist`. Missing, duplicate, mismatched, ambiguous,
+  locally published, wrong-commit, and additional records fail closed.
+  DD-19-1 through DD-19-6 passed 6/6 on deterministic local fixtures without
+  weakening DD-18 or validation-gate VG-112. Canonical and Codex copies
+  preserve only the six sanctioned environment-specific line substitutions.
+  No application, build or regression script, function, model, provider,
+  settings, hosted, commit, push, deploy, merge, production, or release action
+  was used or certified. Lane: COMMANDER. Owner: s3-devops.
+- 2026-09-03 - **#1 `validation-gate` 1.11 -> 1.12 is CODIFIED.** The
+  public build now treats a preexisting real-directory `dist` as disposable
+  cached output only after a new exact 22-file tree validates, while root
+  symlinks, dangling root symlinks, and non-directory roots still fail closed.
+  VG-112-1 through VG-112-8 passed 8/8 across fresh, cached-stale,
+  warm-idempotent, nested-symlink sentinel, root-type, failed-assembly,
+  temporary-cleanup, and exact-inventory cases. The Netlify `dist/netlify.toml`
+  failure was reproduced without a hosted retry; canonical and mirror are
+  byte-identical. Lane: COMMANDER. Owner: s3-devops.
+- 2026-09-03 - **#1 `validation-gate` 1.10 -> 1.11 is CODIFIED.** Every
+  tracked or intended new `.json` artifact must now pass `JSON.parse`.
+  Malformed, truncated, and adversarial payload fixtures must use a non-JSON
+  extension, with no path allowlist, directory exemption, or invalid-JSON
+  exception. VG-111-1 through VG-111-5 passed 5/5: all 15 candidate JSON
+  artifacts parsed, both renamed renderer fixtures remained byte-identical,
+  all three consumer references moved to `.txt`, the renderer suite passed,
+  and invalid-JSON plus stale-reference negative fixtures failed closed.
+  Canonical and mirror are byte-identical. Lane: COMMANDER. Owner: s3-devops.
+- 2026-09-03 - **#2 `deploy-discipline` 1.7 -> 1.8 is CODIFIED.** Cache
+  consumption is now origin-aware: same-origin integers cannot decrease or
+  identify different worker bytes, while an immutable hosted clone candidate
+  may preserve its validated integer across origins with a documented
+  production gap and a fresh two-origin handoff recheck. The current ruling
+  preserves `transition-ops-v150` over production `v129` and clone `v149`;
+  downward renumbering to `v130` is prohibited. DD-18-1 through DD-18-4 passed
+  4/4 without weakening v1.7 production, rollback, privacy, validation, or
+  release controls. Canonical and Codex copies preserve only the six sanctioned
+  environment-specific line substitutions. Lane: COMMANDER. Owner: s3-devops.
+- 2026-09-03 - **#1 `validation-gate` 1.9 -> 1.10 is CODIFIED.** The 4N
+  command now validates and excludes the global `functions.directory` scalar
+  before passing only per-function object tables to Netlify normalization.
+  VG-110-1 through VG-110-4 passed 4/4, including 16 malformed mixed-shape
+  fixtures and the complete actual-artifact package. Commander promotion was
+  approved on 2026-09-03. Lane: COMMANDER. Owner: s3-devops.
+- 2026-09-02 - **#6 `resume-drafter-maintenance` 0.24 -> 0.25 remains
+  PENDING.** Civilian name, location, email, and phone are now governed as an
+  immutable browser-only header snapshot: the serialized request and server
+  reject boundary exclude those fields, the server candidate remains
+  headerless, and only a successfully released marked-JSON draft may receive
+  byte-exact browser assembly, deterministic local HC1/HC2 traces, readiness
+  guidance, preflight, and DOCX export. RDM-250 through RDM-257 fail closed on
+  transport failure, withholding, mutation, omission, duplication, or stale
+  mutable input without adding calls, retries, storage, logging, or tracking.
+  RDM-258 through RDM-263 establish a separate federal hosted-acceptance matrix;
+  civilian evidence cannot clear it. Local regression and genuine-DOCX evidence
+  do not substitute for fresh civilian and federal immutable-clone validations.
+  Lane: COMMANDER. Owner: force-mod.
+- 2026-09-02 - **#1 `validation-gate` 1.8 -> 1.9 remains CODIFIED.** 4N now
+  resolves only the installed Netlify executable from `PATH`, follows its real
+  path to the nearest valid `netlify-cli` manifest, and fails closed without a
+  download or fallback. VG-19-1 through VG-19-8 preserve the artifact, API,
+  dependency, and `jobs` checks.
+- 2026-09-02 - **#2 `deploy-discipline` 1.6 -> 1.7 remains CODIFIED.** Atomic
+  required local precache is separated from optional reviewed remote runtime
+  assets; navigation uses a closed allowlist with zero unknown writes; cache
+  proof accepts only declaration-level `1-/1+` or first-migration `0-/1+`;
+  DD-17 adds a candidate-bound, hash-recorded, temporary-worktree-tested,
+  privacy-safe rollback artifact with a forward bump and no release authority.
+- 2026-09-02 - **#6 `resume-drafter-maintenance` 0.23 -> 0.24 remains
+  PENDING.** The clean hosted v0.23 senior-resume test exposed two release-gate
+  failures after a ten-of-ten model scorecard: the visible manually entered
+  phone `(202) 555-0100` returned as `202-555-0100`, and two of three confirmed
+  education items were omitted. Force-mod classified coverage as PARTIAL.
+  Version 0.24 snapshots all four visible civilian header fields exactly at
+  activation, uses that immutable request-local snapshot for transport and
+  client release verification, and withholds display/download on a changed
+  canonical header. Education and Certifications now use a closed numbered
+  exact-item grammar with one backward-compatible non-mixed inline form; one
+  shared parser owns validation, individual catalog facts, deterministic
+  insertion, and trace. Known omissions, mutations, duplicates, malformed
+  item structures, or missing deterministic support override any model PASS
+  and stop before audit when already known. RDM-240 through RDM-249 cover exact
+  visible-input capture, parenthesized phone preservation, three-item Education,
+  Certifications, repair/fail-closed behavior, item-level traces,
+  deterministic authority, genuine-DOCX continuity, unchanged controls, and
+  six-file scope. Focused synthetic integration, browser preflight, and actual
+  LibreOffice DOCX render passed locally. Models, call graph, caps, four-call
+  maximum, zero retries, USD 4 guard, privacy, federal behavior, adaptive
+  length, and export contracts remain unchanged. Maximum incremental API
+  exposure is $0. Fresh hosted end-to-end and Word-compatible-renderer evidence
+  remains required before promotion. No hosted function/model invocation,
+  provider/settings change, commit, push, deployment, main merge, or production
+  action occurred. Lane: COMMANDER. Owner: force-mod.
+- 2026-09-02 - **#6 `resume-drafter-maintenance` 0.22 -> 0.23 remains
+  PENDING.** Hosted synthetic senior-resume evidence exposed PARTIAL v0.22
+  coverage: adaptive planning correctly required `A >= 10`, but fact extraction
+  could collapse several duties or outcomes into one line while `A` counted only
+  semicolon/newline-delimited text, producing the observed `Y = 18`, `R = 6`,
+  `A = 6` one-page recommendation from 24 distinct supplied facts. Force-mod
+  added a closed per-role `DUTY ATOM n (EXACT)` grammar with contiguous numbering,
+  opaque byte-preserved payloads, one shared parser for structure, catalog,
+  eligibility, and `A`, and no punctuation-based sentence guessing. A one-role
+  inline payload with no other structural issue remains byte-exact and fails
+  closed with member-safe guidance and no repair call; it is never normalized
+  into evidence. Multi-role or continuation collapse can consume only the
+  existing single repair; an unresolved repair or malformed direct submission
+  blocks before catalog construction, planning, drafting, or a further provider
+  call. RDM-231 through RDM-239 cover grammar,
+  order, byte opacity, role ownership, the six-role `Y = 18`/`A = 24` two-page
+  boundary, repair count, fail-closed behavior, unchanged controls, validation,
+  and four-file scope. The focused synthetic OpenAI migration suite, browser
+  preflight, and actual LibreOffice DOCX render passed locally. Models, stage
+  order, 3500/3500/2200/1900/4000 caps, four-call maximum, zero retries, USD 4
+  guard, privacy, public failures, federal behavior, grounding, audit,
+  pagination, export, and DOCX equivalence remain unchanged. Maximum incremental
+  API exposure is $0. Live-clone end-to-end validation remains required before
+  promotion. No hosted function or model invocation, provider/settings change,
+  commit, push, deployment, merge, or production change occurred. Lane:
+  COMMANDER. Owner: force-mod.
+- 2026-09-02 - **#6 `resume-drafter-maintenance` 0.21 -> 0.22 remains
+  PENDING.** The existing content-free six-field Resume transport diagnostic is
+  now mirrored into one fixed-ID page-memory DOM node that is hidden,
+  `aria-hidden`, and inert. The node is reused across deliberate requests,
+  cleared synchronously before each request, left empty while work is pending,
+  and populated only by the first terminal result. Its JSON payload contains
+  exactly `path`, `httpStatus`, `elapsedMs`, `requestAttemptCount`,
+  `handlerResponseCount`, and `outcome`, with values identical to the frozen
+  memory-local diagnostic. Deterministic fixtures cover exact shape, singleton
+  reuse, pre-request clearing, pending-state emptiness, terminal publication,
+  late-completion immutability, and absence from persistence, analytics, later
+  requests, member-facing copy, or downloads. The 35,000-ms deadline, one
+  activation/one request, zero retries, response contracts, member-safe copy,
+  models, caps, budget guard, grounding, audit, and exports remain unchanged.
+  The active PWA cache advances from v147 to v148. This local evidence does not
+  clear live-clone acceptance or promote the skill. No function or model
+  invocation, provider/settings change, commit, push, deployment, merge, or
+  production change occurred. Lane: COMMANDER. Owner: force-mod.
+- 2026-09-02 - **#6 `resume-drafter-maintenance` 0.20 -> 0.21 remains
+  PENDING.** The single Resume request now has one request-wide 35,000-ms
+  `AbortController` deadline covering fetch, handler-marker inspection, and
+  JSON parsing. First-terminal-result wins, every armed timer is cleared once,
+  and late transport completion cannot replace the frozen six-field
+  memory-local diagnostic. `client_timeout` distinguishes pre-header count 0
+  from post-marker count 1 without exposing content. After capability preflight
+  succeeds, one activation still makes exactly one request; missing or invalid
+  `AbortController` fails closed before fetch with zero requests and
+  `fetch_rejected`. Deterministic local fixtures cover normal JSON, both timeout
+  boundaries, ordinary fetch rejection, JSON-parse failure, capability failure,
+  cleanup, and late completion without waiting 35 seconds or reaching a hosted
+  function or provider. Existing member-safe copy, response bodies, models,
+  call graph, caps, shared budget guard, grounding, audit, export, privacy, and
+  zero-retry behavior remain unchanged. The active PWA cache advances from v146
+  to v147. This local evidence does not clear live-clone acceptance and does not
+  promote the skill. No hosted function or model invocation, provider/settings
+  change, commit, push, deployment, merge, or production change occurred. Lane:
+  COMMANDER. Owner: force-mod.
+- 2026-09-02 - **#6 `resume-drafter-maintenance` 0.19 -> 0.20 remains
+  PENDING.** The Resume client now makes exactly one request per button
+  activation with no automatic replay and classifies the request-local boundary
+  into only `handler_json`, `fetch_rejected`, `non_handler_response`,
+  `handler_non_json`, or `handler_json_parse`. One fixed content-free handler
+  response marker distinguishes Resume-handler responses without changing any
+  response body. The memory-only diagnostic is limited to fixed path,
+  integer-or-null HTTP status, integer elapsed milliseconds, request-attempt
+  count, handler-response count, and closed outcome; it enters no log, storage,
+  analytics, later request, member-facing copy, or download. The targeted
+  offline OpenAI migration regression passes RDM-208 through RDM-216 with
+  synthetic fetch and handler-response stubs and zero hosted or provider calls.
+  The remaining four local PRE-MAIN suites and real-artifact 4N are pending
+  parent execution; the active PWA cache advances from v145 to v146. Existing Resume models,
+  call graph, caps, shared budget guard, grounding, audit, export, privacy,
+  public response bodies, and member-safe failure copy remain unchanged. This
+  local evidence does not clear the required live-clone or actual Word-render
+  evidence and does not promote the skill. No live function or model invocation,
+  provider/settings change, commit, push, deployment, merge, or production
+  change occurred. Lane: COMMANDER. Owner: force-mod.
+- 2026-09-01 - **#1 `validation-gate` 1.7 -> 1.8 remains CODIFIED.** The 4N
+  real-artifact boundary now requires Navigator and Resume to load OpenAI 7.8.0
+  and Blobs 10.7.13, verify the OpenAI constructor and Blobs `getStore` API
+  shapes, resolve OTel 6.0.6 and runtime-utils 2.3.0, and prove `jobs` excludes
+  all four package paths. The exact function-scoped four-path source rule keeps
+  global or broad inclusion and bundler overrides prohibited. VG-18-1 through
+  VG-18-7 pass 7/7; canonical and mirror remain byte-identical. The module-only
+  calibration used no client, store, credential, function, network, provider,
+  model, hosted, deploy, merge, or production action. Runtime-spend 1.3 and
+  deploy-discipline 1.6 seams remain unchanged. Lane: AUTO. Owner: s3-devops.
+- 2026-09-01 - **#1 `validation-gate` 1.6 -> 1.7 remains CODIFIED.** The
+  hosted clone's fixed `client_init/module_load_resolution_code` marker exposed
+  a package-boundary gap: OpenAI 7.8.0 was installed and pinned, but the modern
+  runtime-v2 NFT artifact omitted it. Version 1.7 makes `netlify.toml` trigger
+  all five PRE-MAIN suites and adds a real-artifact boundary that packages
+  Navigator and Resume separately, requires OpenAI 7.8.0 to exist and resolve
+  from both artifacts, and requires the non-AI `jobs` artifact to exclude it.
+  The source fixture requires exactly two function-scoped inclusion rules and
+  rejects global or broad inclusion plus bundler, externalization, and ignored-
+  module overrides. It expressly rejects `netlify functions:build` alone as
+  evidence because CLI 26.1.0 was measured to omit normalized per-function
+  config on that command. Calibration cases VG-17-1 through VG-17-6 pass 6/6;
+  canonical and Codex mirrors remain byte-identical. The local artifact smoke
+  performs no credential access, client construction, function invocation,
+  provider call, network request, or model request. Hosted acceptance remains
+  owned by deploy discipline. Lane: AUTO. Owner: s3-devops.
+- 2026-09-01 - **#16 `runtime-ai-spend-governance` 1.2 -> 1.3 remains
+  CODIFIED.** The hosted clone's `client_init/module_load` marker combined
+  resolution-coded failures with every other SDK load or evaluation failure.
+  Version 1.3 retires that ambiguous subphase and closes the boundary at
+  `module_load_resolution_code` and `module_load_other`. The first is selected
+  only when the existing static `require("openai")` throws with exactly
+  `MODULE_NOT_FOUND` or `ERR_MODULE_NOT_FOUND`; every missing, inaccessible,
+  non-string, unknown, package-export, module-format, or other code selects the
+  residual bucket. The classifier reads no caught-error property except `code`,
+  emits only fixed literal markers, and preserves the content-free
+  `upstream_unavailable` response and zero provider calls on initialization
+  failure. It preserves exactly one static OpenAI require and adds no
+  `require.resolve`, dynamic require/import, package externalization, package
+  change, public-response change, or spend-control change. Neither marker proves
+  root-package absence, artifact inventory, SDK evaluation, provider state, or
+  the identity of a transitive dependency. Written synthetic cases RSG-1 through
+  RSG-25 classify 25/25 PASS, including both allowlisted codes, residual and
+  inaccessible-code variants, retired-subphase drift, sentinel exclusion, and
+  zero-provider-call behavior. Canonical and Codex mirrors remain byte-identical.
+  Lane: COMMANDER. Owner: force-mod.
+- 2026-09-01 - **#16 `runtime-ai-spend-governance` 1.1 -> 1.2 remains
+  CODIFIED.** The hosted clone's content-free `client_init` marker narrowed the
+  failure to provider-client initialization but could not identify the failing
+  initialization boundary. Under the Commander's exact governance-only
+  authorization, v1.2 closes `client_init` at `module_load`, `api_shape`,
+  `key_lookup`, `client_construct`, and `guard_construct`. Every initialization
+  failure requires exactly one complete compile-time fixed literal, the public
+  `upstream_unavailable` response remains unchanged, and initialization failure
+  permits zero provider calls. Missing, unknown, duplicated, computed,
+  concatenated, interpolated, or otherwise dynamic `client_init` subphases fail.
+  Raw errors, stacks, messages, codes, statuses, credentials, secrets, requests,
+  responses, member data, identities, and IP addresses remain prohibited from
+  diagnostics. Existing v1.1 phases and subphases remain unchanged;
+  `provider_call`, `provider_result`, and `settlement` remain phase-only. Written
+  synthetic cases RSG-19...RSG-24 cover all five subphases plus missing,
+  invalid, dynamic, and duplicate drift, bringing the governance calibration to
+  24/24 PASS. This validates governance text only, not application
+  instrumentation, runtime wiring, hosted behavior, root cause, or provider or
+  production state. This force-mod governance slice modified no application
+  code and performed no model request, provider/settings action, staging,
+  commit, push, deployment, merge, or production change. Lane: COMMANDER.
+  Owner: force-mod.
+- 2026-09-01 - **#16 `runtime-ai-spend-governance` 1.0 -> 1.1 remains
+  CODIFIED.** A fail-closed but unclassified clone invocation exposed PARTIAL
+  governance coverage: the existing four content-free phases did not cover
+  every `upstream_unavailable` origin. Under the Commander's exact governance-
+  only authorization, v1.1 closes the phase set at `prepare`,
+  `blob_store_load`, `ledger_read`, `ledger_write`, `client_init`,
+  `provider_call`, `provider_result`, and `settlement`. Every such terminal
+  origin requires exactly one compile-time-literal marker; the four new phases
+  have no subphases; terminal precedence suppresses earlier markers; success
+  and valid internal-cutoff budget denial remain silent; and the marker
+  prohibition covers the caught error, stack, message, code, status, request,
+  response, usage, ledger,
+  secret, cookie, identity, IP, provider identifier, model, stage, amount, URL,
+  and timestamp. A marker identifies application execution location only and
+  creates no provider- or account-observability claim. Written synthetic cases
+  RSG-1...RSG-18 classified 18/18 PASS against the approved contract; both
+  skill copies passed skill-creator `quick_validate`, and canonical/mirror skill
+  and calibration files are byte-identical. This validates governance text,
+  not application instrumentation, runtime wiring, hosted behavior, or root
+  cause. This force-mod slice changed no application code and made no
+  provider/account inspection or change, live model or external network request,
+  staging, commit, push, deployment, merge, or production action. Lane:
+  COMMANDER. Owner: force-mod.
+- 2026-08-31 - **PRE-MAIN REMEDIATION PHASE 2 clone implementation completed
+  with LOCAL AUTOMATION PASS; manual AT and hosted acceptance remain
+  PENDING.** Under the Commander's exact clone-only approval, the manifest
+  portrait lock and two stale `Nothing you type is stored.` clauses in
+  `WHATS_NEW` v77/v78 were removed without changing `APP_VERSION`, the
+  `WHATS_NEW` version sequence, or the PWA build comment. Reduced-motion and
+  focus-visible behavior, one content-scoped main landmark and level-one
+  heading, persistent input labels, keyboard-operable cards, 44-pixel targets,
+  corrected contrast, a content-free live status region, zoom/reflow-safe
+  navigation, and modal naming/focus entry/trap/Escape/restoration were added.
+  `test:openai-migration`, `test:sw-privacy`, `test:privacy-network`,
+  `test:runtime-ai-spend`, and `test:accessibility-release` all passed locally;
+  the accessibility command covered twelve portrait/landscape scenarios at
+  default, 200%, and 400% zoom, keyboard traversal, dialog behavior, the browser
+  accessibility tree, and zero attempted external provider requests. The same
+  uncommitted Phase 1 packet retains active cache v144; no second cache number
+  was consumed. Changes remain staged only. No provider setting, live model
+  call, commit, push, merge, deployment, hosted preview, manual assistive-
+  technology acceptance, or production change occurred. Registry versions are
+  unchanged. Lane: COMMANDER.
+- 2026-08-31 - **PRE-MAIN REMEDIATION PHASE 1 clone implementation staged for
+  review; release gate remains BLOCKED.** Under the Commander's isolated-clone
+  approval, browser GA and Kit collection paths and client-side Kit material
+  were removed; production push is one literal OFF state with clone origin,
+  App ID, SDK activation, permission, subscription, and tag paths absent;
+  member-derived Navigator Blob logging was removed; and the legacy worker
+  exception was preserved unchanged. Navigator and Resume now enter the shared
+  USD 4.00 UTC-month aggregate-only guard with closed model/price tables,
+  request and stage-output caps, zero provider calls on denied or failed
+  accounting, conservative reservation/settlement, and a content-free ledger.
+  The active PWA cache moved from v143 to v144. OpenAI migration, worker
+  privacy, privacy/network, and runtime-spend commands passed locally; npm
+  audit reported zero vulnerabilities. The accessibility command correctly
+  blocks on the existing forced-portrait manifest before it can issue local
+  automation acceptance, so there is no `GATE PASS`, manual assistive-
+  technology acceptance, hosted acceptance, or release clearance. Changes are
+  staged only. No provider setting, live model call, commit, push, merge,
+  deployment, or production change occurred. Lane: COMMANDER.
+- 2026-08-31 - **PRE-MAIN REMEDIATION GOVERNANCE PACKET v1.0: #16
+  `runtime-ai-spend-governance` 1.0 and #17
+  `accessibility-release-validation` 1.0 added CODIFIED; #1
+  `validation-gate` 1.5 -> 1.6 and #2 `deploy-discipline` 1.5 -> 1.6; #6
+  `resume-drafter-maintenance` 0.18 -> 0.19 and remains PENDING.** The Commander
+  approved the governance slice for a site-wide aggregate USD 4.00 UTC-month
+  internal OpenAI guard, closed Luna/Terra price/model/stage controls, atomic
+  reservation and conservative settlement, content-free denial, production
+  push OFF with clone configuration prohibited, and a WCAG 2.2 AA release gate.
+  RDM retains the Resume call graph and exact 3500/3500/2200/1900/4000 caps;
+  #16 owns shared admission/accounting; #15 retains privacy/account truth; #1,
+  #17, and #2 retain repository, accessibility, and deployment authority.
+  Dated account evidence keeps the configured USD 5 provider project limit and
+  alert `ACCOUNT-VERIFIED` for its 2026-08-31 scope and overage warning; it is
+  distinct from the repository guard and is not full-account hard-cap proof.
+  Synthetic governance calibration executed RSG 14/14, ARV 12/12, RDM 9/9,
+  VG-16 6/6, and DD-16 6/6 PASS; fixed-point spend state transitions executed
+  10/10 PASS. System skill-creator `quick_validate` passed all nine changed
+  skill folders. Runtime, accessibility, and validation mirrors are
+  byte-identical; deploy copies retain only their documented
+  environment-specific wording. Required application privacy/network, budget,
+  Resume, worker, and accessibility commands are prescribed but were not run:
+  app, runtime, test, and package files were explicitly outside this slice.
+  Manual AT and hosted acceptance remain PENDING. No application code, provider
+  state, live model call, hosted preview, staging, commit, push, merge, or
+  deployment was used or authorized. Lane: COMMANDER.
+- 2026-08-31 - **SW-PRIVACY-01 governance package: #15
+  `privacy-truth-to-implementation` 0.1 -> 0.2, #2 `deploy-discipline`
+  1.4 -> 1.5, and #1 `validation-gate` 1.4 -> 1.5.** The Commander approved
+  prospective zero-OneSignal-request behavior for new and migrated browsers,
+  an OneSignal-free active PWA worker, post-consent dedicated push scope under
+  `/push/onesignal/`, and a bounded legacy root-worker exception through a
+  sunset no earlier than one year after production cutover. Privacy governance
+  now separates NEW, MIGRATED, LEGACY, and RETIRED states and withholds
+  universal claims until retirement and validation. Deploy governance owns the
+  worker-role record, cache ownership, migration, cohort validation, rollback,
+  and sunset execution. Validation-gate generalizes only its hardcoded worker
+  anchor and standalone-JavaScript inventory; it gains no privacy or deployment
+  authority. PTI-SW1...PTI-SW4 and the complete privacy suite executed 4/4 and
+  24/24 PASS. Two independent forward tests passed, all six skill packages
+  passed skill-creator validation, privacy and validation mirrors remain
+  byte-identical, and deploy copies preserve their environment-specific wording.
+  No app code, provider setting, account, staging, commit, push, merge,
+  deployment, or production authority was granted. Lane: COMMANDER.
+- 2026-08-31 - **#15 `privacy-truth-to-implementation` 0.1 added as
+  CODIFIED.** Commander explicitly approved codification after force-mod found
+  no existing owner for outward claims about Transition OPS or VBS privacy,
+  data handling, retention, logging, deletion, and member controls. The skill
+  requires distinct code, runtime, provider-documentation, and account evidence;
+  universal language fails on any unknown path; provider/account settings,
+  user controls, clear/delete boundaries, drift triggers, and claim-release
+  rows remain explicit. PTI-1...PTI-16, PTI-X1, PTI-X2, and two cross-skill
+  seam cases executed 20/20 PASS on synthetic inputs; skill-creator
+  `quick_validate` passed both copies, and canonical/Codex skill and calibration
+  mirrors are byte-identical. An independent fresh-context forward test also
+  passed: it withheld all universal claims, distinguished missing
+  owner/scope/artifact/drift evidence, and preserved every external authority
+  seam. `policy-verification`, `member-impact`,
+  `brand-voice`, `erg-client-plugin-governance`, `member-return-benchmarking`,
+  `resume-drafter-maintenance`, `resource-vetting`, qualified privacy/legal
+  review, `validation-gate`, and `deploy-discipline` retain independent blocking
+  authority. No app, provider account, client, contract, external action,
+  product change, staging, commit, push, merge, deployment, or production
+  authority was used or granted. Lane: COMMANDER. Owner: force-mod.
+- 2026-08-31 — **#14 `erg-client-plugin-governance` 1.0 added as CODIFIED.**
+  Commander explicitly approved the capability after force-mod found NONE
+  coverage for employer-sponsored ERG product governance. The skill requires a
+  closed delivery-model classification, field-level data/access matrix, content
+  authority separation, tenant isolation, review question log, evidence-based
+  business model, synthetic pilot measures, sponsor-report limits, RACI, risk
+  register, and explicit offboarding. Hard red lines bar employer access to
+  individual plans, resumes, prompts, benefits activity, or inferred readiness;
+  data sale, ads, and leads; loss of free public access; unsupported ROI or
+  retention claims; and unapproved accounts, SSO, HRIS, analytics, storage,
+  integrations, spend, deployment, outreach, contracts, or code. Client copy
+  cannot override verified federal policy. `member-return-benchmarking`,
+  `policy-verification`, `member-impact`, `resource-vetting`, `brand-voice`,
+  `resume-drafter-maintenance`, `validation-gate`, and `deploy-discipline`
+  retain independent blocking authority. Canonical and Codex mirror files are
+  byte-identical. EPG-1…EPG-11 and EPG-X1 executed 12/12 PASS on synthetic
+  inputs; skill-creator `quick_validate` passed both copies. No client,
+  platform, product code, member data, external action, or deployment was used
+  or authorized. Lane: COMMANDER. Owner: force-mod.
+- 2026-08-31 — **#13 `member-return-benchmarking` 1.0 added as CODIFIED.**
+  Commander approved the capability after force-mod found NONE coverage for
+  evidence-governed product benchmarking and privacy-compatible member-return
+  recommendations. The skill preserves `OBSERVED`, `REPORTED`, `CORROBORATED`,
+  and `NONCOMPARABLE`; blocks unsupported retention rankings and no-data
+  regressions; and returns only ADOPT / LOCAL SYNTHETIC TEST / WATCH / REJECT.
+  Scope fences leave resource legitimacy, policy truth, member impact, outward
+  voice, push-worthiness, Resume Drafter controls, general privacy self-claims,
+  validation, and deployment with their existing owners. Canonical and Codex
+  mirror files are byte-identical. MRB-1…MRB-12 and MRB-X1 executed 13/13 PASS,
+  including realistic resume, policy/member-impact, push, and deploy seam cases.
+  Lane: COMMANDER. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.17 -> 0.18, remains
+  PENDING.** Dean approved v0.18 after the live-clone `Resume_Draft3.docx`
+  exposed PARTIAL v0.17 coverage: a senior, broad candidate with six roles,
+  14 supported role bullets, four certifications, and four education items
+  still received the compact one-page profile. Force-mod classified this as a
+  narrow skill amendment, not a new skill. Version 0.18 keeps a fixed
+  senior-readable profile for a selected two-page candidate with `B >= 10`;
+  compact fallback remains limited to insufficient post-audit evidence. A
+  naturally two-page candidate may receive one presentation-only break at a
+  deterministic semantic role boundary when executed layout checks prove it
+  improves balance and produces substantive pages; `ResumeSpacer` remains
+  prohibited, the EXPERIENCE heading remains with its first role, candidate
+  content remains byte-exact, and an unresolved sparse result is withheld
+  rather than released or compacted. A fixed-profile candidate that safely
+  fits on one page is released as an honest one-page evidence exception, with Length and
+  Readability marked `NEEDS MEMBER FACT` and no filler, padding, compression,
+  or forced second page. RDM-195…198 cover the senior live shape, fallback
+  separation, honest one-page exception, and unchanged federal/API/cap/privacy
+  boundary. Synthetic RDM-1…RDM-198, browser preflight, and actual LibreOffice
+  rendering passed locally on 2026-08-30. Models, calls, retries, caps, storage,
+  logging, persistence, analytics, privacy, usage limits, budget, and costs are
+  unchanged; maximum incremental API exposure is $0 and the external monthly
+  cap remains `UNVERIFIED`. Live-clone validation is not yet claimed, so
+  registration remains PENDING. Lane: AUTO for internal governance; app
+  implementation remains Commander-gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.16 -> 0.17, remains
+  PENDING.** Commander-approved live evidence established that civilian length
+  must adapt to confirmed target-relevant experience, distinct relevant-role
+  breadth, and grounded evidence fit rather than a fixed one-page target.
+  Version 0.17 preserves every v0.16 grounding, identity, role, privacy, cost,
+  federal, content-equivalence, and pagination protection and adds the ADAPTIVE
+  CIVILIAN LENGTH CONTRACT. The exact request-local options are `Adaptive (recommended)`
+  (default), `Prefer one page`, and `Prefer two pages`; neither preference nor
+  rationale may be logged, persisted, stored, or sent to analytics. The plan is
+  computed before generation from the confirmed draft-eligible fact catalog:
+  `Y` is explicit member-confirmed target-relevant years; `R` is the count of
+  member-selected relevant roles that contain draft-eligible duty/outcome
+  evidence; and `A` is the distinct draft-eligible same-role duty/outcome
+  evidence owned by those selected roles. New and edited fact sheets begin with
+  no relevant roles selected; no role selection means `R = 0`.
+  Target, title, posting, keyword overlap, and model output cannot select a role
+  or add an atom; posting remains targeting language, never member fact support. Adaptive
+  recommends two pages only when `A >= 10` and relevant years/role breadth meet
+  `10/3` or `15/2`, or, when relevant years are unavailable, `R >= 4`. Age,
+  total service, title, and prose cannot supply relevant years. The plan and
+  guarded preference may guide how much grounded role-owned evidence the
+  existing generator retains and the presentation profile, so a valid two-page
+  resume may contain more grounded role detail than a valid one-page resume.
+  They cannot alter the ledger or catalog, omit a role, education item, or
+  credential, relax grounding, invent, duplicate, fill, pad, add calls or
+  retries, or exceed caps. After audit, `B >= 10` supported role bullets and an
+  actual Word-compatible DOCX render must prove that a selected two-page output
+  is substantive; failure applies only the one-page presentation profile to the
+  same audited candidate and re-renders without another model call, or withholds
+  the artifact if one page cannot render safely. Automatic `pageBreakBefore` on
+  `ResumeSpacer` remains prohibited, and browser estimation remains conservative
+  preflight rather than proof. RDM-187…194 cover short-career one page,
+  senior/broad detail retention, exact rule boundaries and total-service
+  isolation, guarded overrides, spacer safety, actual DOCX/post-audit fallback,
+  per-output content exactness, and unchanged federal/API/cap/privacy/cost
+  controls. App code, tests, and cache metadata implement the approved contract;
+  no model, call, retry, cap, storage, logging, persistence, analytics, privacy,
+  usage-limit, budget, or cost behavior changes; maximum incremental API
+  exposure is $0 and the external monthly cap remains `UNVERIFIED`. This entry
+  records the approved live evidence and specification scope. Synthetic
+  RDM-1…RDM-194, browser preflight, and actual LibreOffice rendering passed
+  locally on 2026-08-30; live-clone validation is not yet claimed, so
+  registration remains PENDING. Lane: AUTO for internal governance; app
+  implementation remains Commander-gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.15 -> 0.16, remains
+  PENDING.** Dean approved v0.16 after live-clone Word export evidence exposed
+  PARTIAL v0.15 coverage: six `Title | Employer` role headers were classified as
+  metadata, the browser estimator withheld an otherwise grounded artifact from
+  second-page occupancy alone, and the committed regression asserted render
+  wiring without executing layout in a layout-capable browser. Version 0.16
+  preserves every v0.15 requirement and adds the CIVILIAN WORD PAGINATION
+  CONTRACT: structural-sequence classification of the already-audited released
+  candidate text after PROFESSIONAL EXPERIENCE or a completed bullet block;
+  pipe, hyphen, and em-dash presentation variants with separator alone
+  insufficient and no browser ledger reparsing; executed browser-layout
+  evidence; occupancy as a review signal but not proof of avoidability; safe
+  content-equivalent rebalancing; transitive keep-with-next; and blocking
+  controls for clipping, overlap, hidden text, orphaned headings or role
+  headers, more than two pages, and unreadable compression. RDM-179…186 add a
+  synthetic six-role/16-bullet/four-certification/
+  four-education positive control, role grammar, real-browser execution,
+  sparse-versus-avoidable controls, complete-chain pagination, content
+  equivalence, negative layout cases, and federal/operational non-regression.
+  No app code, tests, cache, model, API call, retry, cap, privacy, logging,
+  storage, persistence, analytics, usage-limit, budget, or cost behavior is
+  changed by this specification update; maximum incremental API exposure is $0
+  and the external monthly cap remains `UNVERIFIED`. This records Dean's
+  specification approval only; registration remains PENDING until synthetic
+  regression execution and live-clone evidence pass. Lane: AUTO for internal
+  governance; app implementation remains Commander-gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.14 -> 0.15, remains
+  PENDING.** Commander-approved scope responds to the first rendered v0.14
+  civilian artifact: confirmed education was omitted; confirmed header and
+  credentials were not deterministically guaranteed; Summary repeated exact
+  Core Skills atoms; the two-page export stranded two roles on a mostly blank
+  second page; and HTML was presented with a `.doc` extension. Version 0.15 adds
+  a FINAL CIVILIAN ARTIFACT GATE. Summary atoms are excluded byte-exact before
+  Core Skills selection. Every confirmed personal-header, education,
+  certification, and license item is included byte-exact and exactly once;
+  missing essential header facts produce Format Compliance `NEEDS MEMBER FACT`
+  and member guidance without placeholders or invention. The actual export must
+  remain content-equivalent to released audited candidate text and be a genuine
+  `.docx` with matching Office Open XML MIME type and file signature. Final
+  render and page balance govern Length and Readability and Format Compliance.
+  RDM-160/161 are amended; RDM-168A/B, RDM-169A/B, RDM-170A/B, and RDM-172…178
+  specify de-duplication, translation boundaries, posting isolation, exact
+  education and credential survival, export equivalence, truthful file format,
+  page balance, federal non-regression, and operational non-regression. No model,
+  call, retry, cap, privacy, storage, logging, persistence, analytics, usage, or
+  cost control changes are authorized; maximum incremental API exposure is $0
+  and the external monthly cap remains `UNVERIFIED`. This entry records approved
+  specification scope only. No regression or live execution evidence is claimed;
+  registration remains PENDING. Lane: AUTO for internal governance; app
+  implementation remains Commander-gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.13 -> 0.14, remains
+  PENDING.** Live v0.13 evidence showed a correctly withheld civilian draft:
+  Core Skills presented posting-only workforce-development and onboarding
+  terminology as member qualifications, and a role claim broadened a confirmed
+  transition-planning application into candidate support. Exact identities,
+  role separation, dates, quantities, jargon, filler, readability, and format
+  otherwise passed. Coverage was **PARTIAL**: existing doctrine prohibited both
+  failures and the audit withheld them, but model-authored Core Skills and the
+  civilian-translation boundary lacked deterministic governance. Version 0.14
+  replaces generated Core Skills with a server-owned section derived only from
+  up to nine safe, exact semicolon-delimited global Skills atoms in stable order;
+  omits the section when none are safe; preserves all other bytes; and uses one
+  deterministic closed-global-Skills trace outside model adjudication. Posting,
+  target, roles, duties, and raw source cannot contribute canonical skills.
+  Civilian translation may change terminology only while preserving the entire
+  confirmed activity, object, beneficiary or audience, purpose, domain, scope,
+  scale, level, and outcome; same-role support remains mandatory and posting
+  references cannot cure partial support. RDM-158…RDM-171 use synthetic fixtures
+  and preserve federal behavior, models, calls, zero retries, all caps,
+  `store: false`, privacy, logging/storage/persistence/analytics, and usage
+  limits. No call, retry, model, cap, or cost ceiling changes; maximum
+  incremental API exposure is $0 and the external monthly cap remains
+  `UNVERIFIED`. Registry remains PENDING until synthetic and live clone
+  validation pass. Lane: AUTO for internal governance; app implementation
+  remains Commander-gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.12 -> 0.13, remains
+  PENDING.** A live pre-audit `unlinked_global_number` rejection exposed an
+  overbroad exact-phrase collision check: a shortened role claim could collide
+  with an unlinked global phrase even when every exact quantity was independently
+  supported by that same role. Version 0.13 keeps every unlinked `NUMBERS AND
+  SCALE` entry excluded from generation, audit support IDs, and returned trace;
+  uses escaped alphanumeric-boundary collision matching; and permits only a
+  role-owned collision with exact same-role, non-unlinked numeric provenance to
+  reach the existing audit. Numeric provenance is a prerequisite, never
+  automatic approval; same-role references and a supported verdict remain
+  mandatory, while global, unresolved, absent-token, wrong-role, unknown,
+  cross-role, unlinked-reference, and unsupported-audit cases remain
+  fail-closed. RDM-142…RDM-157 use synthetic fixtures and preserve federal
+  behavior, models, calls, zero retries, all caps, `store: false`, privacy,
+  logging/storage/persistence/analytics, and usage limits. A qualifying request
+  may consume the already-authorized audit call rather than stopping early;
+  configured maximum exposure is unchanged and the external monthly cap remains
+  `UNVERIFIED`. Registry remains PENDING until synthetic and live clone
+  validation pass. Lane: AUTO for internal governance; app implementation
+  remains Commander-gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.11 -> 0.12, remains
+  PENDING.** Complete live v0.11 evidence isolated the only substantive failure
+  to an unsupported aggregated civilian Summary while identities, roles,
+  quantities, keywords, translation, filler, and readability passed. Version
+  0.12 replaces model Summary content with a server-owned canonical Summary
+  derived only from up to four safe semicolon-delimited global Skills atoms in
+  stable source order. It preserves atom and non-Summary bytes, excludes unsafe
+  or duplicate atoms, omits Summary when none are safe, and prohibits role,
+  posting, target, raw-source, duty, quantity, and career-span influence. The
+  canonical claim is excluded from model-adjudicated IDs, mapped only to the
+  closed global Skills fact, and merged exactly once after remaining audit
+  checks pass; unsupported non-Summary claims remain fail-closed.
+  RDM-123…RDM-141 use synthetic fixtures and preserve federal behavior, models,
+  caps, calls, zero retries, usage limits, `store: false`, no
+  logging/storage/analytics, privacy controls, and the `UNVERIFIED` external
+  monthly cap. No call or cap is added; maximum incremental API exposure is $0.
+  Registry remains PENDING until app regressions and live clone evidence pass.
+  Lane: AUTO for internal governance; app implementation remains
+  Commander-gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.10 -> 0.11, remains
+  PENDING.** Live v0.10 evidence showed a grounded draft withheld because the
+  generator omitted confirmed role dates and locations. Version 0.11 adds a
+  civilian-only deterministic completion step after text normalization and
+  before grounding, inventory, and audit. It inserts byte-exact confirmed
+  location/date values under the exact owning role, omits literal `MISSING`,
+  generates only the ` | ` separator, is idempotent, preserves every bullet,
+  and never infers from duties, posting, target, adjacent roles, or raw source.
+  Existing exact metadata may be safely canonicalized; unknown or conflicting
+  metadata remains visible to fail-closed audit. Duplicate identities use safe
+  first-unmatched ownership or fail closed. RDM-106…RDM-122 use synthetic
+  fixtures and preserve federal behavior, models, caps, calls, zero retries,
+  usage limits, `store: false`, no logging/storage/analytics, privacy controls,
+  and the `UNVERIFIED` external monthly cap. No call or cap is added; maximum
+  incremental API exposure is $0. Registry remains PENDING until app regressions
+  and live clone evidence pass. Lane: AUTO for internal governance; app
+  implementation remains Commander-gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.9 -> 0.10, remains
+  PENDING.** A repeated live audit-reference rejection showed that generation,
+  clause ownership, and audit-reference rules needed one alignment contract
+  before further validator changes. Version 0.10 keeps quantities out of
+  civilian Summary and Core Skills, preserves any used supported metrics in their owning
+  role bullets, restricts role claims to same-role facts, keeps global skills in
+  Core Skills unless repeated in a role, and requires minimum necessary audit
+  references with no redundant refs. Shared heading and role-header recognition
+  covers safe punctuation and variants, numbering consistency, and `MISSING`
+  employers. Reference failures may expose only allowlisted content-free codes
+  and messages; member content, IDs, identities, provider/token details,
+  logging, and persistence remain prohibited. RDM-93…RDM-105 use synthetic
+  fixtures and preserve all caps, calls, zero retries, draft limit, posting
+  isolation, `store: false`, no logging/storage, and the `UNVERIFIED` external
+  monthly cap. No call or cap is added; maximum incremental API exposure is $0.
+  Lane: AUTO for internal governance; app implementation remains
+  Commander-gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.8 -> 0.9, remains
+  PENDING.** A live structured-audit rejection exposed a shared-quantity
+  validator seam: a nonnumeric global claim was rejected because its supporting
+  role fact line also contained a metric. Version 0.9 determines global
+  attribution restrictions from quantified values shared by the claim and the
+  referenced role fact, not merely any number in that fact. Nonnumeric Summary
+  and Core Skills claims may cite audit-supported mixed duty/metric facts.
+  Explicit numeric global claims still require the exact owning title or
+  employer; unlinked numbers, unknown references, cross-role experience
+  references, wrong-role numeric collisions, and unsupported audit verdicts
+  remain fail-closed. RDM-82…RDM-92 use synthetic fixtures and preserve all
+  caps, calls, zero retries, draft limit, posting isolation, `store: false`, no
+  logging/storage, and the `UNVERIFIED` external monthly cap. No call or cap is
+  added; maximum incremental API exposure is $0. Lane: AUTO for internal
+  governance; app implementation remains Commander-gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.7 -> 0.8, remains
+  PENDING.** A live pre-audit rejection exposed a generation/validation seam:
+  the generator could receive raw unlinked global numbers that the deterministic
+  gate correctly refused. Version 0.8 requires catalog-first generation and a
+  separate draft-eligible scoped fact view, excluding the raw ledger, `MISSING`,
+  raw `NUMBERS AND SCALE`, and every global unlinked number. Role ownership and
+  exact identities remain binding; one-page pressure may reduce bullets but not
+  roles. Deterministic failures now require distinct content-free categories,
+  and filler checks apply only to prose. RDM-69…RDM-81 use synthetic portable
+  fixtures and preserve facts/repair 3500, civilian 2200, federal 1900, audit
+  4000, calls, zero retries, draft limit, posting isolation, `store: false`, no
+  logging/storage, and the `UNVERIFIED` external monthly cap. No call or cap is
+  added; maximum incremental API exposure is $0. Lane: AUTO for internal
+  governance; app implementation remains Commander-gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.6 -> 0.7, remains
+  PENDING.** A live six-role civilian draft exposed conflicting placeholder
+  rules and lost number provenance. Version 0.7 makes civilian output
+  candidate-ready: unknown contact/header, role location/date segments, and
+  education years are omitted; `MISSING` stays in the reviewed ledger; optional
+  gaps are `NEEDS MEMBER FACT`; brackets, literal `MISSING`, and `TIP:` are
+  prohibited in civilian output while federal brackets remain unchanged.
+  Identity fields stay byte-exact, translations move to summaries/duties, and
+  unrelated numeric runtime exemplars are prohibited. A request-local
+  role-scoped fact catalog closes `fact_refs`; global unlinked numbers cannot
+  support role or ambiguous summary claims, and unknown/cross-role references
+  fail closed. RDM-54…RDM-68 use a synthetic, structurally equivalent six-role
+  reproduction rather than member source or an attachment path, and preserve
+  facts/repair 3500, civilian 2200, federal 1900, audit 4000, calls, zero
+  retries, draft limit, posting isolation, `store: false`, no logging/storage,
+  and the `UNVERIFIED` external monthly cap. No call or cap is added; maximum
+  incremental API exposure is $0. Lane: AUTO for internal governance; app
+  implementation remains Commander-gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.5 -> 0.6, remains
+  PENDING.** Root cause moved the live limit from draft generation to button-one
+  fact extraction. Version 0.6 sets mode-independent Luna extraction and Terra
+  repair hard caps of 3500, excludes the full posting while retaining the
+  explicit target, bars posting content from member facts, and withholds every
+  partial sheet with fact-stage wording. Maximum output exposure is $0.00420
+  initial, $0.04200 repair, $0.04620 repaired worst case, and $0.02904 added
+  worst case over 1300. RDM-44…RDM-53 preserve civilian 2200, federal 1900,
+  audit 4000, calls, zero retries, `store: false`, no logging/storage, and the
+  `UNVERIFIED` external monthly cap; they also record that the local three-draft
+  limit is not a fact-request cap. Any fact cap above 3500 requires a new
+  architecture review. Lane: AUTO for internal governance; app implementation
+  remains separately gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.4 -> 0.5, remains
+  PENDING.** Repeated generation-stage `output_limit` evidence authorizes a
+  civilian hard ceiling of 2200: +600/37.50% over 1600 and +900/69.23% over the
+  original 1300, with maximum added exposure of $0.0072/$0.0216 per draft/day
+  over 1600 and $0.0108/$0.0324 over 1300. The trace contract now permits the
+  model to omit claim text only behind a closed request-local `C1`…`Cn`
+  inventory, exact ID-set validation, and byte-exact server reattachment before
+  the UI response. RDM-33…RDM-43 preserve complete trace, ten dimensions and
+  evidence, federal 1900, audit 4000, fact/repair caps, calls, zero retries,
+  `store: false`, no logging/storage, and the `UNVERIFIED` external monthly cap.
+  RDM-43 fails closed on an empty inventory before any audit call and prohibits
+  constructing an empty `claim_id` enum.
+  Any increase above 2200 requires a new architecture review. Lane: AUTO for
+  internal governance; app implementation remains separately gated. Owner:
+  force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.3 -> 0.4, remains
+  PENDING.** Records reproduced generation-stage `output_limit` evidence and the
+  approved civilian-only cap increase from 1300 to 1600: +300 tokens or 23.08%,
+  with maximum added exposure of $0.0036 per draft and $0.0108 per three-draft
+  browser day at verified Terra output pricing. RDM-30…RDM-32 hold federal at
+  1900, audit at 4000, fact/repair behavior and caps unchanged, zero retries,
+  unchanged call count, `store: false`, no logging/storage, and the external
+  monthly cap at `UNVERIFIED`. Lane: AUTO for internal governance; app
+  implementation remains separately gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.2 -> 0.3, remains
+  PENDING.** Governs the approved audit-only capacity increase from 3000 to
+  4000, separates generation-stage from audit-stage output limits, and requires
+  audit-specific member-safe wording. Records the exact 33.33% cap increase,
+  $0.012 maximum added exposure per audit, $0.036 per three-draft browser day,
+  and conservative ceilings of $0.08/$0.24. RDM-24…RDM-29 preserve all other
+  caps, zero retries, call count, full schema, complete trace, ten score
+  dimensions, no logging/storage, and the `UNVERIFIED` external monthly cap.
+  Lane: AUTO for internal governance; app implementation remains separately
+  gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` 0.1 -> 0.2, remains
+  PENDING.** Adds an allowlisted, content-free failure contract for output
+  limits, timeouts, rate and budget limits, upstream failure, quality-gate
+  rejection, and unknown incomplete responses. Raw errors, member content, IDs,
+  token details, logging, persistence, retries, and unapproved cap changes are
+  prohibited. RDM-17A…RDM-23 cover classification, sanitization, privacy, and
+  cap evidence. Lane: AUTO for internal governance; app implementation remains
+  separately gated. Owner: force-mod.
+- 2026-08-30 — **#6 `resume-drafter-maintenance` drafted at 0.1, remains
+  PENDING.** Coverage was PARTIAL: the private OpenAI clone had fact extraction,
+  selected grounding checks, separate civilian/federal prompts, and `store:
+  false`, but no governed scorecard, complete claim trace, or executed regression
+  suite. Version 0.1 defines blocking grounding and identity invariants, ten
+  score dimensions, the claim-to-confirmed-fact trace contract, privacy and cost
+  requirements, and RDM-1…RDM-17 plus RDM-X1…RDM-X3. The external monthly budget
+  cap is explicitly **UNVERIFIED** until direct account evidence exists. Remains
+  PENDING until app regression execution and Commander review. Lane: COMMANDER.
+  Owner: force-mod.
 - 2026-08-06 — **#12 `member-impact` added as PENDING, owner s2-intel.**
   Coverage test returned **NONE**: every skill we hold governs whether content is
   TRUE (#3), LANDED (#1), SAFE (#2), or IN VOICE (#4). **Nothing governed whether

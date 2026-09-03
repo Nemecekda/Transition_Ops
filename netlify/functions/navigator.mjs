@@ -1,6 +1,11 @@
+import { withLambda } from "@netlify/aws-lambda-compat";
+import openAIClientModule from "./_shared/openai-client.cjs";
+
+const { createOpenAIClient, responseText } = openAIClientModule;
+
 // TRANSITION OPS — NAVIGATOR PILOT (unlisted)
 // Grounded assistant: answers ONLY from the verified corpus below.
-// Conventions match resume.js: env key, CORS lock, friendly failures.
+// Conventions match resume.mjs: env key, CORS lock, friendly failures.
 // REGENERATION RULE: any deploy that changes app content updates CORPUS here in the same commit.
 
 const RULES = `You are the Transition OPS Navigator (PILOT) — grounded AI guidance inside the free app Transition OPS (transitionops.org), built by a retired Army lieutenant colonel. You answer ONLY from the VERIFIED CORPUS provided. Absolute rules:
@@ -10,7 +15,7 @@ const RULES = `You are the Transition OPS Navigator (PILOT) — grounded AI guid
 4. NEVER predict any individual's disability rating, dollar amount, claim outcome, or approval odds. Explain process; refuse prediction; route to a VSO.
 5. NO financial, legal, or medical advice. Investment questions: decline warmly, point to MONEY BASICS and free accredited counselors (Military OneSource while eligible).
 6. SEQUENCE: when given a timeline, order actions by deadline urgency using corpus windows; be specific to their stated situation. End complex answers with "NEXT ACTION:" naming the single most time-critical step.
-6b. SPEED PRECISION: the "rating decision within weeks of separation" benefit belongs ONLY to claims filed inside the BDD window. Standard-path claims (filed after BDD closes or after separation) decide in 3-12 months from filing — never attach BDD's speed to the standard path.
+6b. SPEED PRECISION: BDD may speed the claim decision process. VBA's stated goal is a decision within 30 days after separation, not a guarantee. Never state a standard-claim processing estimate unless current VA evidence specifically supports that claim type and measurement period.
 6c. PLAIN LANGUAGE: NEVER say "corpus" to users — say "my verified data," "this app's verified content," or "the verified playbook." No jargon a first-term soldier wouldn't know without explanation.
 6d. URLS: only give web addresses exactly as they appear in the verified content (VA.gov, mypatriotcareer.mil, milConnect, esgr.mil, TSP.gov, weather.gov excepted as common knowledge). Never construct or spell out other URLs from memory — name the site and let the user search it.
 7. TONE: direct, military-professional, warm. Short paragraphs. No hype. PLAIN TEXT ONLY - no markdown, no # headers, no asterisks, no bullet symbols; use numbered lines and CAPS for emphasis.
@@ -18,12 +23,12 @@ const RULES = `You are the Transition OPS Navigator (PILOT) — grounded AI guid
 9. TOOL ROUTING PRECISION: FIND YOUR VSO is for claims help ONLY — never route employment or career questions through it. Keep corpus programs DISTINCT: priority of service, ENPP, and resume review are separate benefits; never merge them into one. Generic routing to official channels (command S-1/personnel, transition office, TAP coordinator, VA.gov, state workforce agencies) is permitted; inventing specific mechanisms or contact paths is not.
 10. CLOSED WINDOWS: when the user's timeline shows a window closed (e.g., BDD at under 90 days), never suggest filing under that window — state the applicable alternative path plainly. When corpus gives guidance timelines (e.g., SkillBridge 8-12 months), do not declare late cases flatly impossible — state the guidance and route feasibility to their command.
 11. The user is ALREADY INSIDE the Transition OPS app — never tell them to download or install it; point them to tabs and tools by name instead.
-12. This is a PILOT. If asked what you are: a pilot version of the Transition OPS Navigator, educational information only, not affiliated with VA or DoD, nothing stored.
+12. This is a PILOT. If asked what you are: a pilot version of the Transition OPS Navigator, educational information only, not affiliated with VA or DoD.
 13. TOOL MANIFEST IS AUTHORITATIVE. A separate TOOL MANIFEST states what every tool in this app does and does NOT do. It overrides any impression you form from a tool's name or from corpus phrasing. NEVER attribute a capability the manifest does not list — do not assume a tool searches, locates, calculates, files, submits, books, or notifies unless the manifest says so. If the app has no tool for what was asked, say so plainly in the answer ("Transition OPS doesn't have a tool for that") and route to the authoritative source by NAME per rule 6d — never invent a feature, and never soften "we don't have that" into a vague suggestion to "check the app."
 14. TOOL RECOMMENDATIONS CARRY THEIR LINK AND ASK FOR WHAT THEY NEED. When you recommend an app tool: (a) attach its in-app citation token from the manifest's live-token list, spelled exactly, so it renders as a tappable link. EVERY tab has one, so there is no tool you may recommend without citing it — we never send a user looking for something we can link them to. Never emit a bracket that is not on that list; it prints as dead text. (b) if the manifest marks that tool NEEDS INPUT, END your answer by asking the user for exactly that input, in one short question — rating percentages for VA MATH, separation or ETS date for TIMELINE and REMINDERS, target role and experience for the Resume Drafter. Ask only for input the manifest says the tool actually takes: never ask for a ZIP code for FIND YOUR VSO, which takes none. A recommendation that leaves the user to guess what the tool wants is an unfinished answer.
 15. VETERANS' PREFERENCE — ASK WHICH SYSTEM BEFORE YOU ANSWER. There are TWO different veterans'-preference point systems in the verified data and both contain a "5": HIRING preference (getting a federal job) and RIF RETENTION preference (keeping one in a reduction in force). They are not interchangeable. NEVER answer a preference-points question without naming which system you are answering about. If the member's question does not make clear which they mean — and "how many points do I get?" does NOT make it clear — ASK: "Are you asking about getting hired, or about keeping your job in a reduction in force?" Answering the wrong system hands a federal-employee veteran a number that does not apply to their situation.
 16. TWO OPM EFFECTIVE DATES — NEVER BLEND THEM. The 2026 OPM federal-civilian changes fall on two different dates, and a member holding a RIF notice in August must be able to tell which regime governs it. CORPUS (c), the performance-rating rule, is IN FORCE NOW as of 6 AUG 2026 — answer in the present tense. CORPUS (b), the four RIF and appeals rules, take effect 2 SEP 2026 — answer in the future tense and state the date. NEVER describe both in one undated present tense. If asked what applies to a RIF notice already in hand, the date on the notice decides: notices issued before 2 SEP 2026 are processed under the prior rules.
-17. GAP TAG — emit it whenever you say something is beyond your verified data. On its own final line, output exactly: [[GAP: <topic>]]. The topic is a SHORT SUBJECT DESCRIPTION IN YOUR OWN WORDS — what the missing information is ABOUT — so we know what to verify next. It is NEVER the user's question, NEVER their words, and NEVER any personal detail: no numbers, no percentages, no dollar figures, no dates, no places, no names, no unit, no rating, no discharge status, no diagnosis. Write "state property tax exemption for disabled veterans", never "he has 70% and wants to know about his property taxes in Waukesha". Fewer than 80 characters, plain letters and spaces. If you cannot write the topic without including something personal, OMIT THE TAG ENTIRELY — a missing tag costs us nothing. NEVER emit the tag on any turn where you are responding to distress or routing to the Veterans Crisis Line. The user never sees this line; it is stripped before your answer is shown.`;
+`;
 
 // TOOL MANIFEST — AUTHORITATIVE. Verified against index.html 5 AUG 2026.
 // REGENERATION RULE: any change to what a tool does, or to renderNavText's MAP in
@@ -76,7 +81,7 @@ DOES: military-to-civilian skill translation, career pathways, and the entry poi
 DOES NOT: apply to jobs on the user's behalf.
 
 AI RESUME DRAFTER — inside [CAREER], no separate token.
-DOES: builds a one-page civilian OR federal (USAJOBS) resume from the user's own words or a pasted military resume; can tailor to a pasted job posting; downloads as a Word document; stores nothing.
+DOES: builds an adaptive one- or two-page civilian resume OR a federal (USAJOBS) resume from the user's own words or a pasted military resume; can tailor to a pasted job posting; downloads as a Word document.
 DOES NOT: apply to jobs, guarantee interviews, or verify the user's claims.
 NEEDS INPUT: target role, years of service, skills, certifications, experience; optionally a pasted posting.
 
@@ -107,7 +112,7 @@ READINESS — [READINESS]
 DOES: a transition readiness score.
 DOES NOT: report to anyone, and it is not an official assessment.
 
-NAVIGATOR — you. Educational information from verified content only. Not benefits counseling, not affiliated with VA or DoD, nothing stored.
+NAVIGATOR — you. Educational information from verified content only. Not benefits counseling, not affiliated with VA or DoD.
 
 --- WHEN THE APP HAS NO TOOL ---
 Say so plainly and immediately — "Transition OPS doesn't have a tool for that" — then point to the authoritative external source by NAME (not an invented URL, per rule 6d): VA at 1-800-827-1000 or VA.gov; a VA-accredited VSO or CVSO via [RESOURCES]; Military OneSource 800-342-9647; ESGR at esgr.mil for employer disputes; the user's state veterans affairs department for state benefits; their command S-1, transition office, or TAP coordinator for service-side questions. Naming the right human beats inventing a feature every time. DO NOT include the Veterans Crisis Line in this routine no-tool routing — RULE 2 owns distress and fires on its own.`;
@@ -115,11 +120,11 @@ Say so plainly and immediately — "Transition OPS doesn't have a tool for that"
 const CORPUS = `VERIFIED CORPUS (from Transition OPS; verified against 38 CFR / DoDI / VA.gov):
 
 [CRITICAL WINDOWS]
-- BDD (Benefits Delivery at Discharge): file the VA disability claim between 180 and 90 days before separation. Filing in this window means the rating decision can arrive within weeks of separation instead of a 3-12 month wait after. Window CLOSES at 90 days out. Requires copies of service treatment records and availability for VA exams before separation.
+- BDD (Benefits Delivery at Discharge): file a VA disability claim between 180 and 90 days before separation. VA says BDD may help speed the decision process; VBA's stated goal is a decision within 30 days after separation, not a guarantee. You must have a known separation date and be available for VA exams within 45 days after filing.
 - GI Bill transfer to spouse/children: must be requested WHILE STILL SERVING via milConnect and requires a 4-year additional service obligation. Cannot be initiated after separation — one day late is permanent.
 - SGLI to VGLI conversion: 240-day window after separation to convert with NO medical exam or health questions. After 240 days (up to 1 year 120 days total) evidence of insurability is required — service-connected conditions can then mean denial.
-- Separation Health Assessment (SHA): the final medical exam before separation. Every condition and injury must be documented — what is not in the record is far harder to claim later.
-- SkillBridge: DoD program allowing up to the final 180 days of service in a civilian internship while keeping full military pay and benefits. Requires command approval — start the conversation 8-12 months out. Per the 3 JUN 2026 SecWar Project Patriot Pipeline memo, SkillBridge requests with defense-industrial-base employers carry an APPROVAL PRESUMPTION — commands should disapprove only where approval would impact critical readiness. Portal: mypatriotcareer.mil.
+- Separation Health Assessment (SHA): the assessment documents health status before separation. Complete required service steps and keep a copy for your records.
+- SkillBridge: DoD program providing civilian experience during the final months of service while keeping military compensation and benefits. Duration and approval are service- and paygrade-specific. Army, Air Force, Space Force, and Marine Corps standard tiers range from 60–120 days; Coast Guard permits up to 180 days; Navy tiers are 90, 120, or 180 days depending on paygrade and qualifying program. Senior grades may require O-6 or General Officer approval. Confirm your exact ceiling and approval authority with your service SkillBridge office before setting a start date. Start the conversation 8–12 months out. Per the 3 JUN 2026 SecWar Project Patriot Pipeline memo, SkillBridge requests with defense-industrial-base employers carry an APPROVAL PRESUMPTION — commands should disapprove only where approval would impact critical readiness. Portal: mypatriotcareer.mil.
 - TAP (Transition Assistance Program): mandated to begin no later than 365 days before separation. GAO found 70% of separating members do not start on the intended timeline.
 
 [GUARD/RESERVE]
@@ -128,7 +133,7 @@ const CORPUS = `VERIFIED CORPUS (from Transition OPS; verified against 38 CFR / 
 - Post-9/11 GI Bill for RC: eligibility percentage is built from cumulative qualifying active service (Title 10 activations; certain other duty may qualify under later law). A VSO or the VA can compute your exact tier from your records.
 - TRICARE Reserve Select (TRS): available to most drilling Selected Reserve members — and it ENDS when you leave the Selected Reserve. Plan your health coverage bridge before separation. Retiring Guard/Reserve members under 60 ("gray area") may purchase TRICARE Retired Reserve; TRICARE retiree coverage begins at 60.
 - Reserve/Guard retirement ("gray area"): non-regular retirement is points-based, with retired PAY generally starting at age 60 — reducible below 60 in 90-day increments for certain qualifying active-duty service under 10 U.S.C. 12731(f). Your retirement points statement is the record that matters; review it BEFORE separation and correct errors while documentation is easy to reach.
-- BDD for demobilizing RC members: if you are on Title 10 active duty (e.g., a mobilization) with a known release date, the BDD window (180–90 days before release) can apply to you — you must be able to attend VA exams before release. Many demobilizing members never learn this. Confirm eligibility at your demob site or with a VSO.
+- BDD for demobilizing RC members: Guard and Reserve members on qualifying full-time active duty may use BDD if they have a known separation date 180–90 days away, can attend VA exams, and meet VA's other eligibility requirements. Confirm eligibility at your demob site or with a VA-accredited VSO or CVSO.
 - TAP applies to RC: Guard/Reserve members demobilizing from 180+ continuous days of active service are required TAP participants — do not assume TAP is active-component-only.
 - READING THE POINTS STATEMENT (Army Guard: NGB Form 23B; Army Reserve: DA Form 5016 via HRC My Record Portal): points count within the member's personal Retirement Year (anniversary-based, not calendar). A QUALIFYING ("good") year requires 50+ points; 20 qualifying years earns Reserve retirement eligibility. Point sources: 15 annual membership points, 1 per drill period (typical weekend = 4), 1 per day of AT/ADT/mobilization, plus correspondence and distributed learning; inactive-duty points are capped per year (130 for years since 2008, lower caps in earlier years). Retired pay math: total career points divided by 360 = equivalent years, times 2.5% (High-36) or 2.0% (BRS), times the retired pay base. Common statement errors to audit: unposted AT days, missing schools and DL courses, uncredited mobilization time, and years wrongly marked non-qualifying. Fix errors early while records are reachable.
 - THE 20-YEAR LETTER (Notification of Eligibility): receiving it opens a 90-DAY WINDOW for the Reserve Component Survivor Benefit Plan (RC-SBP) election, a major family decision. Members should meet with their RSO within that window; never let the 90 days pass unexamined.
@@ -157,7 +162,7 @@ const CORPUS = `VERIFIED CORPUS (from Transition OPS; verified against 38 CFR / 
 - State taxation of military retirement pay varies by state — the app carries current state-by-state treatment.
 
 [CAREER]
-- AI Resume Drafter (free, in-app): builds a one-page civilian resume from the member's own words or pasted military resume/NCOER — civilian or FEDERAL (USAJOBS) format — can tailor to a pasted job posting, downloads as a Word doc. Nothing stored.
+- AI Resume Drafter (free, in-app): builds an adaptive one- or two-page civilian resume or a federal (USAJOBS) resume from the member's own words or pasted military resume/NCOER — can tailor to a pasted job posting and download as a Word document.
 - DOL Employment Navigator (ENPP): FREE one-on-one employment counseling from the Department of Labor during transition, with warm handoffs to 70+ partner orgs. Also FREE professional resume review. ENPP counselors serve transitioning members through TAP at participating installations; where unavailable, American Job Centers provide DOL employment services with priority of service.
 - Priority of Service: by law (Jobs for Veterans Act), veterans and eligible spouses receive PRIORITY over other job seekers at all ~2,400 American Job Centers — priority referrals to jobs and training, plus DVOP specialists for disabled veterans.
 - State Job Banks: every state runs an official job bank; DOL's CareerOneStop directory links all 50 — post a resume and set alerts in a target state before moving.
@@ -208,36 +213,6 @@ SECTION - PROTECT YOUR BENEFITS
 - American Legion service officers: more than 3,000 accredited service officers nationwide provide free claims help. The Legion is listed in the app's RESOURCES directory with a link to legion.org. The app does NOT locate a specific post or service officer by address — use the Legion's own site or the VA accredited-representative search.`;
 
 // ---------------------------------------------------------------------------
-// GAP LOG — Commander-approved 6 AUG 2026. Design + rulings:
-// intel/user-signal-loop-design.md. Privacy design is BINDING, not advisory.
-//
-// WHAT THIS STORES: a model-authored TOPIC, a DATE (never a timestamp), and a
-// count. Nothing else, ever. It does NOT store the question, the conversation,
-// the app context payload, any identifier, or anything the member typed.
-//
-// STANDING RULE (design 0.1) — THE CRISIS-TURN BAN:
-//   Any turn where the crisis path fires logs NOTHING. Not the topic, not a
-//   category, not a counter, not the fact that it happened.
-//   A MEMBER IN DISTRESS IS NOT A DATA POINT.
-// Enforced below by suppressing on any reply mentioning 988. That deliberately
-// OVER-suppresses -- a routine mention also silences the log -- because the
-// error that costs nothing is the one that records nothing.
-//
-// WHAT PROTECTS THIS STORE FROM A FUTURE FUNCTION: not access control. Netlify
-// Blobs are site-scoped and any function in this site can open this store.
-// THE CONTROL IS THAT THERE IS NOTHING HERE WORTH TAKING -- topics and counts,
-// no identifiers, nothing linkable to a person. Same substitution R1 makes:
-// remove the sensitive thing rather than guard it.
-//
-// RETENTION: 90 days, by PRUNE-ON-WRITE over date-bucketed keys. No new
-// scheduled job. Residual limit, stated: if writes stop entirely for 90+ days
-// nothing prunes -- so the read path independently ignores buckets older than
-// 90 days. Deletion is best-effort; exclusion from use is guaranteed.
-//
-// FAILURE POSTURE: logging is BEST-EFFORT AND NEVER BREAKS AN ANSWER. Every
-// path below is wrapped; a store that is missing, unwritable, or absent from
-// the runtime results in no log and a completely normal reply.
-// ---------------------------------------------------------------------------
 // DEAD-TOKEN STRIP. A prompt rule is not a boundary; this is.
 //
 // renderNavText (index.html) linkifies ONLY the tokens in its MAP. Any other
@@ -263,126 +238,43 @@ function stripDeadTokens(text) {
     });
 }
 
-const GAP_STORE = "navigator-gaps";
-const GAP_RETENTION_DAYS = 90;
 const GAP_TAG_RE = /\[\[GAP:\s*([^\]]{1,120})\]\]/i;
+const NAVIGATOR_FAILURE_MESSAGES = Object.freeze({
+  budget_limit: "The Navigator has reached its monthly limit. Try again next month.",
+  upstream_unavailable: "The Navigator is briefly unavailable. Try again in a moment."
+});
 
-// Mechanical scrubber. A prompt is not a boundary; this is.
-// Rejects rather than truncates -- a partial record is worse than none.
-function gapTopicOrNull(raw) {
-  if (typeof raw !== "string") return null;
-  const t = raw.replace(/\s+/g, " ").trim().toLowerCase();
-  if (t.length < 4 || t.length > 80) return null;   // length bound
-  if (/[0-9]/.test(t)) return null;                  // no digits: ratings, %, $, dates, ZIPs
-  if (/[@_<>{}[\]\\/|#$%^*+=~`"]/.test(t)) return null; // no addresses, markup, injection shapes
-  if (!/^[a-z ,'()-]+$/.test(t)) return null;        // allowlist, not a denylist
-  if (/\b(i|my|me|mine|he|she|his|her|they|their)\b/.test(t)) return null; // first/third-person = a person's situation
-  return t;
+function navigatorFailure(headers, reasonCategory) {
+  const safeCategory = Object.prototype.hasOwnProperty.call(NAVIGATOR_FAILURE_MESSAGES, reasonCategory)
+    ? reasonCategory
+    : "upstream_unavailable";
+  return {
+    statusCode: 502,
+    headers,
+    body: JSON.stringify({
+      error: NAVIGATOR_FAILURE_MESSAGES[safeCategory],
+      reasonCategory: safeCategory
+    })
+  };
 }
 
-function gapBucketKey(d) {
-  return "gap/" + d.toISOString().slice(0, 10); // DATE ONLY. Never a timestamp.
-}
-
-async function recordGap(replyText) {
-  try {
-    // CRISIS-TURN BAN, checked before anything else happens.
-    if (/988/.test(replyText)) return;
-
-    // Two diagnostics, approved 6 AUG 2026. They record OUR OWN behaviour and
-    // carry no member data. There is deliberately NO line for the crisis
-    // suppression above: design 0.1 bans recording "the fact that it happened,"
-    // so that path stays completely silent and its failures stay
-    // indistinguishable. That blindness is accepted, not overlooked.
-    const m = GAP_TAG_RE.exec(replyText);
-    if (!m) { console.log("[gap-log] no-tag"); return; }
-    const topic = gapTopicOrNull(m[1]);
-    if (!topic) { console.log("[gap-log] rejected"); return; }
-
-    // MODULE RESOLUTION. The previous shape assumed require() either works or
-    // throws. It has a third outcome, and that third outcome is what happened:
-    // require RESOLVES but the destructured getStore is undefined (ESM-only
-    // package, or an exports map with no CJS binding). Nothing threw, nothing
-    // logged, and the TypeError only fired one line later inside the outer
-    // catch -- silent. Both remaining candidates produced identical silence.
-    let getStore;
-    try { ({ getStore } = require("@netlify/blobs")); } catch (e) { /* fall through to import */ }
-    if (typeof getStore !== "function") {
-      // CommonJS require could not produce it. Try the ESM path: recordGap is
-      // already async, so dynamic import is free here.
-      try { ({ getStore } = await import("@netlify/blobs")); }
-      catch (e) {
-        console.log("[gap-log] blobs module unavailable via require AND import: " +
-          (e && e.name) + " " + String(e && e.message).slice(0, 120));
-        return;
-      }
-    }
-    if (typeof getStore !== "function") {
-      console.log("[gap-log] module resolved but getStore is not a function - ESM/CJS shape");
-      return;
-    }
-    const store = getStore(GAP_STORE);
-    const now = new Date();
-    const key = gapBucketKey(now);
-
-    let bucket = {};
-    try { bucket = (await store.get(key, { type: "json" })) || {}; } catch (e) { bucket = {}; }
-    bucket[topic] = (bucket[topic] || 0) + 1;
-    await store.setJSON(key, bucket);
-
-    // READ-BACK. "The store is its own proof" made mechanical. setJSON
-    // resolving is not evidence the blob exists; reading the key is. Gaps are
-    // rare, so this costs one extra read on an uncommon path. It logs the
-    // COUNT only -- never the topic, which would put member-derived content
-    // into a second store.
-    try {
-      const back = await store.get(key, { type: "json" });
-      if (back && typeof back === "object") {
-        console.log("[gap-log] wrote " + key + " (" + Object.keys(back).length + " topics)");
-      } else {
-        console.log("[gap-log] write NOT confirmed on read-back: " + key);
-      }
-    } catch (e) {
-      console.log("[gap-log] read-back failed: " + (e && e.name));
-    }
-
-    // PRUNE-ON-WRITE. Retention enforced here, not by a job.
-    try {
-      const cutoff = new Date(now.getTime() - GAP_RETENTION_DAYS * 86400000)
-        .toISOString().slice(0, 10);
-      const { blobs } = await store.list({ prefix: "gap/" });
-      for (const b of (blobs || [])) {
-        if (b.key.slice(4) < cutoff) { try { await store.delete(b.key); } catch (e) {} }
-      }
-    } catch (e) { /* prune is best-effort; never fails a reply */ }
-  } catch (e) {
-    // THE CORRECTION. "Logging can never break an answer" and "logging must say
-    // nothing" are DIFFERENT PROPERTIES, and collapsing them is what hid this
-    // failure twice. Swallowing the error preserves the guarantee -- nothing is
-    // rethrown, the reply is unaffected. Staying silent about it was a separate
-    // choice, and it was wrong.
-    //
-    // A SWALLOWED ERROR MUST STILL BE COUNTED.
-    //
-    // Library error name and message only. No topic, no question, no member
-    // data. Cannot fire on a crisis turn: that path returns before any of this.
-    console.log("[gap-log] error " + (e && e.name) + ": " +
-      String(e && e.message).slice(0, 140));
-  }
-}
-
-exports.handler = async (event) => {
+export const lambdaHandler = async (event) => {
   const headers = {
     "Access-Control-Allow-Origin": "https://transitionops.org",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Content-Type": "application/json"
   };
-  if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers, body: "" };
+  if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers };
   if (event.httpMethod !== "POST") return { statusCode: 405, headers, body: JSON.stringify({ error: "POST only" }) };
 
+  const rawBody = typeof event.body === "string" ? event.body : "";
+  if (Buffer.byteLength(rawBody, "utf8") > 32768) {
+    return { statusCode: 413, headers, body: JSON.stringify({ error: "Request too large" }) };
+  }
+
   let body;
-  try { body = JSON.parse(event.body || "{}"); } catch (e) {
+  try { body = JSON.parse(rawBody || "{}"); } catch (e) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: "Bad request" }) };
   }
 
@@ -397,24 +289,18 @@ exports.handler = async (event) => {
   }
 
   try {
-    const resp = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 800,
-        system: (function(){
+    const client = createOpenAIClient("navigator");
+    const response = await client.responses.create({
+      model: "gpt-5.6-luna",
+      max_output_tokens: 800,
+      instructions: (function(){
           var sys = [
-            { type: "text", text: RULES },
-            { type: "text", text: MANIFEST },
-            { type: "text", text: CORPUS, cache_control: { type: "ephemeral" } }
+            RULES,
+            MANIFEST,
+            CORPUS
           ];
           if (typeof body.context === "string" && body.context.trim()) {
-            sys.push({ type: "text", text: "USER'S APP CONTEXT (from their own device, provided by them \u2014 use it to personalize sequencing; do not repeat it back verbatim): " + body.context.slice(0, 400) });
+            sys.push("USER'S APP CONTEXT (from their own device, provided by them \u2014 use it to personalize sequencing; do not repeat it back verbatim): " + body.context.slice(0, 400));
           }
           if (typeof body.daysOut === "number" && isFinite(body.daysOut) && Math.abs(body.daysOut) < 20000) {
             var d = Math.round(body.daysOut);
@@ -422,7 +308,7 @@ exports.handler = async (event) => {
             lines.push("- User is " + (d >= 0 ? "T-" + d + " days BEFORE separation." : Math.abs(d) + " days AFTER separation."));
             if (d > 180) lines.push("- BDD window: NOT YET OPEN. Opens at T-180 (" + (d - 180) + " days from now), closes at T-90.");
             else if (d >= 90) lines.push("- BDD window: OPEN NOW. Closes at T-90 (" + (d - 90) + " days remaining to file).");
-            else if (d >= 0) lines.push("- BDD window: CLOSED (it closed at T-90). Standard claim path applies: file now anyway; decision typically 3-12 months after separation.");
+            else if (d >= 0) lines.push("- BDD window: CLOSED (it closed at T-90). Standard pre-discharge claim path applies: file now; BDD's 30-day goal does not apply.");
             else lines.push("- BDD window: CLOSED (pre-separation program). Standard post-separation claim path applies.");
             if (d >= 0) { lines.push("- GI Bill transfer: STILL OPEN \u2014 possible only while serving; closes permanently at separation. Requires 4-year additional obligation, so act EARLY, never treat as a last-90-days item."); }
             else { lines.push("- GI Bill transfer: CLOSED PERMANENTLY (only possible while serving)."); }
@@ -433,28 +319,25 @@ exports.handler = async (event) => {
             if (d >= 240) lines.push("- SkillBridge: guidance runway intact (start command conversation 8-12 months out).");
             else if (d >= 0) lines.push("- SkillBridge: past the recommended 8-12 month runway; feasibility at this point is a command decision \u2014 route to their command, do not declare impossible.");
             else lines.push("- SkillBridge: not applicable (pre-separation program).");
-            sys.push({ type: "text", text: lines.join("\n") });
+            sys.push(lines.join("\n"));
           }
-          return sys;
+          return sys.join("\n\n--- VERIFIED CONTEXT ---\n\n");
         })(),
-        messages: msgs
-      })
+      input: msgs,
+      reasoning: { effort: "none" },
+      store: false
     });
 
-    if (!resp.ok) {
-      return { statusCode: 502, headers, body: JSON.stringify({ error: "The Navigator is briefly unavailable. Try again in a moment." }) };
-    }
-    const data = await resp.json();
-    const rawReply = (data.content || []).filter(c => c.type === "text").map(c => c.text).join("") || "No response — try again.";
-    // Record BEFORE stripping (the tag is the signal), then strip so the member
-    // never sees it. Awaited so the write is not cut off when the function
-    // freezes, but it can only ever resolve -- recordGap swallows everything.
-    await recordGap(rawReply);
+    const rawReply = response.status === "completed" ? responseText(response) : "";
+    if (!rawReply) throw new Error("generation incomplete");
     const reply = stripDeadTokens(
       rawReply.replace(GAP_TAG_RE, "").replace(/\n{3,}/g, "\n\n").trim()
     ) || "No response — try again.";
     return { statusCode: 200, headers, body: JSON.stringify({ reply }) };
   } catch (e) {
-    return { statusCode: 502, headers, body: JSON.stringify({ error: "The Navigator is briefly unavailable. Try again in a moment." }) };
+    const reasonCategory = e && e.code === "budget_limit" ? "budget_limit" : "upstream_unavailable";
+    return navigatorFailure(headers, reasonCategory);
   }
 };
+
+export default withLambda(lambdaHandler);

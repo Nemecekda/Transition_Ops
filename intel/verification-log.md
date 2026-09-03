@@ -897,3 +897,106 @@ held open, no Navy tiers asserted anywhere in app copy.
 Live-file defect confirmed against main prior to patch: blanket
 180-day and O-4+ approval language, index.html:2849/2903 plus
 residuals :2812/:8761 (Patch E).
+
+---
+
+V-2026-016 | 02 SEP 2026 | VA combined-rating Table I reconciliation
+Method: current primary-source direct read, full-table review, and exact code
+comparison at clone HEAD 29593bf. Sources accessed 02 SEP 2026.
+Rating: CONFIRMED | Source ladder: 1 (binding regulation and official VA)
+Sources verified: 38 CFR 4.25, Combined Ratings Table,
+https://www.ecfr.gov/current/title-38/chapter-I/part-4/subpart-A/section-4.25
+| VA, About Disability Ratings,
+https://www.va.gov/disability/about-disability-ratings/
+Findings: Arrange disabilities from greatest to least. For each additional
+rating, carry the whole-number value produced by Table I into the next
+combination. After all ratings are combined, convert the final value once to
+the nearest degree divisible by 10; a final value ending in 5 adjusts upward.
+The live clone contained two calcVACombined implementations and the active
+one carried decimal intermediate values. Vector [60,30,10] must carry
+60 -> 72 -> 75, then convert once to 80. Claims that the app produces an
+official result, that intermediate decimals are carried, or that a particular
+rating is the goal are withheld.
+
+IMPACT: SHIP — ACT | A2 | s2-intel | 02 SEP 2026 | revisit NONE
+A1 population: SEPARATING (active component) · GUARD/RESERVE · ALREADY SEPARATED   band: condition-triggered; no single band   excluded: This does not apply to SPOUSE/FAMILY as the rated claimant.   timing: ACT AVAILABLE NOW
+A2 act: "Use VA's Combined Ratings Table from highest to lowest and treat any Transition OPS result as unavailable until it matches Table I."
+A3 surface(s): VA MATH · /va-math/   token: [VA MATH]   sweep trigger: FIRED calculator capability and worked-example claims
+A4 cost: MONEY
+EXPIRES: NONE
+
+---
+
+V-2026-017 | 02 SEP 2026 | BDD decision, effective-date, and exam claims
+Method: current primary-source direct read and cross-source claim separation
+at clone HEAD 29593bf. Sources accessed 02 SEP 2026.
+Rating: CONFIRMED | Source ladder: 1 (binding regulation and official VA/DoD)
+Sources verified: VA, Pre-discharge claim,
+https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/
+| Veterans Benefits Administration, Benefits Delivery at Discharge Program,
+https://benefits.va.gov/BENEFITS/benefits-delivery-discharge-program.asp
+| VA, VA claim exam,
+https://www.va.gov/resources/va-claim-exam/
+| 38 CFR 3.400, effective dates,
+https://www.ecfr.gov/current/title-38/chapter-I/part-3/subpart-A/subject-group-ECFR429f47d98271c40/section-3.400
+| VA, Disability effective dates,
+https://www.va.gov/disability/effective-date/
+| DoDI 1332.35, Transition Assistance Program for Military Personnel,
+https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/133235p.pdf?ver=2018-11-08-133557-850
+Findings: The BDD filing window is 180 to 90 days before separation and VA
+says the program may help speed a decision. VBA states a goal of a decision
+within 30 days after separation; it is not a guarantee. Eligibility requires
+availability for VA exams during the 45 days after filing. VA permits a member
+to request rescheduling by contacting the VA medical center or contractor at
+least 48 hours in advance and warns that rescheduling may delay the claim.
+An effective date as early as the day after separation depends on an awarded
+claim and governing effective-date rules; it is not a guaranteed Day-1 rating
+or decision. DoDI 1332.35 supports duty-time release for required TAP
+workshops and briefings, but does not establish priority for BDD exams or give
+a Transition Assistance Office authority to override the chain of command.
+Blanket post-discharge processing-time and delayed-compensation projections
+are withheld for lack of a current source matching claim type and measurement
+period.
+
+IMPACT: SHIP — ACT | A2 | s2-intel | 02 SEP 2026 | revisit NONE
+A1 population: SEPARATING (active component) · GUARD/RESERVE on qualifying full-time active duty   band: 6 Months Out · 3 Months Out   excluded: This does not apply to SPOUSE/FAMILY or ALREADY SEPARATED members as BDD claimants.   timing: ACT AVAILABLE NOW
+A2 act: "File VA Form 21-526EZ through BDD on VA.gov while 180–90 days remain; with fewer than 90 days, file a standard disability claim instead."
+A3 surface(s): CRITICAL WINDOWS · REMINDERS · TIMELINE · Navigator CORPUS/RULES · Lead Comms   token: [CRITICAL WINDOWS], [REMINDERS], [TIMELINE]   sweep trigger: FIRED Day-1, reschedule, priority, and processing-time claims
+A4 cost: A CLOSED WINDOW
+EXPIRES: NONE
+
+---
+
+V-2026-018 | 02 SEP 2026 | SkillBridge service/paygrade tier reconciliation
+Method: current primary-source direct read, full-table review, and exact-copy
+sweep at clone HEAD 29593bf. Sources accessed 02 SEP 2026.
+Rating: CONFIRMED | Source ladder: 1 (current official service issuances/pages)
+Sources verified: AR 600-81, 25 MAR 2026, Table 5-1,
+https://home.army.mil/lee/9617/7922/2401/AR-600-81-2026.pdf
+| AFI 36-2671, 31 MAR 2026, Table 1,
+https://static.e-publishing.af.mil/production/1/af_a1/publication/afi36-2671/afi36-2671.pdf
+| SPFI 36-2672, 31 MAR 2026, Table 1,
+https://static.e-publishing.af.mil/production/1/hqsf/publication/spfi36-2672/spfi36-2672.pdf
+| MARADMIN 280/24, 17 JUN 2024,
+https://www.marines.mil/News/Messages/Messages-Display/Article/3809908/interim-guidance-on-the-implementation-of-the-skillbridge-program/
+| USCG ALCOAST 202/26,
+https://content.govdelivery.com/accounts/USDHSCG/bulletins/41eb992
+| MyNavyHR, SkillBridge,
+https://www.mynavyhr.navy.mil/Career-Management/Transition/SkillBridge/
+Findings: Army, Air Force, Space Force, and Marine Corps standard published
+tiers span 60 to 120 days. Coast Guard permits up to 180 days. Current Navy
+guidance sets 180 days for E-5 and below, 120 days for E-6 through E-9 and
+O-4 and below, and 90 days for O-5 and above; qualifying DIB/CBP/ICE programs
+may receive up to 180 days regardless of paygrade. Approval authorities also
+vary by service and paygrade. No source supplies a population denominator for
+"most members rate 60-120 days" or similar prevalence language, so those
+claims are withheld. This record closes and prospectively supersedes only the
+Navy-source gap recorded in V-2026-015; the SHIP-A ruling and hardStartDay
+-180 planning boundary remain in force.
+
+IMPACT: SHIP — ACT | A2 | s2-intel | 02 SEP 2026 | revisit NONE
+A1 population: SEPARATING (active component) · GUARD/RESERVE when service guidance permits   band: 18 Months Out · 12 Months Out · 9 Months Out · 6 Months Out · 3 Months Out   excluded: This does not apply to SPOUSE/FAMILY or ALREADY SEPARATED members.   timing: ACT AVAILABLE NOW
+A2 act: "Use the current service instruction or MyNavyHR SkillBridge page applicable to you to confirm your maximum days and approval authority before setting a start date."
+A3 surface(s): CRITICAL WINDOWS · REMINDERS · Navigator CORPUS · RESOURCES   token: [CRITICAL WINDOWS], [REMINDERS], [RESOURCES]   sweep trigger: FIRED "most members," "most rank categories," "many grades," and Navy source gap
+A4 cost: A CLOSED WINDOW
+EXPIRES: NONE
