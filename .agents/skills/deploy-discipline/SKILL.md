@@ -2,7 +2,7 @@
 name: deploy-discipline
 description: Deployment and rollback procedure for Transition OPS. Governs the path from feature branch to production, the service-worker cache bump, and the authoring rule for CI workflow files under .github/workflows/. Owner - s3-devops.
 metadata:
-  version: "1.8"
+  version: "1.9"
   status: CODIFIED
   owner: s3-devops
   validated: "2026-09-03"
@@ -302,6 +302,46 @@ If two candidates target the same origin with the same integer, the second one
 to reach handoff re-bumps and repeats hosted validation unless both records
 identify the exact same immutable candidate. Resolve before handoff, never
 after merge.
+
+### Hosted Netlify control-plane manifest boundary
+
+The deterministic public builder owns exactly the 22-file `dist` tree defined
+by its closed allowlist. That inventory remains the complete build-owned public
+runtime tree. Root `netlify.toml` is control-plane configuration: it must remain
+outside `dist`, outside the public allowlist, and outside every local public
+build. Never describe a hosted control-plane record as a 23rd runtime file.
+
+For an immutable Git-backed Netlify candidate, bind the deploy ID to the exact
+candidate commit and tree, resolve the effective publish directory as exactly
+`dist`, and obtain the final hosted file manifest. Classify that manifest as a
+closed union of two disjoint sets:
+
+1. `RUNTIME_RECORDS`: exactly one hosted record for each of the 22 build-owned
+   `dist` files, with matching route path, byte size, and SHA-1.
+2. `CONTROL_PLANE_RECORDS`: exactly one `/netlify.toml` record, with byte size
+   and SHA-1 matching root `netlify.toml` from the exact candidate commit.
+
+Netlify manifest path canonicalization is acceptable only through a documented,
+one-to-one, collision-free mapping from each hosted key to one candidate route.
+For a lowercase hosted key, require exactly one candidate route whose lowercase
+form matches it; preserve the candidate route as the asserted runtime identity.
+Two possible candidates, case-fold collisions, duplicate raw records, or an
+unresolved path make the classification ambiguous and are a STOP.
+
+Compute runtime size and SHA-1 evidence from the validated 22-file candidate
+`dist` tree. Compute the control-plane size and SHA-1 from root `netlify.toml`
+at the frozen candidate commit, not from an unrelated checkout or current
+working tree. Confirm that `/netlify.toml` is absent from `dist`; a locally
+published copy fails even when its bytes match. The hosted manifest must contain
+exactly 23 classified records: the 22 runtime records plus the one control-plane
+record. Missing, duplicate, mismatched, ambiguous, wrong-commit, locally
+published, or additional records are a STOP. A provider behavior change is not
+authority to widen either set; return through force-mod and Commander approval.
+
+This hosted boundary is deploy-discipline evidence. The validation-gate exact
+22-file local build PASS does not certify the hosted control-plane union, and a
+hosted 23-record PASS does not permit `netlify.toml` in local public output.
+Record both results separately in the handoff.
 
 ### Commander ruling - current pre-main candidate
 
@@ -650,6 +690,10 @@ reputation as an input.
   origin, or moving it across origins without the exact immutable candidate
 - Handing off a separately hosted candidate without a fresh two-origin ledger
   recheck, or after candidate identity or origin evidence drifts
+- Treating a hosted `/netlify.toml` control-plane record as a build-owned public
+  runtime file, or placing `netlify.toml` in `dist` or its public allowlist
+- Handing off a hosted Netlify candidate with a missing, duplicate, mismatched,
+  ambiguous, wrong-commit, locally published, or additional manifest record
 - Touching `APP_VERSION`, `WHATS_NEW`, or the `PWA BUILD` comment without
   COMMANDER approval
 - Unifying the three version counters
@@ -733,3 +777,30 @@ fixtures exercised the approved gap, downward-renumber, same-origin reuse,
 immutable-continuation, cross-origin identity, and dual-origin drift boundaries.
 No application, browser, provider, hosted, rollback, commit, push, merge,
 deployment, production, or release action was executed or certified.
+
+## VERSION 1.9 GOVERNANCE CALIBRATION
+
+- **DD-19-1:** DD-18-1 through DD-18-4 and validation-gate VG-112 remain PASS;
+  the local build-owned public tree remains exactly 22 files and root
+  `netlify.toml` remains outside `dist`. PASS.
+- **DD-19-2:** the valid hosted-manifest fixture accepts exactly the 22
+  collision-free path/size/SHA-1 runtime records plus one `/netlify.toml`
+  control-plane record matching the frozen candidate root config. PASS.
+- **DD-19-3:** a missing or duplicate runtime record, or any runtime path, size,
+  or SHA-1 mismatch, fails closed. PASS.
+- **DD-19-4:** any unclassified additional path or a second control-plane record
+  fails the exact hosted-manifest inventory. PASS.
+- **DD-19-5:** a missing or mismatched `/netlify.toml`, a deploy or config from
+  the wrong candidate commit, or any locally published `dist/netlify.toml`
+  fails closed even when other records match. PASS.
+- **DD-19-6:** an unresolved publish directory, unresolved deploy-to-commit
+  identity, case-fold collision, non-bijective path map, or otherwise ambiguous
+  record classification fails before handoff. PASS.
+
+Governance calibration executed 6/6 PASS on 2026-09-03. Deterministic local
+fixtures exercised the exact union, runtime omission/duplication/mismatch,
+additional-path, control-plane, wrong-commit, local-publication, publish-root,
+and canonical-path ambiguity boundaries. The exact 22-file build-owned `dist`
+contract remains unchanged. No application, build or regression script,
+function, model, provider, settings, hosted artifact, commit, push, deployment,
+merge, production, or release action was used or certified.

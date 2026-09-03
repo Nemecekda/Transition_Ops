@@ -10,7 +10,7 @@ written) · DEPRECATED (superseded — note by what)
 | # | Skill | Owner | Status | Version | Validated | Location |
 |---|-------|-------|--------|---------|-----------|----------|
 | 1 | validation-gate | s3-devops | CODIFIED | 1.12 | 2026-09-03 | .claude/skills/validation-gate/ (canonical); .agents/skills/validation-gate/ (Codex project mirror) |
-| 2 | deploy-discipline | s3-devops | CODIFIED | 1.8 | 2026-09-03 | .claude/skills/deploy-discipline/ (Claude copy); .agents/skills/deploy-discipline/ (Codex copy; environment wording intentionally differs); 1.3 BURNED - see change log |
+| 2 | deploy-discipline | s3-devops | CODIFIED | 1.9 | 2026-09-03 | .claude/skills/deploy-discipline/ (Claude copy); .agents/skills/deploy-discipline/ (Codex copy; environment wording intentionally differs); 1.3 BURNED - see change log |
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
 | 5 | resource-vetting | s2-vetting | PENDING | — | — | rubric currently embedded in s2-vetting agent prompt; extract to skill when S2 stands up (Build Step 3) |
@@ -71,6 +71,19 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-03 - **#2 `deploy-discipline` 1.8 -> 1.9 is CODIFIED.** The
+  build-owned public `dist` contract remains exactly 22 files. A Git-backed
+  Netlify hosted manifest is now a closed union of those 22 collision-free
+  path/size/SHA-1 runtime records plus exactly one `/netlify.toml` control-plane
+  record matching root config at the frozen candidate commit; the config must
+  remain absent from local `dist`. Missing, duplicate, mismatched, ambiguous,
+  locally published, wrong-commit, and additional records fail closed.
+  DD-19-1 through DD-19-6 passed 6/6 on deterministic local fixtures without
+  weakening DD-18 or validation-gate VG-112. Canonical and Codex copies
+  preserve only the six sanctioned environment-specific line substitutions.
+  No application, build or regression script, function, model, provider,
+  settings, hosted, commit, push, deploy, merge, production, or release action
+  was used or certified. Lane: COMMANDER. Owner: s3-devops.
 - 2026-09-03 - **#1 `validation-gate` 1.11 -> 1.12 is CODIFIED.** The
   public build now treats a preexisting real-directory `dist` as disposable
   cached output only after a new exact 22-file tree validates, while root
