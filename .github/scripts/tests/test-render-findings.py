@@ -104,8 +104,8 @@ if body:
     unclosed, _ = walk_fences(body)
     check("no unclosed fence", unclosed is None, "open len=%s" % unclosed)
 
-print("== cli-wrote-markdown.json — literal ``` and ```` runs at line start ==")
-body, proc = render("cli-wrote-markdown.json")
+print("== cli-wrote-markdown.txt — literal ``` and ```` runs at line start ==")
+body, proc = render("cli-wrote-markdown.txt")
 check("renderer exits 0 on non-JSON input", body is not None,
       proc.stderr if body is None else "")
 if body:
@@ -146,7 +146,7 @@ if body:
           "scanner supplied no what_changed text" in what)
 
 for fx, label in (("malformed-result.json", "result present but not JSON"),
-                  ("truncated-envelope.json", "envelope truncated mid-write")):
+                  ("truncated-envelope.txt", "envelope truncated mid-write")):
     print("== %s — %s ==" % (fx, label))
     body, proc = render(fx)
     check("renderer exits 0", body is not None, proc.stderr if body is None else "")

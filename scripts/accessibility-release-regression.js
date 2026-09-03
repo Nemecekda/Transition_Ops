@@ -23,6 +23,7 @@ const SCENARIOS = Object.freeze([
   { name: "320 landscape 400 percent", width: 640, height: 320, orientation: "landscapePrimary", zoom: 4 },
   { name: "375 landscape 400 percent", width: 667, height: 375, orientation: "landscapePrimary", zoom: 4 }
 ]);
+const AUDIT_ROUTES = Object.freeze(["dashboard", "navigator", "pathway"]);
 
 function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), "utf8");
@@ -39,6 +40,58 @@ function check(condition, label, detail) {
   console.log("PASS " + label);
 }
 
+function literalCount(source, needle) {
+  return source.split(needle).length - 1;
+}
+
+function routeMatrixComplete(routes) {
+  return ["dashboard", "navigator", "pathway"].every(function(route) {
+    return routes.includes(route);
+  });
+}
+
+function sourceControlContract(source) {
+  const lineWith = function(marker) {
+    return source.split("\n").find(function(line) { return line.includes(marker); }) || "";
+  };
+  const prompts = lineWith('return React.createElement("button", { key: i3');
+  const navigatorInput = lineWith('"aria-label": "Ask the Transition Navigator"');
+  const navigatorSend = lineWith('"aria-label": "Send Navigator question"');
+  const resumeDisclosure = lineWith('"aria-controls": "tops-resume-drafter-panel"');
+  const formatStart = source.indexOf('return React.createElement("button", { key: m');
+  const formatControl = formatStart === -1 ? "" : source.slice(formatStart, formatStart + 700);
+  const lengthControl = lineWith('flex: "1 1 120px"');
+  const exampleDisclosure = lineWith('"aria-controls": "tops-resume-example"');
+  const jobsDisclosure = lineWith('"aria-controls": "tops-live-jobs-panel"');
+  const requiredLabels = [
+    "Resume header name",
+    "Resume header location",
+    "Resume header email",
+    "Resume header phone",
+    "Military specialty",
+    "Years served",
+    "Target job title",
+    "Optional job description",
+    "Additional skills",
+    "Certifications",
+    "Experience source",
+    "Confirmed resume fact sheet"
+  ];
+  return {
+    navigatorPrompts: prompts.includes('type: "button"') && prompts.includes("disabled: navBusy") && prompts.includes("minHeight: 44") && !prompts.includes("onKeyDown"),
+    navigatorInput: navigatorInput.includes("minHeight: 44"),
+    navigatorSend: navigatorSend.includes('React.createElement("button"') && navigatorSend.includes("disabled: navBusy || !navInput.trim()") && navigatorSend.includes("minHeight: 44") && !navigatorSend.includes("onKeyDown"),
+    resumeDisclosure: resumeDisclosure.includes('React.createElement("button"') && resumeDisclosure.includes('"aria-expanded": aiR.open') && resumeDisclosure.includes("minHeight: 44") && !resumeDisclosure.includes("onKeyDown"),
+    formatControls: source.includes('role: "group", "aria-label": "Resume format"') && formatControl.includes('type: "button"') && formatControl.includes('"aria-pressed": on') && formatControl.includes("minHeight: 44") && !formatControl.includes("onKeyDown"),
+    exampleDisclosure: exampleDisclosure.includes('React.createElement("button"') && exampleDisclosure.includes('"aria-expanded": aiR.showEx') && exampleDisclosure.includes("minHeight: 44") && !exampleDisclosure.includes("onKeyDown"),
+    lengthControls: lengthControl.includes("minHeight: 44") && !lengthControl.includes("minHeight: 38"),
+    jobsDisclosure: jobsDisclosure.includes('React.createElement("button"') && jobsDisclosure.includes('"aria-expanded": jobsQ.open') && jobsDisclosure.includes("minHeight: 44") && !jobsDisclosure.includes("onKeyDown"),
+    persistentLabels: requiredLabels.every(function(label) {
+      return literalCount(source, '"aria-label": "' + label + '"') === 1;
+    })
+  };
+}
+
 function staticChecks() {
   const index = read("index.html");
   const manifest = JSON.parse(read("manifest.json"));
@@ -50,6 +103,27 @@ function staticChecks() {
   check(!/screen\s*\.\s*orientation\s*\.\s*lock\s*\(/.test(index), "browser source does not force orientation");
   check(!manifest.orientation || /^(?:any|natural)$/.test(manifest.orientation), "manifest does not force orientation");
   check(/@media\s*\([^)]*prefers-reduced-motion\s*:\s*reduce[^)]*\)/i.test(index), "source defines a reduced-motion mode");
+
+  const contract = sourceControlContract(index);
+  Object.keys(contract).forEach(function(key) {
+    check(contract[key], "A11Y-NR source contract " + key);
+  });
+  const clickOnlyNavigator = index.replace(
+    'return React.createElement("button", { key: i3, type: "button"',
+    'return React.createElement("div", { key: i3'
+  );
+  check(!sourceControlContract(clickOnlyNavigator).navigatorPrompts, "A11Y-NR-01 click-only Navigator mutation fails");
+  const placeholderOnlyNavigator = index.replace('"aria-label": "Ask the Transition Navigator", ', "");
+  check(!sourceControlContract(placeholderOnlyNavigator).navigatorInput, "A11Y-NR-02 placeholder-only Navigator mutation fails");
+  const clickOnlyResume = index.replace(
+    'React.createElement("button", { type: "button", "aria-expanded": aiR.open',
+    'React.createElement("div", { "aria-expanded": aiR.open'
+  );
+  check(!sourceControlContract(clickOnlyResume).resumeDisclosure, "A11Y-NR-03 click-only Resume disclosure mutation fails");
+  const unlabeledResume = index.replace('"aria-label": "Confirmed resume fact sheet", ', "");
+  check(!sourceControlContract(unlabeledResume).persistentLabels, "A11Y-NR-04 unlabeled Resume form mutation fails");
+  check(SCENARIOS.length === 12 && routeMatrixComplete(AUDIT_ROUTES), "A11Y-NR-05 full scenario and route matrix is configured");
+  check(!routeMatrixComplete(["dashboard"]), "A11Y-NR-05 dashboard-only route mutation fails");
 }
 
 function sanitizeIndex(source) {
@@ -459,7 +533,19 @@ const DOCUMENT_AUDIT = String.raw`((zoomFactor) => {
 
   const docWidth = Math.max(document.documentElement.scrollWidth, document.body ? document.body.scrollWidth : 0);
   const clientWidth = document.documentElement.clientWidth;
-  if (docWidth > clientWidth + 1) push("document has horizontal overflow: scrollWidth=" + docWidth + " clientWidth=" + clientWidth);
+  if (docWidth > clientWidth + 1) {
+    const overflowSources = Array.from(document.querySelectorAll("body,body *")).filter(visible).map((element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        element,
+        rect,
+        excess: Math.max(rect.right - clientWidth, rect.width - clientWidth, element.scrollWidth - element.clientWidth)
+      };
+    }).filter((item) => item.excess > 1).sort((a, b) => b.excess - a.excess).slice(0, 20).map((item) => {
+      return selectorFor(item.element) + " rect=" + item.rect.left.toFixed(1) + "," + item.rect.right.toFixed(1) + " width=" + item.rect.width.toFixed(1) + " scroll=" + item.element.scrollWidth + "/" + item.element.clientWidth;
+    });
+    push("document has horizontal overflow: scrollWidth=" + docWidth + " clientWidth=" + clientWidth + " sources=" + overflowSources.join(" || "));
+  }
   Array.from(document.querySelectorAll("body *")).filter(visible).forEach((element) => {
     const rect = element.getBoundingClientRect();
     if (rect.right <= clientWidth + 1 && rect.left >= -1) return;
@@ -555,10 +641,124 @@ const DOCUMENT_AUDIT = String.raw`((zoomFactor) => {
 })`;
 
 async function dispatchKey(client, key, modifiers) {
-  const code = key === "Tab" ? "Tab" : key === "Escape" ? "Escape" : key;
-  const windowsVirtualKeyCode = key === "Tab" ? 9 : key === "Escape" ? 27 : key.length === 1 ? key.toUpperCase().charCodeAt(0) : 0;
-  await client.send("Input.dispatchKeyEvent", { type: "keyDown", key, code, modifiers: modifiers || 0, windowsVirtualKeyCode });
-  await client.send("Input.dispatchKeyEvent", { type: "keyUp", key, code, modifiers: modifiers || 0, windowsVirtualKeyCode });
+  const code = key === "Tab" ? "Tab" : key === "Escape" ? "Escape" : key === "Enter" ? "Enter" : key === " " ? "Space" : key;
+  const windowsVirtualKeyCode = key === "Tab" ? 9 : key === "Escape" ? 27 : key === "Enter" ? 13 : key === " " ? 32 : key.length === 1 ? key.toUpperCase().charCodeAt(0) : 0;
+  const text = key === "Enter" ? "\r" : key === " " ? " " : "";
+  await client.send("Input.dispatchKeyEvent", { type: text ? "keyDown" : "rawKeyDown", key, code, text, unmodifiedText: text, modifiers: modifiers || 0, windowsVirtualKeyCode, nativeVirtualKeyCode: windowsVirtualKeyCode });
+  await client.send("Input.dispatchKeyEvent", { type: "keyUp", key, code, modifiers: modifiers || 0, windowsVirtualKeyCode, nativeVirtualKeyCode: windowsVirtualKeyCode });
+}
+
+async function runNavigatorSurfaceChecks(client, scenarioName) {
+  const initial = await evaluate(client, String.raw`(() => {
+    const input = document.querySelector('[aria-label="Ask the Transition Navigator"]');
+    const send = document.querySelector('[aria-label="Send Navigator question"]');
+    const prompts = Array.from(document.querySelectorAll('button')).filter((button) => /BDD window|9 months out|not miss before separation/i.test(button.textContent || ""));
+    return {
+      inputTag: input && input.tagName,
+      inputName: input && input.getAttribute("aria-label"),
+      promptCount: prompts.length,
+      promptTags: prompts.map((button) => button.tagName),
+      promptsEnabled: prompts.every((button) => !button.disabled),
+      sendTag: send && send.tagName,
+      sendDisabled: send && send.disabled
+    };
+  })()`, false);
+  check(initial.inputTag === "INPUT" && initial.inputName === "Ask the Transition Navigator", scenarioName + " Navigator input has a persistent name");
+  check(initial.promptCount === 3 && initial.promptTags.every((tag) => tag === "BUTTON") && initial.promptsEnabled, scenarioName + " Navigator prompts are native enabled buttons");
+  check(initial.sendTag === "BUTTON" && initial.sendDisabled === true, scenarioName + " Navigator SEND is natively disabled while empty");
+
+  const changed = await evaluate(client, String.raw`(() => {
+    const input = document.querySelector('[aria-label="Ask the Transition Navigator"]');
+    if (!input) return false;
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+    setter.call(input, "T");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    return true;
+  })()`, false);
+  check(changed, scenarioName + " Navigator synthetic input was entered locally");
+  await waitForExpression(client, String.raw`(() => { const b=document.querySelector('[aria-label="Send Navigator question"]'); return !!b && b.disabled === false; })()`, scenarioName + " Navigator SEND enabled state", 3000);
+  const after = await evaluate(client, String.raw`(() => {
+    const input = document.querySelector('[aria-label="Ask the Transition Navigator"]');
+    const send = document.querySelector('[aria-label="Send Navigator question"]');
+    const functionRequests = (window.__topsA11yNetwork || []).filter((url) => /\/\.netlify\/functions\//.test(url));
+    return {
+      inputName: input && input.getAttribute("aria-label"),
+      sendEnabled: !!send && !send.disabled,
+      functionRequests: functionRequests.length
+    };
+  })()`, false);
+  check(after.inputName === "Ask the Transition Navigator" && after.sendEnabled, scenarioName + " Navigator name persists after entry");
+  check(after.functionRequests === 0, scenarioName + " Navigator semantics test makes zero function requests");
+}
+
+async function runResumeSurfaceChecks(client, scenarioName) {
+  const focused = await evaluate(client, String.raw`(() => {
+    const button = document.querySelector('button[aria-controls="tops-resume-drafter-panel"]');
+    if (!button) return { ok: false };
+    button.focus();
+    return { ok: true, tag: button.tagName, expanded: button.getAttribute("aria-expanded") };
+  })()`, false);
+  check(focused.ok && focused.tag === "BUTTON" && focused.expanded === "false", scenarioName + " Resume disclosure begins as a collapsed native button");
+  await dispatchKey(client, "Enter", 0);
+  await waitForExpression(client, String.raw`(() => { const b=document.querySelector('button[aria-controls="tops-resume-drafter-panel"]'); const p=document.getElementById('tops-resume-drafter-panel'); return !!b && b.getAttribute('aria-expanded') === 'true' && !!p && !p.hidden; })()`, scenarioName + " Resume disclosure Enter activation", 3000);
+
+  const federalFocused = await evaluate(client, String.raw`(() => {
+    const group = document.querySelector('[role="group"][aria-label="Resume format"]');
+    const button = group && Array.from(group.querySelectorAll("button")).find((item) => /FEDERAL/.test(item.textContent || ""));
+    if (!button) return false;
+    button.focus();
+    return true;
+  })()`, false);
+  check(federalFocused, scenarioName + " Resume federal-format control is keyboard focusable");
+  await dispatchKey(client, " ", 0);
+  await waitForExpression(client, String.raw`(() => { const g=document.querySelector('[role="group"][aria-label="Resume format"]'); const b=g&&Array.from(g.querySelectorAll('button')).find(x=>/FEDERAL/.test(x.textContent||'')); return !!b && b.getAttribute('aria-pressed') === 'true'; })()`, scenarioName + " Resume format Space activation", 3000);
+
+  const civilianFocused = await evaluate(client, String.raw`(() => {
+    const group = document.querySelector('[role="group"][aria-label="Resume format"]');
+    const button = group && Array.from(group.querySelectorAll("button")).find((item) => /CIVILIAN/.test(item.textContent || ""));
+    if (!button) return false;
+    button.focus();
+    return true;
+  })()`, false);
+  check(civilianFocused, scenarioName + " Resume civilian-format control is keyboard focusable");
+  await dispatchKey(client, "Enter", 0);
+  await waitForExpression(client, String.raw`(() => { const g=document.querySelector('[role="group"][aria-label="Resume format"]'); const b=g&&Array.from(g.querySelectorAll('button')).find(x=>/CIVILIAN/.test(x.textContent||'')); return !!b && b.getAttribute('aria-pressed') === 'true'; })()`, scenarioName + " Resume format Enter activation", 3000);
+
+  const lengthFocused = await evaluate(client, String.raw`(() => {
+    const button = Array.from(document.querySelectorAll("button")).find((item) => /Prefer two pages/i.test(item.textContent || ""));
+    if (!button) return false;
+    button.focus();
+    return true;
+  })()`, false);
+  check(lengthFocused, scenarioName + " Resume length control is keyboard focusable");
+  await dispatchKey(client, " ", 0);
+  await waitForExpression(client, String.raw`(() => { const b=Array.from(document.querySelectorAll('button')).find(x=>/Prefer two pages/i.test(x.textContent||'')); return !!b && b.getAttribute('aria-pressed') === 'true'; })()`, scenarioName + " Resume length Space activation", 3000);
+
+  const exampleFocused = await evaluate(client, String.raw`(() => {
+    const button = document.querySelector('button[aria-controls="tops-resume-example"]');
+    if (!button) return false;
+    button.focus();
+    return true;
+  })()`, false);
+  check(exampleFocused, scenarioName + " Resume example disclosure is keyboard focusable");
+  await dispatchKey(client, " ", 0);
+  await waitForExpression(client, String.raw`(() => { const b=document.querySelector('button[aria-controls="tops-resume-example"]'); const p=document.getElementById('tops-resume-example'); return !!b && b.getAttribute('aria-expanded') === 'true' && !!p && !p.hidden; })()`, scenarioName + " Resume example Space activation", 3000);
+
+  const after = await evaluate(client, String.raw`(() => {
+    const required = [
+      "Resume header name", "Resume header location", "Resume header email",
+      "Resume header phone", "Military specialty", "Years served",
+      "Target job title", "Optional job description", "Additional skills",
+      "Certifications", "Experience source"
+    ];
+    const functionRequests = (window.__topsA11yNetwork || []).filter((url) => /\/\.netlify\/functions\//.test(url));
+    return {
+      labelsPresent: required.every((label) => !!document.querySelector('[aria-label="' + label + '"]')),
+      functionRequests: functionRequests.length
+    };
+  })()`, false);
+  check(after.labelsPresent, scenarioName + " visible Resume fields keep persistent labels");
+  check(after.functionRequests === 0, scenarioName + " Resume semantics test makes zero function requests");
 }
 
 async function runKeyboardChecks(client) {
@@ -719,6 +919,7 @@ async function run() {
     console.log("BROWSER " + (version.product || "unknown") + " " + (version.userAgent || ""));
     console.log("FIXTURE synthetic local state; outbound connections denied before network");
 
+    let auditedRouteScenarios = 0;
     for (const scenario of SCENARIOS) {
       const physicalWidth = scenario.width * scenario.zoom;
       const physicalHeight = scenario.height * scenario.zoom;
@@ -731,23 +932,30 @@ async function run() {
         screenHeight: physicalHeight,
         screenOrientation: { type: scenario.orientation, angle: scenario.orientation === "portraitPrimary" ? 0 : 90 }
       });
-      await client.send("Page.navigate", { url: origin + "/?tool=dashboard&a11y_scenario=" + encodeURIComponent(scenario.name) });
-      await waitForExpression(
-        client,
-        "document.readyState === 'complete' && !!document.querySelector('#root') && !document.querySelector('#root .seo-content') && !document.body.innerText.includes('Loading error')",
-        scenario.name + " rendered app",
-        12000
-      );
-      await evaluate(client, "document.documentElement.style.zoom = " + JSON.stringify(String(scenario.zoom)) + "; true", false);
-      await delay(120);
-      const audit = await evaluate(client, DOCUMENT_AUDIT + "(" + scenario.zoom + ")", false);
-      check(
-        audit && audit.failures.length === 0,
-        scenario.name + " semantics, reflow, targets, contrast, orientation, and reduced motion",
-        audit && audit.failures ? audit.failures.join(" | ") : "audit returned no evidence"
-      );
-      console.log("SCENARIO " + scenario.name + " " + JSON.stringify(audit.metrics));
+      for (const route of AUDIT_ROUTES) {
+        const scenarioRoute = scenario.name + " " + route;
+        await client.send("Page.navigate", { url: origin + "/?tool=" + encodeURIComponent(route) + "&a11y_scenario=" + encodeURIComponent(scenario.name) });
+        await waitForExpression(
+          client,
+          "document.readyState === 'complete' && !!document.querySelector('#root') && !document.querySelector('#root .seo-content') && !document.body.innerText.includes('Loading error')",
+          scenarioRoute + " rendered app",
+          12000
+        );
+        await evaluate(client, "document.documentElement.style.zoom = " + JSON.stringify(String(scenario.zoom)) + "; true", false);
+        await delay(120);
+        if (route === "navigator") await runNavigatorSurfaceChecks(client, scenarioRoute);
+        if (route === "pathway") await runResumeSurfaceChecks(client, scenarioRoute);
+        const audit = await evaluate(client, DOCUMENT_AUDIT + "(" + scenario.zoom + ")", false);
+        check(
+          audit && audit.failures.length === 0,
+          scenarioRoute + " semantics, reflow, targets, contrast, orientation, and reduced motion",
+          audit && audit.failures ? audit.failures.join(" | ") : "audit returned no evidence"
+        );
+        auditedRouteScenarios += 1;
+        console.log("SCENARIO " + scenarioRoute + " " + JSON.stringify(audit.metrics));
+      }
     }
+    check(auditedRouteScenarios === SCENARIOS.length * AUDIT_ROUTES.length, "A11Y-NR-05 all configured route scenarios executed", "actual=" + auditedRouteScenarios);
 
     await client.send("Emulation.setDeviceMetricsOverride", {
       width: 375,

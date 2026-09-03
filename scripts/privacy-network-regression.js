@@ -17,6 +17,18 @@ const PROVIDER_PATTERNS = Object.freeze([
   { name: "Kit", pattern: /(?:convertkit|(?:^|[./])api\.kit\.com(?:[/:]|$))/i },
   { name: "OneSignal", pattern: /onesignal/i }
 ]);
+const STALE_ACTIVE_PUSH_COPY = Object.freeze([
+  "One tap. Works offline, and it is what unlocks push alerts.",
+  "Two steps in Safari. This is also what makes alerts possible on iPhone.",
+  "This in-app browser cannot install the app or deliver alerts.",
+  "Deadline alerts that save you money",
+  "Faster access. Push reminders. No app store.",
+  "Get deadline alerts \\u2014 tap here to install.",
+  "\\uD83D\\uDCF2 INSTALL TO GET DEADLINE ALERTS\"),",
+  "Installed users get push reminders timed to their separation date",
+  "a bookmark can\\u2019t send alerts",
+  "tap Enable Alerts below"
+]);
 
 function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), "utf8");
@@ -31,6 +43,18 @@ function sha256(relativePath) {
 function countMatches(source, pattern) {
   const flags = pattern.flags.includes("g") ? pattern.flags : pattern.flags + "g";
   return Array.from(source.matchAll(new RegExp(pattern.source, flags))).length;
+}
+
+function hasStaleActivePushCopy(source) {
+  return STALE_ACTIVE_PUSH_COPY.some(function(needle) {
+    return source.includes(needle);
+  });
+}
+
+function lineContaining(source, marker) {
+  return source.split("\n").find(function(line) {
+    return line.includes(marker);
+  }) || "";
 }
 
 function functionBlock(source, name) {
@@ -150,6 +174,59 @@ function sourceChecks() {
     pushDeclarations === 1 && literalOff === 1,
     "production push is one literal false declaration",
     "declarations=" + pushDeclarations + " literalOff=" + literalOff
+  );
+
+  const staleMatches = STALE_ACTIVE_PUSH_COPY.filter(function(needle) {
+    return index.includes(needle);
+  });
+  check(!hasStaleActivePushCopy(index), "POFF-01 active UI contains no obsolete push promise", staleMatches.join(" | "));
+  const staleMutation = index.replace(
+    "One tap. Add Transition OPS to your home screen for direct access.",
+    STALE_ACTIVE_PUSH_COPY[0]
+  );
+  check(hasStaleActivePushCopy(staleMutation), "POFF-01 obsolete push-copy mutation fails");
+
+  check(
+    countMatches(index, /One tap\. Add Transition OPS to your home screen for direct access\./) === 1 &&
+      countMatches(index, /Two steps in Safari\. Add Transition OPS to your Home Screen for direct access\./) === 1 &&
+      countMatches(index, /This in-app browser cannot install Transition OPS\./) === 1 &&
+      countMatches(index, /Track critical transition windows/) === 1 &&
+      countMatches(index, /Direct access\. No app store\./) === 1 &&
+      countMatches(index, /\(not \\"Add Bookmark\\"\)/) === 3,
+    "POFF-02 install surfaces use direct-access guidance without a push promise"
+  );
+
+  const installStripLine = lineContaining(index, "Install Transition OPS \\u2014 tap here.");
+  const installCardLine = lineContaining(index, "\\uD83D\\uDCF2 INSTALL TRANSITION OPS");
+  const installFooterLine = lineContaining(index, "After installing: open Transition OPS from your home screen.");
+  check(
+    installStripLine.includes("TOPS_PUSH_DISABLED_COPY") &&
+      installStripLine.includes("Android: browser menu \\u2192 Install App or Add to Home Screen.") &&
+      installCardLine.includes("Install Transition OPS on your home screen for direct access.") &&
+      installCardLine.includes("TOPS_PUSH_DISABLED_COPY") &&
+      installFooterLine.includes("TOPS_PUSH_DISABLED_COPY"),
+    "POFF-03 install strip, card, and footer state that push is disabled"
+  );
+
+  const historyStatus = "Release notes describe the app at the time shown. Current status:";
+  const historyStatusIndex = index.indexOf(historyStatus);
+  const renderedHistoryIndex = index.indexOf("WHATS_NEW.map(function(item, i)", historyStatusIndex);
+  const historicalV90 = '{ v: "v90", date: "25 JUL 2026", note: "Fixed: the INSTALL TO GET DEADLINE ALERTS card is back on the main dashboard where new users can see it (it had been tucked under MORE TOOLS). Installing from your home screen is what makes deadline alerts possible \\u2014 15 seconds, worth it." }';
+  check(
+    historyStatusIndex !== -1 &&
+      renderedHistoryIndex > historyStatusIndex &&
+      renderedHistoryIndex - historyStatusIndex < 500 &&
+      lineContaining(index, historyStatus).includes("TOPS_PUSH_DISABLED_COPY") &&
+      countMatches(index, /const APP_VERSION = "v96";/) === 1 &&
+      index.split(historicalV90).length - 1 === 1,
+    "POFF-04 unchanged release history is preceded by current push-off context"
+  );
+
+  check(
+    hasStaleActivePushCopy(STALE_ACTIVE_PUSH_COPY[0]) &&
+      !hasStaleActivePushCopy("Review your in-app alerts and reminders before each transition window.") &&
+      /const NOTIFICATIONS = \[/.test(index),
+    "POFF-06 stale-copy classifier is scoped and preserves valid in-app alert vocabulary"
   );
 
   const uuidPattern = /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/i;
@@ -709,18 +786,22 @@ async function runtimeScenario(name, chromePath, migratedFixture) {
       const visibleEmailInputs = Array.from(document.querySelectorAll('input[type="email"]')).filter(visible).length;
       const visibleSignupCopy = Array.from(document.querySelectorAll("body *")).filter(visible)
         .some((element) => element.children.length === 0 && /weekly\s+(?:field\s+brief|intel)|join\s+(?:the\s+)?list/i.test(element.textContent || ""));
+      const visibleText = String(document.body && document.body.innerText || "").replace(/\s+/g, " ");
       return {
         activePushControls,
+        enableInstructionVisible: /tap Enable Alerts|enable push|turn on push/i.test(visibleText),
         gaGlobals: !!(window.gtag || window.dataLayer || window.GoogleAnalyticsObject),
         kitUi: visibleEmailInputs > 0 || visibleSignupCopy,
         oneSignalGlobals: !!(window.OneSignal || window.OneSignalDeferred || window.__TOPS_ONESIGNAL_INSTANCE || window.__TOPS_ONESIGNAL_PROMISE),
         oneSignalScripts: Array.from(document.scripts).filter((script) => /onesignal/i.test(script.src || "")).length,
         previousRoot: window.__TOPS_PREVIOUS_ROOT_SW_URL || "",
         probe: window.__topsPrivacyProbe || null,
+        pushDisabledVisible: visibleText.includes("Push alerts are currently disabled."),
         registrations: registrations.map((registration) => ({
           scope: registration.scope,
           scriptURL: (registration.active || registration.waiting || registration.installing || {}).scriptURL || ""
-        }))
+        })),
+        stalePushPromiseVisible: /works offline, and it is what unlocks push alerts|makes alerts possible on iPhone|cannot install the app or deliver alerts|deadline alerts that save you money|faster access\. push reminders|get deadline alerts|installed users get push reminders|bookmark can.t send alerts/i.test(visibleText)
       };
     })()`, true);
 
@@ -729,6 +810,17 @@ async function runtimeScenario(name, chromePath, migratedFixture) {
     check(evidence.kitUi === false, name + " rendered app exposes no Kit email-signup UI");
     check(evidence.oneSignalGlobals === false && evidence.oneSignalScripts === 0, name + " rendered app creates no OneSignal runtime or script");
     check(evidence.activePushControls.length === 0, name + " rendered app exposes no push-enablement control", JSON.stringify(evidence.activePushControls));
+    check(
+      evidence.pushDisabledVisible === true &&
+        evidence.enableInstructionVisible === false &&
+        evidence.stalePushPromiseVisible === false,
+      "POFF-05 " + name + " rendered push-off state is explicit and contains no enable instruction or obsolete promise",
+      JSON.stringify({
+        pushDisabledVisible: evidence.pushDisabledVisible,
+        enableInstructionVisible: evidence.enableInstructionVisible,
+        stalePushPromiseVisible: evidence.stalePushPromiseVisible
+      })
+    );
     check(evidence.probe.notificationPermissionCalls === 0, name + " makes no browser notification-permission request");
     check(
       evidence.probe.registrations.length === 1 && evidence.probe.registrations[0].scriptURL === "/pwa-sw.js",

@@ -9,7 +9,7 @@ written) · DEPRECATED (superseded — note by what)
 
 | # | Skill | Owner | Status | Version | Validated | Location |
 |---|-------|-------|--------|---------|-----------|----------|
-| 1 | validation-gate | s3-devops | CODIFIED | 1.10 | 2026-09-03 | .claude/skills/validation-gate/ (canonical); .agents/skills/validation-gate/ (Codex project mirror) |
+| 1 | validation-gate | s3-devops | CODIFIED | 1.11 | 2026-09-03 | .claude/skills/validation-gate/ (canonical); .agents/skills/validation-gate/ (Codex project mirror) |
 | 2 | deploy-discipline | s3-devops | CODIFIED | 1.8 | 2026-09-03 | .claude/skills/deploy-discipline/ (Claude copy); .agents/skills/deploy-discipline/ (Codex copy; environment wording intentionally differs); 1.3 BURNED - see change log |
 | 3 | policy-verification | s2-intel | CODIFIED | 1.1 | 2026-08-02 | .claude/skills/policy-verification/ |
 | 4 | brand-voice | pao-content | CODIFIED | 1.0 | 2026-07-31 | .claude/skills/brand-voice/ |
@@ -71,6 +71,15 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-09-03 - **#1 `validation-gate` 1.10 -> 1.11 is CODIFIED.** Every
+  tracked or intended new `.json` artifact must now pass `JSON.parse`.
+  Malformed, truncated, and adversarial payload fixtures must use a non-JSON
+  extension, with no path allowlist, directory exemption, or invalid-JSON
+  exception. VG-111-1 through VG-111-5 passed 5/5: all 15 candidate JSON
+  artifacts parsed, both renamed renderer fixtures remained byte-identical,
+  all three consumer references moved to `.txt`, the renderer suite passed,
+  and invalid-JSON plus stale-reference negative fixtures failed closed.
+  Canonical and mirror are byte-identical. Lane: COMMANDER. Owner: s3-devops.
 - 2026-09-03 - **#2 `deploy-discipline` 1.7 -> 1.8 is CODIFIED.** Cache
   consumption is now origin-aware: same-origin integers cannot decrease or
   identify different worker bytes, while an immutable hosted clone candidate

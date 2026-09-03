@@ -5852,7 +5852,7 @@ function App() {
     if (branch === "native") {
       installBlock = React.createElement("div", { style: { marginTop: 14, paddingTop: 12, borderTop: "1px solid " + C.border } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "INSTALL THE APP"),
-        React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.45, marginBottom: 9 } }, "One tap. Works offline, and it is what unlocks push alerts."),
+        React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.45, marginBottom: 9 } }, "One tap. Add Transition OPS to your home screen for direct access."),
         React.createElement("button", {
           onClick: handleCaptureInstall,
           style: { width: "100%", padding: "11px", background: "transparent", border: "1px solid " + C.goldBright, borderRadius: 8, color: C.goldBright, fontSize: 12, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" }
@@ -5861,7 +5861,7 @@ function App() {
     } else if (branch === "ios") {
       installBlock = React.createElement("div", { style: { marginTop: 14, paddingTop: 12, borderTop: "1px solid " + C.border } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 2, color: C.gold } }, "ADD TO HOME SCREEN"),
-        React.createElement("div", { style: { fontSize: 12.5, color: C.textSecondary, lineHeight: 1.45, marginTop: 4 } }, "Two steps in Safari. This is also what makes alerts possible on iPhone."),
+        React.createElement("div", { style: { fontSize: 12.5, color: C.textSecondary, lineHeight: 1.45, marginTop: 4 } }, "Two steps in Safari. Add Transition OPS to your Home Screen for direct access."),
         step("s1", stepIcon([
           React.createElement("path", { key: "a", d: "M12 16V4" }),
           React.createElement("path", { key: "b", d: "M8 8l4-4 4 4" }),
@@ -5876,7 +5876,7 @@ function App() {
     } else if (branch === "inapp") {
       installBlock = React.createElement("div", { style: { marginTop: 14, paddingTop: 12, borderTop: "1px solid " + C.border } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "OPEN IN YOUR BROWSER TO INSTALL"),
-        React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.45 } }, "This in-app browser cannot install the app or deliver alerts. Tap the menu in the corner and choose Open in Browser.")
+        React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.45 } }, "This in-app browser cannot install Transition OPS. Tap the menu in the corner and choose Open in Browser.")
       );
     }
 
@@ -6185,7 +6185,7 @@ function App() {
             icon: "📅",
             route: "timeline",
             label: "SMART TIMELINE",
-            desc: "Deadline alerts that save you money"
+            desc: "Track critical transition windows"
           }];
           return /*#__PURE__*/React.createElement("div", {
             className: "onboard-welcome-root"
@@ -6477,7 +6477,7 @@ function App() {
                 marginTop: 2,
                 lineHeight: 1.3
               }
-            }, "Faster access. Push reminders. No app store.")
+            }, "Direct access. No app store.")
           ),
           /*#__PURE__*/React.createElement("button", {
             onClick: handleInstallBannerClick,
@@ -6528,6 +6528,8 @@ function App() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
+      flexWrap: "wrap",
+      gap: 8,
       justifyContent: "space-between",
       alignItems: "flex-start"
     }
@@ -6553,7 +6555,11 @@ function App() {
     style: {
       display: "flex",
       gap: 6,
-      alignItems: "flex-start"
+      alignItems: "flex-start",
+      flexWrap: "wrap",
+      justifyContent: "flex-end",
+      marginLeft: "auto",
+      maxWidth: "100%"
     }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: toggleTheme,
@@ -6775,7 +6781,7 @@ function App() {
     if (sa || installStripX) return null;
     return /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, background: "rgba(212,175,55,0.10)", border: "1px solid " + C.gold, borderRadius: 8, padding: "9px 12px", marginBottom: 12 } },
       React.createElement("div", { onClick: handleInstallBannerClick, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { fontSize: 11.5, color: C.textPrimary, lineHeight: 1.45, flex: 1, minWidth: 0, minHeight: 44, display: "flex", alignItems: "center", cursor: "pointer" } },
-        "\uD83D\uDCF2 ", React.createElement("strong", null, "Get deadline alerts \u2014 tap here to install."), " iPhone: ", React.createElement("strong", { style: { color: C.goldBright } }, "Share \u2192 Add to Home Screen"), " (not Bookmark). Android: one tap."),
+        "\uD83D\uDCF2 ", React.createElement("strong", null, "Install Transition OPS \u2014 tap here."), " iPhone: ", React.createElement("strong", { style: { color: C.goldBright } }, "Share \u2192 Add to Home Screen"), " (not \"Add Bookmark\"). Android: browser menu \u2192 Install App or Add to Home Screen. ", TOPS_PUSH_DISABLED_COPY),
       React.createElement("div", { onClick: function() { setInstallStripX(true); try { window.__safeSet("tops_install_strip_x", "1"); } catch(e) {} }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, "aria-label": "Dismiss install prompt", style: { color: C.inactive, fontSize: 15, cursor: "pointer", minWidth: 44, minHeight: 44, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 } }, "\u2715"));
   })(), activeTab === "navigator" && /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "70vh" } },
     React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 6 } },
@@ -6794,11 +6800,11 @@ function App() {
       navBusy && React.createElement("div", { style: { fontSize: 12, fontStyle: "italic", color: C.inactive } }, "Navigator consulting verified data\u2026")),
     navMsgs.length === 0 && React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 } },
       ["I'm 9 months out, Guard, married, 60% pending \u2014 what's my sequence?", "What's the BDD window and why does it matter?", "What should I not miss before separation?"].map(function(ch, i3) {
-        return React.createElement("div", { key: i3, onClick: function(){ sendNavigator(ch); }, style: { fontSize: 11.5, color: C.textSecondary, border: "1px solid " + C.border, borderRadius: 14, padding: "6px 11px", cursor: "pointer" } }, ch);
+        return React.createElement("button", { key: i3, type: "button", disabled: navBusy, onClick: function(){ sendNavigator(ch); }, style: { minHeight: 44, background: "transparent", fontFamily: "inherit", textAlign: "left", fontSize: 11.5, color: C.textSecondary, border: "1px solid " + C.border, borderRadius: 14, padding: "6px 11px", cursor: navBusy ? "default" : "pointer", opacity: navBusy ? 0.5 : 1 } }, ch);
       })),
     React.createElement("div", { style: { display: "flex", gap: 8 } },
-      React.createElement("input", { value: navInput, onChange: function(e){ setNavInput(e.target.value); }, onKeyDown: function(e){ if (e.key === "Enter") sendNavigator(); }, placeholder: "Ask about your transition\u2026", style: { flex: 1, background: "#1A2114", border: "1px solid #4A5A35", borderRadius: 8, color: "#F2EFE4", caretColor: "#E8C547", fontWeight: 600, padding: 12, fontSize: 16, fontFamily: "inherit", WebkitTextFillColor: "#F2EFE4", opacity: 1 } }),
-      React.createElement("div", { onClick: function(){ sendNavigator(); }, style: { background: C.goldBright, color: "#0E120B", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: "pointer", opacity: navBusy ? 0.5 : 1 } }, "SEND"))),
+      React.createElement("input", { value: navInput, onChange: function(e){ setNavInput(e.target.value); }, onKeyDown: function(e){ if (e.key === "Enter") sendNavigator(); }, "aria-label": "Ask the Transition Navigator", placeholder: "Ask about your transition\u2026", style: { flex: 1, minWidth: 0, minHeight: 44, background: "#1A2114", border: "1px solid #4A5A35", borderRadius: 8, color: "#F2EFE4", caretColor: "#E8C547", fontWeight: 600, padding: 12, fontSize: 16, fontFamily: "inherit", WebkitTextFillColor: "#F2EFE4", opacity: 1 } }),
+      React.createElement("button", { type: "button", disabled: navBusy || !navInput.trim(), onClick: function(){ sendNavigator(); }, "aria-label": "Send Navigator question", style: { minHeight: 44, background: C.goldBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: navBusy || !navInput.trim() ? "default" : "pointer", opacity: navBusy || !navInput.trim() ? 0.5 : 1 } }, "SEND"))),
   navUnlocked && activeTab !== "navigator" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: "#0E120B", borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
   navUnlocked && activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { ...S.card, padding: 14, borderColor: C.gold, cursor: "pointer", marginBottom: 12 } },
     React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: C.goldBright, letterSpacing: 1, marginBottom: 4 } }, "\u2726 ASK THE NAVIGATOR"),
@@ -6809,6 +6815,7 @@ function App() {
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: C.gold } }, "WHAT'S NEW \u2014 TRANSITION OPS"),
         React.createElement("button", { onClick: function() { setWhatsNewOpen(false); }, "aria-label": "Close", autoFocus: true, style: { background: "none", border: "none", color: C.textSecondary, fontSize: 18, cursor: "pointer", padding: "10px 14px", margin: "-10px -14px" } }, "\u2715")
       ),
+      React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.5, padding: "8px 10px", marginBottom: 4, background: C.bg, border: "1px solid " + C.border, borderRadius: 7 } }, "Release notes describe the app at the time shown. Current status: ", TOPS_PUSH_DISABLED_COPY),
       WHATS_NEW.map(function(item, i) {
         return React.createElement("div", { key: i, style: { padding: "12px 0", borderBottom: i < WHATS_NEW.length - 1 ? "1px solid " + C.border : "none" } },
           React.createElement("div", { style: { display: "flex", alignItems: "baseline", gap: 8 } },
@@ -7352,7 +7359,7 @@ whatsNewUnseen && React.createElement("div", {
         fontWeight: 600,
         marginBottom: 8
       }
-    }, "\uD83D\uDCF2 INSTALL TO GET DEADLINE ALERTS"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.55, marginBottom: 10 } }, "Installed users get push reminders timed to their separation date \u2014 BDD, GI Bill transfer, and SGLI\u2192VGLI windows you can\u2019t reopen once they close. Takes 15 seconds."), isIOS && !isSafari && /*#__PURE__*/React.createElement("div", {
+    }, "\uD83D\uDCF2 INSTALL TRANSITION OPS"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.55, marginBottom: 10 } }, "Install Transition OPS on your home screen for direct access. ", TOPS_PUSH_DISABLED_COPY), isIOS && !isSafari && /*#__PURE__*/React.createElement("div", {
       style: {
         background: C.bgWarning,
         border: "1px solid #8B6914",
@@ -7438,7 +7445,7 @@ whatsNewUnseen && React.createElement("div", {
         color: C.textPrimary,
         fontWeight: 700
       }
-    }, "\"Add to Home Screen\""), /*#__PURE__*/React.createElement("span", { style: { color: C.warning, fontWeight: 700 } }, " (NOT \u201cAdd Bookmark\u201d \u2014 a bookmark can\u2019t send alerts)")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    }, "\"Add to Home Screen\""), /*#__PURE__*/React.createElement("span", { style: { color: C.warning, fontWeight: 700 } }, " (not \"Add Bookmark\")")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
       style: {
         color: C.gold,
         fontWeight: 700
@@ -7487,7 +7494,7 @@ whatsNewUnseen && React.createElement("div", {
         color: C.textPrimary,
         fontWeight: 700
       }
-    }, "\"Add to Home Screen\""), /*#__PURE__*/React.createElement("span", { style: { color: C.warning, fontWeight: 700 } }, " (NOT \u201cAdd Bookmark\u201d \u2014 a bookmark can\u2019t send alerts)")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    }, "\"Add to Home Screen\""), /*#__PURE__*/React.createElement("span", { style: { color: C.warning, fontWeight: 700 } }, " (not \"Add Bookmark\")")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
       style: {
         color: C.gold,
         fontWeight: 700
@@ -7536,7 +7543,7 @@ whatsNewUnseen && React.createElement("div", {
         borderTop: "1px solid " + C.border,
         paddingTop: 8
       }
-    }, "After installing: open app from home screen \u2192 tap Enable Alerts below \u2192 set your ETS date")) : /*#__PURE__*/React.createElement("div", {
+    }, "After installing: open Transition OPS from your home screen. ", TOPS_PUSH_DISABLED_COPY)) : /*#__PURE__*/React.createElement("div", {
       style: {
         ...S.card,
         padding: 12,
@@ -8007,17 +8014,18 @@ whatsNewUnseen && React.createElement("div", {
       }
     }, t.text))));
   })(), activeTab === "pathway" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { ...S.card, borderLeft: "3px solid " + C.greenBright, marginBottom: 14 } },
-    React.createElement("div", { onClick: function() { setAiR(function(p){ return Object.assign({}, p, { open: !p.open }); }); if (window.__trackEvent) window.__trackEvent("ai_resume_opened", {}); }, style: { display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" } },
-      React.createElement("div", null,
-        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.greenBright, fontWeight: 700 } }, "\u2728 AI RESUME DRAFTER \u2014 FREE"),
-        React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "First, we pull out your facts for review. Then we draft from only what you confirm. Civilian and federal formats. 3 free drafts a day.")),
-      React.createElement("span", { style: { color: C.greenBright, fontSize: 16, transform: aiR.open ? "rotate(90deg)" : "none" } }, "\u203A")),
-    aiR.open && React.createElement("div", { style: { marginTop: 12 } },
-      React.createElement("div", { style: { display: "flex", gap: 8, marginBottom: 10 } },
+    React.createElement("button", { type: "button", "aria-expanded": aiR.open, "aria-controls": "tops-resume-drafter-panel", onClick: function() { setAiR(function(p){ return Object.assign({}, p, { open: !p.open }); }); if (window.__trackEvent) window.__trackEvent("ai_resume_opened", {}); }, style: { display: "flex", width: "100%", minHeight: 44, padding: 0, background: "transparent", border: "none", justifyContent: "space-between", alignItems: "center", textAlign: "left", color: "inherit", cursor: "pointer" } },
+      React.createElement("span", { style: { display: "block", minWidth: 0 } },
+        React.createElement("span", { style: { display: "block", fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.greenBright, fontWeight: 700 } }, "\u2728 AI RESUME DRAFTER \u2014 FREE"),
+        React.createElement("span", { style: { display: "block", fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "First, we pull out your facts for review. Then we draft from only what you confirm. Civilian and federal formats. 3 free drafts a day.")),
+      React.createElement("span", { "aria-hidden": "true", style: { color: C.greenBright, fontSize: 16, transform: aiR.open ? "rotate(90deg)" : "none" } }, "\u203A")),
+    !aiR.open && React.createElement("div", { id: "tops-resume-drafter-panel", hidden: true }),
+    aiR.open && React.createElement("div", { id: "tops-resume-drafter-panel", style: { marginTop: 12 } },
+      React.createElement("div", { role: "group", "aria-label": "Resume format", style: { display: "flex", gap: 8, marginBottom: 10 } },
         ["standard", "federal"].map(function(m) {
           var on = aiR.mode === m;
-          return React.createElement("div", { key: m, onClick: function() { setAiR(function(p){ return Object.assign({}, p, { mode: m }); }); },
-            style: { flex: 1, textAlign: "center", padding: "9px 6px", borderRadius: 8, cursor: "pointer", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1, fontWeight: 700,
+          return React.createElement("button", { key: m, type: "button", "aria-pressed": on, onClick: function() { setAiR(function(p){ return Object.assign({}, p, { mode: m }); }); },
+            style: { flex: 1, minHeight: 44, textAlign: "center", padding: "9px 6px", borderRadius: 8, cursor: "pointer", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1, fontWeight: 700,
               background: on ? C.greenBright : "transparent", color: on ? "#0E120B" : C.textSecondary, border: "1px solid " + (on ? C.greenBright : C.border) } },
             m === "standard" ? "CIVILIAN RESUME" : "FEDERAL (USAJOBS)");
         })),
@@ -8035,7 +8043,7 @@ whatsNewUnseen && React.createElement("div", {
           var selected = aiR.lengthPreference === option.id;
           return React.createElement("button", { key: option.id, type: "button", "aria-pressed": selected, onClick: function() { setAiR(function(p){
             return Object.assign({}, p, { lengthPreference: option.id, lengthPlan: null, out: "", auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false });
-          }); }, style: { flex: "1 1 120px", minHeight: 38, padding: "8px 7px", borderRadius: 7, cursor: "pointer", fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: 0.5, fontWeight: 700, background: selected ? C.greenBright : "transparent", color: selected ? "#0E120B" : C.textSecondary, border: "1px solid " + (selected ? C.greenBright : C.border) } }, option.label);
+          }); }, style: { flex: "1 1 120px", minHeight: 44, padding: "8px 7px", borderRadius: 7, cursor: "pointer", fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: 0.5, fontWeight: 700, background: selected ? C.greenBright : "transparent", color: selected ? "#0E120B" : C.textSecondary, border: "1px solid " + (selected ? C.greenBright : C.border) } }, option.label);
         })),
         aiR.facts && React.createElement("div", { style: { marginTop: 10, paddingTop: 9, borderTop: "1px solid " + C.border } },
           React.createElement("div", { style: { fontSize: 10.5, color: C.textSecondary, lineHeight: 1.5, marginBottom: 7 } }, "Confirm only years that directly match this target. Leave blank if unavailable. Check each role that supports the target. We never calculate relevant experience from age, total service, dates, titles, or the job posting."),
@@ -8055,31 +8063,32 @@ whatsNewUnseen && React.createElement("div", {
       aiR.mode !== "federal" && React.createElement("div", { style: { marginBottom: 10, padding: "11px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.greenBright, fontWeight: 700, marginBottom: 4 } }, "RESUME HEADER (OPTIONAL FOR DRAFTING)"),
         React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.5, marginBottom: 7 } }, "Add what you have now. These four header fields stay in this browser for this draft and are not included in the resume request."),
-        React.createElement("input", { ref: resumeHeaderNameRef, placeholder: "Name", value: aiR.headerName, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerName: v }); }); }, style: { ...S.input, marginBottom: 7 } }),
-        React.createElement("input", { ref: resumeHeaderLocationRef, placeholder: "City, State", value: aiR.headerLocation, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerLocation: v }); }); }, style: { ...S.input, marginBottom: 7 } }),
+        React.createElement("input", { ref: resumeHeaderNameRef, "aria-label": "Resume header name", placeholder: "Name", value: aiR.headerName, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerName: v }); }); }, style: { ...S.input, marginBottom: 7 } }),
+        React.createElement("input", { ref: resumeHeaderLocationRef, "aria-label": "Resume header location", placeholder: "City, State", value: aiR.headerLocation, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerLocation: v }); }); }, style: { ...S.input, marginBottom: 7 } }),
         React.createElement("div", { style: { display: "flex", gap: 8 } },
-          React.createElement("input", { ref: resumeHeaderEmailRef, placeholder: "Email", inputMode: "email", value: aiR.headerEmail, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerEmail: v }); }); }, style: { ...S.input, marginBottom: 0, flex: 1 } }),
-          React.createElement("input", { ref: resumeHeaderPhoneRef, placeholder: "Phone", inputMode: "tel", value: aiR.headerPhone, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerPhone: v }); }); }, style: { ...S.input, marginBottom: 0, flex: 1 } }))),
-      React.createElement("input", { placeholder: "Your MOS / AFSC / rate (e.g. 92A)", defaultValue: aiR.role, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { role: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
+          React.createElement("input", { ref: resumeHeaderEmailRef, "aria-label": "Resume header email", placeholder: "Email", inputMode: "email", value: aiR.headerEmail, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerEmail: v }); }); }, style: { ...S.input, marginBottom: 0, flex: 1 } }),
+          React.createElement("input", { ref: resumeHeaderPhoneRef, "aria-label": "Resume header phone", placeholder: "Phone", inputMode: "tel", value: aiR.headerPhone, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { headerPhone: v }); }); }, style: { ...S.input, marginBottom: 0, flex: 1 } }))),
+      React.createElement("input", { "aria-label": "Military specialty", placeholder: "Your MOS / AFSC / rate (e.g. 92A)", defaultValue: aiR.role, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { role: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
       React.createElement("div", { style: { display: "flex", gap: 8 } },
-        React.createElement("input", { placeholder: "Years served", defaultValue: aiR.years, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { years: v }); }); }, style: { ...S.input, marginBottom: 8, flex: 1 } }),
-        React.createElement("input", { placeholder: "Specific target job title (e.g. Operations Manager)", value: aiR.target, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { target: v, relevantYears: "", relevantRoleIndexes: [], lengthPlan: null, out: "", auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); }); }, style: { ...S.input, marginBottom: 8, flex: 2 } })),
+        React.createElement("input", { "aria-label": "Years served", placeholder: "Years served", defaultValue: aiR.years, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { years: v }); }); }, style: { ...S.input, marginBottom: 8, flex: 1 } }),
+        React.createElement("input", { "aria-label": "Target job title", placeholder: "Specific target job title (e.g. Operations Manager)", value: aiR.target, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { target: v, relevantYears: "", relevantRoleIndexes: [], lengthPlan: null, out: "", auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); }); }, style: { ...S.input, marginBottom: 8, flex: 2 } })),
       React.createElement("div", { style: { marginBottom: 10, padding: "11px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.greenBright, fontWeight: 700, marginBottom: 4 } }, "TAILOR TO A JOB (OPTIONAL)"),
         React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.5, marginBottom: 7 } }, "Paste a civilian job description or USAJOBS announcement. We use matching keywords only when your confirmed facts support them."),
-        React.createElement("textarea", { placeholder: "Paste the job description here...", defaultValue: aiR.posting, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { posting: v }); }); }, rows: 6, style: { ...S.input, resize: "vertical", fontFamily: "inherit" } })),
-      React.createElement("input", { placeholder: "ASIs / additional skills (optional)", defaultValue: aiR.skills, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { skills: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
-      React.createElement("input", { placeholder: "Certifications (optional)", defaultValue: aiR.certs, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { certs: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
-      React.createElement("textarea", { placeholder: "Paste straight from your CURRENT resume, NCOER/eval, or award write-ups \u2014 military language is fine, we translate it. Or just type what you did: duties, numbers, people led, equipment, results.", defaultValue: aiR.exp, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { exp: v }); }); }, rows: 5, style: { ...S.input, marginBottom: 6, resize: "vertical", fontFamily: "inherit" } }),
-      React.createElement("div", { onClick: function() { setAiR(function(p){ return Object.assign({}, p, { showEx: !p.showEx }); }); }, style: { fontSize: 11, color: C.greenBright, cursor: "pointer", marginBottom: 8 } }, aiR.showEx ? "Hide example \u2303" : "Not sure what to paste? See an example \u203A"),
-      aiR.showEx && React.createElement("div", { style: { background: C.bg, border: "1px dashed " + C.border, borderRadius: 8, padding: "10px 12px", marginBottom: 10, fontSize: 11, color: C.textSecondary, lineHeight: 1.6, fontStyle: "italic" } }, "\u201CNCOIC, Battalion Motor Pool. Responsible for all maintenance operations. Ensured 100% accountability of $2M in assigned equipment. Supervised 15 personnel in performance of PMCS and dispatch operations. Maintained operational readiness rate of 95%.\u201D", React.createElement("div", { style: { fontStyle: "normal", marginTop: 6, color: C.inactive } }, "That's it \u2014 straight military language, real numbers. We turn it into civilian resume material.")),
+        React.createElement("textarea", { "aria-label": "Optional job description", placeholder: "Paste the job description here...", defaultValue: aiR.posting, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { posting: v }); }); }, rows: 6, style: { ...S.input, resize: "vertical", fontFamily: "inherit" } })),
+      React.createElement("input", { "aria-label": "Additional skills", placeholder: "ASIs / additional skills (optional)", defaultValue: aiR.skills, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { skills: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
+      React.createElement("input", { "aria-label": "Certifications", placeholder: "Certifications (optional)", defaultValue: aiR.certs, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { certs: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
+      React.createElement("textarea", { "aria-label": "Experience source", placeholder: "Paste straight from your CURRENT resume, NCOER/eval, or award write-ups \u2014 military language is fine, we translate it. Or just type what you did: duties, numbers, people led, equipment, results.", defaultValue: aiR.exp, onBlur: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { exp: v }); }); }, rows: 5, style: { ...S.input, marginBottom: 6, resize: "vertical", fontFamily: "inherit" } }),
+      React.createElement("button", { type: "button", "aria-expanded": aiR.showEx, "aria-controls": "tops-resume-example", onClick: function() { setAiR(function(p){ return Object.assign({}, p, { showEx: !p.showEx }); }); }, style: { width: "100%", minHeight: 44, padding: 0, background: "transparent", border: "none", textAlign: "left", fontFamily: "inherit", fontSize: 11, color: C.greenBright, cursor: "pointer", marginBottom: 8 } }, aiR.showEx ? "Hide example \u2303" : "Not sure what to paste? See an example \u203A"),
+      !aiR.showEx && React.createElement("div", { id: "tops-resume-example", hidden: true }),
+      aiR.showEx && React.createElement("div", { id: "tops-resume-example", style: { background: C.bg, border: "1px dashed " + C.border, borderRadius: 8, padding: "10px 12px", marginBottom: 10, fontSize: 11, color: C.textSecondary, lineHeight: 1.6, fontStyle: "italic" } }, "\u201CNCOIC, Battalion Motor Pool. Responsible for all maintenance operations. Ensured 100% accountability of $2M in assigned equipment. Supervised 15 personnel in performance of PMCS and dispatch operations. Maintained operational readiness rate of 95%.\u201D", React.createElement("div", { style: { fontStyle: "normal", marginTop: 6, color: C.inactive } }, "That's it \u2014 straight military language, real numbers. We turn it into civilian resume material.")),
       aiR.facts && React.createElement("div", { style: { marginBottom: 10, padding: "11px 12px", background: C.bg, border: "1px solid " + C.gold, borderRadius: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.goldBright, fontWeight: 700, marginBottom: 5 } }, "STEP 2 \u2014 REVIEW YOUR FACTS"),
         React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, lineHeight: 1.5, marginBottom: 7 } }, "Check that every distinct role has its own block, job titles and employers match your source, DATES contains real calendar dates only, and software such as Workday is under SKILLS AND TOOLS unless you named a certification."),
         aiR.factWarnings.length > 0 && React.createElement("div", { style: { background: "rgba(212,168,67,0.12)", border: "1px solid " + C.gold, borderRadius: 7, padding: "8px 10px", marginBottom: 8 } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: 1, color: C.goldBright, fontWeight: 700, marginBottom: 4 } }, "FIX THESE BEFORE DRAFTING"),
           aiR.factWarnings.map(function(warning, i){ return React.createElement("div", { key: i, style: { fontSize: 11, color: C.textBody, lineHeight: 1.5 } }, "\u2022 " + warning); })),
-        React.createElement("textarea", { value: aiR.facts, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { facts: v, factWarnings: [], relevantYears: "", relevantRoleIndexes: [], lengthPlan: null, out: "", auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); }); }, rows: 12, style: { ...S.input, resize: "vertical", fontFamily: "'Courier Prime', monospace", fontSize: 10.5 } })),
+        React.createElement("textarea", { "aria-label": "Confirmed resume fact sheet", value: aiR.facts, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { facts: v, factWarnings: [], relevantYears: "", relevantRoleIndexes: [], lengthPlan: null, out: "", auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); }); }, rows: 12, style: { ...S.input, resize: "vertical", fontFamily: "'Courier Prime', monospace", fontSize: 10.5 } })),
       React.createElement("button", { disabled: aiR.loading, onClick: function() {
         var today = new Date().toISOString().slice(0,10);
         var used = 0; try { var rec = JSON.parse(window.__safeGet("tops_air_uses") || "{}"); used = rec.d === today ? rec.n : 0; } catch(e) {}
@@ -8115,7 +8124,7 @@ whatsNewUnseen && React.createElement("div", {
             setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets, lengthPlan: nextLengthPlan, auditScorecard: nextScorecard, auditTrace: Array.isArray(res.d.trace) ? res.d.trace : [], auditBlockers: [], supportedKeywords: Array.isArray(res.d.supportedKeywords) ? res.d.supportedKeywords : [], auditGaps: Array.isArray(res.d.gaps) ? res.d.gaps : [] }); });
           })
           .catch(handleResumeTransportFailure);
-      }, style: { width: "100%", background: aiR.loading ? C.border : C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? (aiR.facts ? "DRAFTING\u2026 (10-15 SEC)" : "CHECKING FACTS\u2026") : (aiR.facts ? "DRAFT FROM CONFIRMED FACTS" : "BUILD MY FACT SHEET")),
+      }, style: { width: "100%", minHeight: 44, background: aiR.loading ? C.border : C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? (aiR.facts ? "DRAFTING\u2026 (10-15 SEC)" : "CHECKING FACTS\u2026") : (aiR.facts ? "DRAFT FROM CONFIRMED FACTS" : "BUILD MY FACT SHEET")),
       aiR.err && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, aiR.err),
       aiR.auditBlockers.length > 0 && React.createElement("div", { style: { marginTop: 10, padding: "11px 12px", background: "rgba(190,70,70,0.12)", border: "1px solid " + C.warning, borderRadius: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.warning, fontWeight: 700, marginBottom: 5 } }, "DRAFT WITHHELD \u2014 FIX THESE FIRST"),
@@ -8199,12 +8208,13 @@ whatsNewUnseen && React.createElement("div", {
         React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.55 } }, "A DOL Employment Navigator will review this with you 1-on-1, free \u2014 then connect you to 70+ partner orgs for mentoring, hiring events, and placement. Virtual option works from anywhere, spouses included. \u2192"))),
       React.createElement("div", { style: { marginTop: 14, paddingTop: 12, borderTop: "1px solid " + C.border } }, React.createElement("a", { href: "https://www.missionready.jobs/start", target: "_blank", rel: "noopener noreferrer", onClick: function() { if (window.__trackEvent) window.__trackEvent("missionready_start_tapped", {}); }, style: { display: "block", padding: "11px 13px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8, textDecoration: "none" } }, React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "ANOTHER WAY TO DO THIS: REELWORX MISSIONREADY \u2192", React.createElement("span", { style: { marginLeft: 7, fontSize: 9, padding: "2px 5px", background: C.bg, color: C.inactive, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, fontWeight: 400, border: "1px solid " + C.border, verticalAlign: "middle", whiteSpace: "nowrap" } }, "PARTNER")), React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.55 } }, "Build a guided profile in about five minutes instead of writing a resume. It prints to a clean ATS-ready resume and works as a single link on any application. Nothing is public and no contact details move until you approve it. Free for you, always."))),
       React.createElement("div", { style: { marginTop: 10, fontSize: 10, color: C.inactive, lineHeight: 1.5 } }, "Your text is used to build your fact sheet and draft."))), /*#__PURE__*/React.createElement("div", { style: { ...S.card, borderLeft: "3px solid " + C.gold, marginBottom: 14 } },
-    React.createElement("div", { onClick: function() { setJobsQ(function(p){ return Object.assign({}, p, { open: !p.open }); }); if (window.__trackEvent) window.__trackEvent("jobs_search_opened", {}); }, style: { display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" } },
-      React.createElement("div", null,
-        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.goldBright, fontWeight: 700 } }, "\uD83C\uDFAF LIVE JOBS IN YOUR TARGET STATE"),
-        React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "Real openings, pulled live from the Dept. of Labor \u2014 search any state before you even move.")),
-      React.createElement("span", { style: { color: C.goldBright, fontSize: 16, transform: jobsQ.open ? "rotate(90deg)" : "none" } }, "\u203A")),
-    jobsQ.open && !JOBS_LIVE && React.createElement("div", { style: { marginTop: 12 } },
+    React.createElement("button", { type: "button", "aria-expanded": jobsQ.open, "aria-controls": "tops-live-jobs-panel", onClick: function() { setJobsQ(function(p){ return Object.assign({}, p, { open: !p.open }); }); if (window.__trackEvent) window.__trackEvent("jobs_search_opened", {}); }, style: { display: "flex", width: "100%", minHeight: 44, padding: 0, background: "transparent", border: "none", justifyContent: "space-between", alignItems: "center", textAlign: "left", color: "inherit", cursor: "pointer" } },
+      React.createElement("span", { style: { display: "block", minWidth: 0 } },
+        React.createElement("span", { style: { display: "block", fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.goldBright, fontWeight: 700 } }, "\uD83C\uDFAF LIVE JOBS IN YOUR TARGET STATE"),
+        React.createElement("span", { style: { display: "block", fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "Real openings, pulled live from the Dept. of Labor \u2014 search any state before you even move.")),
+      React.createElement("span", { "aria-hidden": "true", style: { color: C.goldBright, fontSize: 16, transform: jobsQ.open ? "rotate(90deg)" : "none" } }, "\u203A")),
+    !jobsQ.open && React.createElement("div", { id: "tops-live-jobs-panel", hidden: true }),
+    jobsQ.open && !JOBS_LIVE && React.createElement("div", { id: "tops-live-jobs-panel", style: { marginTop: 12 } },
       React.createElement("div", { style: { background: C.bg, border: "1px solid " + C.gold, borderRadius: 8, padding: "13px 15px", marginBottom: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1, color: C.goldBright, fontWeight: 700, marginBottom: 4 } }, "\u23F3 FINAL APPROVAL IN PROGRESS"),
         React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.6 } }, "The live job feed is built and our data access request is in the U.S. Department of Labor's approval queue (submitted 21 JUL 2026). The moment it's granted, real openings in all 50 states appear right here \u2014 watch What's New.")),
@@ -8214,7 +8224,7 @@ whatsNewUnseen && React.createElement("div", {
       React.createElement("div", { style: { marginTop: 10, paddingTop: 8, borderTop: "1px solid " + C.border, display: "flex", alignItems: "center", gap: 8 } },
         React.createElement("a", { href: "https://www.careeronestop.org/", target: "_blank", rel: "noopener noreferrer", style: { flexShrink: 0 } }, React.createElement("img", { src: "https://www.careeronestop.org/tridionmultimedia/tcm24-26158_CareerOneStopLogo-linktous.gif", alt: "CareerOneStop logo", style: { height: 24, display: "block" }, onError: function(e){ e.target.style.display = "none"; } })),
         React.createElement("div", { style: { fontSize: 10, color: C.inactive, lineHeight: 1.4 } }, "Job data by CareerOneStop, sponsored by the U.S. Department of Labor."))),
-    jobsQ.open && JOBS_LIVE && React.createElement("div", { style: { marginTop: 12 } },
+    jobsQ.open && JOBS_LIVE && React.createElement("div", { id: "tops-live-jobs-panel", style: { marginTop: 12 } },
       React.createElement("input", { placeholder: "Job keyword (e.g. logistics manager, electrician)", defaultValue: jobsQ.keyword, onBlur: function(e){ var v=e.target.value; setJobsQ(function(p){ return Object.assign({}, p, { keyword: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
       React.createElement("input", { placeholder: "State (e.g. Wisconsin or WI) or ZIP", defaultValue: jobsQ.state, onBlur: function(e){ var v=e.target.value; setJobsQ(function(p){ return Object.assign({}, p, { state: v }); }); }, style: { ...S.input, marginBottom: 10 } }),
       React.createElement("button", { disabled: jobsQ.loading, onClick: function() {
@@ -8262,6 +8272,7 @@ whatsNewUnseen && React.createElement("div", {
     onClick: () => setPathwayMode("journey"),
     style: {
       flex: 1,
+      minHeight: 44,
       padding: "10px 8px",
       background: pathwayMode === "journey" ? C.green : C.bgCard,
       border: "1px solid " + (pathwayMode === "journey" ? C.greenBright : C.border),
@@ -8276,6 +8287,7 @@ whatsNewUnseen && React.createElement("div", {
     onClick: () => setPathwayMode("planner"),
     style: {
       flex: 1,
+      minHeight: 44,
       padding: "10px 8px",
       background: pathwayMode === "planner" ? C.green : C.bgCard,
       border: "1px solid " + (pathwayMode === "planner" ? C.greenBright : C.border),
@@ -8299,6 +8311,7 @@ whatsNewUnseen && React.createElement("div", {
     key: cat.id,
     onClick: () => setJourneyMOS(journeyMOS === cat.id ? "" : cat.id),
     style: {
+      minHeight: 44,
       padding: "8px 12px",
       background: journeyMOS === cat.id ? C.green : C.bgCard,
       border: "1px solid " + (journeyMOS === cat.id ? C.greenBright : C.border),

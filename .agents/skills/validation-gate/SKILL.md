@@ -2,7 +2,7 @@
 name: validation-gate
 description: Validation battle drill for Transition OPS. EDIT mode runs pre-commit on any code change and before any PR, and governs how edits are applied - discrete edits, per-edit counts, reviewed scripts. INTEGRITY mode runs against a clean tree for structural and encoding audits. Owner - s3-devops.
 metadata:
-  version: "1.10"
+  version: "1.11"
   status: CODIFIED
   owner: s3-devops
   validated: "2026-09-03"
@@ -93,7 +93,11 @@ under another name.
      each. This includes active PWA, legacy, dedicated push, script, vendor, and
      Netlify Function files regardless of filename or directory. Do not rely on
      `git diff --name-only` alone because it omits untracked additions. Run
-     `JSON.parse` on `manifest.json`.
+   - JSON files: build an explicit inventory before parsing. Every tracked
+     `.json` and intended untracked `.json` addition must pass `JSON.parse`.
+     Raw, malformed, truncated, or adversarial payload fixtures are not JSON
+     artifacts and must use a non-JSON extension such as `.txt`. No path
+     allowlist, directory exemption, or invalid-JSON exception is permitted.
    - YAML files (`.yml` / `.yaml`, anywhere in the repo, `.github/workflows/**`
      in particular): parse with Ruby. Ruby ships with macOS and its YAML parser
      is Psych, in-tree, offline, deterministic:
@@ -452,3 +456,27 @@ client, store, function, network, provider, model, hosted, deploy, merge, or
 production action was used. Version 1.10 is CODIFIED by Commander approval
 dated 2026-09-03. `deploy-discipline` continues to own hosted artifact
 identity and release authority.
+
+## VERSION 1.11 GOVERNANCE CALIBRATION
+
+- **VG-111-1:** VG-110-1 through VG-110-4 and all earlier controls remain
+  unchanged and PASS.
+- **VG-111-2:** all 15 JSON artifacts remaining in the candidate must parse
+  successfully, with every path reported. PASS.
+- **VG-111-3:** the two intentionally malformed renderer fixtures must use
+  `.txt`, remain byte-identical to their pre-rename payloads, and continue to
+  pass the renderer regression through the three updated references. PASS.
+- **VG-111-4:** renaming either malformed fixture back to `.json`, or adding
+  any other invalid `.json`, must fail structural validation without an
+  allowlist, directory exemption, or invalid-JSON exception. PASS.
+- **VG-111-5:** any stale `.json` fixture reference or renderer regression
+  failure must fail the gate. PASS.
+
+Governance calibration executed 5/5 PASS on 2026-09-03. All 15 candidate JSON
+artifacts parsed; both renamed payloads retained their original SHA-256 hashes;
+all three consumer references moved to `.txt`; and the renderer regression
+passed. Negative fixtures confirmed that invalid `.json` artifacts and stale
+references fail closed without an exception path. Canonical and mirror are
+byte-identical. No function, model, provider, network, hosted, deploy, merge,
+or production action was used. Version 1.11 is CODIFIED by Commander approval
+dated 2026-09-03.
