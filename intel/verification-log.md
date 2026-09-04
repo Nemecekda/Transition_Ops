@@ -595,7 +595,7 @@ COMMANDER lane on arrival because both touch shipped policy copy.
 
 | Fires | Item | What must happen | Source |
 |---|---|---|---|
-| **2 SEP 2026** | The four 3 AUG 2026 OPM rules take effect. | The POLICY INTEL entry **FEDERAL SERVICE — RIF AND APPEAL RULES CHANGE 2 SEP 2026** is written in the future tense throughout, and Navigator RULE 16 orders future tense for CORPUS (b). **On 2 SEP that copy becomes wrong by tense.** Flip (b) and the card to present tense; keep the notice-date sentence, which stays true permanently. | V-2026-009 |
+| **2 SEP 2026** | The four 3 AUG 2026 OPM rules take effect. | The POLICY INTEL entry **FEDERAL SERVICE — RIF AND APPEAL RULES CHANGE 2 SEP 2026** is written in the future tense throughout, and Navigator RULE 16 orders future tense for CORPUS (b). **On 2 SEP that copy becomes wrong by tense.** Flip (b) and the card to present tense; keep the notice-date sentence, which stays true permanently. **STATUS 4 SEP 2026 — card CLOSED, verified in production (V-2026-016, commit `0d71fc5`). Corpus (b) STAGED at `fa80e5d`, unmerged and unpreviewed; this row closes on merge (V-2026-017). NOT YET CLOSED.** | V-2026-009 |
 | **1 JAN 2027** | Agency compliance with 5 CFR 430.208(e)(1)-(2) begins. | A standardized distribution may be published between now and then. **No cap figure exists today and none may be invented** (V-2026-010, NOT CLAIMED). Re-verify at rung 1; if OPM publishes a distribution, it is a new finding, not an edit. | V-2026-010 |
 
 **Why the 2 SEP item is not optional.** Dean's ruling of 9 AUG 2026 is that the
@@ -961,3 +961,64 @@ residuals :2812/:8761 (Patch E).
   open until (b) ships.
 - **Source entry:** `intel/V-2026-016-opm-rif-in-force.md`
 - **Staged patch:** `patch-2026-09-03-opm-rif-tense-flip.md`
+
+---
+
+## V-2026-017 — Navigator corpus (b) and RULE 16 flipped to in force (STAGED)
+
+- **Claim:** The Navigator's CORPUS (b) and RULE 16 still described the four OPM
+  rules as future law after they took effect 2 SEP 2026. RULE 16 instructed the
+  model to "answer in the future tense," so the Navigator was under standing
+  orders to give a wrong answer while the POLICY INTEL card beside it read
+  correctly. Recorded OPEN in [[V-2026-016]]; this entry is the fix.
+- **Rating:** CONFIRMED
+- **Sources:** unchanged from [[V-2026-016]] — FR docs 2026-15665, 2026-15666,
+  2026-15654, 2026-15650, and MSPB RIN 3124-AA33 (FR public-inspection doc
+  2026-16456), all verified by S2 on 3 SEP 2026. This patch asserts nothing
+  beyond them. No re-derivation was performed for this entry.
+- **Verified date:** 3 SEP 2026 (sources) / 4 SEP 2026 (edit evidence)
+- **Commit:** `fa80e5d` on `ops/opm-rif-corpus-b`, base `0d71fc5`. Scope:
+  `netlify/functions/navigator.js` only, two lines, seven edits.
+
+| # | Edit |
+|---|---|
+| R16-1 | RULE 16: CORPUS (b) "take effect 2 SEP 2026 — answer in the future tense" to "are IN FORCE NOW as of 2 SEP 2026 — answer in the present tense" |
+| C-1 | "FUTURE LAW, effective 2 SEP 2026 — not current law … all take effect that day" to "IN FORCE since 2 SEP 2026 … all took effect that day" |
+| C-2 | "From 2 SEP 2026 employees will be ranked by" to "Since 2 SEP 2026 employees are ranked by" (date retained by Commander ruling) |
+| C-3 | "or more will receive 5 additional points" to "or more receive" |
+| C-4 | "RIF appeals will move from the MSPB to OPM and will be open only to" to "have moved … and are open only to" |
+| C-5 | "appeals also move to OPM" to "appeals have also moved to OPM" |
+| C-6 | MSPB carve-out ADDED per Commander ruling: Board jurisdiction over RIF, probationary-termination, and suitability appeals ended 2 SEP 2026; pending cases and pre-2-SEP actions stay with the Board; Foreign Service RIF jurisdiction (22 U.S.C. 4010a) retained |
+- **Grep verdicts:** every `old_str` asserted before writing — all seven
+  `old=1 / new=0`, aborting on mismatch; all seven post-edit `old=0 / new=1`.
+  Presence: 11 new anchors at 1 each, including `RIN 3124-AA33`,
+  `public-inspection doc 2026-16456`, and `(22 U.S.C. 4010a)`. Absence: 0 each
+  for `answer in the future tense`, `FUTURE LAW`, `not current law`,
+  `all take effect that day`, `From 2 SEP 2026 employees will be ranked by`,
+  `will receive 5 additional points`, `will move from the MSPB`,
+  `will be open only to`, `appeals also move to OPM`.
+- **Preserved by Commander ruling, verified present after the edits:** the
+  notice-date-controls clause in **both** places it appears (count 2, lines 25
+  and 190, neither inside any match window); `NEVER describe both in one undated
+  present tense.`; `TWO OPM EFFECTIVE DATES — NEVER BLEND THEM`; and
+  `CORPUS (c) … IN FORCE NOW as of 6 AUG 2026`.
+- **nav-token-regression: PASS, exit 0** — 16 tokens in three-way MAP /
+  MANIFEST / LIVE_TOKENS sync, 6 bracketed CORPUS headers all mapped, identical
+  to the pre-edit baseline. Encoding PASS (zero curly quotes, zero U+00A0),
+  `node --check` OK, untouched-region PASS (one file).
+- **No cache bump, proven not assumed:** the ASSETS-backed path check returns
+  empty and `sw.js` is absent from the diff. `navigator.js` is a Netlify
+  Function and backs no `ASSETS` entry. `CACHE_NAME` stays `transition-ops-v130`.
+- **PREVIEW VALIDATION: NOT PERFORMED.** No result exists and none could. The
+  commit `fa80e5d` is local only; `origin/ops/opm-rif-corpus-b` carries
+  `0d71fc5`, which is main's tip and therefore the PRE-edit branch. Netlify has
+  never built an artifact containing this change, so no branch deploy of it can
+  have been exercised. **PREVIEW WARRANTED** and still owed: the honest test is
+  to ask the deployed Navigator a RIF question and read the tense back. Static
+  checks prove structure and citation integrity, never answer quality.
+- **Disposition:** STAGED, COMMANDER lane, unmerged. Not in production.
+- **Tickler [[V-2026-009]] — NOT closed in full.** The card half closed on
+  4 SEP 2026 (V-2026-016, `0d71fc5`, verified at the live edge). The corpus half
+  is authored and gated but unmerged, so the shipped Navigator still answers in
+  the future tense. The tickler closes when `fa80e5d` reaches `main`, not when
+  it is written. The row above is marked STATUS accordingly.
