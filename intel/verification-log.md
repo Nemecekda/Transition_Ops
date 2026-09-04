@@ -1093,3 +1093,109 @@ verification of the 2108 categories was performed for this entry.
 - **Tickler [[V-2026-009]]: CLOSED 4 SEP 2026.** The row above is flipped from
   STATUS to CLOSED. Card closed via V-2026-016 (`0d71fc5`); corpus (b) and
   RULE 16 closed via this amendment (`fa80e5d`, merged as `e33792c`).
+
+---
+
+## V-2026-018 — FEDVIP enrollment window + Gray Area Future Retiree rungs (STAGED)
+
+- **Claim:** The reminder ladder had no rung for the FEDVIP dental/vision
+  enrollment window (opens 31 days before a retirement date, closes 60 days
+  after, enrollment not automatic) and no rung for Guard/Reserve members
+  entering the gray area with 20 good years. Both are hard-deadline,
+  non-automatic actions with no in-app prompt.
+- **Rating:** CONFIRMED
+- **Sources:** as asserted in `intel/patch-2026-09-04-fedvip-gar-ladder.md`,
+  eleven claims marked VERIFIED by S2 on 4 SEP 2026 — benefeds.gov ABO FAQ and
+  FEDVIP Fact Sheet (OPM-sponsored, primary), myairforcebenefits.us.af.mil
+  (.mil), dfas.mil Gray Area Retirees guide (primary, updated Mar 2026),
+  Army Echoes Aug–Oct 2026 (DFAS Cleveland and TRICARE Communications bylines),
+  soldierforlife.army.mil Army Service Center, MOAA citing DFAS (Apr 2026),
+  tricare.mil/LifeEvents/QLE. Patch records no stays, injunctions, or pending
+  rule changes found on 4 SEP 2026.
+- **NOT RE-DERIVED FOR THIS ENTRY.** This record covers the *application* of the
+  patch, not its sourcing. No primary source was re-read during execution and no
+  URL was fetched. The CONFIRMED rating rests entirely on the S2 pass the patch
+  asserts. If that pass is not itself logged, this entry does not substitute
+  for it.
+- **Verified date:** 4 SEP 2026 (sources, per patch) / 4 SEP 2026 (edit evidence)
+- **Commit:** `0e93163` on `ops/fedvip-gar-ladder`, base `b405193` (main's tip).
+  Scope: `index.html` (+3), `sw.js` (1 line), and the patch file itself.
+  Three str_replace operations, no other changes.
+
+| # | Edit |
+|---|---|
+| OP 1 | `index.html` — inserted rungs `r-1-fedvip` (CRITICAL, BENEFITS, mo:1) and `r-1-gar` (HIGH, GUARD/RESERVE, mo:1) immediately after `r-1-final` |
+| OP 2 | `index.html` — inserted rung `r-p1-fedvip` (HIGH, BENEFITS, mo:-1) immediately after `r-p1`; TRICARE QLE 90-day period folded into this rung rather than given its own |
+| OP 3 | `sw.js` — `CACHE_NAME` `transition-ops-v130` → `transition-ops-v131` |
+
+- **Grep verdicts — pre-write:** the patch's three anchor assertions each
+  returned exactly 1 (`10x harder without base access`,
+  `bridge income depending on your state`, `transition-ops-v130`); abort was
+  armed on any other count. A fourth gate not called for by the patch was added:
+  each `old_str` had to occur exactly once in its target file — all three
+  returned 1, so no replacement target was ambiguous. Nothing was written until
+  all gates cleared.
+- **Grep verdicts — post-write:** presence `r-1-fedvip` 1, `r-1-gar` 1,
+  `r-p1-fedvip` 1, `transition-ops-v131` 1. Absence `transition-ops-v130` 0.
+  Ladder order confirmed by id sequence: `r-1-final` → `r-1-fedvip` → `r-1-gar`
+  → `r-0-ets`, and `r-p1` → `r-p1-fedvip` → `r-p4`.
+- **Escape integrity, proven not assumed:** the new rungs carry literal
+  `\u26A0\uFE0F` and `\u2014` sequences that had to survive as backslash escapes,
+  not glyphs. `old_str`/`new_str` were extracted programmatically from the patch
+  file rather than retyped, so no transcription path existed. Witness: literal
+  `\u26A0` 20 → 21 (+1, the one new title), real `⚠️` character 1 → 1
+  (unchanged — nothing was converted). Per-op `\u` delta was computed from the
+  strings themselves and re-checked against the actual file delta after each
+  write, aborting on mismatch. Delimiters balanced: `{`/`}` +2/+2 and +1/+1,
+  `[`/`]` likewise, quote deltas even (54, 20).
+- **Syntax:** `node --check sw.js` OK. All three inline `<script>` blocks in
+  `index.html` parse clean and parse *identically* before and after the edit
+  (plain JS, no JSX/Babel, so this is a true parse test, not a lint).
+- **Cache-name sequence — no live collision. Correcting an earlier claim in
+  this session.** A survey of `CACHE_NAME` at every local and remote branch tip
+  shows **no branch but this one holds `transition-ops-v131`**. The string
+  appears only inside the *history* of `ops/openai-parallel-clone`: `cfa5f52`
+  (30 AUG 2026) bumped v130→v131, `93b3545` moved v131→v132, the branch climbed
+  to v140, and `4377a6b` "Correct service-worker cache sequence" (31 AUG 2026)
+  wound it back to **v130**, where its tip sits today. An earlier `git log -S`
+  probe returned "2 commits" for v131 and was reported as a live claim on that
+  name; that was wrong. `-S` counts commits where a string's occurrence count
+  *changed*, so it matched the commit that created v131 and the one that removed
+  it, neither of which is reachable as a value at the tip.
+- **The real cache exposure, which that error obscured.**
+  `ops/openai-parallel-clone` is unmerged, **61 commits ahead of main**, and its
+  tip `CACHE_NAME` is `transition-ops-v130` — *identical to main's*. Merging it
+  as-is ships no cache bump at all, so returning users keep a stale service
+  worker. Merging it after this branch would additionally regress v131 → v130.
+  This branch's own v130 → v131 bump is correct against main and is unaffected.
+  Merge order and a re-bump on `ops/openai-parallel-clone` need a Commander
+  ruling.
+- **PREVIEW VALIDATION: NOT PERFORMED.** Commit `0e93163` is local only and was
+  not pushed. No `origin/ops/fedvip-gar-ladder` ref exists, so Netlify has never
+  built an artifact containing these rungs and no branch deploy of them can have
+  been exercised. Static checks prove structure and encoding, never render.
+- **Rungs render but do not fire.** Per the patch's own note, the in-app
+  ETS-triggered local alert channel remains INERT — these rungs appear on the
+  timeline and will not produce a notification until that channel is fixed
+  (same gate as `ops/vgli-tail-reminders`). A member who does not open the app
+  gets nothing.
+- **Anchor caveat carried forward:** rungs are anchored to the member's
+  separation date, which equals the retirement date for retirees. No separate
+  retirement-date anchor was built. Design ruling remains open if the two ever
+  need to diverge.
+- **member-impact: NOT RUN.** The skill requires a SHIP/DECLINE assessment after
+  a CONFIRMED rating and before copy is drafted. The patch carries source
+  verification but no member-impact section, and none was performed during
+  execution. Owed before merge.
+- **Disposition:** STAGED, COMMANDER lane (benefits content + deploy pipeline),
+  unmerged, unpushed. Not in production. `main` remains at `b405193` and
+  contains zero of these ids.
+- **Execution incident, recorded for the pattern:** the three edits sat
+  uncommitted across a session boundary. GitHub Desktop auto-stashed them on a
+  branch switch (`stash@{0}: On ops/fedvip-gar-ladder: !!GitHub_Desktop`) and
+  left HEAD on `main` with a clean tree, which reads as total loss on first
+  inspection. Recovered whole from the stash and verified byte-identical by the
+  escape and delimiter witnesses above. This is the third GitHub_Desktop stash
+  of this shape in the log's recent history. **Standing correction: agent work
+  gets committed to its branch in the same session it is written, never left
+  uncommitted for a later turn.**
