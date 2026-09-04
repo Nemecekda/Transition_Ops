@@ -130,12 +130,20 @@
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "5b25d308-645b-4459-8810-36ac09da88f5",
-      allowLocalhostAsSecureOrigin: true,
-      serviceWorkerPath: "sw.js",
-      serviceWorkerParam: { scope: "/" }
-    });
+    // The SDK is domain-locked to transitionops.org and rejects on any other
+    // host (localhost, Netlify deploy previews). Unhandled, that rejection
+    // surfaces as a console error on every preview build. Production is
+    // unaffected: init resolves and the catch is never entered.
+    try {
+      await OneSignal.init({
+        appId: "5b25d308-645b-4459-8810-36ac09da88f5",
+        allowLocalhostAsSecureOrigin: true,
+        serviceWorkerPath: "sw.js",
+        serviceWorkerParam: { scope: "/" }
+      });
+    } catch (e) {
+      console.warn("OneSignal init skipped:", (e && e.message) || e);
+    }
   });
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
