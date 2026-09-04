@@ -897,3 +897,67 @@ held open, no Navy tiers asserted anywhere in app copy.
 Live-file defect confirmed against main prior to patch: blanket
 180-day and O-4+ approval language, index.html:2849/2903 plus
 residuals :2812/:8761 (Patch E).
+
+---
+
+## V-2026-016 — OPM RIF and appeal rules IN FORCE 2 SEP 2026 (tense flip shipped)
+
+- **Claim:** The four OPM final rules of 3 AUG 2026 took effect 2 SEP 2026. The
+  shipped POLICY INTEL card still read "future law, not current law" in the
+  future tense, wrong by tense as of 0000 2 SEP. A fifth rule — the MSPB's own
+  jurisdictional withdrawal, effective the same day — was absent from the app.
+- **Rating:** CONFIRMED
+- **Verified by:** S2, 3 SEP 2026, rung 1 — Federal Register full text direct.
+  MSPB rule read from the federalregister.gov public-inspection document.
+  Orchestrator, 4 SEP 2026, live-edge verification only; the FR and MSPB
+  sources were not re-derived and remain S2's attestation.
+- **Verified date:** 3 SEP 2026 (sources) / 4 SEP 2026 (live edge)
+- **Citations of record:**
+  - "Reduction in Force," **Final Rule, FR doc 2026-15665**, 5 CFR 351,
+    published 2026-08-03, effective 2026-09-02.
+  - "Reduction in Force Appeals," **Final Rule, FR doc 2026-15666**, 5 CFR 351,
+    published 2026-08-03, effective 2026-09-02.
+  - "Probationary and Trial Period Termination Appeals," **Final Rule, FR doc
+    2026-15654**, published 2026-08-03, effective 2026-09-02.
+  - "Suitability Action Appeals," **Final Rule, FR doc 2026-15650**, 5 CFR 731,
+    published 2026-08-03, effective 2026-09-02.
+  - MSPB, "Appellate Jurisdiction Update II," **Final Rule, RIN 3124-AA33**,
+    public-inspection doc **2026-16456**, effective 2026-09-02 — removes MSPB
+    regulatory jurisdiction over probationary-termination, suitability, and RIF
+    appeals; not applied to pending cases or to actions taken before the
+    effective date; Foreign Service RIF jurisdiction (22 U.S.C. 4010a) retained.
+- **No stay, injunction, or delay** was found against any of the five rules.
+- **Shipped:** commit `0d71fc5`, branch `ops/opm-rif-in-force`, merged to `main`
+  4 SEP 2026. Six string-literal edits to `index.html`, header and five verb
+  phrases, plus the RIN 3124-AA33 companion cite. `sw.js` CACHE_NAME v129 to
+  v130. No structural change, no new assertion beyond the citations above.
+- **Preserved deliberately:** "RIF notices issued before 2 SEP 2026 are
+  processed under the prior rules — the date on your notice decides which
+  regime governs it." Per Dean's ruling of 9 AUG 2026 the card must never blend
+  the two effective dates; that sentence stays permanently true and was not
+  touched. Verified present at the live edge post-merge.
+- **LIVE-EDGE VERDICT: PASS** (4 SEP 2026, production, post-publish).
+  `future law, not current law` expected 0, got **0**. `IN FORCE, 2 SEP 2026`
+  expected 1, got **1**. `sw.js` `transition-ops-v130` expected 1, got **1**.
+  Full anchor sweep: all eight new anchors returned 1, all six retired strings
+  returned 0, the retained notice-date line returned 1, and stale cache
+  `transition-ops-v129` returned 0 at the edge. `origin/main`, local `main`, and
+  `raw.githubusercontent.com/main` all at `0d71fc5` — no publish lag, no partial
+  deploy.
+- **OPEN — the 2 SEP tickler is only half closed.** The tickler ordered "Flip
+  (b) and the card to present tense." The card shipped; **CORPUS (b) did not**.
+  `netlify/functions/navigator.js` is live and still future tense: **line 25,
+  RULE 16** instructs the model to "answer in the future tense" for CORPUS (b),
+  and **line 190** reads "FUTURE LAW, effective 2 SEP 2026 — not current law,"
+  carrying "will be ranked by" and "will receive 5 additional points." A member
+  reading the card now gets the correct framing; a member asking the Navigator
+  is told it is future law. The Navigator is being instructed to be wrong.
+  The corpus carries the notice-date sentence in two places — preserved on any
+  flip, per the same 9 AUG ruling.
+- **Disposition:** card CLOSED and verified in production. Corpus (b) OPEN,
+  COMMANDER lane, needs its own branch, a `policy-verification` pass against
+  this entry, and `nav-token-regression`. No cache bump — `navigator.js` is a
+  Netlify Function and backs no `ASSETS` entry. The tickler row above stays
+  open until (b) ships.
+- **Source entry:** `intel/V-2026-016-opm-rif-in-force.md`
+- **Staged patch:** `patch-2026-09-03-opm-rif-tense-flip.md`
