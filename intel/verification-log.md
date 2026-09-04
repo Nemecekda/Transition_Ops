@@ -595,7 +595,7 @@ COMMANDER lane on arrival because both touch shipped policy copy.
 
 | Fires | Item | What must happen | Source |
 |---|---|---|---|
-| **2 SEP 2026** | The four 3 AUG 2026 OPM rules take effect. | The POLICY INTEL entry **FEDERAL SERVICE — RIF AND APPEAL RULES CHANGE 2 SEP 2026** is written in the future tense throughout, and Navigator RULE 16 orders future tense for CORPUS (b). **On 2 SEP that copy becomes wrong by tense.** Flip (b) and the card to present tense; keep the notice-date sentence, which stays true permanently. **STATUS 4 SEP 2026 — card CLOSED, verified in production (V-2026-016, commit `0d71fc5`). Corpus (b) STAGED at `fa80e5d`, unmerged and unpreviewed; this row closes on merge (V-2026-017). NOT YET CLOSED.** | V-2026-009 |
+| **2 SEP 2026** | The four 3 AUG 2026 OPM rules take effect. | The POLICY INTEL entry **FEDERAL SERVICE — RIF AND APPEAL RULES CHANGE 2 SEP 2026** is written in the future tense throughout, and Navigator RULE 16 orders future tense for CORPUS (b). **On 2 SEP that copy becomes wrong by tense.** Flip (b) and the card to present tense; keep the notice-date sentence, which stays true permanently. **CLOSED 4 SEP 2026 — both halves shipped and verified in production. Card: V-2026-016, commit `0d71fc5`. Corpus (b) and RULE 16: V-2026-017 as amended, commit `fa80e5d`, merged via `e33792c`. Preview PASS on the branch deploy before merge; live-edge sweep PASS after.** | V-2026-009 |
 | **1 JAN 2027** | Agency compliance with 5 CFR 430.208(e)(1)-(2) begins. | A standardized distribution may be published between now and then. **No cap figure exists today and none may be invented** (V-2026-010, NOT CLAIMED). Re-verify at rung 1; if OPM publishes a distribution, it is a new finding, not an edit. | V-2026-010 |
 
 **Why the 2 SEP item is not optional.** Dean's ruling of 9 AUG 2026 is that the
@@ -1022,3 +1022,74 @@ residuals :2812/:8761 (Patch E).
   is authored and gated but unmerged, so the shipped Navigator still answers in
   the future tense. The tickler closes when `fa80e5d` reaches `main`, not when
   it is written. The row above is marked STATUS accordingly.
+
+---
+
+## V-2026-017 — AMENDMENT, 4 SEP 2026 (preview verdict, merge, live-edge sweep)
+
+Supersedes three statements in [[V-2026-017]] above, each of which was true when
+written and is now overtaken: **PREVIEW VALIDATION: NOT PERFORMED**;
+**Disposition: STAGED … Not in production**; and **Tickler [[V-2026-009]] — NOT
+closed in full**. The entry body is left as written; this amendment carries the
+change.
+
+- **Merged:** `fa80e5d` reached `main` via merge commit `e33792c`. Netlify
+  production deploy `6a9ac67e03841e00086d10c4`, commit `e33792c`, state `ready`,
+  published 2026-09-04 13:24Z. Corpus (b) and RULE 16 are in production.
+
+### PREVIEW VALIDATION: PASS
+
+Performed by the Commander against the branch deploy
+`https://ops-v-2026-017-corpus-b-record--veteranbridge-tools.netlify.app`
+(deploy `6a9abd3cfd8ab300085987a7`, commit `e33792c`, `ready`, built
+2026-09-04 12:44Z) **before** the merge. Two questions, both PASS.
+
+- **Q1, RIF retention.** The answer led *"RETENTION PREFERENCE IN A RIF — IN
+  FORCE SINCE 2 SEPTEMBER 2026"* and stayed in the present tense throughout.
+  Ranking, preference points, and appeals content correct. The MSPB carve-out
+  was stated. The notice-date rule was flagged CRITICAL. The 6 AUG
+  performance-rating rule was kept separate with its own date — RULE 16's
+  NEVER BLEND THEM guardrail holding under live conditions, which is the
+  behaviour the guardrail exists to produce and the reason it was left standing.
+- **Q2, pending MSPB appeal.** Correctly stated that a pending case stays with
+  the Board, that the notice date decides the regime, and closed with a
+  confirm-your-notice-date next step. This is the exact question the C-6
+  carve-out was added to answer, and it could not have been answered before.
+
+### LIVE PRODUCTION VERIFICATION: PASS
+
+Run by the Orchestrator against `https://transitionops.org` after Netlify
+published `e33792c`. Independent of the S2 codeload sweep, and of the preview.
+
+- **Navigator corpus, read from the live edge** (`/netlify/functions/navigator.js`,
+  HTTP 200, 55,062 bytes): nine new anchors at **1** each, including
+  `are IN FORCE NOW as of 2 SEP 2026 — answer in the present tense`,
+  `IN FORCE since 2 SEP 2026`, `Appellate Jurisdiction Update II, RIN 3124-AA33`,
+  `public-inspection doc 2026-16456`, and
+  `Foreign Service RIF jurisdiction (22 U.S.C. 4010a)`. Seven retired strings at
+  **0** each, including `answer in the future tense`, `FUTURE LAW`, and
+  `not current law`.
+- **Preserved, verified live:** notice-date-controls clause **2** (both places);
+  `NEVER describe both in one undated present tense.` **1**;
+  `TWO OPM EFFECTIVE DATES — NEVER BLEND THEM` **1**.
+- **Card, re-confirmed unchanged:** `IN FORCE, 2 SEP 2026` **1**,
+  `future law, not current law` **0**, `sw.js` `transition-ops-v130`.
+- **Log entries live:** V-2026-016 **1**, V-2026-017 **1**. Navigator function
+  endpoint reachable (HTTP 405 on GET, POST-only).
+
+### OBSERVATION — candidate corpus clarification, NOT part of this action
+
+In the Q1 preview answer the Navigator glossed 3-point preference eligibility as
+*"service-connected disability of any percentage, or Purple Heart."* That is an
+elaboration beyond corpus text, which says only *"other preference eligibles 3,"*
+and it omits other preference-eligible categories under **5 U.S.C. 2108**. Ruled
+by the Commander as **not a defect and not part of this action**. Logged as a
+**candidate corpus clarification** for a future pass: enumerate the 5 U.S.C. 2108
+categories in CORPUS (b), or instruct the model not to enumerate them, so the
+answer stops narrowing the class on its own. No change made here, and no
+verification of the 2108 categories was performed for this entry.
+
+- **Disposition:** CLOSED. Both halves of the 2 SEP tickler shipped and verified.
+- **Tickler [[V-2026-009]]: CLOSED 4 SEP 2026.** The row above is flipped from
+  STATUS to CLOSED. Card closed via V-2026-016 (`0d71fc5`); corpus (b) and
+  RULE 16 closed via this amendment (`fa80e5d`, merged as `e33792c`).
