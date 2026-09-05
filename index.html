@@ -2935,7 +2935,13 @@ function dueRungs(dateStr, delivered) {
   }).sort(function (a, b) {
     var ra = rank[a.pri] === undefined ? 9 : rank[a.pri];
     var rb = rank[b.pri] === undefined ? 9 : rank[b.pri];
-    return ra - rb;
+    if (ra !== rb) return ra - rb;
+    // S2 named an exact fire day for the day-anchored rungs. At equal priority
+    // they take the single per-open slot ahead of a month-granular rung, which
+    // has a whole month in which to land.
+    var da = Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, a.id) ? 0 : 1;
+    var db = Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, b.id) ? 0 : 1;
+    return da - db;
   });
 }
 
