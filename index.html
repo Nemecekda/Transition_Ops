@@ -2891,6 +2891,54 @@ const SMART_REMINDERS = [
   {id:"r-3-dgib",mo:3,cat:"BENEFITS",pri:"HIGH",title:"Digital GI Bill — Verify Your Payments",brief:"The VA's $2.3B Digital GI Bill system has documented payment failures under active congressional oversight. Trust but verify.",items:["Confirm your School Certifying Official submitted your enrollment certification","Verify your Certificate of Eligibility is on file with the school","Monitor your first BAH payment date — do not assume it processed","Payment problems: call the VA Education Call Center at 1-888-442-4551 immediately"],deadline:"Before your first tuition deadline and rent payment",why:"Automation now handles most education claims, but documented failures have left student veterans waiting on housing payments. Your rent does not wait for a system fix.",link:"https://www.va.gov/education/gi-bill-comparison-tool/"}
 ];
 
+// ═══════════════════════════════════════════════════════════════
+// RUNG TRIGGER ENGINE — evaluate-on-open
+// ═══════════════════════════════════════════════════════════════
+// There is no background scheduler to use. Notification Triggers
+// (TimestampTrigger) was abandoned by Chrome, and a service-worker setTimeout
+// does not survive worker termination — that approach was removed here in v72.
+// So rungs are evaluated when the member opens the app. Anything that must
+// arrive while the app is closed is OneSignal's lane, not this one.
+//
+// S2-supplied day-accurate triggers (BP-2). The value is days-to-ETS at fire
+// time: positive = before separation, negative = after. Rungs absent from this
+// map stay month-granular on their existing mo: value, which is not touched.
+var RUNG_DAY_TRIGGERS = { "r-1-fedvip": 31, "r-p1-fedvip": -30 };
+
+// A day-anchored rung stays due for one ladder step after its trigger, so a
+// member who does not open the app on the exact day still receives it — while
+// a rung whose window closed long ago stays silent. 31 days is the ladder's own
+// spacing, which is what keeps day-anchored and month-anchored rungs behaving
+// alike rather than a policy figure.
+var RUNG_TRIGGER_GRACE_DAYS = 31;
+
+function rungIsDue(rung, dateStr) {
+  if (!rung || !dateStr) return false;
+  if (Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)) {
+    var d = daysToETSDate(dateStr);
+    if (d === null) return false;
+    var trig = RUNG_DAY_TRIGGERS[rung.id];
+    return d <= trig && d > trig - RUNG_TRIGGER_GRACE_DAYS;
+  }
+  var m = moToETS(dateStr);
+  return m !== null && rung.mo === m;
+}
+
+// Due rungs the member has not already been notified about, most urgent first.
+// `delivered` is a plain id -> true map so it round-trips through localStorage.
+function dueRungs(dateStr, delivered) {
+  if (!dateStr) return [];
+  var seen = delivered || {};
+  var rank = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, ADVISORY: 3 };
+  return SMART_REMINDERS.filter(function (r) {
+    return !seen[r.id] && rungIsDue(r, dateStr);
+  }).sort(function (a, b) {
+    var ra = rank[a.pri] === undefined ? 9 : rank[a.pri];
+    var rb = rank[b.pri] === undefined ? 9 : rank[b.pri];
+    return ra - rb;
+  });
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // CRITICAL WINDOWS MODULE — Source-verified time-bound windows
 // All data traceable to DoDI / VA / Title 10 / Title 38 primary sources.

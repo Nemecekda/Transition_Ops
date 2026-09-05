@@ -7,3 +7,4 @@ r-1-gar month-granular).
 | # | Defect | Files | Observable before -> after | Verdict |
 |---|---|---|---|---|
 | 1 | B-5 `daysToETSDate` parses UTC midnight then snaps to previous local day west of UTC | index.html:3051 | US zones 13/13 wrong -> 0/13; UTC/Berlin/Tokyo 0/13 both sides | PASS |
+| 2 | B-2/B-4 no evaluator exists; rungs unreachable from any notify path | index.html:2892 (+48, insertion only) | engine absent -> 24/24 assertions pass in Chicago/UTC/Tokyo; all six gated rungs schedulable | PASS |
