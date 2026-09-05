@@ -16,14 +16,17 @@ records and issue records pulled from:
 Cells that could not be evidenced are scored **FAIL and labelled unverifiable**,
 per the mission rule. They are not scored on the code looking correct.
 
-## FLEET COMPOSITE: 34 / 96
+## FLEET COMPOSITE: 35 / 96
+
+> **CORRECTED 5 SEP 2026** from 34. J4 check 4 was scored 0 on a grep that
+> missed `--retry` on a continuation line; it is 1. See the J4 entry.
 
 | Agent | 1 EXEC | 2 LOUD | 3 COST | 4 RESIL | 5 CONTRACT+DRY | 6 EFFIC | Total |
 |---|---|---|---|---|---|---|---|
 | J1 federal scanner | 2 | 1 | 0 | 0 | 1 | 1 | **5** |
 | J2 Sunday triage | 2 | 2 | 0 | 0 | 1 | 1 | **6** |
 | J3 SITREP | 2 | 2 | 0 | 0 | 1 | 1 | **6** |
-| J4 link audit | 1 | 2 | 0 | 0 | 1 | 0 | **4** |
+| J4 link audit | 1 | 2 | 0 | 1 | 1 | 0 | **5** |
 | J5 metering/spend | 1 | 2 | 1 | 0 | 1 | 1 | **6** |
 | **Navigator (LIVE)** | 0 | 0 | 0 | 0 | 0 | 0 | **0** |
 | PAO weekly packet | 1 | 2 | 0 | 0 | 0 | 0 | **3** |
@@ -78,8 +81,12 @@ Zero agents reach the 10/12 goal. **28 of 48 cells are FAIL.**
 3. **COST 0** — **J4 is not metered at all.** `j5-spend-check.yml:131` loops
    `for W in j1-federal-scan j2-weekly-analysis j3-weekly-sitrep j5-spend-check`
    — j4 is absent.
-4. **RESIL 0** — two single-shot crawls, `j4-link-audit.yml:177` and `:184`,
-   neither retried. This is the agent whose entire job is network fetching.
+4. **RESIL 1 — CORRECTED 5 SEP 2026.** Originally scored 0 on the claim that
+   both crawls were single-shot. That was wrong. `j4-link-audit.yml:178` and
+   `:185` both carry `--retry "$CRAWL_RETRIES"` (value `1`, set at `:74`); the
+   flag sits on a shell continuation line and the baseline's single-line grep
+   did not see it. A multi-line-aware scan finds J4's two real crawls retried
+   and J1's one crawl not. J4's 11 `gh` calls remain unretried, so PARTIAL.
 5. **CONTRACT+DRY 1** — contract met; no dry-run mode.
 6. **EFFIC 0** — unmetered, so there is no cost series and no median to compare
    against. Unverifiable.
@@ -145,7 +152,7 @@ Zero agents reach the 10/12 goal. **28 of 48 cells are FAIL.**
 |---|---|---|---|
 | D1 | **No dry-run mode anywhere in the fleet.** Blocks check 5 for all 8 and, per the fence, blocks safe testing of PAO and Navigator entirely. | 8 x check5 | +8 |
 | D2 | **No per-run metering record.** Cost is inferred from issue counts; failed runs and unmetered agents are invisible. | 8 x check3 | +13 |
-| D3 | **Zero retry logic fleet-wide.** 3 raw `curl` single-shots (`j1:66`, `j4:177`, `j4:184`), 1 `fetch` (`navigator.js:400`), ~60 unretried `gh` calls. | 8 x check4 | +16 |
+| D3 | **Retry gaps.** CORRECTED: one raw `curl` single-shot (`j1:66`) — J4's two crawls already retry. Plus 1 unretried `fetch` (`navigator.js:400`) and ~60 unretried `gh` calls. | 8 x check4 | +15 |
 | D4 | **J4 and PAO are outside J5's metering loop** (`j5-spend-check.yml:131`). | J4/PAO check3+6 | +6 |
 | D5 | **Navigator is unobservable.** No reachable execution or status evidence; scores 0/12 and is the only LIVE member-facing agent. | Navigator 1,2,6 | +6 |
 | D6 | **J1 emits nothing on no-change days** (6 of 32 runs). | J1 check2 | +1 |

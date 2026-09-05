@@ -21,3 +21,11 @@ PAO check 1 (EXECUTION) stays at 1 and cannot move here: it measures whether
 the last four cycles ran to completion, and no edit changes runs that have
 already happened. What 2A buys is that the column means something from now
 on, which is what every later verification leans on.
+| 3 | D3a unretried network edge: J1 fetch, Navigator upstream call | J1 c4, Navigator c4 | J1 0→1; Navigator 0→2 | 39 → **42** (+3) | PASS |
+
+**Baseline correction, iteration 3.** The baseline claimed three single-shot
+curls. A multi-line-aware scan shows only `j1:66` was single-shot — J4's two
+crawls at `:178` and `:185` already carry `--retry "$CRAWL_RETRIES"` (=1), on a
+continuation line the original grep could not see. J4 check 4 is 1, not 0, so
+the true baseline composite is **35, not 34**, and the running composite after
+iterations 1 and 2A is **39, not 38**.

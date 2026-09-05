@@ -63,7 +63,13 @@ jobs:
             # brackets (conditions[agencies][]). Without it curl never makes a
             # request at all: "curl: (3) bad range in URL position 66". This
             # silently produced zero bytes across three flights.
+            # --retry covers the transient half of the failure space: 5xx,
+            # timeouts and refused connections. Deliberately NOT
+            # --retry-all-errors -- a 404 from a wrong agency slug is a real
+            # answer, and retrying it three times would only slow down the
+            # report of a defect J1 has already been bitten by once.
             if err=$(curl -sS --fail --globoff --max-time 30 \
+                       --retry 2 --retry-delay 2 --retry-connrefused \
                        --output "fetched/$id.json" "$url" 2>&1); then
               echo "fetched $id ($(wc -c < "fetched/$id.json" | tr -d ' ') bytes)"
             else

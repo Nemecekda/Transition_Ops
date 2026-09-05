@@ -460,9 +460,16 @@ exports.handler = async (event) => {
     };
   }
 
-  try {
-    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+  // Retry with a HARD total budget. A Netlify synchronous function is killed at
+  // 10s, so an unbounded retry loop would turn one slow upstream call into a
+  // dead function instead of a degraded one. Budget 8.5s across all attempts,
+  // per-attempt deadline = whatever remains. Retries only what is worth
+  // retrying: a thrown network error, 429, or 5xx. A 400 or 401 is a real
+  // answer and repeating it just burns the member's remaining budget.
+  function fetchAnthropic(system, messages, signal) {
+    return fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
+      signal: signal,
       headers: {
         "Content-Type": "application/json",
         "x-api-key": process.env.ANTHROPIC_API_KEY,
@@ -471,11 +478,44 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
         max_tokens: 800,
-        system: sys,
-        messages: msgs
+        system: system,
+        messages: messages
       })
     });
+  }
 
+  const RETRY_BUDGET_MS = 8500;
+  const started = Date.now();
+  const remaining = () => RETRY_BUDGET_MS - (Date.now() - started);
+  const worthRetrying = (st) => st === 429 || (st >= 500 && st <= 599);
+
+  try {
+    let resp = null, attempt = 0;
+    while (attempt < 2) {
+      attempt++;
+      const left = remaining();
+      if (left < 1200) break;                     // no useful time left
+      const ac = new AbortController();
+      const timer = setTimeout(() => ac.abort(), left);
+      try {
+        resp = await fetchAnthropic(sys, msgs, ac.signal);
+      } catch (e) {
+        resp = null;                              // network error or abort
+      } finally {
+        clearTimeout(timer);
+      }
+      if (resp && (resp.ok || !worthRetrying(resp.status))) break;
+      if (attempt < 2 && remaining() > 1500) {
+        console.log("[navigator] retrying after " +
+                    (resp ? "status " + resp.status : "network error") +
+                    ", " + remaining() + "ms budget left");
+        await new Promise(r => setTimeout(r, 250));
+      }
+    }
+    if (!resp) {
+      console.error("[navigator] upstream unreachable after " + attempt + " attempt(s)");
+      return { statusCode: 502, headers, body: JSON.stringify({ error: "The Navigator is briefly unavailable. Try again in a moment." }) };
+    }
     if (!resp.ok) {
       return { statusCode: 502, headers, body: JSON.stringify({ error: "The Navigator is briefly unavailable. Try again in a moment." }) };
     }
