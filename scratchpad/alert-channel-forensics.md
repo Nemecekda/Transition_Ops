@@ -76,16 +76,32 @@ search indexing (`:6066`), dashboard urgent list (`:6418`), due count
 evaluates a rung for the purpose of notifying.** The channel was never wired,
 as distinct from wired-then-broken.
 
-### B-5 — timezone parse shifts the whole ladder by a day
-`moToETS()` (`:3354`) and `daysToETSDate()` (`:3051`) both do
-`new Date("YYYY-MM-DD")`, which parses as **UTC midnight**, then compare against
-local time. For any member west of UTC the ETS date reads as the previous local
-day, shifting every rung boundary. The codebase already knows the fix — the
-dashboard clock uses `new Date(separationDate + "T12:00:00")` at `:6144`. The
-two shared helpers do not.
+### B-5 — day math is off by one across the entire US member base
+**CORRECTED 4 SEP 2026 after empirical test — the original entry overstated the
+blast radius by including `moToETS`.**
 
-For a channel whose entire job is firing on a date boundary, this is
-load-bearing.
+`daysToETSDate()` (`:3051`) does `new Date("YYYY-MM-DD")`, which parses as **UTC
+midnight**. West of UTC that instant is the *previous* local day, and the
+following `ets.setHours(0,0,0,0)` snaps it there permanently. Measured against
+a UTC-arithmetic reference across 13 offsets:
+
+    America/Chicago      13/13 wrong    America/Los_Angeles  13/13 wrong
+    America/New_York     13/13 wrong    UTC / Berlin / Tokyo  0/13
+
+Every US timezone is wrong by exactly one day, in the conservative direction —
+a member 32 days out is told 31.
+
+`moToETS()` (`:3354`) is **NOT affected** and must not be changed. It has no
+`setHours` call, and dividing by 30.44 before rounding absorbs the sub-day
+error; it measured 0 mismatches in every zone tested. The original B-5 entry
+named both functions. That was wrong, and fixing `moToETS` would have been an
+unnecessary edit with display blast radius.
+
+The codebase already knew the fix — the dashboard clock uses
+`new Date(separationDate + "T12:00:00")` at `:6144`.
+
+This is a prerequisite for the day-accurate triggers, not a nicety: ETS-31 and
+ETS+30 both read `daysToETSDate`.
 
 ### B-6 — first-load gate
 `index.html:4971` requires `navigator.serviceWorker.controller`, which is

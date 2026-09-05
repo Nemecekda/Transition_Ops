@@ -3050,7 +3050,10 @@ function __captureBranch(hasDeferredPrompt, ua, standalone, maxTouch) {
 // Day-level ETS helper (distinct from month-level moToETS)
 function daysToETSDate(dateStr) {
   if (!dateStr) return null;
-  var ets = new Date(dateStr);
+  // "YYYY-MM-DD" parses as UTC midnight, which lands on the PREVIOUS local
+  // day west of UTC; setHours then snapped it there, costing every US member
+  // one day. Anchor at local noon so the local calendar date is unambiguous.
+  var ets = new Date(dateStr + "T12:00:00");
   var today = new Date();
   today.setHours(0,0,0,0);
   ets.setHours(0,0,0,0);
