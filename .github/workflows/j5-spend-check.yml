@@ -81,6 +81,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false   # default leaves a usable token in .git/config for the rest of the job
+      - name: Mark start for metering
+        run: echo "METER_STARTED=$(date -u +%FT%TZ)" >> "$GITHUB_ENV"
+
 
       # Armor for the model-free property. If someone later adds an API key to
       # this job, that is a doctrine change and it should fail loudly here rather
@@ -130,7 +133,11 @@ jobs:
           MONTH_START=$(date -u +%Y-%m-01)
           echo "$MONTH_START" > out/month-start.txt
           echo "month window opens $MONTH_START"
-          for W in j1-federal-scan j2-weekly-analysis j3-weekly-sitrep j5-spend-check; do
+          # j4-link-audit and pao-weekly-packet were absent from this list, so
+          # two of the eight agents were spending money J5 never counted. The
+          # list is now every workflow in the fleet.
+          for W in j1-federal-scan j2-weekly-analysis j3-weekly-sitrep \
+                   j4-link-audit j5-spend-check pao-weekly-packet; do
             gh run list --workflow "$W.yml" --limit 200 \
               --json databaseId,createdAt,conclusion,status \
               > "out/runs-$W.json" 2>/dev/null || echo '[]' > "out/runs-$W.json"
@@ -573,6 +580,16 @@ jobs:
               gh issue edit "$N" --body-file out/status-final.md \
                 || echo "::warning::footer edit failed for #$N; the issue is filed without it" ;;
           esac
+
+      # EVERY run emits one record, including failures and quiet runs.
+      # if: always() is the whole point: the runs that used to be
+      # invisible to J5 were exactly the ones that filed no issue.
+      - name: Emit metering record
+        if: always()
+        run: |
+          source .github/scripts/emit-metering.sh
+          n=0   # model-free job
+          emit_metering j5 "$n" "none" "${{ job.status }}"
 
       - name: Upload evidence
         if: always()

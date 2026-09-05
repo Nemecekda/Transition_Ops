@@ -45,6 +45,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
+      - name: Mark start for metering
+        run: echo "METER_STARTED=$(date -u +%FT%TZ)" >> "$GITHUB_ENV"
+
 
       # Issue bodies can quote fetched pages, so they are untrusted text. They
       # are handled as JSON and written to files — never interpolated into a
@@ -363,6 +366,16 @@ jobs:
           printf 'Does not count against N7 and is excluded from the weekly SITREP total by\n' >> out/canary.md
           printf 'title match, the same way the baseline issue is.\n' >> out/canary.md
           gh issue create --title "$ROUTINE_CANARY_TITLE" --body-file out/canary.md
+
+      # EVERY run emits one record, including failures and quiet runs.
+      # if: always() is the whole point: the runs that used to be
+      # invisible to J5 were exactly the ones that filed no issue.
+      - name: Emit metering record
+        if: always()
+        run: |
+          source .github/scripts/emit-metering.sh
+          n=0   # model-free job
+          emit_metering j3 "$n" "none" "${{ job.status }}"
 
       - name: Upload evidence
         if: always()

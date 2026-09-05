@@ -74,6 +74,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false   # default leaves a usable token in .git/config for the rest of the job
+      - name: Mark start for metering
+        run: echo "METER_STARTED=$(date -u +%FT%TZ)" >> "$GITHUB_ENV"
+
 
       - name: Assert model tier
         run: |
@@ -817,6 +820,17 @@ jobs:
               gh issue edit "$N" --body-file out/digest-final.md \
                 || echo "::warning::footer edit failed for #$N; the issue is filed without it" ;;
           esac
+
+      # EVERY run emits one record, including failures and quiet runs.
+      # if: always() is the whole point: the runs that used to be
+      # invisible to J5 were exactly the ones that filed no issue.
+      - name: Emit metering record
+        if: always()
+        run: |
+          source .github/scripts/emit-metering.sh
+          n=0
+          [ -f out/analysis-result.json ] && n=1
+          emit_metering j2 "$n" "${MODEL:-none}" "${{ job.status }}"
 
       - name: Upload evidence
         if: always()

@@ -68,6 +68,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
+      - name: Mark start for metering
+        run: echo "METER_STARTED=$(date -u +%FT%TZ)" >> "$GITHUB_ENV"
+
 
       - name: Assert model tier
         run: |
@@ -219,6 +222,17 @@ jobs:
                echo "::error::packet status $STATUS — failing the run so it cannot read as success"
                exit 1 ;;
           esac
+
+      # EVERY run emits one record, including failures and quiet runs.
+      # if: always() is the whole point: the runs that used to be
+      # invisible to J5 were exactly the ones that filed no issue.
+      - name: Emit metering record
+        if: always()
+        run: |
+          source .github/scripts/emit-metering.sh
+          n=0
+          [ -f out/packet-result.json ] && n=1
+          emit_metering pao "$n" "${MODEL:-none}" "${{ job.status }}"
 
       - name: Upload evidence
         if: always()

@@ -38,6 +38,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false   # default leaves a usable token in .git/config for the rest of the job
+      - name: Mark start for metering
+        run: echo "METER_STARTED=$(date -u +%FT%TZ)" >> "$GITHUB_ENV"
+
 
       - name: Assert model tier
         run: |
@@ -323,6 +326,17 @@ jobs:
           } > out/baseline-body.md
           gh issue edit "$BASELINE_ISSUE" --body-file out/baseline-body.md
           echo "baseline #$BASELINE_ISSUE updated with $ACTUAL sources"
+
+      # EVERY run emits one record, including failures and quiet runs.
+      # if: always() is the whole point: the runs that used to be
+      # invisible to J5 were exactly the ones that filed no issue.
+      - name: Emit metering record
+        if: always()
+        run: |
+          source .github/scripts/emit-metering.sh
+          n=0
+          [ -f out/scan-result.json ] && n=1
+          emit_metering j1 "$n" "${MODEL:-none}" "${{ job.status }}"
 
       - name: Upload evidence
         if: always()
