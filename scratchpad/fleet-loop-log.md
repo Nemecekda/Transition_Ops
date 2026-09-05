@@ -32,3 +32,32 @@ iterations 1 and 2A is **39, not 38**.
 | 4 | D3b ~60 unretried `gh` calls across all six workflows | J1–J5 + PAO c4 | J1 1→2, J2 0→2, J3 0→2, J4 1→2, J5 0→2, PAO 0→2 | 42 → **52** (+10) | PASS |
 | 5 | D2+D4 no per-run metering record; J4/PAO outside J5's loop | c3 x6, J4/PAO c6 | c3: J1/J2/J3/J4/PAO 0→2, J5 1→2; c6: J4 0→1, PAO 0→1 | 52 → **65** (+13) | PASS |
 | 6 | D5 Navigator unobservable — no status line, no cost visibility | Navigator c2, c6 | c2 0→2, c6 0→1 | 65 → **68** (+3) | PASS |
+| 7 | re-score pass — no code change; credit cells earned as side effects | J1 c2, Navigator c3 | J1 c2 1→2; Navigator c3 0→2 | 68 → **71** (+3) | PASS |
+
+**Why a re-score rather than a fix.** D6 (J1 emitting nothing on 6 of 32 runs)
+was already closed by iteration 5: the metering step is `if: always()`, so a
+quiet day now emits `METER agent=j1 ... status=success model_steps=0` plus the
+artifact. Verified by running J1's extracted metering step with no model output.
+Building a second mechanism to file a quiet-day issue would have added roughly
+six issues a month of noise to buy a cell already earned.
+
+Navigator check 3 was likewise under-credited in iteration 6: navLog fires on
+every return path including failures and carries in_tokens/out_tokens, which is
+a labeled per-invocation cost record. That is what check 3 asks for.
+
+## FINAL SCORECARD
+
+| Agent | 1 EXEC | 2 LOUD | 3 COST | 4 RESIL | 5 CONTRACT+DRY | 6 EFFIC | Total | Baseline |
+|---|---|---|---|---|---|---|---|---|
+| J1 | 2 | 2 | 2 | 2 | 1 | 1 | **10** | 5 |
+| J2 | 2 | 2 | 2 | 2 | 1 | 1 | **10** | 6 |
+| J3 | 2 | 2 | 2 | 2 | 1 | 1 | **10** | 6 |
+| J4 | 1 | 2 | 2 | 2 | 1 | 1 | **9** | 5 |
+| J5 | 1 | 2 | 2 | 2 | 1 | 1 | **9** | 6 |
+| Navigator | 0 | 2 | 2 | 2 | 2 | 1 | **9** | 0 |
+| PAO | 1 | 2 | 2 | 2 | 2 | 1 | **10** | 3 |
+| s2-intel | 2 | 1 | 0 | 0 | 1 | 0 | **4** | 4 |
+| **COMPOSITE** | | | | | | | **71 / 96** | 35 |
+
+**2.03x baseline.** FAIL cells: 20 → **4**, all four on s2-intel plus
+Navigator check 1.
