@@ -396,18 +396,9 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers, body: JSON.stringify({ error: "No user message" }) };
   }
 
-  try {
-    const resp = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 800,
-        system: (function(){
+  // Prompt assembly is hoisted out of the request so DRY RUN exercises the
+  // identical path — same rules, same manifest, same corpus, same window math.
+  const sys = (function(){
           var sys = [
             { type: "text", text: RULES },
             { type: "text", text: MANIFEST },
@@ -436,7 +427,51 @@ exports.handler = async (event) => {
             sys.push({ type: "text", text: lines.join("\n") });
           }
           return sys;
-        })(),
+  })();
+
+  // DRY RUN. Environment-gated ONLY, never request-gated: a member-facing
+  // endpoint must not let a caller change what it does. Unset in production, so
+  // the live path below is untouched. Runs the whole function except the
+  // outbound call, including gap recording and token stripping.
+  if (process.env.NAVIGATOR_DRY_RUN === "1") {
+    const synthetic =
+      "DRY RUN — no model call was made. This reply exercises the response path only.\n" +
+      "[[GAP: dry run harness probe]]";
+    await recordGap(synthetic);
+    const dryReply = stripDeadTokens(
+      synthetic.replace(GAP_TAG_RE, "").replace(/\n{3,}/g, "\n\n").trim()
+    ) || "No response — try again.";
+    console.log("[dry-run] blocks=" + sys.length +
+                " systemChars=" + sys.reduce((n, b) => n + (b.text || "").length, 0) +
+                " turns=" + msgs.length);
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        reply: dryReply,
+        dryRun: {
+          model: "claude-haiku-4-5-20251001",
+          systemBlocks: sys.length,
+          systemChars: sys.reduce((n, b) => n + (b.text || "").length, 0),
+          turns: msgs.length,
+          sent: false
+        }
+      })
+    };
+  }
+
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 800,
+        system: sys,
         messages: msgs
       })
     });

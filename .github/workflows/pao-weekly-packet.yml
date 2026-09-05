@@ -29,6 +29,11 @@ on:
   schedule:
     - cron: '0 12 * * 1'
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run — render the full packet, file nothing'
+        type: boolean
+        default: false
 
 permissions:
   contents: read              # CANNOT write a ref. The safety property.
@@ -53,6 +58,11 @@ jobs:
       # J1 will not - a lookup that fails is indistinguishable from a first run,
       # and one transient error would invent a second baseline.
       BASELINE_ISSUE: '22'
+      # DRY RUN. The PAO's only outward act is filing an issue, so suppressing
+      # gh issue create is the whole of it — every other step, including the
+      # model draft and the renderer, runs exactly as on a real Monday. What
+      # would have been filed is written to out/ and lands in the artifact.
+      DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
@@ -171,8 +181,14 @@ jobs:
             *)      TITLE="PAO PACKET FAILED — inputs unread $DATE"; LABEL=FLASH ;;
           esac
           echo "status=$STATUS title=$TITLE label=$LABEL"
-          gh issue create --label "$LABEL" --title "$TITLE" --body-file out/packet.md \
-            || gh issue create --title "$TITLE" --body-file out/packet.md
+          if [ "$DRY_RUN" = "1" ]; then
+            printf 'DRY RUN — would file:\n  label: %s\n  title: %s\n' "$LABEL" "$TITLE" \
+              | tee out/dry-run-packet.txt
+            echo "DRY RUN — nothing filed. Body is out/packet.md in the artifact."
+          else
+            gh issue create --label "$LABEL" --title "$TITLE" --body-file out/packet.md \
+              || gh issue create --title "$TITLE" --body-file out/packet.md
+          fi
 
       - name: Upload evidence
         if: always()
@@ -210,6 +226,11 @@ jobs:
           printf 'failure here costs a packet, never a bad post.\n\n' >> out/failure.md
           if [ -f out/pao-status.txt ]; then
             printf 'Renderer status at failure: %s\n\n' "$(tr -d '[:space:]' < out/pao-status.txt)" >> out/failure.md
+          fi
+          if [ "$DRY_RUN" = "1" ]; then
+            echo "DRY RUN — would file FLASH: PAO FAILED $(date -u +%F)"
+            cat out/failure.md
+            exit 0
           fi
           URL=$(gh issue create --label FLASH --title "PAO FAILED $(date -u +%F)" --body-file out/failure.md) \
           || URL=$(gh issue create --title "PAO FAILED $(date -u +%F)" --body-file out/failure.md)
