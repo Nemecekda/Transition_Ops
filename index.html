@@ -2939,6 +2939,39 @@ function dueRungs(dateStr, delivered) {
   });
 }
 
+// Fire at most one notification per evaluation: the most urgent rung the member
+// has not been told about yet. v72 disabled the previous path because it burst
+// several notifications 2 s apart on every open. One per evaluation, once per
+// rung ever, is what replaces it. Returns the rung id fired, or null.
+function notifyDueRung(dateStr) {
+  if (!dateStr || window.__IS_IFRAME) return null;
+  if (typeof Notification === "undefined" || Notification.permission !== "granted") return null;
+  if (!navigator.serviceWorker) return null;
+  var delivered = {};
+  try { delivered = JSON.parse(window.__safeGet("tops_rung_notified") || "{}") || {}; } catch (e) { delivered = {}; }
+  var due = dueRungs(dateStr, delivered);
+  if (!due.length) return null;
+  var rung = due[0];
+  // Mark delivered synchronously, before the async show, so two evaluations in
+  // the same session cannot race and double-fire the same rung.
+  delivered[rung.id] = true;
+  try { window.__safeSet("tops_rung_notified", JSON.stringify(delivered)); } catch (e) {}
+  // .ready rather than .controller: on a first load no worker is controlling
+  // yet, and the notification was silently dropped.
+  navigator.serviceWorker.ready.then(function (reg) {
+    if (!reg || !reg.showNotification) return;
+    return reg.showNotification(rung.title, {
+      body: rung.brief || "",
+      tag: "ets-" + rung.id,
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
+      data: { url: "/" }
+    });
+  }).catch(function () {});
+  if (window.__trackEvent) window.__trackEvent("rung_notified", { id: rung.id });
+  return rung.id;
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // CRITICAL WINDOWS MODULE — Source-verified time-bound windows
 // All data traceable to DoDI / VA / Title 10 / Title 38 primary sources.
@@ -5019,35 +5052,10 @@ function App() {
         } catch (e) {}
       });
     }
-    if (!window.__IS_IFRAME && notifStatus === "granted" && dateStr && navigator.serviceWorker && navigator.serviceWorker.controller) {
-      const ets = new Date(dateStr);
-      const now = new Date();
-      const diffMonths = Math.ceil((ets - now) / (1000 * 60 * 60 * 24 * 30));
-      const alerts = NOTIFICATIONS.filter(n => n.monthsOut >= diffMonths - 1 && n.monthsOut <= diffMonths + 1);
-      const lastShown = function () {
-        try {
-          return window.__safeGet("lastNotifDate");
-        } catch (e) {
-          return null;
-        }
-      }();
-      const today = new Date().toDateString();
-      if (lastShown !== today && alerts.length > 0) {
-        try {
-          window.__safeSet("lastNotifDate", today);
-        } catch (e) {}
-        alerts.slice(0, 0).forEach((n, i) => { // v72: on-open OS notification burst disabled — the in-app ALERTS panel carries these; push is reserved for real threshold crossings
-          setTimeout(() => {
-            navigator.serviceWorker.controller.postMessage({
-              type: "SHOW_NOTIFICATION",
-              title: n.title,
-              body: n.body,
-              tag: "ets-" + n.id
-            });
-          }, (i + 1) * 2000);
-        });
-      }
-    }
+    // Evaluate the rung ladder against the new ETS date. Also runs on app open
+    // (see the mount effect) -- the web platform has no background scheduler,
+    // so every evaluation happens while the app is in front of the member.
+    notifyDueRung(dateStr);
   }, [notifStatus]);
   const handleInstall = useCallback(() => {
     if (deferredPrompt) {

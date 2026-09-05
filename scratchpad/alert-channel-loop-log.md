@@ -8,3 +8,4 @@ r-1-gar month-granular).
 |---|---|---|---|---|
 | 1 | B-5 `daysToETSDate` parses UTC midnight then snaps to previous local day west of UTC | index.html:3051 | US zones 13/13 wrong -> 0/13; UTC/Berlin/Tokyo 0/13 both sides | PASS |
 | 2 | B-2/B-4 no evaluator exists; rungs unreachable from any notify path | index.html:2892 (+48, insertion only) | engine absent -> 24/24 assertions pass in Chicago/UTC/Tokyo; all six gated rungs schedulable | PASS |
+| 3 | B-1/B-3/B-6 firing block dead (`slice(0,0)`), global daily dedupe, `.controller` gate | index.html (+35/-25) | channel silent -> real OS notification fires end-to-end in Chrome, 0 console errors; per-rung delivered state persists; second call advances to next rung | PASS |
