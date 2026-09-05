@@ -107,6 +107,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           existing=$(gh label list --limit 200 --json name --jq '.[].name' || true)
           for L in FLASH ROUTINE; do
             if printf '%s\n' "$existing" | grep -qx "$L"; then
@@ -124,6 +125,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           mkdir -p out
           MONTH_START=$(date -u +%Y-%m-01)
           echo "$MONTH_START" > out/month-start.txt
@@ -145,6 +147,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           MONTH_START=$(cat out/month-start.txt)
           gh issue list --state all --limit 300 \
             --search "created:>=$MONTH_START" \
@@ -156,6 +159,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           FLASH_SINCE=$(date -u -d "$FLASH_WINDOW_DAYS days ago" +%F)
           DEDUPE_SINCE=$(date -u -d "$DEDUPE_WINDOW_HOURS hours ago" +%FT%TZ)
           echo "N1 window opens $FLASH_SINCE ; N2 window opens $DEDUPE_SINCE"
@@ -393,6 +397,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           COUNT=$(cat out/flash-count.txt 2>/dev/null || echo 0)
           if [ "$COUNT" -eq 0 ]; then
             echo "no FLASH breaches this run"
@@ -436,6 +441,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           python3 - <<'PY'
           import json, os
           s = json.load(open("out/spend.json"))
@@ -582,6 +588,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           mkdir -p out
           printf '1 item may need your eyes: J5 failed, so spend is unmetered until it is fixed or re-run.\n\n' > out/failure.md
           printf 'J5 failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" >> out/failure.md

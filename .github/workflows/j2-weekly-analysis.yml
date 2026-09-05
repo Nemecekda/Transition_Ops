@@ -88,6 +88,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           existing=$(gh label list --limit 200 --json name --jq '.[].name' || true)
           for L in FLASH ROUTINE; do
             if printf '%s\n' "$existing" | grep -qx "$L"; then
@@ -109,6 +110,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           mkdir -p out out/j1-bodies
           SINCE=$(date -u -d "$LOOKBACK_DAYS days ago" +%F)
           echo "input window opens $SINCE"
@@ -235,6 +237,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           FLASH_SINCE=$(date -u -d "$FLASH_WINDOW_DAYS days ago" +%F)
           DEDUPE_SINCE=$(date -u -d "$DEDUPE_WINDOW_HOURS hours ago" +%FT%TZ)
           echo "N1 window opens $FLASH_SINCE ; N2 window opens $DEDUPE_SINCE"
@@ -525,6 +528,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           COUNT=$(cat out/flash-count.txt 2>/dev/null || echo 0)
           # Written as an if, NOT as a test-and-brace short-circuit list. Under
           # the default `bash -e` a failing test at the head of such a list
@@ -596,6 +600,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           python3 - <<'PY'
           import json, os, re
           d = json.load(open("out/decisions.json"))
@@ -829,6 +834,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           mkdir -p out
           printf '1 item may need your eyes: J2 failed, so the shipped-figure check went unrun this week.\n\n' > out/failure.md
           printf 'J2 failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" >> out/failure.md

@@ -104,6 +104,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           existing=$(gh label list --limit 200 --json name --jq '.[].name' || true)
           for L in FLASH ROUTINE; do
             if printf '%s\n' "$existing" | grep -qx "$L"; then
@@ -324,6 +325,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           FLASH_SINCE=$(date -u -d "$FLASH_WINDOW_DAYS days ago" +%F)
           DEDUPE_SINCE=$(date -u -d "$DEDUPE_WINDOW_HOURS hours ago" +%FT%TZ)
           echo "N1 window opens $FLASH_SINCE ; N2 window opens $DEDUPE_SINCE"
@@ -478,6 +480,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           COUNT=$(cat out/flash-count.txt 2>/dev/null || echo 0)
           if [ "$COUNT" -eq 0 ]; then
             echo "no systemic failure this run"
@@ -538,6 +541,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           python3 - <<'PY'
           import json, os, re
           d = json.load(open("out/decisions.json"))
@@ -673,6 +677,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           mkdir -p out
           printf '1 item may need your eyes: J4 failed, so link liveness went unchecked this month.\n\n' > out/failure.md
           printf 'J4 failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" >> out/failure.md

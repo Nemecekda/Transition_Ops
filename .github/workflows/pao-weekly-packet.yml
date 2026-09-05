@@ -106,6 +106,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           if ! gh issue view "$BASELINE_ISSUE" --json number,title,state > out/baseline-meta.json; then
             echo "::error::baseline issue #$BASELINE_ISSUE could not be read. NOT assuming first run."
             exit 1
@@ -144,6 +145,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           existing=$(gh label list --limit 200 --json name --jq '.[].name' || true)
           for L in FLASH ROUTINE; do
             if printf '%s\n' "$existing" | grep -qx "$L"; then
@@ -159,6 +161,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           # Default FAILED. If the renderer dies before writing the status file,
           # the safe reading is "we do not know this packet is trustworthy".
           echo FAILED > out/pao-status.txt
@@ -246,6 +249,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           mkdir -p out
           if [ -f out/pao-already-reported ]; then
             echo "packet step already filed a specific FLASH; not duplicating it"
