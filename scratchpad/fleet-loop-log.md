@@ -61,3 +61,57 @@ a labeled per-invocation cost record. That is what check 3 asks for.
 
 **2.03x baseline.** FAIL cells: 20 → **4**, all four on s2-intel plus
 Navigator check 1.
+| 8 | c6 no trailing median, no >2x flagging | c6 x6 metered agents | J1/J2/J3/J4/J5/PAO 1→2 | 71 → **77** (+6) | PASS |
+
+**TERMINATION: criterion A (amended by Commander 5 SEP 2026)** — composite
+≥ 77 with zero *reachable* FAIL cells. Composite **77/96**, and the four
+remaining FAIL cells are all BLOCKED-ARCHITECTURE.
+
+## FINAL SCORECARD
+
+| Agent | 1 EXEC | 2 LOUD | 3 COST | 4 RESIL | 5 CONTRACT+DRY | 6 EFFIC | Final | Baseline |
+|---|---|---|---|---|---|---|---|---|
+| J1 | 2 | 2 | 2 | 2 | 1 | 2 | **11** | 5 |
+| J2 | 2 | 2 | 2 | 2 | 1 | 2 | **11** | 6 |
+| J3 | 2 | 2 | 2 | 2 | 1 | 2 | **11** | 6 |
+| J4 | 1 | 2 | 2 | 2 | 1 | 2 | **10** | 5 |
+| J5 | 1 | 2 | 2 | 2 | 1 | 2 | **10** | 6 |
+| Navigator | **0** | 2 | 2 | 2 | 2 | 1 | **9** | 0 |
+| PAO | 1 | 2 | 2 | 2 | 2 | 2 | **11** | 3 |
+| s2-intel | 2 | 1 | **0** | **0** | 1 | **0** | **4** | 4 |
+| **COMPOSITE** | | | | | | | **77 / 96** | **35** |
+
+**2.20x baseline.** FAIL cells 20 → 4, all four BLOCKED-ARCHITECTURE.
+
+## BLOCKED-ARCHITECTURE — mechanism named
+
+- **s2-intel c3 (COST)** — it is a Claude Code subagent invoked inside a session,
+  not a workflow. Nothing in the repository observes a subagent invocation, so
+  there is no surface on which to emit a metering record. Would need harness-level
+  per-subagent accounting exposed to the project.
+- **s2-intel c4 (RESILIENCE)** — its network calls are `WebFetch`/`WebSearch`,
+  executed by the harness. Retry policy lives in the tool implementation, not in
+  the agent definition, and the definition cannot express one.
+- **s2-intel c6 (EFFICIENCY)** — follows from c3. No cost series, no median.
+- **Navigator c1 (EXECUTION)** — invocation history lives in Netlify's logs,
+  which are reachable from neither this repository nor the GitHub API. Iteration
+  6 makes every future invocation emit a status line; the historical window
+  stays unevidenced, and scoring it otherwise would be inventing evidence.
+
+## FILLS-WITH-TIME — no edits made
+
+**J4 c1, J5 c1, PAO c1** are each 1 because a four-cycle window does not exist
+yet, not because anything failed. J4 has one scheduled run ever (monthly, first
+fired 2026-09-01), J5 one (monthly, 28th), PAO three (weekly, started mid-Aug).
+Every one of those runs succeeded. No edit can manufacture history; these reach
+2 on their own by roughly December 2026.
+
+## KNOWN-ACCEPTED BEHAVIOUR
+
+**`gh issue create` retries can duplicate.** The wrapper retries creates, and
+before each retry looks the title up and stops if it is already there. That
+closes the common case but not the race: a create that lands *after* the lookup
+and *before* the retry files twice. Accepted deliberately — a duplicate FLASH is
+visible and closeable in seconds, a dropped FLASH is invisible forever, and
+invisible is the failure mode this fleet exists to prevent. Recorded here so the
+next agent finds a ruling rather than rediscovering a bug.

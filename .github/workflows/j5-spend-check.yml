@@ -182,6 +182,44 @@ jobs:
       # Same governor semantics as J2: N2 dedupe first (a suppressed duplicate
       # must not consume budget), then N1 budget.
       # ==================================================================
+      # EFFICIENCY BASELINE. Every run now writes out/metering.json (schema
+      # tops.metering.v1) into its evidence artifact. Collecting them gives J5 a
+      # per-agent trailing median and, with it, the first real answer to "was
+      # that run expensive?" -- previously nothing in the fleet could say.
+      #
+      # Fail-soft on purpose: J5 is the agent that reports on the others, so a
+      # missing or expired artifact degrades this section and never takes the
+      # spend check down. Artifacts retain 30 days, which is the same window.
+      - name: Collect metering records
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
+          mkdir -p out/metering
+          MONTH_START=$(cat out/month-start.txt)
+          n=0
+          # id + name only; the zip is fetched by id, never by an interpolated name.
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts?per_page=100" \
+            --jq ".artifacts[] | select(.expired==false) | select(.created_at >= \"${MONTH_START}\") | .id" \
+            > out/artifact-ids.txt 2>/dev/null || : > out/artifact-ids.txt
+          while read -r id; do
+            [ -n "$id" ] || continue
+            if gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${id}/zip" > "out/a.zip" 2>/dev/null; then
+              if unzip -o -j "out/a.zip" 'metering.json' -d "out/metering/$id" >/dev/null 2>&1; then
+                n=$((n+1))
+              fi
+            fi
+            rm -f out/a.zip
+          done < out/artifact-ids.txt
+          echo "collected $n metering record(s) from $(wc -l < out/artifact-ids.txt | tr -d ' ') artifact(s)"
+
+      - name: Efficiency — trailing median and 2x flags
+        run: |
+          python3 .github/scripts/j5-metering-median.py \
+            out/metering out/efficiency.md out/efficiency.json \
+            || printf 'EFFICIENCY — analyser failed; section omitted this month.\n' > out/efficiency.md
+          cat out/efficiency.md
+
       - name: Compute spend and apply governors
         run: |
           RUN_DATE=$(date -u +%F); export RUN_DATE
@@ -540,6 +578,11 @@ jobs:
                   for x in s["notes"]:
                       fh.write(f"  - {x}\n")
                   fh.write("\n")
+              try:
+                  with open("out/efficiency.md") as _eff:
+                      fh.write(_eff.read() + "\n")
+              except Exception:
+                  fh.write("EFFICIENCY — no metering records available this month.\n\n")
               if s["events"]:
                   fh.write("FIRING EVENTS (model invocations inferred from findings issues)\n")
                   for e in s["events"]:
