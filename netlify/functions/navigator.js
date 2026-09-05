@@ -378,11 +378,37 @@ exports.handler = async (event) => {
     "Access-Control-Allow-Headers": "Content-Type",
     "Content-Type": "application/json"
   };
-  if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers, body: "" };
-  if (event.httpMethod !== "POST") return { statusCode: 405, headers, body: JSON.stringify({ error: "POST only" }) };
+  // ── OBSERVABILITY ──────────────────────────────────────────────────────
+  // One status line per invocation, on EVERY return path. The readiness audit
+  // scored this agent 0 for fail-loud because nothing it did was auditable from
+  // outside: a failed call and a call that never happened looked identical.
+  //
+  // Carries NO member content: outcome, HTTP status, latency, attempt count,
+  // turn count and token usage only. Never the question, the answer, the app
+  // context, or the gap topic. The gap log is a separate path with its own
+  // privacy rules and stays that way.
+  const __t0 = Date.now();
+  let __logged = false;
+  const navLog = (outcome, status, extra) => {
+    if (__logged) return;            // exactly one line per invocation
+    __logged = true;
+    const e = extra || {};
+    console.log("[navigator] outcome=" + outcome +
+      " status=" + status +
+      " ms=" + (Date.now() - __t0) +
+      " attempts=" + (e.attempts === undefined ? 0 : e.attempts) +
+      " turns=" + (e.turns === undefined ? 0 : e.turns) +
+      " in_tokens=" + (e.in_tokens === undefined ? 0 : e.in_tokens) +
+      " out_tokens=" + (e.out_tokens === undefined ? 0 : e.out_tokens) +
+      " dry_run=" + (process.env.NAVIGATOR_DRY_RUN === "1" ? 1 : 0));
+  };
+
+  if (event.httpMethod === "OPTIONS") { navLog("preflight", 204); return { statusCode: 204, headers, body: "" }; }
+  if (event.httpMethod !== "POST") { navLog("bad-method", 405); return { statusCode: 405, headers, body: JSON.stringify({ error: "POST only" }) }; }
 
   let body;
   try { body = JSON.parse(event.body || "{}"); } catch (e) {
+    navLog("bad-json", 400);
     return { statusCode: 400, headers, body: JSON.stringify({ error: "Bad request" }) };
   }
 
@@ -393,6 +419,7 @@ exports.handler = async (event) => {
     .map(m => ({ role: m.role, content: m.content.slice(0, 1500) }))
     .slice(-12);
   if (msgs.length === 0 || msgs[msgs.length - 1].role !== "user") {
+    navLog("no-user-message", 400);
     return { statusCode: 400, headers, body: JSON.stringify({ error: "No user message" }) };
   }
 
@@ -441,6 +468,7 @@ exports.handler = async (event) => {
     const dryReply = stripDeadTokens(
       synthetic.replace(GAP_TAG_RE, "").replace(/\n{3,}/g, "\n\n").trim()
     ) || "No response — try again.";
+    navLog("dry-run", 200, { turns: msgs.length });
     console.log("[dry-run] blocks=" + sys.length +
                 " systemChars=" + sys.reduce((n, b) => n + (b.text || "").length, 0) +
                 " turns=" + msgs.length);
@@ -514,9 +542,11 @@ exports.handler = async (event) => {
     }
     if (!resp) {
       console.error("[navigator] upstream unreachable after " + attempt + " attempt(s)");
+      navLog("upstream-unreachable", 502, { attempts: attempt, turns: msgs.length });
       return { statusCode: 502, headers, body: JSON.stringify({ error: "The Navigator is briefly unavailable. Try again in a moment." }) };
     }
     if (!resp.ok) {
+      navLog("upstream-error", resp.status, { attempts: attempt, turns: msgs.length });
       return { statusCode: 502, headers, body: JSON.stringify({ error: "The Navigator is briefly unavailable. Try again in a moment." }) };
     }
     const data = await resp.json();
@@ -528,8 +558,12 @@ exports.handler = async (event) => {
     const reply = stripDeadTokens(
       rawReply.replace(GAP_TAG_RE, "").replace(/\n{3,}/g, "\n\n").trim()
     ) || "No response — try again.";
+    const u = (data && data.usage) || {};
+    navLog("ok", 200, { attempts: attempt, turns: msgs.length,
+                        in_tokens: u.input_tokens, out_tokens: u.output_tokens });
     return { statusCode: 200, headers, body: JSON.stringify({ reply }) };
   } catch (e) {
+    navLog("exception", 502, { turns: msgs.length });
     return { statusCode: 502, headers, body: JSON.stringify({ error: "The Navigator is briefly unavailable. Try again in a moment." }) };
   }
 };

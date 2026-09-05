@@ -31,3 +31,4 @@ the true baseline composite is **35, not 34**, and the running composite after
 iterations 1 and 2A is **39, not 38**.
 | 4 | D3b ~60 unretried `gh` calls across all six workflows | J1–J5 + PAO c4 | J1 1→2, J2 0→2, J3 0→2, J4 1→2, J5 0→2, PAO 0→2 | 42 → **52** (+10) | PASS |
 | 5 | D2+D4 no per-run metering record; J4/PAO outside J5's loop | c3 x6, J4/PAO c6 | c3: J1/J2/J3/J4/PAO 0→2, J5 1→2; c6: J4 0→1, PAO 0→1 | 52 → **65** (+13) | PASS |
+| 6 | D5 Navigator unobservable — no status line, no cost visibility | Navigator c2, c6 | c2 0→2, c6 0→1 | 65 → **68** (+3) | PASS |
