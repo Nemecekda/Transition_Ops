@@ -5030,6 +5030,23 @@ function App() {
     }, 1500);
     return () => clearTimeout(t);
   }, [__updateOneSignalTags]);
+  // ═══════════ EVALUATE-ON-OPEN ═══════════
+  // The web platform has no background scheduler: Notification Triggers was
+  // abandoned by Chrome, and a service-worker timer does not survive worker
+  // termination (removed here in v72). So the rung ladder is evaluated when the
+  // member opens the app. Anything that must arrive while the app is closed is
+  // OneSignal's lane. Runs once permission is known; notifyDueRung re-checks
+  // permission and iframe state itself.
+  useEffect(() => {
+    if (window.__IS_IFRAME) return;
+    if (notifStatus !== "granted") return;
+    let ets = "";
+    try { ets = window.__safeGet("etsDate") || window.__safeGet("tops_sep_date") || ""; } catch (e) {}
+    if (!ets) return;
+    // Brief delay so the service worker has taken control on a cold start.
+    const t = setTimeout(() => { notifyDueRung(ets); }, 2000);
+    return () => clearTimeout(t);
+  }, [notifStatus]);
   const handleETSChange = useCallback(dateStr => {
     setSeparationDate(dateStr);
     if (window.__IS_IFRAME) return;
