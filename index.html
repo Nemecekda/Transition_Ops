@@ -2905,20 +2905,25 @@ const SMART_REMINDERS = [
 // map stay month-granular on their existing mo: value, which is not touched.
 var RUNG_DAY_TRIGGERS = { "r-1-fedvip": 31, "r-p1-fedvip": -30 };
 
-// A day-anchored rung stays due for one ladder step after its trigger, so a
-// member who does not open the app on the exact day still receives it — while
-// a rung whose window closed long ago stays silent. 31 days is the ladder's own
-// spacing, which is what keeps day-anchored and month-anchored rungs behaving
-// alike rather than a policy figure.
-var RUNG_TRIGGER_GRACE_DAYS = 31;
+// ── STALENESS TIERS (values S2-fixed; mechanism ours) ──────────────────────
+// A rung whose window has closed must never surface. A late "30 Days Left on
+// the Window" alert is a false claim to a member.
+//
+// Day-anchored rungs: 14 days past their trigger, then dark. This OVERRIDES the
+// class table below — an S2-named fire date is precise, so its tail is short.
+var RUNG_DAY_TRIGGER_CEILING_DAYS = 14;
 
-// Staleness ceiling: how many days past its trigger a rung may still fire.
-// A rung whose window closed must never surface -- a late "30 Days Left on the
-// Window" alert is a false claim to a member. PENDING S2: values per rung class.
-// The current ladder math already bounds every rung to roughly one month, so
-// this guard is defence in depth and is not load-bearing today; it stays
-// correct if a future window is ever widened.
-var RUNG_STALENESS_CEILING_DAYS = { CRITICAL: 31, HIGH: 31, MEDIUM: 31, ADVISORY: 31 };
+// Month-granular rungs: their existing exact-month window (mo === moToETS,
+// roughly the 15 days either side of the trigger) plus a 15-day tail, then
+// dark. MONTH_WINDOW_HALF_DAYS is the half-window the exact-month match already
+// covers; the tail extends past it.
+var RUNG_MONTH_WINDOW_HALF_DAYS = 15;
+var RUNG_MONTH_TAIL_DAYS = 15;
+
+// Per-class ceiling, applied on top of the two rules above. A rung fires only
+// if BOTH its class ceiling and its class-of-rung window allow it — the tighter
+// constraint governs, because the failure mode being guarded is a stale claim.
+var RUNG_STALENESS_CEILING_DAYS = { CRITICAL: 31, HIGH: 31, MEDIUM: 31, ADVISORY: 60 };
 
 // Days-to-ETS at which a rung is meant to fire. Day-anchored rungs carry it
 // explicitly; month-granular rungs derive it from their existing mo: value.
@@ -2931,21 +2936,30 @@ function rungTriggerDay(rung) {
 
 function rungIsDue(rung, dateStr) {
   if (!rung || !dateStr) return false;
+  var d = daysToETSDate(dateStr);
   if (Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)) {
-    var d = daysToETSDate(dateStr);
-    if (d === null) return false;
+    if (d === null || isNaN(d)) return false;
     var trig = RUNG_DAY_TRIGGERS[rung.id];
-    return d <= trig && d > trig - RUNG_TRIGGER_GRACE_DAYS;
+    // Reached the trigger day, and no more than the day ceiling past it.
+    return d <= trig && (trig - d) <= RUNG_DAY_TRIGGER_CEILING_DAYS;
   }
+  // Month-granular: the exact-month window, unchanged...
   var m = moToETS(dateStr);
-  return m !== null && rung.mo === m;
+  if (m !== null && rung.mo === m) return true;
+  // ...plus a tail past that window, then dark.
+  if (d === null || isNaN(d)) return false;
+  var past = rungTriggerDay(rung) - d;
+  return past > 0 && past <= (RUNG_MONTH_WINDOW_HALF_DAYS + RUNG_MONTH_TAIL_DAYS);
 }
 
 // Has this rung's window closed? Measured in days past its trigger point.
 function rungIsStale(rung, dateStr) {
   var d = daysToETSDate(dateStr);
   if (d === null || isNaN(d)) return false;
-  var ceiling = RUNG_STALENESS_CEILING_DAYS[rung.pri];
+  // A day-anchored rung's own ceiling overrides the class table.
+  var ceiling = Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)
+    ? RUNG_DAY_TRIGGER_CEILING_DAYS
+    : RUNG_STALENESS_CEILING_DAYS[rung.pri];
   if (ceiling === undefined || ceiling === null) return false;
   return (rungTriggerDay(rung) - d) > ceiling;
 }
