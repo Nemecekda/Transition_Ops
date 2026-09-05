@@ -2912,6 +2912,23 @@ var RUNG_DAY_TRIGGERS = { "r-1-fedvip": 31, "r-p1-fedvip": -30 };
 // alike rather than a policy figure.
 var RUNG_TRIGGER_GRACE_DAYS = 31;
 
+// Staleness ceiling: how many days past its trigger a rung may still fire.
+// A rung whose window closed must never surface -- a late "30 Days Left on the
+// Window" alert is a false claim to a member. PENDING S2: values per rung class.
+// The current ladder math already bounds every rung to roughly one month, so
+// this guard is defence in depth and is not load-bearing today; it stays
+// correct if a future window is ever widened.
+var RUNG_STALENESS_CEILING_DAYS = { CRITICAL: 31, HIGH: 31, MEDIUM: 31, ADVISORY: 31 };
+
+// Days-to-ETS at which a rung is meant to fire. Day-anchored rungs carry it
+// explicitly; month-granular rungs derive it from their existing mo: value.
+function rungTriggerDay(rung) {
+  if (Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)) {
+    return RUNG_DAY_TRIGGERS[rung.id];
+  }
+  return Math.round(rung.mo * 30.44);
+}
+
 function rungIsDue(rung, dateStr) {
   if (!rung || !dateStr) return false;
   if (Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)) {
@@ -2924,6 +2941,15 @@ function rungIsDue(rung, dateStr) {
   return m !== null && rung.mo === m;
 }
 
+// Has this rung's window closed? Measured in days past its trigger point.
+function rungIsStale(rung, dateStr) {
+  var d = daysToETSDate(dateStr);
+  if (d === null || isNaN(d)) return false;
+  var ceiling = RUNG_STALENESS_CEILING_DAYS[rung.pri];
+  if (ceiling === undefined || ceiling === null) return false;
+  return (rungTriggerDay(rung) - d) > ceiling;
+}
+
 // Due rungs the member has not already been notified about, most urgent first.
 // `delivered` is a plain id -> true map so it round-trips through localStorage.
 function dueRungs(dateStr, delivered) {
@@ -2931,7 +2957,7 @@ function dueRungs(dateStr, delivered) {
   var seen = delivered || {};
   var rank = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, ADVISORY: 3 };
   return SMART_REMINDERS.filter(function (r) {
-    return !seen[r.id] && rungIsDue(r, dateStr);
+    return !seen[r.id] && rungIsDue(r, dateStr) && !rungIsStale(r, dateStr);
   }).sort(function (a, b) {
     var ra = rank[a.pri] === undefined ? 9 : rank[a.pri];
     var rb = rank[b.pri] === undefined ? 9 : rank[b.pri];
@@ -2949,32 +2975,56 @@ function dueRungs(dateStr, delivered) {
 // has not been told about yet. v72 disabled the previous path because it burst
 // several notifications 2 s apart on every open. One per evaluation, once per
 // rung ever, is what replaces it. Returns the rung id fired, or null.
+// One notification per page load, enforced here rather than by the callers.
+// Per-invocation was not a gate: every call took the NEXT undelivered rung, so
+// N opens walked N rungs off the ladder and iOS stacked them.
+var __rungFiredThisOpen = false;
+
 function notifyDueRung(dateStr) {
   if (!dateStr || window.__IS_IFRAME) return null;
+  if (__rungFiredThisOpen) return null;                       // structural: one per open
   if (typeof Notification === "undefined" || Notification.permission !== "granted") return null;
   if (!navigator.serviceWorker) return null;
+
+  // One per open is not enough on its own: six opens in a day is six
+  // notifications, which is exactly the reported incident. At most one rung
+  // notification per calendar day, across opens.
+  var todayKey = new Date().toDateString();
+  try {
+    if (window.__safeGet("tops_rung_last_fired") === todayKey) return null;
+  } catch (e) {}
+
   var delivered = {};
   try { delivered = JSON.parse(window.__safeGet("tops_rung_notified") || "{}") || {}; } catch (e) { delivered = {}; }
   var due = dueRungs(dateStr, delivered);
   if (!due.length) return null;
   var rung = due[0];
-  // Mark delivered synchronously, before the async show, so two evaluations in
-  // the same session cannot race and double-fire the same rung.
-  delivered[rung.id] = true;
-  try { window.__safeSet("tops_rung_notified", JSON.stringify(delivered)); } catch (e) {}
+
+  // Claim the per-open slot before the async show so nothing can race it.
+  __rungFiredThisOpen = true;
+
   // .ready rather than .controller: on a first load no worker is controlling
   // yet, and the notification was silently dropped.
   navigator.serviceWorker.ready.then(function (reg) {
-    if (!reg || !reg.showNotification) return;
+    if (!reg || !reg.showNotification) { __rungFiredThisOpen = false; return; }
     return reg.showNotification(rung.title, {
       body: rung.brief || "",
       tag: "ets-" + rung.id,
       icon: "/icon-192.png",
       badge: "/icon-192.png",
       data: { url: "/" }
+    }).then(function () {
+      // Delivered state is written ON FIRE, not before it. A rung that failed
+      // to show is not burned and will be offered again.
+      delivered[rung.id] = true;
+      try {
+        window.__safeSet("tops_rung_notified", JSON.stringify(delivered));
+        window.__safeSet("tops_rung_last_fired", todayKey);
+      } catch (e) {}
+      if (window.__trackEvent) window.__trackEvent("rung_notified", { id: rung.id });
     });
-  }).catch(function () {});
-  if (window.__trackEvent) window.__trackEvent("rung_notified", { id: rung.id });
+  }).catch(function () { __rungFiredThisOpen = false; });
+
   return rung.id;
 }
 
