@@ -73,3 +73,9 @@ End every working session with a SITREP:
   content, ever (see `brand-voice` skill).
 - Verification records live in `intel/`: every rated benefits/policy claim gets
   an entry in `intel/verification-log.md`, and staged patches land beside it.
+
+## SHARED DEVELOPMENT
+Before changing this repository, read and follow
+[SHARED_DEVELOPMENT.md](SHARED_DEVELOPMENT.md) for Claude/Codex reconciliation
+and preservation of the current Resume behavior. Follow the user's current
+instructions; this section does not reinstate withdrawn AGENTS.md orders.
