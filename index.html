@@ -2985,61 +2985,137 @@ function dueRungs(dateStr, delivered) {
   });
 }
 
-// Fire at most one notification per evaluation: the most urgent rung the member
-// has not been told about yet. v72 disabled the previous path because it burst
-// several notifications 2 s apart on every open. One per evaluation, once per
-// rung ever, is what replaces it. Returns the rung id fired, or null.
-// One notification per page load, enforced here rather than by the callers.
-// Per-invocation was not a gate: every call took the NEXT undelivered rung, so
-// N opens walked N rungs off the ladder and iOS stacked them.
+// Local alert persistence, iteration 1. Read-back verification is NOT an atomic
+// cross-context lock; origin-wide coordination remains iteration 2.
 var __rungFiredThisOpen = false;
+var RUNG_LEDGER_KEY = "tops_rung_ledger_v1";
 
-function notifyDueRung(dateStr) {
-  if (!dateStr || window.__IS_IFRAME) return null;
-  if (__rungFiredThisOpen) return null;                       // structural: one per open
-  if (typeof Notification === "undefined" || Notification.permission !== "granted") return null;
-  if (!navigator.serviceWorker) return null;
+function rungAlertResult(status, id) {
+  if (typeof console !== "undefined" && console.warn) {
+    console.warn("[local-rung] " + status);
+  }
+  return { status: status, id: id || null };
+}
 
-  // One per open is not enough on its own: six opens in a day is six
-  // notifications, which is exactly the reported incident. At most one rung
-  // notification per calendar day, across opens.
-  var todayKey = new Date().toDateString();
-  try {
-    if (window.__safeGet("tops_rung_last_fired") === todayKey) return null;
-  } catch (e) {}
+function rungLedgerObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
 
-  var delivered = {};
-  try { delivered = JSON.parse(window.__safeGet("tops_rung_notified") || "{}") || {}; } catch (e) { delivered = {}; }
-  var due = dueRungs(dateStr, delivered);
-  if (!due.length) return null;
-  var rung = due[0];
+function rungLedgerDay(value) {
+  return value === null || (typeof value === "string" &&
+    !isNaN(Date.parse(value)) && new Date(value).toDateString() === value);
+}
 
-  // Claim the per-open slot before the async show so nothing can race it.
+function rungLedgerHistory(value) {
+  return rungLedgerObject(value) && Object.keys(value).every(function (id) {
+    return /^r-[a-z0-9-]+$/.test(id) && value[id] === true;
+  });
+}
+
+function rungLedgerValid(value) {
+  if (!rungLedgerObject(value) || Object.keys(value).sort().join(",") !==
+      "delivered,lastFired,pending,version" || value.version !== 1 ||
+      !rungLedgerHistory(value.delivered) || !rungLedgerDay(value.lastFired)) return false;
+  var pending = value.pending;
+  return pending === null || (rungLedgerObject(pending) &&
+    Object.keys(pending).sort().join(",") === "day,id" &&
+    typeof pending.id === "string" && /^r-[a-z0-9-]+$/.test(pending.id) &&
+    pending.day !== null && rungLedgerDay(pending.day) && !value.delivered[pending.id]);
+}
+
+function rungLedgerRead(todayKey) {
+  // Direct local-channel access: global wrappers intentionally swallow errors.
+  // Legacy inputs remain read-only, including history written by an older page.
+  var raw = localStorage.getItem(RUNG_LEDGER_KEY);
+  var legacyRaw = localStorage.getItem("tops_rung_notified");
+  var legacyDay = localStorage.getItem("tops_rung_last_fired");
+  var legacy = legacyRaw === null ? {} : JSON.parse(legacyRaw);
+  if (!rungLedgerHistory(legacy) || !rungLedgerDay(legacyDay)) throw new Error("legacy-invalid");
+  var ledger = raw === null ? { version: 1, delivered: {}, lastFired: null, pending: null } : JSON.parse(raw);
+  if (!rungLedgerValid(ledger)) throw new Error("ledger-invalid");
+  Object.keys(legacy).forEach(function (id) { ledger.delivered[id] = true; });
+  if (legacyDay === todayKey || ledger.lastFired === null) ledger.lastFired = legacyDay;
+  // Conflicting legacy delivery of a pending rung is ambiguous; never clear it.
+  if (!rungLedgerValid(ledger)) throw new Error("legacy-conflict");
+  return { raw: raw, ledger: ledger };
+}
+
+function rungLedgerWrite(expected, ledger) {
+  if (!rungLedgerValid(ledger)) throw new Error("ledger-invalid");
+  var encoded = JSON.stringify(ledger);
+  if (localStorage.getItem(RUNG_LEDGER_KEY) !== expected) throw new Error("ledger-changed");
+  localStorage.setItem(RUNG_LEDGER_KEY, encoded);
+  if (localStorage.getItem(RUNG_LEDGER_KEY) !== encoded) throw new Error("ledger-unverified");
+  return encoded;
+}
+
+// Promise result replaces the old immediate attempt ID; both callers ignore it.
+// Only fulfilled show + verified final persistence reports delivered.
+async function notifyDueRung(dateStr) {
+  if (!dateStr || window.__IS_IFRAME) return rungAlertResult("skipped-context");
+  if (__rungFiredThisOpen) return rungAlertResult("blocked-this-open");
+  if (typeof Notification === "undefined" || Notification.permission !== "granted" ||
+      !navigator.serviceWorker) return rungAlertResult("skipped-permission-or-worker");
   __rungFiredThisOpen = true;
+  var reg;
+  try { reg = await navigator.serviceWorker.ready; }
+  catch (e) {
+    __rungFiredThisOpen = false;
+    return rungAlertResult("worker-unavailable");
+  }
+  if (!reg || typeof reg.showNotification !== "function" || Notification.permission !== "granted") {
+    __rungFiredThisOpen = false;
+    return rungAlertResult("worker-or-permission-unavailable");
+  }
+  // Fresh date and eligibility AFTER readiness, not a stale queued selection.
+  var todayKey = new Date().toDateString();
+  var snapshot;
+  try { snapshot = rungLedgerRead(todayKey); }
+  catch (e) { return rungAlertResult("blocked-state-read-or-validation"); }
+  var ledger = snapshot.ledger;
+  if (ledger.pending) return rungAlertResult("blocked-pending", ledger.pending.id);
+  if (ledger.lastFired === todayKey) return rungAlertResult("blocked-daily-cap");
+  var due = dueRungs(dateStr, ledger.delivered);
+  if (!due.length) {
+    __rungFiredThisOpen = false;
+    return rungAlertResult("no-due-rung");
+  }
+  var rung = due[0];
+  ledger.pending = { id: rung.id, day: todayKey };
+  var reserved;
+  try { reserved = rungLedgerWrite(snapshot.raw, ledger); }
+  catch (e) { return rungAlertResult("blocked-reservation-unverified", rung.id); }
 
-  // .ready rather than .controller: on a first load no worker is controlling
-  // yet, and the notification was silently dropped.
-  navigator.serviceWorker.ready.then(function (reg) {
-    if (!reg || !reg.showNotification) { __rungFiredThisOpen = false; return; }
-    return reg.showNotification(rung.title, {
-      body: rung.brief || "",
-      tag: "ets-" + rung.id,
-      icon: "/icon-192.png",
-      badge: "/icon-192.png",
-      data: { url: "/" }
-    }).then(function () {
-      // Delivered state is written ON FIRE, not before it. A rung that failed
-      // to show is not burned and will be offered again.
-      delivered[rung.id] = true;
-      try {
-        window.__safeSet("tops_rung_notified", JSON.stringify(delivered));
-        window.__safeSet("tops_rung_last_fired", todayKey);
-      } catch (e) {}
-      if (window.__trackEvent) window.__trackEvent("rung_notified", { id: rung.id });
+  var shown;
+  try {
+    shown = reg.showNotification(rung.title, {
+      body: rung.brief || "", tag: "ets-" + rung.id,
+      icon: "/icon-192.png", badge: "/icon-192.png", data: { url: "/" }
     });
-  }).catch(function () { __rungFiredThisOpen = false; });
-
-  return rung.id;
+    if (!shown || typeof shown.then !== "function") throw new Error("show-result-unknown");
+  } catch (e) {
+    return rungAlertResult("blocked-show-uncertain", rung.id);
+  }
+  // A hanging show keeps pending indefinitely. No timeout can prove non-delivery.
+  try { await shown; }
+  catch (e) {
+    ledger.pending = null;
+    try { rungLedgerWrite(reserved, ledger); }
+    catch (cleanupError) { return rungAlertResult("blocked-rejection-cleanup-unverified", rung.id); }
+    __rungFiredThisOpen = false;
+    return rungAlertResult("show-rejected-retryable", rung.id);
+  }
+  // Recompute the cap day on completion too: a show may span local midnight.
+  ledger.delivered[rung.id] = true;
+  ledger.lastFired = new Date().toDateString();
+  ledger.pending = null;
+  try { rungLedgerWrite(reserved, ledger); }
+  catch (e) { return rungAlertResult("blocked-final-persistence-unverified", rung.id); }
+  // Analytics failure cannot undo committed delivery or release the slot.
+  try {
+    if (window.__trackEvent) window.__trackEvent("rung_notified", { id: rung.id });
+  } catch (e) {}
+  return rungAlertResult("delivered", rung.id);
 }
 
 // ═══════════════════════════════════════════════════════════════════

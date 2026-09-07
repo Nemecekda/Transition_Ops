@@ -4,7 +4,8 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const path = require('node:path');
-const source = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+// Historical defect reproduction pinned to the pre-fix audit; use alert-persistence-test.cjs for current behavior.
+const source = require('node:child_process').execFileSync('git', ['show', 'e073af5:index.html'], { cwd: path.join(__dirname, '..'), encoding: 'utf8' });
 function unique(text) {
   assert.equal(source.split(text).length - 1, 1, `Non-unique source anchor: ${text}`);
   return source.indexOf(text);
