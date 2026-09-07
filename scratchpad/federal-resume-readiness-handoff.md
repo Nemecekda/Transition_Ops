@@ -1,4 +1,14 @@
-# Federal Resume readiness - iteration 9 locally complete; fresh hosted test pending
+# Federal Resume readiness - iteration 10; fresh hosted test pending
+
+Dean's latest push is verified at 349770c, but GitHub still reported PR #59 open and unmerged. The fresh immutable preview passed warning-free fact extraction with all 49 expected lines. Federal drafting was withheld: its review returned 8 PASS, 1 FAIL and 1 NEEDS MEMBER FACT, reporting unsupported summary and causal assertions. No retry or export followed. See [hosted evidence](federal-hosted-349770c/acceptance.md).
+
+Iteration 10 removes two fixed-length federal prose instructions and requires supported statements without inferred relationships or target-title qualifications. Actual writer request quotas improve from 2 to 0. Short supported candidates still release; simulated unsupported reviews still withhold. Audit instructions and all validators remain unchanged. All five final local suites, Word rendering and function packaging pass. These local checks do not prove the fresh model response will pass. See [iteration 10](federal-resume-iteration-10/readiness.md).
+
+Next: Dean pushes codex/federal-resume-readiness to PR #59, base ops/openai-parallel-clone. Verify the new immutable deploy before one bounded fictional acceptance. Full federal release, federal artifact, phone/manual accessibility and production acceptance remain pending. No agent push, merge, new skill or cache change. The working civilian Resume/DOCX remains intact.
+
+The sections below are historical handoffs, retained verbatim.
+
+## Historical iteration 9 handoff
 
 Dean pushed 964a93e. Its immutable preview preserved all tested fact payloads but returned bare EDUCATION and CERTIFICATIONS headings. The UI showed two structural warnings; one draft activation confirmed HTTP 400 before generation. No retries or exports followed. This attempt did not exercise the previous hyphen repair's hosted drafting behavior. See [failed hosted evidence](federal-hosted-964a93e/acceptance.md).
 

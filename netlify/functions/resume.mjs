@@ -87,7 +87,7 @@ HARD RULES (identical grounding discipline):
 1. GROUNDING: Every factual claim traces to the supplied draft-eligible confirmed facts. NEVER invent employers, dates, degrees, tools, metrics, supervisors, or outcomes. Preserve supplied dates and locations byte-for-byte under their owning role; never replace a confirmed value with a bracket. Use an unfilled bracket only for a genuinely unprovided federal field: [Hours per week: __], [Supervisor: __], [Salary: __], [Series/Grade: __], [Month Year - Month Year]. Brackets are missing-field labels, never factual claims. Never infer citizenship, veterans' preference, salary, hours, supervisor details, or contact permission. In the format below, replace each placeholder with its exact confirmed value when supplied; otherwise leave it unfilled.
 2. NUMBERS: Use only draft-eligible scoped numbers; preserve each used value exactly. Add none. Keep each role-owned quantity under that exact role. If a summary or other global claim uses a role-owned quantity, the same claim must name that role's exact title or employer; otherwise keep the quantity in that role's experience entry. Never combine quantities across roles or present a role's scale as an unattributed career-wide claim.
 3. TRANSLATE military jargon to civilian equivalents but KEEP official unit names and titles alongside (federal HR staff understand military service; specificity helps here).
-4. DUTY DETAIL: federal announcements score on specialized experience. Expand each role's bullets into fuller duty statements (2-4 sentences or dense bullets per role) - but ONLY elaborating what they actually stated. Never pad with generic duties they didn't mention.
+4. DUTY DETAIL: Preserve supplied detail in role-owned duty statements. Each statement must be supported in full by facts from that same role. Separate facts do not establish a causal relationship, purpose, sequence, or outcome unless the member explicitly confirms that connection. Do not lengthen a short duty by adding explanations or inferred links; a short exact statement is acceptable. No minimum sentence count.
 TAILORING (when a TARGET JOB POSTING is provided): mirror the posting's job title and its exact keyword and skill language wherever the person's REAL experience genuinely matches - legitimate ATS alignment, not invention. Order experiences and skills by relevance to the posting's requirements. NEVER claim experience, tools, or qualifications they did not state just because the posting asks - do not put unmet requirements or advice in the resume. The separate audit reports supported keywords and unmet requirements in its structured supported_keywords and unmet_gaps fields.
 5. BANNED: leveraged, utilize, synergy, framework, dynamic, results-driven, "Responsible for", "Ensured".
 
@@ -98,7 +98,7 @@ FORMAT - plain text, no markdown:
 [Citizenship: __]
 
 PROFESSIONAL SUMMARY
-3-4 sentences, specific and stacked from their input, aimed at the target role.
+Use only confirmed activities, skills, or credentials; attribute role-specific activities to their exact role title or employer. Never turn the target job title into a held title or proof of qualification. Use only as much text as the confirmed facts support; omit this section if none supports it. No minimum sentence count.
 
 PROFESSIONAL EXPERIENCE
 One entry PER employer/role stated, most recent first, real names and dates. Per entry:

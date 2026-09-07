@@ -1,0 +1,135 @@
+{
+  "parent": "349770c3a3d2226621cd7215757ac05c580fc50f",
+  "files": [
+    {
+      "file": "iteration-10-baseline.txt",
+      "bytes": 11204,
+      "sha256": "28b7fd9b462daa045a08bf2efc11fd72d7c48332cc293172fddb8e95bd5d1f8e"
+    },
+    {
+      "file": "iteration-10-edit.py",
+      "bytes": 7804,
+      "sha256": "4c5f4fa47d9b2eff4240dd41e3d13479c95807ce2eae1e489b49de34c37b0b3d"
+    },
+    {
+      "file": "iteration-10-final-accessibility.txt",
+      "bytes": 30692,
+      "sha256": "5fb62998911fac7b832326c7a24beaf65197c330bcc2ccbbe6478ef100d5d56f"
+    },
+    {
+      "file": "iteration-10-final-openai.txt",
+      "bytes": 12653,
+      "sha256": "cbd8c9a7473ffa81ec223ceade2a804263dc37bb69a5e2bafae708d9e1dfd53b"
+    },
+    {
+      "file": "iteration-10-final-package.txt",
+      "bytes": 244,
+      "sha256": "fe84c6d21ccd7689eebd03ff6c306fb32a9d53e919f14cf60a8998e8a019bda1"
+    },
+    {
+      "file": "iteration-10-final-privacy.txt",
+      "bytes": 3800,
+      "sha256": "bab24f7e7e8ffbd221dc686a62206ff33a3f0ad86afc8509a830ea8da099cdb8"
+    },
+    {
+      "file": "iteration-10-final-record-edits.txt",
+      "bytes": 230,
+      "sha256": "b6a0718debb743f79267820bb7286e910a7082651fa6ba28d2705a2d8c7f78a0"
+    },
+    {
+      "file": "iteration-10-final-records.py",
+      "bytes": 1954,
+      "sha256": "b3d4eead2d064287967f9ed2bd9c9b793381365455934f9afdbf25b467fe5b5a"
+    },
+    {
+      "file": "iteration-10-final-spend.txt",
+      "bytes": 953,
+      "sha256": "97de30e5a104a36dce9898396364b9a23f422d1f31e0d06e2f17fdd95d6c0471"
+    },
+    {
+      "file": "iteration-10-final-sw.txt",
+      "bytes": 5744,
+      "sha256": "df7c6c2960ccd33607124c72677e99e9d3db67bab017d0bfbad2e933c94653c3"
+    },
+    {
+      "file": "iteration-10-fixture-edit.txt",
+      "bytes": 56,
+      "sha256": "b739a7506a39c7d2322fb4ab0196fb6f4e198b1653c46ce9f206f0fd3d004dcf"
+    },
+    {
+      "file": "iteration-10-fixture-refinement.py",
+      "bytes": 1085,
+      "sha256": "eea985ac72bed7f10c09ba785e754c383dd10d075cc72b3287a0a4f872ecf547"
+    },
+    {
+      "file": "iteration-10-openai.txt",
+      "bytes": 12653,
+      "sha256": "cbd8c9a7473ffa81ec223ceade2a804263dc37bb69a5e2bafae708d9e1dfd53b"
+    },
+    {
+      "file": "iteration-10-package.txt",
+      "bytes": 244,
+      "sha256": "fe84c6d21ccd7689eebd03ff6c306fb32a9d53e919f14cf60a8998e8a019bda1"
+    },
+    {
+      "file": "iteration-10-privacy.txt",
+      "bytes": 3800,
+      "sha256": "bab24f7e7e8ffbd221dc686a62206ff33a3f0ad86afc8509a830ea8da099cdb8"
+    },
+    {
+      "file": "iteration-10-record-edits.txt",
+      "bytes": 228,
+      "sha256": "90de343d3fcd4922a712ed97514f9050f3448ddc03ff1ec88780ccad5e9ca4e7"
+    },
+    {
+      "file": "iteration-10-records.py",
+      "bytes": 12410,
+      "sha256": "aaa71df550db7f9e860b2c0e9dc606b60f050b3eaf709cd85b8500c3abf220db"
+    },
+    {
+      "file": "iteration-10-runtime-edits.txt",
+      "bytes": 263,
+      "sha256": "cffd1169a7690a80d80bac34fb13df693e8bf0daf26cbe85adb5cd89597206ab"
+    },
+    {
+      "file": "iteration-10-scope.cjs",
+      "bytes": 3174,
+      "sha256": "7ccdbe770be2588a5039316847d100a58ce20054df5cc2e0562b2490826bf4fc"
+    },
+    {
+      "file": "iteration-10-scope.txt",
+      "bytes": 1779,
+      "sha256": "5489a90a0b4455255b2153288de2f4cb5c943072fe1d68af6367c4c3cfa82797"
+    },
+    {
+      "file": "iteration-10-spend.txt",
+      "bytes": 953,
+      "sha256": "97de30e5a104a36dce9898396364b9a23f422d1f31e0d06e2f17fdd95d6c0471"
+    },
+    {
+      "file": "iteration-10-structural.txt",
+      "bytes": 173,
+      "sha256": "afee57d448f727962afd41fa2a704f4074bc8d3f1bdbe685e9b6bf5c49b93afc"
+    },
+    {
+      "file": "iteration-10-summary-scope-edit.txt",
+      "bytes": 242,
+      "sha256": "81d8ae50ef8322eaebf3e34f253109425aab0946c0374563f50bf2315fceccc6"
+    },
+    {
+      "file": "iteration-10-summary-scope.py",
+      "bytes": 1253,
+      "sha256": "d3a47385029dffe400eff5c93606f092edc0e0b8c591f6e263ac3914bae373c3"
+    },
+    {
+      "file": "iteration-10-sw.txt",
+      "bytes": 5744,
+      "sha256": "df7c6c2960ccd33607124c72677e99e9d3db67bab017d0bfbad2e933c94653c3"
+    },
+    {
+      "file": "readiness.md",
+      "bytes": 5880,
+      "sha256": "7db594fb96abe5d3c4f51e5eeac57fcb07d9c1ca998105335d9102647f3edfe3"
+    }
+  ]
+}
