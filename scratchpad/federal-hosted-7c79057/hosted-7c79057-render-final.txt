@@ -1,0 +1,4 @@
+Fontconfig warning: no <cachedir> elements found. Check configuration.
+Fontconfig warning: adding <cachedir>/@.__________________________________________________OOO/var/cache/fontconfig</cachedir>
+Fontconfig warning: adding <cachedir prefix="xdg">fontconfig</cachedir>
+convert /private/tmp/tops-federal-resume-readiness/scratchpad/federal-hosted-7c79057/artifact/Federal_Resume_Draft.doc as a Writer/Web document -> /private/tmp/tops-federal-resume-readiness/scratchpad/federal-hosted-7c79057/artifact/Federal_Resume_Draft.pdf using filter : writer_web_pdf_Export

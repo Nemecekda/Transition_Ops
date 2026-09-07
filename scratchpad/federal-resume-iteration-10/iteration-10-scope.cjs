@@ -1,0 +1,37 @@
+const fs = require('node:fs');
+const cp = require('node:child_process');
+const crypto = require('node:crypto');
+const assert = require('node:assert/strict');
+const base = '349770c3a3d2226621cd7215757ac05c580fc50f';
+const old = cp.execFileSync('git', ['show', base + ':netlify/functions/resume.mjs'], { encoding: 'utf8' });
+const current = fs.readFileSync('netlify/functions/resume.mjs', 'utf8');
+const pattern = /const systemFederal = `([\s\S]*?)`;/g;
+const before = [...old.matchAll(pattern)];
+const after = [...current.matchAll(pattern)];
+assert.equal(before.length, 1);
+assert.equal(after.length, 1);
+assert.equal(current.replace(after[0][0], before[0][0]), old, 'all runtime bytes outside the federal writer prompt match parent');
+const oldLines = before[0][1].split('\n');
+const newLines = after[0][1].split('\n');
+assert.equal(newLines.length, oldLines.length);
+const changed = oldLines.map((text, index) => ({ text, index })).filter(item => item.text !== newLines[item.index]);
+assert.equal(changed.length, 2);
+assert.ok(changed[0].text.startsWith('4. DUTY DETAIL:'));
+assert.ok(changed[1].text.startsWith('3-4 sentences, specific and stacked'));
+assert.ok(newLines[changed[0].index].includes('Separate facts do not establish a causal relationship'));
+assert.ok(newLines[changed[1].index].includes('Never turn the target job title into a held title or proof of qualification'));
+assert.ok(newLines[changed[1].index].includes('omit this section if none supports it'));
+assert.ok(!newLines[changed[1].index].includes('nonnumeric'));
+assert.equal(newLines.find(line => line.startsWith('2. NUMBERS:')), oldLines.find(line => line.startsWith('2. NUMBERS:')), 'exact scoped quantities remain permitted under the existing rule');
+assert.equal((before[0][1].match(/2-4 sentences or dense bullets per role|3-4 sentences, specific and stacked/g) || []).length, 2);
+assert.equal((after[0][1].match(/2-4 sentences or dense bullets per role|3-4 sentences, specific and stacked/g) || []).length, 0);
+console.log('PASS whole-file comparison: exactly two federal writer lines changed; minimum expansion directives 2 -> 0');
+console.log('PASS all audit instructions, validators, extraction, numeric ownership, models, budgets, caps, transport and failure responses byte-identical to parent');
+console.log('Federal prompt sha256=' + crypto.createHash('sha256').update(after[0][1]).digest('hex'));
+for (const file of ['index.html', 'netlify/functions/navigator.mjs', 'netlify/functions/_shared/openai-client.cjs', 'netlify/functions/_shared/openai-budget.cjs', 'package.json', 'package-lock.json', 'netlify.toml', 'pwa-sw.js', 'sw.js', 'scripts/resume-docx-render-regression.js', 'SHARED_DEVELOPMENT.md', 'CLAUDE.md']) {
+  const bytes = fs.readFileSync(file);
+  assert.ok(bytes.equals(cp.execFileSync('git', ['show', base + ':' + file])), file + ' changed');
+  console.log('UNCHANGED ' + file + ' sha256=' + crypto.createHash('sha256').update(bytes).digest('hex'));
+}
+console.log('PASS no dependency, skill, cache, public wording, notifications or policy change; cache remains v152');
+console.log('LIMIT: request identity and stubbed gate tests do not establish hosted model success');

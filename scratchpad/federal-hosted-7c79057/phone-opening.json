@@ -1,0 +1,12 @@
+{
+  "date": "2026-09-07",
+  "reporter": "Dean",
+  "response_verbatim": "opens",
+  "artifact": "Federal_Resume_Draft.doc",
+  "desktop_artifact_sha256": "ae6cbec20e3d823d2790f8542a50fe481ec6582aff6e6fe7929b887edc0f249c",
+  "phone_file_hash": "NOT MEASURED; confirmation refers to the file requested for phone testing",
+  "result": "PHONE OPENING CONFIRMED BY USER",
+  "scope": "Opening only; full phone content, pagination, application identity and assistive-technology behavior not established",
+  "additional_generation": false,
+  "production_acceptance": "PENDING"
+}

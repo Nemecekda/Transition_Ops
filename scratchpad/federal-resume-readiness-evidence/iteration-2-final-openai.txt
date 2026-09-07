@@ -1,0 +1,10 @@
+
+> transition-ops@1.0.0 test:openai-migration
+> node scripts/openai-migration-regression.js
+
+PASS: Navigator dry-run environment gate, validation, no client/store/provider, and request-flag rejection
+PASS: federal metadata 12/12 admitted; missing/malformed/global/unlinked excluded; civilian eligibility unchanged; generation/audit ownership and two-call path verified with stubs
+PASS: federal TIP directives 2 -> 0; actual request contract, honest gaps and byte-exact release, four audit-withhold paths, and two-call/no-retry boundaries verified with stubs; hosted behavior pending
+PASS: RDM-175 and RDM-187..RDM-198 browser preflight, fixed senior profile, honest one-page exception, exact content, and negative layout controls
+PASS: RDM-192 and RDM-195 actual LibreOffice DOCX rendering; one/two-page counts, fixed senior profile, substantive visible pages, exact renderer-extracted content, no clipping, and only the expected semantic role-boundary break
+PASS: synthetic RDM-1..RDM-263 integration paths; all prior grounding, DOCX, federal, adaptive-length, guarded-stage, transport, browser-only civilian header, and federal hosted-preparation fixtures verified locally

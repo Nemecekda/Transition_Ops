@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-09-07T20:46:45.127Z",
+  "branch": "codex/federal-resume-readiness",
+  "commit": "349770c3a3d2226621cd7215757ac05c580fc50f",
+  "tree": "aaf6fe0920f03fc98c5b29c414051792196fef8e",
+  "site": "veteranbridge-tools",
+  "site_id": "e8e39892-d7d1-47c0-b23a-847ed01120b8",
+  "deploy_id": "6a9f216e813d160008626f7b",
+  "context": "deploy-preview",
+  "state": "ready",
+  "published_at": null,
+  "immutable_url": "https://6a9f216e813d160008626f7b--veteranbridge-tools.netlify.app",
+  "resume_function_digest": "1dc6f73927463cfdf048dc8791e541322d99525a06fde7f97c32103a0625d469",
+  "pr": 59,
+  "pr_state": "open",
+  "merged": false,
+  "base": "ops/openai-parallel-clone",
+  "acceptance": "FAILED_STOPPED",
+  "live_attempts": {
+    "facts": 1,
+    "draft": 1
+  },
+  "browser_retries": 0,
+  "export_attempts": 0,
+  "provider_calls": "UNVERIFIED"
+}

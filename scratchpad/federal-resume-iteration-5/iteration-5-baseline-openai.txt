@@ -1,0 +1,17 @@
+
+> transition-ops@1.0.0 test:openai-migration
+> node scripts/openai-migration-regression.js
+
+PASS: Navigator dry-run environment gate, validation, no client/store/provider, and request-flag rejection
+AssertionError [ERR_ASSERTION]: standard invented tenure: {"factSheet":"ROLE 1\nJOB TITLE (EXACT): Operations Lead\nEMPLOYER OR UNIT (EXACT): North Test Depot\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Reviewed equipment records.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): MISSING\nNUMBERS AND SCALE (EXACT OR MISSING):\n26 years of service\nTARGET ROLE (EXACT OR MISSING): Program Analyst","warnings":[]}
+
+200 !== 502
+
+    at run (/private/tmp/tops-federal-resume-readiness/scripts/openai-migration-regression.js:808:16) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 200,
+  expected: 502,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

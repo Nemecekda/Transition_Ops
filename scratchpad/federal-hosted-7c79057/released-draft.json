@@ -1,0 +1,180 @@
+{
+  "lines": [
+    "[Your Name]",
+    "[City, State ZIP] | [phone] | [email]",
+    "[Veterans' Preference: __]",
+    "[Citizenship: __]",
+    "",
+    "PROFESSIONAL SUMMARY",
+    "Operations Lead at North Test Depot with experience reviewing equipment records and preparing monthly inventory summaries. Planning Analyst at East Test Office with experience tracking work orders and maintaining project schedules.",
+    "",
+    "PROFESSIONAL EXPERIENCE",
+    "",
+    "Operations Lead - North Test Depot",
+    "Synthetic City, WI | January 2023 - December 2025 | [Hours per week: __]",
+    "[Supervisor: __]",
+    "Reviewed equipment records for 12 teams.",
+    "Prepared monthly inventory summaries.",
+    "",
+    "Planning Analyst - East Test Office",
+    "Example City, VA | January 2020 - December 2022 | [Hours per week: __]",
+    "[Supervisor: __]",
+    "Tracked work orders for 8 sites.",
+    "Maintained project schedules.",
+    "",
+    "Training Coordinator - West Test Center",
+    "Sample City, TX | January 2017 - December 2019 | [Hours per week: __]",
+    "[Supervisor: __]",
+    "Scheduled training for 6 teams.",
+    "Updated course attendance records.",
+    "",
+    "Logistics Specialist - South Test Unit",
+    "Fictional City, CO | January 2014 - December 2016 | [Hours per week: __]",
+    "[Supervisor: __]",
+    "Reviewed supply requests.",
+    "Maintained shipment records.",
+    "",
+    "Records Coordinator - Central Test Office",
+    "Demo City, FL | January 2011 - December 2013 | [Hours per week: __]",
+    "[Supervisor: __]",
+    "Checked document completeness.",
+    "Prepared records inventories.",
+    "",
+    "Administrative Specialist - Lake Test Center",
+    "Practice City, OH | January 2008 - December 2010 | [Hours per week: __]",
+    "[Supervisor: __]",
+    "Scheduled office meetings.",
+    "Maintained correspondence logs.",
+    "",
+    "EDUCATION",
+    "Master of Public Administration, Example Graduate University, 2018.",
+    "Bachelor of Arts in Administration, Synthetic State College, 2012.",
+    "Associate of Arts, Demonstration Community College, 2008.",
+    "",
+    "CERTIFICATIONS & TRAINING",
+    "Example Records Management Certificate.",
+    "Synthetic Scheduling Certificate."
+  ],
+  "trace": [
+    {
+      "claim": "Operations Lead at North Test Depot with experience reviewing equipment records and preparing monthly inventory summaries. Planning Analyst at East Test Office with experience tracking work orders and maintaining project schedules.",
+      "refs": "Confirmed facts: F1, F2, F5, F6, F7, F8, F11, F12"
+    },
+    {
+      "claim": "Operations Lead - North Test Depot",
+      "refs": "Confirmed facts: F1, F2"
+    },
+    {
+      "claim": "Synthetic City, WI | January 2023 - December 2025 | [Hours per week: __]",
+      "refs": "Confirmed facts: F3, F4"
+    },
+    {
+      "claim": "Reviewed equipment records for 12 teams.",
+      "refs": "Confirmed facts: F5"
+    },
+    {
+      "claim": "Prepared monthly inventory summaries.",
+      "refs": "Confirmed facts: F6"
+    },
+    {
+      "claim": "Planning Analyst - East Test Office",
+      "refs": "Confirmed facts: F7, F8"
+    },
+    {
+      "claim": "Example City, VA | January 2020 - December 2022 | [Hours per week: __]",
+      "refs": "Confirmed facts: F9, F10"
+    },
+    {
+      "claim": "Tracked work orders for 8 sites.",
+      "refs": "Confirmed facts: F11"
+    },
+    {
+      "claim": "Maintained project schedules.",
+      "refs": "Confirmed facts: F12"
+    },
+    {
+      "claim": "Training Coordinator - West Test Center",
+      "refs": "Confirmed facts: F13, F14"
+    },
+    {
+      "claim": "Sample City, TX | January 2017 - December 2019 | [Hours per week: __]",
+      "refs": "Confirmed facts: F15, F16"
+    },
+    {
+      "claim": "Scheduled training for 6 teams.",
+      "refs": "Confirmed facts: F17"
+    },
+    {
+      "claim": "Updated course attendance records.",
+      "refs": "Confirmed facts: F18"
+    },
+    {
+      "claim": "Logistics Specialist - South Test Unit",
+      "refs": "Confirmed facts: F19, F20"
+    },
+    {
+      "claim": "Fictional City, CO | January 2014 - December 2016 | [Hours per week: __]",
+      "refs": "Confirmed facts: F21, F22"
+    },
+    {
+      "claim": "Reviewed supply requests.",
+      "refs": "Confirmed facts: F23"
+    },
+    {
+      "claim": "Maintained shipment records.",
+      "refs": "Confirmed facts: F24"
+    },
+    {
+      "claim": "Records Coordinator - Central Test Office",
+      "refs": "Confirmed facts: F25, F26"
+    },
+    {
+      "claim": "Demo City, FL | January 2011 - December 2013 | [Hours per week: __]",
+      "refs": "Confirmed facts: F27, F28"
+    },
+    {
+      "claim": "Checked document completeness.",
+      "refs": "Confirmed facts: F29"
+    },
+    {
+      "claim": "Prepared records inventories.",
+      "refs": "Confirmed facts: F30"
+    },
+    {
+      "claim": "Administrative Specialist - Lake Test Center",
+      "refs": "Confirmed facts: F31, F32"
+    },
+    {
+      "claim": "Practice City, OH | January 2008 - December 2010 | [Hours per week: __]",
+      "refs": "Confirmed facts: F33, F34"
+    },
+    {
+      "claim": "Scheduled office meetings.",
+      "refs": "Confirmed facts: F35"
+    },
+    {
+      "claim": "Maintained correspondence logs.",
+      "refs": "Confirmed facts: F36"
+    },
+    {
+      "claim": "Master of Public Administration, Example Graduate University, 2018.",
+      "refs": "Confirmed facts: F37"
+    },
+    {
+      "claim": "Bachelor of Arts in Administration, Synthetic State College, 2012.",
+      "refs": "Confirmed facts: F38"
+    },
+    {
+      "claim": "Associate of Arts, Demonstration Community College, 2008.",
+      "refs": "Confirmed facts: F39"
+    },
+    {
+      "claim": "Example Records Management Certificate.",
+      "refs": "Confirmed facts: F40"
+    },
+    {
+      "claim": "Synthetic Scheduling Certificate.",
+      "refs": "Confirmed facts: F41"
+    }
+  ]
+}

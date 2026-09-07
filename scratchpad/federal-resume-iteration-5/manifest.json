@@ -1,0 +1,78 @@
+{
+  "date": "2026-09-07",
+  "parent_commit": "1b6b586d9fb0ace098c3ede4c831a3f7086ec6a8",
+  "records": [
+    {
+      "file": "iteration-5-baseline-openai.txt",
+      "exit_code": 1,
+      "bytes": 1027,
+      "sha256": "45f18036f4d9ee405fcce462caa8628fa88e73bbb93707cfe1e07dddfe8bda02"
+    },
+    {
+      "file": "iteration-5-openai.txt",
+      "exit_code": 1,
+      "bytes": 826,
+      "sha256": "21e8d4c2e999be267c92d233071b76b157597dc119175093034ee93680a21881"
+    },
+    {
+      "file": "iteration-5-openai-corrected.txt",
+      "exit_code": 1,
+      "bytes": 844,
+      "sha256": "f1ec78f3fd14973e867768a0c4d8d3e2a4cf473335d4bb1b338b727a838542bc"
+    },
+    {
+      "file": "iteration-5-openai-fixture-corrected.txt",
+      "exit_code": 1,
+      "bytes": 844,
+      "sha256": "9aef28c67288f941be87d4ca8f576c71aa486590cba30256e0dd77c060105535"
+    },
+    {
+      "file": "iteration-5-openai-final.txt",
+      "exit_code": 0,
+      "bytes": 1942,
+      "sha256": "7b4cbda2083a957de778b2598c1b07d0ae6f8743f0e3d2986f9e49a517d58949"
+    },
+    {
+      "file": "iteration-5-sw.txt",
+      "exit_code": 0,
+      "bytes": 5744,
+      "sha256": "df7c6c2960ccd33607124c72677e99e9d3db67bab017d0bfbad2e933c94653c3"
+    },
+    {
+      "file": "iteration-5-spend.txt",
+      "exit_code": 0,
+      "bytes": 953,
+      "sha256": "97de30e5a104a36dce9898396364b9a23f422d1f31e0d06e2f17fdd95d6c0471"
+    },
+    {
+      "file": "iteration-5-privacy.txt",
+      "exit_code": 0,
+      "bytes": 3800,
+      "sha256": "bab24f7e7e8ffbd221dc686a62206ff33a3f0ad86afc8509a830ea8da099cdb8"
+    },
+    {
+      "file": "iteration-5-accessibility.txt",
+      "exit_code": 0,
+      "bytes": 30692,
+      "sha256": "b25c47eda870104c8af0150634fb2dbe9dc95e1a5d2e7965aac9d5bc47513be2"
+    },
+    {
+      "file": "iteration-5-package.txt",
+      "exit_code": 0,
+      "bytes": 244,
+      "sha256": "fe84c6d21ccd7689eebd03ff6c306fb32a9d53e919f14cf60a8998e8a019bda1"
+    },
+    {
+      "file": "iteration-5-structural.txt",
+      "exit_code": 0,
+      "bytes": 173,
+      "sha256": "f3f35284221e3fde199b84e3759dd2201361d74d50c0db6716b69e0f968942c3"
+    },
+    {
+      "file": "iteration-5-scope.txt",
+      "exit_code": 0,
+      "bytes": 1406,
+      "sha256": "46e2ea971eadb49910ef5ed1fed847ca05679ee09a4d273fbdf253cc619f2e57"
+    }
+  ]
+}

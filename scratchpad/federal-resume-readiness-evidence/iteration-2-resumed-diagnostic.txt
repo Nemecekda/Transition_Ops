@@ -1,0 +1,75 @@
+PASS: Navigator dry-run environment gate, validation, no client/store/provider, and request-flag rejection
+PASS: federal metadata 12/12 admitted; missing/malformed/global/unlinked excluded; civilian eligibility unchanged; generation/audit ownership and two-call path verified with stubs
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
+  '[Citizenship: __]\n' +
+    "[Veterans' Preference: __]\n" +
+    'PROFESSIONAL EXPERIENCE\n' +
+    'Federal Test Role 1 - Federal Test Unit 1\n' +
++   '[Location: ] | [Month Year - Month Year] | [Hours per week: ]\n' +
+-   '[Location: __] | [Month Year - Month Year] | [Hours per week: __]\n' +
+    '[Supervisor: __]\n' +
+    'Reviewed equipment records.\n' +
+    '\n' +
+    'Federal Test Role 2 - Federal Test Unit 2\n' +
++   '[Location: ] | [Month Year - Month Year] | [Hours per week: ]\n' +
+-   '[Location: __] | [Month Year - Month Year] | [Hours per week: __]\n' +
+    '[Supervisor: __]\n' +
+    'Reviewed equipment records.\n' +
+    '\n' +
+    'Federal Test Role 3 - Federal Test Unit 3\n' +
++   '[Location: ] | [Month Year - Month Year] | [Hours per week: ]\n' +
+-   '[Location: __] | [Month Year - Month Year] | [Hours per week: __]\n' +
+    '[Supervisor: __]\n' +
+    'Reviewed equipment records.\n' +
+    '\n' +
+    'Federal Test Role 4 - Federal Test Unit 4\n' +
++   '[Location: ] | [Month Year - Month Year] | [Hours per week: ]\n' +
+-   '[Location: __] | [Month Year - Month Year] | [Hours per week: __]\n' +
+    '[Supervisor: __]\n' +
+    'Reviewed equipment records.\n' +
+    '\n' +
+    'Federal Test Role 5 - Federal Test Unit 5\n' +
++   '[Location: ] | [Month Year - Month Year] | [Hours per week: ]\n' +
+-   '[Location: __] | [Month Year - Month Year] | [Hours per week: __]\n' +
+    '[Supervisor: __]\n' +
+    'Reviewed equipment records.\n' +
+    '\n' +
+    'Federal Test Role 6 - Federal Test Unit 6\n' +
++   '[Location: ] | [Month Year - Month Year] | [Hours per week: ]\n' +
+-   '[Location: __] | [Month Year - Month Year] | [Hours per week: __]\n' +
+    '[Supervisor: __]\n' +
+    'Reviewed equipment records.'
+
+    at /private/tmp/tops-federal-resume-readiness/scripts/openai-migration-regression.js:2310:12
+    at Object.create (/private/tmp/tops-federal-resume-readiness/scripts/openai-migration-regression.js:371:65)
+    at Module.lambdaHandler (file:///private/tmp/tops-federal-resume-readiness/netlify/functions/resume.mjs:1232:51)
+    at async run (/private/tmp/tops-federal-resume-readiness/scripts/openai-migration-regression.js:2318:12) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '[Citizenship: __]\n' +
+    "[Veterans' Preference: __]\n" +
+    'PROFESSIONAL EXPERIENCE\n' +
+    'Federal Test Role 1 - Federal Test Unit 1\n' +
+    '[Location: ] | [Month Year - Month Year] | [Hours per week: ]\n' +
+    '[Supervisor: __]\n' +
+    'Reviewed equipment records.\n' +
+    '\n' +
+    'Federal Test Role 2 - Federal Test Unit 2\n' +
+    '[Location: ] | [Month Year - Month Year] | [Hours per week: ]\n' +
+    '...',
+  expected: '[Citizenship: __]\n' +
+    "[Veterans' Preference: __]\n" +
+    'PROFESSIONAL EXPERIENCE\n' +
+    'Federal Test Role 1 - Federal Test Unit 1\n' +
+    '[Location: __] | [Month Year - Month Year] | [Hours per week: __]\n' +
+    '[Supervisor: __]\n' +
+    'Reviewed equipment records.\n' +
+    '\n' +
+    'Federal Test Role 2 - Federal Test Unit 2\n' +
+    '[Location: __] | [Month Year - Month Year] | [Hours per week: __]\n' +
+    '...',
+  operator: 'strictEqual',
+  diff: 'simple'
+}

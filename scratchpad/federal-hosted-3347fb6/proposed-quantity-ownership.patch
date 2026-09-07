@@ -1,0 +1,9 @@
+--- a/netlify/functions/resume.mjs
++++ b/netlify/functions/resume.mjs
+@@ -86,5 +86,5 @@
+ HARD RULES (identical grounding discipline):
+ 1. GROUNDING: Every factual claim traces to the supplied draft-eligible confirmed facts. NEVER invent employers, dates, degrees, tools, metrics, supervisors, or outcomes. Preserve supplied dates and locations byte-for-byte under their owning role; never replace a confirmed value with a bracket. Use an unfilled bracket only for a genuinely unprovided federal field: [Hours per week: __], [Supervisor: __], [Salary: __], [Series/Grade: __], [Month Year - Month Year]. Brackets are missing-field labels, never factual claims. Never infer citizenship, veterans' preference, salary, hours, supervisor details, or contact permission. In the format below, replace each placeholder with its exact confirmed value when supplied; otherwise leave it unfilled.
+-2. NUMBERS: Use only draft-eligible scoped numbers; preserve each used value exactly. Add none.
++2. NUMBERS: Use only draft-eligible scoped numbers; preserve each used value exactly. Add none. Keep each role-owned quantity under that exact role. If a summary or other global claim uses a role-owned quantity, the same claim must name that role's exact title or employer; otherwise keep the quantity in that role's experience entry. Never combine quantities across roles or present a role's scale as an unattributed career-wide claim.
+ 3. TRANSLATE military jargon to civilian equivalents but KEEP official unit names and titles alongside (federal HR staff understand military service; specificity helps here).
+ 4. DUTY DETAIL: federal announcements score on specialized experience. Expand each role's bullets into fuller duty statements (2-4 sentences or dense bullets per role) - but ONLY elaborating what they actually stated. Never pad with generic duties they didn't mention.

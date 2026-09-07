@@ -1,0 +1,70 @@
+{
+  "date": "2026-09-07",
+  "branch": "codex/federal-resume-readiness",
+  "parent_commit": "c40625c5161491195f3c75a182939372355c6edd",
+  "records": [
+    {
+      "file": "iteration-4-baseline-openai.txt",
+      "command": "npm run test:openai-migration (test-only counterexample on c40625c)",
+      "exit_code": 1,
+      "bytes": 6208,
+      "sha256": "67ec9ccdb881dbffff472c6b48a1df09699945031c69df2368c6dc3f9f8babf1"
+    },
+    {
+      "file": "iteration-4-openai.txt",
+      "command": "npm run test:openai-migration",
+      "exit_code": 0,
+      "bytes": 1749,
+      "sha256": "0a2c1c6429f779384bf09bf3f9c29c1d927e09bb1d18a16fdcf89df397ec2a4e"
+    },
+    {
+      "file": "iteration-4-sw.txt",
+      "command": "npm run test:sw-privacy",
+      "exit_code": 0,
+      "bytes": 5744,
+      "sha256": "df7c6c2960ccd33607124c72677e99e9d3db67bab017d0bfbad2e933c94653c3"
+    },
+    {
+      "file": "iteration-4-privacy.txt",
+      "command": "npm run test:privacy-network",
+      "exit_code": 0,
+      "bytes": 3800,
+      "sha256": "bab24f7e7e8ffbd221dc686a62206ff33a3f0ad86afc8509a830ea8da099cdb8"
+    },
+    {
+      "file": "iteration-4-spend.txt",
+      "command": "npm run test:runtime-ai-spend",
+      "exit_code": 0,
+      "bytes": 953,
+      "sha256": "97de30e5a104a36dce9898396364b9a23f422d1f31e0d06e2f17fdd95d6c0471"
+    },
+    {
+      "file": "iteration-4-accessibility.txt",
+      "command": "npm run test:accessibility-release",
+      "exit_code": 0,
+      "bytes": 30692,
+      "sha256": "5078492d4e72fad4fd17ca8c424bbe45015d775645096fe71302472b8d2aec88"
+    },
+    {
+      "file": "iteration-4-package.txt",
+      "command": "bash /tmp/tops-weekend-evidence/package-boundary.sh",
+      "exit_code": 0,
+      "bytes": 244,
+      "sha256": "fe84c6d21ccd7689eebd03ff6c306fb32a9d53e919f14cf60a8998e8a019bda1"
+    },
+    {
+      "file": "iteration-4-scope.txt",
+      "command": "python3 /tmp/tops-federal-evidence/iteration-4-scope.py",
+      "exit_code": 0,
+      "bytes": 1568,
+      "sha256": "8744f75c681e9ec6b445348fb8e3e4265468d8a1fafc7ac192bf8163a376fe41"
+    },
+    {
+      "file": "iteration-4-structural.txt",
+      "command": "python3 /tmp/tops-federal-evidence/structural.py",
+      "exit_code": 0,
+      "bytes": 173,
+      "sha256": "5fd0919d59fb4db7d6f64e50ad1ea457e38739bd6593d948eb068278aea2416b"
+    }
+  ]
+}

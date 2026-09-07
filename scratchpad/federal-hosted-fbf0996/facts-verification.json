@@ -1,0 +1,15 @@
+{
+  "counts": {
+    "titles": 6,
+    "employers": 6,
+    "locations": 6,
+    "dates": 6,
+    "duties": 12,
+    "education": 3,
+    "certifications": 2
+  },
+  "invented_tenure": false,
+  "posting_credential_as_fact": false,
+  "fidelity": "PASS",
+  "provider_calls": "UNVERIFIED; browser counts do not prove provider count"
+}

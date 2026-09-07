@@ -1,0 +1,39 @@
+{
+  "before": {
+    "unassigned": {
+      "fact_id": "F7",
+      "owner": "global",
+      "text": "26 years of service",
+      "unlinked_number": false
+    },
+    "owned": {
+      "fact_id": "F6",
+      "owner": "global",
+      "text": "12 teams",
+      "unlinked_number": false
+    },
+    "eligibleUnassigned": [
+      true,
+      true
+    ]
+  },
+  "after": {
+    "unassigned": {
+      "fact_id": "F7",
+      "owner": "global",
+      "text": "26 years of service",
+      "unlinked_number": true
+    },
+    "owned": {
+      "fact_id": "F6",
+      "owner": "R1",
+      "text": "12 teams",
+      "unlinked_number": false
+    },
+    "eligibleUnassigned": [
+      false,
+      false
+    ]
+  }
+}
+PASS actual parent/current function comparison: unassigned eligible 1 -> 0 in both modes; exact role-owned quantity global -> R1; zero provider calls

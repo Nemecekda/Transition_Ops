@@ -1,0 +1,11 @@
+{
+  "started_at": "2026-09-07T19:00:08.096Z",
+  "diagnostic": "{\"path\":\"/.netlify/functions/resume\",\"httpStatus\":422,\"elapsedMs\":16726,\"requestAttemptCount\":1,\"handlerResponseCount\":1,\"outcome\":\"handler_json\"}",
+  "visible_review": "Browser tab: 7, Title: \"Transition OPS\u2122 \u2014 Free Military Transition App | VA Math, SkillBridge, Benefits\", URL: \"https://6a9f08b3e90dd300083e1b17--veteranbridge-tools.netlify.app/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 0 AXWebArea Transition OPS\u2122 \u2014 Free Military Transition App | VA Math, SkillBridge, Benefits, URL: 6a9f08b3e90dd300083e1b17--veteranbridge-tools.netlify.app/",
+  "console_errors": [],
+  "facts_activations": 1,
+  "draft_activations": 1,
+  "retries": 0,
+  "exports": 0,
+  "provider_calls": "UNVERIFIED"
+}

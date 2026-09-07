@@ -1,0 +1,31 @@
+{
+  "filename": "Federal_Resume_Draft.doc",
+  "extension": ".doc",
+  "declared_mime": "application/msword",
+  "mime_evidence": "index.html:8426 in exact deployed commit; declaration, not captured network telemetry",
+  "actual_signature": "UTF-8 BOM followed by HTML; not native DOCX or binary DOC",
+  "bytes": 4571,
+  "sha256": "ae6cbec20e3d823d2790f8542a50fe481ec6582aff6e6fe7929b887edc0f249c",
+  "renderer": "LibreOfficeDev 26.8.0.0.alpha0 Writer/Web PDF export",
+  "pages": 2,
+  "page_sizes": [
+    {
+      "width_points": 595.303937007874,
+      "height_points": 841.889763779528
+    },
+    {
+      "width_points": 595.303937007874,
+      "height_points": 841.889763779528
+    }
+  ],
+  "visible_draft_matches_download": true,
+  "renderer_text_matches_download": true,
+  "trace_claims_checked": 30,
+  "roles_intact_on_single_pages": 6,
+  "education_entries": 3,
+  "certifications": 2,
+  "visual_review": "Both pages inspected; no clipping, overlap, hidden content or orphaned role structure; page 2 begins at role 6 and ends after final certification",
+  "phone": "OPENING CONFIRMED BY DEAN; full phone layout and content not established",
+  "microsoft_word_app": "NOT TESTED",
+  "provider_calls": "UNVERIFIED"
+}
