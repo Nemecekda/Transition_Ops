@@ -29,6 +29,11 @@ on:
   schedule:
     - cron: '0 12 * * 1'
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run — render the full packet, file nothing'
+        type: boolean
+        default: false
 
 permissions:
   contents: read              # CANNOT write a ref. The safety property.
@@ -53,11 +58,19 @@ jobs:
       # J1 will not - a lookup that fails is indistinguishable from a first run,
       # and one transient error would invent a second baseline.
       BASELINE_ISSUE: '22'
+      # DRY RUN. The PAO's only outward act is filing an issue, so suppressing
+      # gh issue create is the whole of it — every other step, including the
+      # model draft and the renderer, runs exactly as on a real Monday. What
+      # would have been filed is written to out/ and lands in the artifact.
+      DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
+      - name: Mark start for metering
+        run: echo "METER_STARTED=$(date -u +%FT%TZ)" >> "$GITHUB_ENV"
+
 
       - name: Assert model tier
         run: |
@@ -96,6 +109,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           if ! gh issue view "$BASELINE_ISSUE" --json number,title,state > out/baseline-meta.json; then
             echo "::error::baseline issue #$BASELINE_ISSUE could not be read. NOT assuming first run."
             exit 1
@@ -134,6 +148,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           existing=$(gh label list --limit 200 --json name --jq '.[].name' || true)
           for L in FLASH ROUTINE; do
             if printf '%s\n' "$existing" | grep -qx "$L"; then
@@ -149,6 +164,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           # Default FAILED. If the renderer dies before writing the status file,
           # the safe reading is "we do not know this packet is trustworthy".
           echo FAILED > out/pao-status.txt
@@ -171,8 +187,52 @@ jobs:
             *)      TITLE="PAO PACKET FAILED — inputs unread $DATE"; LABEL=FLASH ;;
           esac
           echo "status=$STATUS title=$TITLE label=$LABEL"
-          gh issue create --label "$LABEL" --title "$TITLE" --body-file out/packet.md \
-            || gh issue create --title "$TITLE" --body-file out/packet.md
+          if [ "$DRY_RUN" = "1" ]; then
+            printf 'DRY RUN — would file:\n  label: %s\n  title: %s\n' "$LABEL" "$TITLE" \
+              | tee out/dry-run-packet.txt
+            echo "DRY RUN — nothing filed. Body is out/packet.md in the artifact."
+          else
+            if ! gh issue create --label "$LABEL" --title "$TITLE" --body-file out/packet.md \
+                 && ! gh issue create --title "$TITLE" --body-file out/packet.md; then
+              # Both attempts failed, so nothing was filed. Without this the step
+              # fell through to the status case and a total filing failure on an
+              # OK packet still exited green -- the same lie in a different place.
+              # Deliberately NO marker here. The marker means "a specific FLASH
+              # was successfully filed"; nothing was. Leave the generic reporter
+              # free to try -- it is the only signal left.
+              echo "::error::could not file the packet issue; nothing was filed"
+              exit 1
+            fi
+          fi
+
+          # THE RUN STATUS MUST MATCH THE PACKET STATUS. Run 33425889905's
+          # predecessor on 2026-08-17 exited green while filing "PAO PACKET
+          # FAILED — inputs unread": the dashboard said success, the packet said
+          # failure. Every readiness check that leans on run status was reading
+          # a number that did not mean anything. A packet that did not render is
+          # a failed run, and the run now says so.
+          #
+          # The marker stops the if: failure() reporter double-filing: this step
+          # has already filed a specific FLASH, so the generic one would be
+          # noise. A crash BEFORE this point leaves no marker and still gets the
+          # generic reporter, which is the case it exists for.
+          case "$STATUS" in
+            OK|QUIET) ;;
+            *) : > out/pao-already-reported
+               echo "::error::packet status $STATUS — failing the run so it cannot read as success"
+               exit 1 ;;
+          esac
+
+      # EVERY run emits one record, including failures and quiet runs.
+      # if: always() is the whole point: the runs that used to be
+      # invisible to J5 were exactly the ones that filed no issue.
+      - name: Emit metering record
+        if: always()
+        run: |
+          source .github/scripts/emit-metering.sh
+          n=0
+          [ -f out/packet-result.json ] && n=1
+          emit_metering pao "$n" "${MODEL:-none}" "${{ job.status }}"
 
       - name: Upload evidence
         if: always()
@@ -203,13 +263,23 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           mkdir -p out
+          if [ -f out/pao-already-reported ]; then
+            echo "packet step already filed a specific FLASH; not duplicating it"
+            exit 0
+          fi
           printf '1 item may need your eyes: the PAO packet failed, so this week produced no distribution drafts.\n\n' > out/failure.md
           printf 'PAO failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" >> out/failure.md
           printf 'NOTHING WAS POSTED OR SENT. The PAO holds no platform credential, so a\n' >> out/failure.md
           printf 'failure here costs a packet, never a bad post.\n\n' >> out/failure.md
           if [ -f out/pao-status.txt ]; then
             printf 'Renderer status at failure: %s\n\n' "$(tr -d '[:space:]' < out/pao-status.txt)" >> out/failure.md
+          fi
+          if [ "$DRY_RUN" = "1" ]; then
+            echo "DRY RUN — would file FLASH: PAO FAILED $(date -u +%F)"
+            cat out/failure.md
+            exit 0
           fi
           URL=$(gh issue create --label FLASH --title "PAO FAILED $(date -u +%F)" --body-file out/failure.md) \
           || URL=$(gh issue create --title "PAO FAILED $(date -u +%F)" --body-file out/failure.md)

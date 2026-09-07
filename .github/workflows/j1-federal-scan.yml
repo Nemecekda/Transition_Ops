@@ -38,6 +38,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false   # default leaves a usable token in .git/config for the rest of the job
+      - name: Mark start for metering
+        run: echo "METER_STARTED=$(date -u +%FT%TZ)" >> "$GITHUB_ENV"
+
 
       - name: Assert model tier
         run: |
@@ -63,7 +66,13 @@ jobs:
             # brackets (conditions[agencies][]). Without it curl never makes a
             # request at all: "curl: (3) bad range in URL position 66". This
             # silently produced zero bytes across three flights.
+            # --retry covers the transient half of the failure space: 5xx,
+            # timeouts and refused connections. Deliberately NOT
+            # --retry-all-errors -- a 404 from a wrong agency slug is a real
+            # answer, and retrying it three times would only slow down the
+            # report of a defect J1 has already been bitten by once.
             if err=$(curl -sS --fail --globoff --max-time 30 \
+                       --retry 2 --retry-delay 2 --retry-connrefused \
                        --output "fetched/$id.json" "$url" 2>&1); then
               echo "fetched $id ($(wc -c < "fetched/$id.json" | tr -d ' ') bytes)"
             else
@@ -115,6 +124,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           if ! gh issue view "$BASELINE_ISSUE" --json number,title,state > out/baseline-meta.json; then
             echo "::error::baseline issue #$BASELINE_ISSUE could not be read. NOT assuming first run."
             exit 1
@@ -177,6 +187,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           existing=$(gh label list --limit 200 --json name --jq '.[].name' || true)
           for L in FLASH ROUTINE; do
             if printf '%s\n' "$existing" | grep -qx "$L"; then
@@ -196,6 +207,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           COUNT=$(cat out/diff-count.txt)
           # BLUF first, then WHAT CHANGED in prose, then the caveat, then raw
           # evidence last. The renderer takes the payload BY PATH: no fetched
@@ -280,6 +292,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           EXPECTED=$(grep -vcE '^[[:space:]]*#|^[[:space:]]*$' .github/j1-sources.txt)
           ACTUAL=$(python3 -c 'import json;print(len(json.load(open("out/manifest.json"))["sources"]))')
           PRIOR=$(python3 -c 'import json;print(len(json.load(open("out/baseline.json")).get("sources",{})))')
@@ -314,6 +327,17 @@ jobs:
           gh issue edit "$BASELINE_ISSUE" --body-file out/baseline-body.md
           echo "baseline #$BASELINE_ISSUE updated with $ACTUAL sources"
 
+      # EVERY run emits one record, including failures and quiet runs.
+      # if: always() is the whole point: the runs that used to be
+      # invisible to J5 were exactly the ones that filed no issue.
+      - name: Emit metering record
+        if: always()
+        run: |
+          source .github/scripts/emit-metering.sh
+          n=0
+          [ -f out/scan-result.json ] && n=1
+          emit_metering j1 "$n" "${MODEL:-none}" "${{ job.status }}"
+
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
@@ -332,6 +356,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           mkdir -p out
           printf '1 item may need your eyes: J1 failed, so federal sources went unscanned this run.\n\n' > out/failure.md
           printf 'J1 failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" >> out/failure.md

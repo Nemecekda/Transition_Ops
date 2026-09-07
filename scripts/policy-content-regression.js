@@ -237,9 +237,18 @@ check(occurrences(navigator, "adaptive one- or two-page civilian resume") === 2,
 requireAbsent(navigator, "builds a one-page civilian",
   "Navigator has no stale one-page-only resume description");
 
+const cloneProvenance = "### Source identifier: CLONE-0433f333e1de16d2dfd06e0cad4cb9a1ba025008";
+const mainProvenance = "### Source identifier: MAIN-d82516389ed5906febad467cfe57887acda97053";
+check(occurrences(verificationLog, cloneProvenance) === 1, "one immutable clone verification source");
+check(occurrences(verificationLog, mainProvenance) === 1, "one immutable published verification source");
+check(verificationLog.indexOf(cloneProvenance) < verificationLog.indexOf(mainProvenance), "verification source sections remain ordered and separate");
+const cloneRecords = verificationLog.slice(verificationLog.indexOf(cloneProvenance), verificationLog.indexOf(mainProvenance));
+const mainRecords = verificationLog.slice(verificationLog.indexOf(mainProvenance));
 ["V-2026-016", "V-2026-017", "V-2026-018"].forEach((recordId) => {
-  check(occurrences(verificationLog, recordId) === 1,
-    recordId + " appears exactly once in the verification log");
+  check(occurrences(cloneRecords, recordId) === 1,
+    recordId + " appears exactly once within its clone source");
+  check(occurrences(mainRecords, "## " + recordId + " —") === (recordId === "V-2026-017" ? 2 : 1),
+    recordId + " published record and any amendment remain within their main source");
 });
 
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");
