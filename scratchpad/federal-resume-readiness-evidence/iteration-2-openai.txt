@@ -1,0 +1,14 @@
+PASS: Navigator dry-run environment gate, validation, no client/store/provider, and request-flag rejection
+PASS: federal metadata 12/12 admitted; missing/malformed/global/unlinked excluded; civilian eligibility unchanged; generation/audit ownership and two-call path verified with stubs
+AssertionError [ERR_ASSERTION]: {"error":"The generation service is temporarily unavailable. Try again in a minute.","reasonCategory":"upstream_unavailable","blockers":["The quality review could not be completed."],"scorecard":[]}
+
+502 !== 200
+
+    at run (/private/tmp/tops-federal-resume-readiness/scripts/openai-migration-regression.js:2316:10) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 502,
+  expected: 200,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

@@ -1,0 +1,29 @@
+
+> transition-ops@1.0.0 test:accessibility-release
+> node scripts/accessibility-release-regression.js
+
+PASS document source declares a language
+PASS document source declares a nonempty title
+PASS viewport does not disable user scaling
+PASS viewport does not cap required zoom
+PASS browser source does not force orientation
+PASS manifest does not force orientation
+PASS source defines a reduced-motion mode
+PASS A11Y-NR source contract navigatorPrompts
+PASS A11Y-NR source contract navigatorInput
+PASS A11Y-NR source contract navigatorSend
+PASS A11Y-NR source contract resumeDisclosure
+PASS A11Y-NR source contract formatControls
+PASS A11Y-NR source contract exampleDisclosure
+PASS A11Y-NR source contract lengthControls
+PASS A11Y-NR source contract jobsDisclosure
+PASS A11Y-NR source contract persistentLabels
+PASS A11Y-NR-01 click-only Navigator mutation fails
+PASS A11Y-NR-02 placeholder-only Navigator mutation fails
+PASS A11Y-NR-03 click-only Resume disclosure mutation fails
+PASS A11Y-NR-04 unlabeled Resume form mutation fails
+PASS A11Y-NR-05 full scenario and route matrix is configured
+PASS A11Y-NR-05 dashboard-only route mutation fails
+Error: Chrome wrote an invalid CDP port
+    at launchChrome (/private/tmp/tops-federal-resume-readiness/scripts/accessibility-release-regression.js:341:51)
+    at async run (/private/tmp/tops-federal-resume-readiness/scripts/accessibility-release-regression.js:882:14)
