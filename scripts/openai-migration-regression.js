@@ -2364,7 +2364,7 @@ async function run() {
     // Federal readiness iteration 3: generation must receive the existing audit ownership rule.
     // Provider responses are stubbed; the actual handler, inventory, and validator execute.
     const ownershipDuty = "Reviewed equipment records for 12 teams.";
-    const ownershipEducation = "Example Degree, Example College, 2020";
+    const ownershipEducation = "Example Degree, Example College, 2020.";
     const ownershipLedger = federalMetadataLedger
       .replace("DUTY ATOM 1 (EXACT): Reviewed equipment records.", "DUTY ATOM 1 (EXACT): " + ownershipDuty)
       .replace("EDUCATION (EXACT OR MISSING): MISSING", "EDUCATION (EXACT OR MISSING): " + ownershipEducation);
@@ -2438,6 +2438,103 @@ async function run() {
       assert.deepEqual(clientStages.slice(beforeStages), ["resume_federal", "resume_audit"]);
     }
     console.log("PASS: federal generation ownership rule present; 8/8 ownership fixtures (3 exact releases, 5 withholds), ten dimensions on release, same-year reference boundary, two-call/no-retry paths; hosted outcome pending");
+  }
+
+  {
+    // Exercise the shared validator through both handlers, including civilian
+    // noncanonical global prose. Stubbed audit PASS cannot override ownership.
+    let punctuationHandlerCases = 0;
+    for (const mode of ["civilian", "federal"]) {
+      for (const punctuation of [".", ","]) {
+        for (const attribution of ["unnamed", "title", "employer", "wrong title"]) {
+          const education = "Example Degree, Example College, 2020" + punctuation;
+          const ledger = federalMetadataLedger.replace("EDUCATION (EXACT OR MISSING): MISSING", "EDUCATION (EXACT OR MISSING): " + education);
+          const prefix = { unnamed: "", title: "Federal Test Role 1 ", employer: "Federal Test Unit 1 ", "wrong title": "Federal Test Role 2 " }[attribution];
+          const globalClaim = prefix + "reviewed records in 2020" + punctuation;
+          const draft = "ADDITIONAL INFORMATION\n" + globalClaim + "\n" + federalMetadataDraft + "\nEDUCATION\n" + education;
+          const label = mode + " " + attribution + " terminal " + punctuation;
+          const expectedStatus = attribution === "title" || attribution === "employer" ? 200 : 502;
+          const beforeCalls = calls.length;
+          const beforeStages = clientStages.length;
+          let callbackError;
+          nextResponse = { status: "completed", output_text: draft };
+          auditResponseQueue.push(request => {
+            try {
+              const inventory = clauseInventoryFromAuditRequest(request);
+              const catalog = factCatalogFromAuditRequest(request);
+              const claim = inventory.find(item => item.claim_text === globalClaim);
+              const date = catalog.find(fact => fact.owner === "R1" && /^DATES /.test(fact.text));
+              assert.ok(claim && date, label + " reaches the actual catalog and clause inventory");
+              assert.equal(claim.owner, "global");
+              const audit = passingAudit(request);
+              audit.claim_trace.find(item => item.claim_id === claim.claim_id).fact_refs = [date.fact_id];
+              for (const item of inventory.filter(item => item.claim_text === education)) {
+                const educationFact = catalog.find(fact => fact.owner === "global" && fact.text === education);
+                assert.ok(educationFact);
+                audit.claim_trace.find(trace => trace.claim_id === item.claim_id).fact_refs = [educationFact.fact_id];
+              }
+              return audit;
+            } catch (error) { callbackError = error; throw error; }
+          });
+          result = await resume.lambdaHandler(post({ action: "draft", mode, target: "Program Analyst", experience: ledger, confirmedFacts: ledger }));
+          if (callbackError) throw callbackError;
+          assert.equal(result.statusCode, expectedStatus, label + ": " + result.body);
+          const body = JSON.parse(result.body);
+          if (expectedStatus === 502) {
+            assert.equal(body.reasonCategory, "quality_gate");
+            assert.equal(Object.hasOwn(body, "bullets"), false);
+            assert.deepEqual(body.scorecard, []);
+            assert.equal(body.blockers.length, 1);
+            assert.ok(body.blockers[0].startsWith("[global_quantity_owner_mismatch]"));
+          } else {
+            assert.ok(body.bullets.includes(globalClaim), label + " preserves exact claim bytes");
+            assert.deepEqual(body.scorecard.map(item => item.dimension), auditDimensions);
+            if (mode === "federal") assert.equal(body.bullets, draft);
+          }
+          assert.equal(calls.length - beforeCalls, 2, label + " does not retry");
+          assert.deepEqual(clientStages.slice(beforeStages), ["resume_" + mode, "resume_audit"]);
+          punctuationHandlerCases += 1;
+        }
+      }
+    }
+    assert.equal(punctuationHandlerCases, 16);
+    console.log("PASS: terminal period/comma ownership: 16/16 actual handler cases across civilian/federal, 8 wrong-owner withholds and 8 attributed releases; unchanged text and two-call boundaries");
+
+    // Direct execution of actual validator functions isolates numeric comparison.
+    // A nonmatching quantity here is not semantic grounding or release approval.
+    const validatorSource = fs.readFileSync(resumePath, "utf8");
+    const actualFunctions = ["quantifiedValues", "factRoles", "semanticTerms", "hasPostingOnlySemanticCure", "validateAudit"].map(name => {
+      const matches = Array.from(validatorSource.matchAll(new RegExp("^  function " + name + "\\([^\\n]*\\) \\{[\\s\\S]*?^  \\}", "gm")));
+      assert.equal(matches.length, 1, "actual function boundary: " + name);
+      return matches[0][0];
+    }).join("\n");
+    const validatorContext = { SCORE_DIMENSIONS: auditDimensions, AUDIT_BLOCKER_CODES: [], AUDIT_BLOCKER_MESSAGES: {} };
+    vm.runInNewContext(actualFunctions, validatorContext, { timeout: 1000 });
+    const quantityPairs = [
+      ["2020.", "2020", true], ["2020", "2020.", true],
+      ["2020,", "2020", true], ["2020", "2020,", true],
+      ["2020, 2020.", "2020", true],
+      ["1,200.50.", "1,200.50", true], ["$1,200.50,", "$1,200.50", true],
+      ["12%.", "12%", true], ["12+.", "12+", true],
+      ["12", "120", false], ["1,200", "1200", false],
+      ["12.50", "12.5", false], ["$12", "12", false],
+      ["12%", "12", false], ["12+", "12", false]
+    ];
+    for (const [claimValue, factValue, shared] of quantityPairs) {
+      const inventory = [{ claim_id: "C1", owner: "global", claim_text: "Quantity " + claimValue }];
+      const catalog = [{ fact_id: "F1", owner: "R1", text: "Quantity " + factValue, unlinked_number: false }];
+      const audit = {
+        audit_verdict: "pass", blockers: [], supported_keywords: [], unmet_gaps: [],
+        scorecard: auditDimensions.map(dimension => ({ dimension, status: "PASS", evidence: "Comparison isolation only" })),
+        claim_trace: [{ claim_id: "C1", section: "resume", fact_refs: ["F1"], posting_refs: [], transform: "exact", verdict: "supported" }]
+      };
+      const snapshot = JSON.stringify({ inventory, catalog, audit });
+      const review = validatorContext.validateAudit(audit, inventory, catalog, "ROLE 1\nJOB TITLE (EXACT): Example Role\nEMPLOYER OR UNIT (EXACT): Example Unit", "");
+      assert.equal(review.malformed, shared, claimValue + " versus " + factValue);
+      if (shared) assert.ok(review.blockers[0].startsWith("[global_quantity_owner_mismatch]"));
+      assert.equal(JSON.stringify({ inventory, catalog, audit }), snapshot, "comparison does not mutate source/candidate/audit bytes");
+    }
+    console.log("PASS: 15/15 actual-validator quantity comparisons; terminal punctuation only, decimals/grouping/currency/percent/plus remain distinct, inputs unchanged; not semantic release evidence");
   }
 
   // RDM-258..RDM-263: federal hosted acceptance is independently prepared and remains PENDING.

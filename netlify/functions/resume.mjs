@@ -1040,8 +1040,8 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
           referenceIssues.push(fact.owner === "global" ? "global_fact_on_role_claim" : "role_cross_reference");
           return;
         }
-        const claimValues = quantifiedValues(claim.claim_text).map(function (value) { return value.toLowerCase(); });
-        const sharedQuantity = quantifiedValues(fact.text).some(function (value) { return claimValues.indexOf(value.toLowerCase()) !== -1; });
+        const claimValues = quantifiedValues(claim.claim_text).map(function (value) { return value.replace(/[.,]+$/, "").toLowerCase(); });
+        const sharedQuantity = quantifiedValues(fact.text).some(function (value) { return claimValues.indexOf(value.replace(/[.,]+$/, "").toLowerCase()) !== -1; });
         if (claim.owner === "global" && /^R\d+$/.test(fact.owner) && sharedQuantity) {
           const role = catalogRoles[Number(fact.owner.slice(1)) - 1];
           if (!role) referenceIssues.push("claim_owner_unresolved");

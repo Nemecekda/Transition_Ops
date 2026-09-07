@@ -1,6 +1,6 @@
-# Federal Resume readiness - iteration 3 locally complete, release blocked
+# Federal Resume readiness - iteration 4 locally complete, fresh preview pending
 
-Latest: Dean approved and the agent completed the federal quantity-attribution instruction change. All five local suites pass. A separate existing shared-number comparison weakness remains BLOCKED-TECHNICAL; PR #59 must remain unmerged. See [iteration 3](federal-resume-iteration-3/readiness.md) for current evidence and the concrete next proposal. No new hosted federal acceptance, push, merge, or production action occurred.
+Latest: Dean approved the two-line shared comparison correction. The period-ended education counterexample now withholds (HTTP 200 -> 502); both formats pass punctuation/ownership tests, and all five local suites pass. The separate iteration-3 punctuation blocker is resolved locally. See [iteration 4](federal-resume-iteration-4/readiness.md) for evidence and next steps. Dean must push codex/federal-resume-readiness to refresh PR #59; the remote at 3347fb6 lacks both local fixes. Fresh hosted federal acceptance and manual accessibility remain PENDING before merge. No push, merge, new hosted generation, or production action occurred.
 
 The following dated section is the historical two-fix handoff at 3347fb6, retained for continuity.
 
