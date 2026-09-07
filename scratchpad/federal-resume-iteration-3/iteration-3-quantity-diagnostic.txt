@@ -1,0 +1,2 @@
+{"unchangedFrom":"3347fb6","exactYearShared":true,"periodEndedYearShared":false,"disposition":"BLOCKED-TECHNICAL: existing comparison misses equivalent year with terminal punctuation; full-handler failing counterexample retained in iteration-3-openai-final.log"}
+Diagnostic reproduction complete; expected withholding is NOT satisfied for the period-ended full-handler counterexample. No validator edit.

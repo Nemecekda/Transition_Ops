@@ -2360,6 +2360,86 @@ async function run() {
   }
   console.log("PASS: federal TIP directives 2 -> 0; actual request contract, honest gaps and byte-exact release, four audit-withhold paths, and two-call/no-retry boundaries verified with stubs; hosted behavior pending");
 
+  {
+    // Federal readiness iteration 3: generation must receive the existing audit ownership rule.
+    // Provider responses are stubbed; the actual handler, inventory, and validator execute.
+    const ownershipDuty = "Reviewed equipment records for 12 teams.";
+    const ownershipEducation = "Example Degree, Example College, 2020";
+    const ownershipLedger = federalMetadataLedger
+      .replace("DUTY ATOM 1 (EXACT): Reviewed equipment records.", "DUTY ATOM 1 (EXACT): " + ownershipDuty)
+      .replace("EDUCATION (EXACT OR MISSING): MISSING", "EDUCATION (EXACT OR MISSING): " + ownershipEducation);
+    const ownershipDraft = federalMetadataDraft.replace("Reviewed equipment records.", ownershipDuty) + "\nEDUCATION\n" + ownershipEducation;
+    const ownershipFixtures = [
+      { name: "role-local quantity", status: 200 },
+      { name: "unnamed global quantity", summary: ownershipDuty, status: 502, blocker: "global_quantity_owner_mismatch" },
+      { name: "global quantity names exact title", summary: "Federal Test Role 1 reviewed equipment records for 12 teams.", status: 200 },
+      { name: "global quantity names exact employer", summary: "Federal Test Unit 1 reviewed equipment records for 12 teams.", status: 200 },
+      { name: "global quantity names wrong role", summary: "Federal Test Role 2 reviewed equipment records for 12 teams.", status: 502, blocker: "global_quantity_owner_mismatch" },
+      { name: "role quantity cites wrong role", wrongRole: true, status: 502, blocker: "role_cross_reference" },
+      { name: "education year cites role date", educationRoleRef: true, status: 502, blocker: "global_quantity_owner_mismatch" },
+      { name: "education year has redundant role date reference", educationRoleRef: true, redundant: true, status: 502, blocker: "global_quantity_owner_mismatch" }
+    ];
+    for (const fixture of ownershipFixtures) {
+      const fixtureDraft = (fixture.summary ? "PROFESSIONAL SUMMARY\n" + fixture.summary + "\n" : "") + ownershipDraft;
+      const beforeCalls = calls.length;
+      const beforeStages = clientStages.length;
+      let ownershipAssertion;
+      nextResponse = { status: "completed", output_text: fixtureDraft };
+      auditResponseQueue.push(request => {
+        try {
+          const generation = calls.at(-2);
+          assert.match(generation.instructions, /Keep each role-owned quantity under that exact role\./);
+          assert.match(generation.instructions, /the same claim must name that role's exact title or employer/);
+          assert.match(generation.instructions, /Never combine quantities across roles/);
+          assert.equal(request.instructions, federalAuditInstructionsReadiness);
+          assert.equal(candidateDraftFromAuditRequest(request), fixtureDraft);
+          const inventory = clauseInventoryFromAuditRequest(request);
+          const catalog = factCatalogFromAuditRequest(request);
+          const quantityFact = catalog.find(fact => fact.owner === "R1" && fact.text.includes(ownershipDuty));
+          const wrongRoleFact = catalog.find(fact => fact.owner === "R2" && fact.text.includes("Reviewed equipment records."));
+          const roleDate = catalog.find(fact => fact.owner === "R1" && /^DATES /.test(fact.text));
+          const educationFact = catalog.find(fact => fact.owner === "global" && fact.text === ownershipEducation);
+          assert.ok(quantityFact && wrongRoleFact && roleDate && educationFact, "fixture uses actual catalog facts");
+          const audit = passingAudit(request);
+          for (const claim of inventory) {
+            const trace = audit.claim_trace.find(item => item.claim_id === claim.claim_id);
+            if (claim.claim_text === ownershipDuty && claim.owner === "R1") {
+              trace.fact_refs = [fixture.wrongRole ? wrongRoleFact.fact_id : quantityFact.fact_id];
+            } else if (fixture.summary && claim.section === "summary") {
+              assert.equal(claim.owner, "global");
+              trace.fact_refs = [quantityFact.fact_id];
+            } else if (claim.claim_text === ownershipEducation) {
+              assert.equal(claim.owner, "global");
+              trace.fact_refs = fixture.educationRoleRef ? (fixture.redundant ? [educationFact.fact_id, roleDate.fact_id] : [roleDate.fact_id]) : [educationFact.fact_id];
+            } else if (/^R[1-9]\d*$/.test(claim.owner) && claim.claim_text.includes("January 2020 - December 2022")) {
+              trace.fact_refs = catalog.filter(fact => fact.owner === claim.owner && /^(?:DATES|LOCATION) /.test(fact.text)).map(fact => fact.fact_id);
+            }
+          }
+          return audit;
+        } catch (error) { ownershipAssertion = error; throw error; }
+      });
+      result = await resume.lambdaHandler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: ownershipLedger, confirmedFacts: ownershipLedger }));
+      if (ownershipAssertion) throw ownershipAssertion;
+      assert.equal(result.statusCode, fixture.status, fixture.name + ": " + result.body);
+      const body = JSON.parse(result.body);
+      if (fixture.status === 200) {
+        assert.equal(body.bullets, fixtureDraft, fixture.name + " releases the exact audited candidate");
+        assert.deepEqual(body.scorecard.map(item => item.dimension), auditDimensions);
+        const educationTrace = body.trace.find(trace => trace.claim_text === ownershipEducation);
+        assert.equal(educationTrace.fact_refs.length, 1, "coincident year needs only the education fact");
+      } else {
+        assert.equal(body.reasonCategory, "quality_gate");
+        assert.equal(Object.hasOwn(body, "bullets"), false);
+        assert.deepEqual(body.scorecard, []);
+        assert.equal(body.blockers.length, 1);
+        assert.ok(body.blockers[0].startsWith("[" + fixture.blocker + "]"), fixture.name);
+      }
+      assert.equal(calls.length - beforeCalls, 2, fixture.name + " has no provider retry");
+      assert.deepEqual(clientStages.slice(beforeStages), ["resume_federal", "resume_audit"]);
+    }
+    console.log("PASS: federal generation ownership rule present; 8/8 ownership fixtures (3 exact releases, 5 withholds), ten dimensions on release, same-year reference boundary, two-call/no-retry paths; hosted outcome pending");
+  }
+
   // RDM-258..RDM-263: federal hosted acceptance is independently prepared and remains PENDING.
   assert.equal(federalHostedAcceptanceMatrixV025.status, "PENDING");
   assert.equal(federalHostedAcceptanceMatrixV025.mode, "federal");
@@ -2390,7 +2470,7 @@ async function run() {
     const federalGenerationCall = calls[calls.length - 2];
     const federalSystemSource = fs.readFileSync(resumePath, "utf8").match(/const systemFederal = `([\s\S]*?)`;/)[1];
     const federalScopedFactRules = `\n\nSCOPED FACT RULES:\nThe supplied draft-eligible fact view is the sole controlling fact source. Use no member fact unless it appears there. Preserve every job title, employer or unit, degree, school, certification, and license byte-for-byte. Include every role's exact title and employer or unit even under one-page pressure. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.`;
-    assert.equal(crypto.createHash("sha256").update(federalSystemSource).digest("hex"), "5099d2ca1bfde25d32560046cbae011e68babe592d62c765239efbc0e084580c");
+    assert.equal(crypto.createHash("sha256").update(federalSystemSource).digest("hex"), "726e8f5bec24bd629730986f7cd9f9f62e1f6c30c11ade1078805e2141ba5313");
     assert.equal(federalGenerationCall.instructions, federalSystemSource + federalScopedFactRules, "RDM-194 uses exactly the approved federal readiness prompt plus unchanged scoped fact rules");
     assert.doesNotMatch(federalGenerationCall.instructions, /REQUEST-LOCAL LENGTH PROFILE|regardless of page count/);
     return passingAudit(request);

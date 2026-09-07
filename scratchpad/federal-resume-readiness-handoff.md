@@ -1,4 +1,8 @@
-# Federal Resume fixes - local verification complete
+# Federal Resume readiness - iteration 3 locally complete, release blocked
+
+Latest: Dean approved and the agent completed the federal quantity-attribution instruction change. All five local suites pass. A separate existing shared-number comparison weakness remains BLOCKED-TECHNICAL; PR #59 must remain unmerged. See [iteration 3](federal-resume-iteration-3/readiness.md) for current evidence and the concrete next proposal. No new hosted federal acceptance, push, merge, or production action occurred.
+
+The following dated section is the historical two-fix handoff at 3347fb6, retained for continuity.
 
 Date: 2026-09-07. Branch: codex/federal-resume-readiness. Worktree: /tmp/tops-federal-resume-readiness. PR base for Dean: ops/openai-parallel-clone.
 
