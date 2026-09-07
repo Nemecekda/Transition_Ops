@@ -1,0 +1,14 @@
+{
+  "deploy_id": "6a9f2e3981fbb90008098f68",
+  "candidate": "f63ace2e41afcb01893ce5c2e7706c4881051b11",
+  "source": "Visible Netlify deploy-log DOM textContent, read 2026-09-07",
+  "checks": {
+    "publish_dist": true,
+    "functions_directory": true,
+    "build_command": true,
+    "config_file": true,
+    "build_exact22": true,
+    "deploy_from_dist": true,
+    "exact_deploy": true
+  }
+}

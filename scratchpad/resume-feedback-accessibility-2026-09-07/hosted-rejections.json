@@ -1,0 +1,183 @@
+{
+  "origin": "https://6a9f2e3981fbb90008098f68--veteranbridge-tools.netlify.app",
+  "candidate": "f63ace2e41afcb01893ce5c2e7706c4881051b11",
+  "scope": "Hosted rejection responses only. Provider bypass established by matching inspected pre-client branches; provider-account counters not read.",
+  "results": [
+    {
+      "endpoint": "navigator",
+      "case": "get",
+      "status": 405,
+      "expected_status": 405,
+      "body": {
+        "error": "POST only"
+      },
+      "elapsed_ms": 1234,
+      "content_type": "application/json",
+      "resume_handler_marker": null,
+      "cors_origin": "https://transitionops.org",
+      "response_sha256": "a1fe7a8337014249476cf1b6213330f7c36e3e43673735eb80da95460bcdc19c",
+      "pass": true
+    },
+    {
+      "endpoint": "navigator",
+      "case": "preflight",
+      "status": 204,
+      "expected_status": 204,
+      "body": null,
+      "elapsed_ms": 341,
+      "content_type": "application/json",
+      "resume_handler_marker": null,
+      "cors_origin": "https://transitionops.org",
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pass": true
+    },
+    {
+      "endpoint": "navigator",
+      "case": "malformed_json",
+      "status": 400,
+      "expected_status": 400,
+      "body": {
+        "error": "Bad request"
+      },
+      "elapsed_ms": 346,
+      "content_type": "application/json",
+      "resume_handler_marker": null,
+      "cors_origin": "https://transitionops.org",
+      "response_sha256": "cb74fb930e8162e1a0d15bd912f395c86d487ec3a8b5bd078dfb687e12e4118f",
+      "pass": true
+    },
+    {
+      "endpoint": "navigator",
+      "case": "no_message",
+      "status": 400,
+      "expected_status": 400,
+      "body": {
+        "error": "No user message"
+      },
+      "elapsed_ms": 411,
+      "content_type": "application/json",
+      "resume_handler_marker": null,
+      "cors_origin": "https://transitionops.org",
+      "response_sha256": "eb749c6d9eb6c958ac6b9200c0c810e0f93c3339254a48f7ec2ae1ec6a91b2b5",
+      "pass": true
+    },
+    {
+      "endpoint": "navigator",
+      "case": "assistant_only",
+      "status": 400,
+      "expected_status": 400,
+      "body": {
+        "error": "No user message"
+      },
+      "elapsed_ms": 291,
+      "content_type": "application/json",
+      "resume_handler_marker": null,
+      "cors_origin": "https://transitionops.org",
+      "response_sha256": "eb749c6d9eb6c958ac6b9200c0c810e0f93c3339254a48f7ec2ae1ec6a91b2b5",
+      "pass": true
+    },
+    {
+      "endpoint": "navigator",
+      "case": "oversized",
+      "status": 413,
+      "expected_status": 413,
+      "body": {
+        "error": "Request too large"
+      },
+      "elapsed_ms": 418,
+      "content_type": "application/json",
+      "resume_handler_marker": null,
+      "cors_origin": "https://transitionops.org",
+      "response_sha256": "4a4f61d1cd1053aee267ee34090b92db3595931acf96faf7933f120a8ab6ac1b",
+      "pass": true
+    },
+    {
+      "endpoint": "resume",
+      "case": "get",
+      "status": 405,
+      "expected_status": 405,
+      "body": {
+        "error": "POST only"
+      },
+      "elapsed_ms": 992,
+      "content_type": "application/json",
+      "resume_handler_marker": "1",
+      "cors_origin": "https://transitionops.org",
+      "response_sha256": "a1fe7a8337014249476cf1b6213330f7c36e3e43673735eb80da95460bcdc19c",
+      "pass": true
+    },
+    {
+      "endpoint": "resume",
+      "case": "preflight",
+      "status": 204,
+      "expected_status": 204,
+      "body": null,
+      "elapsed_ms": 303,
+      "content_type": "application/json",
+      "resume_handler_marker": "1",
+      "cors_origin": "https://transitionops.org",
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pass": true
+    },
+    {
+      "endpoint": "resume",
+      "case": "malformed_json",
+      "status": 400,
+      "expected_status": 400,
+      "body": {
+        "error": "Bad JSON"
+      },
+      "elapsed_ms": 282,
+      "content_type": "application/json",
+      "resume_handler_marker": "1",
+      "cors_origin": "https://transitionops.org",
+      "response_sha256": "86578e303a20db5d36c24d916bfd27545d97f4663ca8295d9115ddfa9dd80a41",
+      "pass": true
+    },
+    {
+      "endpoint": "resume",
+      "case": "no_experience",
+      "status": 400,
+      "expected_status": 400,
+      "body": {
+        "error": "Tell us what you actually did \u2014 at least a sentence or two."
+      },
+      "elapsed_ms": 230,
+      "content_type": "application/json",
+      "resume_handler_marker": "1",
+      "cors_origin": "https://transitionops.org",
+      "response_sha256": "63af969e30963f9aef9865047dfe550c7c78a75d977a6de983a2e58000bb9a69",
+      "pass": true
+    },
+    {
+      "endpoint": "resume",
+      "case": "personal_header_rejected",
+      "status": 400,
+      "expected_status": 400,
+      "body": {
+        "error": "Personal details must stay in your browser."
+      },
+      "elapsed_ms": 260,
+      "content_type": "application/json",
+      "resume_handler_marker": "1",
+      "cors_origin": "https://transitionops.org",
+      "response_sha256": "2c4afdc2e9e06d0bff58f895cfb6f7d389f2767f2f04d445be27913d36871cda",
+      "pass": true
+    },
+    {
+      "endpoint": "resume",
+      "case": "oversized",
+      "status": 413,
+      "expected_status": 413,
+      "body": {
+        "error": "Request is too large."
+      },
+      "elapsed_ms": 369,
+      "content_type": "application/json",
+      "resume_handler_marker": "1",
+      "cors_origin": "https://transitionops.org",
+      "response_sha256": "faade8d16818a4c464bd89c63562a9ea468966c9eee34e2b4096375f169d986f",
+      "pass": true
+    }
+  ]
+}

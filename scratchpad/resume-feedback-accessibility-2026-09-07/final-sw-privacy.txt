@@ -1,0 +1,89 @@
+
+> transition-ops@1.0.0 test:sw-privacy
+> node scripts/sw-privacy-regression.js
+
+PASS global production push is exactly one literal false declaration
+PASS production browser source has no static UUID-shaped App ID
+PASS production browser source has no clone/test origin, configuration, or status copy
+PASS current app registers only the active PWA worker
+PASS current app never registers the legacy root worker
+PASS OneSignal activation is removed or fail-closed before every primitive
+PASS current app has no static SDK element or dedicated-worker registration/fetch
+PASS active PWA worker uses root scope and bypasses HTTP cache on update
+PASS active PWA worker is provider-free
+PASS active worker excludes APIs and query-bearing non-navigation requests
+PASS navigation caching uses a closed allowlist and suppresses unknown-route writes
+PASS ERG static pages retain distinct navigation cache keys
+PASS Google Fonts URL appears once outside the atomic local asset list
+PASS activation deletes only prior app caches and preserves unrelated caches
+PASS active PWA worker has one extractable cache name
+PASS active PWA worker cache version is a positive integer
+PASS legacy root worker has one extractable cache name
+PASS legacy root worker cache version is a positive integer
+PASS cache history contains extractable shipped versions
+PASS active cache is the extracted monotonic bumped value
+CACHE EXPECTATION extracted transition-ops-v153
+PASS dedicated worker imports only the provider worker
+PASS dedicated worker retains cold-launch intent handling
+PASS dedicated worker contains no app-cache or local-notification logic
+PASS legacy root dedicated-worker shim remains separately bounded
+PASS sw.js legacy hash preserved
+PASS OneSignalSDKWorker.js legacy hash preserved
+PASS ERG static pages contain no collection form or editable field
+PASS ERG static pages add no network, analytics, provider, or automatic-share integration
+PASS ERG static pages use only the exact public Transition Ops URL
+PASS ERG static pages contain no personalization reader or VBS contact route
+PASS intranet launch kit contains no collection or embedded-app surface
+PASS intranet launch kit has no external script, style, font, or image asset
+PASS intranet launch kit has no network, analytics, provider, or automatic-share integration
+PASS intranet launch kit has no storage or query/hash personalization flow
+PASS intranet launch kit has no VBS contact, SSO, client-ID, or tracking-parameter flow
+PASS intranet launch kit avoids universal data-free and untracked wording
+PASS intranet launch kit uses one local QR image with approved alternative text
+PASS intranet launch kit provides one local PNG download
+PASS every intranet launch-kit public anchor uses the exact hardened public link
+PASS intranet launch kit contains no alternate, slash, query, or fragment URL
+PASS all worker routes have explicit JavaScript and no-cache headers
+PASS frame-blocking headers are exact and permissive predecessors are absent
+PASS package preserves the service-worker privacy regression command
+PASS package exposes the exact public build command
+PASS Netlify uses the exact public build, dist publish boundary, and functions directory
+PASS active worker install supplies a lifetime promise
+PASS atomic install contains exactly the nine required local assets
+PASS atomic local install completes when remote font precaching is unavailable
+PASS Google Fonts remains one optional reviewed runtime URL
+PASS navigation cache key is closed and query-free for /
+PASS navigation cache key is closed and query-free for /index.html
+PASS navigation cache key is closed and query-free for /va-math/
+PASS navigation cache key is closed and query-free for /bdd-timeline/
+PASS navigation cache key is closed and query-free for /erg-handoff.html
+PASS navigation cache key is closed and query-free for /erg-employer-brief.html
+PASS navigation cache key is closed and query-free for /erg-intranet-launch-kit.html
+PASS unknown same-origin navigation has no cache key or root-key mapping
+PASS reviewed request is intercepted by the active worker
+PASS successful unknown navigation performs zero dynamic cache writes
+PASS reviewed request is intercepted by the active worker
+PASS unknown navigation may read root fallback but never writes or matches a dynamic key
+PASS VG-112-1 public builder retains the exact 22-file allowlist
+PASS public builder rejects a missing source entry
+PASS public builder rejects a Markdown allowlist entry
+PASS public builder rejects a symlink source entry
+PASS public builder rejects a nonregular source entry
+PASS public builder rejects the excluded Navigator pilot
+PASS VG-112-2 fresh absent output becomes one exact validated tree
+PASS VG-112-3 cached netlify.toml and nested stale entries are replaced
+PASS VG-112-4 nested stale symlink removal does not touch its external sentinel
+PASS VG-112-5 warm idempotent rebuild preserves the exact inventory
+PASS VG-112-8 successful rebuild removes its temporary tree
+PASS VG-112-6 public builder rejects a root output symlink
+PASS VG-112-6 root output symlink rejection leaves its target untouched
+PASS VG-112-6 public builder rejects a dangling root output symlink
+PASS VG-112-6 dangling root output symlink remains untouched
+PASS VG-112-6 public builder rejects a non-directory output root
+PASS VG-112-6 non-directory output rejection leaves the file untouched
+PASS VG-112-7 synthetic assembly failure fails closed
+PASS VG-112-7 failed assembly preserves the prior output
+PASS VG-112-8 failed assembly removes its temporary tree
+PASS public build command produces the exact validated dist inventory
+PASS dist excludes pilot, internal evidence, scripts, functions, docs, and package metadata
+SW-PRIVACY REGRESSION PASS

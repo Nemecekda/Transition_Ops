@@ -1,0 +1,5 @@
+
+> transition-ops@1.0.0 test:runtime-ai-spend
+> node scripts/runtime-ai-spend-regression.js
+
+PASS: runtime AI spend governance synthetic suite - modern withLambda wiring for Navigator and Resume, zero-config strong-consistency @netlify/blobs 10.7.13 loading, fixed prices, six stages, exact caps, executed 32,768-byte Navigator and 65,536-byte Resume boundaries, content-free budget/accounting failures, strict options, ledger initialization, corrupt-ledger denial, cutoff equality/overage, { modified } ETag CAS conflicts, concurrency, three-attempt failure, invalid/future months, max-safe counters, conservative settlement, one-way UTC rollover, four-call repair path, aggregate-only sentinel exclusion, seven fixed content-free phase diagnostics, three fixed blob-store-load subphase diagnostics, six fixed client-init subphase diagnostics, six fixed ledger-read subphase diagnostics, and executable RSG-15 through RSG-25 diagnostic-origin coverage
