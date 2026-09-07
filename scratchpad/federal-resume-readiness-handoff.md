@@ -1,4 +1,12 @@
-# Federal Resume readiness - iteration 10; fresh hosted test pending
+# Federal Resume readiness - desktop hosted draft and artifact verified
+
+The pushed 7c79057 immutable preview released the federal draft: 8 PASS, zero FAIL and 2 honest NEEDS MEMBER FACT dimensions. All six roles, twelve duties, exact identities and quantities, and all 30 claim references were checked. One actual federal Word download opened and rendered across two pages with complete content and intact roles. See [acceptance evidence](federal-hosted-7c79057/acceptance.md).
+
+The file is HTML-backed Federal_Resume_Draft.doc; the civilian native DOCX remains a separate, unchanged path. No source change is needed from this successful desktop run. One facts activation, one draft activation and one export; zero retries and console errors. Actual provider call count remains UNVERIFIED.
+
+Next is Dean's phone check using the already downloaded file, with no new generation. Phone/manual assistive-technology and production acceptance remain pending. PR #59 is open into ops/openai-parallel-clone; Dean owns merge and release. No skill or production acceptance is promoted by this partial matrix. Nothing pushed or merged by the agent.
+
+## Historical iteration 10 handoff
 
 Dean's latest push is verified at 349770c, but GitHub still reported PR #59 open and unmerged. The fresh immutable preview passed warning-free fact extraction with all 49 expected lines. Federal drafting was withheld: its review returned 8 PASS, 1 FAIL and 1 NEEDS MEMBER FACT, reporting unsupported summary and causal assertions. No retry or export followed. See [hosted evidence](federal-hosted-349770c/acceptance.md).
 
