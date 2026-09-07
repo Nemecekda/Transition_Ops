@@ -1,0 +1,23 @@
+
+> transition-ops@1.0.0 test:openai-migration
+> node scripts/openai-migration-regression.js
+
+PASS: Navigator dry-run environment gate, validation, no client/store/provider, and request-flag rejection
+PASS: 40/40 extraction source-number cases across both modes; invented tenure and repaired additions withheld, genuine numbers and punctuation preserved, exact numeric forms kept, no new calls
+PASS: federal metadata 12/12 admitted; missing/malformed/global/unlinked excluded; civilian eligibility unchanged; generation/audit ownership and two-call path verified with stubs
+PASS: federal TIP directives 2 -> 0; actual request contract, honest gaps and byte-exact release, four audit-withhold paths, and two-call/no-retry boundaries verified with stubs; hosted behavior pending
+PASS: federal generation ownership rule present; 8/8 ownership fixtures (3 exact releases, 5 withholds), ten dimensions on release, same-year reference boundary, two-call/no-retry paths; hosted outcome pending
+PASS: terminal period/comma ownership: 16/16 actual handler cases across civilian/federal, 8 wrong-owner withholds and 8 attributed releases; unchanged text and two-call boundaries
+PASS: 15/15 actual-validator quantity comparisons; terminal punctuation only, decimals/grouping/currency/percent/plus remain distinct, inputs unchanged; not semantic release evidence
+AssertionError [ERR_ASSERTION]: standard multiline: {"error":"The generation service is temporarily unavailable. Try again in a minute.","reasonCategory":"upstream_unavailable","blockers":["The quality review could not be completed."],"scorecard":[]}
+
+502 !== 200
+
+    at run (/private/tmp/tops-federal-resume-readiness/scripts/openai-migration-regression.js:2693:16) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 502,
+  expected: 200,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

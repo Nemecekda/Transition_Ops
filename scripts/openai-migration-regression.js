@@ -2652,6 +2652,65 @@ async function run() {
   result = await resume.lambdaHandler(post({ action: "draft", target: "Program Analyst", experience: boundaryLedger, confirmedFacts: boundaryLedger }));
   assert.equal(result.statusCode, 200);
 
+
+  // Multiline scale entries obey the same closed ownership rules as inline entries.
+  {
+    const scaleHeader = "NUMBERS AND SCALE (EXACT OR MISSING):";
+    const inlineScale = scaleHeader + " 22 specialists; shared 44-unit scale; 110; 77 sites";
+    const layouts = [
+      { name: "multiline", text: scaleHeader + "\n22 specialists\nshared 44-unit scale\n110\n77 sites" },
+      { name: "mixed", text: scaleHeader + " 22 specialists; shared 44-unit scale\n110; 77 sites" },
+      { name: "blank spaced CRLF", text: scaleHeader + "\r\n  22 specialists  \r\n\r\nshared 44-unit scale\r\n110\r\n77 sites" },
+      { name: "missing header continuation", text: scaleHeader + " MISSING\n22 specialists; shared 44-unit scale; 110; 77 sites" }
+    ];
+    const safeDraft = "PROFESSIONAL EXPERIENCE\nBoundary Role 1 - Boundary Employer 1\nDelivered hiring work.\nBoundary Role 2 - Boundary Employer 2\nManaged specialist work.";
+    let tested = 0;
+    for (const mode of ["standard", "federal"]) {
+      for (const layout of layouts) {
+        const ledger = boundaryLedger.replace(inlineScale, layout.text);
+        nextResponse = { status: "completed", output_text: safeDraft };
+        const start = calls.length;
+        let catalog, eligible, supportIds;
+        auditResponseQueue.push(request => {
+          catalog = factCatalogFromAuditRequest(request);
+          eligible = JSON.parse(calls[calls.length - 2].input.match(/<DRAFT_ELIGIBLE_FACTS>\n([\s\S]*?)\n<\/DRAFT_ELIGIBLE_FACTS>/)[1]);
+          supportIds = request.text.format.schema.properties.claim_trace.items.properties.fact_refs.items.enum;
+          return passingAudit(request);
+        });
+        result = await resume.lambdaHandler(post({ action: "draft", mode, target: "Program Analyst", experience: ledger, confirmedFacts: ledger }));
+        assert.equal(result.statusCode, 200, mode + " " + layout.name + ": " + result.body);
+        assert.equal(calls.length - start, 2);
+        assert.equal(auditResponseQueue.length, 0);
+        for (const value of ["shared 44-unit scale", "110", "77 sites"]) {
+          const entries = catalog.filter(fact => fact.text === value);
+          assert.equal(entries.length, 1, layout.name + " one catalog entry for " + value);
+          assert.equal(entries[0].unlinked_number, true, layout.name + " unassigned scale must be unlinked");
+          assert.equal(entries[0].owner, "global");
+          assert.equal(eligible.some(fact => fact.text === value), false, "unlinked scale excluded before generation");
+          assert.equal(supportIds.includes(entries[0].fact_id), false, "unlinked IDs excluded from audit support enum");
+        }
+        const owned = catalog.filter(fact => fact.text === "22 specialists");
+        assert.equal(owned.length, 1);
+        assert.equal(owned[0].owner, "R2");
+        assert.equal(owned[0].unlinked_number, false);
+        assert.ok(eligible.some(fact => fact.text === "22 specialists" && fact.owner === "R2"));
+        assert.ok(catalog.some(fact => fact.text === "TARGET ROLE (EXACT OR MISSING): Program Analyst" && !fact.unlinked_number), "following field ends the scale block");
+        tested += 1;
+
+        nextResponse = { status: "completed", output_text: safeDraft.replace("Delivered hiring work.", "Served 77 sites.") };
+        const unsafeStart = calls.length;
+        result = await resume.lambdaHandler(post({ action: "draft", mode, target: "Program Analyst", experience: ledger, confirmedFacts: ledger }));
+        assert.equal(result.statusCode, 502, "unlinked scale used in draft must withhold");
+        assert.equal(JSON.parse(result.body).reasonCategory, "unlinked_global_number");
+        assert.equal(calls.length - unsafeStart, 1, "unlinked collision stops before audit");
+        assert.equal(Object.hasOwn(JSON.parse(result.body), "bullets"), false);
+        tested += 1;
+      }
+    }
+    assert.equal(tested, 16);
+    console.log("PASS: 16/16 multiline scale handler cases; unique owner retained, unassigned/ambiguous values excluded from generator and audit IDs, unsafe draft withheld before audit in both modes; no new calls");
+  }
+
   nextResponse = { status: "completed", output_text: "SUMMARY\nSynthetic summary claim.\nPROFESSIONAL EXPERIENCE\nSynthetic Role 1 - Synthetic Employer 1\nWorked with Synthetic Role 2 without changing ownership.\nSynthetic Role 2 - Synthetic Employer 2\nLed synthetic function 2." };
   auditResponseQueue.push((request) => { const audit = passingAudit(request); const catalog = factCatalogFromAuditRequest(request); audit.claim_trace[0].fact_refs = [catalog.find((fact) => fact.unlinked_number).fact_id]; return audit; });
   result = await resume.lambdaHandler(post({ action: "draft", target: "Talent Management Manager", experience: ownershipLedger, confirmedFacts: ownershipLedger }));

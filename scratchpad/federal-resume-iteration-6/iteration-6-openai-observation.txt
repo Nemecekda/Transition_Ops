@@ -1,0 +1,15 @@
+
+> transition-ops@1.0.0 test:openai-migration
+> node scripts/openai-migration-regression.js
+
+PASS: Navigator dry-run environment gate, validation, no client/store/provider, and request-flag rejection
+PASS: 40/40 extraction source-number cases across both modes; invented tenure and repaired additions withheld, genuine numbers and punctuation preserved, exact numeric forms kept, no new calls
+PASS: federal metadata 12/12 admitted; missing/malformed/global/unlinked excluded; civilian eligibility unchanged; generation/audit ownership and two-call path verified with stubs
+PASS: federal TIP directives 2 -> 0; actual request contract, honest gaps and byte-exact release, four audit-withhold paths, and two-call/no-retry boundaries verified with stubs; hosted behavior pending
+PASS: federal generation ownership rule present; 8/8 ownership fixtures (3 exact releases, 5 withholds), ten dimensions on release, same-year reference boundary, two-call/no-retry paths; hosted outcome pending
+PASS: terminal period/comma ownership: 16/16 actual handler cases across civilian/federal, 8 wrong-owner withholds and 8 attributed releases; unchanged text and two-call boundaries
+PASS: 15/15 actual-validator quantity comparisons; terminal punctuation only, decimals/grouping/currency/percent/plus remain distinct, inputs unchanged; not semantic release evidence
+PASS: 16/16 multiline scale handler cases; unique owner retained, unassigned/ambiguous values excluded from generator and audit IDs, unsafe draft withheld before audit in both modes; no new calls
+PASS: RDM-175 and RDM-187..RDM-198 browser preflight, fixed senior profile, honest one-page exception, exact content, and negative layout controls
+PASS: RDM-192 and RDM-195 actual LibreOffice DOCX rendering; one/two-page counts, fixed senior profile, substantive visible pages, exact renderer-extracted content, no clipping, and only the expected semantic role-boundary break
+PASS: synthetic RDM-1..RDM-263 integration paths; all prior grounding, DOCX, federal, adaptive-length, guarded-stage, transport, browser-only civilian header, and federal hosted-preparation fixtures verified locally

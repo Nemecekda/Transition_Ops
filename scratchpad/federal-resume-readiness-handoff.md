@@ -1,6 +1,6 @@
-# Federal Resume readiness - iteration 5 locally complete, catalog fix next
+# Federal Resume readiness - iterations 5 and 6 locally complete
 
-Latest: the unsupported-tenure extraction counterexample now withholds before release (HTTP 200 -> 502), and all 40 new extraction cases and five local suites pass. See [iteration 5](federal-resume-iteration-5/readiness.md). The fresh hosted 1b6b586 run failed at facts and stopped; it did not reach draft or export. The related multiline catalog defect will be addressed as separately committed iteration 6 under Dean's continuing approval. Fresh hosted federal and manual accessibility acceptance remain pending. No agent push or merge occurred.
+Latest: unsupported extraction numbers are withheld, and multiline scale entries retain the same role ownership rules as inline entries. All 40 extraction cases, 16 multiline handler cases, five full local suites and packaging pass. See [iteration 6](federal-resume-iteration-6/readiness.md) and [iteration 5](federal-resume-iteration-5/readiness.md). Dean should push codex/federal-resume-readiness to refresh PR #59; keep its base ops/openai-parallel-clone. The earlier immutable 1b6b586 run failed at extraction and stopped. Fresh hosted federal, actual federal artifact, phone/manual accessibility and release acceptance remain pending. No agent push or merge occurred.
 
 The following dated section is the historical two-fix handoff at 3347fb6, retained for continuity.
 

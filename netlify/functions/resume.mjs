@@ -734,11 +734,13 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     const roleBlocks = String(facts || "").split(/^ROLE\s+\d+\s*$/im).slice(1).map(function (block) { return block.split(/^EDUCATION\s*\(/im)[0]; });
     let role = "global";
     let roleIndex = 0;
+    let numbersField = false;
     String(facts || "").split("\n").forEach(function (line) {
       const roleMatch = /^ROLE\s+(\d+)\s*$/i.exec(line.trim());
-      if (roleMatch) { roleIndex += 1; role = "R" + roleIndex; return; }
+      if (roleMatch) { roleIndex += 1; role = "R" + roleIndex; numbersField = false; return; }
       if (/^EDUCATION\s*\(/i.test(line)) role = "global";
       const value = line.trim();
+      if (/^(?:JOB TITLE|EMPLOYER OR UNIT|LOCATION|DATES|DUTIES AND OUTCOMES|EDUCATION|CERTIFICATIONS|SKILLS AND TOOLS|NUMBERS AND SCALE|TARGET ROLE)\s*\(/i.test(value)) numbersField = /^NUMBERS AND SCALE\s*\(/i.test(value);
       if (!value || /^MISSING$/i.test(value) || /^\w[\w ]+\(.*\):\s*MISSING$/i.test(value)) return;
       if (/^DUTIES AND OUTCOMES \(EXACT FACTS ONLY\):$/.test(value)) {
         const record = dutyRecords[roleIndex - 1];
@@ -758,8 +760,8 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
         return;
       }
       if (/^(?:EDUCATION ITEM|CERTIFICATION ITEM) [1-9]\d* \(EXACT\): /.test(value)) return;
-      if (/^NUMBERS AND SCALE/i.test(value)) {
-        value.replace(/^NUMBERS AND SCALE\s*\(.*?\):\s*/i, "").split(";").map(function (item) { return item.trim(); }).filter(Boolean).forEach(function (item) {
+      if (numbersField) {
+        value.replace(/^NUMBERS AND SCALE\s*\(.*?\):\s*/i, "").split(";").map(function (item) { return item.trim(); }).filter(function (item) { return item && !/^MISSING$/i.test(item); }).forEach(function (item) {
           const itemTokens = exactQuantityTokens(item);
           const linkedRoles = roleBlocks.map(function (block, index) {
             const blockTokens = exactQuantityTokens(block);

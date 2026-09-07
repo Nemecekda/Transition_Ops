@@ -9,6 +9,7 @@ Dean approved both federal-only fixes by replying "lets keep going" to the two-f
 | 3 | Federal generation omitted explicit global quantity ownership rule | netlify/functions/resume.mjs; scripts/openai-migration-regression.js; hosted/iteration evidence | Explicit rule absent -> present in real requests; 8/8 exact-token ownership cases; five local suites pass | APPROVED FIX LOCAL PASS; separate punctuation counterexample BLOCKED-TECHNICAL; hosted pending |
 | 4 | Terminal period/comma bypassed shared numeric ownership comparison | netlify/functions/resume.mjs; scripts/openai-migration-regression.js; readiness/evidence records | Original education counterexample HTTP 200 -> 502; 16/16 both-mode handler cases, 15/15 comparison cases, prior 8/8 federal fixtures, all five local suites pass | APPROVED FIX LOCAL PASS; punctuation blocker resolved locally; fresh hosted/manual acceptance pending |
 | 5 | Extraction released numbers absent from member source, including invented tenure | resume.mjs; OpenAI regression; hosted/iteration evidence | Counterexample HTTP 200 -> 502; 40/40 extraction cases; all five local suites and packaging pass | LOCAL PASS; multiline catalog fix next; hosted/manual pending |
+| 6 | Multiline NUMBERS AND SCALE bypassed ownership classification | resume.mjs; OpenAI regression; iteration evidence | Unassigned eligible 1 -> 0 in each mode; exact owned scale global -> R1; 16/16 handler cases and five local suites pass | LOCAL PASS; fresh hosted/manual acceptance pending |
 
 Iteration 1 validation: all five Phase 1 suites passed (OpenAI migration with actual LibreOffice DOCX rendering, service worker/privacy, browser privacy/network, runtime AI spend, browser accessibility). Actual Netlify packaging passed with installed CLI 26.1.0 and packager 14.7.1: both AI functions resolve openai 7.8.0, @netlify/blobs 10.7.13, @netlify/otel 6.0.6, and @netlify/runtime-utils 2.3.0; jobs excludes those packages. Structural checks passed: 24 JavaScript modules/scripts, 15 JSON files, six YAML files, one inline JavaScript block, one inline JSON-LD block. Added-line encoding and whitespace checks passed. Each edit asserted one old match before writing and verified its replacement. Hunks reviewed before commit.
 
@@ -39,3 +40,7 @@ Dean approved the previously prepared two-line shared comparison patch with "app
 ## Iteration 5 completion
 
 Dean approved extraction and related fixes without repeated approval unless a major skill addition is needed. No major skill was added. See federal-resume-iteration-5/readiness.md for original failures, fixture repairs, scope proof and final verification. Historical hosted 1b6b586 failed and stopped at extraction; no draft or export. No agent push or main merge.
+
+## Iteration 6 completion
+
+The related multiline catalog defect is fixed under continuing approval. See federal-resume-iteration-6/readiness.md for original failure outputs, direct parent/current comparison and all final checks. Iterations 5 and 6 are local commits awaiting Dean's push for a fresh immutable preview. Hosted federal and manual acceptance remain pending; no live retry, push, merge or major skill addition.
