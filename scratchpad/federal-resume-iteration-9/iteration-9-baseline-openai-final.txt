@@ -1,0 +1,20 @@
+
+> transition-ops@1.0.0 test:openai-migration
+> node scripts/openai-migration-regression.js
+
+PASS: Navigator dry-run environment gate, validation, no client/store/provider, and request-flag rejection
+PASS: 40/40 extraction source-number cases across both modes; invented tenure and repaired additions withheld, genuine numbers and punctuation preserved, exact numeric forms kept, no new calls
+Iteration 9 header observations: [{"mode":"standard","name":"both","repair":false,"warnings":2,"calls":2},{"mode":"standard","name":"both","repair":true,"warnings":2,"calls":2},{"mode":"standard","name":"education","repair":false,"warnings":2,"calls":2},{"mode":"standard","name":"education","repair":true,"warnings":2,"calls":2},{"mode":"standard","name":"certifications","repair":false,"warnings":1,"calls":2},{"mode":"standard","name":"certifications","repair":true,"warnings":1,"calls":2},{"mode":"standard","name":"crlf","repair":false,"warnings":2,"calls":2},{"mode":"standard","name":"crlf","repair":true,"warnings":2,"calls":2},{"mode":"federal","name":"both","repair":false,"warnings":2,"calls":2},{"mode":"federal","name":"both","repair":true,"warnings":2,"calls":2},{"mode":"federal","name":"education","repair":false,"warnings":2,"calls":2},{"mode":"federal","name":"education","repair":true,"warnings":2,"calls":2},{"mode":"federal","name":"certifications","repair":false,"warnings":1,"calls":2},{"mode":"federal","name":"certifications","repair":true,"warnings":1,"calls":2},{"mode":"federal","name":"crlf","repair":false,"warnings":2,"calls":2},{"mode":"federal","name":"crlf","repair":true,"warnings":2,"calls":2}]
+PASS 16 malformed extractions + 16 malformed direct drafts + 2 invented-number cases + 2 bare-header direct drafts remain blocked
+AssertionError [ERR_ASSERTION]: all sixteen supported provider-only header cases should proceed without warnings
+
+0 !== 16
+
+    at run (/private/tmp/tops-federal-resume-readiness/scripts/openai-migration-regression.js:904:12) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 0,
+  expected: 16,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

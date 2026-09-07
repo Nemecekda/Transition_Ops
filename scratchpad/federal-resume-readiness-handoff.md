@@ -1,4 +1,14 @@
-# Federal Resume readiness - iteration 8 locally complete; hosted acceptance pending
+# Federal Resume readiness - iteration 9 locally complete; fresh hosted test pending
+
+Dean pushed 964a93e. Its immutable preview preserved all tested fact payloads but returned bare EDUCATION and CERTIFICATIONS headings. The UI showed two structural warnings; one draft activation confirmed HTTP 400 before generation. No retries or exports followed. This attempt did not exercise the previous hyphen repair's hosted drafting behavior. See [failed hosted evidence](federal-hosted-964a93e/acceptance.md).
+
+Iteration 9 standardizes only those provider-output labels when the whole fact sheet then passes the unchanged parser. Warning-free replay cases improved from 0/16 to 16/16; all 36 negative handler checks remain blocked. Initial extraction avoids a redundant repair call for these aliases. All five local suites, actual Word rendering and function packaging passed. See [iteration 9](federal-resume-iteration-9/readiness.md).
+
+Next: Dean pushes codex/federal-resume-readiness to PR #59, base ops/openai-parallel-clone. Verify the fresh immutable deploy and perform one bounded fictional acceptance. Stop at unresolved fact warnings; exact payload fidelity alone is insufficient. Full federal drafting, downloadable federal artifact, phone/manual accessibility and production acceptance remain pending. Nothing pushed or merged by the agent; no skill addition, public wording or cache change.
+
+The sections below are historical handoffs, retained verbatim.
+
+## Historical iteration 8 handoff
 
 Dean pushed iteration 7. The fresh immutable 9f39034 preview passed fact fidelity and then withheld federal drafting with HTTP 422. The new [posting_reference_mismatch] code identified the deterministic matcher as the blocking check. No model-only posting blocker appeared. The withheld candidate and trace were unavailable, so its exact disputed claim remains unverified. The run stopped without retry or export. See [hosted evidence](federal-hosted-9f39034/acceptance.md).
 

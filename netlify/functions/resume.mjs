@@ -324,6 +324,13 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     return issues;
   }
 
+  function canonicalExtractedFactHeaders(facts, source) {
+    const canonical = facts
+      .replace(/^EDUCATION(?=\r?\nEDUCATION ITEM 1 \(EXACT\): )/gm, "EDUCATION (EXACT OR MISSING):")
+      .replace(/^CERTIFICATIONS(?=\r?\nCERTIFICATION ITEM 1 \(EXACT\): )/gm, "CERTIFICATIONS (EXACT OR MISSING):");
+    return canonical !== facts && !factSheetIssues(canonical, source).length ? canonical : facts;
+  }
+
   function factIssueWarnings(issues) {
     const warnings = [];
     (issues || []).forEach(function (issue) {
@@ -1173,7 +1180,7 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
       const generationReason = classifyIncomplete(response);
       return action === "facts" && generationReason === "output_limit" ? safeFailure("output_limit", 502, { error: FACT_OUTPUT_LIMIT_MESSAGE, stage: "facts" }) : safeFailure(generationReason);
     }
-    const rawText = responseText(response);
+    const rawText = action === "facts" ? canonicalExtractedFactHeaders(responseText(response), factSourceBlock) : responseText(response);
     if (!rawText) return safeFailure("incomplete_unknown");
     if (action === "facts") {
       if (extractedFactHasUnsupportedNumber(rawText, factSourceBlock)) return safeFailure("quality_gate", 502, { stage: "facts" });
@@ -1196,7 +1203,7 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
         const repairReason = classifyIncomplete(repairResponse);
         return repairReason === "output_limit" ? safeFailure("output_limit", 502, { error: FACT_OUTPUT_LIMIT_MESSAGE, stage: "facts" }) : safeFailure(repairReason);
       }
-      const repairedText = responseText(repairResponse);
+      const repairedText = canonicalExtractedFactHeaders(responseText(repairResponse), factSourceBlock);
       const editableText = repairedText || rawText;
       if (extractedFactHasUnsupportedNumber(editableText, factSourceBlock)) return safeFailure("quality_gate", 502, { stage: "facts" });
       const repairedIssues = factSheetIssues(editableText, factSourceBlock);
