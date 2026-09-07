@@ -77,7 +77,7 @@ TARGET ROLE (EXACT OR MISSING):
 Use one ROLE block for every distinct job title, even when several titles share one employer or unit. Transition phrases such as "later served as Deputy Director" always start a new ROLE block.
 For every ROLE, put DUTIES AND OUTCOMES (EXACT FACTS ONLY): on its own line with no value after the colon. Follow it with DUTY ATOM 1 (EXACT): and additional contiguously numbered DUTY ATOM n (EXACT): lines, restarting at 1 for each role. Put exactly one explicitly separate source duty or outcome in each atom, in source order. If none is stated, use exactly DUTY ATOM 1 (EXACT): MISSING. The label and structural edge spacing are not part of the fact; preserve every payload's internal bytes exactly. Never split or join payloads by guessing from periods, semicolons, commas, colons, dashes, slashes, parentheses, capitalization, abbreviations, decimals, dates, currency, percentages, or plus signs.
 For EDUCATION and CERTIFICATIONS, put each field header on its own line with no value after the colon. Follow it with contiguously numbered EDUCATION ITEM n (EXACT): or CERTIFICATION ITEM n (EXACT): lines starting at 1. Put one separately stated item on each line in source order. If none is stated, use exactly EDUCATION ITEM 1 (EXACT): MISSING or CERTIFICATION ITEM 1 (EXACT): MISSING. Preserve each payload's internal bytes exactly; never merge, split, reformat, or infer an item.
-DATES may contain only calendar dates or calendar date ranges explicitly stated in the source. Tenure such as "26 years of service" is not a date; put it under NUMBERS AND SCALE.
+DATES may contain only calendar dates or calendar date ranges explicitly stated in the source. Put tenure under NUMBERS AND SCALE only when the member explicitly states it. Never infer tenure from calendar dates or copy an instruction example into the fact sheet.
 Software and tools, including Workday, belong under SKILLS AND TOOLS unless the source explicitly identifies a named certification in that software or tool.
 No markdown, bullets, commentary, advice, or resume language.`;
 
@@ -288,6 +288,17 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
       const missingItems = items.filter(function (item) { return item.text === "MISSING"; });
       if (missingItems.length && (items.length !== 1 || missingItems.length !== 1 || missingItems[0].number !== 1)) valid = false;
       return { key: spec.key, valid: valid, items: items, format: inlineValue ? "legacy_inline" : "numbered" };
+    });
+  }
+
+  function extractedFactHasUnsupportedNumber(facts, source) {
+    const comparisonValues = function (text) { return exactQuantityTokens(text).map(function (value) { return value.replace(/[.,]+$/, ""); }); };
+    const sourceValues = comparisonValues(source);
+    return String(facts || "").split("\n").some(function (line) {
+      const trimmed = line.trim();
+      if (!trimmed || /^ROLE\s+\d+\s*$/i.test(trimmed)) return false;
+      const payload = trimmed.replace(/^(?:(?:JOB TITLE|EMPLOYER OR UNIT|LOCATION|DATES|DUTIES AND OUTCOMES|EDUCATION|CERTIFICATIONS|SKILLS AND TOOLS|NUMBERS AND SCALE|TARGET ROLE) \([^)]*\)|(?:DUTY ATOM|EDUCATION ITEM|CERTIFICATION ITEM) [1-9]\d* \(EXACT\)):\s*/, "");
+      return comparisonValues(payload).some(function (value) { return sourceValues.indexOf(value) === -1; });
     });
   }
 
@@ -1159,6 +1170,7 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     const rawText = responseText(response);
     if (!rawText) return safeFailure("incomplete_unknown");
     if (action === "facts") {
+      if (extractedFactHasUnsupportedNumber(rawText, factSourceBlock)) return safeFailure("quality_gate", 502, { stage: "facts" });
       const factIssues = factSheetIssues(rawText, factSourceBlock);
       if (!factIssues.length) return { statusCode: 200, headers, body: JSON.stringify(factResponseBody(rawText, [], clip(target, 120))) };
       if (factIssues.length === 1 && factIssues[0] === "invalid duty atom structure" && hasSingleRoleInlineDutyAtomStructure(rawText)) {
@@ -1180,6 +1192,7 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
       }
       const repairedText = responseText(repairResponse);
       const editableText = repairedText || rawText;
+      if (extractedFactHasUnsupportedNumber(editableText, factSourceBlock)) return safeFailure("quality_gate", 502, { stage: "facts" });
       const repairedIssues = factSheetIssues(editableText, factSourceBlock);
       if (repairedIssues.length) {
         return { statusCode: 200, headers, body: JSON.stringify(factResponseBody(editableText, factIssueWarnings(repairedIssues), clip(target, 120))) };

@@ -1,0 +1,4 @@
+REPRODUCED: unsupported 26 years passes factSheetIssues with zero warnings.
+REPRODUCED: multiline NUMBERS continuation is cataloged global/unlinked_number=false and reaches federal draft-eligible facts.
+CONFIRMED: existing exactQuantityTokens distinguishes 26 from 2026; a source-presence gate can detect this absent value.
+SCOPE: extracted actual functions, fictional fixture, zero provider calls; this diagnoses failure, not acceptance.

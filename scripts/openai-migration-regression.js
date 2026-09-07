@@ -762,11 +762,72 @@ async function run() {
   assert.equal(calls.at(-1).store, false);
   assert.deepEqual(calls.at(-1).reasoning, { effort: "none" });
   assert.match(calls.at(-1).instructions, /later served as Deputy Director/);
-  assert.match(calls.at(-1).instructions, /Tenure such as "26 years of service" is not a date/);
+  assert.match(calls.at(-1).instructions, /Put tenure under NUMBERS AND SCALE only when the member explicitly states it/);
+  assert.match(calls.at(-1).instructions, /Never infer tenure from calendar dates or copy an instruction example into the fact sheet/);
+  assert.doesNotMatch(calls.at(-1).instructions, /26 years of service/);
   assert.match(calls.at(-1).instructions, /including Workday/);
   assert.match(calls.at(-1).instructions, /DUTY ATOM 1 \(EXACT\):/);
   assert.match(calls.at(-1).instructions, /contiguously numbered DUTY ATOM n \(EXACT\): lines, restarting at 1 for each role/);
   assert.match(calls.at(-1).instructions, /Never split or join payloads by guessing from periods, semicolons, commas, colons, dashes, slashes, parentheses, capitalization, abbreviations, decimals, dates, currency, percentages, or plus signs/);
+
+  {
+    // Extraction source-presence gate: actual handlers with provider stubs.
+    // Number presence alone is not semantic grounding or role attribution.
+    const simpleSource = "Operations Lead at North Test Depot. Reviewed equipment records.";
+    const baseLedger = "ROLE 1\nJOB TITLE (EXACT): Operations Lead\nEMPLOYER OR UNIT (EXACT): North Test Depot\nLOCATION (EXACT OR MISSING): MISSING\nDATES (EXACT OR MISSING): MISSING\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Reviewed equipment records.\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): MISSING\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+    const withNumber = value => baseLedger.replace("NUMBERS AND SCALE (EXACT OR MISSING): MISSING", "NUMBERS AND SCALE (EXACT OR MISSING):\n" + value);
+    const repairable = baseLedger.replace("DATES (EXACT OR MISSING): MISSING", "DATES (EXACT OR MISSING): 26 years of service");
+    const numericSource = "Handled $1,200.50, improved by 8%, served 65+ locations, and used 4.50 units.";
+    const extractionCases = [
+      { name: "invented tenure", output: withNumber("26 years of service"), status: 502 },
+      { name: "supplied tenure field", years: "26", output: withNumber("26 years of service"), status: 200 },
+      { name: "posting-only number", posting: "Requires 26 years of service.", output: withNumber("26 years of service"), status: 502 },
+      { name: "year substring is not tenure", source: simpleSource + " Reference year 2026.", output: withNumber("26 years of service"), status: 502 },
+      { name: "invented duty number", output: baseLedger.replace("Reviewed equipment records.", "Reviewed equipment records for 26 teams."), status: 502 },
+      { name: "invented legacy inline duty", output: baseLedger.replace("DUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Reviewed equipment records.", "DUTIES AND OUTCOMES (EXACT FACTS ONLY): Reviewed equipment records for 26 teams."), status: 502 },
+      { name: "supported exact forms", source: simpleSource + " " + numericSource, output: withNumber("$1,200.50; 8%; 65+ locations; 4.50 units"), status: 200 },
+      { name: "grouping changed", source: simpleSource + " " + numericSource, output: withNumber("$1200.50"), status: 502 },
+      { name: "decimal precision changed", source: simpleSource + " " + numericSource, output: withNumber("4.5 units"), status: 502 },
+      { name: "currency stripped", source: simpleSource + " " + numericSource, output: withNumber("1,200.50"), status: 502 },
+      { name: "percent stripped", source: simpleSource + " " + numericSource, output: withNumber("8"), status: 502 },
+      { name: "plus stripped", source: simpleSource + " " + numericSource, output: withNumber("65 locations"), status: 502 },
+      { name: "punctuation source comma", source: simpleSource + " In 2020, reviewed records.", output: withNumber("2020"), status: 200 },
+      { name: "punctuation output comma", source: simpleSource + " In 2020 reviewed records.", output: withNumber("2020,"), status: 200 },
+      { name: "word quantity supplied", source: simpleSource + " Served twenty-six years.", output: withNumber("twenty-six years"), status: 200 },
+      { name: "word quantity invented", output: withNumber("twenty-six years"), status: 502 },
+      { name: "clipped source cannot support number", source: simpleSource + " ".repeat(8000) + "26 years of service", output: withNumber("26 years of service"), status: 502 },
+      { name: "repair invents quantity", years: "26", initial: repairable, output: withNumber("77 years of service"), status: 502 },
+      { name: "repair retains supplied quantity", years: "26", initial: repairable, output: withNumber("26 years of service"), status: 200 },
+      { name: "structural role and atom numbers", output: baseLedger, status: 200 }
+    ];
+    let extractionCount = 0;
+    for (const mode of ["standard", "federal"]) {
+      for (const fixture of extractionCases) {
+        const startCalls = calls.length;
+        const startStages = clientStages.length;
+        responseQueue = (fixture.initial ? [fixture.initial, fixture.output] : [fixture.output]).map(output_text => ({ status: "completed", output_text }));
+        result = await resume.lambdaHandler(post({ action: "facts", mode, target: "Program Analyst", years: fixture.years || "", experience: fixture.source || simpleSource, posting: fixture.posting || "" }));
+        assert.equal(result.statusCode, fixture.status, mode + " " + fixture.name + ": " + result.body);
+        const body = JSON.parse(result.body);
+        if (fixture.status === 200) {
+          assert.equal(body.factSheet, fixture.output, "accepted values are not silently rewritten");
+          assert.deepEqual(body.warnings, []);
+        } else {
+          assert.equal(body.reasonCategory, "quality_gate");
+          assert.equal(body.stage, "facts");
+          assert.equal(Object.hasOwn(body, "factSheet"), false);
+          assert.equal(Object.hasOwn(body, "bullets"), false);
+          assert.deepEqual(Object.keys(body).sort(), ["error", "reasonCategory", "stage"]);
+        }
+        assert.equal(calls.length - startCalls, fixture.initial ? 2 : 1, "no new call or retry");
+        assert.deepEqual(clientStages.slice(startStages), fixture.initial ? ["resume_facts", "resume_fact_repair"] : ["resume_facts"]);
+        assert.equal(responseQueue.length, 0);
+        extractionCount += 1;
+      }
+    }
+    assert.equal(extractionCount, 40);
+    console.log("PASS: 40/40 extraction source-number cases across both modes; invented tenure and repaired additions withheld, genuine numbers and punctuation preserved, exact numeric forms kept, no new calls");
+  }
 
   const legacySingleRoleFacts = facts.replace(
     "DUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Led a 15-person team and managed a $2M equipment inventory.",
@@ -915,7 +976,7 @@ async function run() {
   const atomizedTwoFactSheet = facts.replace(
     "DUTY ATOM 1 (EXACT): Led a 15-person team and managed a $2M equipment inventory.",
     "DUTY ATOM 1 (EXACT): " + opaqueDutyOne + "\nDUTY ATOM 2 (EXACT): " + opaqueDutyTwo
-  );
+  ).replace("NUMBERS AND SCALE (EXACT OR MISSING): 15-person; $2M", "NUMBERS AND SCALE (EXACT OR MISSING): MISSING");
   const collapsedTwoFactSheet = atomizedTwoFactSheet.replace(
     "DUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): " + opaqueDutyOne + "\nDUTY ATOM 2 (EXACT): " + opaqueDutyTwo,
     "DUTIES AND OUTCOMES (EXACT FACTS ONLY): " + opaqueDutyOne + " " + opaqueDutyTwo
@@ -1870,7 +1931,7 @@ async function run() {
   ];
   const callsBeforeExactItemRepair = calls.length;
   const stagesBeforeExactItemRepair = clientStages.length;
-  result = await resume.lambdaHandler(post({ action: "facts", target: "Program Analyst", experience: "Synthetic source contains several exact education and certification records for testing." }));
+  result = await resume.lambdaHandler(post({ action: "facts", target: "Program Analyst", experience: exactGlobalLedger }));
   assert.equal(result.statusCode, 200, result.body);
   assert.equal(JSON.parse(result.body).factSheet, exactGlobalLedger, "RDM-245 one existing repair may correct exact-item structure");
   assert.deepEqual(JSON.parse(result.body).warnings, []);

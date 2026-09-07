@@ -1,6 +1,6 @@
-# Federal Resume readiness - iteration 4 locally complete, fresh preview pending
+# Federal Resume readiness - iteration 5 locally complete, catalog fix next
 
-Latest: Dean approved the two-line shared comparison correction. The period-ended education counterexample now withholds (HTTP 200 -> 502); both formats pass punctuation/ownership tests, and all five local suites pass. The separate iteration-3 punctuation blocker is resolved locally. See [iteration 4](federal-resume-iteration-4/readiness.md) for evidence and next steps. Dean must push codex/federal-resume-readiness to refresh PR #59; the remote at 3347fb6 lacks both local fixes. Fresh hosted federal acceptance and manual accessibility remain PENDING before merge. No push, merge, new hosted generation, or production action occurred.
+Latest: the unsupported-tenure extraction counterexample now withholds before release (HTTP 200 -> 502), and all 40 new extraction cases and five local suites pass. See [iteration 5](federal-resume-iteration-5/readiness.md). The fresh hosted 1b6b586 run failed at facts and stopped; it did not reach draft or export. The related multiline catalog defect will be addressed as separately committed iteration 6 under Dean's continuing approval. Fresh hosted federal and manual accessibility acceptance remain pending. No agent push or merge occurred.
 
 The following dated section is the historical two-fix handoff at 3347fb6, retained for continuity.
 
