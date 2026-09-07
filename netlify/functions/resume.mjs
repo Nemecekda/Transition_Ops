@@ -763,8 +763,15 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     return catalog;
   }
 
-  function draftEligibleFacts(catalog) {
-    return catalog.filter(function (fact) { return !fact.unlinked_number && !/\bMISSING\b/.test(fact.text) && !/^NUMBERS AND SCALE/i.test(fact.text); });
+  function draftEligibleFacts(catalog, mode) {
+    return catalog.filter(function (fact) {
+      if (fact.unlinked_number || /^NUMBERS AND SCALE/i.test(fact.text)) return false;
+      if (mode === "federal" && /^R[1-9]\d*$/.test(fact.owner)) {
+        const metadata = /^(?:DATES|LOCATION) \(EXACT OR MISSING\):[ \t]*(\S[^\r\n]*)$/.exec(fact.text);
+        if (metadata) return !/^MISSING$/i.test(metadata[1].trim());
+      }
+      return !/\bMISSING\b/.test(fact.text);
+    });
   }
 
   function auditSchema(claimIds, factIds) { return {
@@ -1131,7 +1138,7 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
       }
     }
     const catalog = action === "draft" ? factCatalog(confirmedFacts) : [];
-    const scopedFacts = action === "draft" ? draftEligibleFacts(catalog) : [];
+    const scopedFacts = action === "draft" ? draftEligibleFacts(catalog, mode) : [];
     const preGenerationLengthPlan = action === "draft" && mode !== "federal" ? civilianPreGenerationLengthPlan(lengthPreference, requestLengthInputs, confirmedFacts, scopedFacts) : null;
     const scopedFactRules = mode === "federal" ? `\n\nSCOPED FACT RULES:\nThe supplied draft-eligible fact view is the sole controlling fact source. Use no member fact unless it appears there. Preserve every job title, employer or unit, degree, school, certification, and license byte-for-byte. Include every role's exact title and employer or unit even under one-page pressure. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.` : `\n\nSCOPED FACT RULES:\nThe supplied draft-eligible fact view is the sole controlling fact source. Use no member fact unless it appears there. Preserve every job title, employer or unit, degree, school, certification, and license byte-for-byte. Include every role's exact title and employer or unit regardless of page count. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.`;
     const primaryStage = action === "facts" ? "resume_facts" : (mode === "federal" ? "resume_federal" : "resume_civilian");

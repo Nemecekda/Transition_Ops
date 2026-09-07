@@ -2212,6 +2212,71 @@ async function run() {
     assert.equal(Object.hasOwn(artifactCheck, "formatCompliance"), false);
   }
 
+  // Federal readiness iteration 1: known metadata must reach generation, not just audit.
+  const metadataFilterSource = fs.readFileSync(resumePath, "utf8").match(/  function draftEligibleFacts\([^)]*\) \{[\s\S]*?\n  \}/g);
+  assert.equal(metadataFilterSource.length, 1);
+  const metadataFilter = vm.runInNewContext("(" + metadataFilterSource[0].trim() + ")");
+  const federalKnownMetadata = Array.from({ length: 6 }, (_, index) => [
+    { fact_id: "FD" + index, owner: "R" + (index + 1), text: "DATES (EXACT OR MISSING): January 2020 - December 2022", unlinked_number: false },
+    { fact_id: "FL" + index, owner: "R" + (index + 1), text: "LOCATION (EXACT OR MISSING): Synthetic City, WI", unlinked_number: false }
+  ]).flat();
+  assert.equal(metadataFilter(federalKnownMetadata, "federal").length, 12, "all twelve confirmed federal metadata facts reach generation");
+  assert.deepEqual(plainTransportValue(metadataFilter(federalKnownMetadata, "federal")), federalKnownMetadata, "metadata identities and owners are byte-exact");
+  const absentOrMalformedMetadata = [
+    "DATES (EXACT OR MISSING): MISSING", "LOCATION (EXACT OR MISSING): MISSING",
+    "DATES (EXACT OR MISSING): ", "LOCATION (EXACT OR MISSING):  ",
+    "DATES (EXACT OR MISSING): MISSING\nJanuary 2020",
+    "LOCATION (EXACT OR MISSING): Synthetic City\nEXTRA FIELD: MISSING",
+    "DATES (EXACT OR MISSING):    missing  ", "LOCATION (EXACT OR MISSING):missing"
+  ].map((text, index) => ({ fact_id: "FM" + index, owner: "R1", text, unlinked_number: false }));
+  assert.equal(metadataFilter(absentOrMalformedMetadata, "federal").length, 0);
+  const otherMetadataExclusions = [
+    { ...federalKnownMetadata[0], owner: "global" },
+    { ...federalKnownMetadata[0], owner: "R0" },
+    { ...federalKnownMetadata[0], unlinked_number: true },
+    { fact_id: "FU", owner: "global", text: "999", unlinked_number: true },
+    { fact_id: "FN", owner: "global", text: "NUMBERS AND SCALE: 888", unlinked_number: false }
+  ];
+  assert.equal(metadataFilter(otherMetadataExclusions, "federal").length, 0);
+  const unchangedCivilianCatalog = federalKnownMetadata.concat(absentOrMalformedMetadata, otherMetadataExclusions,
+    [{ fact_id: "FC", owner: "R1", text: "Reviewed equipment records.", unlinked_number: false }]);
+  const priorCivilianEligibility = unchangedCivilianCatalog.filter(fact => !fact.unlinked_number && !/\bMISSING\b/.test(fact.text) && !/^NUMBERS AND SCALE/i.test(fact.text));
+  for (const mode of [undefined, "civilian"]) assert.deepEqual(plainTransportValue(metadataFilter(unchangedCivilianCatalog, mode)), priorCivilianEligibility, "civilian eligibility remains unchanged");
+
+  const federalMetadataLedger = Array.from({ length: 6 }, (_, index) =>
+    "ROLE " + (index + 1) + "\nJOB TITLE (EXACT): Federal Test Role " + (index + 1) +
+    "\nEMPLOYER OR UNIT (EXACT): Federal Test Unit " + (index + 1) +
+    "\nLOCATION (EXACT OR MISSING): Synthetic City, WI\nDATES (EXACT OR MISSING): January 2020 - December 2022" +
+    "\nDUTIES AND OUTCOMES (EXACT FACTS ONLY):\nDUTY ATOM 1 (EXACT): Reviewed equipment records.").join("\n\n") +
+    "\n\nEDUCATION (EXACT OR MISSING): MISSING\nCERTIFICATIONS (EXACT OR MISSING): MISSING\nSKILLS AND TOOLS (EXACT OR MISSING): Planning\nNUMBERS AND SCALE (EXACT OR MISSING): MISSING\nTARGET ROLE (EXACT OR MISSING): Program Analyst";
+  const federalMetadataDraft = "PROFESSIONAL EXPERIENCE\n" + Array.from({ length: 6 }, (_, index) =>
+    "Federal Test Role " + (index + 1) + " - Federal Test Unit " + (index + 1) +
+    "\nSynthetic City, WI | January 2020 - December 2022\nReviewed equipment records.").join("\n\n");
+  const metadataCallsBefore = calls.length;
+  const metadataStagesBefore = clientStages.length;
+  nextResponse = { status: "completed", output_text: federalMetadataDraft };
+  auditResponseQueue.push(request => {
+    const generation = calls[calls.length - 2];
+    const eligible = JSON.parse(generation.input.match(/<DRAFT_ELIGIBLE_FACTS>\n([\s\S]*?)\n<\/DRAFT_ELIGIBLE_FACTS>/)[1]);
+    const metadata = eligible.filter(fact => /^(?:DATES|LOCATION) \(EXACT OR MISSING\):/.test(fact.text));
+    assert.equal(metadata.length, 12, "real handler sends twelve metadata facts to federal generation");
+    const catalog = factCatalogFromAuditRequest(request);
+    for (const fact of metadata) assert.deepEqual(fact, catalog.find(item => item.fact_id === fact.fact_id), "generation and audit have the identical metadata owner and value");
+    const audit = passingAudit(request);
+    for (const claim of clauseInventoryFromAuditRequest(request)) {
+      if (claim.claim_text.includes("Synthetic City, WI | January 2020 - December 2022")) {
+        audit.claim_trace.find(trace => trace.claim_id === claim.claim_id).fact_refs = metadata.filter(fact => fact.owner === claim.owner).map(fact => fact.fact_id);
+      }
+    }
+    return audit;
+  });
+  result = await resume.lambdaHandler(post({ action: "draft", mode: "federal", target: "Program Analyst", experience: federalMetadataLedger, confirmedFacts: federalMetadataLedger }));
+  assert.equal(result.statusCode, 200);
+  assert.equal(JSON.parse(result.body).bullets, federalMetadataDraft);
+  assert.equal(calls.length - metadataCallsBefore, 2);
+  assert.deepEqual(clientStages.slice(metadataStagesBefore), ["resume_federal", "resume_audit"]);
+  console.log("PASS: federal metadata 12/12 admitted; missing/malformed/global/unlinked excluded; civilian eligibility unchanged; generation/audit ownership and two-call path verified with stubs");
+
   // RDM-258..RDM-263: federal hosted acceptance is independently prepared and remains PENDING.
   assert.equal(federalHostedAcceptanceMatrixV025.status, "PENDING");
   assert.equal(federalHostedAcceptanceMatrixV025.mode, "federal");
