@@ -1869,6 +1869,109 @@ async function run() {
   for (const observation of blockerOriginObservations) assert.deepEqual(observation.actual, observation.expected, "Readiness7 " + observation.mode + "/" + observation.transform + "/" + observation.origin);
   console.log("PASS readiness7: 12 independently identified withheld responses; 2 release and 2 malformed controls; all call counts unchanged");
 
+  // Readiness iteration 8: a hyphen must not turn an otherwise supported phrase into a posting-only claim.
+  const hyphenReadinessResults = [];
+  for (const mode of ["standard", "federal"]) {
+    for (const transform of ["exact", "reordered", "format_only", "civilian_translation"]) {
+      for (const factPhrase of ["work orders", "work-orders"]) {
+        const draftPhrase = factPhrase === "work orders" ? "work-orders" : "work orders";
+        const duty = "Tracked " + factPhrase + ".";
+        const ledger = coreLedger.replace("Built a transition-planning application for service members.", duty);
+        nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nCore Role - Core Unit\nTracked " + draftPhrase + "." };
+        let observed = null;
+        auditResponseQueue.push((request) => {
+          const audit = passingAudit(request);
+          const claim = clauseInventoryFromAuditRequest(request).find((item) => /Tracked/.test(item.claim_text));
+          const fact = factCatalogFromAuditRequest(request).find((item) => item.owner === claim.owner && item.text.includes(duty));
+          const trace = audit.claim_trace.find((item) => item.claim_id === claim.claim_id);
+          trace.fact_refs = [fact.fact_id];
+          trace.posting_refs = [draftPhrase];
+          trace.transform = transform;
+          observed = { claim: claim.claim_text, fact: fact.text };
+          return audit;
+        });
+        const beforeCalls = calls.length;
+        const response = await resume.lambdaHandler(post({ action: "draft", mode, target: "Program Analyst", posting: "Track " + draftPhrase + ".", experience: ledger, confirmedFacts: ledger }));
+        assert.ok(observed && observed.fact.includes(duty));
+        assert.equal(calls.length - beforeCalls, 2);
+        hyphenReadinessResults.push({ mode, transform, factPhrase, draftPhrase, status: response.statusCode });
+        if (response.statusCode === 200) {
+          const body = JSON.parse(response.body);
+          assert.ok(body.bullets.includes("Tracked " + draftPhrase + "."), "no candidate rewriting");
+          assert.ok(body.trace.some((trace) => trace.claim_text === "Tracked " + draftPhrase + "."));
+        }
+      }
+      // A named tool remains unsupported, regardless of harmless punctuation in another phrase.
+      const ledger = coreLedger.replace("Built a transition-planning application for service members.", "Tracked work orders.");
+      nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nCore Role - Core Unit\nTracked work-orders using Workday." };
+      auditResponseQueue.push((request) => {
+        const audit = passingAudit(request);
+        const claim = clauseInventoryFromAuditRequest(request).find((item) => /Workday/.test(item.claim_text));
+        const fact = factCatalogFromAuditRequest(request).find((item) => item.owner === claim.owner && /Tracked work orders/.test(item.text));
+        const trace = audit.claim_trace.find((item) => item.claim_id === claim.claim_id);
+        trace.fact_refs = [fact.fact_id];
+        trace.posting_refs = ["work-orders", "Workday"];
+        trace.transform = transform;
+        return audit;
+      });
+      const beforeCalls = calls.length;
+      const response = await resume.lambdaHandler(post({ action: "draft", mode, target: "Program Analyst", posting: "Track work-orders using Workday.", experience: ledger, confirmedFacts: ledger }));
+      assert.equal(response.statusCode, 422);
+      assert.match(JSON.parse(response.body).blockers.join(" "), /posting_reference_mismatch/);
+      assert.equal(JSON.parse(response.body).bullets, undefined);
+      assert.equal(calls.length - beforeCalls, 2);
+    }
+    for (const transform of ["exact", "reordered", "format_only"]) {
+      nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nCore Role - Core Unit\nTracked payroll and work-orders." };
+      const ledger = coreLedger.replace("Built a transition-planning application for service members.", "Tracked work orders.");
+      auditResponseQueue.push((request) => {
+        const audit = passingAudit(request);
+        const claim = clauseInventoryFromAuditRequest(request).find((item) => /payroll/.test(item.claim_text));
+        const fact = factCatalogFromAuditRequest(request).find((item) => item.owner === claim.owner && /Tracked work orders/.test(item.text));
+        const trace = audit.claim_trace.find((item) => item.claim_id === claim.claim_id);
+        trace.fact_refs = [fact.fact_id];
+        trace.posting_refs = ["payroll", "work-orders"];
+        trace.transform = transform;
+        return audit;
+      });
+      const beforeCalls = calls.length;
+      const response = await resume.lambdaHandler(post({ action: "draft", mode, target: "Program Analyst", posting: "Track payroll and work-orders.", experience: ledger, confirmedFacts: ledger }));
+      assert.equal(response.statusCode, 422);
+      assert.match(JSON.parse(response.body).blockers.join(" "), /posting_reference_mismatch/);
+      assert.equal(calls.length - beforeCalls, 2);
+    }
+  }
+  const shortPrefixResults = [];
+  for (const mode of ["standard", "federal"]) {
+    for (const transform of ["exact", "reordered", "format_only"]) {
+      for (const [claimed, confirmed] of [["un-paid work", "paid work"], ["de-icing", "icing"]]) {
+        const duty = "Performed " + confirmed + ".";
+        const ledger = coreLedger.replace("Built a transition-planning application for service members.", duty);
+        nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nCore Role - Core Unit\nPerformed " + claimed + "." };
+        auditResponseQueue.push((request) => {
+          const audit = passingAudit(request);
+          const claim = clauseInventoryFromAuditRequest(request).find((item) => /Performed/.test(item.claim_text));
+          const fact = factCatalogFromAuditRequest(request).find((item) => item.owner === claim.owner && item.text.includes(duty));
+          const trace = audit.claim_trace.find((item) => item.claim_id === claim.claim_id);
+          trace.fact_refs = [fact.fact_id];
+          trace.posting_refs = [claimed];
+          trace.transform = transform;
+          return audit;
+        });
+        const beforeCalls = calls.length;
+        const response = await resume.lambdaHandler(post({ action: "draft", mode, target: "Program Analyst", posting: "Perform " + claimed + ".", experience: ledger, confirmedFacts: ledger }));
+        assert.equal(calls.length - beforeCalls, 2);
+        shortPrefixResults.push({ mode, transform, claimed, confirmed, status: response.statusCode });
+      }
+    }
+  }
+  console.log("READINESS8_SHORT_PREFIXES " + JSON.stringify(shortPrefixResults));
+  for (const observation of shortPrefixResults) assert.equal(observation.status, 422, "Readiness8 short prefix " + JSON.stringify(observation));
+  console.log("PASS readiness8: 12 short-prefix meaning changes remain withheld");
+  console.log("READINESS8_HYPHENS " + JSON.stringify(hyphenReadinessResults));
+  for (const observation of hyphenReadinessResults) assert.equal(observation.status, 200, "Readiness8 " + JSON.stringify(observation));
+  console.log("PASS readiness8: 16 supported space/hyphen cases released unchanged; 8 posting-only tool and 6 unsupported-duty cases withheld; no added calls");
+
   // RDM-170B: posting alignment remains available when the member fact contains the exact supported terms.
   const workforceOnboardingLedger = coreLedger.replace("Built a transition-planning application for service members.", "Provided workforce onboarding support for candidates.");
   const workforceOnboardingDraft = "PROFESSIONAL EXPERIENCE\nCore Role - Core Unit\nProvided workforce onboarding support for candidates.";

@@ -1006,7 +1006,10 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
 
   function semanticTerms(text) {
     const stop = new Set(["about", "after", "along", "also", "among", "and", "are", "been", "before", "being", "built", "delivered", "for", "from", "had", "has", "have", "into", "led", "managed", "more", "most", "only", "provided", "that", "the", "their", "them", "they", "this", "through", "under", "used", "using", "was", "were", "with", "within"]);
-    return (String(text || "").toLowerCase().match(/[a-z][a-z-]{2,}/g) || []).map(function (term) { return term.replace(/(?:ing|ed|es|s)$/i, ""); }).filter(function (term, index, all) { return term.length >= 3 && !stop.has(term) && all.indexOf(term) === index; });
+    return (String(text || "").toLowerCase().match(/[a-z][a-z-]{2,}/g) || []).flatMap(function (term) {
+      const parts = term.split("-");
+      return parts.length > 1 && parts.every(function (part) { return part.length >= 3; }) ? parts : [term];
+    }).map(function (term) { return term.replace(/(?:ing|ed|es|s)$/i, ""); }).filter(function (term, index, all) { return term.length >= 3 && !stop.has(term) && all.indexOf(term) === index; });
   }
 
   function hasPostingOnlySemanticCure(claimText, factTexts, postingRefs, transform) {
