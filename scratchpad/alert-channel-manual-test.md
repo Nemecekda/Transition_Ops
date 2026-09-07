@@ -12,7 +12,8 @@ record the existing notification titles, timestamps, and screenshots; device/OS;
 Safari versus Home Screen launch; exact origin; app/build and worker version if
 available; local date/time/timezone; and the sequence of opens and ETS edits.
 Capture these storage values read-only if inspection is available:
-`etsDate`, `tops_sep_date`, `tops_rung_notified`, `tops_rung_last_fired`.
+`etsDate`, `tops_sep_date`, `tops_rung_notified`, `tops_rung_last_fired`,
+and the authoritative `tops_rung_ledger_v1` record.
 Record notification permission and any inspectable tag/payload. A local rung uses
 `ets-<rung-id>`; title alone does not prove the channel. Mark unavailable evidence
 as unavailable. Do not clear or overwrite real member data to obtain a test.
@@ -71,7 +72,8 @@ so `daysToETSDate` is -44/-45. The target `r-p1-fedvip` triggers at -30 and perm
 
 Run B1 and B2 as independent fresh fixtures, not as same-day continuations of A.
 Before each fixture, in the isolated test storage only, set BOTH ETS keys to the
-case date, remove the test daily marker, and seed the delivered map with every
+case date, remove `tops_rung_ledger_v1` and the legacy test daily marker, and seed
+the legacy delivered map `tops_rung_notified` with every
 current SMART_REMINDERS ID except `r-p1-fedvip` set to true. This isolates the
 boundary by suppressing competing rungs. Prepare while the app is closed and
 launch a fresh page so the in-memory per-load flag is also reset. Record exact
@@ -114,9 +116,15 @@ and no competing successful delivery consumed the day. Record timing and state.
 
 Capture evidence first. Never delete real member data. Reset only the named
 keys on the verified disposable test origin/profile, while the test app is
-closed: delivered map `tops_rung_notified`, daily marker `tops_rung_last_fired`,
-and the two ETS keys as each case requires. Verify the resulting values rather
-than assuming an uninstall, reinstall, or storage-clear action worked. Relaunch
+closed: authoritative ledger `tops_rung_ledger_v1`, legacy delivered map
+`tops_rung_notified`, legacy daily marker `tops_rung_last_fired`, and the two ETS
+keys as each case requires. New deliveries update the authoritative ledger; the
+legacy keys remain migration inputs. Inspect `delivered`, `lastFired`, and
+`pending` in the ledger. A pending record is an uncertain attempt, not confirmed
+delivery, and deliberately blocks further local alerts without automatic expiry.
+Never clear a real member pending record merely to force another notification.
+Verify the resulting values rather than assuming an uninstall, reinstall, or
+storage-clear action worked. Relaunch
 fresh to reset the per-load flag. Do not change the device clock to bypass the cap.
 
 ## Pass criteria and report back

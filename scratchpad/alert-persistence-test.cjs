@@ -1,4 +1,4 @@
-// Authoritative iteration-1 regression. Node built-ins only; no network or browser.
+// Authoritative persistence regression with stubbed locks. Node built-ins only; no network or browser.
 // TZ=America/Chicago node scratchpad/alert-persistence-test.cjs
 const fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
 const assert = require('node:assert/strict');
@@ -22,14 +22,15 @@ function fixture(store = {}, options = {}) {
   const f = {store,calls:[],logs:[],events:[],writes:[],setNow:s=>{now=Date.parse(s);}};
   let reads = 0;
   const localStorage = {
-    getItem(key) { reads++; if (options.read) return options.read(key,store,reads,f); return store[key] ?? null; },
+    getItem(key) { assert(f.lockHeld); reads++; if (options.read) return options.read(key,store,reads,f); return store[key] ?? null; },
     setItem(key,value) {
-      f.writes.push(key);
+      assert(f.lockHeld); f.writes.push(key);
       if (options.write) return options.write(key,value,store,f.writes.length,f);
       store[key]=value;
     }
   };
   const reg = {showNotification(title, payload) {
+    assert(f.lockHeld);
     // Every request must have a verified, durable pending entry, never delivered.
     const ledger = JSON.parse(store[KEY]);
     assert.equal(ledger.pending.id, payload.tag.slice(4));
@@ -40,6 +41,14 @@ function fixture(store = {}, options = {}) {
   const ctx = {Date:Clock,localStorage,console:{warn:s=>f.logs.push(s)},
     Notification:{permission:options.permission || 'granted'},
     navigator:{serviceWorker:{ready:options.ready || Promise.resolve(reg)}}};
+  f.lockRequests = []; f.lockHeld = false;
+  ctx.navigator.locks = options.locks === null ? undefined : (options.locks || {
+    async request(name, config, callback) {
+      assert.equal(name, 'tops-local-rung-v1'); assert.equal(config.mode, 'exclusive');
+      f.lockRequests.push(name); f.lockHeld = true;
+      try { return await callback(); } finally { f.lockHeld = false; }
+    }
+  });
   ctx.window=ctx; ctx.__trackEvent=(...args)=>{f.events.push(args);if(options.trackThrow)throw Error('analytics');};
   vm.createContext(ctx);vm.runInContext(engine+'\n'+helpers,ctx);
   f.ctx=ctx;f.reg=reg;f.notify=(date=ETS)=>ctx.notifyDueRung(date);
@@ -161,6 +170,25 @@ async function run() {
   await test('permission denied: no reservation or show',async()=>{
     const f=fixture({}, {permission:'denied'});assert.equal((await f.notify()).status,'skipped-permission-or-worker');assert.equal(f.writes.length,0);assert.equal(f.calls.length,0);
   });
-  console.log(`${passed}/${passed} PASS; synthetic persistence only. Cross-context atomicity, old-version contexts and iOS NOT certified.`);
+  await test('absent native locks: explicit failure, no storage writes or notification',async()=>{
+    const f=fixture({}, {locks:null});
+    assert.equal((await f.notify()).status,'blocked-lock-unavailable');
+    assert.equal(f.calls.length,0);assert.equal(f.writes.length,0);
+    assert(f.logs.some(s=>s.includes('blocked-lock-unavailable')));
+  });
+  await test('rejected native lock: explicit failure, no fallback or notification',async()=>{
+    const f=fixture({}, {locks:{request:()=>Promise.reject(Error('lock denied'))}});
+    assert.equal((await f.notify()).status,'blocked-lock-rejected');
+    assert.equal(f.calls.length,0);assert.equal(f.writes.length,0);
+    assert(f.logs.some(s=>s.includes('blocked-lock-rejected')));
+  });
+  await test('lock acquired only after readiness, held until show and finalization finish',async()=>{
+    const ready=deferred(),show=deferred(),f=fixture({}, {ready:ready.promise,show:()=>show.promise});
+    const result=f.notify();await tick();assert.equal(f.lockRequests.length,0);
+    ready.resolve(f.reg);await tick();assert.equal(f.lockHeld,true);assert.equal(f.lockRequests.length,1);
+    show.resolve();assert.equal((await result).status,'delivered');assert.equal(f.lockHeld,false);
+    assert.equal(f.ledger().pending,null);
+  });
+  console.log(`${passed}/${passed} PASS; stubbed locks and persistence only. Native browser concurrency, old-version contexts and iOS NOT certified.`);
 }
 run().catch(e=>{console.error(e);process.exitCode=1;});

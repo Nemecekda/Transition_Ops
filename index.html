@@ -2985,8 +2985,8 @@ function dueRungs(dateStr, delivered) {
   });
 }
 
-// Local alert persistence, iteration 1. Read-back verification is NOT an atomic
-// cross-context lock; origin-wide coordination remains iteration 2.
+// Local alert persistence and native exclusive coordination. Only contexts using
+// this lock participate; older app versions do not consult the ledger or lock.
 var __rungFiredThisOpen = false;
 var RUNG_LEDGER_KEY = "tops_rung_ledger_v1";
 
@@ -3067,55 +3067,65 @@ async function notifyDueRung(dateStr) {
     __rungFiredThisOpen = false;
     return rungAlertResult("worker-or-permission-unavailable");
   }
-  // Fresh date and eligibility AFTER readiness, not a stale queued selection.
-  var todayKey = new Date().toDateString();
-  var snapshot;
-  try { snapshot = rungLedgerRead(todayKey); }
-  catch (e) { return rungAlertResult("blocked-state-read-or-validation"); }
-  var ledger = snapshot.ledger;
-  if (ledger.pending) return rungAlertResult("blocked-pending", ledger.pending.id);
-  if (ledger.lastFired === todayKey) return rungAlertResult("blocked-daily-cap");
-  var due = dueRungs(dateStr, ledger.delivered);
-  if (!due.length) {
-    __rungFiredThisOpen = false;
-    return rungAlertResult("no-due-rung");
-  }
-  var rung = due[0];
-  ledger.pending = { id: rung.id, day: todayKey };
-  var reserved;
-  try { reserved = rungLedgerWrite(snapshot.raw, ledger); }
-  catch (e) { return rungAlertResult("blocked-reservation-unverified", rung.id); }
+  try {
+    if (!navigator.locks || typeof navigator.locks.request !== "function") {
+      return rungAlertResult("blocked-lock-unavailable");
+    }
+    return await navigator.locks.request("tops-local-rung-v1", { mode: "exclusive" }, async function () {
+      // Fresh date and eligibility AFTER readiness, not a stale queued selection.
+      var todayKey = new Date().toDateString();
+      var snapshot;
+      try { snapshot = rungLedgerRead(todayKey); }
+      catch (e) { return rungAlertResult("blocked-state-read-or-validation"); }
+      var ledger = snapshot.ledger;
+      if (ledger.pending) return rungAlertResult("blocked-pending", ledger.pending.id);
+      if (ledger.lastFired === todayKey) return rungAlertResult("blocked-daily-cap");
+      var due = dueRungs(dateStr, ledger.delivered);
+      if (!due.length) {
+        __rungFiredThisOpen = false;
+        return rungAlertResult("no-due-rung");
+      }
+      var rung = due[0];
+      ledger.pending = { id: rung.id, day: todayKey };
+      var reserved;
+      try { reserved = rungLedgerWrite(snapshot.raw, ledger); }
+      catch (e) { return rungAlertResult("blocked-reservation-unverified", rung.id); }
 
-  var shown;
-  try {
-    shown = reg.showNotification(rung.title, {
-      body: rung.brief || "", tag: "ets-" + rung.id,
-      icon: "/icon-192.png", badge: "/icon-192.png", data: { url: "/" }
+      var shown;
+      try {
+        shown = reg.showNotification(rung.title, {
+          body: rung.brief || "", tag: "ets-" + rung.id,
+          icon: "/icon-192.png", badge: "/icon-192.png", data: { url: "/" }
+        });
+        if (!shown || typeof shown.then !== "function") throw new Error("show-result-unknown");
+      } catch (e) {
+        return rungAlertResult("blocked-show-uncertain", rung.id);
+      }
+      // A hanging show keeps pending indefinitely. No timeout can prove non-delivery.
+      try { await shown; }
+      catch (e) {
+        ledger.pending = null;
+        try { rungLedgerWrite(reserved, ledger); }
+        catch (cleanupError) { return rungAlertResult("blocked-rejection-cleanup-unverified", rung.id); }
+        __rungFiredThisOpen = false;
+        return rungAlertResult("show-rejected-retryable", rung.id);
+      }
+      // Recompute the cap day on completion too: a show may span local midnight.
+      ledger.delivered[rung.id] = true;
+      ledger.lastFired = new Date().toDateString();
+      ledger.pending = null;
+      try { rungLedgerWrite(reserved, ledger); }
+      catch (e) { return rungAlertResult("blocked-final-persistence-unverified", rung.id); }
+      // Analytics failure cannot undo committed delivery or release the slot.
+      try {
+        if (window.__trackEvent) window.__trackEvent("rung_notified", { id: rung.id });
+      } catch (e) {}
+      return rungAlertResult("delivered", rung.id);
     });
-    if (!shown || typeof shown.then !== "function") throw new Error("show-result-unknown");
   } catch (e) {
-    return rungAlertResult("blocked-show-uncertain", rung.id);
+    // Never fall back to an unlocked attempt or clear a durable pending record.
+    return rungAlertResult("blocked-lock-rejected");
   }
-  // A hanging show keeps pending indefinitely. No timeout can prove non-delivery.
-  try { await shown; }
-  catch (e) {
-    ledger.pending = null;
-    try { rungLedgerWrite(reserved, ledger); }
-    catch (cleanupError) { return rungAlertResult("blocked-rejection-cleanup-unverified", rung.id); }
-    __rungFiredThisOpen = false;
-    return rungAlertResult("show-rejected-retryable", rung.id);
-  }
-  // Recompute the cap day on completion too: a show may span local midnight.
-  ledger.delivered[rung.id] = true;
-  ledger.lastFired = new Date().toDateString();
-  ledger.pending = null;
-  try { rungLedgerWrite(reserved, ledger); }
-  catch (e) { return rungAlertResult("blocked-final-persistence-unverified", rung.id); }
-  // Analytics failure cannot undo committed delivery or release the slot.
-  try {
-    if (window.__trackEvent) window.__trackEvent("rung_notified", { id: rung.id });
-  } catch (e) {}
-  return rungAlertResult("delivered", rung.id);
 }
 
 // ═══════════════════════════════════════════════════════════════════
