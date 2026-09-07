@@ -1,77 +1,134 @@
-# ALERT CHANNEL — MANUAL VERIFICATION ON A REAL DEVICE
+# ALERT CHANNEL - MANUAL VERIFICATION ON A REAL DEVICE
 
-Headless Chrome proves Chrome desktop and an Android-class context. It cannot
-prove real iOS Safari. This script is what closes that gap. Run it on the
-deploy preview, before merge.
+Owner: Dean. Status: NOT EXECUTED on a phone by the agent.
+Use a separate test origin/profile and disposable test data. This procedure
+checks the current local alert implementation; it does not change S2 values.
+Synthetic API tests do not prove iOS behavior or the incident root cause.
 
-Everything below is done from the app's own UI except the two date entries.
+## 0. Capture evidence before changing anything
 
----
+Before editing ETS, granting permission, resetting storage, or dismissing alerts,
+record the existing notification titles, timestamps, and screenshots; device/OS;
+Safari versus Home Screen launch; exact origin; app/build and worker version if
+available; local date/time/timezone; and the sequence of opens and ETS edits.
+Capture these storage values read-only if inspection is available:
+`etsDate`, `tops_sep_date`, `tops_rung_notified`, `tops_rung_last_fired`.
+Record notification permission and any inspectable tag/payload. A local rung uses
+`ets-<rung-id>`; title alone does not prove the channel. Mark unavailable evidence
+as unavailable. Do not clear or overwrite real member data to obtain a test.
 
-## A. iPhone — installed PWA (the case that matters most)
+Use an isolated preview/test origin and separate profile where supported. On
+an iPhone without profile isolation, use a separate test origin and verify the
+installed icon opens that origin. Do not use production for fixture changes.
+If isolation or inspection cannot be established, record BLOCKED for that case.
+Do not assume uninstalling/reinstalling clears storage or notification permission.
 
-iOS refuses to even ask for notification permission unless the app is on the
-Home Screen. That guard is already in the app and you should see it fire.
+## 1. Preconditions and timing for every case
 
-1. **Safari, NOT installed.** Open the preview URL in Safari. Go to the alerts
-   control and try to enable alerts.
-   - EXPECT: toast reading `INSTALL APP FIRST — Add to Home Screen, then enable alerts.`
-   - If you get a permission prompt instead, stop and report it — that means the
-     iOS guard at `index.html:5282` is not firing.
-2. **Install it.** Share → Add to Home Screen. Open it from the Home Screen icon
-   (not Safari).
-3. **Enable alerts.** Tap the alerts control, accept the iOS prompt.
-   - EXPECT: toast `ALERTS ENABLED — You will receive transition reminders.`
-4. **Set the trigger date.** Set your ETS date to **exactly 31 days from today**.
-5. **Force-close the app** (swipe up from the app switcher) and reopen it from
-   the Home Screen icon.
-   - EXPECT within ~2 seconds of the app settling: one iOS notification titled
-     **"FEDVIP Dental/Vision Window OPEN (Retirees)"**.
-   - EXPECT exactly ONE notification, not a burst.
-6. **Reopen again** without changing anything.
-   - EXPECT: no repeat of that notification. Once per rung, ever.
+- Keep only one test app context open; concurrent-context testing is separate.
+- Record starting permission, both ETS keys, delivered map, and daily marker.
+- A successful local alert consumes the current page-load slot and writes a
+  local-calendar-day marker. Later ETS edits or same-day reopens normally cannot
+  deliver another rung, even if the newly selected rung has higher priority.
+- The settings/profile ETS control calls `handleETSChange` on blur: observe for
+  a notification immediately after committing the edit. Do not force-close
+  before its asynchronous delivery settles. The dashboard clock uses a different
+  save path; do not substitute it in this test.
+- Reopening with a stored date and granted permission schedules evaluation after
+  approximately two seconds, plus worker-readiness/OS delay. This is not a hard
+  delivery deadline. Granting permission can also trigger that delayed evaluation.
+- If delivery already occurred during an edit or permission change, reopening
+  should not deliver it again. Silence on reopen alone is not a failed alert test.
+- Record successful API delivery state separately from visible OS presentation;
+  a returned rung ID alone is not evidence that delivery succeeded.
 
-## B. iPhone — post-separation tail
+## A. iPhone installed PWA: pre-separation positive and daily cap
 
-7. Set ETS to **45 days in the past**.
-8. Force-close, reopen.
-   - EXPECT: **"FEDVIP Backstop — 30 Days Left on the Window (Retirees)"**.
-   - This is the negative-offset path. If A works and B does not, the sign
-     handling is wrong and I need to know.
+1. Start on the isolated origin in Safari, not installed, with no saved test ETS.
+   Try Enable Alerts. Expect the install-first message; record actual wording.
+2. Share -> Add to Home Screen, then launch the test icon. Enable alerts and
+   accept permission. Record the actual permission result.
+3. With a fresh delivered map and no marker for today, set ETS in settings/profile
+   to exactly 31 calendar days in the future and blur the field. Observe the edit
+   before reopening. Expected target: `r-1-fedvip`, title containing
+   "FEDVIP Dental/Vision Window OPEN (Retirees)". It is CRITICAL and day-anchored,
+   so it wins over equal-priority month rungs. Expect one local request, no burst.
+4. Once delivery/state have settled, force-close and reopen the Home Screen app.
+   Expect no additional local rung notification that day. Repeat reopen once.
+   Record the delivered map and daily marker after each observation.
+5. For a distinct reopen-timing case, use another isolated fresh fixture: save
+   the same date with permission not granted, then enable permission. An alert
+   may arrive on permission change. If it does, the subsequent reopen must be
+   silent. To test mount specifically, prepare a stored date and granted
+   permission while the app is closed using test inspection, then launch fresh.
+   Record which trigger actually ran; do not label an edit fire as a reopen fire.
 
-## C. Android (if you have one to hand)
+## B. Post-separation boundary: +44 positive, +45 negative
 
-Same as A, steps 2-6. Install via Chrome's "Add to Home screen".
-Expected results are identical.
+Here +44/+45 mean days AFTER separation: ETS is 44/45 calendar days in the past,
+so `daysToETSDate` is -44/-45. The target `r-p1-fedvip` triggers at -30 and permits
+14 days past that trigger. +44 is included; +45 is excluded.
 
-## D. Denial path — confirm nothing is lost
+Run B1 and B2 as independent fresh fixtures, not as same-day continuations of A.
+Before each fixture, in the isolated test storage only, set BOTH ETS keys to the
+case date, remove the test daily marker, and seed the delivered map with every
+current SMART_REMINDERS ID except `r-p1-fedvip` set to true. This isolates the
+boundary by suppressing competing rungs. Prepare while the app is closed and
+launch a fresh page so the in-memory per-load flag is also reset. Record exact
+fixture values before launch. Fixture writes are Dean's manual test setup, not
+agent sends, and must never touch real member storage. If safe fixture setup is
+unavailable, mark the isolated cases BLOCKED rather than infer a boundary failure.
 
-9. On a second device or after clearing site data: set an ETS date 31 days out
-   but **decline** the notification permission.
-   - EXPECT: no notification, no error, and the reminder still visible inside
-     the app on the dashboard and the reminders tab.
-10. Now grant permission and reopen.
-    - EXPECT: the FEDVIP notification arrives now. Declining must not burn the
-      rung — the app only records a rung as delivered if it actually showed it.
+- **B1: isolated +44 positive.** Expect the FEDVIP Backstop target once, with
+  `ets-r-p1-fedvip` if its tag is inspectable. Record the actual title unchanged;
+  this is an eligibility test, not verification of the title's policy wording.
+- **B2: isolated +45 negative.** Expect no target and, with all other rungs
+  suppressed by the fixture, no local rung notification. The target must remain
+  absent from the delivered map. A leftover daily marker invalidates this test.
+- **Unisolated control:** at +44, an undelivered CRITICAL `r-p1` outranks the HIGH
+  FEDVIP target. A different notification is therefore not a boundary failure.
+  At +45, the FEDVIP target must be absent, but another eligible rung may fire.
+  Absence of this target and complete silence are different observations. Do not
+  wait until tomorrow to retest +44: the member will then be at +45.
 
----
+## C. Android comparison
 
-## Resetting between runs
+Dean may repeat A and B in a separate Chrome test profile/origin, installing via
+Chrome's install flow. Record platform-specific permission behavior. Android
+results do not certify iOS behavior.
 
-The delivered-rung record lives in `localStorage` under `tops_rung_notified`.
-To re-run a case, clear website data for the site (iOS: Settings → Safari →
-Advanced → Website Data; or delete and reinstall the Home Screen app).
+## D. Denial and later permission
 
-## What "pass" means
+Use a separate fresh isolated fixture with ETS 31 days in the future, target
+undelivered, and no daily marker for today. Decline permission. Expect no local
+notification and no delivered entry or daily marker written by this attempt.
+Check in-app reminder visibility separately; dismissed/UI-filtered reminders
+are not the same mechanism as local notification delivery.
 
-- A5 fires exactly one notification, correct title, within a couple of seconds
-- A6 does not repeat it
-- B8 fires the post-separation rung
-- D9 stays silent but still shows the reminder in-app
-- D10 delivers the rung after permission is granted
+Grant permission using the device's supported settings path; a second button
+press need not re-prompt after denial. Observe permission-change evaluation and
+then reopen if needed. Expect the target once, provided the date remains eligible
+and no competing successful delivery consumed the day. Record timing and state.
 
-## Report back
+## Resetting test fixtures only
 
-If any step deviates, send me the step number, the device and OS version, and
-whether the app was opened from the Home Screen icon or from Safari. That last
-detail decides whether it is an iOS platform limit or a defect in this branch.
+Capture evidence first. Never delete real member data. Reset only the named
+keys on the verified disposable test origin/profile, while the test app is
+closed: delivered map `tops_rung_notified`, daily marker `tops_rung_last_fired`,
+and the two ETS keys as each case requires. Verify the resulting values rather
+than assuming an uninstall, reinstall, or storage-clear action worked. Relaunch
+fresh to reset the per-load flag. Do not change the device clock to bypass the cap.
+
+## Pass criteria and report back
+
+Report each case as PASS, FAIL, BLOCKED, or NOT RUN, with the starting fixture,
+local date/time/timezone, device/OS, origin/build, launch surface, permission,
+edit/permission/reopen timing, observed title/tag/channel evidence, and storage
+before/after. Preserve screenshots before dismissing notifications.
+
+A passes with one eligible target and no additional same-day sequential-open
+fire. B1 passes only with isolated +44 target delivery; B2 passes with isolated
++45 exclusion. An unisolated competing alert is not a failed negative boundary.
+D passes when denial preserves undelivered state and later eligible permission
+allows delivery. A generic title match cannot close incident channel attribution.
+No phone execution or production send is authorized to the agent by this document.
