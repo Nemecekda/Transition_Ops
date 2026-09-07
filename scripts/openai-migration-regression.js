@@ -1809,6 +1809,66 @@ async function run() {
   assert.equal(result.statusCode, 422);
   assert.match(JSON.parse(result.body).blockers.join(" "), /job-posting requirement/i);
 
+  // Readiness iteration 7: content-free failure origins remain distinct with identical release rules.
+  const blockerOriginObservations = [];
+  const postingBlockerMessage = "A job-posting requirement was presented as if it were your qualification.";
+  for (const mode of ["standard", "federal"]) {
+    for (const transform of ["exact", "civilian_translation"]) {
+      for (const origin of ["audit", "reference", "both"]) {
+        nextResponse = { status: "completed", output_text: "PROFESSIONAL EXPERIENCE\nCore Role - Core Unit\nUsed Workday to support service members." };
+        let observedClaimCount = 0;
+        auditResponseQueue.push((request) => {
+          const audit = passingAudit(request);
+          const inventory = clauseInventoryFromAuditRequest(request);
+          observedClaimCount = inventory.length;
+          const claim = inventory.find((item) => /Used Workday/.test(item.claim_text));
+          const trace = audit.claim_trace.find((item) => item.claim_id === claim.claim_id);
+          trace.transform = transform;
+          trace.posting_refs = origin === "audit" ? [] : ["Workday"];
+          audit.blockers = origin === "reference" ? [] : ["posting_only_claim"];
+          audit.scorecard = auditDimensions.map((dimension) => ({ dimension, status: ["job_posting_alignment", "format_compliance"].includes(dimension) ? "NEEDS MEMBER FACT" : "PASS", evidence: "Synthetic content-free evidence." }));
+          audit.supported_keywords = [];
+          audit.unmet_gaps = [];
+          return audit;
+        });
+        const beforeCalls = calls.length;
+        const response = await resume.lambdaHandler(post({ action: "draft", mode, target: "Program Analyst", posting: "Workday required", experience: coreLedger, confirmedFacts: coreLedger }));
+        const body = JSON.parse(response.body);
+        assert.ok(observedClaimCount > 0, "actual audit path executed");
+        assert.equal(response.statusCode, 422);
+        assert.equal(body.reasonCategory, "quality_gate");
+        assert.equal(body.bullets, undefined);
+        assert.equal(body.trace, undefined);
+        assert.equal(body.scorecard.length, 10);
+        assert.equal(body.scorecard.filter((item) => item.status === "NEEDS MEMBER FACT").length, 2);
+        assert.equal(calls.length - beforeCalls, 2, "generation plus audit; no diagnostic call or retry");
+        assert.doesNotMatch(JSON.stringify(body), /Workday|Core Role|Core Unit|fact_refs|claim_id|posting_refs/);
+        const expected = [];
+        if (origin !== "reference") expected.push("[audit_posting_only_claim] " + postingBlockerMessage);
+        if (origin !== "audit") expected.push("[posting_reference_mismatch] " + postingBlockerMessage);
+        blockerOriginObservations.push({ mode, transform, origin, actual: body.blockers, expected });
+      }
+    }
+    for (const malformed of [false, true]) {
+      nextResponse = { status: "completed", output_text: coreRoleDraft };
+      auditResponseQueue.push((request) => {
+        const audit = passingAudit(request);
+        if (malformed) audit.blockers = ["posting_only_claim: PRIVATE_SENTINEL"];
+        return audit;
+      });
+      const beforeCalls = calls.length;
+      const response = await resume.lambdaHandler(post({ action: "draft", mode, target: "Program Analyst", posting: "Workday required", experience: coreLedger, confirmedFacts: coreLedger }));
+      assert.equal(response.statusCode, malformed ? 502 : 200);
+      assert.equal(calls.length - beforeCalls, 2);
+      assert.doesNotMatch(response.body, /PRIVATE_SENTINEL|audit_posting_only_claim|posting_reference_mismatch/);
+      if (malformed) assert.equal(JSON.parse(response.body).bullets, undefined);
+      else assert.match(JSON.parse(response.body).bullets, /Built a transition-planning application/);
+    }
+  }
+  console.log("READINESS7_ORIGINS " + JSON.stringify(blockerOriginObservations));
+  for (const observation of blockerOriginObservations) assert.deepEqual(observation.actual, observation.expected, "Readiness7 " + observation.mode + "/" + observation.transform + "/" + observation.origin);
+  console.log("PASS readiness7: 12 independently identified withheld responses; 2 release and 2 malformed controls; all call counts unchanged");
+
   // RDM-170B: posting alignment remains available when the member fact contains the exact supported terms.
   const workforceOnboardingLedger = coreLedger.replace("Built a transition-planning application for service members.", "Provided workforce onboarding support for candidates.");
   const workforceOnboardingDraft = "PROFESSIONAL EXPERIENCE\nCore Role - Core Unit\nProvided workforce onboarding support for candidates.";

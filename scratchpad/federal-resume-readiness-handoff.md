@@ -1,6 +1,10 @@
-# Federal Resume readiness - iterations 5 and 6 locally complete
+# Federal Resume readiness - iteration 7 locally complete; hosted failure unresolved
 
-Latest: unsupported extraction numbers are withheld, and multiline scale entries retain the same role ownership rules as inline entries. All 40 extraction cases, 16 multiline handler cases, five full local suites and packaging pass. See [iteration 6](federal-resume-iteration-6/readiness.md) and [iteration 5](federal-resume-iteration-5/readiness.md). Dean should push codex/federal-resume-readiness to refresh PR #59; keep its base ops/openai-parallel-clone. The earlier immutable 1b6b586 run failed at extraction and stopped. Fresh hosted federal, actual federal artifact, phone/manual accessibility and release acceptance remain pending. No agent push or merge occurred.
+Dean pushed iterations 5 and 6. A fresh immutable fbf0996 preview passed six-role fact fidelity but withheld federal drafting with HTTP 422. The model returned eight PASS rows and two honest NEEDS MEMBER FACT rows; the sole posting warning did not identify which of two independent checks fired. No withheld candidate or trace was released, so the root cause and any false-positive claim remain unverified. The run stopped without retry or export. See [hosted failure](federal-hosted-fbf0996/acceptance.md).
+
+Iteration 7 fixes that diagnostic ambiguity: AI posting blockers carry [audit_posting_only_claim], deterministic reference mismatches carry [posting_reference_mismatch], and both remain visible when both fire. All release predicates, generation instructions and privacy controls are unchanged. Twelve negative cases distinguish all three origins, two valid drafts still release, and two malformed reviews still fail closed. Five local suites and packaging pass. See [iteration 7](federal-resume-iteration-7/readiness.md).
+
+Dean's next step: push codex/federal-resume-readiness to refresh PR #59, keeping base ops/openai-parallel-clone. PREVIEW WARRANTED: this is a diagnostic patch for the still-blocked federal acceptance, not a claim that the draft failure is fixed. After verifying the new immutable deployment, use the existing bounded synthetic acceptance procedure below once; no retry of fbf0996. Hosted federal acceptance, actual federal artifact, phone/manual accessibility and production release remain pending. No agent push, main merge or major skill addition. Cache remains v152; no precached asset changed.
 
 The following dated section is the historical two-fix handoff at 3347fb6, retained for continuity.
 

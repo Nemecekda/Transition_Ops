@@ -1085,7 +1085,8 @@ Use concise evidence-bearing bullets per role when the confirmed facts support t
     if (["pass", "withhold"].indexOf(audit.audit_verdict) === -1 || !exactInventory || !validScores || !validTraceShape || !validSafeArrays) return { malformed: true, blockers: ["The quality review could not be verified safely."] };
     const unsafeTrace = traces.some(function (item) { return item.verdict === "unsupported" || item.verdict === "identity_mismatch"; });
     const failedDimension = scores.some(function (item) { return item.status === "FAIL"; });
-    const blockers = audit.blockers.concat(semanticBlockers).map(function (code) { return AUDIT_BLOCKER_MESSAGES[code]; });
+    const blockers = audit.blockers.map(function (code) { return (code === "posting_only_claim" ? "[audit_posting_only_claim] " : "") + AUDIT_BLOCKER_MESSAGES[code]; });
+    semanticBlockers.forEach(function (code) { blockers.push("[posting_reference_mismatch] " + AUDIT_BLOCKER_MESSAGES[code]); });
     if (audit.audit_verdict === "withhold") blockers.push("The quality review determined this draft should not be released.");
     if (unsafeTrace) blockers.push("One or more draft claims were unsupported or changed an exact identity.");
     if (failedDimension) blockers.push("One or more quality dimensions failed.");
