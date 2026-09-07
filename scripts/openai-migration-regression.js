@@ -693,6 +693,33 @@ async function runResumeTransportClassifierRegression(uiSource, resumeSource, mo
 async function run() {
   resume = await import(pathToFileURL(resumePath).href);
   navigator = await import(pathToFileURL(navigatorPath).href);
+
+  const priorDryRun = process.env.NAVIGATOR_DRY_RUN;
+  const dryStartClients = clientStages.length;
+  const dryStartCalls = calls.length;
+  try {
+    process.env.NAVIGATOR_DRY_RUN = "1";
+    const dryResult = await navigator.lambdaHandler(post({ messages: [{ role: "user", content: "Synthetic dry-run fixture" }], daysOut: 120 }));
+    assert.equal(dryResult.statusCode, 200);
+    const dryBody = JSON.parse(dryResult.body);
+    assert.deepEqual(dryBody.dryRun, { model: "gpt-5.6-luna", sent: false });
+    assert.equal(dryBody.reply, "DRY RUN — no model call was made. This reply exercises the response path only.");
+    assert.equal(clientStages.length, dryStartClients, "dry-run constructs no client/store");
+    assert.equal(calls.length, dryStartCalls, "dry-run makes no provider request");
+    const dryBad = await navigator.lambdaHandler({ httpMethod: "POST", body: "{" });
+    assert.equal(dryBad.statusCode, 400, "dry-run retains request validation");
+    delete process.env.NAVIGATOR_DRY_RUN;
+    const ordinary = await navigator.lambdaHandler(post({ dryRun: true, messages: [{ role: "user", content: "Synthetic request flag fixture" }] }));
+    assert.equal(ordinary.statusCode, 200);
+    assert.equal(JSON.parse(ordinary.body).dryRun, undefined, "request body cannot activate dry-run");
+    assert.equal(calls.length, dryStartCalls + 1, "ordinary path uses one stubbed provider request");
+    console.log("PASS: Navigator dry-run environment gate, validation, no client/store/provider, and request-flag rejection");
+  } finally {
+    if (priorDryRun === undefined) delete process.env.NAVIGATOR_DRY_RUN;
+    else process.env.NAVIGATOR_DRY_RUN = priorDryRun;
+    calls.splice(dryStartCalls);
+    clientStages.splice(dryStartClients);
+  }
   assert.equal(typeof resume.default, "function");
   assert.equal(typeof resume.lambdaHandler, "function");
   assert.equal(typeof navigator.default, "function");

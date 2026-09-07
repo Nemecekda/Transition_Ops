@@ -101,7 +101,10 @@
 }
 </script>
 
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{--t-bg:#0E120B;--t-bg-card:#161B11;--t-border:#222A19;--t-nav-bg:#0f120b;--t-overlay:rgba(10,12,8,0.95);--t-body-text:#d4cbb3}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -2966,8 +2969,11 @@ const SMART_REMINDERS = [
   {id:"r-3-va",mo:3,cat:"HEALTH",pri:"HIGH",title:"Register for VA Healthcare",brief:"Apply now so coverage is ready on Day 1.",items:["Apply at VA.gov or nearest VA medical center","Understand your Priority Group","Locate nearest VAMC and CBOC","TAMP (if you qualify): 180 days TRICARE after separation","Retirees: review TRICARE Retired options"],deadline:"Apply before separation for seamless coverage",why:"TAMP (when it applies) only lasts 180 days. Gaps put your family at risk.",link:"https://www.va.gov/health-care/apply/"},
   {id:"r-2-fin",mo:2,cat:"FINANCE",pri:"HIGH",title:"Final Financial Readiness Check",brief:"Do you have 3-6 months saved? Know when the money stops.",items:["Verify final pay date and amount with finance","Calculate terminal leave (sell back vs take leave)","Ensure 3-6 months emergency fund accessible","Budget first 90 days without military pay","Cancel military-specific allotments","File unemployment on Day 1 — most separating members qualify (varies by state)"],deadline:"No later than 60 days before ETS",why:"35% of veterans report financial hardship in Year 1. Don't be a statistic.",link:null},
   {id:"r-1-final",mo:1,cat:"ADMIN",pri:"CRITICAL",title:"Final Out-Processing & Life Admin",brief:"You're on the objective. Execute with discipline.",items:["Complete TAP Capstone","USPS mail forwarding","Update banks, credit cards, insurance","Obtain 10+ certified DD214 copies","Verify final LES","Letter of service for employment verification","Download all military email contacts"],deadline:"All items complete before ETS",why:"Loose ends after separation become 10x harder without base access.",link:null},
+  {id:"r-1-fedvip",mo:1,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F FEDVIP Dental/Vision Window OPEN (Retirees)",brief:"Your FEDVIP enrollment window opens 31 days before your retirement date. Enrollment is not automatic.",items:["Enroll BEFORE your retirement date to avoid a dental coverage gap","Window: 31 days before retirement date through 60 days after","Vision coverage requires enrollment in a TRICARE health plan","Gray area reservists under age 60 are also eligible","Miss the window and you wait for the next Federal Benefits Open Season","Enroll at BENEFEDS.gov or 1-877-888-3337"],deadline:"60 days after retirement date \u2014 HARD DEADLINE",why:"Active duty dental ends at retirement. FEDVIP replaced the TRICARE Retiree Dental Program \u2014 no dental coverage is waiting on the other side unless you enroll.",link:"https://www.benefeds.gov/"},
+  {id:"r-1-gar",mo:1,cat:"GUARD/RESERVE",pri:"HIGH",title:"Entering the Gray Area \u2014 Establish Your DFAS Future Retiree Account",brief:"Guard/Reserve with 20 good years: your link to retired pay runs through a myPay account most members never set up.",items:["Establish your Future Retiree myPay account at mypay.dfas.mil \u2014 easier now while your login is active","Keep contact info current in THREE systems: DFAS, DEERS, and your branch \u2014 updates do not transfer between them","DFAS sends a retired pay prompt at age 59 ONLY if your account has a current email on file","Retired pay is NOT automatic \u2014 apply through your service (Army: HRC Gray Area Retirements Branch, not DFAS) 9 months to 90 days before eligibility age","Gray area retains commissary, exchange, MWR access, and select TRICARE plans"],deadline:"Set up before losing routine myPay access",why:"Members who fall off the radar in the gray area face serious delays when retired pay eligibility arrives.",link:"https://www.dfas.mil/RetiredMilitary/plan/Gray-Area-Retirees/"},
   {id:"r-0-ets",mo:0,cat:"ADMIN",pri:"CRITICAL",title:"SEPARATION DAY — Verify Everything",brief:"Before you drive off for the last time, make sure your paperwork is squared away.",items:["VERIFY DD214 — read every line before signing","Obtain multiple certified copies","Verify sep code, RE code, characterization","Secure medical and dental records"],deadline:"TODAY",why:"Your DD214 is your new birth certificate. Get it right.",link:null},
   {id:"r-p1",mo:-1,cat:"BENEFITS",pri:"CRITICAL",title:"First 30 Days — File Unemployment & Activate Benefits",brief:"Several critical windows open at separation and close fast.",items:["File unemployment IMMEDIATELY (DD214 = proof)","Register for VA healthcare if not done","Monitor VA.gov for C&P exam schedule","Apply veteran's preference (SF-15)","Veteran driver's license designation"],deadline:"State unemployment deadlines start from sep date",why:"Unemployment (UCX) can mean roughly $1,300-$2,200/month of bridge income depending on your state. Don't leave it on the table.",link:null},
+  {id:"r-p1-fedvip",mo:-1,cat:"BENEFITS",pri:"HIGH",title:"FEDVIP Backstop \u2014 30 Days Left on the Window (Retirees)",brief:"If you retired without enrolling in FEDVIP dental/vision, the 60-day window is half gone.",items:["Enroll now at BENEFEDS.gov \u2014 after day 60 the next opportunity is Federal Benefits Open Season (Nov\u2013Dec)","Retiree TRICARE enrollment is also NOT automatic \u2014 retirement is a Qualifying Life Event with a 90-day enrollment period at tricare.mil"],deadline:"Day 60 after retirement date (FEDVIP); day 90 (TRICARE QLE)",why:"Two separate non-automatic enrollments \u2014 FEDVIP and retiree TRICARE \u2014 expire in your first 90 days out. Both are routinely missed.",link:"https://www.benefeds.gov/"},
   {id:"r-p4",mo:-4,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F SGLI to VGLI — The Clock Is Running",brief:"Free SGLI coverage ends 120 days after separation. VGLI with NO health exam is available only through day 240.",items:["Day 0-120: SGLI continues free — compare VGLI vs commercial term rates NOW","Day 0-240: VGLI guaranteed acceptance, no medical exam","Day 241-485: VGLI still possible but medical evidence required — can be denied","Day 486+: VGLI window closed permanently","If service-connected conditions exist, VGLI may be your only option","Apply at myvgli.prudential.com or 1-800-419-1473"],deadline:"240 days post-separation for no-exam VGLI — HARD DEADLINE",why:"After day 240 you must prove good health. PTSD, sleep apnea, or musculoskeletal conditions can disqualify you on the civilian market.",link:"https://www.va.gov/life-insurance/options-eligibility/vgli/"},
   {id:"r-p6",mo:-6,cat:"HEALTH",pri:"HIGH",title:"TAMP Ending — Healthcare Decision",brief:"180-day TAMP TRICARE is ending. You need a plan.",items:["VA-rated: verify enrollment and Priority Group","Employed: enroll in employer healthcare","Retiring: TRICARE Retired (Prime, Select, For Life at 65)","Otherwise: ACA marketplace (HealthCare.gov)","VA doesn't cover routine dental unless 100%"],deadline:"180 days post-separation",why:"One ER visit without coverage averages $2,200+.",link:"https://www.tricare.mil/Plans/Leaving"},
   {id:"r-p12",mo:-12,cat:"BENEFITS",pri:"HIGH",title:"One-Year AAR — Benefits & Career",brief:"You've been out a year. Time for an honest after-action review.",items:["Review VA claim — file supplemental if needed","Career at target level and salary?","If underemployed, use VET HUB tools","Check VR&E (Ch.31) eligibility","Rebalance TSP/retirement accounts"],deadline:"Self-imposed 12-month AAR",why:"Veterans who don't course-correct in Year 1 are more likely to stay underemployed.",link:null},
@@ -2978,6 +2984,244 @@ const SMART_REMINDERS = [
   {id:"r-6-vettec",mo:6,cat:"CAREER",pri:"HIGH",title:"VET TEC 2.0 — Tech Training Is Back",brief:"The VA's high-tech training program returned under the Dole Act. Applications opened JUN 2026 and are open now. Capped at 4,000 paid participants per fiscal year — slots will go fast.",items:["Eligible: a veteran discharged other than dishonorable, OR a service member within 180 days of separating — and EITHER path also requires 36+ months of active duty and being under 62 when VA approves your application","Covers tuition, monthly housing allowance, and books through VA-approved providers","Fields: computer programming, computer software, data processing, information sciences, media application","CHANGED FROM THE ORIGINAL: if you have remaining GI Bill or DEA entitlement, VET TEC 2.0 now charges 1 month of entitlement per month of full-time training — factor this into your education plan","Preferred providers must place 70% of graduates in-field within 180 days or refund tuition to VA","Apply at VA.gov — VA Form 22-10297"],deadline:"Annual cap of 4,000 participants — apply early in the fiscal year",why:"Accelerated tech training with housing allowance, without committing to a degree program. But the entitlement charge means the old 'doesn't touch your GI Bill' advice no longer applies — verify your math first.",link:"https://www.va.gov/education/other-va-education-benefits/vet-tec-2/"},
   {id:"r-3-dgib",mo:3,cat:"BENEFITS",pri:"HIGH",title:"Digital GI Bill — Verify Your Payments",brief:"The VA's $2.3B Digital GI Bill system has documented payment failures under active congressional oversight. Trust but verify.",items:["Confirm your School Certifying Official submitted your enrollment certification","Verify your Certificate of Eligibility is on file with the school","Monitor your first BAH payment date — do not assume it processed","Payment problems: call the VA Education Call Center at 1-888-442-4551 immediately"],deadline:"Before your first tuition deadline and rent payment",why:"Automation now handles most education claims, but documented failures have left student veterans waiting on housing payments. Your rent does not wait for a system fix.",link:"https://www.va.gov/education/gi-bill-comparison-tool/"}
 ];
+
+// ═══════════════════════════════════════════════════════════════
+// RUNG TRIGGER ENGINE — evaluate-on-open
+// ═══════════════════════════════════════════════════════════════
+// There is no background scheduler to use. Notification Triggers
+// (TimestampTrigger) was abandoned by Chrome, and a service-worker setTimeout
+// does not survive worker termination — that approach was removed here in v72.
+// So rungs are evaluated when the member opens the app. Anything that must
+// arrive while the app is closed is OneSignal's lane, not this one.
+//
+// S2-supplied day-accurate triggers (BP-2). The value is days-to-ETS at fire
+// time: positive = before separation, negative = after. Rungs absent from this
+// map stay month-granular on their existing mo: value, which is not touched.
+var RUNG_DAY_TRIGGERS = { "r-1-fedvip": 31, "r-p1-fedvip": -30 };
+
+// ── STALENESS TIERS (values S2-fixed; mechanism ours) ──────────────────────
+// A rung whose window has closed must never surface. A late "30 Days Left on
+// the Window" alert is a false claim to a member.
+//
+// Day-anchored rungs: 14 days past their trigger, then dark. This OVERRIDES the
+// class table below — an S2-named fire date is precise, so its tail is short.
+var RUNG_DAY_TRIGGER_CEILING_DAYS = 14;
+
+// Month-granular rungs: their existing exact-month window (mo === moToETS,
+// roughly the 15 days either side of the trigger) plus a 15-day tail, then
+// dark. MONTH_WINDOW_HALF_DAYS is the half-window the exact-month match already
+// covers; the tail extends past it.
+var RUNG_MONTH_WINDOW_HALF_DAYS = 15;
+var RUNG_MONTH_TAIL_DAYS = 15;
+
+// Per-class ceiling, applied on top of the two rules above. A rung fires only
+// if BOTH its class ceiling and its class-of-rung window allow it — the tighter
+// constraint governs, because the failure mode being guarded is a stale claim.
+var RUNG_STALENESS_CEILING_DAYS = { CRITICAL: 31, HIGH: 31, MEDIUM: 31, ADVISORY: 60 };
+
+// Days-to-ETS at which a rung is meant to fire. Day-anchored rungs carry it
+// explicitly; month-granular rungs derive it from their existing mo: value.
+function rungTriggerDay(rung) {
+  if (Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)) {
+    return RUNG_DAY_TRIGGERS[rung.id];
+  }
+  return Math.round(rung.mo * 30.44);
+}
+
+function rungIsDue(rung, dateStr) {
+  if (!rung || !dateStr) return false;
+  var d = daysToETSDate(dateStr);
+  if (Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)) {
+    if (d === null || isNaN(d)) return false;
+    var trig = RUNG_DAY_TRIGGERS[rung.id];
+    // Reached the trigger day, and no more than the day ceiling past it.
+    return d <= trig && (trig - d) <= RUNG_DAY_TRIGGER_CEILING_DAYS;
+  }
+  // Month-granular: the exact-month window, unchanged...
+  var m = moToETS(dateStr);
+  if (m !== null && rung.mo === m) return true;
+  // ...plus a tail past that window, then dark.
+  if (d === null || isNaN(d)) return false;
+  var past = rungTriggerDay(rung) - d;
+  return past > 0 && past <= (RUNG_MONTH_WINDOW_HALF_DAYS + RUNG_MONTH_TAIL_DAYS);
+}
+
+// Has this rung's window closed? Measured in days past its trigger point.
+function rungIsStale(rung, dateStr) {
+  var d = daysToETSDate(dateStr);
+  if (d === null || isNaN(d)) return false;
+  // A day-anchored rung's own ceiling overrides the class table.
+  var ceiling = Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)
+    ? RUNG_DAY_TRIGGER_CEILING_DAYS
+    : RUNG_STALENESS_CEILING_DAYS[rung.pri];
+  if (ceiling === undefined || ceiling === null) return false;
+  return (rungTriggerDay(rung) - d) > ceiling;
+}
+
+// Due rungs the member has not already been notified about, most urgent first.
+// `delivered` is a plain id -> true map so it round-trips through localStorage.
+function dueRungs(dateStr, delivered) {
+  if (!dateStr) return [];
+  var seen = delivered || {};
+  var rank = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, ADVISORY: 3 };
+  return SMART_REMINDERS.filter(function (r) {
+    return !seen[r.id] && rungIsDue(r, dateStr) && !rungIsStale(r, dateStr);
+  }).sort(function (a, b) {
+    var ra = rank[a.pri] === undefined ? 9 : rank[a.pri];
+    var rb = rank[b.pri] === undefined ? 9 : rank[b.pri];
+    if (ra !== rb) return ra - rb;
+    // S2 named an exact fire day for the day-anchored rungs. At equal priority
+    // they take the single per-open slot ahead of a month-granular rung, which
+    // has a whole month in which to land.
+    var da = Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, a.id) ? 0 : 1;
+    var db = Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, b.id) ? 0 : 1;
+    return da - db;
+  });
+}
+
+// Local alert persistence and native exclusive coordination. Only contexts using
+// this lock participate; older app versions do not consult the ledger or lock.
+var __rungFiredThisOpen = false;
+var RUNG_LEDGER_KEY = "tops_rung_ledger_v1";
+
+function rungAlertResult(status, id) {
+  if (typeof console !== "undefined" && console.warn) {
+    console.warn("[local-rung] " + status);
+  }
+  return { status: status, id: id || null };
+}
+
+function rungLedgerObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function rungLedgerDay(value) {
+  return value === null || (typeof value === "string" &&
+    !isNaN(Date.parse(value)) && new Date(value).toDateString() === value);
+}
+
+function rungLedgerHistory(value) {
+  return rungLedgerObject(value) && Object.keys(value).every(function (id) {
+    return /^r-[a-z0-9-]+$/.test(id) && value[id] === true;
+  });
+}
+
+function rungLedgerValid(value) {
+  if (!rungLedgerObject(value) || Object.keys(value).sort().join(",") !==
+      "delivered,lastFired,pending,version" || value.version !== 1 ||
+      !rungLedgerHistory(value.delivered) || !rungLedgerDay(value.lastFired)) return false;
+  var pending = value.pending;
+  return pending === null || (rungLedgerObject(pending) &&
+    Object.keys(pending).sort().join(",") === "day,id" &&
+    typeof pending.id === "string" && /^r-[a-z0-9-]+$/.test(pending.id) &&
+    pending.day !== null && rungLedgerDay(pending.day) && !value.delivered[pending.id]);
+}
+
+function rungLedgerRead(todayKey) {
+  // Direct local-channel access: global wrappers intentionally swallow errors.
+  // Legacy inputs remain read-only, including history written by an older page.
+  var raw = localStorage.getItem(RUNG_LEDGER_KEY);
+  var legacyRaw = localStorage.getItem("tops_rung_notified");
+  var legacyDay = localStorage.getItem("tops_rung_last_fired");
+  var legacy = legacyRaw === null ? {} : JSON.parse(legacyRaw);
+  if (!rungLedgerHistory(legacy) || !rungLedgerDay(legacyDay)) throw new Error("legacy-invalid");
+  var ledger = raw === null ? { version: 1, delivered: {}, lastFired: null, pending: null } : JSON.parse(raw);
+  if (!rungLedgerValid(ledger)) throw new Error("ledger-invalid");
+  Object.keys(legacy).forEach(function (id) { ledger.delivered[id] = true; });
+  if (legacyDay === todayKey || ledger.lastFired === null) ledger.lastFired = legacyDay;
+  // Conflicting legacy delivery of a pending rung is ambiguous; never clear it.
+  if (!rungLedgerValid(ledger)) throw new Error("legacy-conflict");
+  return { raw: raw, ledger: ledger };
+}
+
+function rungLedgerWrite(expected, ledger) {
+  if (!rungLedgerValid(ledger)) throw new Error("ledger-invalid");
+  var encoded = JSON.stringify(ledger);
+  if (localStorage.getItem(RUNG_LEDGER_KEY) !== expected) throw new Error("ledger-changed");
+  localStorage.setItem(RUNG_LEDGER_KEY, encoded);
+  if (localStorage.getItem(RUNG_LEDGER_KEY) !== encoded) throw new Error("ledger-unverified");
+  return encoded;
+}
+
+// Promise result replaces the old immediate attempt ID; both callers ignore it.
+// Only fulfilled show + verified final persistence reports delivered.
+async function notifyDueRung(dateStr) {
+  if (!TOPS_PUSH_ENABLED) return { status: "disabled", id: null };
+  if (!dateStr || window.__IS_IFRAME) return rungAlertResult("skipped-context");
+  if (__rungFiredThisOpen) return rungAlertResult("blocked-this-open");
+  if (typeof Notification === "undefined" || Notification.permission !== "granted" ||
+      !navigator.serviceWorker) return rungAlertResult("skipped-permission-or-worker");
+  __rungFiredThisOpen = true;
+  var reg;
+  try { reg = await navigator.serviceWorker.ready; }
+  catch (e) {
+    __rungFiredThisOpen = false;
+    return rungAlertResult("worker-unavailable");
+  }
+  if (!reg || typeof reg.showNotification !== "function" || Notification.permission !== "granted") {
+    __rungFiredThisOpen = false;
+    return rungAlertResult("worker-or-permission-unavailable");
+  }
+  try {
+    if (!navigator.locks || typeof navigator.locks.request !== "function") {
+      return rungAlertResult("blocked-lock-unavailable");
+    }
+    return await navigator.locks.request("tops-local-rung-v1", { mode: "exclusive" }, async function () {
+      // Fresh date and eligibility AFTER readiness, not a stale queued selection.
+      var todayKey = new Date().toDateString();
+      var snapshot;
+      try { snapshot = rungLedgerRead(todayKey); }
+      catch (e) { return rungAlertResult("blocked-state-read-or-validation"); }
+      var ledger = snapshot.ledger;
+      if (ledger.pending) return rungAlertResult("blocked-pending", ledger.pending.id);
+      if (ledger.lastFired === todayKey) return rungAlertResult("blocked-daily-cap");
+      var due = dueRungs(dateStr, ledger.delivered);
+      if (!due.length) {
+        __rungFiredThisOpen = false;
+        return rungAlertResult("no-due-rung");
+      }
+      var rung = due[0];
+      ledger.pending = { id: rung.id, day: todayKey };
+      var reserved;
+      try { reserved = rungLedgerWrite(snapshot.raw, ledger); }
+      catch (e) { return rungAlertResult("blocked-reservation-unverified", rung.id); }
+
+      var shown;
+      try {
+        shown = reg.showNotification(rung.title, {
+          body: rung.brief || "", tag: "ets-" + rung.id,
+          icon: "/icon-192.png", badge: "/icon-192.png", data: { url: "/" }
+        });
+        if (!shown || typeof shown.then !== "function") throw new Error("show-result-unknown");
+      } catch (e) {
+        return rungAlertResult("blocked-show-uncertain", rung.id);
+      }
+      // A hanging show keeps pending indefinitely. No timeout can prove non-delivery.
+      try { await shown; }
+      catch (e) {
+        ledger.pending = null;
+        try { rungLedgerWrite(reserved, ledger); }
+        catch (cleanupError) { return rungAlertResult("blocked-rejection-cleanup-unverified", rung.id); }
+        __rungFiredThisOpen = false;
+        return rungAlertResult("show-rejected-retryable", rung.id);
+      }
+      // Recompute the cap day on completion too: a show may span local midnight.
+      ledger.delivered[rung.id] = true;
+      ledger.lastFired = new Date().toDateString();
+      ledger.pending = null;
+      try { rungLedgerWrite(reserved, ledger); }
+      catch (e) { return rungAlertResult("blocked-final-persistence-unverified", rung.id); }
+      // Analytics failure cannot undo committed delivery or release the slot.
+      try {
+        if (window.__trackEvent) window.__trackEvent("rung_notified", { id: rung.id });
+      } catch (e) {}
+      return rungAlertResult("delivered", rung.id);
+    });
+  } catch (e) {
+    // Never fall back to an unlocked attempt or clear a durable pending record.
+    return rungAlertResult("blocked-lock-rejected");
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════════
 // CRITICAL WINDOWS MODULE — Source-verified time-bound windows
@@ -3132,7 +3376,10 @@ function __captureBranch(hasDeferredPrompt, ua, standalone, maxTouch) {
 // Day-level ETS helper (distinct from month-level moToETS)
 function daysToETSDate(dateStr) {
   if (!dateStr) return null;
-  var ets = new Date(dateStr);
+  // "YYYY-MM-DD" parses as UTC midnight, which lands on the PREVIOUS local
+  // day west of UTC; setHours then snapped it there, costing every US member
+  // one day. Anchor at local noon so the local calendar date is unambiguous.
+  var ets = new Date(dateStr + "T12:00:00");
   var today = new Date();
   today.setHours(0,0,0,0);
   ets.setHours(0,0,0,0);
@@ -5318,8 +5565,8 @@ function App() {
             React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.5 } }, "Already law, and separate from the RIF rules below. OPM's appraisal rule (91 FR 41521, effective 6 AUG 2026) removed the prohibition on a forced, or standardized, distribution of rating levels, so OPM may cap how many employees can receive each rating. It also eliminated mandatory review of a Level 1 (Unacceptable) rating and closed the union route: a rating of record may no longer be challenged through a negotiated grievance or arbitration. ", React.createElement("strong", { style: { color: C.textPrimary } }, "If a rating of record is wrong, request a correction through your agency's own procedures within 60 days of the date it was issued (5 CFR 430.208(i)(1)) \u2014 that is now the primary route, and the grievance you would once have filed is no longer available."), " Standardized-distribution requirements apply to agencies beginning 1 JAN 2027. ", React.createElement("strong", { style: { color: C.textPrimary } }, "Disabled veterans: your rating of record cannot be lowered because you were absent from work to seek medical treatment (5 CFR 430.208(f), Executive Order 5396)."), " Final rule 2026-13715, 91 FR 41521.")
           ),
           React.createElement("div", { style: { marginBottom: 14 } },
-            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 FEDERAL SERVICE \u2014 RIF AND APPEAL RULES CHANGE 2 SEP 2026"),
-            React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.5 } }, "Four OPM final rules published 3 AUG 2026, all effective 2 SEP 2026 \u2014 future law, not current law. They govern reduction-in-force retention (2026-15665), RIF appeals (2026-15666), probationary and trial-period termination appeals (2026-15654), and suitability action appeals (2026-15650). In a RIF, employees will be ranked by ", React.createElement("strong", { style: { color: C.textPrimary } }, "performance credit, augmented by veterans' preference"), ", with tenure subgroup and length of service as tie-breakers (5 CFR 351.501). Preference eligibles with a compensable service-connected disability of 30% or more will receive 5 additional points; other preference eligibles 3 (5 CFR 351.504, as revised effective 2 SEP 2026). Appeals will move from the MSPB to OPM: a RIF appeal will be open only to an employee furloughed more than 30 days, separated, or demoted, and that employee must show the agency broke a rule and that the failure cost them the outcome. ", React.createElement("strong", { style: { color: C.textPrimary } }, "RIF notices issued before 2 SEP 2026 are processed under the prior rules \u2014 the date on your notice decides which regime governs it."), " Your retention standing will run on your rating of record, so read FEDERAL PERFORMANCE RATINGS above \u2014 that rule is in force now. Final rules 2026-15665, 2026-15666, 2026-15654 and 2026-15650.")
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 FEDERAL SERVICE \u2014 RIF AND APPEAL RULES IN FORCE, 2 SEP 2026"),
+            React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.5 } }, "Four OPM final rules published 3 AUG 2026, all effective 2 SEP 2026 \u2014 in force now. They govern reduction-in-force retention (2026-15665), RIF appeals (2026-15666), probationary and trial-period termination appeals (2026-15654), and suitability action appeals (2026-15650). In a RIF, employees are ranked by ", React.createElement("strong", { style: { color: C.textPrimary } }, "performance credit, augmented by veterans' preference"), ", with tenure subgroup and length of service as tie-breakers (5 CFR 351.501). Preference eligibles with a compensable service-connected disability of 30% or more receive 5 additional points; other preference eligibles 3 (5 CFR 351.504, as revised effective 2 SEP 2026). Appeals have moved from the MSPB to OPM \u2014 the Board removed these appeal categories from its own regulations effective the same day (Appellate Jurisdiction Update II, RIN 3124-AA33), keeping pending and pre-2-SEP cases \u2014 and a RIF appeal is open only to an employee furloughed more than 30 days, separated, or demoted, and that employee must show the agency broke a rule and that the failure cost them the outcome. ", React.createElement("strong", { style: { color: C.textPrimary } }, "RIF notices issued before 2 SEP 2026 are processed under the prior rules \u2014 the date on your notice decides which regime governs it."), " Your retention standing runs on your rating of record, so read FEDERAL PERFORMANCE RATINGS above \u2014 that rule is in force now. Final rules 2026-15665, 2026-15666, 2026-15654 and 2026-15650.")
           ),
           React.createElement("div", { style: { marginBottom: 14 } },
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 PROJECT PATRIOT PIPELINE \u2014 DIRECTED 3 JUN 2026"),

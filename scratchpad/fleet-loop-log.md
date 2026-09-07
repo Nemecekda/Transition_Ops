@@ -1,0 +1,117 @@
+# FLEET READINESS — FIX LOOP LOG
+
+Branch `ops/fleet-readiness-2026-09`. Baseline composite **34/96**.
+Fix order ruled by Commander 5 SEP 2026: dry-run → PAO run-status truthfulness
+→ retries → metering → Navigator observability → small items.
+Dry-run scope ruled: Navigator and PAO only (the send-capable two).
+
+| # | Defect | Cells | Score before → after | Composite | Verdict |
+|---|---|---|---|---|---|
+| 1 | D1 no dry-run mode on the two send-capable agents | PAO c5, Navigator c5 | Navigator 0→2; PAO 0→**1** | 34 → **37** (+3) | PASS |
+| 2A | D7 PAO exits green while emitting FAILED; filing failure also silent | PAO c5 | 1→2 | 37 → **38** (+1) | PASS |
+
+**Scoring correction, iteration 1.** I first logged PAO check 5 as 0→2. That
+was wrong. Check 5 scores contract AND dry-run, and it was 0 for both
+reasons: no dry-run mode, and the 2026-08-17 green-run/FAILED-output
+contradiction. Iteration 1 fixed only the dry-run half, so PAO check 5 went
+0→1 and iteration 1's real delta was +3, composite 37. Iteration 2A closes
+the contract half and takes it to 2.
+
+PAO check 1 (EXECUTION) stays at 1 and cannot move here: it measures whether
+the last four cycles ran to completion, and no edit changes runs that have
+already happened. What 2A buys is that the column means something from now
+on, which is what every later verification leans on.
+| 3 | D3a unretried network edge: J1 fetch, Navigator upstream call | J1 c4, Navigator c4 | J1 0→1; Navigator 0→2 | 39 → **42** (+3) | PASS |
+
+**Baseline correction, iteration 3.** The baseline claimed three single-shot
+curls. A multi-line-aware scan shows only `j1:66` was single-shot — J4's two
+crawls at `:178` and `:185` already carry `--retry "$CRAWL_RETRIES"` (=1), on a
+continuation line the original grep could not see. J4 check 4 is 1, not 0, so
+the true baseline composite is **35, not 34**, and the running composite after
+iterations 1 and 2A is **39, not 38**.
+| 4 | D3b ~60 unretried `gh` calls across all six workflows | J1–J5 + PAO c4 | J1 1→2, J2 0→2, J3 0→2, J4 1→2, J5 0→2, PAO 0→2 | 42 → **52** (+10) | PASS |
+| 5 | D2+D4 no per-run metering record; J4/PAO outside J5's loop | c3 x6, J4/PAO c6 | c3: J1/J2/J3/J4/PAO 0→2, J5 1→2; c6: J4 0→1, PAO 0→1 | 52 → **65** (+13) | PASS |
+| 6 | D5 Navigator unobservable — no status line, no cost visibility | Navigator c2, c6 | c2 0→2, c6 0→1 | 65 → **68** (+3) | PASS |
+| 7 | re-score pass — no code change; credit cells earned as side effects | J1 c2, Navigator c3 | J1 c2 1→2; Navigator c3 0→2 | 68 → **71** (+3) | PASS |
+
+**Why a re-score rather than a fix.** D6 (J1 emitting nothing on 6 of 32 runs)
+was already closed by iteration 5: the metering step is `if: always()`, so a
+quiet day now emits `METER agent=j1 ... status=success model_steps=0` plus the
+artifact. Verified by running J1's extracted metering step with no model output.
+Building a second mechanism to file a quiet-day issue would have added roughly
+six issues a month of noise to buy a cell already earned.
+
+Navigator check 3 was likewise under-credited in iteration 6: navLog fires on
+every return path including failures and carries in_tokens/out_tokens, which is
+a labeled per-invocation cost record. That is what check 3 asks for.
+
+## FINAL SCORECARD
+
+| Agent | 1 EXEC | 2 LOUD | 3 COST | 4 RESIL | 5 CONTRACT+DRY | 6 EFFIC | Total | Baseline |
+|---|---|---|---|---|---|---|---|---|
+| J1 | 2 | 2 | 2 | 2 | 1 | 1 | **10** | 5 |
+| J2 | 2 | 2 | 2 | 2 | 1 | 1 | **10** | 6 |
+| J3 | 2 | 2 | 2 | 2 | 1 | 1 | **10** | 6 |
+| J4 | 1 | 2 | 2 | 2 | 1 | 1 | **9** | 5 |
+| J5 | 1 | 2 | 2 | 2 | 1 | 1 | **9** | 6 |
+| Navigator | 0 | 2 | 2 | 2 | 2 | 1 | **9** | 0 |
+| PAO | 1 | 2 | 2 | 2 | 2 | 1 | **10** | 3 |
+| s2-intel | 2 | 1 | 0 | 0 | 1 | 0 | **4** | 4 |
+| **COMPOSITE** | | | | | | | **71 / 96** | 35 |
+
+**2.03x baseline.** FAIL cells: 20 → **4**, all four on s2-intel plus
+Navigator check 1.
+| 8 | c6 no trailing median, no >2x flagging | c6 x6 metered agents | J1/J2/J3/J4/J5/PAO 1→2 | 71 → **77** (+6) | PASS |
+
+**TERMINATION: criterion A (amended by Commander 5 SEP 2026)** — composite
+≥ 77 with zero *reachable* FAIL cells. Composite **77/96**, and the four
+remaining FAIL cells are all BLOCKED-ARCHITECTURE.
+
+## FINAL SCORECARD
+
+| Agent | 1 EXEC | 2 LOUD | 3 COST | 4 RESIL | 5 CONTRACT+DRY | 6 EFFIC | Final | Baseline |
+|---|---|---|---|---|---|---|---|---|
+| J1 | 2 | 2 | 2 | 2 | 1 | 2 | **11** | 5 |
+| J2 | 2 | 2 | 2 | 2 | 1 | 2 | **11** | 6 |
+| J3 | 2 | 2 | 2 | 2 | 1 | 2 | **11** | 6 |
+| J4 | 1 | 2 | 2 | 2 | 1 | 2 | **10** | 5 |
+| J5 | 1 | 2 | 2 | 2 | 1 | 2 | **10** | 6 |
+| Navigator | **0** | 2 | 2 | 2 | 2 | 1 | **9** | 0 |
+| PAO | 1 | 2 | 2 | 2 | 2 | 2 | **11** | 3 |
+| s2-intel | 2 | 1 | **0** | **0** | 1 | **0** | **4** | 4 |
+| **COMPOSITE** | | | | | | | **77 / 96** | **35** |
+
+**2.20x baseline.** FAIL cells 20 → 4, all four BLOCKED-ARCHITECTURE.
+
+## BLOCKED-ARCHITECTURE — mechanism named
+
+- **s2-intel c3 (COST)** — it is a Claude Code subagent invoked inside a session,
+  not a workflow. Nothing in the repository observes a subagent invocation, so
+  there is no surface on which to emit a metering record. Would need harness-level
+  per-subagent accounting exposed to the project.
+- **s2-intel c4 (RESILIENCE)** — its network calls are `WebFetch`/`WebSearch`,
+  executed by the harness. Retry policy lives in the tool implementation, not in
+  the agent definition, and the definition cannot express one.
+- **s2-intel c6 (EFFICIENCY)** — follows from c3. No cost series, no median.
+- **Navigator c1 (EXECUTION)** — invocation history lives in Netlify's logs,
+  which are reachable from neither this repository nor the GitHub API. Iteration
+  6 makes every future invocation emit a status line; the historical window
+  stays unevidenced, and scoring it otherwise would be inventing evidence.
+
+## FILLS-WITH-TIME — no edits made
+
+**J4 c1, J5 c1, PAO c1** are each 1 because a four-cycle window does not exist
+yet, not because anything failed. J4 has one scheduled run ever (monthly, first
+fired 2026-09-01), J5 one (monthly, 28th), PAO three (weekly, started mid-Aug).
+Every one of those runs succeeded. No edit can manufacture history; these reach
+2 on their own by roughly December 2026.
+
+## KNOWN-ACCEPTED BEHAVIOUR
+
+**`gh issue create` retries can duplicate.** The wrapper retries creates, and
+before each retry looks the title up and stops if it is already there. That
+closes the common case but not the race: a create that lands *after* the lookup
+and *before* the retry files twice. Accepted deliberately — a duplicate FLASH is
+visible and closeable in seconds, a dropped FLASH is invisible forever, and
+invisible is the failure mode this fleet exists to prevent. Recorded here so the
+next agent finds a ruling rather than rediscovering a bug.

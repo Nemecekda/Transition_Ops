@@ -81,6 +81,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false   # default leaves a usable token in .git/config for the rest of the job
+      - name: Mark start for metering
+        run: echo "METER_STARTED=$(date -u +%FT%TZ)" >> "$GITHUB_ENV"
+
 
       # Armor for the model-free property. If someone later adds an API key to
       # this job, that is a doctrine change and it should fail loudly here rather
@@ -107,6 +110,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           existing=$(gh label list --limit 200 --json name --jq '.[].name' || true)
           for L in FLASH ROUTINE; do
             if printf '%s\n' "$existing" | grep -qx "$L"; then
@@ -124,11 +128,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           mkdir -p out
           MONTH_START=$(date -u +%Y-%m-01)
           echo "$MONTH_START" > out/month-start.txt
           echo "month window opens $MONTH_START"
-          for W in j1-federal-scan j2-weekly-analysis j3-weekly-sitrep j5-spend-check; do
+          # j4-link-audit and pao-weekly-packet were absent from this list, so
+          # two of the eight agents were spending money J5 never counted. The
+          # list is now every workflow in the fleet.
+          for W in j1-federal-scan j2-weekly-analysis j3-weekly-sitrep \
+                   j4-link-audit j5-spend-check pao-weekly-packet; do
             gh run list --workflow "$W.yml" --limit 200 \
               --json databaseId,createdAt,conclusion,status \
               > "out/runs-$W.json" 2>/dev/null || echo '[]' > "out/runs-$W.json"
@@ -145,6 +154,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           MONTH_START=$(cat out/month-start.txt)
           gh issue list --state all --limit 300 \
             --search "created:>=$MONTH_START" \
@@ -156,6 +166,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           FLASH_SINCE=$(date -u -d "$FLASH_WINDOW_DAYS days ago" +%F)
           DEDUPE_SINCE=$(date -u -d "$DEDUPE_WINDOW_HOURS hours ago" +%FT%TZ)
           echo "N1 window opens $FLASH_SINCE ; N2 window opens $DEDUPE_SINCE"
@@ -171,6 +182,44 @@ jobs:
       # Same governor semantics as J2: N2 dedupe first (a suppressed duplicate
       # must not consume budget), then N1 budget.
       # ==================================================================
+      # EFFICIENCY BASELINE. Every run now writes out/metering.json (schema
+      # tops.metering.v1) into its evidence artifact. Collecting them gives J5 a
+      # per-agent trailing median and, with it, the first real answer to "was
+      # that run expensive?" -- previously nothing in the fleet could say.
+      #
+      # Fail-soft on purpose: J5 is the agent that reports on the others, so a
+      # missing or expired artifact degrades this section and never takes the
+      # spend check down. Artifacts retain 30 days, which is the same window.
+      - name: Collect metering records
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
+          mkdir -p out/metering
+          MONTH_START=$(cat out/month-start.txt)
+          n=0
+          # id + name only; the zip is fetched by id, never by an interpolated name.
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts?per_page=100" \
+            --jq ".artifacts[] | select(.expired==false) | select(.created_at >= \"${MONTH_START}\") | .id" \
+            > out/artifact-ids.txt 2>/dev/null || : > out/artifact-ids.txt
+          while read -r id; do
+            [ -n "$id" ] || continue
+            if gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${id}/zip" > "out/a.zip" 2>/dev/null; then
+              if unzip -o -j "out/a.zip" 'metering.json' -d "out/metering/$id" >/dev/null 2>&1; then
+                n=$((n+1))
+              fi
+            fi
+            rm -f out/a.zip
+          done < out/artifact-ids.txt
+          echo "collected $n metering record(s) from $(wc -l < out/artifact-ids.txt | tr -d ' ') artifact(s)"
+
+      - name: Efficiency — trailing median and 2x flags
+        run: |
+          python3 .github/scripts/j5-metering-median.py \
+            out/metering out/efficiency.md out/efficiency.json \
+            || printf 'EFFICIENCY — analyser failed; section omitted this month.\n' > out/efficiency.md
+          cat out/efficiency.md
+
       - name: Compute spend and apply governors
         run: |
           RUN_DATE=$(date -u +%F); export RUN_DATE
@@ -393,6 +442,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           COUNT=$(cat out/flash-count.txt 2>/dev/null || echo 0)
           if [ "$COUNT" -eq 0 ]; then
             echo "no FLASH breaches this run"
@@ -436,6 +486,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           python3 - <<'PY'
           import json, os
           s = json.load(open("out/spend.json"))
@@ -527,6 +578,11 @@ jobs:
                   for x in s["notes"]:
                       fh.write(f"  - {x}\n")
                   fh.write("\n")
+              try:
+                  with open("out/efficiency.md") as _eff:
+                      fh.write(_eff.read() + "\n")
+              except Exception:
+                  fh.write("EFFICIENCY — no metering records available this month.\n\n")
               if s["events"]:
                   fh.write("FIRING EVENTS (model invocations inferred from findings issues)\n")
                   for e in s["events"]:
@@ -568,6 +624,16 @@ jobs:
                 || echo "::warning::footer edit failed for #$N; the issue is filed without it" ;;
           esac
 
+      # EVERY run emits one record, including failures and quiet runs.
+      # if: always() is the whole point: the runs that used to be
+      # invisible to J5 were exactly the ones that filed no issue.
+      - name: Emit metering record
+        if: always()
+        run: |
+          source .github/scripts/emit-metering.sh
+          n=0   # model-free job
+          emit_metering j5 "$n" "none" "${{ job.status }}"
+
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
@@ -582,6 +648,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          source .github/scripts/gh-retry.sh   # bounded, idempotent gh retries
           mkdir -p out
           printf '1 item may need your eyes: J5 failed, so spend is unmetered until it is fixed or re-run.\n\n' > out/failure.md
           printf 'J5 failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" >> out/failure.md

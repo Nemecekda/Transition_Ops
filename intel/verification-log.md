@@ -595,7 +595,7 @@ COMMANDER lane on arrival because both touch shipped policy copy.
 
 | Fires | Item | What must happen | Source |
 |---|---|---|---|
-| **2 SEP 2026** | The four 3 AUG 2026 OPM rules take effect. | The POLICY INTEL entry **FEDERAL SERVICE — RIF AND APPEAL RULES CHANGE 2 SEP 2026** is written in the future tense throughout, and Navigator RULE 16 orders future tense for CORPUS (b). **On 2 SEP that copy becomes wrong by tense.** Flip (b) and the card to present tense; keep the notice-date sentence, which stays true permanently. | V-2026-009 |
+| **2 SEP 2026** | The four 3 AUG 2026 OPM rules take effect. | The POLICY INTEL entry **FEDERAL SERVICE — RIF AND APPEAL RULES CHANGE 2 SEP 2026** is written in the future tense throughout, and Navigator RULE 16 orders future tense for CORPUS (b). **On 2 SEP that copy becomes wrong by tense.** Flip (b) and the card to present tense; keep the notice-date sentence, which stays true permanently. **CLOSED 4 SEP 2026 — both halves shipped and verified in production. Card: V-2026-016, commit `0d71fc5`. Corpus (b) and RULE 16: V-2026-017 as amended, commit `fa80e5d`, merged via `e33792c`. Preview PASS on the branch deploy before merge; live-edge sweep PASS after.** | V-2026-009 |
 | **1 JAN 2027** | Agency compliance with 5 CFR 430.208(e)(1)-(2) begins. | A standardized distribution may be published between now and then. **No cap figure exists today and none may be invented** (V-2026-010, NOT CLAIMED). Re-verify at rung 1; if OPM publishes a distribution, it is a new finding, not an edit. | V-2026-010 |
 
 **Why the 2 SEP item is not optional.** Dean's ruling of 9 AUG 2026 is that the
@@ -900,6 +900,15 @@ residuals :2812/:8761 (Patch E).
 
 ---
 
+## Integration provenance - parallel verification histories
+
+Record identity is the pair (source identifier, original record identifier).
+The two source histories below independently assigned overlapping numeric IDs.
+Original claims, ratings, dates, and amendments are retained verbatim; this
+integration adds no verification rating and does not combine their findings.
+
+### Source identifier: CLONE-0433f333e1de16d2dfd06e0cad4cb9a1ba025008
+
 V-2026-016 | 02 SEP 2026 | VA combined-rating Table I reconciliation
 Method: current primary-source direct read, full-table review, and exact code
 comparison at clone HEAD 29593bf. Sources accessed 02 SEP 2026.
@@ -1000,3 +1009,306 @@ A2 act: "Use the current service instruction or MyNavyHR SkillBridge page applic
 A3 surface(s): CRITICAL WINDOWS · REMINDERS · Navigator CORPUS · RESOURCES   token: [CRITICAL WINDOWS], [REMINDERS], [RESOURCES]   sweep trigger: FIRED "most members," "most rank categories," "many grades," and Navy source gap
 A4 cost: A CLOSED WINDOW
 EXPIRES: NONE
+
+
+### Source identifier: MAIN-d82516389ed5906febad467cfe57887acda97053
+
+## V-2026-016 — OPM RIF and appeal rules IN FORCE 2 SEP 2026 (tense flip shipped)
+
+- **Claim:** The four OPM final rules of 3 AUG 2026 took effect 2 SEP 2026. The
+  shipped POLICY INTEL card still read "future law, not current law" in the
+  future tense, wrong by tense as of 0000 2 SEP. A fifth rule — the MSPB's own
+  jurisdictional withdrawal, effective the same day — was absent from the app.
+- **Rating:** CONFIRMED
+- **Verified by:** S2, 3 SEP 2026, rung 1 — Federal Register full text direct.
+  MSPB rule read from the federalregister.gov public-inspection document.
+  Orchestrator, 4 SEP 2026, live-edge verification only; the FR and MSPB
+  sources were not re-derived and remain S2's attestation.
+- **Verified date:** 3 SEP 2026 (sources) / 4 SEP 2026 (live edge)
+- **Citations of record:**
+  - "Reduction in Force," **Final Rule, FR doc 2026-15665**, 5 CFR 351,
+    published 2026-08-03, effective 2026-09-02.
+  - "Reduction in Force Appeals," **Final Rule, FR doc 2026-15666**, 5 CFR 351,
+    published 2026-08-03, effective 2026-09-02.
+  - "Probationary and Trial Period Termination Appeals," **Final Rule, FR doc
+    2026-15654**, published 2026-08-03, effective 2026-09-02.
+  - "Suitability Action Appeals," **Final Rule, FR doc 2026-15650**, 5 CFR 731,
+    published 2026-08-03, effective 2026-09-02.
+  - MSPB, "Appellate Jurisdiction Update II," **Final Rule, RIN 3124-AA33**,
+    public-inspection doc **2026-16456**, effective 2026-09-02 — removes MSPB
+    regulatory jurisdiction over probationary-termination, suitability, and RIF
+    appeals; not applied to pending cases or to actions taken before the
+    effective date; Foreign Service RIF jurisdiction (22 U.S.C. 4010a) retained.
+- **No stay, injunction, or delay** was found against any of the five rules.
+- **Shipped:** commit `0d71fc5`, branch `ops/opm-rif-in-force`, merged to `main`
+  4 SEP 2026. Six string-literal edits to `index.html`, header and five verb
+  phrases, plus the RIN 3124-AA33 companion cite. `sw.js` CACHE_NAME v129 to
+  v130. No structural change, no new assertion beyond the citations above.
+- **Preserved deliberately:** "RIF notices issued before 2 SEP 2026 are
+  processed under the prior rules — the date on your notice decides which
+  regime governs it." Per Dean's ruling of 9 AUG 2026 the card must never blend
+  the two effective dates; that sentence stays permanently true and was not
+  touched. Verified present at the live edge post-merge.
+- **LIVE-EDGE VERDICT: PASS** (4 SEP 2026, production, post-publish).
+  `future law, not current law` expected 0, got **0**. `IN FORCE, 2 SEP 2026`
+  expected 1, got **1**. `sw.js` `transition-ops-v130` expected 1, got **1**.
+  Full anchor sweep: all eight new anchors returned 1, all six retired strings
+  returned 0, the retained notice-date line returned 1, and stale cache
+  `transition-ops-v129` returned 0 at the edge. `origin/main`, local `main`, and
+  `raw.githubusercontent.com/main` all at `0d71fc5` — no publish lag, no partial
+  deploy.
+- **OPEN — the 2 SEP tickler is only half closed.** The tickler ordered "Flip
+  (b) and the card to present tense." The card shipped; **CORPUS (b) did not**.
+  `netlify/functions/navigator.js` is live and still future tense: **line 25,
+  RULE 16** instructs the model to "answer in the future tense" for CORPUS (b),
+  and **line 190** reads "FUTURE LAW, effective 2 SEP 2026 — not current law,"
+  carrying "will be ranked by" and "will receive 5 additional points." A member
+  reading the card now gets the correct framing; a member asking the Navigator
+  is told it is future law. The Navigator is being instructed to be wrong.
+  The corpus carries the notice-date sentence in two places — preserved on any
+  flip, per the same 9 AUG ruling.
+- **Disposition:** card CLOSED and verified in production. Corpus (b) OPEN,
+  COMMANDER lane, needs its own branch, a `policy-verification` pass against
+  this entry, and `nav-token-regression`. No cache bump — `navigator.js` is a
+  Netlify Function and backs no `ASSETS` entry. The tickler row above stays
+  open until (b) ships.
+- **Source entry:** `intel/V-2026-016-opm-rif-in-force.md`
+- **Staged patch:** `patch-2026-09-03-opm-rif-tense-flip.md`
+
+---
+
+## V-2026-017 — Navigator corpus (b) and RULE 16 flipped to in force (STAGED)
+
+- **Claim:** The Navigator's CORPUS (b) and RULE 16 still described the four OPM
+  rules as future law after they took effect 2 SEP 2026. RULE 16 instructed the
+  model to "answer in the future tense," so the Navigator was under standing
+  orders to give a wrong answer while the POLICY INTEL card beside it read
+  correctly. Recorded OPEN in [[V-2026-016]]; this entry is the fix.
+- **Rating:** CONFIRMED
+- **Sources:** unchanged from [[V-2026-016]] — FR docs 2026-15665, 2026-15666,
+  2026-15654, 2026-15650, and MSPB RIN 3124-AA33 (FR public-inspection doc
+  2026-16456), all verified by S2 on 3 SEP 2026. This patch asserts nothing
+  beyond them. No re-derivation was performed for this entry.
+- **Verified date:** 3 SEP 2026 (sources) / 4 SEP 2026 (edit evidence)
+- **Commit:** `fa80e5d` on `ops/opm-rif-corpus-b`, base `0d71fc5`. Scope:
+  `netlify/functions/navigator.js` only, two lines, seven edits.
+
+| # | Edit |
+|---|---|
+| R16-1 | RULE 16: CORPUS (b) "take effect 2 SEP 2026 — answer in the future tense" to "are IN FORCE NOW as of 2 SEP 2026 — answer in the present tense" |
+| C-1 | "FUTURE LAW, effective 2 SEP 2026 — not current law … all take effect that day" to "IN FORCE since 2 SEP 2026 … all took effect that day" |
+| C-2 | "From 2 SEP 2026 employees will be ranked by" to "Since 2 SEP 2026 employees are ranked by" (date retained by Commander ruling) |
+| C-3 | "or more will receive 5 additional points" to "or more receive" |
+| C-4 | "RIF appeals will move from the MSPB to OPM and will be open only to" to "have moved … and are open only to" |
+| C-5 | "appeals also move to OPM" to "appeals have also moved to OPM" |
+| C-6 | MSPB carve-out ADDED per Commander ruling: Board jurisdiction over RIF, probationary-termination, and suitability appeals ended 2 SEP 2026; pending cases and pre-2-SEP actions stay with the Board; Foreign Service RIF jurisdiction (22 U.S.C. 4010a) retained |
+- **Grep verdicts:** every `old_str` asserted before writing — all seven
+  `old=1 / new=0`, aborting on mismatch; all seven post-edit `old=0 / new=1`.
+  Presence: 11 new anchors at 1 each, including `RIN 3124-AA33`,
+  `public-inspection doc 2026-16456`, and `(22 U.S.C. 4010a)`. Absence: 0 each
+  for `answer in the future tense`, `FUTURE LAW`, `not current law`,
+  `all take effect that day`, `From 2 SEP 2026 employees will be ranked by`,
+  `will receive 5 additional points`, `will move from the MSPB`,
+  `will be open only to`, `appeals also move to OPM`.
+- **Preserved by Commander ruling, verified present after the edits:** the
+  notice-date-controls clause in **both** places it appears (count 2, lines 25
+  and 190, neither inside any match window); `NEVER describe both in one undated
+  present tense.`; `TWO OPM EFFECTIVE DATES — NEVER BLEND THEM`; and
+  `CORPUS (c) … IN FORCE NOW as of 6 AUG 2026`.
+- **nav-token-regression: PASS, exit 0** — 16 tokens in three-way MAP /
+  MANIFEST / LIVE_TOKENS sync, 6 bracketed CORPUS headers all mapped, identical
+  to the pre-edit baseline. Encoding PASS (zero curly quotes, zero U+00A0),
+  `node --check` OK, untouched-region PASS (one file).
+- **No cache bump, proven not assumed:** the ASSETS-backed path check returns
+  empty and `sw.js` is absent from the diff. `navigator.js` is a Netlify
+  Function and backs no `ASSETS` entry. `CACHE_NAME` stays `transition-ops-v130`.
+- **PREVIEW VALIDATION: NOT PERFORMED.** No result exists and none could. The
+  commit `fa80e5d` is local only; `origin/ops/opm-rif-corpus-b` carries
+  `0d71fc5`, which is main's tip and therefore the PRE-edit branch. Netlify has
+  never built an artifact containing this change, so no branch deploy of it can
+  have been exercised. **PREVIEW WARRANTED** and still owed: the honest test is
+  to ask the deployed Navigator a RIF question and read the tense back. Static
+  checks prove structure and citation integrity, never answer quality.
+- **Disposition:** STAGED, COMMANDER lane, unmerged. Not in production.
+- **Tickler [[V-2026-009]] — NOT closed in full.** The card half closed on
+  4 SEP 2026 (V-2026-016, `0d71fc5`, verified at the live edge). The corpus half
+  is authored and gated but unmerged, so the shipped Navigator still answers in
+  the future tense. The tickler closes when `fa80e5d` reaches `main`, not when
+  it is written. The row above is marked STATUS accordingly.
+
+---
+
+## V-2026-017 — AMENDMENT, 4 SEP 2026 (preview verdict, merge, live-edge sweep)
+
+Supersedes three statements in [[V-2026-017]] above, each of which was true when
+written and is now overtaken: **PREVIEW VALIDATION: NOT PERFORMED**;
+**Disposition: STAGED … Not in production**; and **Tickler [[V-2026-009]] — NOT
+closed in full**. The entry body is left as written; this amendment carries the
+change.
+
+- **Merged:** `fa80e5d` reached `main` via merge commit `e33792c`. Netlify
+  production deploy `6a9ac67e03841e00086d10c4`, commit `e33792c`, state `ready`,
+  published 2026-09-04 13:24Z. Corpus (b) and RULE 16 are in production.
+
+### PREVIEW VALIDATION: PASS
+
+Performed by the Commander against the branch deploy
+`https://ops-v-2026-017-corpus-b-record--veteranbridge-tools.netlify.app`
+(deploy `6a9abd3cfd8ab300085987a7`, commit `e33792c`, `ready`, built
+2026-09-04 12:44Z) **before** the merge. Two questions, both PASS.
+
+- **Q1, RIF retention.** The answer led *"RETENTION PREFERENCE IN A RIF — IN
+  FORCE SINCE 2 SEPTEMBER 2026"* and stayed in the present tense throughout.
+  Ranking, preference points, and appeals content correct. The MSPB carve-out
+  was stated. The notice-date rule was flagged CRITICAL. The 6 AUG
+  performance-rating rule was kept separate with its own date — RULE 16's
+  NEVER BLEND THEM guardrail holding under live conditions, which is the
+  behaviour the guardrail exists to produce and the reason it was left standing.
+- **Q2, pending MSPB appeal.** Correctly stated that a pending case stays with
+  the Board, that the notice date decides the regime, and closed with a
+  confirm-your-notice-date next step. This is the exact question the C-6
+  carve-out was added to answer, and it could not have been answered before.
+
+### LIVE PRODUCTION VERIFICATION: PASS
+
+Run by the Orchestrator against `https://transitionops.org` after Netlify
+published `e33792c`. Independent of the S2 codeload sweep, and of the preview.
+
+- **Navigator corpus, read from the live edge** (`/netlify/functions/navigator.js`,
+  HTTP 200, 55,062 bytes): nine new anchors at **1** each, including
+  `are IN FORCE NOW as of 2 SEP 2026 — answer in the present tense`,
+  `IN FORCE since 2 SEP 2026`, `Appellate Jurisdiction Update II, RIN 3124-AA33`,
+  `public-inspection doc 2026-16456`, and
+  `Foreign Service RIF jurisdiction (22 U.S.C. 4010a)`. Seven retired strings at
+  **0** each, including `answer in the future tense`, `FUTURE LAW`, and
+  `not current law`.
+- **Preserved, verified live:** notice-date-controls clause **2** (both places);
+  `NEVER describe both in one undated present tense.` **1**;
+  `TWO OPM EFFECTIVE DATES — NEVER BLEND THEM` **1**.
+- **Card, re-confirmed unchanged:** `IN FORCE, 2 SEP 2026` **1**,
+  `future law, not current law` **0**, `sw.js` `transition-ops-v130`.
+- **Log entries live:** V-2026-016 **1**, V-2026-017 **1**. Navigator function
+  endpoint reachable (HTTP 405 on GET, POST-only).
+
+### OBSERVATION — candidate corpus clarification, NOT part of this action
+
+In the Q1 preview answer the Navigator glossed 3-point preference eligibility as
+*"service-connected disability of any percentage, or Purple Heart."* That is an
+elaboration beyond corpus text, which says only *"other preference eligibles 3,"*
+and it omits other preference-eligible categories under **5 U.S.C. 2108**. Ruled
+by the Commander as **not a defect and not part of this action**. Logged as a
+**candidate corpus clarification** for a future pass: enumerate the 5 U.S.C. 2108
+categories in CORPUS (b), or instruct the model not to enumerate them, so the
+answer stops narrowing the class on its own. No change made here, and no
+verification of the 2108 categories was performed for this entry.
+
+- **Disposition:** CLOSED. Both halves of the 2 SEP tickler shipped and verified.
+- **Tickler [[V-2026-009]]: CLOSED 4 SEP 2026.** The row above is flipped from
+  STATUS to CLOSED. Card closed via V-2026-016 (`0d71fc5`); corpus (b) and
+  RULE 16 closed via this amendment (`fa80e5d`, merged as `e33792c`).
+
+---
+
+## V-2026-018 — FEDVIP enrollment window + Gray Area Future Retiree rungs (STAGED)
+
+- **Claim:** The reminder ladder had no rung for the FEDVIP dental/vision
+  enrollment window (opens 31 days before a retirement date, closes 60 days
+  after, enrollment not automatic) and no rung for Guard/Reserve members
+  entering the gray area with 20 good years. Both are hard-deadline,
+  non-automatic actions with no in-app prompt.
+- **Rating:** CONFIRMED
+- **Sources:** as asserted in `intel/patch-2026-09-04-fedvip-gar-ladder.md`,
+  eleven claims marked VERIFIED by S2 on 4 SEP 2026 — benefeds.gov ABO FAQ and
+  FEDVIP Fact Sheet (OPM-sponsored, primary), myairforcebenefits.us.af.mil
+  (.mil), dfas.mil Gray Area Retirees guide (primary, updated Mar 2026),
+  Army Echoes Aug–Oct 2026 (DFAS Cleveland and TRICARE Communications bylines),
+  soldierforlife.army.mil Army Service Center, MOAA citing DFAS (Apr 2026),
+  tricare.mil/LifeEvents/QLE. Patch records no stays, injunctions, or pending
+  rule changes found on 4 SEP 2026.
+- **NOT RE-DERIVED FOR THIS ENTRY.** This record covers the *application* of the
+  patch, not its sourcing. No primary source was re-read during execution and no
+  URL was fetched. The CONFIRMED rating rests entirely on the S2 pass the patch
+  asserts. If that pass is not itself logged, this entry does not substitute
+  for it.
+- **Verified date:** 4 SEP 2026 (sources, per patch) / 4 SEP 2026 (edit evidence)
+- **Commit:** `0e93163` on `ops/fedvip-gar-ladder`, base `b405193` (main's tip).
+  Scope: `index.html` (+3), `sw.js` (1 line), and the patch file itself.
+  Three str_replace operations, no other changes.
+
+| # | Edit |
+|---|---|
+| OP 1 | `index.html` — inserted rungs `r-1-fedvip` (CRITICAL, BENEFITS, mo:1) and `r-1-gar` (HIGH, GUARD/RESERVE, mo:1) immediately after `r-1-final` |
+| OP 2 | `index.html` — inserted rung `r-p1-fedvip` (HIGH, BENEFITS, mo:-1) immediately after `r-p1`; TRICARE QLE 90-day period folded into this rung rather than given its own |
+| OP 3 | `sw.js` — `CACHE_NAME` `transition-ops-v130` → `transition-ops-v131` |
+
+- **Grep verdicts — pre-write:** the patch's three anchor assertions each
+  returned exactly 1 (`10x harder without base access`,
+  `bridge income depending on your state`, `transition-ops-v130`); abort was
+  armed on any other count. A fourth gate not called for by the patch was added:
+  each `old_str` had to occur exactly once in its target file — all three
+  returned 1, so no replacement target was ambiguous. Nothing was written until
+  all gates cleared.
+- **Grep verdicts — post-write:** presence `r-1-fedvip` 1, `r-1-gar` 1,
+  `r-p1-fedvip` 1, `transition-ops-v131` 1. Absence `transition-ops-v130` 0.
+  Ladder order confirmed by id sequence: `r-1-final` → `r-1-fedvip` → `r-1-gar`
+  → `r-0-ets`, and `r-p1` → `r-p1-fedvip` → `r-p4`.
+- **Escape integrity, proven not assumed:** the new rungs carry literal
+  `\u26A0\uFE0F` and `\u2014` sequences that had to survive as backslash escapes,
+  not glyphs. `old_str`/`new_str` were extracted programmatically from the patch
+  file rather than retyped, so no transcription path existed. Witness: literal
+  `\u26A0` 20 → 21 (+1, the one new title), real `⚠️` character 1 → 1
+  (unchanged — nothing was converted). Per-op `\u` delta was computed from the
+  strings themselves and re-checked against the actual file delta after each
+  write, aborting on mismatch. Delimiters balanced: `{`/`}` +2/+2 and +1/+1,
+  `[`/`]` likewise, quote deltas even (54, 20).
+- **Syntax:** `node --check sw.js` OK. All three inline `<script>` blocks in
+  `index.html` parse clean and parse *identically* before and after the edit
+  (plain JS, no JSX/Babel, so this is a true parse test, not a lint).
+- **Cache-name sequence — no live collision. Correcting an earlier claim in
+  this session.** A survey of `CACHE_NAME` at every local and remote branch tip
+  shows **no branch but this one holds `transition-ops-v131`**. The string
+  appears only inside the *history* of `ops/openai-parallel-clone`: `cfa5f52`
+  (30 AUG 2026) bumped v130→v131, `93b3545` moved v131→v132, the branch climbed
+  to v140, and `4377a6b` "Correct service-worker cache sequence" (31 AUG 2026)
+  wound it back to **v130**, where its tip sits today. An earlier `git log -S`
+  probe returned "2 commits" for v131 and was reported as a live claim on that
+  name; that was wrong. `-S` counts commits where a string's occurrence count
+  *changed*, so it matched the commit that created v131 and the one that removed
+  it, neither of which is reachable as a value at the tip.
+- **The real cache exposure, which that error obscured.**
+  `ops/openai-parallel-clone` is unmerged, **61 commits ahead of main**, and its
+  tip `CACHE_NAME` is `transition-ops-v130` — *identical to main's*. Merging it
+  as-is ships no cache bump at all, so returning users keep a stale service
+  worker. Merging it after this branch would additionally regress v131 → v130.
+  This branch's own v130 → v131 bump is correct against main and is unaffected.
+  Merge order and a re-bump on `ops/openai-parallel-clone` need a Commander
+  ruling.
+- **PREVIEW VALIDATION: NOT PERFORMED.** Commit `0e93163` is local only and was
+  not pushed. No `origin/ops/fedvip-gar-ladder` ref exists, so Netlify has never
+  built an artifact containing these rungs and no branch deploy of them can have
+  been exercised. Static checks prove structure and encoding, never render.
+- **Rungs render but do not fire.** Per the patch's own note, the in-app
+  ETS-triggered local alert channel remains INERT — these rungs appear on the
+  timeline and will not produce a notification until that channel is fixed
+  (same gate as `ops/vgli-tail-reminders`). A member who does not open the app
+  gets nothing.
+- **Anchor caveat carried forward:** rungs are anchored to the member's
+  separation date, which equals the retirement date for retirees. No separate
+  retirement-date anchor was built. Design ruling remains open if the two ever
+  need to diverge.
+- **member-impact: NOT RUN.** The skill requires a SHIP/DECLINE assessment after
+  a CONFIRMED rating and before copy is drafted. The patch carries source
+  verification but no member-impact section, and none was performed during
+  execution. Owed before merge.
+- **Disposition:** STAGED, COMMANDER lane (benefits content + deploy pipeline),
+  unmerged, unpushed. Not in production. `main` remains at `b405193` and
+  contains zero of these ids.
+- **Execution incident, recorded for the pattern:** the three edits sat
+  uncommitted across a session boundary. GitHub Desktop auto-stashed them on a
+  branch switch (`stash@{0}: On ops/fedvip-gar-ladder: !!GitHub_Desktop`) and
+  left HEAD on `main` with a clean tree, which reads as total loss on first
+  inspection. Recovered whole from the stash and verified byte-identical by the
+  escape and delimiter witnesses above. This is the third GitHub_Desktop stash
+  of this shape in the log's recent history. **Standing correction: agent work
+  gets committed to its branch in the same session it is written, never left
+  uncommitted for a later turn.**
