@@ -111,6 +111,13 @@
 html,body,#root{height:100%;width:100%;margin:0;padding:0}
 body{background:var(--t-bg);font-family:"Courier Prime","Courier New",monospace;color:var(--t-body-text);-webkit-font-smoothing:antialiased}
 #root{width:100%;max-width:100%}
+html{scroll-padding-bottom:calc(var(--tops-nav-height,64px) + 12px)}
+/* Compact screens keep support controls in document flow, clear of plan actions. */
+@media(max-width:1200px),(max-height:500px){
+  .tops-ask-launcher,.tops-feedback-launcher{position:static!important;width:fit-content;max-width:100%}
+  .tops-ask-launcher{margin:0 0 12px}
+  .tops-feedback-launcher{margin:0 14px 12px auto}
+}
 :focus{outline:3px solid #E8C547!important;outline-offset:2px}
 :focus-visible{position:relative;z-index:400}
 input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px #E8C547!important}
@@ -3784,6 +3791,7 @@ const FEEDBACK_EMAIL = "dean@veteranbridgesolutions.com";
 function FeedbackFAB(props) {
   const C = props.C;
   return /*#__PURE__*/React.createElement("button", {
+    className: "tops-feedback-launcher",
     onClick: props.onClick,
     title: "Send feedback to Dean",
     style: {
@@ -6096,7 +6104,10 @@ function App() {
     var nav = document.querySelector(".bottom-nav");
     if (!nav) return;
     var measure = function () {
-      if (nav.offsetHeight > 0) setCaptureNavH(nav.offsetHeight);
+      if (nav.offsetHeight > 0) {
+        setCaptureNavH(nav.offsetHeight);
+        document.documentElement.style.setProperty("--tops-nav-height", nav.offsetHeight + "px");
+      }
     };
     measure();
     var observer = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : null;
@@ -6109,6 +6120,35 @@ function App() {
       window.removeEventListener("orientationchange", measure);
     };
   }, [showOnboarding]);
+
+  // Keep keyboard and route focus clear after reflow and viewport changes.
+  useEffect(function() {
+    var frame;
+    function keepFocusVisible() {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(function() {
+        var target = document.activeElement;
+        if (!target || !target.closest("main,.tops-feedback-launcher")) return;
+        for (var parent = target; parent && parent !== document.body; parent = parent.parentElement) {
+          if (getComputedStyle(parent).position === "fixed") return;
+        }
+        var header = document.querySelector(".tops-app-header");
+        var nav = document.querySelector(".bottom-nav");
+        var top = header ? Math.max(0, header.getBoundingClientRect().bottom) + 8 : 8;
+        var bottom = nav ? nav.getBoundingClientRect().top - 12 : window.innerHeight - 12;
+        var rect = target.getBoundingClientRect();
+        if (rect.top < top) window.scrollBy(0, rect.top - top);
+        else if (rect.bottom > bottom) window.scrollBy(0, Math.min(rect.bottom - bottom, rect.top - top));
+      });
+    }
+    document.addEventListener("focusin", keepFocusVisible);
+    window.addEventListener("resize", keepFocusVisible);
+    return function() {
+      cancelAnimationFrame(frame);
+      document.removeEventListener("focusin", keepFocusVisible);
+      window.removeEventListener("resize", keepFocusVisible);
+    };
+  }, []);
 
   const handleCaptureInstall = useCallback(() => {
     if (window.__trackEvent) window.__trackEvent("capture_install_native", {});
@@ -6830,6 +6870,7 @@ function App() {
         )
       )
     ), renderCaptureCard(), /*#__PURE__*/React.createElement("div", {
+    className: "tops-app-header",
     style: {
       background: theme === "tactical" ? C.bg : "linear-gradient(180deg, #2C5234 0%, #1A3A24 100%)",
       borderBottom: theme === "tactical" ? "1px solid " + C.border : "3px solid #2C5234",
@@ -7118,7 +7159,7 @@ function App() {
     React.createElement("div", { style: { display: "flex", gap: 8 } },
       React.createElement("input", { value: navInput, onChange: function(e){ setNavInput(e.target.value); }, onKeyDown: function(e){ if (e.key === "Enter") sendNavigator(); }, "aria-label": "Ask the Transition Navigator", placeholder: "Ask about your transition\u2026", style: { flex: 1, minWidth: 0, minHeight: 44, background: "#1A2114", border: "1px solid #4A5A35", borderRadius: 8, color: "#F2EFE4", caretColor: "#E8C547", fontWeight: 600, padding: 12, fontSize: 16, fontFamily: "inherit", WebkitTextFillColor: "#F2EFE4", opacity: 1 } }),
       React.createElement("button", { type: "button", disabled: navBusy || !navInput.trim(), onClick: function(){ sendNavigator(); }, "aria-label": "Send Navigator question", style: { minHeight: 44, background: C.goldBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: navBusy || !navInput.trim() ? "default" : "pointer", opacity: navBusy || !navInput.trim() ? 0.5 : 1 } }, "SEND"))),
-  navUnlocked && activeTab !== "navigator" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: "#0E120B", borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
+  navUnlocked && activeTab !== "navigator" && /*#__PURE__*/React.createElement("div", { className: "tops-ask-launcher", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: "#0E120B", borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
   navUnlocked && activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { ...S.card, padding: 14, borderColor: C.gold, cursor: "pointer", marginBottom: 12 } },
     React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: C.goldBright, letterSpacing: 1, marginBottom: 4 } }, "\u2726 ASK THE NAVIGATOR"),
     React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "Not sure what to do next? Tell it your situation \u2014 it sequences your moves from this app\u2019s verified content and routes you to humans.")),
