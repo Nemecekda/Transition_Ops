@@ -1,16 +1,21 @@
 # Combined-app preview handoff
 
-> **Status note added 2026-09-08.** The body below is the 2026-09-07 record for
-> candidate `07a1d3b` on `codex/openai-weekend-integration`. That branch has
-> since been merged into `ops/openai-parallel-clone`, which is now at
-> `1803e511ff3d7001e15d41ff35465a1786657882`. The federal Resume blocker
-> described in the 2026-09-07 scratchpad status record is resolved and
-> hosted-tested at `7c79057`. Current candidate identity, the runtime delta
-> between `7c79057` and the tip, the two-origin cache measurements, and the
-> remaining pending items are in
-> [intel/openai-release-status-2026-09-08.md](openai-release-status-2026-09-08.md).
-> Nothing below is retracted; the steps below refer to their own candidate and
-> are historical.
+> **Status note corrected 2026-09-08.** The body below remains the historical
+> 2026-09-07 record for07a1d3b. Published runtime is1803e511 (v156); the later
+> local documentation wrapper6a59611 is two unpublished commits ahead with
+> identical runtime. Fetch the latest published clone before future edits;
+> these are dated snapshots, not permanent baseline instructions.
+> Federal success at 7c79057 is preserved. Current 1803 complete 22+1 manifests,
+> all three operational dist logs, scoped Resume/Privacy USER-REPORTED PASS,
+> 12 pre-provider rejections, and unapplied1803-bound v157 recovery are recorded
+> in [current status](openai-release-status-2026-09-08.md) and the
+> [durable evidence summary](openai-release-evidence-2026-09-08.md).
+> Parent's 2026-09-08 disposition resolves row29 accounting by intentionally
+> superseding detailed telemetry with the approved literal-marker privacy
+> implementation; the dynamic feature was not ported and no rule was waived.
+> Historical blockers/steps below are not current instructions or new rerun
+> requirements. Full AT, provider/package limits and production acceptance
+> remain separately unresolved as stated in the current record.
 
 
 2026-09-07. PREVIEW WARRANTED: the integration changes app content, date

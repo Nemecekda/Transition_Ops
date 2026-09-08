@@ -1,7 +1,10 @@
 # OpenAI release status - 2026-09-08
 
-Readiness record for the current `ops/openai-parallel-clone` tip. This is not
-production clearance and not a merge or deploy authorization.
+Readiness record for published runtime `1803e51` and the subsequent local
+documentation wrapper `6a59611`. This is not production clearance and not a
+merge or deploy authorization. The local wrapper preserves the exact runtime.
+The dated identities below are snapshots; fetch the latest published clone
+before future edits and preserve any concurrent local work.
 
 This record supersedes the local untracked file
 `scratchpad/openai-release-status-2026-09-07.md`, which describes the earlier
@@ -16,17 +19,26 @@ changed to write it. No push, no merge to `main`, no deploy.
 ## Candidate identity
 
 - Repository: https://github.com/Nemecekda/Transition_Ops
-- Branch: `ops/openai-parallel-clone`
-- Commit: `1803e511ff3d7001e15d41ff35465a1786657882`
-- Tree: `b015baa4b44fe19472326b980a824ca9bbae7936`
-- Authored: 2026-09-08T10:04:39-05:00
-- Position vs published main `d82516389ed5906febad467cfe57887acda97053`:
-  83 commits ahead, 0 behind.
+- Published clone/runtime: `1803e511ff3d7001e15d41ff35465a1786657882`;
+  tree `b015baa4b44fe19472326b980a824ca9bbae7936`, active PWA cache v156.
+- PR65 merged at 2026-09-08T15:04:40Z; its commit timestamp is 15:04:39Z.
+- Local clone documentation wrapper at review:
+  `6a596112d769b4ecdd1d24afb76583f8b8b36920`, tree
+  `73b9a9ae0e31d6adfb8f4b2e03b0a2352a99805b`. It retains Claude's documentation
+  commit `8e149936e20ed2a750d045a8ba8534a64bea78ee` and local no-ff merge.
+- Measured against main `d82516389ed5906febad467cfe57887acda97053`:
+  published runtime 83 ahead / 0 behind; local wrapper 85 ahead / 0 behind.
+  Local wrapper is 2 ahead / 0 behind the published clone, unpublished at review.
+- Full `1803..6a59611` diff contains only this record and the dated header in
+  `intel/weekend-preview-handoff.md`. Runtime, functions, worker, packages,
+  tests and deployment configuration are byte-identical; full Git trees differ
+  because of the documentation. No new cache integer is needed for these records.
 
-Remote freshness: `git ls-remote origin` at 2026-09-08T15:49Z returned
-`1803e51...` for `refs/heads/ops/openai-parallel-clone` and `d825163...` for
-`refs/heads/main`. Local refs equal origin at that moment. This is a
-point-in-time read, not a guarantee against later pushes.
+Claude's original `git ls-remote` read at 2026-09-08T15:49Z reported published
+clone 1803/main d825. This review independently refreshed all published heads
+through the authenticated GitHub connector and an isolated read-only fetch;
+both still agree. Shared refs/index/stashes were not changed by this review.
+See [durable evidence summary](openai-release-evidence-2026-09-08.md).
 
 File digests at the candidate (SHA-256):
 
@@ -34,7 +46,7 @@ File digests at the candidate (SHA-256):
 | --- | --- |
 | `index.html` | `b8b653776e7182afa9c09f7909869752a8c8a2a887ee2393d3148eec41cef27e` |
 | `pwa-sw.js` | `fdbab32cb6e0e8ab009c1ff35e2046acf90b8c4d80b659676204f270eea8a8dc` |
-| `sw.js` (legacy, unregistered) | `45a4f093d7a19d4403cdaa5da0e6d6ae0a7ae497080fe92694046be789108d32` |
+| `sw.js` (legacy; not registered by current app) | `45a4f093d7a19d4403cdaa5da0e6d6ae0a7ae497080fe92694046be789108d32` |
 | `netlify/functions/resume.mjs` | `9f14ef2c219fb856682d832f4225759d8e098d5ad12f9e3dfde131f12f3f8085` |
 
 ## Corrections to the 2026-09-07 record
@@ -44,12 +56,15 @@ File digests at the candidate (SHA-256):
    a reproduced eligibility-filter defect dropping all 12 supplied role
    date/location facts, and two fixes "awaiting Dean's approval". Both fixes
    landed and were hosted-tested. See "Federal Resume" below.
-2. **The candidate has advanced.** `7948cac` is an ancestor of the current tip;
-   19 further commits have landed since.
-3. **The cache and served-origin picture is now measured on both origins.** The
-   09-07 line "Current active worker pwa-sw.js is v152, SHA-256 0f2499c3..."
-   is confirmed to describe the *preview* origin, not production. See
-   "Service worker and cache ledger".
+2. **The candidate has advanced.** From `7948cac`, measured `git rev-list`
+   counts are 19 commits to published runtime `1803e51` and 21 to local
+   documentation wrapper `6a59611`. The final two commits are local and
+   unpublished; they are not additional published runtime work.
+3. **The older v152 preview is historical.** The 09-07 worker line matches
+   immutable `7c79057` preview `6a9f25af9495300009430de3`; it is not current
+   PR65/PR46 preview evidence. The exact current runtime is v156, with complete
+   manifests and operational publish logs on all three named 1803 deployments.
+   See "Service worker and cache ledger".
 
 ## Federal Resume - blocker resolved
 
@@ -95,69 +110,119 @@ federal PASS was executed at `7c79057`, which is **not** the candidate.
 | `pwa-sw.js` | Cache constant only, `transition-ops-v152` -> `transition-ops-v156`. |
 | `scripts/accessibility-release-regression.js` | Test-side changes accompanying all three of `01ecad8`, `2808d8f`, `117dd58`. |
 
-Consequence, stated plainly: the server-side Resume implementation that produced
-the hosted federal PASS is byte-identical at this candidate, so that evidence
-carries forward for the function. The browser-side code does **not** carry
-forward unchanged - three accessibility/layout commits have since touched
-`index.html`, two of them in the Resume and Privacy surfaces. The hosted federal
-run has not been repeated at `1803e51`.
+The Resume function source is unchanged, while the browser changes listed
+above are real. The federal generation/trace/export PASS remains evidence of
+the specific7c79057 run; it is not relabeled as a new1803 generation. The later
+Resume function-bundle digest differs from the older tested bundle, with cause
+unestablished. Source identity alone does not prove package/execution identity
+or actual provider/repair counts.
+
+The three frontend changes already have their relevant local/hosted checks and
+the explicitly scoped user AT results recorded below. Their existence does not
+create a new mandatory federal generation rerun. No already passed test is
+repeated for these documentation-only commits. Full AT and backend/package
+evidence limits remain separate.
 
 ## Service worker and cache ledger
+Current evidence is bound to runtime 1803; the local 6a59611 documentation
+wrapper is not represented as a hosted deployment. Authenticated exact-deploy
+API manifests each contain **22 runtime records plus one separate netlify.toml
+control-plane record**, all path/size/SHA-1 matched to 1803. Parent Codex/XO
+independently observed each exact Netlify UI log resolving effective publish
+directory `dist`, `/opt/build/repo`, `/opt/build/repo/netlify.toml`, and
+`PUBLIC BUILD PASS: 22 files -> dist`. The subordinate did not view that UI.
 
-Measured 2026-09-08T15:49Z by direct HTTP read.
+| Deployment at 1803 | Exact deploy ID | Result |
+| --- | --- | --- |
+| Clone published | `6aa0240afb7cab0008ec684a` | Complete22+1 manifest and operational dist PASS |
+| Clone PR46 preview | `6aa0240dfb7cab0008ec684f` | Complete22+1 manifest and operational dist PASS |
+| Veteranbridge PR46 preview | `6aa0240c6ac17c0008850ed5` | Complete22+1 manifest and operational dist PASS |
 
-| Origin | Path | HTTP | Cache constant | SHA-256 (first 16) |
-| --- | --- | --- | --- | --- |
-| transitionops.org (production) | `/sw.js` | 200 | `transition-ops-v135` | `f2df1564491dea3d` |
-| transitionops.org (production) | `/pwa-sw.js` | 404 | n/a | n/a |
-| `6a9f25af9495300009430de3--veteranbridge-tools.netlify.app` (preview) | `/pwa-sw.js` | 200 | `transition-ops-v152` | `0f2499c307702a35` |
+Use the [exact veteranbridge preview](https://6aa0240c6ac17c0008850ed5--veteranbridge-tools.netlify.app/).
+Its public index and active `/pwa-sw.js` bytes match1803, with v156 and the
+digests above. The clone canonical public worker request returned401; the
+authenticated manifest passed. Do not hide that access limit. Real production
+remains deploy `6a9c073e97694a000737014e` at main d825 with active `/sw.js` v135.
 
-Findings:
+The full available-history ledger plus final metadata delta found no unresolved
+new owner or differing-byte cache156 reuse: main origin high135, clone 156,
+all recorded relevant contexts156. Deleted/unreturned history is unobservable.
+The older immutable7c79057 preview still serving v152 is expected historical
+evidence, not the current preview or the clone high-water mark.
 
-- The production origin's served `/sw.js` is **byte-identical to `main:sw.js`**
-  (`f2df1564491dea3d61a8ff6458e925bb11b677038f321c1e594388db47279572`). The
-  production served-origin high-water is therefore `v135`, matching main.
-- The preview digest `0f2499c3...` matches the value recorded on 2026-09-07,
-  and matches `7c79057:pwa-sw.js` at `v152`. That record's worker line
-  describes the preview origin.
-- The candidate registers `/pwa-sw.js` (scope `/`, `updateViaCache: "none"`) at
-  `index.html:454`; nothing in `index.html` references `/sw.js`. Main registers
-  `/sw.js`.
-- The candidate still ships a legacy root `sw.js` whose constant is
-  `transition-ops-v130`, i.e. *lower* than the `v135` currently active in
-  production browsers. Registering `/pwa-sw.js` at scope `/` replaces the prior
-  root registration, so this file is expected to be unreferenced after a
-  migrated load. Recorded as an observation to resolve before production
-  cutover, not as a demonstrated failure; no cutover behavior was executed.
+Current app registers only `/pwa-sw.js`, scope `/`, `updateViaCache: "none"`.
+Retained `/sw.js` v130 is the approved legacy compatibility file for existing
+registrations; current app does not register it. Its integer is not the active
+candidate integer. Preserve it byte-identically under the existing migration
+rules; no new v130 rewrite/decision gate follows from comparing it to main 135.
+Production cohort/cutover/sunset requirements remain as already specified by
+deploy-discipline, not newly demonstrated legacy-device behavior.
 
-Cache constants across the candidate's recent history, for the ledger:
-`7c79057` v152 -> `01ecad8` v153 -> `2808d8f` v155 -> `117dd58` v156. `v154` is
-not used by any commit on this branch. Monotonic increase holds; the skipped
-number is noted for completeness.
+Active history: 7c79057 v152 -> 01ecad8 v153 -> 2808d8f v155 -> 117dd58/1803 v156.
+Emergency 154 was prepared only for 1822 and never applied. A new **v157 recovery
+artifact bound exactly to 1803** now passed applicability/result-tree, protected
+hashes, required local gates and cleanup; it remains unapplied. It intentionally
+removes app offline caching if separately used.157 is proposed, not reserved.
+Its 1803 binding does not certify the later6a59611 documentation tree or any
+future candidate: rebind after the eventual release candidate is frozen per the
+existing rule. No recovery rework/application is part of this documentation fix.
 
-No cache bump is triggered by this record, which changes no shipped asset.
+## Completed scoped accessibility and shared-work accounting
+
+- Parent hosted native Safari on the exact 1803 veteranbridge preview: footer
+  visible; pointer opens About with Close focused; Tab/Shift/Option variants
+  contained; Escape returns Privacy. Parent UI observation, not speech evidence.
+- Dean's exact Mac Safari/VoiceOver Privacy reply: **"Yes, all of those work."**
+  **USER-REPORTED PASS** for the named About/Close announcements, Tab/Shift+Tab
+  containment, Escape closure and return to footer Privacy. macOS Tahoe 26.5.2;
+  Safari 26.5.2 (21624.2.5.11.8); separately identified VoiceOver version unknown.
+- Prior Resume **USER-REPORTED PASS**: Mac both formats initial empty-submission
+  speech/focus, repeat announcement and moved-focus retention. iPhone both
+  formats initial spoken empty-submission error only; iOS 26.6.1 reported.
+  No iPhone focus/repeat/moved-focus or Privacy result is inferred.
+- The full manual AT matrix remains incomplete. These exact completed flows
+  need no repeat without relevant change; they do not pass a whole browser row.
+- `codex/alert-verification-followup` c395 is nonancestor but already selectively
+  preserved inactive: seven exact helpers, notifier with explicit push-OFF guard,
+  seven evidence/test files with two test-only fixture adaptations. It is not
+  missing work merely because its tip was not merged. The older April branch
+  is also accounted for by preservation/supersession; no new policy import.
+- **Row29 accounting resolved by parent disposition, 2026-09-08:** retain the
+  approved closed literal-marker logging. Former dynamic per-invocation
+  Navigator telemetry is intentionally superseded, not ported. Parent cites
+  PR58's approved description excluding detailed logging. Historical records
+  remain unchanged; this is not a privacy waiver or runtime/governance change.
+
+Durable provenance, deployment URLs, source hashes and evidence limits are in
+[openai-release-evidence-2026-09-08.md](openai-release-evidence-2026-09-08.md).
 
 ## Still pending before production release
+- Remaining full manual AT coverage: Safari/VoiceOver, Chrome/NVDA, Edge/JAWS,
+  Android Chrome/TalkBack. Preserve the narrow passes above; unavailable is not PASS.
+- Actual hosted provider-timeout/budget-denial/status coverage and provider/repair
+  counts remain unverified, as does the older-vs-later Resume package difference.
+  **12/12 pre-provider hosted rejection cases already passed** for Navigator and
+  Resume; do not reduce that history to the old422/200 generation pair.
+- Full phone export layout/content and named phone app remain unverified;
+  phone opening is confirmed. Microsoft Word itself was not the desktop renderer.
+  Inspect the existing artifact rather than regenerate it solely for this check.
+- Release-specific source currency, existing cohort/cutover requirements, final
+  origin review and Dean's explicit main/release decision remain separate.
+- Rebind the prepared recovery only when the eventual release candidate is
+  frozen if it differs from 1803; its current applicability PASS is exact to 1803.
 
-Unchanged from the 09-07 record except where noted:
-
-- Manual assistive-technology matrix: Safari/VoiceOver, Chrome/NVDA, Edge/JAWS,
-  Android Chrome/TalkBack. PENDING. Ordinary phone use does not substitute.
-- Hosted acceptance re-run at the candidate `1803e51`, covering at minimum the
-  three `index.html` changes made since `7c79057` in the Resume and Privacy
-  surfaces. NEW requirement, created by those commits.
-- Actual provider-call telemetry. UNVERIFIED; no provider telemetry is
-  reachable through the enabled read connector.
-- Independent effective hosted build-configuration evidence.
-- Broader hosted failure-path coverage beyond the one observed 422 and the one
-  observed 200.
-- Legacy root `sw.js` v130 disposition at cutover (see above).
-- Final release and origin review, and Dean's merge decision.
+An optional page-level synthetic failure helper is not a new gate or prerequisite.
+It requires a separately supported test harness: available CUA browser evaluate
+is read-only DOM only and cannot install or invoke a fetch override. It remains
+unexecuted and would not prove actual backend/provider behavior.
 
 ## What this record does not claim
 
-It does not claim production clearance, a ten-PASS federal result, hosted
-evidence at the candidate commit, manual AT clearance, an exhaustive historical
-cache ledger, or that any preview URL cited here will remain live. It does not
-relabel prior local suite evidence as hosted or manual evidence. Deploy
-identities recorded here are the ones read at the times stated.
+No production clearance, ten-PASS federal result, new federal generation at 1803,
+full manual AT clearance, actual provider/repair counts, or observed execution of
+unavailable historical deployments is claimed. Existing exact 1803 hosted
+identity, operational logs and narrow user-reported flows remain valid evidence
+of their stated scope. Local6a59611 has the same runtime but a different full
+documentation tree; it is not falsely identified as a hosted deploy or as the
+candidate bound by the 1803 recovery patch. No push/main merge/deployment or
+runtime/skill/account change is authorized by this record.
