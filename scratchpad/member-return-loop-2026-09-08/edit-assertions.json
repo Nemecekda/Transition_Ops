@@ -1,0 +1,121 @@
+[
+  {
+    "edit": "1a checklist hydration helpers",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 1,
+    "old_expected_after": 1
+  },
+  {
+    "edit": "1b hydrate tasks before first save",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0,
+    "old_expected_after": 0
+  },
+  {
+    "edit": "1c hydrate docs before first save",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0,
+    "old_expected_after": 0
+  },
+  {
+    "edit": "1d remove whole-array restore and isolate notification JSON",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0,
+    "old_expected_after": 0
+  },
+  {
+    "edit": "2a continuation route focus",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 1,
+    "old_expected_after": 1
+  },
+  {
+    "edit": "2b Home current partial selection",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 1,
+    "old_expected_after": 1
+  },
+  {
+    "edit": "2c compact Home continuation card",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 1,
+    "old_expected_after": 1
+  },
+  {
+    "edit": "3a Timeline stat native",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0,
+    "old_expected_after": 0
+  },
+  {
+    "edit": "3b Readiness stat native",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0,
+    "old_expected_after": 0
+  },
+  {
+    "edit": "3c Next Action native exact route",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0,
+    "old_expected_after": 0
+  },
+  {
+    "edit": "3d Timeline focus target",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0,
+    "old_expected_after": 0
+  },
+  {
+    "edit": "3e Milestone focus target",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0,
+    "old_expected_after": 0
+  },
+  {
+    "edit": "3f Document focus target",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 1,
+    "old_expected_after": 1
+  },
+  {
+    "edit": "3g Readiness focus target",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0,
+    "old_expected_after": 0
+  },
+  {
+    "edit": "3h Exact reminder native focus target",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0,
+    "old_expected_after": 0
+  },
+  {
+    "edit": "4a release-note version",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0,
+    "old_expected_after": 0
+  },
+  {
+    "edit": "4b implemented release note",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 1,
+    "old_expected_after": 1
+  }
+]

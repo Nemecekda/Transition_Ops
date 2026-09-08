@@ -1,0 +1,17 @@
+[
+  {
+    "command": "npm run test:openai-migration",
+    "exit": 0,
+    "log": "openai-migration.log"
+  },
+  {
+    "command": "npm run test:sw-privacy",
+    "exit": 0,
+    "log": "sw-privacy.log"
+  },
+  {
+    "command": "npm run test:privacy-network",
+    "exit": 1,
+    "log": "privacy-network.log"
+  }
+]

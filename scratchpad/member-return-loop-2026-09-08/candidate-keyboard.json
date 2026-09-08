@@ -1,0 +1,3046 @@
+{
+  "mode": "candidate",
+  "modality": "keyboard",
+  "fixtureSha256": "59e94221f93c56ba8186de3cf162e018bbf65712f1a912f57433642a8944b9dc",
+  "indexSha256": "494903fa373b112c99c8405fddae61d15d6ee9fb9c97fdd6164dcb69785ee4b0",
+  "clock": "2026-09-08T15:00:00.000Z",
+  "timezone": "America/Chicago",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "started": "2026-09-08T17:09:57.777Z",
+  "episodes": [
+    {
+      "id": "U1",
+      "steps": [
+        {
+          "label": "[data-continue-plan=\"milestone\"]",
+          "navigation": true,
+          "x": 110,
+          "y": 421.578125,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Continue: 18 Months Out",
+          "hit": true
+        },
+        {
+          "label": "Review military service records for accuracy (OMPF)",
+          "navigation": false,
+          "x": 195,
+          "y": 421.609375,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Review military service records for accuracy (OMPF)",
+          "hit": true
+        },
+        {
+          "label": "HOME",
+          "navigation": false,
+          "x": 243.15625,
+          "y": 88.1875,
+          "scrolled": false,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "HOME",
+          "hit": true
+        }
+      ],
+      "activations": 1,
+      "status": "PASS",
+      "initialCounts": {
+        "tasks": 8,
+        "documents": 0
+      },
+      "expectedFinal": {
+        "milestones": [
+          [
+            1,
+            [
+              [
+                "t1",
+                true
+              ],
+              [
+                "t2",
+                true
+              ],
+              [
+                "t1b",
+                true
+              ],
+              [
+                "t1c",
+                true
+              ],
+              [
+                "t1d",
+                true
+              ],
+              [
+                "t3",
+                true
+              ],
+              [
+                "t4",
+                true
+              ],
+              [
+                "t5",
+                true
+              ],
+              [
+                "t1e",
+                true
+              ]
+            ]
+          ],
+          [
+            2,
+            [
+              [
+                "t6",
+                false
+              ],
+              [
+                "t7",
+                false
+              ],
+              [
+                "t7b",
+                false
+              ],
+              [
+                "t8",
+                false
+              ],
+              [
+                "t9",
+                false
+              ],
+              [
+                "t10",
+                false
+              ],
+              [
+                "t11",
+                false
+              ]
+            ]
+          ],
+          [
+            3,
+            [
+              [
+                "t12",
+                false
+              ],
+              [
+                "t12b",
+                false
+              ],
+              [
+                "t13",
+                false
+              ],
+              [
+                "t14",
+                false
+              ],
+              [
+                "t14b",
+                false
+              ],
+              [
+                "t15",
+                false
+              ],
+              [
+                "t15b",
+                false
+              ],
+              [
+                "t15c",
+                false
+              ],
+              [
+                "t16",
+                false
+              ]
+            ]
+          ],
+          [
+            4,
+            [
+              [
+                "t17a",
+                false
+              ],
+              [
+                "t17b",
+                false
+              ],
+              [
+                "t17c",
+                false
+              ],
+              [
+                "t17",
+                false
+              ],
+              [
+                "t18",
+                false
+              ],
+              [
+                "t19",
+                false
+              ],
+              [
+                "t20",
+                false
+              ],
+              [
+                "t21",
+                false
+              ],
+              [
+                "t22",
+                false
+              ]
+            ]
+          ],
+          [
+            5,
+            [
+              [
+                "t23",
+                false
+              ],
+              [
+                "t24",
+                false
+              ],
+              [
+                "t25",
+                false
+              ],
+              [
+                "t26",
+                false
+              ],
+              [
+                "t27",
+                false
+              ],
+              [
+                "t28",
+                false
+              ]
+            ]
+          ],
+          [
+            6,
+            [
+              [
+                "t29",
+                false
+              ],
+              [
+                "t30",
+                false
+              ],
+              [
+                "t31",
+                false
+              ],
+              [
+                "t32",
+                false
+              ],
+              [
+                "t33",
+                false
+              ],
+              [
+                "t34",
+                false
+              ]
+            ]
+          ],
+          [
+            7,
+            [
+              [
+                "t35",
+                false
+              ],
+              [
+                "t36",
+                false
+              ],
+              [
+                "t37",
+                false
+              ],
+              [
+                "t38",
+                false
+              ],
+              [
+                "t39",
+                false
+              ],
+              [
+                "t40",
+                false
+              ],
+              [
+                "t41",
+                false
+              ],
+              [
+                "t42",
+                false
+              ],
+              [
+                "t43",
+                false
+              ],
+              [
+                "t44",
+                false
+              ]
+            ]
+          ]
+        ],
+        "documents": [
+          [
+            "d1",
+            false
+          ],
+          [
+            "d2",
+            false
+          ],
+          [
+            "d3",
+            false
+          ],
+          [
+            "d4",
+            false
+          ],
+          [
+            "d5",
+            false
+          ],
+          [
+            "d6",
+            false
+          ],
+          [
+            "d7",
+            false
+          ],
+          [
+            "d8",
+            false
+          ],
+          [
+            "d9",
+            false
+          ],
+          [
+            "d10",
+            false
+          ],
+          [
+            "d11",
+            false
+          ],
+          [
+            "d12",
+            false
+          ]
+        ]
+      },
+      "firstMountWrites": [
+        {
+          "key": "taskProgress",
+          "valueSha256": "01444867ce4444c86889f21aac326ec43cf804148915578f78af9fe6751f9d8e"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "1fc24bafc40a4fe1f5d24ba6d75aea7c005883a217e63b68dd581bccd521c48a"
+        },
+        {
+          "key": "taskProgress",
+          "valueSha256": "01444867ce4444c86889f21aac326ec43cf804148915578f78af9fe6751f9d8e"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "1fc24bafc40a4fe1f5d24ba6d75aea7c005883a217e63b68dd581bccd521c48a"
+        }
+      ]
+    },
+    {
+      "id": "U2",
+      "steps": [
+        {
+          "label": "[data-continue-plan=\"milestone\"]",
+          "navigation": true,
+          "x": 110,
+          "y": 421.578125,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Continue: 18 Months Out",
+          "hit": true
+        },
+        {
+          "label": "Complete Individual Transition Plan (ITP) with commander",
+          "navigation": false,
+          "x": 195,
+          "y": 422.359375,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Complete Individual Transition Plan (ITP) with commander",
+          "hit": true
+        },
+        {
+          "label": "HOME",
+          "navigation": false,
+          "x": 243.15625,
+          "y": 88.1875,
+          "scrolled": false,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "HOME",
+          "hit": true
+        }
+      ],
+      "activations": 1,
+      "status": "PASS",
+      "initialCounts": {
+        "tasks": 1,
+        "documents": 0
+      },
+      "expectedFinal": {
+        "milestones": [
+          [
+            1,
+            [
+              [
+                "t1",
+                true
+              ],
+              [
+                "t2",
+                true
+              ],
+              [
+                "t1b",
+                false
+              ],
+              [
+                "t1c",
+                false
+              ],
+              [
+                "t1d",
+                false
+              ],
+              [
+                "t3",
+                false
+              ],
+              [
+                "t4",
+                false
+              ],
+              [
+                "t5",
+                false
+              ],
+              [
+                "t1e",
+                false
+              ]
+            ]
+          ],
+          [
+            2,
+            [
+              [
+                "t6",
+                false
+              ],
+              [
+                "t7",
+                false
+              ],
+              [
+                "t7b",
+                false
+              ],
+              [
+                "t8",
+                false
+              ],
+              [
+                "t9",
+                false
+              ],
+              [
+                "t10",
+                false
+              ],
+              [
+                "t11",
+                false
+              ]
+            ]
+          ],
+          [
+            3,
+            [
+              [
+                "t12",
+                false
+              ],
+              [
+                "t12b",
+                false
+              ],
+              [
+                "t13",
+                false
+              ],
+              [
+                "t14",
+                false
+              ],
+              [
+                "t14b",
+                false
+              ],
+              [
+                "t15",
+                false
+              ],
+              [
+                "t15b",
+                false
+              ],
+              [
+                "t15c",
+                false
+              ],
+              [
+                "t16",
+                false
+              ]
+            ]
+          ],
+          [
+            4,
+            [
+              [
+                "t17a",
+                false
+              ],
+              [
+                "t17b",
+                false
+              ],
+              [
+                "t17c",
+                false
+              ],
+              [
+                "t17",
+                false
+              ],
+              [
+                "t18",
+                false
+              ],
+              [
+                "t19",
+                false
+              ],
+              [
+                "t20",
+                false
+              ],
+              [
+                "t21",
+                false
+              ],
+              [
+                "t22",
+                false
+              ]
+            ]
+          ],
+          [
+            5,
+            [
+              [
+                "t23",
+                false
+              ],
+              [
+                "t24",
+                false
+              ],
+              [
+                "t25",
+                false
+              ],
+              [
+                "t26",
+                false
+              ],
+              [
+                "t27",
+                false
+              ],
+              [
+                "t28",
+                false
+              ]
+            ]
+          ],
+          [
+            6,
+            [
+              [
+                "t29",
+                false
+              ],
+              [
+                "t30",
+                false
+              ],
+              [
+                "t31",
+                false
+              ],
+              [
+                "t32",
+                false
+              ],
+              [
+                "t33",
+                false
+              ],
+              [
+                "t34",
+                false
+              ]
+            ]
+          ],
+          [
+            7,
+            [
+              [
+                "t35",
+                false
+              ],
+              [
+                "t36",
+                false
+              ],
+              [
+                "t37",
+                false
+              ],
+              [
+                "t38",
+                false
+              ],
+              [
+                "t39",
+                false
+              ],
+              [
+                "t40",
+                false
+              ],
+              [
+                "t41",
+                false
+              ],
+              [
+                "t42",
+                false
+              ],
+              [
+                "t43",
+                false
+              ],
+              [
+                "t44",
+                false
+              ]
+            ]
+          ]
+        ],
+        "documents": [
+          [
+            "d1",
+            false
+          ],
+          [
+            "d2",
+            false
+          ],
+          [
+            "d3",
+            false
+          ],
+          [
+            "d4",
+            false
+          ],
+          [
+            "d5",
+            false
+          ],
+          [
+            "d6",
+            false
+          ],
+          [
+            "d7",
+            false
+          ],
+          [
+            "d8",
+            false
+          ],
+          [
+            "d9",
+            false
+          ],
+          [
+            "d10",
+            false
+          ],
+          [
+            "d11",
+            false
+          ],
+          [
+            "d12",
+            false
+          ]
+        ]
+      },
+      "firstMountWrites": [
+        {
+          "key": "taskProgress",
+          "valueSha256": "79d091b875f30ee7d1338af8c0441de925610ee8ff0e291bb291a3a9bc16970c"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "1fc24bafc40a4fe1f5d24ba6d75aea7c005883a217e63b68dd581bccd521c48a"
+        },
+        {
+          "key": "taskProgress",
+          "valueSha256": "79d091b875f30ee7d1338af8c0441de925610ee8ff0e291bb291a3a9bc16970c"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "1fc24bafc40a4fe1f5d24ba6d75aea7c005883a217e63b68dd581bccd521c48a"
+        }
+      ]
+    },
+    {
+      "id": "U3",
+      "steps": [
+        {
+          "label": "[data-continue-plan=\"documents\"]",
+          "navigation": true,
+          "x": 280,
+          "y": 421.578125,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Continue documents",
+          "hit": true
+        },
+        {
+          "label": "Awards/Decoration Certificates",
+          "navigation": false,
+          "x": 195,
+          "y": 427.15625,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Awards/Decoration Certificates\nPhysical copies of all awards.",
+          "hit": true
+        },
+        {
+          "label": "HOME",
+          "navigation": false,
+          "x": 243.15625,
+          "y": 88.1875,
+          "scrolled": false,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "HOME",
+          "hit": true
+        }
+      ],
+      "activations": 1,
+      "status": "PASS",
+      "initialCounts": {
+        "tasks": 0,
+        "documents": 4
+      },
+      "expectedFinal": {
+        "milestones": [
+          [
+            1,
+            [
+              [
+                "t1",
+                false
+              ],
+              [
+                "t2",
+                false
+              ],
+              [
+                "t1b",
+                false
+              ],
+              [
+                "t1c",
+                false
+              ],
+              [
+                "t1d",
+                false
+              ],
+              [
+                "t3",
+                false
+              ],
+              [
+                "t4",
+                false
+              ],
+              [
+                "t5",
+                false
+              ],
+              [
+                "t1e",
+                false
+              ]
+            ]
+          ],
+          [
+            2,
+            [
+              [
+                "t6",
+                false
+              ],
+              [
+                "t7",
+                false
+              ],
+              [
+                "t7b",
+                false
+              ],
+              [
+                "t8",
+                false
+              ],
+              [
+                "t9",
+                false
+              ],
+              [
+                "t10",
+                false
+              ],
+              [
+                "t11",
+                false
+              ]
+            ]
+          ],
+          [
+            3,
+            [
+              [
+                "t12",
+                false
+              ],
+              [
+                "t12b",
+                false
+              ],
+              [
+                "t13",
+                false
+              ],
+              [
+                "t14",
+                false
+              ],
+              [
+                "t14b",
+                false
+              ],
+              [
+                "t15",
+                false
+              ],
+              [
+                "t15b",
+                false
+              ],
+              [
+                "t15c",
+                false
+              ],
+              [
+                "t16",
+                false
+              ]
+            ]
+          ],
+          [
+            4,
+            [
+              [
+                "t17a",
+                false
+              ],
+              [
+                "t17b",
+                false
+              ],
+              [
+                "t17c",
+                false
+              ],
+              [
+                "t17",
+                false
+              ],
+              [
+                "t18",
+                false
+              ],
+              [
+                "t19",
+                false
+              ],
+              [
+                "t20",
+                false
+              ],
+              [
+                "t21",
+                false
+              ],
+              [
+                "t22",
+                false
+              ]
+            ]
+          ],
+          [
+            5,
+            [
+              [
+                "t23",
+                false
+              ],
+              [
+                "t24",
+                false
+              ],
+              [
+                "t25",
+                false
+              ],
+              [
+                "t26",
+                false
+              ],
+              [
+                "t27",
+                false
+              ],
+              [
+                "t28",
+                false
+              ]
+            ]
+          ],
+          [
+            6,
+            [
+              [
+                "t29",
+                false
+              ],
+              [
+                "t30",
+                false
+              ],
+              [
+                "t31",
+                false
+              ],
+              [
+                "t32",
+                false
+              ],
+              [
+                "t33",
+                false
+              ],
+              [
+                "t34",
+                false
+              ]
+            ]
+          ],
+          [
+            7,
+            [
+              [
+                "t35",
+                false
+              ],
+              [
+                "t36",
+                false
+              ],
+              [
+                "t37",
+                false
+              ],
+              [
+                "t38",
+                false
+              ],
+              [
+                "t39",
+                false
+              ],
+              [
+                "t40",
+                false
+              ],
+              [
+                "t41",
+                false
+              ],
+              [
+                "t42",
+                false
+              ],
+              [
+                "t43",
+                false
+              ],
+              [
+                "t44",
+                false
+              ]
+            ]
+          ]
+        ],
+        "documents": [
+          [
+            "d1",
+            true
+          ],
+          [
+            "d2",
+            true
+          ],
+          [
+            "d3",
+            true
+          ],
+          [
+            "d4",
+            true
+          ],
+          [
+            "d5",
+            false
+          ],
+          [
+            "d6",
+            false
+          ],
+          [
+            "d7",
+            false
+          ],
+          [
+            "d8",
+            false
+          ],
+          [
+            "d9",
+            false
+          ],
+          [
+            "d10",
+            false
+          ],
+          [
+            "d11",
+            false
+          ],
+          [
+            "d12",
+            true
+          ]
+        ]
+      },
+      "firstMountWrites": [
+        {
+          "key": "taskProgress",
+          "valueSha256": "50daa568d0cf44f59124e14e8bbfd8f0daf92b78eeaf06d88fffc0793bfba042"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "bd4b4dc748e491558640f6b8cff151aca62b3c1fb9b1d9c1dbd30baddac219cb"
+        },
+        {
+          "key": "taskProgress",
+          "valueSha256": "50daa568d0cf44f59124e14e8bbfd8f0daf92b78eeaf06d88fffc0793bfba042"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "bd4b4dc748e491558640f6b8cff151aca62b3c1fb9b1d9c1dbd30baddac219cb"
+        }
+      ]
+    },
+    {
+      "id": "U4",
+      "steps": [
+        {
+          "label": "NEXT ACTION",
+          "navigation": true,
+          "x": 195,
+          "y": 422.078125,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "NEXT ACTION\nBegin Resume Development\nFIRST DRAFT COMPLETE NO LATER THAN 12 MONTHS OUT\n\u203a",
+          "hit": true
+        },
+        {
+          "label": "MARK COMPLETE",
+          "navigation": false,
+          "x": 95.8125,
+          "y": 421.546875,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "\u2713 MARK COMPLETE",
+          "hit": true
+        },
+        {
+          "label": "HOME",
+          "navigation": false,
+          "x": 243.15625,
+          "y": 155.265625,
+          "scrolled": false,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "HOME",
+          "hit": true
+        }
+      ],
+      "activations": 1,
+      "status": "PASS",
+      "initialCounts": {
+        "tasks": 56,
+        "documents": 12
+      },
+      "expectedFinal": {
+        "milestones": [
+          [
+            1,
+            [
+              [
+                "t1",
+                true
+              ],
+              [
+                "t2",
+                true
+              ],
+              [
+                "t1b",
+                true
+              ],
+              [
+                "t1c",
+                true
+              ],
+              [
+                "t1d",
+                true
+              ],
+              [
+                "t3",
+                true
+              ],
+              [
+                "t4",
+                true
+              ],
+              [
+                "t5",
+                true
+              ],
+              [
+                "t1e",
+                true
+              ]
+            ]
+          ],
+          [
+            2,
+            [
+              [
+                "t6",
+                true
+              ],
+              [
+                "t7",
+                true
+              ],
+              [
+                "t7b",
+                true
+              ],
+              [
+                "t8",
+                true
+              ],
+              [
+                "t9",
+                true
+              ],
+              [
+                "t10",
+                true
+              ],
+              [
+                "t11",
+                true
+              ]
+            ]
+          ],
+          [
+            3,
+            [
+              [
+                "t12",
+                true
+              ],
+              [
+                "t12b",
+                true
+              ],
+              [
+                "t13",
+                true
+              ],
+              [
+                "t14",
+                true
+              ],
+              [
+                "t14b",
+                true
+              ],
+              [
+                "t15",
+                true
+              ],
+              [
+                "t15b",
+                true
+              ],
+              [
+                "t15c",
+                true
+              ],
+              [
+                "t16",
+                true
+              ]
+            ]
+          ],
+          [
+            4,
+            [
+              [
+                "t17a",
+                true
+              ],
+              [
+                "t17b",
+                true
+              ],
+              [
+                "t17c",
+                true
+              ],
+              [
+                "t17",
+                true
+              ],
+              [
+                "t18",
+                true
+              ],
+              [
+                "t19",
+                true
+              ],
+              [
+                "t20",
+                true
+              ],
+              [
+                "t21",
+                true
+              ],
+              [
+                "t22",
+                true
+              ]
+            ]
+          ],
+          [
+            5,
+            [
+              [
+                "t23",
+                true
+              ],
+              [
+                "t24",
+                true
+              ],
+              [
+                "t25",
+                true
+              ],
+              [
+                "t26",
+                true
+              ],
+              [
+                "t27",
+                true
+              ],
+              [
+                "t28",
+                true
+              ]
+            ]
+          ],
+          [
+            6,
+            [
+              [
+                "t29",
+                true
+              ],
+              [
+                "t30",
+                true
+              ],
+              [
+                "t31",
+                true
+              ],
+              [
+                "t32",
+                true
+              ],
+              [
+                "t33",
+                true
+              ],
+              [
+                "t34",
+                true
+              ]
+            ]
+          ],
+          [
+            7,
+            [
+              [
+                "t35",
+                true
+              ],
+              [
+                "t36",
+                true
+              ],
+              [
+                "t37",
+                true
+              ],
+              [
+                "t38",
+                true
+              ],
+              [
+                "t39",
+                true
+              ],
+              [
+                "t40",
+                true
+              ],
+              [
+                "t41",
+                true
+              ],
+              [
+                "t42",
+                true
+              ],
+              [
+                "t43",
+                true
+              ],
+              [
+                "t44",
+                true
+              ]
+            ]
+          ]
+        ],
+        "documents": [
+          [
+            "d1",
+            true
+          ],
+          [
+            "d2",
+            true
+          ],
+          [
+            "d3",
+            true
+          ],
+          [
+            "d4",
+            true
+          ],
+          [
+            "d5",
+            true
+          ],
+          [
+            "d6",
+            true
+          ],
+          [
+            "d7",
+            true
+          ],
+          [
+            "d8",
+            true
+          ],
+          [
+            "d9",
+            true
+          ],
+          [
+            "d10",
+            true
+          ],
+          [
+            "d11",
+            true
+          ],
+          [
+            "d12",
+            true
+          ]
+        ]
+      },
+      "firstMountWrites": [
+        {
+          "key": "taskProgress",
+          "valueSha256": "44ab82de5d7889b4b927577b436624876b7adfe34b9e525bbc84a43adfe9d317"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "02b5f519134b732ab1901ec6c75329e2f1aad78a0386bc1393f6df5e77d74f45"
+        },
+        {
+          "key": "taskProgress",
+          "valueSha256": "44ab82de5d7889b4b927577b436624876b7adfe34b9e525bbc84a43adfe9d317"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "02b5f519134b732ab1901ec6c75329e2f1aad78a0386bc1393f6df5e77d74f45"
+        }
+      ]
+    },
+    {
+      "id": "U5",
+      "steps": [
+        {
+          "label": "[data-continue-plan=\"milestone\"]",
+          "navigation": true,
+          "x": 110,
+          "y": 421.578125,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Continue: 18 Months Out",
+          "hit": true
+        },
+        {
+          "label": "Review military service records for accuracy (OMPF)",
+          "navigation": false,
+          "x": 195,
+          "y": 421.609375,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Review military service records for accuracy (OMPF)",
+          "hit": true
+        },
+        {
+          "label": "HOME",
+          "navigation": false,
+          "x": 243.15625,
+          "y": 88.1875,
+          "scrolled": false,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "HOME",
+          "hit": true
+        }
+      ],
+      "activations": 1,
+      "status": "PASS",
+      "initialCounts": {
+        "tasks": 8,
+        "documents": 0
+      },
+      "expectedFinal": {
+        "milestones": [
+          [
+            1,
+            [
+              [
+                "t1",
+                true
+              ],
+              [
+                "t2",
+                true
+              ],
+              [
+                "t1b",
+                true
+              ],
+              [
+                "t1c",
+                true
+              ],
+              [
+                "t1d",
+                true
+              ],
+              [
+                "t3",
+                true
+              ],
+              [
+                "t4",
+                true
+              ],
+              [
+                "t5",
+                true
+              ],
+              [
+                "t1e",
+                true
+              ]
+            ]
+          ],
+          [
+            2,
+            [
+              [
+                "t6",
+                false
+              ],
+              [
+                "t7",
+                false
+              ],
+              [
+                "t7b",
+                false
+              ],
+              [
+                "t8",
+                false
+              ],
+              [
+                "t9",
+                false
+              ],
+              [
+                "t10",
+                false
+              ],
+              [
+                "t11",
+                false
+              ]
+            ]
+          ],
+          [
+            3,
+            [
+              [
+                "t12",
+                false
+              ],
+              [
+                "t12b",
+                false
+              ],
+              [
+                "t13",
+                false
+              ],
+              [
+                "t14",
+                false
+              ],
+              [
+                "t14b",
+                false
+              ],
+              [
+                "t15",
+                false
+              ],
+              [
+                "t15b",
+                false
+              ],
+              [
+                "t15c",
+                false
+              ],
+              [
+                "t16",
+                false
+              ]
+            ]
+          ],
+          [
+            4,
+            [
+              [
+                "t17a",
+                false
+              ],
+              [
+                "t17b",
+                false
+              ],
+              [
+                "t17c",
+                false
+              ],
+              [
+                "t17",
+                false
+              ],
+              [
+                "t18",
+                false
+              ],
+              [
+                "t19",
+                false
+              ],
+              [
+                "t20",
+                false
+              ],
+              [
+                "t21",
+                false
+              ],
+              [
+                "t22",
+                false
+              ]
+            ]
+          ],
+          [
+            5,
+            [
+              [
+                "t23",
+                false
+              ],
+              [
+                "t24",
+                false
+              ],
+              [
+                "t25",
+                false
+              ],
+              [
+                "t26",
+                false
+              ],
+              [
+                "t27",
+                false
+              ],
+              [
+                "t28",
+                false
+              ]
+            ]
+          ],
+          [
+            6,
+            [
+              [
+                "t29",
+                false
+              ],
+              [
+                "t30",
+                false
+              ],
+              [
+                "t31",
+                false
+              ],
+              [
+                "t32",
+                false
+              ],
+              [
+                "t33",
+                false
+              ],
+              [
+                "t34",
+                false
+              ]
+            ]
+          ],
+          [
+            7,
+            [
+              [
+                "t35",
+                false
+              ],
+              [
+                "t36",
+                false
+              ],
+              [
+                "t37",
+                false
+              ],
+              [
+                "t38",
+                false
+              ],
+              [
+                "t39",
+                false
+              ],
+              [
+                "t40",
+                false
+              ],
+              [
+                "t41",
+                false
+              ],
+              [
+                "t42",
+                false
+              ],
+              [
+                "t43",
+                false
+              ],
+              [
+                "t44",
+                false
+              ]
+            ]
+          ]
+        ],
+        "documents": [
+          [
+            "d1",
+            false
+          ],
+          [
+            "d2",
+            false
+          ],
+          [
+            "d3",
+            false
+          ],
+          [
+            "d4",
+            false
+          ],
+          [
+            "d5",
+            false
+          ],
+          [
+            "d6",
+            false
+          ],
+          [
+            "d7",
+            false
+          ],
+          [
+            "d8",
+            false
+          ],
+          [
+            "d9",
+            false
+          ],
+          [
+            "d10",
+            false
+          ],
+          [
+            "d11",
+            false
+          ],
+          [
+            "d12",
+            false
+          ]
+        ]
+      },
+      "firstMountWrites": [
+        {
+          "key": "taskProgress",
+          "valueSha256": "a0ed7d0d2b1e38b2fdc96732b99e9cf2fa9d5f825c40f93da926e85a0977d000"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "1fc24bafc40a4fe1f5d24ba6d75aea7c005883a217e63b68dd581bccd521c48a"
+        },
+        {
+          "key": "taskProgress",
+          "valueSha256": "01444867ce4444c86889f21aac326ec43cf804148915578f78af9fe6751f9d8e"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "1fc24bafc40a4fe1f5d24ba6d75aea7c005883a217e63b68dd581bccd521c48a"
+        }
+      ]
+    },
+    {
+      "id": "U6",
+      "steps": [
+        {
+          "label": "[data-continue-plan=\"documents\"]",
+          "navigation": true,
+          "x": 280,
+          "y": 421.578125,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Continue documents",
+          "hit": true
+        },
+        {
+          "label": "Awards/Decoration Certificates",
+          "navigation": false,
+          "x": 195,
+          "y": 427.15625,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Awards/Decoration Certificates\nPhysical copies of all awards.",
+          "hit": true
+        },
+        {
+          "label": "HOME",
+          "navigation": false,
+          "x": 243.15625,
+          "y": 88.1875,
+          "scrolled": false,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "HOME",
+          "hit": true
+        }
+      ],
+      "activations": 1,
+      "status": "PASS",
+      "initialCounts": {
+        "tasks": 0,
+        "documents": 4
+      },
+      "expectedFinal": {
+        "milestones": [
+          [
+            1,
+            [
+              [
+                "t1",
+                false
+              ],
+              [
+                "t2",
+                false
+              ],
+              [
+                "t1b",
+                false
+              ],
+              [
+                "t1c",
+                false
+              ],
+              [
+                "t1d",
+                false
+              ],
+              [
+                "t3",
+                false
+              ],
+              [
+                "t4",
+                false
+              ],
+              [
+                "t5",
+                false
+              ],
+              [
+                "t1e",
+                false
+              ]
+            ]
+          ],
+          [
+            2,
+            [
+              [
+                "t6",
+                false
+              ],
+              [
+                "t7",
+                false
+              ],
+              [
+                "t7b",
+                false
+              ],
+              [
+                "t8",
+                false
+              ],
+              [
+                "t9",
+                false
+              ],
+              [
+                "t10",
+                false
+              ],
+              [
+                "t11",
+                false
+              ]
+            ]
+          ],
+          [
+            3,
+            [
+              [
+                "t12",
+                false
+              ],
+              [
+                "t12b",
+                false
+              ],
+              [
+                "t13",
+                false
+              ],
+              [
+                "t14",
+                false
+              ],
+              [
+                "t14b",
+                false
+              ],
+              [
+                "t15",
+                false
+              ],
+              [
+                "t15b",
+                false
+              ],
+              [
+                "t15c",
+                false
+              ],
+              [
+                "t16",
+                false
+              ]
+            ]
+          ],
+          [
+            4,
+            [
+              [
+                "t17a",
+                false
+              ],
+              [
+                "t17b",
+                false
+              ],
+              [
+                "t17c",
+                false
+              ],
+              [
+                "t17",
+                false
+              ],
+              [
+                "t18",
+                false
+              ],
+              [
+                "t19",
+                false
+              ],
+              [
+                "t20",
+                false
+              ],
+              [
+                "t21",
+                false
+              ],
+              [
+                "t22",
+                false
+              ]
+            ]
+          ],
+          [
+            5,
+            [
+              [
+                "t23",
+                false
+              ],
+              [
+                "t24",
+                false
+              ],
+              [
+                "t25",
+                false
+              ],
+              [
+                "t26",
+                false
+              ],
+              [
+                "t27",
+                false
+              ],
+              [
+                "t28",
+                false
+              ]
+            ]
+          ],
+          [
+            6,
+            [
+              [
+                "t29",
+                false
+              ],
+              [
+                "t30",
+                false
+              ],
+              [
+                "t31",
+                false
+              ],
+              [
+                "t32",
+                false
+              ],
+              [
+                "t33",
+                false
+              ],
+              [
+                "t34",
+                false
+              ]
+            ]
+          ],
+          [
+            7,
+            [
+              [
+                "t35",
+                false
+              ],
+              [
+                "t36",
+                false
+              ],
+              [
+                "t37",
+                false
+              ],
+              [
+                "t38",
+                false
+              ],
+              [
+                "t39",
+                false
+              ],
+              [
+                "t40",
+                false
+              ],
+              [
+                "t41",
+                false
+              ],
+              [
+                "t42",
+                false
+              ],
+              [
+                "t43",
+                false
+              ],
+              [
+                "t44",
+                false
+              ]
+            ]
+          ]
+        ],
+        "documents": [
+          [
+            "d1",
+            true
+          ],
+          [
+            "d2",
+            true
+          ],
+          [
+            "d3",
+            true
+          ],
+          [
+            "d4",
+            true
+          ],
+          [
+            "d5",
+            false
+          ],
+          [
+            "d6",
+            false
+          ],
+          [
+            "d7",
+            false
+          ],
+          [
+            "d8",
+            false
+          ],
+          [
+            "d9",
+            false
+          ],
+          [
+            "d10",
+            false
+          ],
+          [
+            "d11",
+            false
+          ],
+          [
+            "d12",
+            true
+          ]
+        ]
+      },
+      "firstMountWrites": [
+        {
+          "key": "taskProgress",
+          "valueSha256": "50daa568d0cf44f59124e14e8bbfd8f0daf92b78eeaf06d88fffc0793bfba042"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "0080609de7bbbeaf8992d63c6f5fefba4e9bf77c9c4cc754a2b77e31cc9419f2"
+        },
+        {
+          "key": "taskProgress",
+          "valueSha256": "50daa568d0cf44f59124e14e8bbfd8f0daf92b78eeaf06d88fffc0793bfba042"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "bd4b4dc748e491558640f6b8cff151aca62b3c1fb9b1d9c1dbd30baddac219cb"
+        }
+      ]
+    },
+    {
+      "id": "U7",
+      "steps": [
+        {
+          "label": "[data-continue-plan=\"milestone\"]",
+          "navigation": true,
+          "x": 110,
+          "y": 421.578125,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Continue: 6 Months Out",
+          "hit": true
+        },
+        {
+          "label": "Open/verify civilian bank accounts",
+          "navigation": false,
+          "x": 195,
+          "y": 422.21875,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Open/verify civilian bank accounts",
+          "hit": true
+        },
+        {
+          "label": "HOME",
+          "navigation": false,
+          "x": 243.15625,
+          "y": 88.1875,
+          "scrolled": false,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "HOME",
+          "hit": true
+        }
+      ],
+      "activations": 1,
+      "status": "PASS",
+      "initialCounts": {
+        "tasks": 33,
+        "documents": 0
+      },
+      "expectedFinal": {
+        "milestones": [
+          [
+            1,
+            [
+              [
+                "t1",
+                true
+              ],
+              [
+                "t2",
+                true
+              ],
+              [
+                "t1b",
+                true
+              ],
+              [
+                "t1c",
+                true
+              ],
+              [
+                "t1d",
+                true
+              ],
+              [
+                "t3",
+                true
+              ],
+              [
+                "t4",
+                true
+              ],
+              [
+                "t5",
+                true
+              ],
+              [
+                "t1e",
+                true
+              ]
+            ]
+          ],
+          [
+            2,
+            [
+              [
+                "t6",
+                true
+              ],
+              [
+                "t7",
+                true
+              ],
+              [
+                "t7b",
+                true
+              ],
+              [
+                "t8",
+                true
+              ],
+              [
+                "t9",
+                true
+              ],
+              [
+                "t10",
+                true
+              ],
+              [
+                "t11",
+                true
+              ]
+            ]
+          ],
+          [
+            3,
+            [
+              [
+                "t12",
+                true
+              ],
+              [
+                "t12b",
+                true
+              ],
+              [
+                "t13",
+                true
+              ],
+              [
+                "t14",
+                true
+              ],
+              [
+                "t14b",
+                true
+              ],
+              [
+                "t15",
+                true
+              ],
+              [
+                "t15b",
+                true
+              ],
+              [
+                "t15c",
+                true
+              ],
+              [
+                "t16",
+                true
+              ]
+            ]
+          ],
+          [
+            4,
+            [
+              [
+                "t17a",
+                true
+              ],
+              [
+                "t17b",
+                true
+              ],
+              [
+                "t17c",
+                true
+              ],
+              [
+                "t17",
+                true
+              ],
+              [
+                "t18",
+                true
+              ],
+              [
+                "t19",
+                true
+              ],
+              [
+                "t20",
+                true
+              ],
+              [
+                "t21",
+                true
+              ],
+              [
+                "t22",
+                true
+              ]
+            ]
+          ],
+          [
+            5,
+            [
+              [
+                "t23",
+                false
+              ],
+              [
+                "t24",
+                false
+              ],
+              [
+                "t25",
+                false
+              ],
+              [
+                "t26",
+                false
+              ],
+              [
+                "t27",
+                false
+              ],
+              [
+                "t28",
+                false
+              ]
+            ]
+          ],
+          [
+            6,
+            [
+              [
+                "t29",
+                false
+              ],
+              [
+                "t30",
+                false
+              ],
+              [
+                "t31",
+                false
+              ],
+              [
+                "t32",
+                false
+              ],
+              [
+                "t33",
+                false
+              ],
+              [
+                "t34",
+                false
+              ]
+            ]
+          ],
+          [
+            7,
+            [
+              [
+                "t35",
+                false
+              ],
+              [
+                "t36",
+                false
+              ],
+              [
+                "t37",
+                false
+              ],
+              [
+                "t38",
+                false
+              ],
+              [
+                "t39",
+                false
+              ],
+              [
+                "t40",
+                false
+              ],
+              [
+                "t41",
+                false
+              ],
+              [
+                "t42",
+                false
+              ],
+              [
+                "t43",
+                false
+              ],
+              [
+                "t44",
+                false
+              ]
+            ]
+          ]
+        ],
+        "documents": [
+          [
+            "d1",
+            false
+          ],
+          [
+            "d2",
+            false
+          ],
+          [
+            "d3",
+            false
+          ],
+          [
+            "d4",
+            false
+          ],
+          [
+            "d5",
+            false
+          ],
+          [
+            "d6",
+            false
+          ],
+          [
+            "d7",
+            false
+          ],
+          [
+            "d8",
+            false
+          ],
+          [
+            "d9",
+            false
+          ],
+          [
+            "d10",
+            false
+          ],
+          [
+            "d11",
+            false
+          ],
+          [
+            "d12",
+            false
+          ]
+        ]
+      },
+      "firstMountWrites": [
+        {
+          "key": "taskProgress",
+          "valueSha256": "e81256acf0a47d747ad19bc0f7464a6eed949fb0f12dfa33d760e806ff8256d0"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "1fc24bafc40a4fe1f5d24ba6d75aea7c005883a217e63b68dd581bccd521c48a"
+        },
+        {
+          "key": "taskProgress",
+          "valueSha256": "e81256acf0a47d747ad19bc0f7464a6eed949fb0f12dfa33d760e806ff8256d0"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "1fc24bafc40a4fe1f5d24ba6d75aea7c005883a217e63b68dd581bccd521c48a"
+        }
+      ]
+    },
+    {
+      "id": "U8",
+      "steps": [
+        {
+          "label": "[data-continue-plan=\"milestone\"]",
+          "navigation": true,
+          "x": 110,
+          "y": 421.578125,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Continue: Post-Separation",
+          "hit": true
+        },
+        {
+          "label": "Connect with local veteran service organizations",
+          "navigation": false,
+          "x": 195,
+          "y": 421.8125,
+          "scrolled": true,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "Connect with local veteran service organizations",
+          "hit": true
+        },
+        {
+          "label": "HOME",
+          "navigation": false,
+          "x": 243.15625,
+          "y": 88.1875,
+          "scrolled": false,
+          "tag": "BUTTON",
+          "tabIndex": 0,
+          "text": "HOME",
+          "hit": true
+        }
+      ],
+      "activations": 1,
+      "status": "PASS",
+      "initialCounts": {
+        "tasks": 55,
+        "documents": 0
+      },
+      "expectedFinal": {
+        "milestones": [
+          [
+            1,
+            [
+              [
+                "t1",
+                true
+              ],
+              [
+                "t2",
+                true
+              ],
+              [
+                "t1b",
+                true
+              ],
+              [
+                "t1c",
+                true
+              ],
+              [
+                "t1d",
+                true
+              ],
+              [
+                "t3",
+                true
+              ],
+              [
+                "t4",
+                true
+              ],
+              [
+                "t5",
+                true
+              ],
+              [
+                "t1e",
+                true
+              ]
+            ]
+          ],
+          [
+            2,
+            [
+              [
+                "t6",
+                true
+              ],
+              [
+                "t7",
+                true
+              ],
+              [
+                "t7b",
+                true
+              ],
+              [
+                "t8",
+                true
+              ],
+              [
+                "t9",
+                true
+              ],
+              [
+                "t10",
+                true
+              ],
+              [
+                "t11",
+                true
+              ]
+            ]
+          ],
+          [
+            3,
+            [
+              [
+                "t12",
+                true
+              ],
+              [
+                "t12b",
+                true
+              ],
+              [
+                "t13",
+                true
+              ],
+              [
+                "t14",
+                true
+              ],
+              [
+                "t14b",
+                true
+              ],
+              [
+                "t15",
+                true
+              ],
+              [
+                "t15b",
+                true
+              ],
+              [
+                "t15c",
+                true
+              ],
+              [
+                "t16",
+                true
+              ]
+            ]
+          ],
+          [
+            4,
+            [
+              [
+                "t17a",
+                true
+              ],
+              [
+                "t17b",
+                true
+              ],
+              [
+                "t17c",
+                true
+              ],
+              [
+                "t17",
+                true
+              ],
+              [
+                "t18",
+                true
+              ],
+              [
+                "t19",
+                true
+              ],
+              [
+                "t20",
+                true
+              ],
+              [
+                "t21",
+                true
+              ],
+              [
+                "t22",
+                true
+              ]
+            ]
+          ],
+          [
+            5,
+            [
+              [
+                "t23",
+                true
+              ],
+              [
+                "t24",
+                true
+              ],
+              [
+                "t25",
+                true
+              ],
+              [
+                "t26",
+                true
+              ],
+              [
+                "t27",
+                true
+              ],
+              [
+                "t28",
+                true
+              ]
+            ]
+          ],
+          [
+            6,
+            [
+              [
+                "t29",
+                true
+              ],
+              [
+                "t30",
+                true
+              ],
+              [
+                "t31",
+                true
+              ],
+              [
+                "t32",
+                true
+              ],
+              [
+                "t33",
+                true
+              ],
+              [
+                "t34",
+                true
+              ]
+            ]
+          ],
+          [
+            7,
+            [
+              [
+                "t35",
+                true
+              ],
+              [
+                "t36",
+                true
+              ],
+              [
+                "t37",
+                true
+              ],
+              [
+                "t38",
+                true
+              ],
+              [
+                "t39",
+                true
+              ],
+              [
+                "t40",
+                true
+              ],
+              [
+                "t41",
+                true
+              ],
+              [
+                "t42",
+                true
+              ],
+              [
+                "t43",
+                true
+              ],
+              [
+                "t44",
+                true
+              ]
+            ]
+          ]
+        ],
+        "documents": [
+          [
+            "d1",
+            false
+          ],
+          [
+            "d2",
+            false
+          ],
+          [
+            "d3",
+            false
+          ],
+          [
+            "d4",
+            false
+          ],
+          [
+            "d5",
+            false
+          ],
+          [
+            "d6",
+            false
+          ],
+          [
+            "d7",
+            false
+          ],
+          [
+            "d8",
+            false
+          ],
+          [
+            "d9",
+            false
+          ],
+          [
+            "d10",
+            false
+          ],
+          [
+            "d11",
+            false
+          ],
+          [
+            "d12",
+            false
+          ]
+        ]
+      },
+      "firstMountWrites": [
+        {
+          "key": "taskProgress",
+          "valueSha256": "9df71c1471224640cb5847e263dd4adbab594838072b012b2e0030741cfeee5d"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "1fc24bafc40a4fe1f5d24ba6d75aea7c005883a217e63b68dd581bccd521c48a"
+        },
+        {
+          "key": "taskProgress",
+          "valueSha256": "9df71c1471224640cb5847e263dd4adbab594838072b012b2e0030741cfeee5d"
+        },
+        {
+          "key": "docProgress",
+          "valueSha256": "1fc24bafc40a4fe1f5d24ba6d75aea7c005883a217e63b68dd581bccd521c48a"
+        }
+      ]
+    }
+  ],
+  "externalAttempts": [
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+  ],
+  "functionAttempts": [],
+  "exceptions": [],
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Chrome/152.0.7977.82",
+    "revision": "@d04cdb24d67b081f6cf80200ffc5233f44b61109",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/152.0.0.0 Safari/537.36",
+    "jsVersion": "15.2.124.21"
+  },
+  "pass": 8,
+  "fail": 0,
+  "proxyAttempts": 89,
+  "finished": "2026-09-08T17:10:04.921Z"
+}

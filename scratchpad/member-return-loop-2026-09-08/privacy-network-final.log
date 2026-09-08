@@ -1,0 +1,60 @@
+
+> transition-ops@1.0.0 test:privacy-network
+> node scripts/privacy-network-regression.js
+
+PASS browser source has no GA bootstrap, measurement ID, tag URL, or obsolete analytics claim
+PASS browser source has no Kit form, credential, email-signup runtime, or signup UI
+PASS feedback has no app submission, tracking event, identity fields, or dormant Forms path
+PASS feedback is a truthful member-controlled email handoff
+PASS Navigator discloses the request payload and optional provider boundary
+PASS Resume discloses provider-bound fields and keeps its personal header out of transport
+PASS Navigator source has no member-derived gap Blob or gap-log path
+PASS production push is one literal false declaration
+PASS POFF-01 active UI contains no obsolete push promise
+PASS POFF-01 obsolete push-copy mutation fails
+PASS POFF-02 install surfaces use direct-access guidance without a push promise
+PASS POFF-03 install strip, card, and footer state that push is disabled
+PASS POFF-04 mismatched release-note version mutation fails
+PASS POFF-04 unchanged release history is preceded by current push-off context
+PASS POFF-06 stale-copy classifier is scoped and preserves valid in-app alert vocabulary
+PASS browser source has no static UUID-shaped push App ID
+PASS browser source has no clone/test origin, configuration, or status copy
+PASS OneSignal activation is removed or fail-closed and stale dedicated state is cleaned
+PASS browser source has no static SDK element or dedicated-worker registration/fetch
+PASS current app registers only the active OneSignal-free PWA worker
+PASS active PWA worker is provider-free
+PASS dedicated worker remains isolated at its approved path
+PASS dedicated worker contains no app-cache or local-notification behavior
+PASS sw.js legacy exception hash preserved
+PASS OneSignalSDKWorker.js legacy exception hash preserved
+LEGACY COHORT: bounded source exception preserved; current app registration excluded
+RUNTIME BROWSER: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+RUNTIME FIXTURE: synthetic data, local files, outbound proxy denied before network
+PASS NEW app has no uncaught browser exception
+PASS NEW runtime instrumentation remained active
+PASS NEW rendered app creates no GA runtime globals
+PASS NEW rendered app exposes no Kit email-signup UI
+PASS NEW rendered app creates no OneSignal runtime or script
+PASS NEW rendered app exposes no push-enablement control
+PASS POFF-05 NEW rendered push-off state is explicit and contains no enable instruction or obsolete promise
+PASS NEW makes no browser notification-permission request
+PASS NEW app runtime registers only the active PWA worker
+PASS NEW finishes with one active PWA worker registration
+PASS NEW begins without a prior-root worker
+PASS NEW makes zero GA, Kit, or OneSignal requests across load, interactions, and reload
+RUNTIME NEW: 14 local/browser requests observed; provider count 0
+PASS MIGRATED synthetic prior-root fixture activated
+PASS MIGRATED app has no uncaught browser exception
+PASS MIGRATED runtime instrumentation remained active
+PASS MIGRATED rendered app creates no GA runtime globals
+PASS MIGRATED rendered app exposes no Kit email-signup UI
+PASS MIGRATED rendered app creates no OneSignal runtime or script
+PASS MIGRATED rendered app exposes no push-enablement control
+PASS POFF-05 MIGRATED rendered push-off state is explicit and contains no enable instruction or obsolete promise
+PASS MIGRATED makes no browser notification-permission request
+PASS MIGRATED app runtime registers only the active PWA worker
+PASS MIGRATED finishes with one active PWA worker registration
+PASS MIGRATED separately records the bounded prior-root cohort
+PASS MIGRATED makes zero GA, Kit, or OneSignal requests across load, interactions, and reload
+RUNTIME MIGRATED: 16 local/browser requests observed; provider count 0
+PRIVACY-NETWORK REGRESSION PASS

@@ -1,0 +1,5 @@
+
+> transition-ops@1.0.0 build:public
+> node scripts/build-public.js
+
+PUBLIC BUILD PASS: 22 files -> dist

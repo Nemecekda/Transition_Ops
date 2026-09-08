@@ -1,0 +1,148 @@
+{
+  "scope": "LOCAL exact dist only; not a hosted manifest",
+  "runtime_records": [
+    {
+      "path": "/BingSiteAuth.xml",
+      "bytes": 85,
+      "sha1": "8afa0f0e7cb6f54a9ed3e2ee095c03c830ebef0a",
+      "sha256": "34babb6c0bd4ec268a45fdae21d773e467f98d45375b6a21ceef446bb834ba49"
+    },
+    {
+      "path": "/OneSignalSDKWorker.js",
+      "bytes": 76,
+      "sha1": "26fa40df48fafb1a2b86ad69e1f76b8d4c78da37",
+      "sha256": "2f213985d10e5c5117acfde4f0cab00ad2c13035577ef38c7f0d86d2dd722fbc"
+    },
+    {
+      "path": "/_headers",
+      "bytes": 513,
+      "sha1": "7271e5d96a4bbabe8a47f6b43dcfafabb0521881",
+      "sha256": "0649aad635df50b36a06dde0da7096c88e53624c7d44557a2c4dc850c57a5090"
+    },
+    {
+      "path": "/_redirects",
+      "bytes": 679,
+      "sha1": "999848fad31dac840508fbb8e8d5942ad6aea2b3",
+      "sha256": "b53943bf6361d60377431c17b1ea8bcba335bac440ee3216f6063c88a299ddfe"
+    },
+    {
+      "path": "/bdd-timeline/index.html",
+      "bytes": 13094,
+      "sha1": "ef93d6aed1ea459b4c311f3cb5894a7b366f742b",
+      "sha256": "c8149744cdcfae0983f39e7292918c34136a77c8cbb60690cc1ea3b7422214fc"
+    },
+    {
+      "path": "/erg-employer-brief.html",
+      "bytes": 14519,
+      "sha1": "d320be682f5d1cf44555c5c29c678a18f70f03ea",
+      "sha256": "60798844df78ac96d6711132f55222672e24cef926de243d24fe3b122fc6705a"
+    },
+    {
+      "path": "/erg-handoff.html",
+      "bytes": 12790,
+      "sha1": "8d19ca3f70aa9115e2cac8d739f914c027c54d82",
+      "sha256": "d06f8336ec54cc7686a8c8e84165be66b0214e56babfd260c6196547d7b5128e"
+    },
+    {
+      "path": "/erg-intranet-launch-kit.html",
+      "bytes": 17659,
+      "sha1": "67ee25a4bd23887c23a54e818332d34b83f6a1da",
+      "sha256": "2c8baa9d66bdeab69793ef29f0bb6814cfd6415dbca1c9805b33c891094da910"
+    },
+    {
+      "path": "/icon-192.png",
+      "bytes": 7021,
+      "sha1": "2fba042b6cfa0f2a934f70bfd0a4ddcf626178ec",
+      "sha256": "885da6b8b9932b2c31dc6da3bdcf17a7cfecb0eeac490e20ef8a3821336ca8cd"
+    },
+    {
+      "path": "/icon-512.png",
+      "bytes": 21696,
+      "sha1": "3ab430e866ef36f82ddadc0b0083a2d50b54605a",
+      "sha256": "9f60b0980c59796def8dabfecc8f756a42a1bdb1543e15095d62c29eda4f31c6"
+    },
+    {
+      "path": "/index.html",
+      "bytes": 925652,
+      "sha1": "8b8049b8d49f9e7f57ae25bfb530ce41fdb9f3a6",
+      "sha256": "494903fa373b112c99c8405fddae61d15d6ee9fb9c97fdd6164dcb69785ee4b0"
+    },
+    {
+      "path": "/manifest.json",
+      "bytes": 492,
+      "sha1": "31a7636bced13814c9eeeef300cf5673f2e3e60e",
+      "sha256": "bb00454d58990a433774f2bab482fbd9d0744feeeefaf1eec0e708a34d17954c"
+    },
+    {
+      "path": "/og-image.png",
+      "bytes": 52041,
+      "sha1": "e4fecde44f823e230bb6d66c3ac897992bd147e0",
+      "sha256": "f97517f77fe6af3881c22ca86837005574ec40d706c8f3ead9fff8771560fbf7"
+    },
+    {
+      "path": "/push/onesignal/OneSignalSDKWorker.js",
+      "bytes": 843,
+      "sha1": "0e7f27847db54de233a43ad12587389ae67d2b56",
+      "sha256": "c0dff569138a3876f942c7c931f4c3a1b812399565337d87d426207a26c4d69a"
+    },
+    {
+      "path": "/pwa-sw.js",
+      "bytes": 3933,
+      "sha1": "b9601c9d7362898d9c5b752c5e2d737191ea8de3",
+      "sha256": "8fa42be2bb1781a2095c0deac5fc85e858f18c7f89d8d450a097d9e937933e04"
+    },
+    {
+      "path": "/robots.txt",
+      "bytes": 1423,
+      "sha1": "99e57502ed36059925be568b40cc37f49fce25f4",
+      "sha256": "739685bac77ec71d92182ba4873300634f48365de494160ce676880c46787cd9"
+    },
+    {
+      "path": "/sitemap.xml",
+      "bytes": 2676,
+      "sha1": "46e14f3173c98a4ba17d47080bf92f1326d02d94",
+      "sha256": "c05f3a5f3e17e42c0de15a9408409e7dced9aa4e13153865aff38dcde2ffb61d"
+    },
+    {
+      "path": "/sw.js",
+      "bytes": 4033,
+      "sha1": "a2ed1dfa3e8d8e362f49c2cf2f43bca8639eb40c",
+      "sha256": "45a4f093d7a19d4403cdaa5da0e6d6ae0a7ae497080fe92694046be789108d32"
+    },
+    {
+      "path": "/transition-ops-public-qr.png",
+      "bytes": 10253,
+      "sha1": "f5c6fef2d3e17ce6ceca823406b3af99efece03d",
+      "sha256": "3514563abaac027d65ecfb5728bfbc525e5ecd4d850a6500d19c91eb2e63f9d7"
+    },
+    {
+      "path": "/va-math/index.html",
+      "bytes": 9863,
+      "sha1": "af12f69d42c5fffa4e228c90a8e68f647777a831",
+      "sha256": "392da0884747a3eae06f828ec3ae0d9c77cf3b75919f74900d9a53f42ee5a820"
+    },
+    {
+      "path": "/vendor/react-dom.production.min.js",
+      "bytes": 131882,
+      "sha1": "506d9100caa070005a890bd496de64c437d6d008",
+      "sha256": "21758ed084cd0e37e735722ee4f3957ea960628a29dfa6c3ce1a1d47a2d6e4f7"
+    },
+    {
+      "path": "/vendor/react.production.min.js",
+      "bytes": 10737,
+      "sha1": "98089a33d0cf2fa4b3e1ba9b7eeb9b8ba0ac82a7",
+      "sha256": "4b4969fa4ef3594324da2c6d78ce8766fbbc2fd121fff395aedf997db0a99a06"
+    }
+  ],
+  "count": 22,
+  "source_dist_identity": "PASS",
+  "control_plane_outside_dist": {
+    "path": "/netlify.toml",
+    "bytes": 603,
+    "sha1": "aed840ef6d510f49448869bdc39ddc8168bfe525",
+    "sha256": "0d32e934f4295f4929ccc15083c9d52b3527261dfdf12efc9a6b9805c287c72b"
+  },
+  "index_sha256": "494903fa373b112c99c8405fddae61d15d6ee9fb9c97fdd6164dcb69785ee4b0",
+  "worker_sha256": "8fa42be2bb1781a2095c0deac5fc85e858f18c7f89d8d450a097d9e937933e04",
+  "cache": 157
+}

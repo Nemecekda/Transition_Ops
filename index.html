@@ -2666,10 +2666,11 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v96";
+const APP_VERSION = "v97";
   const JOBS_LIVE = false; // flip to true the day NLx/DOL approves Jobs API access
 const DATA_VERIFIED = "1 AUG 2026";
 const WHATS_NEW = [
+  { v: "v97", date: "8 SEP 2026", note: "Continue your plan from Home: see task and document counts, reopen a partly completed checklist, or go straight to Documents. Saved completion marks now use current checklist content. Home timeline, readiness, and Next Action controls work with the keyboard; Next Action opens the matching reminder." },
   { v: "v96", date: "14 AUG 2026", note: "FIND YOUR POST buttons added to the VFW and American Legion cards in the VSO directory \u2014 one tap to each organization's official post locator. Use them to find your nearest post and a service officer before your BDD consultation." },
   { v: "v95", date: "13 AUG 2026", note: "Free year of ChatGPT Plus for transitioning members: veterans and retirees within 12 months of leaving active duty, service members within 12 months of transitioning. ID.me verification, personal accounts only. Read the card before you claim \u2014 it renews at the paid rate after the free year unless you cancel." },
   { v: "v94", date: "31 JUL 2026", note: "THE GUARD PACKAGE. Two Careers, One Plan: COOL-funded certifications, your clearance as a career asset, the AGR/TPU/mil-tech decision tree, PME as civilian credentials, and the employer conversation scripts. Plus pre-mob and demob checklists, including TAMP: the 180 days of premium-free TRICARE most demobilizing members never hear about. Built by a Guard retiree who wishes someone had told him." },
@@ -5336,6 +5337,39 @@ function topsKeyboardActivate(event) {
   }
 }
 
+// Saved arrays carry completion only; current source owns content and membership.
+function topsReadProgressArray(key) {
+  if (window.__IS_IFRAME) return [];
+  try {
+    var saved = JSON.parse(window.__safeGet(key));
+    return Array.isArray(saved) ? saved : [];
+  } catch (e) { return []; }
+}
+function topsRestoreMilestones() {
+  var saved = topsReadProgressArray("taskProgress");
+  return TRANSITION_MILESTONES.map(function(m) {
+    var flags = new Map();
+    saved.forEach(function(row) {
+      if (!row || row.id !== m.id || !Array.isArray(row.tasks)) return;
+      row.tasks.forEach(function(t) {
+        if (t && typeof t.done === "boolean" && !flags.has(t.id)) flags.set(t.id, t.done);
+      });
+    });
+    return Object.assign({}, m, { tasks: m.tasks.map(function(t) {
+      return Object.assign({}, t, { done: flags.has(t.id) ? flags.get(t.id) : t.done });
+    }) });
+  });
+}
+function topsRestoreDocuments() {
+  var flags = new Map();
+  topsReadProgressArray("docProgress").forEach(function(d) {
+    if (d && typeof d.obtained === "boolean" && !flags.has(d.id)) flags.set(d.id, d.obtained);
+  });
+  return DOCUMENT_VAULT.map(function(d) {
+    return Object.assign({}, d, { obtained: flags.has(d.id) ? flags.get(d.id) : d.obtained });
+  });
+}
+
 function App() {
   const [theme, setTheme] = useState(() => {
     try {
@@ -5535,7 +5569,7 @@ function App() {
   const [pathwayMode, setPathwayMode] = useState("journey");
   const [journeyMOS, setJourneyMOS] = useState("");
   const [journeyTarget, setJourneyTarget] = useState("");
-  const [milestones, setMilestones] = useState(TRANSITION_MILESTONES);
+  const [milestones, setMilestones] = useState(topsRestoreMilestones);
   const [selectedMilestone, setSelectedMilestone] = useState(null);
   const [separationDate, setSeparationDate] = useState("");
   const [separationDateFocused, setSeparationDateFocused] = useState(false);
@@ -5640,7 +5674,7 @@ function App() {
   const [userState, setUserState] = useState("");
   const [dismissedNotifs, setDismissedNotifs] = useState(new Set());
   const [toast, setToast] = useState(null);
-  const [documents, setDocuments] = useState(DOCUMENT_VAULT);
+  const [documents, setDocuments] = useState(topsRestoreDocuments);
   const [vsoFilter, setVsoFilter] = useState("ALL");
   const [resourceFilter, setResourceFilter] = useState({ category: "ALL", cost: "ALL", eligibility: "ALL" });
   const [subTab, setSubTab] = useState("vsos");
@@ -5787,6 +5821,34 @@ function App() {
   const [reminderFilterPri, setReminderFilterPri] = useState("ALL");
   const [reminderFilterCat, setReminderFilterCat] = useState("ALL");
   const [showDismissed, setShowDismissed] = useState(false);
+  const continuationFocus = useRef(null);
+  const continuationReturn = useRef(null);
+  function openPlanRoute(tab, target, invoker, milestoneId) {
+    continuationFocus.current = target;
+    continuationReturn.current = invoker;
+    if (tab === "timeline") setSelectedMilestone(milestoneId || null);
+    if (tab === "resources") setSubTab("documents");
+    if (tab === "reminders") {
+      setReminderFilterPri("ALL");
+      setReminderFilterCat("ALL");
+      setShowDismissed(false);
+      setReminderExpanded(target.slice("tops-reminder-".length));
+    }
+    setActiveTab(tab);
+  }
+  useEffect(function() {
+    var id = continuationFocus.current || (activeTab === "dashboard" && continuationReturn.current);
+    if (!id) return;
+    var frame = requestAnimationFrame(function() {
+      var target = document.getElementById(id);
+      if (!target) return;
+      target.focus();
+      target.scrollIntoView({ block: "center" });
+      continuationFocus.current = null;
+      if (activeTab === "dashboard") continuationReturn.current = null;
+    });
+    return function() { cancelAnimationFrame(frame); };
+  }, [activeTab, selectedMilestone, subTab, reminderExpanded]);
   // Readiness Score state
   const [readinessAnswers, setReadinessAnswers] = useState(function() { try { var v = window.__safeGet("tops_readiness"); return v ? JSON.parse(v) : {}; } catch(e) { return {}; } });
   const [readinessCatOpen, setReadinessCatOpen] = useState(null);
@@ -5820,12 +5882,10 @@ function App() {
     try {
       const savedETS = window.__safeGet("etsDate") || window.__safeGet("tops_sep_date");
       if (savedETS) setSeparationDate(savedETS);
-      const savedTasks = window.__safeGet("taskProgress");
-      if (savedTasks) setMilestones(JSON.parse(savedTasks));
-      const savedDocs = window.__safeGet("docProgress");
-      if (savedDocs) setDocuments(JSON.parse(savedDocs));
-      const savedDismissed = window.__safeGet("dismissedNotifs");
-      if (savedDismissed) setDismissedNotifs(new Set(JSON.parse(savedDismissed)));
+      try {
+        const savedDismissed = JSON.parse(window.__safeGet("dismissedNotifs"));
+        if (Array.isArray(savedDismissed)) setDismissedNotifs(new Set(savedDismissed));
+      } catch (e) {}
       if ("Notification" in window) setBrowserPermission(window.Notification.permission);
       if (!TOPS_PUSH_ENABLED) {
         setPushChoiceState("missing");
@@ -7459,6 +7519,10 @@ function App() {
     var tlPct = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
     var docsTotal = documents.length;
     var docsSecured = documents.filter(function(d) { return d.obtained; }).length;
+    var partialMilestone = milestones.find(function(m) {
+      var count = m.tasks.filter(function(t) { return t.done; }).length;
+      return count > 0 && count < m.tasks.length;
+    });
     var remDismissed = Object.keys(dismissedReminders).length;
     var remTotal = SMART_REMINDERS.length;
     var urgentReminders = etsMonths !== null ? SMART_REMINDERS.filter(function(r) { var d = r.mo - etsMonths; return d >= -1 && d <= 3 && !dismissedReminders[r.id]; }).slice(0, 3) : [];
@@ -7494,18 +7558,28 @@ function App() {
             )
           ),
           React.createElement("div", { style: { display: "flex", gap: 34, marginTop: 14 } },
-            React.createElement("div", { style: { textAlign: "center", cursor: "pointer" }, onClick: function() { setActiveTab("timeline"); } },
+            React.createElement("button", { id: "tops-home-timeline", type: "button", style: { textAlign: "center", cursor: "pointer", background: "transparent", border: 0, padding: 0, minWidth: 44, minHeight: 44 }, onClick: function() { openPlanRoute("timeline", "tops-plan-timeline", "tops-home-timeline"); } },
               React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: C.greenBright } }, tlPct + "%"),
               React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.inactive, marginTop: 3 } }, "TIMELINE")),
             React.createElement("div", { style: { textAlign: "center" } },
               React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: C.textPrimary } }, doneTasks, React.createElement("span", { style: { color: C.inactive } }, "/" + totalTasks)),
               React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.inactive, marginTop: 3 } }, "TASKS")),
-            React.createElement("div", { style: { textAlign: "center", cursor: "pointer" }, onClick: function() { setActiveTab("readiness"); } },
+            React.createElement("button", { id: "tops-home-readiness", type: "button", style: { textAlign: "center", cursor: "pointer", background: "transparent", border: 0, padding: 0, minWidth: 44, minHeight: 44 }, onClick: function() { openPlanRoute("readiness", "tops-plan-readiness", "tops-home-readiness"); } },
               React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: rInfo.c } }, rScore),
               React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.inactive, marginTop: 3 } }, "READINESS"))
           )
         );
       })(),
+
+      React.createElement("section", { "aria-labelledby": "tops-continue-title", style: { background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, padding: 14, marginBottom: 12 } },
+        React.createElement("h2", { id: "tops-continue-title", style: { fontFamily: "'Oswald', sans-serif", fontSize: 17, fontWeight: 600, color: C.textPrimary, margin: "0 0 6px" } }, "Continue your plan"),
+        React.createElement("p", { style: { fontSize: 13, color: C.textSecondary, margin: "0 0 10px", lineHeight: 1.45 } }, doneTasks + "/" + totalTasks + " tasks complete; " + docsSecured + "/" + docsTotal + " documents obtained."),
+        React.createElement("p", { style: { fontSize: 12, color: C.textSecondary, margin: "0 0 10px", lineHeight: 1.45 } }, partialMilestone ? "Continue the first checklist you have started, in timeline order." : doneTasks === totalTasks ? "All timeline tasks are marked complete. You can review or reopen them." : "No checklist is partly complete. Open your timeline to choose a task."),
+        React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
+          React.createElement("button", { id: "tops-continue-milestone", "data-continue-plan": "milestone", type: "button", onClick: function() { openPlanRoute("timeline", partialMilestone ? "tops-plan-milestone" : "tops-plan-timeline", "tops-continue-milestone", partialMilestone && partialMilestone.id); }, style: { flex: "1 1 150px", minHeight: 44, border: "1px solid " + C.border, borderRadius: 6, background: C.bgElevated, color: C.textPrimary, padding: "10px 12px", fontFamily: "'Oswald', sans-serif", fontSize: 14, cursor: "pointer", textAlign: "left" } }, partialMilestone ? "Continue: " + partialMilestone.phase : "Review timeline"),
+          React.createElement("button", { id: "tops-continue-documents", "data-continue-plan": "documents", type: "button", onClick: function() { openPlanRoute("resources", "tops-plan-documents", "tops-continue-documents"); }, style: { flex: "1 1 150px", minHeight: 44, border: "1px solid " + C.border, borderRadius: 6, background: C.bgElevated, color: C.textPrimary, padding: "10px 12px", fontFamily: "'Oswald', sans-serif", fontSize: 14, cursor: "pointer", textAlign: "left" } }, docsSecured === docsTotal ? "Review documents" : "Continue documents")
+        )
+      ),
 
       // ═══ v72 SITREP DELTA — what changed since your last check-in ═══
       sitrepDelta && React.createElement("div", { onClick: function() { setPolicyPanelOpen(true); }, style: { background: C.bgElevated, border: "1px solid " + C.border, borderLeft: "3px solid " + C.goldBright, borderRadius: 12, padding: "12px 15px", marginBottom: 12, cursor: "pointer" } },
@@ -7514,7 +7588,7 @@ function App() {
       ),
 
       // ═══ v49 NEXT ACTION (replaces pulsing urgent card) ═══
-      urgentReminders.length > 0 && React.createElement("div", { style: { background: C.bgCard, borderRadius: 12, padding: "14px 16px", marginBottom: 12, display: "flex", alignItems: "center", gap: 13, cursor: "pointer" }, onClick: function() { setActiveTab("reminders"); } },
+      urgentReminders.length > 0 && React.createElement("button", { id: "tops-home-next-action", type: "button", style: { width: "100%", textAlign: "left", border: "1px solid " + C.border, background: C.bgCard, borderRadius: 12, padding: "14px 16px", marginBottom: 12, display: "flex", alignItems: "center", gap: 13, cursor: "pointer" }, onClick: function() { openPlanRoute("reminders", "tops-reminder-" + urgentReminders[0].id, "tops-home-next-action"); } },
         React.createElement("div", { style: { width: 3, alignSelf: "stretch", borderRadius: 4, background: C.accent, flexShrink: 0 } }),
         React.createElement("div", { style: { minWidth: 0 } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 3, color: C.gold } }, "NEXT ACTION"),
@@ -7916,7 +7990,7 @@ whatsNewUnseen && React.createElement("div", {
     );
   })()),
 
-  activeTab === "timeline" && !selectedMilestone && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  activeTab === "timeline" && !selectedMilestone && /*#__PURE__*/React.createElement("div", { id: "tops-plan-timeline", role: "region", "aria-label": "Timeline", tabIndex: -1 }, /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
       padding: 14
@@ -8158,6 +8232,7 @@ whatsNewUnseen && React.createElement("div", {
         marginBottom: 3
       }
     }, m.phase), /*#__PURE__*/React.createElement("div", {
+      id: "tops-plan-milestone", tabIndex: -1, role: "heading", "aria-level": 2,
       style: {
         fontSize: 14,
         color: C.textSecondary,
@@ -13614,6 +13689,7 @@ whatsNewUnseen && React.createElement("div", {
       padding: 14
     }
   }, /*#__PURE__*/React.createElement("div", {
+    id: "tops-plan-documents", tabIndex: -1, role: "heading", "aria-level": 2,
     style: S.cardTitle
   }, "DOCUMENT VAULT"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -14501,7 +14577,7 @@ whatsNewUnseen && React.createElement("div", {
         var isDis = dismissedReminders[r.id];
         var isImm = etsMonths !== null && r.mo >= etsMonths - 1 && r.mo <= etsMonths + 2;
         return React.createElement("div", { key: r.id, style: { marginBottom: 10, background: ps.bg, border: "1px solid " + ps.bdr, borderRadius: 8, overflow: "hidden", opacity: isDis ? 0.4 : 1, borderLeft: isImm && !isDis ? "3px solid " + ps.bdr : undefined } },
-          React.createElement("div", { style: { padding: 14, cursor: "pointer", display: "flex", gap: 10 }, onClick: function() { setReminderExpanded(isExp ? null : r.id); } },
+          React.createElement("button", { id: "tops-reminder-" + r.id, type: "button", "aria-expanded": isExp, style: { width: "100%", background: "transparent", border: 0, textAlign: "left", padding: 14, cursor: "pointer", display: "flex", gap: 10 }, onClick: function() { setReminderExpanded(isExp ? null : r.id); } },
             React.createElement("div", { style: { flex: 1 } },
               React.createElement("div", { style: { display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 6 } },
                 React.createElement("span", { style: { padding: "2px 8px", background: ps.bdg, color: "#fff", fontSize: 9, fontWeight: 700, borderRadius: 4, fontFamily: "'Oswald', sans-serif" } }, r.pri),
@@ -14727,7 +14803,7 @@ whatsNewUnseen && React.createElement("div", {
 
     return React.createElement("div", null,
       React.createElement("div", { style: { textAlign: "center", paddingTop: 10 } },
-        React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif", marginBottom: 16 } }, "TRANSITION READINESS SCORE"),
+        React.createElement("div", { id: "tops-plan-readiness", tabIndex: -1, role: "heading", "aria-level": 2, style: { fontSize: 10, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif", marginBottom: 16 } }, "TRANSITION READINESS SCORE"),
         React.createElement("div", { style: { position: "relative", width: 180, height: 180, margin: "0 auto 16px" } },
           React.createElement("svg", { width: 180, height: 180, viewBox: "0 0 180 180", style: { transform: "rotate(-90deg)" } },
             React.createElement("circle", { cx: 90, cy: 90, r: 80, fill: "none", stroke: C.border, strokeWidth: 10 }),

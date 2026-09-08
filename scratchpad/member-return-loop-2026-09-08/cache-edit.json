@@ -1,0 +1,9 @@
+{
+  "old": "const CACHE_NAME = \"transition-ops-v156\";",
+  "new": "const CACHE_NAME = \"transition-ops-v157\";",
+  "old_before": 1,
+  "old_after": 0,
+  "new_after": 1,
+  "ledger": "cache-ledger.json",
+  "recovery_applied": false
+}

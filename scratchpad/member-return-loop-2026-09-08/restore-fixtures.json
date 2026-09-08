@@ -1,0 +1,3138 @@
+{
+  "source_commit": "e9a84fe2c94cecd4b76b70880fc3a76a36e1e469",
+  "source_sha256": "b8b653776e7182afa9c09f7909869752a8c8a2a887ee2393d3148eec41cef27e",
+  "scope": "Synthetic restoration contract only, derived from parent proposed bounded fix. No metric design; no app edits. Same fixture expectations for before/after.",
+  "canonical": {
+    "milestones": [
+      {
+        "id": 1,
+        "phase": "18 Months Out",
+        "monthsOut": 18,
+        "category": "PLANNING",
+        "title": "Initial Planning & Medical Documentation",
+        "tasks": [
+          {
+            "id": "t1",
+            "text": "Attend Initial TAP briefing",
+            "done": false
+          },
+          {
+            "id": "t2",
+            "text": "Complete Individual Transition Plan (ITP) with commander",
+            "done": false
+          },
+          {
+            "id": "t1b",
+            "text": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record.",
+            "done": false
+          },
+          {
+            "id": "t1c",
+            "text": "Follow up on current conditions, referrals, and specialist appointments; keep your service treatment records current",
+            "done": false
+          },
+          {
+            "id": "t1d",
+            "text": "Research VR&E (Chapter 31) \u2014 vocational rehab benefits at 10%+ disability rating (priority at 20%+). It interacts with your GI Bill and the choice matters \u2014 understand both before you elect. Ask a VSO",
+            "done": false
+          },
+          {
+            "id": "t3",
+            "text": "Review military service records for accuracy (OMPF)",
+            "done": false
+          },
+          {
+            "id": "t4",
+            "text": "Research post-separation state: income tax, property tax exemptions, vehicle registration discounts, state vet benefits",
+            "done": false
+          },
+          {
+            "id": "t5",
+            "text": "Begin networking \u2014 LinkedIn profile, veteran groups, mentors",
+            "done": false
+          },
+          {
+            "id": "t1e",
+            "text": "Get professional headshot \u2014 Portraits for Patriots offers FREE headshots for military (see Resources \u2192 TAP+)",
+            "done": false
+          }
+        ],
+        "reminder": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record. Also: research VR&E (Ch. 31) \u2014 if you qualify, understand how it interacts with your GI Bill before you choose, because the election affects both."
+      },
+      {
+        "id": 2,
+        "phase": "12 Months Out",
+        "monthsOut": 12,
+        "category": "BENEFITS",
+        "title": "Benefits, Claims & Medical Follow-Up",
+        "tasks": [
+          {
+            "id": "t6",
+            "text": "Continue medical documentation \u2014 follow up on ALL referrals and specialist appointments",
+            "done": false
+          },
+          {
+            "id": "t7",
+            "text": "Keep service treatment records current; follow up on active referrals and document current conditions",
+            "done": false
+          },
+          {
+            "id": "t7b",
+            "text": "If eligible: apply for VR&E (Chapter 31) NOW \u2014 vocational rehab for service-connected veterans. Understand how it interacts with your GI Bill before you elect \u2014 the choice matters",
+            "done": false
+          },
+          {
+            "id": "t8",
+            "text": "Research VA disability claim process and BDD program (opens at 180 days)",
+            "done": false
+          },
+          {
+            "id": "t9",
+            "text": "Attend TAP workshops \u2014 not all TAPs are equal, supplement with outside resources (see Resources \u2192 TAP+)",
+            "done": false
+          },
+          {
+            "id": "t10",
+            "text": "Research GI Bill eligibility and transfer options \u2014 remember VR&E comes FIRST if eligible",
+            "done": false
+          },
+          {
+            "id": "t11",
+            "text": "Verify SGLI to VGLI conversion timeline",
+            "done": false
+          }
+        ],
+        "reminder": "BDD opens at 180 days. Gather service treatment records and document current conditions before filing. VA evaluates each claimed condition using the evidence of record. Consider VR&E (Ch. 31) before spending GI Bill months if you qualify \u2014 the two interact and the election matters. Ask a VSO which fits your plan."
+      },
+      {
+        "id": 3,
+        "phase": "9 Months Out",
+        "monthsOut": 9,
+        "category": "CAREER",
+        "title": "Career Targeting & Gap Analysis",
+        "tasks": [
+          {
+            "id": "t12",
+            "text": "Run MOS through O*NET Crosswalk \u2014 identify top 3 civilian job matches (Pathway tab)",
+            "done": false
+          },
+          {
+            "id": "t12b",
+            "text": "Complete Gap Analysis \u2014 compare your skills to target job requirements (Pathway \u2192 Step 2)",
+            "done": false
+          },
+          {
+            "id": "t13",
+            "text": "Choose your path: college degree, certs/trades, or SkillBridge (Pathway \u2192 Step 3)",
+            "done": false
+          },
+          {
+            "id": "t14",
+            "text": "Research certs & credentials on DOD COOL \u2014 many are FREE on active duty",
+            "done": false
+          },
+          {
+            "id": "t14b",
+            "text": "Map your income stack: VA comp + GI Bill BAH + work programs (Pathway \u2192 Step 4)",
+            "done": false
+          },
+          {
+            "id": "t15",
+            "text": "Apply through your service-specific SkillBridge or Career Skills Program process after confirming your maximum days and approval authority.",
+            "done": false
+          },
+          {
+            "id": "t15b",
+            "text": "Apply for ACP mentorship \u2014 FREE year-long 1-on-1 with Fortune 500 professionals (acp-usa.org)",
+            "done": false
+          },
+          {
+            "id": "t15c",
+            "text": "Register on 50 Strong \u2014 FREE on-demand mentoring, employer connects, and job board (50-strong.us)",
+            "done": false
+          },
+          {
+            "id": "t16",
+            "text": "Contact vet-ready employers with gap closure programs (Pathway \u2192 Step 5)",
+            "done": false
+          }
+        ],
+        "reminder": "Run your crosswalk. Run your gap analysis. Choose your path. GET A MENTOR NOW \u2014 ACP and 50 Strong are free and connect you with civilians who've hired vets. One conversation can change your trajectory."
+      },
+      {
+        "id": 4,
+        "phase": "6 Months Out",
+        "monthsOut": 6,
+        "category": "FINANCE",
+        "title": "BDD Filing & Financial Operations",
+        "tasks": [
+          {
+            "id": "t17a",
+            "text": "SUBMIT BDD claim (Benefits Delivery at Discharge) \u2014 180-90 day window is NOW",
+            "done": false
+          },
+          {
+            "id": "t17b",
+            "text": "Be available for VA C&P exams within 45 days of filing",
+            "done": false
+          },
+          {
+            "id": "t17c",
+            "text": "Keep service treatment records current and complete before separation",
+            "done": false
+          },
+          {
+            "id": "t17",
+            "text": "Build post-separation budget (no BAH/BAS)",
+            "done": false
+          },
+          {
+            "id": "t18",
+            "text": "Determine state of residence for tax purposes",
+            "done": false
+          },
+          {
+            "id": "t19",
+            "text": "Research VA home loan pre-approval",
+            "done": false
+          },
+          {
+            "id": "t20",
+            "text": "Open/verify civilian bank accounts",
+            "done": false
+          },
+          {
+            "id": "t21",
+            "text": "Review TSP rollover options",
+            "done": false
+          },
+          {
+            "id": "t22",
+            "text": "Secure housing at post-separation location",
+            "done": false
+          }
+        ],
+        "reminder": "BDD WINDOW IS OPEN. Submit your claim NOW (180-90 days pre-sep). Be available for VA exams within 45 days of filing. Keep your service treatment records current and complete."
+      },
+      {
+        "id": 5,
+        "phase": "3 Months Out",
+        "monthsOut": 3,
+        "category": "ADMIN",
+        "title": "Administrative & Legal Closeout",
+        "tasks": [
+          {
+            "id": "t23",
+            "text": "Complete DD214 worksheet \u2014 verify every line",
+            "done": false
+          },
+          {
+            "id": "t24",
+            "text": "Schedule separation physical (VA C&P exam may satisfy this \u2014 check with medical)",
+            "done": false
+          },
+          {
+            "id": "t25",
+            "text": "Verify all awards, decorations, schools on record",
+            "done": false
+          },
+          {
+            "id": "t26",
+            "text": "Set up VA healthcare enrollment",
+            "done": false
+          },
+          {
+            "id": "t27",
+            "text": "Update DEERS for dependents",
+            "done": false
+          },
+          {
+            "id": "t28",
+            "text": "Finalize SBP elections (if retiring)",
+            "done": false
+          }
+        ],
+        "reminder": "Your DD214 is your most important document. Verify every entry. Errors are costly."
+      },
+      {
+        "id": 6,
+        "phase": "1 Month Out",
+        "monthsOut": 1,
+        "category": "EXECUTION",
+        "title": "Final Preparations & Outprocessing",
+        "tasks": [
+          {
+            "id": "t29",
+            "text": "Complete installation outprocessing checklist",
+            "done": false
+          },
+          {
+            "id": "t30",
+            "text": "Turn in all CIF/IIF (unit supply) and organizational equipment",
+            "done": false
+          },
+          {
+            "id": "t31",
+            "text": "Obtain 10+ certified copies of DD214",
+            "done": false
+          },
+          {
+            "id": "t32",
+            "text": "Verify final pay / leave sellback",
+            "done": false
+          },
+          {
+            "id": "t33",
+            "text": "Set up TRICARE transition (TAMP if eligible / CHCBP)",
+            "done": false
+          },
+          {
+            "id": "t34",
+            "text": "Confirm VA disability rating status",
+            "done": false
+          }
+        ],
+        "reminder": "Get 10+ certified copies of your DD214. You will need them for everything."
+      },
+      {
+        "id": 7,
+        "phase": "Post-Separation",
+        "monthsOut": 0,
+        "category": "VETERAN",
+        "title": "First 90 Days as a Veteran",
+        "tasks": [
+          {
+            "id": "t35",
+            "text": "Register with VA healthcare system",
+            "done": false
+          },
+          {
+            "id": "t36",
+            "text": "Apply for state veteran benefits \u2014 property tax exemptions, vehicle registration discounts, state vet bonuses",
+            "done": false
+          },
+          {
+            "id": "t37",
+            "text": "File for unemployment (UCX) if applicable",
+            "done": false
+          },
+          {
+            "id": "t38",
+            "text": "Connect with local veteran service organizations",
+            "done": false
+          },
+          {
+            "id": "t39",
+            "text": "Verify GI Bill enrollment / housing allowance",
+            "done": false
+          },
+          {
+            "id": "t40",
+            "text": "Establish primary care provider",
+            "done": false
+          },
+          {
+            "id": "t41",
+            "text": "Get your America the Beautiful Pass \u2014 FREE National Parks & Federal Lands access for all veterans (see Vet Perks tab)",
+            "done": false
+          },
+          {
+            "id": "t42",
+            "text": "Get veteran designation on driver's license \u2014 free in most states, proves status without carrying DD214",
+            "done": false
+          },
+          {
+            "id": "t43",
+            "text": "Join a veteran community \u2014 Team RWB, The Mission Continues, Team Rubicon, Next 18 (free golf & wellness camps), local VFW or American Legion post. Don't isolate.",
+            "done": false
+          },
+          {
+            "id": "t44",
+            "text": "Read the MINDSET tab \u2014 The Drop hits at months 1-3. Know the signs. Build structure. Ask for help if you need it.",
+            "done": false
+          }
+        ],
+        "reminder": "You earned these benefits. Don't leave anything on the table. And be ready for The Drop \u2014 the loss of identity, structure, and purpose hits harder than anyone warns you. Build your new routine, connect with other vets, and don't isolate. See Resources \u2192 Mindset."
+      }
+    ],
+    "documents": [
+      {
+        "id": "d1",
+        "name": "DD214 (Member-4 Copy)",
+        "critical": true,
+        "obtained": false,
+        "notes": "Get 10+ certified copies. Required for nearly all veteran benefits."
+      },
+      {
+        "id": "d2",
+        "name": "VA Disability Rating Letter",
+        "critical": true,
+        "obtained": false,
+        "notes": "Download from VA.gov (Records \u2192 VA letters)."
+      },
+      {
+        "id": "d3",
+        "name": "Military Medical Records (Complete)",
+        "critical": true,
+        "obtained": false,
+        "notes": "Request from MTF. Include dental. Takes 30-90 days."
+      },
+      {
+        "id": "d4",
+        "name": "Service Record (OMPF)",
+        "critical": true,
+        "obtained": false,
+        "notes": "Verify all entries via iPERMS or branch equivalent."
+      },
+      {
+        "id": "d5",
+        "name": "Joint Services Transcript (JST)",
+        "critical": false,
+        "obtained": false,
+        "notes": "Download from jst.doded.mil. Maps training to ACE credits."
+      },
+      {
+        "id": "d6",
+        "name": "VMET Document",
+        "critical": false,
+        "obtained": false,
+        "notes": "Translates military experience to civilian terms."
+      },
+      {
+        "id": "d7",
+        "name": "TSP Account Statement",
+        "critical": false,
+        "obtained": false,
+        "notes": "Current balance, fund allocations, beneficiary info."
+      },
+      {
+        "id": "d8",
+        "name": "SGLI/VGLI Documentation",
+        "critical": false,
+        "obtained": false,
+        "notes": "SGLI to VGLI conversion within 240 days of separation."
+      },
+      {
+        "id": "d9",
+        "name": "VA Certificate of Eligibility (COE)",
+        "critical": false,
+        "obtained": false,
+        "notes": "For VA home loan. Request via VA.gov."
+      },
+      {
+        "id": "d10",
+        "name": "GI Bill Statement of Benefits",
+        "critical": false,
+        "obtained": false,
+        "notes": "Verify months remaining, transfer status."
+      },
+      {
+        "id": "d11",
+        "name": "Security Clearance Verification",
+        "critical": false,
+        "obtained": false,
+        "notes": "Clearance status and investigation dates."
+      },
+      {
+        "id": "d12",
+        "name": "Awards/Decoration Certificates",
+        "critical": false,
+        "obtained": false,
+        "notes": "Physical copies of all awards."
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "absent keys retain canonical defaults",
+      "storage": {},
+      "expected": {
+        "milestones": [
+          {
+            "id": 1,
+            "phase": "18 Months Out",
+            "monthsOut": 18,
+            "category": "PLANNING",
+            "title": "Initial Planning & Medical Documentation",
+            "tasks": [
+              {
+                "id": "t1",
+                "text": "Attend Initial TAP briefing",
+                "done": false
+              },
+              {
+                "id": "t2",
+                "text": "Complete Individual Transition Plan (ITP) with commander",
+                "done": false
+              },
+              {
+                "id": "t1b",
+                "text": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record.",
+                "done": false
+              },
+              {
+                "id": "t1c",
+                "text": "Follow up on current conditions, referrals, and specialist appointments; keep your service treatment records current",
+                "done": false
+              },
+              {
+                "id": "t1d",
+                "text": "Research VR&E (Chapter 31) \u2014 vocational rehab benefits at 10%+ disability rating (priority at 20%+). It interacts with your GI Bill and the choice matters \u2014 understand both before you elect. Ask a VSO",
+                "done": false
+              },
+              {
+                "id": "t3",
+                "text": "Review military service records for accuracy (OMPF)",
+                "done": false
+              },
+              {
+                "id": "t4",
+                "text": "Research post-separation state: income tax, property tax exemptions, vehicle registration discounts, state vet benefits",
+                "done": false
+              },
+              {
+                "id": "t5",
+                "text": "Begin networking \u2014 LinkedIn profile, veteran groups, mentors",
+                "done": false
+              },
+              {
+                "id": "t1e",
+                "text": "Get professional headshot \u2014 Portraits for Patriots offers FREE headshots for military (see Resources \u2192 TAP+)",
+                "done": false
+              }
+            ],
+            "reminder": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record. Also: research VR&E (Ch. 31) \u2014 if you qualify, understand how it interacts with your GI Bill before you choose, because the election affects both."
+          },
+          {
+            "id": 2,
+            "phase": "12 Months Out",
+            "monthsOut": 12,
+            "category": "BENEFITS",
+            "title": "Benefits, Claims & Medical Follow-Up",
+            "tasks": [
+              {
+                "id": "t6",
+                "text": "Continue medical documentation \u2014 follow up on ALL referrals and specialist appointments",
+                "done": false
+              },
+              {
+                "id": "t7",
+                "text": "Keep service treatment records current; follow up on active referrals and document current conditions",
+                "done": false
+              },
+              {
+                "id": "t7b",
+                "text": "If eligible: apply for VR&E (Chapter 31) NOW \u2014 vocational rehab for service-connected veterans. Understand how it interacts with your GI Bill before you elect \u2014 the choice matters",
+                "done": false
+              },
+              {
+                "id": "t8",
+                "text": "Research VA disability claim process and BDD program (opens at 180 days)",
+                "done": false
+              },
+              {
+                "id": "t9",
+                "text": "Attend TAP workshops \u2014 not all TAPs are equal, supplement with outside resources (see Resources \u2192 TAP+)",
+                "done": false
+              },
+              {
+                "id": "t10",
+                "text": "Research GI Bill eligibility and transfer options \u2014 remember VR&E comes FIRST if eligible",
+                "done": false
+              },
+              {
+                "id": "t11",
+                "text": "Verify SGLI to VGLI conversion timeline",
+                "done": false
+              }
+            ],
+            "reminder": "BDD opens at 180 days. Gather service treatment records and document current conditions before filing. VA evaluates each claimed condition using the evidence of record. Consider VR&E (Ch. 31) before spending GI Bill months if you qualify \u2014 the two interact and the election matters. Ask a VSO which fits your plan."
+          },
+          {
+            "id": 3,
+            "phase": "9 Months Out",
+            "monthsOut": 9,
+            "category": "CAREER",
+            "title": "Career Targeting & Gap Analysis",
+            "tasks": [
+              {
+                "id": "t12",
+                "text": "Run MOS through O*NET Crosswalk \u2014 identify top 3 civilian job matches (Pathway tab)",
+                "done": false
+              },
+              {
+                "id": "t12b",
+                "text": "Complete Gap Analysis \u2014 compare your skills to target job requirements (Pathway \u2192 Step 2)",
+                "done": false
+              },
+              {
+                "id": "t13",
+                "text": "Choose your path: college degree, certs/trades, or SkillBridge (Pathway \u2192 Step 3)",
+                "done": false
+              },
+              {
+                "id": "t14",
+                "text": "Research certs & credentials on DOD COOL \u2014 many are FREE on active duty",
+                "done": false
+              },
+              {
+                "id": "t14b",
+                "text": "Map your income stack: VA comp + GI Bill BAH + work programs (Pathway \u2192 Step 4)",
+                "done": false
+              },
+              {
+                "id": "t15",
+                "text": "Apply through your service-specific SkillBridge or Career Skills Program process after confirming your maximum days and approval authority.",
+                "done": false
+              },
+              {
+                "id": "t15b",
+                "text": "Apply for ACP mentorship \u2014 FREE year-long 1-on-1 with Fortune 500 professionals (acp-usa.org)",
+                "done": false
+              },
+              {
+                "id": "t15c",
+                "text": "Register on 50 Strong \u2014 FREE on-demand mentoring, employer connects, and job board (50-strong.us)",
+                "done": false
+              },
+              {
+                "id": "t16",
+                "text": "Contact vet-ready employers with gap closure programs (Pathway \u2192 Step 5)",
+                "done": false
+              }
+            ],
+            "reminder": "Run your crosswalk. Run your gap analysis. Choose your path. GET A MENTOR NOW \u2014 ACP and 50 Strong are free and connect you with civilians who've hired vets. One conversation can change your trajectory."
+          },
+          {
+            "id": 4,
+            "phase": "6 Months Out",
+            "monthsOut": 6,
+            "category": "FINANCE",
+            "title": "BDD Filing & Financial Operations",
+            "tasks": [
+              {
+                "id": "t17a",
+                "text": "SUBMIT BDD claim (Benefits Delivery at Discharge) \u2014 180-90 day window is NOW",
+                "done": false
+              },
+              {
+                "id": "t17b",
+                "text": "Be available for VA C&P exams within 45 days of filing",
+                "done": false
+              },
+              {
+                "id": "t17c",
+                "text": "Keep service treatment records current and complete before separation",
+                "done": false
+              },
+              {
+                "id": "t17",
+                "text": "Build post-separation budget (no BAH/BAS)",
+                "done": false
+              },
+              {
+                "id": "t18",
+                "text": "Determine state of residence for tax purposes",
+                "done": false
+              },
+              {
+                "id": "t19",
+                "text": "Research VA home loan pre-approval",
+                "done": false
+              },
+              {
+                "id": "t20",
+                "text": "Open/verify civilian bank accounts",
+                "done": false
+              },
+              {
+                "id": "t21",
+                "text": "Review TSP rollover options",
+                "done": false
+              },
+              {
+                "id": "t22",
+                "text": "Secure housing at post-separation location",
+                "done": false
+              }
+            ],
+            "reminder": "BDD WINDOW IS OPEN. Submit your claim NOW (180-90 days pre-sep). Be available for VA exams within 45 days of filing. Keep your service treatment records current and complete."
+          },
+          {
+            "id": 5,
+            "phase": "3 Months Out",
+            "monthsOut": 3,
+            "category": "ADMIN",
+            "title": "Administrative & Legal Closeout",
+            "tasks": [
+              {
+                "id": "t23",
+                "text": "Complete DD214 worksheet \u2014 verify every line",
+                "done": false
+              },
+              {
+                "id": "t24",
+                "text": "Schedule separation physical (VA C&P exam may satisfy this \u2014 check with medical)",
+                "done": false
+              },
+              {
+                "id": "t25",
+                "text": "Verify all awards, decorations, schools on record",
+                "done": false
+              },
+              {
+                "id": "t26",
+                "text": "Set up VA healthcare enrollment",
+                "done": false
+              },
+              {
+                "id": "t27",
+                "text": "Update DEERS for dependents",
+                "done": false
+              },
+              {
+                "id": "t28",
+                "text": "Finalize SBP elections (if retiring)",
+                "done": false
+              }
+            ],
+            "reminder": "Your DD214 is your most important document. Verify every entry. Errors are costly."
+          },
+          {
+            "id": 6,
+            "phase": "1 Month Out",
+            "monthsOut": 1,
+            "category": "EXECUTION",
+            "title": "Final Preparations & Outprocessing",
+            "tasks": [
+              {
+                "id": "t29",
+                "text": "Complete installation outprocessing checklist",
+                "done": false
+              },
+              {
+                "id": "t30",
+                "text": "Turn in all CIF/IIF (unit supply) and organizational equipment",
+                "done": false
+              },
+              {
+                "id": "t31",
+                "text": "Obtain 10+ certified copies of DD214",
+                "done": false
+              },
+              {
+                "id": "t32",
+                "text": "Verify final pay / leave sellback",
+                "done": false
+              },
+              {
+                "id": "t33",
+                "text": "Set up TRICARE transition (TAMP if eligible / CHCBP)",
+                "done": false
+              },
+              {
+                "id": "t34",
+                "text": "Confirm VA disability rating status",
+                "done": false
+              }
+            ],
+            "reminder": "Get 10+ certified copies of your DD214. You will need them for everything."
+          },
+          {
+            "id": 7,
+            "phase": "Post-Separation",
+            "monthsOut": 0,
+            "category": "VETERAN",
+            "title": "First 90 Days as a Veteran",
+            "tasks": [
+              {
+                "id": "t35",
+                "text": "Register with VA healthcare system",
+                "done": false
+              },
+              {
+                "id": "t36",
+                "text": "Apply for state veteran benefits \u2014 property tax exemptions, vehicle registration discounts, state vet bonuses",
+                "done": false
+              },
+              {
+                "id": "t37",
+                "text": "File for unemployment (UCX) if applicable",
+                "done": false
+              },
+              {
+                "id": "t38",
+                "text": "Connect with local veteran service organizations",
+                "done": false
+              },
+              {
+                "id": "t39",
+                "text": "Verify GI Bill enrollment / housing allowance",
+                "done": false
+              },
+              {
+                "id": "t40",
+                "text": "Establish primary care provider",
+                "done": false
+              },
+              {
+                "id": "t41",
+                "text": "Get your America the Beautiful Pass \u2014 FREE National Parks & Federal Lands access for all veterans (see Vet Perks tab)",
+                "done": false
+              },
+              {
+                "id": "t42",
+                "text": "Get veteran designation on driver's license \u2014 free in most states, proves status without carrying DD214",
+                "done": false
+              },
+              {
+                "id": "t43",
+                "text": "Join a veteran community \u2014 Team RWB, The Mission Continues, Team Rubicon, Next 18 (free golf & wellness camps), local VFW or American Legion post. Don't isolate.",
+                "done": false
+              },
+              {
+                "id": "t44",
+                "text": "Read the MINDSET tab \u2014 The Drop hits at months 1-3. Know the signs. Build structure. Ask for help if you need it.",
+                "done": false
+              }
+            ],
+            "reminder": "You earned these benefits. Don't leave anything on the table. And be ready for The Drop \u2014 the loss of identity, structure, and purpose hits harder than anyone warns you. Build your new routine, connect with other vets, and don't isolate. See Resources \u2192 Mindset."
+          }
+        ],
+        "documents": [
+          {
+            "id": "d1",
+            "name": "DD214 (Member-4 Copy)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Get 10+ certified copies. Required for nearly all veteran benefits."
+          },
+          {
+            "id": "d2",
+            "name": "VA Disability Rating Letter",
+            "critical": true,
+            "obtained": false,
+            "notes": "Download from VA.gov (Records \u2192 VA letters)."
+          },
+          {
+            "id": "d3",
+            "name": "Military Medical Records (Complete)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Request from MTF. Include dental. Takes 30-90 days."
+          },
+          {
+            "id": "d4",
+            "name": "Service Record (OMPF)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Verify all entries via iPERMS or branch equivalent."
+          },
+          {
+            "id": "d5",
+            "name": "Joint Services Transcript (JST)",
+            "critical": false,
+            "obtained": false,
+            "notes": "Download from jst.doded.mil. Maps training to ACE credits."
+          },
+          {
+            "id": "d6",
+            "name": "VMET Document",
+            "critical": false,
+            "obtained": false,
+            "notes": "Translates military experience to civilian terms."
+          },
+          {
+            "id": "d7",
+            "name": "TSP Account Statement",
+            "critical": false,
+            "obtained": false,
+            "notes": "Current balance, fund allocations, beneficiary info."
+          },
+          {
+            "id": "d8",
+            "name": "SGLI/VGLI Documentation",
+            "critical": false,
+            "obtained": false,
+            "notes": "SGLI to VGLI conversion within 240 days of separation."
+          },
+          {
+            "id": "d9",
+            "name": "VA Certificate of Eligibility (COE)",
+            "critical": false,
+            "obtained": false,
+            "notes": "For VA home loan. Request via VA.gov."
+          },
+          {
+            "id": "d10",
+            "name": "GI Bill Statement of Benefits",
+            "critical": false,
+            "obtained": false,
+            "notes": "Verify months remaining, transfer status."
+          },
+          {
+            "id": "d11",
+            "name": "Security Clearance Verification",
+            "critical": false,
+            "obtained": false,
+            "notes": "Clearance status and investigation dates."
+          },
+          {
+            "id": "d12",
+            "name": "Awards/Decoration Certificates",
+            "critical": false,
+            "obtained": false,
+            "notes": "Physical copies of all awards."
+          }
+        ],
+        "dismissed": []
+      }
+    },
+    {
+      "name": "old partial arrays keep marks and restore current canonical content and IDs",
+      "storage": {
+        "taskProgress": "[{\"id\":1,\"phase\":\"18 Months Out\",\"monthsOut\":18,\"category\":\"PLANNING\",\"title\":\"STALE FIXTURE TITLE\",\"tasks\":[{\"id\":\"t1\",\"text\":\"STALE FIXTURE TEXT\",\"done\":true},{\"id\":\"removed-fixture-task\",\"text\":\"REMOVED\",\"done\":true}],\"reminder\":\"Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record. Also: research VR&E (Ch. 31) \u2014 if you qualify, understand how it interacts with your GI Bill before you choose, because the election affects both.\"}]",
+        "docProgress": "[{\"id\":\"d1\",\"name\":\"STALE FIXTURE DOCUMENT\",\"critical\":true,\"obtained\":true,\"notes\":\"Get 10+ certified copies. Required for nearly all veteran benefits.\"},{\"id\":\"removed-fixture-document\",\"obtained\":true}]"
+      },
+      "expected": {
+        "milestones": [
+          {
+            "id": 1,
+            "phase": "18 Months Out",
+            "monthsOut": 18,
+            "category": "PLANNING",
+            "title": "Initial Planning & Medical Documentation",
+            "tasks": [
+              {
+                "id": "t1",
+                "text": "Attend Initial TAP briefing",
+                "done": true
+              },
+              {
+                "id": "t2",
+                "text": "Complete Individual Transition Plan (ITP) with commander",
+                "done": false
+              },
+              {
+                "id": "t1b",
+                "text": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record.",
+                "done": false
+              },
+              {
+                "id": "t1c",
+                "text": "Follow up on current conditions, referrals, and specialist appointments; keep your service treatment records current",
+                "done": false
+              },
+              {
+                "id": "t1d",
+                "text": "Research VR&E (Chapter 31) \u2014 vocational rehab benefits at 10%+ disability rating (priority at 20%+). It interacts with your GI Bill and the choice matters \u2014 understand both before you elect. Ask a VSO",
+                "done": false
+              },
+              {
+                "id": "t3",
+                "text": "Review military service records for accuracy (OMPF)",
+                "done": false
+              },
+              {
+                "id": "t4",
+                "text": "Research post-separation state: income tax, property tax exemptions, vehicle registration discounts, state vet benefits",
+                "done": false
+              },
+              {
+                "id": "t5",
+                "text": "Begin networking \u2014 LinkedIn profile, veteran groups, mentors",
+                "done": false
+              },
+              {
+                "id": "t1e",
+                "text": "Get professional headshot \u2014 Portraits for Patriots offers FREE headshots for military (see Resources \u2192 TAP+)",
+                "done": false
+              }
+            ],
+            "reminder": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record. Also: research VR&E (Ch. 31) \u2014 if you qualify, understand how it interacts with your GI Bill before you choose, because the election affects both."
+          },
+          {
+            "id": 2,
+            "phase": "12 Months Out",
+            "monthsOut": 12,
+            "category": "BENEFITS",
+            "title": "Benefits, Claims & Medical Follow-Up",
+            "tasks": [
+              {
+                "id": "t6",
+                "text": "Continue medical documentation \u2014 follow up on ALL referrals and specialist appointments",
+                "done": false
+              },
+              {
+                "id": "t7",
+                "text": "Keep service treatment records current; follow up on active referrals and document current conditions",
+                "done": false
+              },
+              {
+                "id": "t7b",
+                "text": "If eligible: apply for VR&E (Chapter 31) NOW \u2014 vocational rehab for service-connected veterans. Understand how it interacts with your GI Bill before you elect \u2014 the choice matters",
+                "done": false
+              },
+              {
+                "id": "t8",
+                "text": "Research VA disability claim process and BDD program (opens at 180 days)",
+                "done": false
+              },
+              {
+                "id": "t9",
+                "text": "Attend TAP workshops \u2014 not all TAPs are equal, supplement with outside resources (see Resources \u2192 TAP+)",
+                "done": false
+              },
+              {
+                "id": "t10",
+                "text": "Research GI Bill eligibility and transfer options \u2014 remember VR&E comes FIRST if eligible",
+                "done": false
+              },
+              {
+                "id": "t11",
+                "text": "Verify SGLI to VGLI conversion timeline",
+                "done": false
+              }
+            ],
+            "reminder": "BDD opens at 180 days. Gather service treatment records and document current conditions before filing. VA evaluates each claimed condition using the evidence of record. Consider VR&E (Ch. 31) before spending GI Bill months if you qualify \u2014 the two interact and the election matters. Ask a VSO which fits your plan."
+          },
+          {
+            "id": 3,
+            "phase": "9 Months Out",
+            "monthsOut": 9,
+            "category": "CAREER",
+            "title": "Career Targeting & Gap Analysis",
+            "tasks": [
+              {
+                "id": "t12",
+                "text": "Run MOS through O*NET Crosswalk \u2014 identify top 3 civilian job matches (Pathway tab)",
+                "done": false
+              },
+              {
+                "id": "t12b",
+                "text": "Complete Gap Analysis \u2014 compare your skills to target job requirements (Pathway \u2192 Step 2)",
+                "done": false
+              },
+              {
+                "id": "t13",
+                "text": "Choose your path: college degree, certs/trades, or SkillBridge (Pathway \u2192 Step 3)",
+                "done": false
+              },
+              {
+                "id": "t14",
+                "text": "Research certs & credentials on DOD COOL \u2014 many are FREE on active duty",
+                "done": false
+              },
+              {
+                "id": "t14b",
+                "text": "Map your income stack: VA comp + GI Bill BAH + work programs (Pathway \u2192 Step 4)",
+                "done": false
+              },
+              {
+                "id": "t15",
+                "text": "Apply through your service-specific SkillBridge or Career Skills Program process after confirming your maximum days and approval authority.",
+                "done": false
+              },
+              {
+                "id": "t15b",
+                "text": "Apply for ACP mentorship \u2014 FREE year-long 1-on-1 with Fortune 500 professionals (acp-usa.org)",
+                "done": false
+              },
+              {
+                "id": "t15c",
+                "text": "Register on 50 Strong \u2014 FREE on-demand mentoring, employer connects, and job board (50-strong.us)",
+                "done": false
+              },
+              {
+                "id": "t16",
+                "text": "Contact vet-ready employers with gap closure programs (Pathway \u2192 Step 5)",
+                "done": false
+              }
+            ],
+            "reminder": "Run your crosswalk. Run your gap analysis. Choose your path. GET A MENTOR NOW \u2014 ACP and 50 Strong are free and connect you with civilians who've hired vets. One conversation can change your trajectory."
+          },
+          {
+            "id": 4,
+            "phase": "6 Months Out",
+            "monthsOut": 6,
+            "category": "FINANCE",
+            "title": "BDD Filing & Financial Operations",
+            "tasks": [
+              {
+                "id": "t17a",
+                "text": "SUBMIT BDD claim (Benefits Delivery at Discharge) \u2014 180-90 day window is NOW",
+                "done": false
+              },
+              {
+                "id": "t17b",
+                "text": "Be available for VA C&P exams within 45 days of filing",
+                "done": false
+              },
+              {
+                "id": "t17c",
+                "text": "Keep service treatment records current and complete before separation",
+                "done": false
+              },
+              {
+                "id": "t17",
+                "text": "Build post-separation budget (no BAH/BAS)",
+                "done": false
+              },
+              {
+                "id": "t18",
+                "text": "Determine state of residence for tax purposes",
+                "done": false
+              },
+              {
+                "id": "t19",
+                "text": "Research VA home loan pre-approval",
+                "done": false
+              },
+              {
+                "id": "t20",
+                "text": "Open/verify civilian bank accounts",
+                "done": false
+              },
+              {
+                "id": "t21",
+                "text": "Review TSP rollover options",
+                "done": false
+              },
+              {
+                "id": "t22",
+                "text": "Secure housing at post-separation location",
+                "done": false
+              }
+            ],
+            "reminder": "BDD WINDOW IS OPEN. Submit your claim NOW (180-90 days pre-sep). Be available for VA exams within 45 days of filing. Keep your service treatment records current and complete."
+          },
+          {
+            "id": 5,
+            "phase": "3 Months Out",
+            "monthsOut": 3,
+            "category": "ADMIN",
+            "title": "Administrative & Legal Closeout",
+            "tasks": [
+              {
+                "id": "t23",
+                "text": "Complete DD214 worksheet \u2014 verify every line",
+                "done": false
+              },
+              {
+                "id": "t24",
+                "text": "Schedule separation physical (VA C&P exam may satisfy this \u2014 check with medical)",
+                "done": false
+              },
+              {
+                "id": "t25",
+                "text": "Verify all awards, decorations, schools on record",
+                "done": false
+              },
+              {
+                "id": "t26",
+                "text": "Set up VA healthcare enrollment",
+                "done": false
+              },
+              {
+                "id": "t27",
+                "text": "Update DEERS for dependents",
+                "done": false
+              },
+              {
+                "id": "t28",
+                "text": "Finalize SBP elections (if retiring)",
+                "done": false
+              }
+            ],
+            "reminder": "Your DD214 is your most important document. Verify every entry. Errors are costly."
+          },
+          {
+            "id": 6,
+            "phase": "1 Month Out",
+            "monthsOut": 1,
+            "category": "EXECUTION",
+            "title": "Final Preparations & Outprocessing",
+            "tasks": [
+              {
+                "id": "t29",
+                "text": "Complete installation outprocessing checklist",
+                "done": false
+              },
+              {
+                "id": "t30",
+                "text": "Turn in all CIF/IIF (unit supply) and organizational equipment",
+                "done": false
+              },
+              {
+                "id": "t31",
+                "text": "Obtain 10+ certified copies of DD214",
+                "done": false
+              },
+              {
+                "id": "t32",
+                "text": "Verify final pay / leave sellback",
+                "done": false
+              },
+              {
+                "id": "t33",
+                "text": "Set up TRICARE transition (TAMP if eligible / CHCBP)",
+                "done": false
+              },
+              {
+                "id": "t34",
+                "text": "Confirm VA disability rating status",
+                "done": false
+              }
+            ],
+            "reminder": "Get 10+ certified copies of your DD214. You will need them for everything."
+          },
+          {
+            "id": 7,
+            "phase": "Post-Separation",
+            "monthsOut": 0,
+            "category": "VETERAN",
+            "title": "First 90 Days as a Veteran",
+            "tasks": [
+              {
+                "id": "t35",
+                "text": "Register with VA healthcare system",
+                "done": false
+              },
+              {
+                "id": "t36",
+                "text": "Apply for state veteran benefits \u2014 property tax exemptions, vehicle registration discounts, state vet bonuses",
+                "done": false
+              },
+              {
+                "id": "t37",
+                "text": "File for unemployment (UCX) if applicable",
+                "done": false
+              },
+              {
+                "id": "t38",
+                "text": "Connect with local veteran service organizations",
+                "done": false
+              },
+              {
+                "id": "t39",
+                "text": "Verify GI Bill enrollment / housing allowance",
+                "done": false
+              },
+              {
+                "id": "t40",
+                "text": "Establish primary care provider",
+                "done": false
+              },
+              {
+                "id": "t41",
+                "text": "Get your America the Beautiful Pass \u2014 FREE National Parks & Federal Lands access for all veterans (see Vet Perks tab)",
+                "done": false
+              },
+              {
+                "id": "t42",
+                "text": "Get veteran designation on driver's license \u2014 free in most states, proves status without carrying DD214",
+                "done": false
+              },
+              {
+                "id": "t43",
+                "text": "Join a veteran community \u2014 Team RWB, The Mission Continues, Team Rubicon, Next 18 (free golf & wellness camps), local VFW or American Legion post. Don't isolate.",
+                "done": false
+              },
+              {
+                "id": "t44",
+                "text": "Read the MINDSET tab \u2014 The Drop hits at months 1-3. Know the signs. Build structure. Ask for help if you need it.",
+                "done": false
+              }
+            ],
+            "reminder": "You earned these benefits. Don't leave anything on the table. And be ready for The Drop \u2014 the loss of identity, structure, and purpose hits harder than anyone warns you. Build your new routine, connect with other vets, and don't isolate. See Resources \u2192 Mindset."
+          }
+        ],
+        "documents": [
+          {
+            "id": "d1",
+            "name": "DD214 (Member-4 Copy)",
+            "critical": true,
+            "obtained": true,
+            "notes": "Get 10+ certified copies. Required for nearly all veteran benefits."
+          },
+          {
+            "id": "d2",
+            "name": "VA Disability Rating Letter",
+            "critical": true,
+            "obtained": false,
+            "notes": "Download from VA.gov (Records \u2192 VA letters)."
+          },
+          {
+            "id": "d3",
+            "name": "Military Medical Records (Complete)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Request from MTF. Include dental. Takes 30-90 days."
+          },
+          {
+            "id": "d4",
+            "name": "Service Record (OMPF)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Verify all entries via iPERMS or branch equivalent."
+          },
+          {
+            "id": "d5",
+            "name": "Joint Services Transcript (JST)",
+            "critical": false,
+            "obtained": false,
+            "notes": "Download from jst.doded.mil. Maps training to ACE credits."
+          },
+          {
+            "id": "d6",
+            "name": "VMET Document",
+            "critical": false,
+            "obtained": false,
+            "notes": "Translates military experience to civilian terms."
+          },
+          {
+            "id": "d7",
+            "name": "TSP Account Statement",
+            "critical": false,
+            "obtained": false,
+            "notes": "Current balance, fund allocations, beneficiary info."
+          },
+          {
+            "id": "d8",
+            "name": "SGLI/VGLI Documentation",
+            "critical": false,
+            "obtained": false,
+            "notes": "SGLI to VGLI conversion within 240 days of separation."
+          },
+          {
+            "id": "d9",
+            "name": "VA Certificate of Eligibility (COE)",
+            "critical": false,
+            "obtained": false,
+            "notes": "For VA home loan. Request via VA.gov."
+          },
+          {
+            "id": "d10",
+            "name": "GI Bill Statement of Benefits",
+            "critical": false,
+            "obtained": false,
+            "notes": "Verify months remaining, transfer status."
+          },
+          {
+            "id": "d11",
+            "name": "Security Clearance Verification",
+            "critical": false,
+            "obtained": false,
+            "notes": "Clearance status and investigation dates."
+          },
+          {
+            "id": "d12",
+            "name": "Awards/Decoration Certificates",
+            "critical": false,
+            "obtained": false,
+            "notes": "Physical copies of all awards."
+          }
+        ],
+        "dismissed": []
+      }
+    },
+    {
+      "name": "nonboolean flags are ignored",
+      "storage": {
+        "taskProgress": "[{\"id\":1,\"phase\":\"18 Months Out\",\"monthsOut\":18,\"category\":\"PLANNING\",\"title\":\"Initial Planning & Medical Documentation\",\"tasks\":[{\"id\":\"t1\",\"text\":\"Attend Initial TAP briefing\",\"done\":\"true\"},{\"id\":\"t2\",\"text\":\"Complete Individual Transition Plan (ITP) with commander\",\"done\":false},{\"id\":\"t1b\",\"text\":\"Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record.\",\"done\":false},{\"id\":\"t1c\",\"text\":\"Follow up on current conditions, referrals, and specialist appointments; keep your service treatment records current\",\"done\":false},{\"id\":\"t1d\",\"text\":\"Research VR&E (Chapter 31) \u2014 vocational rehab benefits at 10%+ disability rating (priority at 20%+). It interacts with your GI Bill and the choice matters \u2014 understand both before you elect. Ask a VSO\",\"done\":false},{\"id\":\"t3\",\"text\":\"Review military service records for accuracy (OMPF)\",\"done\":false},{\"id\":\"t4\",\"text\":\"Research post-separation state: income tax, property tax exemptions, vehicle registration discounts, state vet benefits\",\"done\":false},{\"id\":\"t5\",\"text\":\"Begin networking \u2014 LinkedIn profile, veteran groups, mentors\",\"done\":false},{\"id\":\"t1e\",\"text\":\"Get professional headshot \u2014 Portraits for Patriots offers FREE headshots for military (see Resources \u2192 TAP+)\",\"done\":false}],\"reminder\":\"Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record. Also: research VR&E (Ch. 31) \u2014 if you qualify, understand how it interacts with your GI Bill before you choose, because the election affects both.\"},{\"id\":2,\"phase\":\"12 Months Out\",\"monthsOut\":12,\"category\":\"BENEFITS\",\"title\":\"Benefits, Claims & Medical Follow-Up\",\"tasks\":[{\"id\":\"t6\",\"text\":\"Continue medical documentation \u2014 follow up on ALL referrals and specialist appointments\",\"done\":false},{\"id\":\"t7\",\"text\":\"Keep service treatment records current; follow up on active referrals and document current conditions\",\"done\":false},{\"id\":\"t7b\",\"text\":\"If eligible: apply for VR&E (Chapter 31) NOW \u2014 vocational rehab for service-connected veterans. Understand how it interacts with your GI Bill before you elect \u2014 the choice matters\",\"done\":false},{\"id\":\"t8\",\"text\":\"Research VA disability claim process and BDD program (opens at 180 days)\",\"done\":false},{\"id\":\"t9\",\"text\":\"Attend TAP workshops \u2014 not all TAPs are equal, supplement with outside resources (see Resources \u2192 TAP+)\",\"done\":false},{\"id\":\"t10\",\"text\":\"Research GI Bill eligibility and transfer options \u2014 remember VR&E comes FIRST if eligible\",\"done\":false},{\"id\":\"t11\",\"text\":\"Verify SGLI to VGLI conversion timeline\",\"done\":false}],\"reminder\":\"BDD opens at 180 days. Gather service treatment records and document current conditions before filing. VA evaluates each claimed condition using the evidence of record. Consider VR&E (Ch. 31) before spending GI Bill months if you qualify \u2014 the two interact and the election matters. Ask a VSO which fits your plan.\"},{\"id\":3,\"phase\":\"9 Months Out\",\"monthsOut\":9,\"category\":\"CAREER\",\"title\":\"Career Targeting & Gap Analysis\",\"tasks\":[{\"id\":\"t12\",\"text\":\"Run MOS through O*NET Crosswalk \u2014 identify top 3 civilian job matches (Pathway tab)\",\"done\":false},{\"id\":\"t12b\",\"text\":\"Complete Gap Analysis \u2014 compare your skills to target job requirements (Pathway \u2192 Step 2)\",\"done\":false},{\"id\":\"t13\",\"text\":\"Choose your path: college degree, certs/trades, or SkillBridge (Pathway \u2192 Step 3)\",\"done\":false},{\"id\":\"t14\",\"text\":\"Research certs & credentials on DOD COOL \u2014 many are FREE on active duty\",\"done\":false},{\"id\":\"t14b\",\"text\":\"Map your income stack: VA comp + GI Bill BAH + work programs (Pathway \u2192 Step 4)\",\"done\":false},{\"id\":\"t15\",\"text\":\"Apply through your service-specific SkillBridge or Career Skills Program process after confirming your maximum days and approval authority.\",\"done\":false},{\"id\":\"t15b\",\"text\":\"Apply for ACP mentorship \u2014 FREE year-long 1-on-1 with Fortune 500 professionals (acp-usa.org)\",\"done\":false},{\"id\":\"t15c\",\"text\":\"Register on 50 Strong \u2014 FREE on-demand mentoring, employer connects, and job board (50-strong.us)\",\"done\":false},{\"id\":\"t16\",\"text\":\"Contact vet-ready employers with gap closure programs (Pathway \u2192 Step 5)\",\"done\":false}],\"reminder\":\"Run your crosswalk. Run your gap analysis. Choose your path. GET A MENTOR NOW \u2014 ACP and 50 Strong are free and connect you with civilians who've hired vets. One conversation can change your trajectory.\"},{\"id\":4,\"phase\":\"6 Months Out\",\"monthsOut\":6,\"category\":\"FINANCE\",\"title\":\"BDD Filing & Financial Operations\",\"tasks\":[{\"id\":\"t17a\",\"text\":\"SUBMIT BDD claim (Benefits Delivery at Discharge) \u2014 180-90 day window is NOW\",\"done\":false},{\"id\":\"t17b\",\"text\":\"Be available for VA C&P exams within 45 days of filing\",\"done\":false},{\"id\":\"t17c\",\"text\":\"Keep service treatment records current and complete before separation\",\"done\":false},{\"id\":\"t17\",\"text\":\"Build post-separation budget (no BAH/BAS)\",\"done\":false},{\"id\":\"t18\",\"text\":\"Determine state of residence for tax purposes\",\"done\":false},{\"id\":\"t19\",\"text\":\"Research VA home loan pre-approval\",\"done\":false},{\"id\":\"t20\",\"text\":\"Open/verify civilian bank accounts\",\"done\":false},{\"id\":\"t21\",\"text\":\"Review TSP rollover options\",\"done\":false},{\"id\":\"t22\",\"text\":\"Secure housing at post-separation location\",\"done\":false}],\"reminder\":\"BDD WINDOW IS OPEN. Submit your claim NOW (180-90 days pre-sep). Be available for VA exams within 45 days of filing. Keep your service treatment records current and complete.\"},{\"id\":5,\"phase\":\"3 Months Out\",\"monthsOut\":3,\"category\":\"ADMIN\",\"title\":\"Administrative & Legal Closeout\",\"tasks\":[{\"id\":\"t23\",\"text\":\"Complete DD214 worksheet \u2014 verify every line\",\"done\":false},{\"id\":\"t24\",\"text\":\"Schedule separation physical (VA C&P exam may satisfy this \u2014 check with medical)\",\"done\":false},{\"id\":\"t25\",\"text\":\"Verify all awards, decorations, schools on record\",\"done\":false},{\"id\":\"t26\",\"text\":\"Set up VA healthcare enrollment\",\"done\":false},{\"id\":\"t27\",\"text\":\"Update DEERS for dependents\",\"done\":false},{\"id\":\"t28\",\"text\":\"Finalize SBP elections (if retiring)\",\"done\":false}],\"reminder\":\"Your DD214 is your most important document. Verify every entry. Errors are costly.\"},{\"id\":6,\"phase\":\"1 Month Out\",\"monthsOut\":1,\"category\":\"EXECUTION\",\"title\":\"Final Preparations & Outprocessing\",\"tasks\":[{\"id\":\"t29\",\"text\":\"Complete installation outprocessing checklist\",\"done\":false},{\"id\":\"t30\",\"text\":\"Turn in all CIF/IIF (unit supply) and organizational equipment\",\"done\":false},{\"id\":\"t31\",\"text\":\"Obtain 10+ certified copies of DD214\",\"done\":false},{\"id\":\"t32\",\"text\":\"Verify final pay / leave sellback\",\"done\":false},{\"id\":\"t33\",\"text\":\"Set up TRICARE transition (TAMP if eligible / CHCBP)\",\"done\":false},{\"id\":\"t34\",\"text\":\"Confirm VA disability rating status\",\"done\":false}],\"reminder\":\"Get 10+ certified copies of your DD214. You will need them for everything.\"},{\"id\":7,\"phase\":\"Post-Separation\",\"monthsOut\":0,\"category\":\"VETERAN\",\"title\":\"First 90 Days as a Veteran\",\"tasks\":[{\"id\":\"t35\",\"text\":\"Register with VA healthcare system\",\"done\":false},{\"id\":\"t36\",\"text\":\"Apply for state veteran benefits \u2014 property tax exemptions, vehicle registration discounts, state vet bonuses\",\"done\":false},{\"id\":\"t37\",\"text\":\"File for unemployment (UCX) if applicable\",\"done\":false},{\"id\":\"t38\",\"text\":\"Connect with local veteran service organizations\",\"done\":false},{\"id\":\"t39\",\"text\":\"Verify GI Bill enrollment / housing allowance\",\"done\":false},{\"id\":\"t40\",\"text\":\"Establish primary care provider\",\"done\":false},{\"id\":\"t41\",\"text\":\"Get your America the Beautiful Pass \u2014 FREE National Parks & Federal Lands access for all veterans (see Vet Perks tab)\",\"done\":false},{\"id\":\"t42\",\"text\":\"Get veteran designation on driver's license \u2014 free in most states, proves status without carrying DD214\",\"done\":false},{\"id\":\"t43\",\"text\":\"Join a veteran community \u2014 Team RWB, The Mission Continues, Team Rubicon, Next 18 (free golf & wellness camps), local VFW or American Legion post. Don't isolate.\",\"done\":false},{\"id\":\"t44\",\"text\":\"Read the MINDSET tab \u2014 The Drop hits at months 1-3. Know the signs. Build structure. Ask for help if you need it.\",\"done\":false}],\"reminder\":\"You earned these benefits. Don't leave anything on the table. And be ready for The Drop \u2014 the loss of identity, structure, and purpose hits harder than anyone warns you. Build your new routine, connect with other vets, and don't isolate. See Resources \u2192 Mindset.\"}]",
+        "docProgress": "[{\"id\":\"d1\",\"name\":\"DD214 (Member-4 Copy)\",\"critical\":true,\"obtained\":1,\"notes\":\"Get 10+ certified copies. Required for nearly all veteran benefits.\"},{\"id\":\"d2\",\"name\":\"VA Disability Rating Letter\",\"critical\":true,\"obtained\":false,\"notes\":\"Download from VA.gov (Records \u2192 VA letters).\"},{\"id\":\"d3\",\"name\":\"Military Medical Records (Complete)\",\"critical\":true,\"obtained\":false,\"notes\":\"Request from MTF. Include dental. Takes 30-90 days.\"},{\"id\":\"d4\",\"name\":\"Service Record (OMPF)\",\"critical\":true,\"obtained\":false,\"notes\":\"Verify all entries via iPERMS or branch equivalent.\"},{\"id\":\"d5\",\"name\":\"Joint Services Transcript (JST)\",\"critical\":false,\"obtained\":false,\"notes\":\"Download from jst.doded.mil. Maps training to ACE credits.\"},{\"id\":\"d6\",\"name\":\"VMET Document\",\"critical\":false,\"obtained\":false,\"notes\":\"Translates military experience to civilian terms.\"},{\"id\":\"d7\",\"name\":\"TSP Account Statement\",\"critical\":false,\"obtained\":false,\"notes\":\"Current balance, fund allocations, beneficiary info.\"},{\"id\":\"d8\",\"name\":\"SGLI/VGLI Documentation\",\"critical\":false,\"obtained\":false,\"notes\":\"SGLI to VGLI conversion within 240 days of separation.\"},{\"id\":\"d9\",\"name\":\"VA Certificate of Eligibility (COE)\",\"critical\":false,\"obtained\":false,\"notes\":\"For VA home loan. Request via VA.gov.\"},{\"id\":\"d10\",\"name\":\"GI Bill Statement of Benefits\",\"critical\":false,\"obtained\":false,\"notes\":\"Verify months remaining, transfer status.\"},{\"id\":\"d11\",\"name\":\"Security Clearance Verification\",\"critical\":false,\"obtained\":false,\"notes\":\"Clearance status and investigation dates.\"},{\"id\":\"d12\",\"name\":\"Awards/Decoration Certificates\",\"critical\":false,\"obtained\":false,\"notes\":\"Physical copies of all awards.\"}]"
+      },
+      "expected": {
+        "milestones": [
+          {
+            "id": 1,
+            "phase": "18 Months Out",
+            "monthsOut": 18,
+            "category": "PLANNING",
+            "title": "Initial Planning & Medical Documentation",
+            "tasks": [
+              {
+                "id": "t1",
+                "text": "Attend Initial TAP briefing",
+                "done": false
+              },
+              {
+                "id": "t2",
+                "text": "Complete Individual Transition Plan (ITP) with commander",
+                "done": false
+              },
+              {
+                "id": "t1b",
+                "text": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record.",
+                "done": false
+              },
+              {
+                "id": "t1c",
+                "text": "Follow up on current conditions, referrals, and specialist appointments; keep your service treatment records current",
+                "done": false
+              },
+              {
+                "id": "t1d",
+                "text": "Research VR&E (Chapter 31) \u2014 vocational rehab benefits at 10%+ disability rating (priority at 20%+). It interacts with your GI Bill and the choice matters \u2014 understand both before you elect. Ask a VSO",
+                "done": false
+              },
+              {
+                "id": "t3",
+                "text": "Review military service records for accuracy (OMPF)",
+                "done": false
+              },
+              {
+                "id": "t4",
+                "text": "Research post-separation state: income tax, property tax exemptions, vehicle registration discounts, state vet benefits",
+                "done": false
+              },
+              {
+                "id": "t5",
+                "text": "Begin networking \u2014 LinkedIn profile, veteran groups, mentors",
+                "done": false
+              },
+              {
+                "id": "t1e",
+                "text": "Get professional headshot \u2014 Portraits for Patriots offers FREE headshots for military (see Resources \u2192 TAP+)",
+                "done": false
+              }
+            ],
+            "reminder": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record. Also: research VR&E (Ch. 31) \u2014 if you qualify, understand how it interacts with your GI Bill before you choose, because the election affects both."
+          },
+          {
+            "id": 2,
+            "phase": "12 Months Out",
+            "monthsOut": 12,
+            "category": "BENEFITS",
+            "title": "Benefits, Claims & Medical Follow-Up",
+            "tasks": [
+              {
+                "id": "t6",
+                "text": "Continue medical documentation \u2014 follow up on ALL referrals and specialist appointments",
+                "done": false
+              },
+              {
+                "id": "t7",
+                "text": "Keep service treatment records current; follow up on active referrals and document current conditions",
+                "done": false
+              },
+              {
+                "id": "t7b",
+                "text": "If eligible: apply for VR&E (Chapter 31) NOW \u2014 vocational rehab for service-connected veterans. Understand how it interacts with your GI Bill before you elect \u2014 the choice matters",
+                "done": false
+              },
+              {
+                "id": "t8",
+                "text": "Research VA disability claim process and BDD program (opens at 180 days)",
+                "done": false
+              },
+              {
+                "id": "t9",
+                "text": "Attend TAP workshops \u2014 not all TAPs are equal, supplement with outside resources (see Resources \u2192 TAP+)",
+                "done": false
+              },
+              {
+                "id": "t10",
+                "text": "Research GI Bill eligibility and transfer options \u2014 remember VR&E comes FIRST if eligible",
+                "done": false
+              },
+              {
+                "id": "t11",
+                "text": "Verify SGLI to VGLI conversion timeline",
+                "done": false
+              }
+            ],
+            "reminder": "BDD opens at 180 days. Gather service treatment records and document current conditions before filing. VA evaluates each claimed condition using the evidence of record. Consider VR&E (Ch. 31) before spending GI Bill months if you qualify \u2014 the two interact and the election matters. Ask a VSO which fits your plan."
+          },
+          {
+            "id": 3,
+            "phase": "9 Months Out",
+            "monthsOut": 9,
+            "category": "CAREER",
+            "title": "Career Targeting & Gap Analysis",
+            "tasks": [
+              {
+                "id": "t12",
+                "text": "Run MOS through O*NET Crosswalk \u2014 identify top 3 civilian job matches (Pathway tab)",
+                "done": false
+              },
+              {
+                "id": "t12b",
+                "text": "Complete Gap Analysis \u2014 compare your skills to target job requirements (Pathway \u2192 Step 2)",
+                "done": false
+              },
+              {
+                "id": "t13",
+                "text": "Choose your path: college degree, certs/trades, or SkillBridge (Pathway \u2192 Step 3)",
+                "done": false
+              },
+              {
+                "id": "t14",
+                "text": "Research certs & credentials on DOD COOL \u2014 many are FREE on active duty",
+                "done": false
+              },
+              {
+                "id": "t14b",
+                "text": "Map your income stack: VA comp + GI Bill BAH + work programs (Pathway \u2192 Step 4)",
+                "done": false
+              },
+              {
+                "id": "t15",
+                "text": "Apply through your service-specific SkillBridge or Career Skills Program process after confirming your maximum days and approval authority.",
+                "done": false
+              },
+              {
+                "id": "t15b",
+                "text": "Apply for ACP mentorship \u2014 FREE year-long 1-on-1 with Fortune 500 professionals (acp-usa.org)",
+                "done": false
+              },
+              {
+                "id": "t15c",
+                "text": "Register on 50 Strong \u2014 FREE on-demand mentoring, employer connects, and job board (50-strong.us)",
+                "done": false
+              },
+              {
+                "id": "t16",
+                "text": "Contact vet-ready employers with gap closure programs (Pathway \u2192 Step 5)",
+                "done": false
+              }
+            ],
+            "reminder": "Run your crosswalk. Run your gap analysis. Choose your path. GET A MENTOR NOW \u2014 ACP and 50 Strong are free and connect you with civilians who've hired vets. One conversation can change your trajectory."
+          },
+          {
+            "id": 4,
+            "phase": "6 Months Out",
+            "monthsOut": 6,
+            "category": "FINANCE",
+            "title": "BDD Filing & Financial Operations",
+            "tasks": [
+              {
+                "id": "t17a",
+                "text": "SUBMIT BDD claim (Benefits Delivery at Discharge) \u2014 180-90 day window is NOW",
+                "done": false
+              },
+              {
+                "id": "t17b",
+                "text": "Be available for VA C&P exams within 45 days of filing",
+                "done": false
+              },
+              {
+                "id": "t17c",
+                "text": "Keep service treatment records current and complete before separation",
+                "done": false
+              },
+              {
+                "id": "t17",
+                "text": "Build post-separation budget (no BAH/BAS)",
+                "done": false
+              },
+              {
+                "id": "t18",
+                "text": "Determine state of residence for tax purposes",
+                "done": false
+              },
+              {
+                "id": "t19",
+                "text": "Research VA home loan pre-approval",
+                "done": false
+              },
+              {
+                "id": "t20",
+                "text": "Open/verify civilian bank accounts",
+                "done": false
+              },
+              {
+                "id": "t21",
+                "text": "Review TSP rollover options",
+                "done": false
+              },
+              {
+                "id": "t22",
+                "text": "Secure housing at post-separation location",
+                "done": false
+              }
+            ],
+            "reminder": "BDD WINDOW IS OPEN. Submit your claim NOW (180-90 days pre-sep). Be available for VA exams within 45 days of filing. Keep your service treatment records current and complete."
+          },
+          {
+            "id": 5,
+            "phase": "3 Months Out",
+            "monthsOut": 3,
+            "category": "ADMIN",
+            "title": "Administrative & Legal Closeout",
+            "tasks": [
+              {
+                "id": "t23",
+                "text": "Complete DD214 worksheet \u2014 verify every line",
+                "done": false
+              },
+              {
+                "id": "t24",
+                "text": "Schedule separation physical (VA C&P exam may satisfy this \u2014 check with medical)",
+                "done": false
+              },
+              {
+                "id": "t25",
+                "text": "Verify all awards, decorations, schools on record",
+                "done": false
+              },
+              {
+                "id": "t26",
+                "text": "Set up VA healthcare enrollment",
+                "done": false
+              },
+              {
+                "id": "t27",
+                "text": "Update DEERS for dependents",
+                "done": false
+              },
+              {
+                "id": "t28",
+                "text": "Finalize SBP elections (if retiring)",
+                "done": false
+              }
+            ],
+            "reminder": "Your DD214 is your most important document. Verify every entry. Errors are costly."
+          },
+          {
+            "id": 6,
+            "phase": "1 Month Out",
+            "monthsOut": 1,
+            "category": "EXECUTION",
+            "title": "Final Preparations & Outprocessing",
+            "tasks": [
+              {
+                "id": "t29",
+                "text": "Complete installation outprocessing checklist",
+                "done": false
+              },
+              {
+                "id": "t30",
+                "text": "Turn in all CIF/IIF (unit supply) and organizational equipment",
+                "done": false
+              },
+              {
+                "id": "t31",
+                "text": "Obtain 10+ certified copies of DD214",
+                "done": false
+              },
+              {
+                "id": "t32",
+                "text": "Verify final pay / leave sellback",
+                "done": false
+              },
+              {
+                "id": "t33",
+                "text": "Set up TRICARE transition (TAMP if eligible / CHCBP)",
+                "done": false
+              },
+              {
+                "id": "t34",
+                "text": "Confirm VA disability rating status",
+                "done": false
+              }
+            ],
+            "reminder": "Get 10+ certified copies of your DD214. You will need them for everything."
+          },
+          {
+            "id": 7,
+            "phase": "Post-Separation",
+            "monthsOut": 0,
+            "category": "VETERAN",
+            "title": "First 90 Days as a Veteran",
+            "tasks": [
+              {
+                "id": "t35",
+                "text": "Register with VA healthcare system",
+                "done": false
+              },
+              {
+                "id": "t36",
+                "text": "Apply for state veteran benefits \u2014 property tax exemptions, vehicle registration discounts, state vet bonuses",
+                "done": false
+              },
+              {
+                "id": "t37",
+                "text": "File for unemployment (UCX) if applicable",
+                "done": false
+              },
+              {
+                "id": "t38",
+                "text": "Connect with local veteran service organizations",
+                "done": false
+              },
+              {
+                "id": "t39",
+                "text": "Verify GI Bill enrollment / housing allowance",
+                "done": false
+              },
+              {
+                "id": "t40",
+                "text": "Establish primary care provider",
+                "done": false
+              },
+              {
+                "id": "t41",
+                "text": "Get your America the Beautiful Pass \u2014 FREE National Parks & Federal Lands access for all veterans (see Vet Perks tab)",
+                "done": false
+              },
+              {
+                "id": "t42",
+                "text": "Get veteran designation on driver's license \u2014 free in most states, proves status without carrying DD214",
+                "done": false
+              },
+              {
+                "id": "t43",
+                "text": "Join a veteran community \u2014 Team RWB, The Mission Continues, Team Rubicon, Next 18 (free golf & wellness camps), local VFW or American Legion post. Don't isolate.",
+                "done": false
+              },
+              {
+                "id": "t44",
+                "text": "Read the MINDSET tab \u2014 The Drop hits at months 1-3. Know the signs. Build structure. Ask for help if you need it.",
+                "done": false
+              }
+            ],
+            "reminder": "You earned these benefits. Don't leave anything on the table. And be ready for The Drop \u2014 the loss of identity, structure, and purpose hits harder than anyone warns you. Build your new routine, connect with other vets, and don't isolate. See Resources \u2192 Mindset."
+          }
+        ],
+        "documents": [
+          {
+            "id": "d1",
+            "name": "DD214 (Member-4 Copy)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Get 10+ certified copies. Required for nearly all veteran benefits."
+          },
+          {
+            "id": "d2",
+            "name": "VA Disability Rating Letter",
+            "critical": true,
+            "obtained": false,
+            "notes": "Download from VA.gov (Records \u2192 VA letters)."
+          },
+          {
+            "id": "d3",
+            "name": "Military Medical Records (Complete)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Request from MTF. Include dental. Takes 30-90 days."
+          },
+          {
+            "id": "d4",
+            "name": "Service Record (OMPF)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Verify all entries via iPERMS or branch equivalent."
+          },
+          {
+            "id": "d5",
+            "name": "Joint Services Transcript (JST)",
+            "critical": false,
+            "obtained": false,
+            "notes": "Download from jst.doded.mil. Maps training to ACE credits."
+          },
+          {
+            "id": "d6",
+            "name": "VMET Document",
+            "critical": false,
+            "obtained": false,
+            "notes": "Translates military experience to civilian terms."
+          },
+          {
+            "id": "d7",
+            "name": "TSP Account Statement",
+            "critical": false,
+            "obtained": false,
+            "notes": "Current balance, fund allocations, beneficiary info."
+          },
+          {
+            "id": "d8",
+            "name": "SGLI/VGLI Documentation",
+            "critical": false,
+            "obtained": false,
+            "notes": "SGLI to VGLI conversion within 240 days of separation."
+          },
+          {
+            "id": "d9",
+            "name": "VA Certificate of Eligibility (COE)",
+            "critical": false,
+            "obtained": false,
+            "notes": "For VA home loan. Request via VA.gov."
+          },
+          {
+            "id": "d10",
+            "name": "GI Bill Statement of Benefits",
+            "critical": false,
+            "obtained": false,
+            "notes": "Verify months remaining, transfer status."
+          },
+          {
+            "id": "d11",
+            "name": "Security Clearance Verification",
+            "critical": false,
+            "obtained": false,
+            "notes": "Clearance status and investigation dates."
+          },
+          {
+            "id": "d12",
+            "name": "Awards/Decoration Certificates",
+            "critical": false,
+            "obtained": false,
+            "notes": "Physical copies of all awards."
+          }
+        ],
+        "dismissed": []
+      }
+    },
+    {
+      "name": "corrupt task key cannot prevent docs or notifications restoring",
+      "storage": {
+        "taskProgress": "{",
+        "docProgress": "[{\"id\":\"d1\",\"name\":\"DD214 (Member-4 Copy)\",\"critical\":true,\"obtained\":true,\"notes\":\"Get 10+ certified copies. Required for nearly all veteran benefits.\"}]",
+        "dismissedNotifs": "[\"fixture-notification\"]"
+      },
+      "expected": {
+        "milestones": [
+          {
+            "id": 1,
+            "phase": "18 Months Out",
+            "monthsOut": 18,
+            "category": "PLANNING",
+            "title": "Initial Planning & Medical Documentation",
+            "tasks": [
+              {
+                "id": "t1",
+                "text": "Attend Initial TAP briefing",
+                "done": false
+              },
+              {
+                "id": "t2",
+                "text": "Complete Individual Transition Plan (ITP) with commander",
+                "done": false
+              },
+              {
+                "id": "t1b",
+                "text": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record.",
+                "done": false
+              },
+              {
+                "id": "t1c",
+                "text": "Follow up on current conditions, referrals, and specialist appointments; keep your service treatment records current",
+                "done": false
+              },
+              {
+                "id": "t1d",
+                "text": "Research VR&E (Chapter 31) \u2014 vocational rehab benefits at 10%+ disability rating (priority at 20%+). It interacts with your GI Bill and the choice matters \u2014 understand both before you elect. Ask a VSO",
+                "done": false
+              },
+              {
+                "id": "t3",
+                "text": "Review military service records for accuracy (OMPF)",
+                "done": false
+              },
+              {
+                "id": "t4",
+                "text": "Research post-separation state: income tax, property tax exemptions, vehicle registration discounts, state vet benefits",
+                "done": false
+              },
+              {
+                "id": "t5",
+                "text": "Begin networking \u2014 LinkedIn profile, veteran groups, mentors",
+                "done": false
+              },
+              {
+                "id": "t1e",
+                "text": "Get professional headshot \u2014 Portraits for Patriots offers FREE headshots for military (see Resources \u2192 TAP+)",
+                "done": false
+              }
+            ],
+            "reminder": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record. Also: research VR&E (Ch. 31) \u2014 if you qualify, understand how it interacts with your GI Bill before you choose, because the election affects both."
+          },
+          {
+            "id": 2,
+            "phase": "12 Months Out",
+            "monthsOut": 12,
+            "category": "BENEFITS",
+            "title": "Benefits, Claims & Medical Follow-Up",
+            "tasks": [
+              {
+                "id": "t6",
+                "text": "Continue medical documentation \u2014 follow up on ALL referrals and specialist appointments",
+                "done": false
+              },
+              {
+                "id": "t7",
+                "text": "Keep service treatment records current; follow up on active referrals and document current conditions",
+                "done": false
+              },
+              {
+                "id": "t7b",
+                "text": "If eligible: apply for VR&E (Chapter 31) NOW \u2014 vocational rehab for service-connected veterans. Understand how it interacts with your GI Bill before you elect \u2014 the choice matters",
+                "done": false
+              },
+              {
+                "id": "t8",
+                "text": "Research VA disability claim process and BDD program (opens at 180 days)",
+                "done": false
+              },
+              {
+                "id": "t9",
+                "text": "Attend TAP workshops \u2014 not all TAPs are equal, supplement with outside resources (see Resources \u2192 TAP+)",
+                "done": false
+              },
+              {
+                "id": "t10",
+                "text": "Research GI Bill eligibility and transfer options \u2014 remember VR&E comes FIRST if eligible",
+                "done": false
+              },
+              {
+                "id": "t11",
+                "text": "Verify SGLI to VGLI conversion timeline",
+                "done": false
+              }
+            ],
+            "reminder": "BDD opens at 180 days. Gather service treatment records and document current conditions before filing. VA evaluates each claimed condition using the evidence of record. Consider VR&E (Ch. 31) before spending GI Bill months if you qualify \u2014 the two interact and the election matters. Ask a VSO which fits your plan."
+          },
+          {
+            "id": 3,
+            "phase": "9 Months Out",
+            "monthsOut": 9,
+            "category": "CAREER",
+            "title": "Career Targeting & Gap Analysis",
+            "tasks": [
+              {
+                "id": "t12",
+                "text": "Run MOS through O*NET Crosswalk \u2014 identify top 3 civilian job matches (Pathway tab)",
+                "done": false
+              },
+              {
+                "id": "t12b",
+                "text": "Complete Gap Analysis \u2014 compare your skills to target job requirements (Pathway \u2192 Step 2)",
+                "done": false
+              },
+              {
+                "id": "t13",
+                "text": "Choose your path: college degree, certs/trades, or SkillBridge (Pathway \u2192 Step 3)",
+                "done": false
+              },
+              {
+                "id": "t14",
+                "text": "Research certs & credentials on DOD COOL \u2014 many are FREE on active duty",
+                "done": false
+              },
+              {
+                "id": "t14b",
+                "text": "Map your income stack: VA comp + GI Bill BAH + work programs (Pathway \u2192 Step 4)",
+                "done": false
+              },
+              {
+                "id": "t15",
+                "text": "Apply through your service-specific SkillBridge or Career Skills Program process after confirming your maximum days and approval authority.",
+                "done": false
+              },
+              {
+                "id": "t15b",
+                "text": "Apply for ACP mentorship \u2014 FREE year-long 1-on-1 with Fortune 500 professionals (acp-usa.org)",
+                "done": false
+              },
+              {
+                "id": "t15c",
+                "text": "Register on 50 Strong \u2014 FREE on-demand mentoring, employer connects, and job board (50-strong.us)",
+                "done": false
+              },
+              {
+                "id": "t16",
+                "text": "Contact vet-ready employers with gap closure programs (Pathway \u2192 Step 5)",
+                "done": false
+              }
+            ],
+            "reminder": "Run your crosswalk. Run your gap analysis. Choose your path. GET A MENTOR NOW \u2014 ACP and 50 Strong are free and connect you with civilians who've hired vets. One conversation can change your trajectory."
+          },
+          {
+            "id": 4,
+            "phase": "6 Months Out",
+            "monthsOut": 6,
+            "category": "FINANCE",
+            "title": "BDD Filing & Financial Operations",
+            "tasks": [
+              {
+                "id": "t17a",
+                "text": "SUBMIT BDD claim (Benefits Delivery at Discharge) \u2014 180-90 day window is NOW",
+                "done": false
+              },
+              {
+                "id": "t17b",
+                "text": "Be available for VA C&P exams within 45 days of filing",
+                "done": false
+              },
+              {
+                "id": "t17c",
+                "text": "Keep service treatment records current and complete before separation",
+                "done": false
+              },
+              {
+                "id": "t17",
+                "text": "Build post-separation budget (no BAH/BAS)",
+                "done": false
+              },
+              {
+                "id": "t18",
+                "text": "Determine state of residence for tax purposes",
+                "done": false
+              },
+              {
+                "id": "t19",
+                "text": "Research VA home loan pre-approval",
+                "done": false
+              },
+              {
+                "id": "t20",
+                "text": "Open/verify civilian bank accounts",
+                "done": false
+              },
+              {
+                "id": "t21",
+                "text": "Review TSP rollover options",
+                "done": false
+              },
+              {
+                "id": "t22",
+                "text": "Secure housing at post-separation location",
+                "done": false
+              }
+            ],
+            "reminder": "BDD WINDOW IS OPEN. Submit your claim NOW (180-90 days pre-sep). Be available for VA exams within 45 days of filing. Keep your service treatment records current and complete."
+          },
+          {
+            "id": 5,
+            "phase": "3 Months Out",
+            "monthsOut": 3,
+            "category": "ADMIN",
+            "title": "Administrative & Legal Closeout",
+            "tasks": [
+              {
+                "id": "t23",
+                "text": "Complete DD214 worksheet \u2014 verify every line",
+                "done": false
+              },
+              {
+                "id": "t24",
+                "text": "Schedule separation physical (VA C&P exam may satisfy this \u2014 check with medical)",
+                "done": false
+              },
+              {
+                "id": "t25",
+                "text": "Verify all awards, decorations, schools on record",
+                "done": false
+              },
+              {
+                "id": "t26",
+                "text": "Set up VA healthcare enrollment",
+                "done": false
+              },
+              {
+                "id": "t27",
+                "text": "Update DEERS for dependents",
+                "done": false
+              },
+              {
+                "id": "t28",
+                "text": "Finalize SBP elections (if retiring)",
+                "done": false
+              }
+            ],
+            "reminder": "Your DD214 is your most important document. Verify every entry. Errors are costly."
+          },
+          {
+            "id": 6,
+            "phase": "1 Month Out",
+            "monthsOut": 1,
+            "category": "EXECUTION",
+            "title": "Final Preparations & Outprocessing",
+            "tasks": [
+              {
+                "id": "t29",
+                "text": "Complete installation outprocessing checklist",
+                "done": false
+              },
+              {
+                "id": "t30",
+                "text": "Turn in all CIF/IIF (unit supply) and organizational equipment",
+                "done": false
+              },
+              {
+                "id": "t31",
+                "text": "Obtain 10+ certified copies of DD214",
+                "done": false
+              },
+              {
+                "id": "t32",
+                "text": "Verify final pay / leave sellback",
+                "done": false
+              },
+              {
+                "id": "t33",
+                "text": "Set up TRICARE transition (TAMP if eligible / CHCBP)",
+                "done": false
+              },
+              {
+                "id": "t34",
+                "text": "Confirm VA disability rating status",
+                "done": false
+              }
+            ],
+            "reminder": "Get 10+ certified copies of your DD214. You will need them for everything."
+          },
+          {
+            "id": 7,
+            "phase": "Post-Separation",
+            "monthsOut": 0,
+            "category": "VETERAN",
+            "title": "First 90 Days as a Veteran",
+            "tasks": [
+              {
+                "id": "t35",
+                "text": "Register with VA healthcare system",
+                "done": false
+              },
+              {
+                "id": "t36",
+                "text": "Apply for state veteran benefits \u2014 property tax exemptions, vehicle registration discounts, state vet bonuses",
+                "done": false
+              },
+              {
+                "id": "t37",
+                "text": "File for unemployment (UCX) if applicable",
+                "done": false
+              },
+              {
+                "id": "t38",
+                "text": "Connect with local veteran service organizations",
+                "done": false
+              },
+              {
+                "id": "t39",
+                "text": "Verify GI Bill enrollment / housing allowance",
+                "done": false
+              },
+              {
+                "id": "t40",
+                "text": "Establish primary care provider",
+                "done": false
+              },
+              {
+                "id": "t41",
+                "text": "Get your America the Beautiful Pass \u2014 FREE National Parks & Federal Lands access for all veterans (see Vet Perks tab)",
+                "done": false
+              },
+              {
+                "id": "t42",
+                "text": "Get veteran designation on driver's license \u2014 free in most states, proves status without carrying DD214",
+                "done": false
+              },
+              {
+                "id": "t43",
+                "text": "Join a veteran community \u2014 Team RWB, The Mission Continues, Team Rubicon, Next 18 (free golf & wellness camps), local VFW or American Legion post. Don't isolate.",
+                "done": false
+              },
+              {
+                "id": "t44",
+                "text": "Read the MINDSET tab \u2014 The Drop hits at months 1-3. Know the signs. Build structure. Ask for help if you need it.",
+                "done": false
+              }
+            ],
+            "reminder": "You earned these benefits. Don't leave anything on the table. And be ready for The Drop \u2014 the loss of identity, structure, and purpose hits harder than anyone warns you. Build your new routine, connect with other vets, and don't isolate. See Resources \u2192 Mindset."
+          }
+        ],
+        "documents": [
+          {
+            "id": "d1",
+            "name": "DD214 (Member-4 Copy)",
+            "critical": true,
+            "obtained": true,
+            "notes": "Get 10+ certified copies. Required for nearly all veteran benefits."
+          },
+          {
+            "id": "d2",
+            "name": "VA Disability Rating Letter",
+            "critical": true,
+            "obtained": false,
+            "notes": "Download from VA.gov (Records \u2192 VA letters)."
+          },
+          {
+            "id": "d3",
+            "name": "Military Medical Records (Complete)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Request from MTF. Include dental. Takes 30-90 days."
+          },
+          {
+            "id": "d4",
+            "name": "Service Record (OMPF)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Verify all entries via iPERMS or branch equivalent."
+          },
+          {
+            "id": "d5",
+            "name": "Joint Services Transcript (JST)",
+            "critical": false,
+            "obtained": false,
+            "notes": "Download from jst.doded.mil. Maps training to ACE credits."
+          },
+          {
+            "id": "d6",
+            "name": "VMET Document",
+            "critical": false,
+            "obtained": false,
+            "notes": "Translates military experience to civilian terms."
+          },
+          {
+            "id": "d7",
+            "name": "TSP Account Statement",
+            "critical": false,
+            "obtained": false,
+            "notes": "Current balance, fund allocations, beneficiary info."
+          },
+          {
+            "id": "d8",
+            "name": "SGLI/VGLI Documentation",
+            "critical": false,
+            "obtained": false,
+            "notes": "SGLI to VGLI conversion within 240 days of separation."
+          },
+          {
+            "id": "d9",
+            "name": "VA Certificate of Eligibility (COE)",
+            "critical": false,
+            "obtained": false,
+            "notes": "For VA home loan. Request via VA.gov."
+          },
+          {
+            "id": "d10",
+            "name": "GI Bill Statement of Benefits",
+            "critical": false,
+            "obtained": false,
+            "notes": "Verify months remaining, transfer status."
+          },
+          {
+            "id": "d11",
+            "name": "Security Clearance Verification",
+            "critical": false,
+            "obtained": false,
+            "notes": "Clearance status and investigation dates."
+          },
+          {
+            "id": "d12",
+            "name": "Awards/Decoration Certificates",
+            "critical": false,
+            "obtained": false,
+            "notes": "Physical copies of all awards."
+          }
+        ],
+        "dismissed": [
+          "fixture-notification"
+        ]
+      }
+    },
+    {
+      "name": "corrupt docs key cannot prevent later notification restoration",
+      "storage": {
+        "taskProgress": "[{\"id\":1,\"phase\":\"18 Months Out\",\"monthsOut\":18,\"category\":\"PLANNING\",\"title\":\"Initial Planning & Medical Documentation\",\"tasks\":[{\"id\":\"t1\",\"text\":\"Attend Initial TAP briefing\",\"done\":true},{\"id\":\"t2\",\"text\":\"Complete Individual Transition Plan (ITP) with commander\",\"done\":false},{\"id\":\"t1b\",\"text\":\"Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record.\",\"done\":false},{\"id\":\"t1c\",\"text\":\"Follow up on current conditions, referrals, and specialist appointments; keep your service treatment records current\",\"done\":false},{\"id\":\"t1d\",\"text\":\"Research VR&E (Chapter 31) \u2014 vocational rehab benefits at 10%+ disability rating (priority at 20%+). It interacts with your GI Bill and the choice matters \u2014 understand both before you elect. Ask a VSO\",\"done\":false},{\"id\":\"t3\",\"text\":\"Review military service records for accuracy (OMPF)\",\"done\":false},{\"id\":\"t4\",\"text\":\"Research post-separation state: income tax, property tax exemptions, vehicle registration discounts, state vet benefits\",\"done\":false},{\"id\":\"t5\",\"text\":\"Begin networking \u2014 LinkedIn profile, veteran groups, mentors\",\"done\":false},{\"id\":\"t1e\",\"text\":\"Get professional headshot \u2014 Portraits for Patriots offers FREE headshots for military (see Resources \u2192 TAP+)\",\"done\":false}],\"reminder\":\"Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record. Also: research VR&E (Ch. 31) \u2014 if you qualify, understand how it interacts with your GI Bill before you choose, because the election affects both.\"},{\"id\":2,\"phase\":\"12 Months Out\",\"monthsOut\":12,\"category\":\"BENEFITS\",\"title\":\"Benefits, Claims & Medical Follow-Up\",\"tasks\":[{\"id\":\"t6\",\"text\":\"Continue medical documentation \u2014 follow up on ALL referrals and specialist appointments\",\"done\":false},{\"id\":\"t7\",\"text\":\"Keep service treatment records current; follow up on active referrals and document current conditions\",\"done\":false},{\"id\":\"t7b\",\"text\":\"If eligible: apply for VR&E (Chapter 31) NOW \u2014 vocational rehab for service-connected veterans. Understand how it interacts with your GI Bill before you elect \u2014 the choice matters\",\"done\":false},{\"id\":\"t8\",\"text\":\"Research VA disability claim process and BDD program (opens at 180 days)\",\"done\":false},{\"id\":\"t9\",\"text\":\"Attend TAP workshops \u2014 not all TAPs are equal, supplement with outside resources (see Resources \u2192 TAP+)\",\"done\":false},{\"id\":\"t10\",\"text\":\"Research GI Bill eligibility and transfer options \u2014 remember VR&E comes FIRST if eligible\",\"done\":false},{\"id\":\"t11\",\"text\":\"Verify SGLI to VGLI conversion timeline\",\"done\":false}],\"reminder\":\"BDD opens at 180 days. Gather service treatment records and document current conditions before filing. VA evaluates each claimed condition using the evidence of record. Consider VR&E (Ch. 31) before spending GI Bill months if you qualify \u2014 the two interact and the election matters. Ask a VSO which fits your plan.\"},{\"id\":3,\"phase\":\"9 Months Out\",\"monthsOut\":9,\"category\":\"CAREER\",\"title\":\"Career Targeting & Gap Analysis\",\"tasks\":[{\"id\":\"t12\",\"text\":\"Run MOS through O*NET Crosswalk \u2014 identify top 3 civilian job matches (Pathway tab)\",\"done\":false},{\"id\":\"t12b\",\"text\":\"Complete Gap Analysis \u2014 compare your skills to target job requirements (Pathway \u2192 Step 2)\",\"done\":false},{\"id\":\"t13\",\"text\":\"Choose your path: college degree, certs/trades, or SkillBridge (Pathway \u2192 Step 3)\",\"done\":false},{\"id\":\"t14\",\"text\":\"Research certs & credentials on DOD COOL \u2014 many are FREE on active duty\",\"done\":false},{\"id\":\"t14b\",\"text\":\"Map your income stack: VA comp + GI Bill BAH + work programs (Pathway \u2192 Step 4)\",\"done\":false},{\"id\":\"t15\",\"text\":\"Apply through your service-specific SkillBridge or Career Skills Program process after confirming your maximum days and approval authority.\",\"done\":false},{\"id\":\"t15b\",\"text\":\"Apply for ACP mentorship \u2014 FREE year-long 1-on-1 with Fortune 500 professionals (acp-usa.org)\",\"done\":false},{\"id\":\"t15c\",\"text\":\"Register on 50 Strong \u2014 FREE on-demand mentoring, employer connects, and job board (50-strong.us)\",\"done\":false},{\"id\":\"t16\",\"text\":\"Contact vet-ready employers with gap closure programs (Pathway \u2192 Step 5)\",\"done\":false}],\"reminder\":\"Run your crosswalk. Run your gap analysis. Choose your path. GET A MENTOR NOW \u2014 ACP and 50 Strong are free and connect you with civilians who've hired vets. One conversation can change your trajectory.\"},{\"id\":4,\"phase\":\"6 Months Out\",\"monthsOut\":6,\"category\":\"FINANCE\",\"title\":\"BDD Filing & Financial Operations\",\"tasks\":[{\"id\":\"t17a\",\"text\":\"SUBMIT BDD claim (Benefits Delivery at Discharge) \u2014 180-90 day window is NOW\",\"done\":false},{\"id\":\"t17b\",\"text\":\"Be available for VA C&P exams within 45 days of filing\",\"done\":false},{\"id\":\"t17c\",\"text\":\"Keep service treatment records current and complete before separation\",\"done\":false},{\"id\":\"t17\",\"text\":\"Build post-separation budget (no BAH/BAS)\",\"done\":false},{\"id\":\"t18\",\"text\":\"Determine state of residence for tax purposes\",\"done\":false},{\"id\":\"t19\",\"text\":\"Research VA home loan pre-approval\",\"done\":false},{\"id\":\"t20\",\"text\":\"Open/verify civilian bank accounts\",\"done\":false},{\"id\":\"t21\",\"text\":\"Review TSP rollover options\",\"done\":false},{\"id\":\"t22\",\"text\":\"Secure housing at post-separation location\",\"done\":false}],\"reminder\":\"BDD WINDOW IS OPEN. Submit your claim NOW (180-90 days pre-sep). Be available for VA exams within 45 days of filing. Keep your service treatment records current and complete.\"},{\"id\":5,\"phase\":\"3 Months Out\",\"monthsOut\":3,\"category\":\"ADMIN\",\"title\":\"Administrative & Legal Closeout\",\"tasks\":[{\"id\":\"t23\",\"text\":\"Complete DD214 worksheet \u2014 verify every line\",\"done\":false},{\"id\":\"t24\",\"text\":\"Schedule separation physical (VA C&P exam may satisfy this \u2014 check with medical)\",\"done\":false},{\"id\":\"t25\",\"text\":\"Verify all awards, decorations, schools on record\",\"done\":false},{\"id\":\"t26\",\"text\":\"Set up VA healthcare enrollment\",\"done\":false},{\"id\":\"t27\",\"text\":\"Update DEERS for dependents\",\"done\":false},{\"id\":\"t28\",\"text\":\"Finalize SBP elections (if retiring)\",\"done\":false}],\"reminder\":\"Your DD214 is your most important document. Verify every entry. Errors are costly.\"},{\"id\":6,\"phase\":\"1 Month Out\",\"monthsOut\":1,\"category\":\"EXECUTION\",\"title\":\"Final Preparations & Outprocessing\",\"tasks\":[{\"id\":\"t29\",\"text\":\"Complete installation outprocessing checklist\",\"done\":false},{\"id\":\"t30\",\"text\":\"Turn in all CIF/IIF (unit supply) and organizational equipment\",\"done\":false},{\"id\":\"t31\",\"text\":\"Obtain 10+ certified copies of DD214\",\"done\":false},{\"id\":\"t32\",\"text\":\"Verify final pay / leave sellback\",\"done\":false},{\"id\":\"t33\",\"text\":\"Set up TRICARE transition (TAMP if eligible / CHCBP)\",\"done\":false},{\"id\":\"t34\",\"text\":\"Confirm VA disability rating status\",\"done\":false}],\"reminder\":\"Get 10+ certified copies of your DD214. You will need them for everything.\"},{\"id\":7,\"phase\":\"Post-Separation\",\"monthsOut\":0,\"category\":\"VETERAN\",\"title\":\"First 90 Days as a Veteran\",\"tasks\":[{\"id\":\"t35\",\"text\":\"Register with VA healthcare system\",\"done\":false},{\"id\":\"t36\",\"text\":\"Apply for state veteran benefits \u2014 property tax exemptions, vehicle registration discounts, state vet bonuses\",\"done\":false},{\"id\":\"t37\",\"text\":\"File for unemployment (UCX) if applicable\",\"done\":false},{\"id\":\"t38\",\"text\":\"Connect with local veteran service organizations\",\"done\":false},{\"id\":\"t39\",\"text\":\"Verify GI Bill enrollment / housing allowance\",\"done\":false},{\"id\":\"t40\",\"text\":\"Establish primary care provider\",\"done\":false},{\"id\":\"t41\",\"text\":\"Get your America the Beautiful Pass \u2014 FREE National Parks & Federal Lands access for all veterans (see Vet Perks tab)\",\"done\":false},{\"id\":\"t42\",\"text\":\"Get veteran designation on driver's license \u2014 free in most states, proves status without carrying DD214\",\"done\":false},{\"id\":\"t43\",\"text\":\"Join a veteran community \u2014 Team RWB, The Mission Continues, Team Rubicon, Next 18 (free golf & wellness camps), local VFW or American Legion post. Don't isolate.\",\"done\":false},{\"id\":\"t44\",\"text\":\"Read the MINDSET tab \u2014 The Drop hits at months 1-3. Know the signs. Build structure. Ask for help if you need it.\",\"done\":false}],\"reminder\":\"You earned these benefits. Don't leave anything on the table. And be ready for The Drop \u2014 the loss of identity, structure, and purpose hits harder than anyone warns you. Build your new routine, connect with other vets, and don't isolate. See Resources \u2192 Mindset.\"}]",
+        "docProgress": "{",
+        "dismissedNotifs": "[\"fixture-notification\"]"
+      },
+      "expected": {
+        "milestones": [
+          {
+            "id": 1,
+            "phase": "18 Months Out",
+            "monthsOut": 18,
+            "category": "PLANNING",
+            "title": "Initial Planning & Medical Documentation",
+            "tasks": [
+              {
+                "id": "t1",
+                "text": "Attend Initial TAP briefing",
+                "done": true
+              },
+              {
+                "id": "t2",
+                "text": "Complete Individual Transition Plan (ITP) with commander",
+                "done": false
+              },
+              {
+                "id": "t1b",
+                "text": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record.",
+                "done": false
+              },
+              {
+                "id": "t1c",
+                "text": "Follow up on current conditions, referrals, and specialist appointments; keep your service treatment records current",
+                "done": false
+              },
+              {
+                "id": "t1d",
+                "text": "Research VR&E (Chapter 31) \u2014 vocational rehab benefits at 10%+ disability rating (priority at 20%+). It interacts with your GI Bill and the choice matters \u2014 understand both before you elect. Ask a VSO",
+                "done": false
+              },
+              {
+                "id": "t3",
+                "text": "Review military service records for accuracy (OMPF)",
+                "done": false
+              },
+              {
+                "id": "t4",
+                "text": "Research post-separation state: income tax, property tax exemptions, vehicle registration discounts, state vet benefits",
+                "done": false
+              },
+              {
+                "id": "t5",
+                "text": "Begin networking \u2014 LinkedIn profile, veteran groups, mentors",
+                "done": false
+              },
+              {
+                "id": "t1e",
+                "text": "Get professional headshot \u2014 Portraits for Patriots offers FREE headshots for military (see Resources \u2192 TAP+)",
+                "done": false
+              }
+            ],
+            "reminder": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record. Also: research VR&E (Ch. 31) \u2014 if you qualify, understand how it interacts with your GI Bill before you choose, because the election affects both."
+          },
+          {
+            "id": 2,
+            "phase": "12 Months Out",
+            "monthsOut": 12,
+            "category": "BENEFITS",
+            "title": "Benefits, Claims & Medical Follow-Up",
+            "tasks": [
+              {
+                "id": "t6",
+                "text": "Continue medical documentation \u2014 follow up on ALL referrals and specialist appointments",
+                "done": false
+              },
+              {
+                "id": "t7",
+                "text": "Keep service treatment records current; follow up on active referrals and document current conditions",
+                "done": false
+              },
+              {
+                "id": "t7b",
+                "text": "If eligible: apply for VR&E (Chapter 31) NOW \u2014 vocational rehab for service-connected veterans. Understand how it interacts with your GI Bill before you elect \u2014 the choice matters",
+                "done": false
+              },
+              {
+                "id": "t8",
+                "text": "Research VA disability claim process and BDD program (opens at 180 days)",
+                "done": false
+              },
+              {
+                "id": "t9",
+                "text": "Attend TAP workshops \u2014 not all TAPs are equal, supplement with outside resources (see Resources \u2192 TAP+)",
+                "done": false
+              },
+              {
+                "id": "t10",
+                "text": "Research GI Bill eligibility and transfer options \u2014 remember VR&E comes FIRST if eligible",
+                "done": false
+              },
+              {
+                "id": "t11",
+                "text": "Verify SGLI to VGLI conversion timeline",
+                "done": false
+              }
+            ],
+            "reminder": "BDD opens at 180 days. Gather service treatment records and document current conditions before filing. VA evaluates each claimed condition using the evidence of record. Consider VR&E (Ch. 31) before spending GI Bill months if you qualify \u2014 the two interact and the election matters. Ask a VSO which fits your plan."
+          },
+          {
+            "id": 3,
+            "phase": "9 Months Out",
+            "monthsOut": 9,
+            "category": "CAREER",
+            "title": "Career Targeting & Gap Analysis",
+            "tasks": [
+              {
+                "id": "t12",
+                "text": "Run MOS through O*NET Crosswalk \u2014 identify top 3 civilian job matches (Pathway tab)",
+                "done": false
+              },
+              {
+                "id": "t12b",
+                "text": "Complete Gap Analysis \u2014 compare your skills to target job requirements (Pathway \u2192 Step 2)",
+                "done": false
+              },
+              {
+                "id": "t13",
+                "text": "Choose your path: college degree, certs/trades, or SkillBridge (Pathway \u2192 Step 3)",
+                "done": false
+              },
+              {
+                "id": "t14",
+                "text": "Research certs & credentials on DOD COOL \u2014 many are FREE on active duty",
+                "done": false
+              },
+              {
+                "id": "t14b",
+                "text": "Map your income stack: VA comp + GI Bill BAH + work programs (Pathway \u2192 Step 4)",
+                "done": false
+              },
+              {
+                "id": "t15",
+                "text": "Apply through your service-specific SkillBridge or Career Skills Program process after confirming your maximum days and approval authority.",
+                "done": false
+              },
+              {
+                "id": "t15b",
+                "text": "Apply for ACP mentorship \u2014 FREE year-long 1-on-1 with Fortune 500 professionals (acp-usa.org)",
+                "done": false
+              },
+              {
+                "id": "t15c",
+                "text": "Register on 50 Strong \u2014 FREE on-demand mentoring, employer connects, and job board (50-strong.us)",
+                "done": false
+              },
+              {
+                "id": "t16",
+                "text": "Contact vet-ready employers with gap closure programs (Pathway \u2192 Step 5)",
+                "done": false
+              }
+            ],
+            "reminder": "Run your crosswalk. Run your gap analysis. Choose your path. GET A MENTOR NOW \u2014 ACP and 50 Strong are free and connect you with civilians who've hired vets. One conversation can change your trajectory."
+          },
+          {
+            "id": 4,
+            "phase": "6 Months Out",
+            "monthsOut": 6,
+            "category": "FINANCE",
+            "title": "BDD Filing & Financial Operations",
+            "tasks": [
+              {
+                "id": "t17a",
+                "text": "SUBMIT BDD claim (Benefits Delivery at Discharge) \u2014 180-90 day window is NOW",
+                "done": false
+              },
+              {
+                "id": "t17b",
+                "text": "Be available for VA C&P exams within 45 days of filing",
+                "done": false
+              },
+              {
+                "id": "t17c",
+                "text": "Keep service treatment records current and complete before separation",
+                "done": false
+              },
+              {
+                "id": "t17",
+                "text": "Build post-separation budget (no BAH/BAS)",
+                "done": false
+              },
+              {
+                "id": "t18",
+                "text": "Determine state of residence for tax purposes",
+                "done": false
+              },
+              {
+                "id": "t19",
+                "text": "Research VA home loan pre-approval",
+                "done": false
+              },
+              {
+                "id": "t20",
+                "text": "Open/verify civilian bank accounts",
+                "done": false
+              },
+              {
+                "id": "t21",
+                "text": "Review TSP rollover options",
+                "done": false
+              },
+              {
+                "id": "t22",
+                "text": "Secure housing at post-separation location",
+                "done": false
+              }
+            ],
+            "reminder": "BDD WINDOW IS OPEN. Submit your claim NOW (180-90 days pre-sep). Be available for VA exams within 45 days of filing. Keep your service treatment records current and complete."
+          },
+          {
+            "id": 5,
+            "phase": "3 Months Out",
+            "monthsOut": 3,
+            "category": "ADMIN",
+            "title": "Administrative & Legal Closeout",
+            "tasks": [
+              {
+                "id": "t23",
+                "text": "Complete DD214 worksheet \u2014 verify every line",
+                "done": false
+              },
+              {
+                "id": "t24",
+                "text": "Schedule separation physical (VA C&P exam may satisfy this \u2014 check with medical)",
+                "done": false
+              },
+              {
+                "id": "t25",
+                "text": "Verify all awards, decorations, schools on record",
+                "done": false
+              },
+              {
+                "id": "t26",
+                "text": "Set up VA healthcare enrollment",
+                "done": false
+              },
+              {
+                "id": "t27",
+                "text": "Update DEERS for dependents",
+                "done": false
+              },
+              {
+                "id": "t28",
+                "text": "Finalize SBP elections (if retiring)",
+                "done": false
+              }
+            ],
+            "reminder": "Your DD214 is your most important document. Verify every entry. Errors are costly."
+          },
+          {
+            "id": 6,
+            "phase": "1 Month Out",
+            "monthsOut": 1,
+            "category": "EXECUTION",
+            "title": "Final Preparations & Outprocessing",
+            "tasks": [
+              {
+                "id": "t29",
+                "text": "Complete installation outprocessing checklist",
+                "done": false
+              },
+              {
+                "id": "t30",
+                "text": "Turn in all CIF/IIF (unit supply) and organizational equipment",
+                "done": false
+              },
+              {
+                "id": "t31",
+                "text": "Obtain 10+ certified copies of DD214",
+                "done": false
+              },
+              {
+                "id": "t32",
+                "text": "Verify final pay / leave sellback",
+                "done": false
+              },
+              {
+                "id": "t33",
+                "text": "Set up TRICARE transition (TAMP if eligible / CHCBP)",
+                "done": false
+              },
+              {
+                "id": "t34",
+                "text": "Confirm VA disability rating status",
+                "done": false
+              }
+            ],
+            "reminder": "Get 10+ certified copies of your DD214. You will need them for everything."
+          },
+          {
+            "id": 7,
+            "phase": "Post-Separation",
+            "monthsOut": 0,
+            "category": "VETERAN",
+            "title": "First 90 Days as a Veteran",
+            "tasks": [
+              {
+                "id": "t35",
+                "text": "Register with VA healthcare system",
+                "done": false
+              },
+              {
+                "id": "t36",
+                "text": "Apply for state veteran benefits \u2014 property tax exemptions, vehicle registration discounts, state vet bonuses",
+                "done": false
+              },
+              {
+                "id": "t37",
+                "text": "File for unemployment (UCX) if applicable",
+                "done": false
+              },
+              {
+                "id": "t38",
+                "text": "Connect with local veteran service organizations",
+                "done": false
+              },
+              {
+                "id": "t39",
+                "text": "Verify GI Bill enrollment / housing allowance",
+                "done": false
+              },
+              {
+                "id": "t40",
+                "text": "Establish primary care provider",
+                "done": false
+              },
+              {
+                "id": "t41",
+                "text": "Get your America the Beautiful Pass \u2014 FREE National Parks & Federal Lands access for all veterans (see Vet Perks tab)",
+                "done": false
+              },
+              {
+                "id": "t42",
+                "text": "Get veteran designation on driver's license \u2014 free in most states, proves status without carrying DD214",
+                "done": false
+              },
+              {
+                "id": "t43",
+                "text": "Join a veteran community \u2014 Team RWB, The Mission Continues, Team Rubicon, Next 18 (free golf & wellness camps), local VFW or American Legion post. Don't isolate.",
+                "done": false
+              },
+              {
+                "id": "t44",
+                "text": "Read the MINDSET tab \u2014 The Drop hits at months 1-3. Know the signs. Build structure. Ask for help if you need it.",
+                "done": false
+              }
+            ],
+            "reminder": "You earned these benefits. Don't leave anything on the table. And be ready for The Drop \u2014 the loss of identity, structure, and purpose hits harder than anyone warns you. Build your new routine, connect with other vets, and don't isolate. See Resources \u2192 Mindset."
+          }
+        ],
+        "documents": [
+          {
+            "id": "d1",
+            "name": "DD214 (Member-4 Copy)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Get 10+ certified copies. Required for nearly all veteran benefits."
+          },
+          {
+            "id": "d2",
+            "name": "VA Disability Rating Letter",
+            "critical": true,
+            "obtained": false,
+            "notes": "Download from VA.gov (Records \u2192 VA letters)."
+          },
+          {
+            "id": "d3",
+            "name": "Military Medical Records (Complete)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Request from MTF. Include dental. Takes 30-90 days."
+          },
+          {
+            "id": "d4",
+            "name": "Service Record (OMPF)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Verify all entries via iPERMS or branch equivalent."
+          },
+          {
+            "id": "d5",
+            "name": "Joint Services Transcript (JST)",
+            "critical": false,
+            "obtained": false,
+            "notes": "Download from jst.doded.mil. Maps training to ACE credits."
+          },
+          {
+            "id": "d6",
+            "name": "VMET Document",
+            "critical": false,
+            "obtained": false,
+            "notes": "Translates military experience to civilian terms."
+          },
+          {
+            "id": "d7",
+            "name": "TSP Account Statement",
+            "critical": false,
+            "obtained": false,
+            "notes": "Current balance, fund allocations, beneficiary info."
+          },
+          {
+            "id": "d8",
+            "name": "SGLI/VGLI Documentation",
+            "critical": false,
+            "obtained": false,
+            "notes": "SGLI to VGLI conversion within 240 days of separation."
+          },
+          {
+            "id": "d9",
+            "name": "VA Certificate of Eligibility (COE)",
+            "critical": false,
+            "obtained": false,
+            "notes": "For VA home loan. Request via VA.gov."
+          },
+          {
+            "id": "d10",
+            "name": "GI Bill Statement of Benefits",
+            "critical": false,
+            "obtained": false,
+            "notes": "Verify months remaining, transfer status."
+          },
+          {
+            "id": "d11",
+            "name": "Security Clearance Verification",
+            "critical": false,
+            "obtained": false,
+            "notes": "Clearance status and investigation dates."
+          },
+          {
+            "id": "d12",
+            "name": "Awards/Decoration Certificates",
+            "critical": false,
+            "obtained": false,
+            "notes": "Physical copies of all awards."
+          }
+        ],
+        "dismissed": [
+          "fixture-notification"
+        ]
+      }
+    },
+    {
+      "name": "wrong-shaped saved values do not replace canonical arrays",
+      "storage": {
+        "taskProgress": "{}",
+        "docProgress": "null"
+      },
+      "expected": {
+        "milestones": [
+          {
+            "id": 1,
+            "phase": "18 Months Out",
+            "monthsOut": 18,
+            "category": "PLANNING",
+            "title": "Initial Planning & Medical Documentation",
+            "tasks": [
+              {
+                "id": "t1",
+                "text": "Attend Initial TAP briefing",
+                "done": false
+              },
+              {
+                "id": "t2",
+                "text": "Complete Individual Transition Plan (ITP) with commander",
+                "done": false
+              },
+              {
+                "id": "t1b",
+                "text": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record.",
+                "done": false
+              },
+              {
+                "id": "t1c",
+                "text": "Follow up on current conditions, referrals, and specialist appointments; keep your service treatment records current",
+                "done": false
+              },
+              {
+                "id": "t1d",
+                "text": "Research VR&E (Chapter 31) \u2014 vocational rehab benefits at 10%+ disability rating (priority at 20%+). It interacts with your GI Bill and the choice matters \u2014 understand both before you elect. Ask a VSO",
+                "done": false
+              },
+              {
+                "id": "t3",
+                "text": "Review military service records for accuracy (OMPF)",
+                "done": false
+              },
+              {
+                "id": "t4",
+                "text": "Research post-separation state: income tax, property tax exemptions, vehicle registration discounts, state vet benefits",
+                "done": false
+              },
+              {
+                "id": "t5",
+                "text": "Begin networking \u2014 LinkedIn profile, veteran groups, mentors",
+                "done": false
+              },
+              {
+                "id": "t1e",
+                "text": "Get professional headshot \u2014 Portraits for Patriots offers FREE headshots for military (see Resources \u2192 TAP+)",
+                "done": false
+              }
+            ],
+            "reminder": "Gather service treatment records and document current conditions before filing. VA decides service connection from the evidence of record. Also: research VR&E (Ch. 31) \u2014 if you qualify, understand how it interacts with your GI Bill before you choose, because the election affects both."
+          },
+          {
+            "id": 2,
+            "phase": "12 Months Out",
+            "monthsOut": 12,
+            "category": "BENEFITS",
+            "title": "Benefits, Claims & Medical Follow-Up",
+            "tasks": [
+              {
+                "id": "t6",
+                "text": "Continue medical documentation \u2014 follow up on ALL referrals and specialist appointments",
+                "done": false
+              },
+              {
+                "id": "t7",
+                "text": "Keep service treatment records current; follow up on active referrals and document current conditions",
+                "done": false
+              },
+              {
+                "id": "t7b",
+                "text": "If eligible: apply for VR&E (Chapter 31) NOW \u2014 vocational rehab for service-connected veterans. Understand how it interacts with your GI Bill before you elect \u2014 the choice matters",
+                "done": false
+              },
+              {
+                "id": "t8",
+                "text": "Research VA disability claim process and BDD program (opens at 180 days)",
+                "done": false
+              },
+              {
+                "id": "t9",
+                "text": "Attend TAP workshops \u2014 not all TAPs are equal, supplement with outside resources (see Resources \u2192 TAP+)",
+                "done": false
+              },
+              {
+                "id": "t10",
+                "text": "Research GI Bill eligibility and transfer options \u2014 remember VR&E comes FIRST if eligible",
+                "done": false
+              },
+              {
+                "id": "t11",
+                "text": "Verify SGLI to VGLI conversion timeline",
+                "done": false
+              }
+            ],
+            "reminder": "BDD opens at 180 days. Gather service treatment records and document current conditions before filing. VA evaluates each claimed condition using the evidence of record. Consider VR&E (Ch. 31) before spending GI Bill months if you qualify \u2014 the two interact and the election matters. Ask a VSO which fits your plan."
+          },
+          {
+            "id": 3,
+            "phase": "9 Months Out",
+            "monthsOut": 9,
+            "category": "CAREER",
+            "title": "Career Targeting & Gap Analysis",
+            "tasks": [
+              {
+                "id": "t12",
+                "text": "Run MOS through O*NET Crosswalk \u2014 identify top 3 civilian job matches (Pathway tab)",
+                "done": false
+              },
+              {
+                "id": "t12b",
+                "text": "Complete Gap Analysis \u2014 compare your skills to target job requirements (Pathway \u2192 Step 2)",
+                "done": false
+              },
+              {
+                "id": "t13",
+                "text": "Choose your path: college degree, certs/trades, or SkillBridge (Pathway \u2192 Step 3)",
+                "done": false
+              },
+              {
+                "id": "t14",
+                "text": "Research certs & credentials on DOD COOL \u2014 many are FREE on active duty",
+                "done": false
+              },
+              {
+                "id": "t14b",
+                "text": "Map your income stack: VA comp + GI Bill BAH + work programs (Pathway \u2192 Step 4)",
+                "done": false
+              },
+              {
+                "id": "t15",
+                "text": "Apply through your service-specific SkillBridge or Career Skills Program process after confirming your maximum days and approval authority.",
+                "done": false
+              },
+              {
+                "id": "t15b",
+                "text": "Apply for ACP mentorship \u2014 FREE year-long 1-on-1 with Fortune 500 professionals (acp-usa.org)",
+                "done": false
+              },
+              {
+                "id": "t15c",
+                "text": "Register on 50 Strong \u2014 FREE on-demand mentoring, employer connects, and job board (50-strong.us)",
+                "done": false
+              },
+              {
+                "id": "t16",
+                "text": "Contact vet-ready employers with gap closure programs (Pathway \u2192 Step 5)",
+                "done": false
+              }
+            ],
+            "reminder": "Run your crosswalk. Run your gap analysis. Choose your path. GET A MENTOR NOW \u2014 ACP and 50 Strong are free and connect you with civilians who've hired vets. One conversation can change your trajectory."
+          },
+          {
+            "id": 4,
+            "phase": "6 Months Out",
+            "monthsOut": 6,
+            "category": "FINANCE",
+            "title": "BDD Filing & Financial Operations",
+            "tasks": [
+              {
+                "id": "t17a",
+                "text": "SUBMIT BDD claim (Benefits Delivery at Discharge) \u2014 180-90 day window is NOW",
+                "done": false
+              },
+              {
+                "id": "t17b",
+                "text": "Be available for VA C&P exams within 45 days of filing",
+                "done": false
+              },
+              {
+                "id": "t17c",
+                "text": "Keep service treatment records current and complete before separation",
+                "done": false
+              },
+              {
+                "id": "t17",
+                "text": "Build post-separation budget (no BAH/BAS)",
+                "done": false
+              },
+              {
+                "id": "t18",
+                "text": "Determine state of residence for tax purposes",
+                "done": false
+              },
+              {
+                "id": "t19",
+                "text": "Research VA home loan pre-approval",
+                "done": false
+              },
+              {
+                "id": "t20",
+                "text": "Open/verify civilian bank accounts",
+                "done": false
+              },
+              {
+                "id": "t21",
+                "text": "Review TSP rollover options",
+                "done": false
+              },
+              {
+                "id": "t22",
+                "text": "Secure housing at post-separation location",
+                "done": false
+              }
+            ],
+            "reminder": "BDD WINDOW IS OPEN. Submit your claim NOW (180-90 days pre-sep). Be available for VA exams within 45 days of filing. Keep your service treatment records current and complete."
+          },
+          {
+            "id": 5,
+            "phase": "3 Months Out",
+            "monthsOut": 3,
+            "category": "ADMIN",
+            "title": "Administrative & Legal Closeout",
+            "tasks": [
+              {
+                "id": "t23",
+                "text": "Complete DD214 worksheet \u2014 verify every line",
+                "done": false
+              },
+              {
+                "id": "t24",
+                "text": "Schedule separation physical (VA C&P exam may satisfy this \u2014 check with medical)",
+                "done": false
+              },
+              {
+                "id": "t25",
+                "text": "Verify all awards, decorations, schools on record",
+                "done": false
+              },
+              {
+                "id": "t26",
+                "text": "Set up VA healthcare enrollment",
+                "done": false
+              },
+              {
+                "id": "t27",
+                "text": "Update DEERS for dependents",
+                "done": false
+              },
+              {
+                "id": "t28",
+                "text": "Finalize SBP elections (if retiring)",
+                "done": false
+              }
+            ],
+            "reminder": "Your DD214 is your most important document. Verify every entry. Errors are costly."
+          },
+          {
+            "id": 6,
+            "phase": "1 Month Out",
+            "monthsOut": 1,
+            "category": "EXECUTION",
+            "title": "Final Preparations & Outprocessing",
+            "tasks": [
+              {
+                "id": "t29",
+                "text": "Complete installation outprocessing checklist",
+                "done": false
+              },
+              {
+                "id": "t30",
+                "text": "Turn in all CIF/IIF (unit supply) and organizational equipment",
+                "done": false
+              },
+              {
+                "id": "t31",
+                "text": "Obtain 10+ certified copies of DD214",
+                "done": false
+              },
+              {
+                "id": "t32",
+                "text": "Verify final pay / leave sellback",
+                "done": false
+              },
+              {
+                "id": "t33",
+                "text": "Set up TRICARE transition (TAMP if eligible / CHCBP)",
+                "done": false
+              },
+              {
+                "id": "t34",
+                "text": "Confirm VA disability rating status",
+                "done": false
+              }
+            ],
+            "reminder": "Get 10+ certified copies of your DD214. You will need them for everything."
+          },
+          {
+            "id": 7,
+            "phase": "Post-Separation",
+            "monthsOut": 0,
+            "category": "VETERAN",
+            "title": "First 90 Days as a Veteran",
+            "tasks": [
+              {
+                "id": "t35",
+                "text": "Register with VA healthcare system",
+                "done": false
+              },
+              {
+                "id": "t36",
+                "text": "Apply for state veteran benefits \u2014 property tax exemptions, vehicle registration discounts, state vet bonuses",
+                "done": false
+              },
+              {
+                "id": "t37",
+                "text": "File for unemployment (UCX) if applicable",
+                "done": false
+              },
+              {
+                "id": "t38",
+                "text": "Connect with local veteran service organizations",
+                "done": false
+              },
+              {
+                "id": "t39",
+                "text": "Verify GI Bill enrollment / housing allowance",
+                "done": false
+              },
+              {
+                "id": "t40",
+                "text": "Establish primary care provider",
+                "done": false
+              },
+              {
+                "id": "t41",
+                "text": "Get your America the Beautiful Pass \u2014 FREE National Parks & Federal Lands access for all veterans (see Vet Perks tab)",
+                "done": false
+              },
+              {
+                "id": "t42",
+                "text": "Get veteran designation on driver's license \u2014 free in most states, proves status without carrying DD214",
+                "done": false
+              },
+              {
+                "id": "t43",
+                "text": "Join a veteran community \u2014 Team RWB, The Mission Continues, Team Rubicon, Next 18 (free golf & wellness camps), local VFW or American Legion post. Don't isolate.",
+                "done": false
+              },
+              {
+                "id": "t44",
+                "text": "Read the MINDSET tab \u2014 The Drop hits at months 1-3. Know the signs. Build structure. Ask for help if you need it.",
+                "done": false
+              }
+            ],
+            "reminder": "You earned these benefits. Don't leave anything on the table. And be ready for The Drop \u2014 the loss of identity, structure, and purpose hits harder than anyone warns you. Build your new routine, connect with other vets, and don't isolate. See Resources \u2192 Mindset."
+          }
+        ],
+        "documents": [
+          {
+            "id": "d1",
+            "name": "DD214 (Member-4 Copy)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Get 10+ certified copies. Required for nearly all veteran benefits."
+          },
+          {
+            "id": "d2",
+            "name": "VA Disability Rating Letter",
+            "critical": true,
+            "obtained": false,
+            "notes": "Download from VA.gov (Records \u2192 VA letters)."
+          },
+          {
+            "id": "d3",
+            "name": "Military Medical Records (Complete)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Request from MTF. Include dental. Takes 30-90 days."
+          },
+          {
+            "id": "d4",
+            "name": "Service Record (OMPF)",
+            "critical": true,
+            "obtained": false,
+            "notes": "Verify all entries via iPERMS or branch equivalent."
+          },
+          {
+            "id": "d5",
+            "name": "Joint Services Transcript (JST)",
+            "critical": false,
+            "obtained": false,
+            "notes": "Download from jst.doded.mil. Maps training to ACE credits."
+          },
+          {
+            "id": "d6",
+            "name": "VMET Document",
+            "critical": false,
+            "obtained": false,
+            "notes": "Translates military experience to civilian terms."
+          },
+          {
+            "id": "d7",
+            "name": "TSP Account Statement",
+            "critical": false,
+            "obtained": false,
+            "notes": "Current balance, fund allocations, beneficiary info."
+          },
+          {
+            "id": "d8",
+            "name": "SGLI/VGLI Documentation",
+            "critical": false,
+            "obtained": false,
+            "notes": "SGLI to VGLI conversion within 240 days of separation."
+          },
+          {
+            "id": "d9",
+            "name": "VA Certificate of Eligibility (COE)",
+            "critical": false,
+            "obtained": false,
+            "notes": "For VA home loan. Request via VA.gov."
+          },
+          {
+            "id": "d10",
+            "name": "GI Bill Statement of Benefits",
+            "critical": false,
+            "obtained": false,
+            "notes": "Verify months remaining, transfer status."
+          },
+          {
+            "id": "d11",
+            "name": "Security Clearance Verification",
+            "critical": false,
+            "obtained": false,
+            "notes": "Clearance status and investigation dates."
+          },
+          {
+            "id": "d12",
+            "name": "Awards/Decoration Certificates",
+            "critical": false,
+            "obtained": false,
+            "notes": "Physical copies of all awards."
+          }
+        ],
+        "dismissed": []
+      }
+    }
+  ]
+}

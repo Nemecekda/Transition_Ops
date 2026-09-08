@@ -208,6 +208,13 @@ function sourceChecks() {
     "POFF-03 install strip, card, and footer state that push is disabled"
   );
 
+  function releaseVersionMatchesNotes(text) {
+    const declarations = Array.from(text.matchAll(/const APP_VERSION = "(v\d+)";/g));
+    const firstNote = /const WHATS_NEW = \[\s*\{ v: "(v\d+)"/.exec(text);
+    return declarations.length === 1 && !!firstNote && declarations[0][1] === firstNote[1];
+  }
+  check(!releaseVersionMatchesNotes(index.replace(/const APP_VERSION = "v\d+";/, 'const APP_VERSION = "v0";')),
+    "POFF-04 mismatched release-note version mutation fails");
   const historyStatus = "Release notes describe the app at the time shown. Current status:";
   const historyStatusIndex = index.indexOf(historyStatus);
   const renderedHistoryIndex = index.indexOf("WHATS_NEW.map(function(item, i)", historyStatusIndex);
@@ -217,7 +224,7 @@ function sourceChecks() {
       renderedHistoryIndex > historyStatusIndex &&
       renderedHistoryIndex - historyStatusIndex < 500 &&
       lineContaining(index, historyStatus).includes("TOPS_PUSH_DISABLED_COPY") &&
-      countMatches(index, /const APP_VERSION = "v96";/) === 1 &&
+      releaseVersionMatchesNotes(index) &&
       index.split(historicalV90).length - 1 === 1,
     "POFF-04 unchanged release history is preceded by current push-off context"
   );

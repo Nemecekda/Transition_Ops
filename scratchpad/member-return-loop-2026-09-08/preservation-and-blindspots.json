@@ -1,0 +1,173 @@
+{
+  "same": [
+    {
+      "name": "milestones",
+      "sha256": "0c4a58c86cc6c2d25bc268e1e290bab0e0425a301032ec186d22d2dfeda6d5c4"
+    },
+    {
+      "name": "documents",
+      "sha256": "71bcf86da30efa1da8ff7eb4e282750dfa05dd70e869905e980b48108765d7e5"
+    },
+    {
+      "name": "reminders",
+      "sha256": "e67867cd0bf335359e1e4d3de030e5c12a251b05b0dc10891015a49d2dccea67"
+    },
+    {
+      "name": "policies",
+      "sha256": "145badd18e4a885f6ab21d7ec5bf66f8916276e4e55732d6a5dd9f973aac7666"
+    },
+    {
+      "name": "SITREP",
+      "sha256": "949d112fded5afb07a4c46c57243c7649b4dd956219fbf8fbe16019563ca935f"
+    },
+    {
+      "name": "Resume state",
+      "sha256": "458c786bf21c3eafcb9a56cb78f25fe94ad223860841d849cb1adfc28281401d"
+    }
+  ],
+  "changedTrackedFiles": [
+    "index.html",
+    "pwa-sw.js",
+    "scripts/privacy-network-regression.js"
+  ],
+  "workerOnlyVersionChanged": true,
+  "allOtherTrackedFilesUnchanged": true,
+  "snapshotObservations": [
+    {
+      "name": "six-hour open",
+      "input": {
+        "ts": 1788858000000,
+        "policy": 4,
+        "days": 600
+      },
+      "result": {
+        "summary": null,
+        "after": {
+          "ts": 1788879600000,
+          "policy": 5,
+          "days": 548
+        }
+      },
+      "secondReload": {
+        "summary": null,
+        "after": {
+          "ts": 1788879600000,
+          "policy": 5,
+          "days": 548
+        }
+      },
+      "scope": "Unchanged snapshot behavior; not a fixed or accepted new feature."
+    },
+    {
+      "name": "21-hour policy-count increase",
+      "input": {
+        "ts": 1788804000000,
+        "policy": 4,
+        "days": 600
+      },
+      "result": {
+        "summary": {
+          "away": 1,
+          "items": [
+            "1 new policy change tracked \u2014 tap for sources"
+          ]
+        },
+        "after": {
+          "ts": 1788879600000,
+          "policy": 5,
+          "days": 548
+        }
+      },
+      "secondReload": {
+        "summary": null,
+        "after": {
+          "ts": 1788879600000,
+          "policy": 5,
+          "days": 548
+        }
+      },
+      "scope": "Unchanged snapshot behavior; not a fixed or accepted new feature."
+    },
+    {
+      "name": "same-count policy replacement",
+      "input": {
+        "ts": 1788804000000,
+        "policy": 5,
+        "days": 600
+      },
+      "result": {
+        "summary": null,
+        "after": {
+          "ts": 1788879600000,
+          "policy": 5,
+          "days": 548
+        }
+      },
+      "secondReload": {
+        "summary": null,
+        "after": {
+          "ts": 1788879600000,
+          "policy": 5,
+          "days": 548
+        }
+      },
+      "scope": "Unchanged snapshot behavior; not a fixed or accepted new feature."
+    },
+    {
+      "name": "future timestamp",
+      "input": {
+        "ts": 1788883200000,
+        "policy": 4,
+        "days": 600
+      },
+      "result": {
+        "summary": null,
+        "after": {
+          "ts": 1788883200000,
+          "policy": 4,
+          "days": 600
+        }
+      },
+      "secondReload": {
+        "summary": null,
+        "after": {
+          "ts": 1788883200000,
+          "policy": 4,
+          "days": 600
+        }
+      },
+      "scope": "Unchanged snapshot behavior; not a fixed or accepted new feature."
+    }
+  ],
+  "dateObservations": [
+    {
+      "clock": "2026-03-07T16:00:00Z",
+      "date": "2026-03-09",
+      "expected": 2,
+      "actual": 2,
+      "pass": true
+    },
+    {
+      "clock": "2026-10-31T15:00:00Z",
+      "date": "2026-11-02",
+      "expected": 2,
+      "actual": 2,
+      "pass": true
+    },
+    {
+      "clock": "2026-09-08T13:00:00Z",
+      "date": "2026-09-08",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "clock": "2026-09-08T17:00:00Z",
+      "date": "2026-09-08",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "limits": "Existing SITREP count identity and load-consumption blind spots remain. Existing date functions unchanged; observations are not new policy verification."
+}

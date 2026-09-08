@@ -1,0 +1,27 @@
+
+> transition-ops@1.0.0 test:privacy-network
+> node scripts/privacy-network-regression.js
+
+PASS browser source has no GA bootstrap, measurement ID, tag URL, or obsolete analytics claim
+PASS browser source has no Kit form, credential, email-signup runtime, or signup UI
+PASS feedback has no app submission, tracking event, identity fields, or dormant Forms path
+PASS feedback is a truthful member-controlled email handoff
+PASS Navigator discloses the request payload and optional provider boundary
+PASS Resume discloses provider-bound fields and keeps its personal header out of transport
+PASS Navigator source has no member-derived gap Blob or gap-log path
+PASS production push is one literal false declaration
+PASS POFF-01 active UI contains no obsolete push promise
+PASS POFF-01 obsolete push-copy mutation fails
+PASS POFF-02 install surfaces use direct-access guidance without a push promise
+PASS POFF-03 install strip, card, and footer state that push is disabled
+Error: FAIL POFF-04 unchanged release history is preceded by current push-off context
+    at check (/private/tmp/tops-member-return-2026-09-08/scripts/privacy-network-regression.js:72:11)
+    at sourceChecks (/private/tmp/tops-member-return-2026-09-08/scripts/privacy-network-regression.js:215:3)
+    at run (/private/tmp/tops-member-return-2026-09-08/scripts/privacy-network-regression.js:857:3)
+    at Object.<anonymous> (/private/tmp/tops-member-return-2026-09-08/scripts/privacy-network-regression.js:869:1)
+    at Module._compile (node:internal/modules/cjs/loader:1871:14)
+    at Object..js (node:internal/modules/cjs/loader:2002:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
