@@ -2673,10 +2673,11 @@ const CATEGORIES = {
     label: "VETERAN"
   }
 };
-const APP_VERSION = "v97";
+const APP_VERSION = "v98";
   const JOBS_LIVE = false; // flip to true the day NLx/DOL approves Jobs API access
 const DATA_VERIFIED = "1 AUG 2026";
 const WHATS_NEW = [
+  { v: "v98", date: "8 SEP 2026", note: "Policy Intel: September 8 executive order explained, with current VA claims and TAP next steps." },
   { v: "v97", date: "8 SEP 2026", note: "Continue your plan from Home: see task and document counts, reopen a partly completed checklist, or go straight to Documents. Saved completion marks now use current checklist content. Home timeline, readiness, and Next Action controls work with the keyboard; Next Action opens the matching reminder." },
   { v: "v96", date: "14 AUG 2026", note: "FIND YOUR POST buttons added to the VFW and American Legion cards in the VSO directory \u2014 one tap to each organization's official post locator. Use them to find your nearest post and a service officer before your BDD consultation." },
   { v: "v95", date: "13 AUG 2026", note: "Free year of ChatGPT Plus for transitioning members: veterans and retirees within 12 months of leaving active duty, service members within 12 months of transitioning. ID.me verification, personal accounts only. Read the card before you claim \u2014 it renews at the paid rate after the free year unless you cancel." },
@@ -5587,11 +5588,18 @@ function App() {
   function renderPolicyIntel() {
     return (
       React.createElement("div", { style: { background: "linear-gradient(135deg, rgba(139,105,20,0.08), rgba(139,105,20,0.02))", border: "1px solid " + C.gold, borderRadius: 8, padding: 12, marginBottom: 12 } },
-        React.createElement("div", { onClick: function() { setPolicyIntelOpen(!policyIntelOpen); }, style: { cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" } },
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.gold, letterSpacing: 2 } }, (policyIntelOpen ? "\u25BC" : "\u25B6") + " 2026 POLICY INTEL"),
-          React.createElement("div", { style: { fontSize: 10, color: C.inactive, letterSpacing: 1 } }, policyIntelOpen ? "COLLAPSE" : "EXPAND")
+        React.createElement("button", { type: "button", "aria-label": "2026 Policy Intel", "aria-expanded": policyIntelOpen, "aria-controls": policyIntelOpen ? "tops-policy-intel-panel" : undefined, onClick: function() { setPolicyIntelOpen(!policyIntelOpen); }, style: { width: "100%", minHeight: 44, padding: 0, border: "none", background: "transparent", color: "inherit", font: "inherit", textAlign: "left", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" } },
+          React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.gold, letterSpacing: 2 } }, (policyIntelOpen ? "\u25BC" : "\u25B6") + " 2026 POLICY INTEL"),
+          React.createElement("span", { style: { fontSize: 10, color: C.inactive, letterSpacing: 1 } }, policyIntelOpen ? "COLLAPSE" : "EXPAND")
         ),
-        policyIntelOpen && React.createElement("div", { style: { marginTop: 12, paddingTop: 12, borderTop: "1px solid " + C.border } },
+        policyIntelOpen && React.createElement("div", { id: "tops-policy-intel-panel", style: { marginTop: 12, paddingTop: 12, borderTop: "1px solid " + C.border } },
+          React.createElement("div", { style: { marginBottom: 14 } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "8 SEP 2026 ORDER - RECORDS, BENEFITS TOOLS AND TRANSITION SUPPORT"),
+            React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.5 } }, "Continue your VA claims and TAP steps. The September 8 order directs agencies to: within 30 days, ensure records are shared immediately at discharge; within 120 days, review and modify relevant IT contracts for interoperability; and within 180 days, establish ongoing records-sharing systems, AI-assisted benefits tools and TAP/workforce updates. These agency deadlines run from September 8, 2026, not your separation date, and are not guaranteed launch dates. The order does not automatically award benefits or guarantee jobs. The order alone does not establish that new tools are available; implementation remains subject to law and funding."),
+            React.createElement("div", { style: { fontSize: 13, color: C.textPrimary, lineHeight: 1.5, marginTop: 8 } }, "Use VA's current claims instructions, including the 180-90-day BDD window if eligible. If preparing to leave active service, contact your installation TAP office for class registration requirements and prerequisites."),
+            React.createElement("div", { style: { fontSize: 13, lineHeight: 1.7, marginTop: 8 } }, React.createElement("a", { href: "https://www.whitehouse.gov/presidential-actions/2026/09/accelerating-access-to-veterans-benefits-and-employment-opportunities/", target: "_blank", rel: "noopener noreferrer", style: { display: "flex", alignItems: "center", minHeight: 44, color: C.greenBright, textDecoration: "underline" } }, "Read the executive order"), React.createElement("a", { href: "https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/", target: "_blank", rel: "noopener noreferrer", style: { display: "flex", alignItems: "center", minHeight: 44, color: C.greenBright, textDecoration: "underline" } }, "VA pre-discharge and BDD instructions"), React.createElement("a", { href: "https://www.va.gov/disability/how-to-file-claim/evidence-needed/standard-claims/", target: "_blank", rel: "noopener noreferrer", style: { display: "flex", alignItems: "center", minHeight: 44, color: C.greenBright, textDecoration: "underline" } }, "VA standard-claim instructions"), React.createElement("a", { href: "https://www.dol.gov/agencies/vets/programs/tap", target: "_blank", rel: "noopener noreferrer", style: { display: "flex", alignItems: "center", minHeight: 44, color: C.greenBright, textDecoration: "underline" } }, "DOL TAP office guidance")),
+            React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, marginTop: 6 } }, "Order and linked guidance verified 8 SEP 2026.")
+          ),
           React.createElement("div", { style: { marginBottom: 14 } },
             React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, color: C.greenBright, letterSpacing: 1, marginBottom: 4 } }, "\u2713 FY26 NDAA \u2014 ENACTED 18 DEC 2025"),
             React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.7, paddingLeft: 12 } },
@@ -11790,7 +11798,8 @@ whatsNewUnseen && React.createElement("div", {
       ...S.bodyText,
       lineHeight: 1.7
     }
-  }, "Not all TAPs are created equal. These free resources supplement what your base transition office provides.")), /*#__PURE__*/React.createElement("div", {
+  }, "Not all TAPs are created equal. These free resources supplement what your base transition office provides."),
+    React.createElement("div", { style: { ...S.bodyText, marginTop: 10 } }, "The ", React.createElement("a", { href: "https://www.whitehouse.gov/presidential-actions/2026/09/accelerating-access-to-veterans-benefits-and-employment-opportunities/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "September 8 order"), " directs agencies to update TAP and workforce support within 180 days of the order. This is an agency target, not a member deadline or job guarantee. If preparing to leave active service, ", React.createElement("a", { href: "https://www.dol.gov/agencies/vets/programs/tap", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "contact your installation TAP office"), " for current class registration requirements and prerequisites.")), /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
   }, "FREE PROFESSIONAL DEVELOPMENT"), [{
     name: "Portraits for Patriots",
@@ -14283,7 +14292,9 @@ whatsNewUnseen && React.createElement("div", {
     style: S.cardTitle
   }, "DD214 & SERVICE RECORD"), /*#__PURE__*/React.createElement("div", {
     style: S.bodyText
-  }, "Your DD214 is the single most important document you'll carry as a veteran. Verify every line.")), /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 14, borderColor: C.gold, marginTop: 12 } },
+  }, "Your DD214 is the single most important document you'll carry as a veteran. Verify every line."),
+    React.createElement("div", { style: { ...S.bodyText, marginTop: 10 } }, "The ", React.createElement("a", { href: "https://www.whitehouse.gov/presidential-actions/2026/09/accelerating-access-to-veterans-benefits-and-employment-opportunities/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "September 8 order"), " directs agencies to improve records sharing; it does not confirm that your records have transferred. For your own copy, use ", React.createElement("a", { href: "https://www.va.gov/records/get-military-service-records/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "VA's service-record request instructions"), ". Continue filing your claim while that request is pending."),
+    React.createElement("div", { style: { ...S.bodyText, marginTop: 10 } }, "Using BDD? Follow ", React.createElement("a", { href: "https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "VA's BDD instructions"), " to confirm eligibility and file 180-90 days before leaving qualifying full-time active duty, submit Separation Health Assessment Part A, and remain available for exams during the next 45 days. VA obtains service treatment records for online claims; include copies when filing by another method.")), /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 14, borderColor: C.gold, marginTop: 12 } },
     React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "RESERVE SOLDIERS: WHERE YOUR DD214 ACTUALLY COMES FROM"),
     React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.8 } },
       "Readiness Division Retirement Services Offices do not process, generate, or issue DD214s. Sending your DD214 request there buries their inbox and costs you days waiting on a redirect. Your DD214 is issued at your separation point when you come off active duty orders. For copies or corrections after the fact, go through HRC Soldier Records or milConnect.")), /*#__PURE__*/React.createElement("div", {
