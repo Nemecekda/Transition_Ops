@@ -6027,22 +6027,25 @@ function App() {
     }
   }, [separationDate, deferredPrompt]);
 
-  // Measure the nav when the card opens, and on resize while it is open
-  // (rotation and browser-chrome collapse both change the nav height).
+  // Share the live nav height with the capture card and persistent footer.
+  // offsetHeight includes safe-area padding; observe font/size changes too.
   useEffect(() => {
-    if (!captureCard) return;
+    var nav = document.querySelector(".bottom-nav");
+    if (!nav) return;
     var measure = function () {
-      var nav = document.querySelector(".bottom-nav");
-      if (nav && nav.offsetHeight > 0) setCaptureNavH(nav.offsetHeight);
+      if (nav.offsetHeight > 0) setCaptureNavH(nav.offsetHeight);
     };
     measure();
+    var observer = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : null;
+    if (observer) observer.observe(nav, { box: "border-box" });
     window.addEventListener("resize", measure);
     window.addEventListener("orientationchange", measure);
     return function () {
+      if (observer) observer.disconnect();
       window.removeEventListener("resize", measure);
       window.removeEventListener("orientationchange", measure);
     };
-  }, [captureCard]);
+  }, [showOnboarding]);
 
   const handleCaptureInstall = useCallback(() => {
     if (window.__trackEvent) window.__trackEvent("capture_install_native", {});
@@ -15406,7 +15409,7 @@ whatsNewUnseen && React.createElement("div", {
   // open. Deliberately a quiet text link, never a banner. Opens the same
   // AboutModal as the ABOUT & PRIVACY tile.
   /*#__PURE__*/React.createElement("div", {
-    style: { textAlign: "center", padding: "18px 12px 26px" }
+    style: { textAlign: "center", padding: "18px 12px " + (captureNavH + 26) + "px" }
   }, /*#__PURE__*/React.createElement("span", {
     onClick: function(event) { openAbout(event); if (window.__trackEvent) window.__trackEvent("privacy_link_opened"); },
     role: "button",
