@@ -1,0 +1,18 @@
+
+> transition-ops@1.0.0 test:openai-migration
+> node scripts/openai-migration-regression.js
+
+PASS: Navigator dry-run environment gate, validation, no client/store/provider, and request-flag rejection
+PASS: 40/40 extraction source-number cases across both modes; invented tenure and repaired additions withheld, genuine numbers and punctuation preserved, exact numeric forms kept, no new calls
+AssertionError [ERR_ASSERTION]: {"error":"The result did not pass the required grounding and quality checks. Review your confirmed facts and try again.","reasonCategory":"quality_gate","stage":"facts"}
+
+502 !== 200
+
+    at run (/private/tmp/tops-federal-resume-readiness/scripts/openai-migration-regression.js:1935:10) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 502,
+  expected: 200,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

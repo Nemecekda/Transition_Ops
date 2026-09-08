@@ -1,0 +1,18 @@
+{
+  "checked_at": "2026-09-07T21:04:01.541Z",
+  "branch": "codex/federal-resume-readiness",
+  "commit": "7c79057801f7430c082fdc8009ded1fe307ba76b",
+  "tree": "0f83c5c3f20f81effbc0678bbf856ee93919a4b7",
+  "site": "veteranbridge-tools",
+  "site_id": "e8e39892-d7d1-47c0-b23a-847ed01120b8",
+  "deploy_id": "6a9f25af9495300009430de3",
+  "context": "deploy-preview",
+  "state": "ready",
+  "published_at": null,
+  "immutable_url": "https://6a9f25af9495300009430de3--veteranbridge-tools.netlify.app/",
+  "resume_function_digest": "161c0e311eff4882af40b44475726baf8c84f786e57398bec5777fd68a21615c",
+  "pr": 59,
+  "pr_state": "open",
+  "merged": false,
+  "base": "ops/openai-parallel-clone"
+}

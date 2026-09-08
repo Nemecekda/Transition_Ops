@@ -1,0 +1,4 @@
+EDIT 10F old expect 1 actual 1
+EDIT 10F post-count PASS; existing attributed-quantity rule retained
+EDIT 10G old expect 1 actual 1
+EDIT 10G post-count PASS; final prompt sha256=1c2350dbb8ce1f5db98dbdc4afd19581020fd3087865fc42b209a872cee77d91

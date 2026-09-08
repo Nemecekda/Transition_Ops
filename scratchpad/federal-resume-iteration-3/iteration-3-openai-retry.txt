@@ -1,0 +1,19 @@
+
+> transition-ops@1.0.0 test:openai-migration
+> node scripts/openai-migration-regression.js
+
+PASS: Navigator dry-run environment gate, validation, no client/store/provider, and request-flag rejection
+PASS: federal metadata 12/12 admitted; missing/malformed/global/unlinked excluded; civilian eligibility unchanged; generation/audit ownership and two-call path verified with stubs
+PASS: federal TIP directives 2 -> 0; actual request contract, honest gaps and byte-exact release, four audit-withhold paths, and two-call/no-retry boundaries verified with stubs; hosted behavior pending
+AssertionError [ERR_ASSERTION]: global quantity names exact employer: {"error":"The draft included a number that was not supported by the scoped confirmed facts. Review the confirmed facts and try again.","reasonCategory":"unsupported_number"}
+
+502 !== 200
+
+    at run (/private/tmp/tops-federal-resume-readiness/scripts/openai-migration-regression.js:2423:14) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 502,
+  expected: 200,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

@@ -1,4 +1,20 @@
+/pwa-sw.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: no-cache
+
+/sw.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: no-cache
+
+/OneSignalSDKWorker.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: no-cache
+
+/push/onesignal/OneSignalSDKWorker.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: no-cache
+
 /*
-  X-Frame-Options: ALLOWALL
-  Content-Security-Policy: frame-ancestors *
+  X-Frame-Options: DENY
+  Content-Security-Policy: frame-ancestors 'none'
   Access-Control-Allow-Origin: *

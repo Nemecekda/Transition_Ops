@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A client-neutral employer review brief for sharing Transition Ops with an ERG, BRG, veteran network, or military-connected employee group." />
+  <title>Transition Ops Employer Review Brief</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --navy: #102a43;
+      --navy-dark: #071a2b;
+      --blue: #155e75;
+      --gold: #f2b134;
+      --ink: #17212b;
+      --muted: #465463;
+      --line: #c7d1db;
+      --surface: #ffffff;
+      --surface-alt: #eef4f7;
+      --focus: #ffbf47;
+      --max-width: 72rem;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 100%;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--surface-alt);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    a {
+      color: #075985;
+      font-weight: 700;
+      text-underline-offset: 0.2em;
+      text-decoration-thickness: 0.12em;
+    }
+
+    a:hover {
+      color: #0c4a6e;
+    }
+
+    a:focus-visible {
+      border-radius: 0.2rem;
+      box-shadow: 0 0 0 0.45rem var(--focus);
+      outline: 0.2rem solid #000000;
+      outline-offset: 0.2rem;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 10;
+      padding: 0.7rem 1rem;
+      background: var(--surface);
+      color: var(--navy-dark);
+      transform: translateY(-200%);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .site-header {
+      background: var(--navy);
+      color: var(--surface);
+      border-top: 0.45rem solid var(--gold);
+    }
+
+    .package-banner {
+      padding: 0.9rem 1rem;
+      background: #7f1d1d;
+      color: #ffffff;
+      border-top: 0.2rem solid #ffffff;
+      border-bottom: 0.2rem solid #ffffff;
+      text-align: center;
+    }
+
+    .package-banner p {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      font-weight: 800;
+      letter-spacing: 0.035em;
+    }
+
+    .header-inner,
+    main,
+    .footer-inner {
+      width: min(calc(100% - 2rem), var(--max-width));
+      margin-inline: auto;
+    }
+
+    .header-inner {
+      padding: 3.5rem 0 3rem;
+    }
+
+    .eyebrow {
+      margin: 0 0 0.65rem;
+      color: #fbd47b;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.2;
+      text-wrap: balance;
+    }
+
+    h1 {
+      max-width: 18ch;
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+    }
+
+    .lede {
+      max-width: 48rem;
+      margin: 1.25rem 0 0;
+      color: #edf6fb;
+      font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+    }
+
+    main {
+      padding: 2rem 0 3.5rem;
+    }
+
+    .summary {
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      background: var(--surface);
+      border: 0.15rem solid var(--navy);
+      border-left-width: 0.55rem;
+      border-radius: 0.45rem;
+    }
+
+    .summary h2,
+    .card h2,
+    .callout h2 {
+      margin-top: 0;
+      color: var(--navy-dark);
+      font-size: clamp(1.35rem, 3vw, 1.75rem);
+    }
+
+    .summary p:last-child,
+    .card > :last-child,
+    .callout > :last-child {
+      margin-bottom: 0;
+    }
+
+    .primary-link {
+      display: inline-block;
+      margin-top: 0.45rem;
+      padding: 0.8rem 1.1rem;
+      background: var(--navy);
+      color: var(--surface);
+      border: 0.15rem solid var(--navy);
+      border-radius: 0.3rem;
+      text-decoration: none;
+    }
+
+    .primary-link:hover {
+      background: var(--navy-dark);
+      color: var(--surface);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card,
+    .callout {
+      padding: 1.5rem;
+      background: var(--surface);
+      border: 0.1rem solid var(--line);
+      border-radius: 0.45rem;
+    }
+
+    .wide {
+      grid-column: 1 / -1;
+    }
+
+    .callout {
+      margin-top: 1.5rem;
+      background: #fff8e6;
+      border-color: #8a5a00;
+    }
+
+    .boundary {
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      background: var(--navy-dark);
+      color: var(--surface);
+      border-radius: 0.45rem;
+    }
+
+    .boundary h2 {
+      margin-top: 0;
+      color: var(--surface);
+    }
+
+    .boundary strong {
+      color: #fbd47b;
+    }
+
+    ul,
+    ol {
+      padding-left: 1.4rem;
+    }
+
+    li + li {
+      margin-top: 0.55rem;
+    }
+
+    .checklist {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .checklist li {
+      position: relative;
+      padding-left: 1.8rem;
+    }
+
+    .checklist li::before {
+      content: "";
+      position: absolute;
+      top: 0.38rem;
+      left: 0;
+      width: 0.85rem;
+      height: 0.85rem;
+      border: 0.13rem solid var(--navy);
+      border-radius: 0.1rem;
+    }
+
+    .site-footer {
+      background: var(--navy-dark);
+      color: var(--surface);
+    }
+
+    .footer-inner {
+      padding: 1.5rem 0;
+    }
+
+    .footer-inner p {
+      margin: 0;
+    }
+
+    @media (max-width: 44rem) {
+      .header-inner {
+        padding: 2.6rem 0 2.25rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .wide {
+        grid-column: auto;
+      }
+
+      .summary,
+      .card,
+      .callout,
+      .boundary {
+        padding: 1.2rem;
+      }
+    }
+
+    @media print {
+      @page {
+        margin: 0.6in;
+      }
+
+      body {
+        background: var(--surface);
+        color: #000000;
+        font-size: 10.5pt;
+      }
+
+      .skip-link {
+        display: none;
+      }
+
+      .site-header,
+      .site-footer,
+      .boundary {
+        background: var(--surface);
+        color: #000000;
+      }
+
+      .package-banner {
+        display: block !important;
+        padding: 0.12in;
+        background: #ffffff !important;
+        color: #000000 !important;
+        border: 0.04in solid #000000;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      .package-banner p {
+        color: #000000 !important;
+        font-size: 11pt;
+      }
+
+      .site-header {
+        border-top: 0.18in solid #000000;
+        border-bottom: 0.02in solid #000000;
+      }
+
+      .header-inner,
+      main,
+      .footer-inner {
+        width: 100%;
+      }
+
+      .header-inner {
+        padding: 0.3in 0 0.2in;
+      }
+
+      .eyebrow,
+      .lede,
+      .boundary h2,
+      .boundary strong {
+        color: #000000;
+      }
+
+      main {
+        padding: 0.2in 0;
+      }
+
+      .summary,
+      .card,
+      .callout,
+      .boundary {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+
+      .grid {
+        gap: 0.16in;
+      }
+
+      a {
+        color: #000000;
+      }
+
+      a[href]::after {
+        content: " (" attr(href) ")";
+        font-weight: 400;
+        overflow-wrap: anywhere;
+      }
+
+      .primary-link {
+        padding: 0;
+        background: transparent;
+        color: #000000;
+        border: 0;
+        text-decoration: underline;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <aside class="package-banner" aria-label="Package boundary">
+    <p>CLIENT-NEUTRAL EMPLOYER REVIEW BRIEF - STATIC CONTENT; NO SIGN-UP, TRACKING, PERSONALIZATION, CLIENT IDENTIFIER, OR ENDORSEMENT CLAIM</p>
+  </aside>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <p class="eyebrow">Employer review brief</p>
+      <h1>Transition Ops for an ERG, BRG, or military-connected employee group</h1>
+      <p class="lede">
+        A client-neutral starting point for organizations reviewing a free public
+        transition-planning resource for their military-connected community.
+      </p>
+    </div>
+  </header>
+
+  <main id="main-content" tabindex="-1">
+    <section class="summary" aria-labelledby="bluf-heading">
+      <h2 id="bluf-heading">Bottom line</h2>
+      <p>
+        Transition Ops is publicly accessible at no cost. Use is optional. An
+        organization can review the public site and, after its own approval,
+        place one ordinary direct link in an existing resource area.
+      </p>
+      <a class="primary-link" href="https://transitionops.org">Review Transition Ops</a>
+    </section>
+
+    <div class="grid">
+      <section class="card" aria-labelledby="resource-heading">
+        <h2 id="resource-heading">What the resource provides</h2>
+        <p>
+          Transition Ops is a public planning resource for transitioning service
+          members, veterans, Guard and Reserve members, military spouses,
+          caregivers, and families. It brings transition timelines, benefits
+          resources, career tools, and practical checklists into one place.
+        </p>
+      </section>
+
+      <section class="card" aria-labelledby="first-step-heading">
+        <h2 id="first-step-heading">Recommended first step</h2>
+        <ol>
+          <li>Review this brief and the public Transition Ops site.</li>
+          <li>Route the resource through the organization's existing review process.</li>
+          <li>Publish only the direct public link after internal approval.</li>
+          <li>Keep employer policy and contacts on employer-managed systems.</li>
+        </ol>
+      </section>
+
+      <section class="card wide" aria-labelledby="not-required-heading">
+        <h2 id="not-required-heading">This static package does not require</h2>
+        <ul>
+          <li>A client tenant, software installation, member account, SSO, or HRIS connection.</li>
+          <li>An ERG, BRG, employee, or veteran roster.</li>
+          <li>A member form, survey, upload, attendance list, or completion check.</li>
+          <li>A campaign link, tracking parameter, dashboard, or member-usage report.</li>
+          <li>Paid member access, advertising, or the sale of member information.</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="boundary" aria-labelledby="boundary-heading">
+      <h2 id="boundary-heading">Employer and member boundary</h2>
+      <p>
+        <strong>Through this package, the employer receives no individual member
+        activity from Transition Ops.</strong> That includes no individual plan,
+        separation date, service status, checklist, resume, prompt, benefits
+        activity, readiness status, visit history, or completion status.
+      </p>
+      <p>
+        Use of Transition Ops is optional and remains separate from employer
+        program administration. ERG or BRG participation does not create a right
+        to inspect a member's Transition Ops activity.
+      </p>
+    </section>
+
+    <div class="grid" style="margin-top: 1.5rem;">
+      <section class="card" aria-labelledby="systems-heading">
+        <h2 id="systems-heading">Employer-managed systems</h2>
+        <p>
+          If someone opens or shares the link through an employer-managed browser,
+          device, network, intranet, email, or collaboration service, those systems
+          may create ordinary security, access, or communications records. Those
+          records remain governed by the employer's systems, notices, and policies.
+        </p>
+      </section>
+
+      <section class="card" aria-labelledby="privacy-heading">
+        <h2 id="privacy-heading">Public-app privacy is separate</h2>
+        <p>
+          This employer-package boundary does not describe or certify every data
+          flow in the public Transition Ops app. The public app's providers,
+          privacy practices, notices, and member controls must be reviewed and
+          validated separately.
+        </p>
+      </section>
+
+      <section class="card" aria-labelledby="organization-heading">
+        <h2 id="organization-heading">What the organization controls</h2>
+        <ul>
+          <li>Its ERG or BRG audience, owner, sponsor, contacts, and publication surface.</li>
+          <li>Its internal benefits, leave, accommodations, employee-relations, and escalation information.</li>
+          <li>Its privacy, legal, accessibility, security, procurement, communications, and brand review.</li>
+          <li>Any mentoring, event, membership, or employee-program process.</li>
+        </ul>
+      </section>
+
+      <section class="card" aria-labelledby="limits-heading">
+        <h2 id="limits-heading">What is not part of this package</h2>
+        <ul>
+          <li>Employer access to individual or group Transition Ops activity.</li>
+          <li>A retention, recruiting, productivity, promotion, hiring, readiness, or ROI claim.</li>
+          <li>An ERG roster, event, budget, communications, case-management, or analytics system.</li>
+          <li>A client-specific page, native app, integration, analytics feed, or co-branding.</li>
+          <li>Legal, medical, financial, tax, command, or benefits advice.</li>
+        </ul>
+      </section>
+
+      <section class="card wide" aria-labelledby="review-heading">
+        <h2 id="review-heading">Internal review checklist</h2>
+        <ul class="checklist">
+          <li>Identify the military-connected ERG, BRG, veteran network, or program owner.</li>
+          <li>Identify the executive sponsor and final internal approver.</li>
+          <li>Select the existing internal resource area where the direct link would appear.</li>
+          <li>Complete the organization's required privacy, legal, accessibility, security, procurement, communications, and brand reviews.</li>
+          <li>Assign a role-based internal contact for employer-policy questions.</li>
+          <li>Assign an owner and date for refreshing or removing the resource.</li>
+        </ul>
+      </section>
+    </div>
+
+    <aside class="callout" aria-labelledby="next-step-heading">
+      <h2 id="next-step-heading">Next step</h2>
+      <p>
+        Send this brief to the organization's ERG or BRG owner and existing review
+        team. Do not attach member plans, resumes, prompts, benefits details,
+        medical information, employee records, or other sensitive personal
+        information. This brief provides no VBS contact or automated outreach route.
+      </p>
+      <a class="primary-link" href="/erg-intranet-launch-kit.html">OPEN INTRANET LAUNCH KIT</a>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>Transition Ops employer review brief</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,355 @@
+
+> transition-ops@1.0.0 test:accessibility-release
+> node scripts/accessibility-release-regression.js
+
+PASS document source declares a language
+PASS document source declares a nonempty title
+PASS viewport does not disable user scaling
+PASS viewport does not cap required zoom
+PASS browser source does not force orientation
+PASS manifest does not force orientation
+PASS source defines a reduced-motion mode
+PASS A11Y-NR source contract navigatorPrompts
+PASS A11Y-NR source contract navigatorInput
+PASS A11Y-NR source contract navigatorSend
+PASS A11Y-NR source contract resumeDisclosure
+PASS A11Y-NR source contract formatControls
+PASS A11Y-NR source contract exampleDisclosure
+PASS A11Y-NR source contract lengthControls
+PASS A11Y-NR source contract jobsDisclosure
+PASS A11Y-NR source contract persistentLabels
+PASS A11Y-NR-01 click-only Navigator mutation fails
+PASS A11Y-NR-02 placeholder-only Navigator mutation fails
+PASS A11Y-NR-03 click-only Resume disclosure mutation fails
+PASS A11Y-NR-04 unlabeled Resume form mutation fails
+PASS A11Y-NR-05 full scenario and route matrix is configured
+PASS A11Y-NR-05 dashboard-only route mutation fails
+ARTIFACT index.html sha256=54db0513e6aa6063c057f0f6780a2ccf4b54a6e8338addf17348f6c603515e39
+BROWSER Chrome/152.0.7977.82 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/152.0.0.0 Safari/537.36
+FIXTURE synthetic local state; outbound connections denied before network
+PASS 320 portrait default dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait default dashboard {"clientWidth":320,"docWidth":320,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"1"}
+PASS 320 portrait default navigator Navigator input has a persistent name
+PASS 320 portrait default navigator Navigator prompts are native enabled buttons
+PASS 320 portrait default navigator Navigator SEND is natively disabled while empty
+PASS 320 portrait default navigator Navigator synthetic input was entered locally
+PASS 320 portrait default navigator Navigator name persists after entry
+PASS 320 portrait default navigator Navigator semantics test makes zero function requests
+PASS 320 portrait default navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait default navigator {"clientWidth":320,"docWidth":320,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":20,"zoom":"1"}
+PASS 320 portrait default pathway Resume disclosure begins as a collapsed native button
+PASS 320 portrait default pathway Resume federal-format control is keyboard focusable
+PASS 320 portrait default pathway Resume civilian-format control is keyboard focusable
+PASS 320 portrait default pathway Resume length control is keyboard focusable
+PASS 320 portrait default pathway Resume example disclosure is keyboard focusable
+PASS 320 portrait default pathway visible Resume fields keep persistent labels
+PASS 320 portrait default pathway Resume semantics test makes zero function requests
+PASS 320 portrait default pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait default pathway {"clientWidth":320,"docWidth":320,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":46,"zoom":"1"}
+PASS 375 portrait default dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait default dashboard {"clientWidth":375,"docWidth":375,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"1"}
+PASS 375 portrait default navigator Navigator input has a persistent name
+PASS 375 portrait default navigator Navigator prompts are native enabled buttons
+PASS 375 portrait default navigator Navigator SEND is natively disabled while empty
+PASS 375 portrait default navigator Navigator synthetic input was entered locally
+PASS 375 portrait default navigator Navigator name persists after entry
+PASS 375 portrait default navigator Navigator semantics test makes zero function requests
+PASS 375 portrait default navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait default navigator {"clientWidth":375,"docWidth":375,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":20,"zoom":"1"}
+PASS 375 portrait default pathway Resume disclosure begins as a collapsed native button
+PASS 375 portrait default pathway Resume federal-format control is keyboard focusable
+PASS 375 portrait default pathway Resume civilian-format control is keyboard focusable
+PASS 375 portrait default pathway Resume length control is keyboard focusable
+PASS 375 portrait default pathway Resume example disclosure is keyboard focusable
+PASS 375 portrait default pathway visible Resume fields keep persistent labels
+PASS 375 portrait default pathway Resume semantics test makes zero function requests
+PASS 375 portrait default pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait default pathway {"clientWidth":375,"docWidth":375,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":46,"zoom":"1"}
+PASS 320 landscape default dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape default dashboard {"clientWidth":640,"docWidth":640,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"1"}
+PASS 320 landscape default navigator Navigator input has a persistent name
+PASS 320 landscape default navigator Navigator prompts are native enabled buttons
+PASS 320 landscape default navigator Navigator SEND is natively disabled while empty
+PASS 320 landscape default navigator Navigator synthetic input was entered locally
+PASS 320 landscape default navigator Navigator name persists after entry
+PASS 320 landscape default navigator Navigator semantics test makes zero function requests
+PASS 320 landscape default navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape default navigator {"clientWidth":640,"docWidth":640,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":20,"zoom":"1"}
+PASS 320 landscape default pathway Resume disclosure begins as a collapsed native button
+PASS 320 landscape default pathway Resume federal-format control is keyboard focusable
+PASS 320 landscape default pathway Resume civilian-format control is keyboard focusable
+PASS 320 landscape default pathway Resume length control is keyboard focusable
+PASS 320 landscape default pathway Resume example disclosure is keyboard focusable
+PASS 320 landscape default pathway visible Resume fields keep persistent labels
+PASS 320 landscape default pathway Resume semantics test makes zero function requests
+PASS 320 landscape default pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape default pathway {"clientWidth":640,"docWidth":640,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":46,"zoom":"1"}
+PASS 375 landscape default dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape default dashboard {"clientWidth":667,"docWidth":667,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"1"}
+PASS 375 landscape default navigator Navigator input has a persistent name
+PASS 375 landscape default navigator Navigator prompts are native enabled buttons
+PASS 375 landscape default navigator Navigator SEND is natively disabled while empty
+PASS 375 landscape default navigator Navigator synthetic input was entered locally
+PASS 375 landscape default navigator Navigator name persists after entry
+PASS 375 landscape default navigator Navigator semantics test makes zero function requests
+PASS 375 landscape default navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape default navigator {"clientWidth":667,"docWidth":667,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":20,"zoom":"1"}
+PASS 375 landscape default pathway Resume disclosure begins as a collapsed native button
+PASS 375 landscape default pathway Resume federal-format control is keyboard focusable
+PASS 375 landscape default pathway Resume civilian-format control is keyboard focusable
+PASS 375 landscape default pathway Resume length control is keyboard focusable
+PASS 375 landscape default pathway Resume example disclosure is keyboard focusable
+PASS 375 landscape default pathway visible Resume fields keep persistent labels
+PASS 375 landscape default pathway Resume semantics test makes zero function requests
+PASS 375 landscape default pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape default pathway {"clientWidth":667,"docWidth":667,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":46,"zoom":"1"}
+PASS 320 portrait 200 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait 200 percent dashboard {"clientWidth":640,"docWidth":640,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"2"}
+PASS 320 portrait 200 percent navigator Navigator input has a persistent name
+PASS 320 portrait 200 percent navigator Navigator prompts are native enabled buttons
+PASS 320 portrait 200 percent navigator Navigator SEND is natively disabled while empty
+PASS 320 portrait 200 percent navigator Navigator synthetic input was entered locally
+PASS 320 portrait 200 percent navigator Navigator name persists after entry
+PASS 320 portrait 200 percent navigator Navigator semantics test makes zero function requests
+PASS 320 portrait 200 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait 200 percent navigator {"clientWidth":640,"docWidth":640,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":20,"zoom":"2"}
+PASS 320 portrait 200 percent pathway Resume disclosure begins as a collapsed native button
+PASS 320 portrait 200 percent pathway Resume federal-format control is keyboard focusable
+PASS 320 portrait 200 percent pathway Resume civilian-format control is keyboard focusable
+PASS 320 portrait 200 percent pathway Resume length control is keyboard focusable
+PASS 320 portrait 200 percent pathway Resume example disclosure is keyboard focusable
+PASS 320 portrait 200 percent pathway visible Resume fields keep persistent labels
+PASS 320 portrait 200 percent pathway Resume semantics test makes zero function requests
+PASS 320 portrait 200 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait 200 percent pathway {"clientWidth":640,"docWidth":640,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":46,"zoom":"2"}
+PASS 375 portrait 200 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait 200 percent dashboard {"clientWidth":750,"docWidth":750,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"2"}
+PASS 375 portrait 200 percent navigator Navigator input has a persistent name
+PASS 375 portrait 200 percent navigator Navigator prompts are native enabled buttons
+PASS 375 portrait 200 percent navigator Navigator SEND is natively disabled while empty
+PASS 375 portrait 200 percent navigator Navigator synthetic input was entered locally
+PASS 375 portrait 200 percent navigator Navigator name persists after entry
+PASS 375 portrait 200 percent navigator Navigator semantics test makes zero function requests
+PASS 375 portrait 200 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait 200 percent navigator {"clientWidth":750,"docWidth":750,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":20,"zoom":"2"}
+PASS 375 portrait 200 percent pathway Resume disclosure begins as a collapsed native button
+PASS 375 portrait 200 percent pathway Resume federal-format control is keyboard focusable
+PASS 375 portrait 200 percent pathway Resume civilian-format control is keyboard focusable
+PASS 375 portrait 200 percent pathway Resume length control is keyboard focusable
+PASS 375 portrait 200 percent pathway Resume example disclosure is keyboard focusable
+PASS 375 portrait 200 percent pathway visible Resume fields keep persistent labels
+PASS 375 portrait 200 percent pathway Resume semantics test makes zero function requests
+PASS 375 portrait 200 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait 200 percent pathway {"clientWidth":750,"docWidth":750,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":46,"zoom":"2"}
+PASS 320 landscape 200 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape 200 percent dashboard {"clientWidth":1280,"docWidth":1280,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"2"}
+PASS 320 landscape 200 percent navigator Navigator input has a persistent name
+PASS 320 landscape 200 percent navigator Navigator prompts are native enabled buttons
+PASS 320 landscape 200 percent navigator Navigator SEND is natively disabled while empty
+PASS 320 landscape 200 percent navigator Navigator synthetic input was entered locally
+PASS 320 landscape 200 percent navigator Navigator name persists after entry
+PASS 320 landscape 200 percent navigator Navigator semantics test makes zero function requests
+PASS 320 landscape 200 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape 200 percent navigator {"clientWidth":1280,"docWidth":1280,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":20,"zoom":"2"}
+PASS 320 landscape 200 percent pathway Resume disclosure begins as a collapsed native button
+PASS 320 landscape 200 percent pathway Resume federal-format control is keyboard focusable
+PASS 320 landscape 200 percent pathway Resume civilian-format control is keyboard focusable
+PASS 320 landscape 200 percent pathway Resume length control is keyboard focusable
+PASS 320 landscape 200 percent pathway Resume example disclosure is keyboard focusable
+PASS 320 landscape 200 percent pathway visible Resume fields keep persistent labels
+PASS 320 landscape 200 percent pathway Resume semantics test makes zero function requests
+PASS 320 landscape 200 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape 200 percent pathway {"clientWidth":1280,"docWidth":1280,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":46,"zoom":"2"}
+PASS 375 landscape 200 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape 200 percent dashboard {"clientWidth":1334,"docWidth":1334,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"2"}
+PASS 375 landscape 200 percent navigator Navigator input has a persistent name
+PASS 375 landscape 200 percent navigator Navigator prompts are native enabled buttons
+PASS 375 landscape 200 percent navigator Navigator SEND is natively disabled while empty
+PASS 375 landscape 200 percent navigator Navigator synthetic input was entered locally
+PASS 375 landscape 200 percent navigator Navigator name persists after entry
+PASS 375 landscape 200 percent navigator Navigator semantics test makes zero function requests
+PASS 375 landscape 200 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape 200 percent navigator {"clientWidth":1334,"docWidth":1334,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":20,"zoom":"2"}
+PASS 375 landscape 200 percent pathway Resume disclosure begins as a collapsed native button
+PASS 375 landscape 200 percent pathway Resume federal-format control is keyboard focusable
+PASS 375 landscape 200 percent pathway Resume civilian-format control is keyboard focusable
+PASS 375 landscape 200 percent pathway Resume length control is keyboard focusable
+PASS 375 landscape 200 percent pathway Resume example disclosure is keyboard focusable
+PASS 375 landscape 200 percent pathway visible Resume fields keep persistent labels
+PASS 375 landscape 200 percent pathway Resume semantics test makes zero function requests
+PASS 375 landscape 200 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape 200 percent pathway {"clientWidth":1334,"docWidth":1334,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":46,"zoom":"2"}
+PASS 320 portrait 400 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait 400 percent dashboard {"clientWidth":1280,"docWidth":1280,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"4"}
+PASS 320 portrait 400 percent navigator Navigator input has a persistent name
+PASS 320 portrait 400 percent navigator Navigator prompts are native enabled buttons
+PASS 320 portrait 400 percent navigator Navigator SEND is natively disabled while empty
+PASS 320 portrait 400 percent navigator Navigator synthetic input was entered locally
+PASS 320 portrait 400 percent navigator Navigator name persists after entry
+PASS 320 portrait 400 percent navigator Navigator semantics test makes zero function requests
+PASS 320 portrait 400 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait 400 percent navigator {"clientWidth":1280,"docWidth":1280,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":20,"zoom":"4"}
+PASS 320 portrait 400 percent pathway Resume disclosure begins as a collapsed native button
+PASS 320 portrait 400 percent pathway Resume federal-format control is keyboard focusable
+PASS 320 portrait 400 percent pathway Resume civilian-format control is keyboard focusable
+PASS 320 portrait 400 percent pathway Resume length control is keyboard focusable
+PASS 320 portrait 400 percent pathway Resume example disclosure is keyboard focusable
+PASS 320 portrait 400 percent pathway visible Resume fields keep persistent labels
+PASS 320 portrait 400 percent pathway Resume semantics test makes zero function requests
+PASS 320 portrait 400 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait 400 percent pathway {"clientWidth":1280,"docWidth":1280,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":46,"zoom":"4"}
+PASS 375 portrait 400 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait 400 percent dashboard {"clientWidth":1500,"docWidth":1500,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"4"}
+PASS 375 portrait 400 percent navigator Navigator input has a persistent name
+PASS 375 portrait 400 percent navigator Navigator prompts are native enabled buttons
+PASS 375 portrait 400 percent navigator Navigator SEND is natively disabled while empty
+PASS 375 portrait 400 percent navigator Navigator synthetic input was entered locally
+PASS 375 portrait 400 percent navigator Navigator name persists after entry
+PASS 375 portrait 400 percent navigator Navigator semantics test makes zero function requests
+PASS 375 portrait 400 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait 400 percent navigator {"clientWidth":1500,"docWidth":1500,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":20,"zoom":"4"}
+PASS 375 portrait 400 percent pathway Resume disclosure begins as a collapsed native button
+PASS 375 portrait 400 percent pathway Resume federal-format control is keyboard focusable
+PASS 375 portrait 400 percent pathway Resume civilian-format control is keyboard focusable
+PASS 375 portrait 400 percent pathway Resume length control is keyboard focusable
+PASS 375 portrait 400 percent pathway Resume example disclosure is keyboard focusable
+PASS 375 portrait 400 percent pathway visible Resume fields keep persistent labels
+PASS 375 portrait 400 percent pathway Resume semantics test makes zero function requests
+PASS 375 portrait 400 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait 400 percent pathway {"clientWidth":1500,"docWidth":1500,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":46,"zoom":"4"}
+PASS 320 landscape 400 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape 400 percent dashboard {"clientWidth":2560,"docWidth":2560,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"4"}
+PASS 320 landscape 400 percent navigator Navigator input has a persistent name
+PASS 320 landscape 400 percent navigator Navigator prompts are native enabled buttons
+PASS 320 landscape 400 percent navigator Navigator SEND is natively disabled while empty
+PASS 320 landscape 400 percent navigator Navigator synthetic input was entered locally
+PASS 320 landscape 400 percent navigator Navigator name persists after entry
+PASS 320 landscape 400 percent navigator Navigator semantics test makes zero function requests
+PASS 320 landscape 400 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape 400 percent navigator {"clientWidth":2560,"docWidth":2560,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":20,"zoom":"4"}
+PASS 320 landscape 400 percent pathway Resume disclosure begins as a collapsed native button
+PASS 320 landscape 400 percent pathway Resume federal-format control is keyboard focusable
+PASS 320 landscape 400 percent pathway Resume civilian-format control is keyboard focusable
+PASS 320 landscape 400 percent pathway Resume length control is keyboard focusable
+PASS 320 landscape 400 percent pathway Resume example disclosure is keyboard focusable
+PASS 320 landscape 400 percent pathway visible Resume fields keep persistent labels
+PASS 320 landscape 400 percent pathway Resume semantics test makes zero function requests
+PASS 320 landscape 400 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape 400 percent pathway {"clientWidth":2560,"docWidth":2560,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":46,"zoom":"4"}
+PASS 375 landscape 400 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape 400 percent dashboard {"clientWidth":2668,"docWidth":2668,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"4"}
+PASS 375 landscape 400 percent navigator Navigator input has a persistent name
+PASS 375 landscape 400 percent navigator Navigator prompts are native enabled buttons
+PASS 375 landscape 400 percent navigator Navigator SEND is natively disabled while empty
+PASS 375 landscape 400 percent navigator Navigator synthetic input was entered locally
+PASS 375 landscape 400 percent navigator Navigator name persists after entry
+PASS 375 landscape 400 percent navigator Navigator semantics test makes zero function requests
+PASS 375 landscape 400 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape 400 percent navigator {"clientWidth":2668,"docWidth":2668,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":20,"zoom":"4"}
+PASS 375 landscape 400 percent pathway Resume disclosure begins as a collapsed native button
+PASS 375 landscape 400 percent pathway Resume federal-format control is keyboard focusable
+PASS 375 landscape 400 percent pathway Resume civilian-format control is keyboard focusable
+PASS 375 landscape 400 percent pathway Resume length control is keyboard focusable
+PASS 375 landscape 400 percent pathway Resume example disclosure is keyboard focusable
+PASS 375 landscape 400 percent pathway visible Resume fields keep persistent labels
+PASS 375 landscape 400 percent pathway Resume semantics test makes zero function requests
+PASS 375 landscape 400 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape 400 percent pathway {"clientWidth":2668,"docWidth":2668,"headings":1,"liveRegions":1,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":46,"zoom":"4"}
+PASS A11Y-NR-05 all configured route scenarios executed
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard traversal reaches multiple distinct controls
+PASS rendered app exposes a dialog flow
+PASS dialog exposes modal semantics
+PASS dialog has an accessible name
+PASS dialog receives focus on open
+PASS dialog contains an operable control
+PASS modal dialog contains keyboard focus
+PASS modal dialog contains keyboard focus
+PASS modal dialog contains keyboard focus
+PASS modal dialog contains keyboard focus
+PASS dialog restores focus to its invoker after Escape
+PASS browser accessibility tree has no unnamed interactive nodes
+PASS rendered automation has no uncaught browser exceptions
+PASS rendered app attempts no external provider network
+NETWORK target external attempts=0; blocking proxy contacts=157
+SCOPE local browser automation only; manual assistive-technology and hosted release acceptance remain untested
+LOCAL AUTOMATION PASS

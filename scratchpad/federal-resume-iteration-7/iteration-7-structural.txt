@@ -1,0 +1,3 @@
+PASS structural {"inline_js": 1, "inline_json": 1, "javascript": 26, "json": 27, "yaml": 6}
+PASS changed-line curly quotes/NBSP/conflict markers zero; diff whitespace clean
+PASS entire staged inventory encoding and whitespace; allowed files only

@@ -1,0 +1,23 @@
+
+> transition-ops@1.0.0 test:openai-migration
+> node scripts/openai-migration-regression.js
+
+PASS: Navigator dry-run environment gate, validation, no client/store/provider, and request-flag rejection
+PASS: 40/40 extraction source-number cases across both modes; invented tenure and repaired additions withheld, genuine numbers and punctuation preserved, exact numeric forms kept, no new calls
+READINESS7_ORIGINS [{"mode":"standard","transform":"exact","origin":"audit","actual":["A job-posting requirement was presented as if it were your qualification."],"expected":["[audit_posting_only_claim] A job-posting requirement was presented as if it were your qualification."]},{"mode":"standard","transform":"exact","origin":"reference","actual":["A job-posting requirement was presented as if it were your qualification."],"expected":["[posting_reference_mismatch] A job-posting requirement was presented as if it were your qualification."]},{"mode":"standard","transform":"exact","origin":"both","actual":["A job-posting requirement was presented as if it were your qualification."],"expected":["[audit_posting_only_claim] A job-posting requirement was presented as if it were your qualification.","[posting_reference_mismatch] A job-posting requirement was presented as if it were your qualification."]},{"mode":"standard","transform":"civilian_translation","origin":"audit","actual":["A job-posting requirement was presented as if it were your qualification."],"expected":["[audit_posting_only_claim] A job-posting requirement was presented as if it were your qualification."]},{"mode":"standard","transform":"civilian_translation","origin":"reference","actual":["A job-posting requirement was presented as if it were your qualification."],"expected":["[posting_reference_mismatch] A job-posting requirement was presented as if it were your qualification."]},{"mode":"standard","transform":"civilian_translation","origin":"both","actual":["A job-posting requirement was presented as if it were your qualification."],"expected":["[audit_posting_only_claim] A job-posting requirement was presented as if it were your qualification.","[posting_reference_mismatch] A job-posting requirement was presented as if it were your qualification."]},{"mode":"federal","transform":"exact","origin":"audit","actual":["A job-posting requirement was presented as if it were your qualification."],"expected":["[audit_posting_only_claim] A job-posting requirement was presented as if it were your qualification."]},{"mode":"federal","transform":"exact","origin":"reference","actual":["A job-posting requirement was presented as if it were your qualification."],"expected":["[posting_reference_mismatch] A job-posting requirement was presented as if it were your qualification."]},{"mode":"federal","transform":"exact","origin":"both","actual":["A job-posting requirement was presented as if it were your qualification."],"expected":["[audit_posting_only_claim] A job-posting requirement was presented as if it were your qualification.","[posting_reference_mismatch] A job-posting requirement was presented as if it were your qualification."]},{"mode":"federal","transform":"civilian_translation","origin":"audit","actual":["A job-posting requirement was presented as if it were your qualification."],"expected":["[audit_posting_only_claim] A job-posting requirement was presented as if it were your qualification."]},{"mode":"federal","transform":"civilian_translation","origin":"reference","actual":["A job-posting requirement was presented as if it were your qualification."],"expected":["[posting_reference_mismatch] A job-posting requirement was presented as if it were your qualification."]},{"mode":"federal","transform":"civilian_translation","origin":"both","actual":["A job-posting requirement was presented as if it were your qualification."],"expected":["[audit_posting_only_claim] A job-posting requirement was presented as if it were your qualification.","[posting_reference_mismatch] A job-posting requirement was presented as if it were your qualification."]}]
+AssertionError [ERR_ASSERTION]: Readiness7 standard/exact/audit
++ actual - expected
+
+  [
++   'A job-posting requirement was presented as if it were your qualification.'
+-   '[audit_posting_only_claim] A job-posting requirement was presented as if it were your qualification.'
+  ]
+
+    at run (/private/tmp/tops-federal-resume-readiness/scripts/openai-migration-regression.js:1869:63) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [Array],
+  expected: [Array],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}

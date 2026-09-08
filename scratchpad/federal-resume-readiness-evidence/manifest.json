@@ -1,0 +1,92 @@
+[
+  {
+    "file": "iteration-1-openai.txt",
+    "bytes": 879,
+    "sha256": "c6b8e5d16174bee9f0897c831f29341f38482e362a0b866ce4b5827d748218bf"
+  },
+  {
+    "file": "iteration-1-sw.txt",
+    "bytes": 5663,
+    "sha256": "c7eac13d38a474ae1746d07f401a755239456a15027c8328224f65d940d06ad3"
+  },
+  {
+    "file": "iteration-1-privacy.txt",
+    "bytes": 3709,
+    "sha256": "dce4a467e69f55e811ce6d2b0838140990eb60daf07e387f132467e056315f00"
+  },
+  {
+    "file": "iteration-1-spend.txt",
+    "bytes": 860,
+    "sha256": "431dacaef54b07c3c7c32ea452c8a45b6386026699e413d35001d2741630b8cc"
+  },
+  {
+    "file": "iteration-1-accessibility.txt",
+    "bytes": 30589,
+    "sha256": "f5d699b6ed964aa142d8694abda3f867bc8199d8b31e4aa61862455224dfd30d"
+  },
+  {
+    "file": "iteration-1-package.txt",
+    "bytes": 244,
+    "sha256": "fe84c6d21ccd7689eebd03ff6c306fb32a9d53e919f14cf60a8998e8a019bda1"
+  },
+  {
+    "file": "iteration-1-structural.txt",
+    "bytes": 173,
+    "sha256": "a6420b468520dc65f08a3ee534c8ae874784467c019631cb66e11fda683a02ed"
+  },
+  {
+    "file": "iteration-2-final-openai.txt",
+    "bytes": 1175,
+    "sha256": "2955680d03f2ad9298633af5039a60816ac1273bf816ecf469f37ea2d8b63862"
+  },
+  {
+    "file": "iteration-2-final-sw.txt",
+    "bytes": 5744,
+    "sha256": "df7c6c2960ccd33607124c72677e99e9d3db67bab017d0bfbad2e933c94653c3"
+  },
+  {
+    "file": "iteration-2-final-privacy.txt",
+    "bytes": 3800,
+    "sha256": "bab24f7e7e8ffbd221dc686a62206ff33a3f0ad86afc8509a830ea8da099cdb8"
+  },
+  {
+    "file": "iteration-2-final-spend.txt",
+    "bytes": 953,
+    "sha256": "97de30e5a104a36dce9898396364b9a23f422d1f31e0d06e2f17fdd95d6c0471"
+  },
+  {
+    "file": "iteration-2-final-accessibility.txt",
+    "bytes": 1415,
+    "sha256": "a8dc6629b9f95aa703f42464c1f3859a91be60e1c84c837e80a8414a31de904e"
+  },
+  {
+    "file": "iteration-2-final-accessibility-retry.txt",
+    "bytes": 30692,
+    "sha256": "08738a0d1e75f64ce22f40b19307385b3d415d59eab56711701c03277c8a5c64"
+  },
+  {
+    "file": "iteration-2-final-package.txt",
+    "bytes": 244,
+    "sha256": "fe84c6d21ccd7689eebd03ff6c306fb32a9d53e919f14cf60a8998e8a019bda1"
+  },
+  {
+    "file": "iteration-2-final-structural.txt",
+    "bytes": 173,
+    "sha256": "a6420b468520dc65f08a3ee534c8ae874784467c019631cb66e11fda683a02ed"
+  },
+  {
+    "file": "iteration-2-final-scope.txt",
+    "bytes": 1323,
+    "sha256": "b2df12fe23e658e5880adb20cf27caa56bb3077176bf5636aa558201e7a0fae2"
+  },
+  {
+    "file": "iteration-2-openai.txt",
+    "bytes": 767,
+    "sha256": "a8981107acbdb20377182da2279e457fdba3230352bc70bfa02375744d861771"
+  },
+  {
+    "file": "iteration-2-resumed-diagnostic.txt",
+    "bytes": 3541,
+    "sha256": "fc255c5495346664e2b4b1f22ab65798d1b871130274ae89e5c9f3f632384d28"
+  }
+]

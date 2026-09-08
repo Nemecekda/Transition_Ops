@@ -1,0 +1,17 @@
+{
+  "base": "f63ace2e41afcb01893ce5c2e7706c4881051b11",
+  "index_sha256": "eb48487885f49af40f056538f7b985725ed50b0f1d9cfeb65eff329b811f15d2",
+  "pwa_worker_sha256": "59d14222946dfafbc858a7a06412a2252bbdf1447515e9044fd83e3adb2c32d6",
+  "feedback_cases_passed": 96,
+  "pending_visual_cases_passed": 24,
+  "outside_planned_feedback_edits_byte_identical": true,
+  "all_member_copy_preserved": true,
+  "provider_functions_and_config_unchanged": true,
+  "production_push_enabled": false,
+  "shipped_file_changes": [
+    "index.html",
+    "pwa-sw.js"
+  ],
+  "cache_version": 153,
+  "verdict": "PASS local scope and automation; new hosted preview and manual AT pending"
+}

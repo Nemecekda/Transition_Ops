@@ -1,0 +1,7 @@
+EDIT MODE
+Initial porcelain: ?? scratchpad/federal-hosted-3347fb6/
+APPROVED: Dean said "fix and approved" to the federal-only quantity ownership proposal.
+Application old_str: pre=1; post=0; replacement post=1. Test insertion anchor retained once; inserted block once. Prompt hash: old once -> zero; new once.
+Test-only corrections each prechecked one exact old_str, then verified old=0/new=1: lexical scope; numeric employer punctuation; exact shared year token. No grep assertion failed.
+PASS application file equals 3347fb6 plus exactly the reviewed one-line federal generation change. All other bytes, including shared validator, remain exact.
+Federal generation hash: 5099d2ca1bfde25d32560046cbae011e68babe592d62c765239efbc0e084580c -> 726e8f5bec24bd629730986f7cd9f9f62e1f6c30c11ade1078805e2141ba5313.

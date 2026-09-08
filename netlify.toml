@@ -1,0 +1,14 @@
+# The modern runtime-v2 NFT bundle cannot infer this guarded CommonJS SDK edge.
+# Keep the package inclusion scoped to the two AI functions.
+[build]
+  command = "npm run build:public"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+
+[functions.navigator]
+  included_files = ["node_modules/openai/**", "node_modules/@netlify/blobs/**", "node_modules/@netlify/otel/**", "node_modules/@netlify/runtime-utils/**"]
+
+[functions.resume]
+  included_files = ["node_modules/openai/**", "node_modules/@netlify/blobs/**", "node_modules/@netlify/otel/**", "node_modules/@netlify/runtime-utils/**"]

@@ -7,7 +7,7 @@
 // WHY IT READS THE SHIPPED FILES INSTEAD OF RESTATING THEM. A harness that
 // retypes the regex or the token list tests the harness, not the app. Both
 // regexes, the MAP, and the manifest's live-token list are extracted from
-// index.html and netlify/functions/navigator.js as they actually ship. So this
+// index.html and netlify/functions/navigator.mjs as they actually ship. So this
 // cannot pass against a fix that was never applied, and it fails the moment
 // either file drifts from the other.
 //
@@ -24,7 +24,7 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
 const INDEX = path.join(ROOT, "index.html");
-const NAV = path.join(ROOT, "netlify", "functions", "navigator.js");
+const NAV = path.join(ROOT, "netlify", "functions", "navigator.mjs");
 
 let failures = 0;
 const fail = (msg) => { failures++; console.log("  FAIL  " + msg); };
@@ -111,13 +111,13 @@ if (stale === 0) pass("none");
 else fail(stale + " occurrence(s) of 'no live token' remain — every tab now has one");
 
 // ------------------------------------------------- F. THREE lists, not two
-// stripDeadTokens in navigator.js holds a third copy of the token list. Three
+// stripDeadTokens in navigator.mjs holds a third copy of the token list. Three
 // copies drifting is worse than two, so all three are policed here: MAP,
 // TOOL MANIFEST, and LIVE_TOKENS.
 console.log("\nF. MAP, MANIFEST, and the function's LIVE_TOKENS all agree");
 const liveM = /const LIVE_TOKENS = \[([\s\S]*?)\];/.exec(navSrc);
 if (!liveM) {
-  fail("LIVE_TOKENS not found in navigator.js — stripDeadTokens cannot be verified");
+  fail("LIVE_TOKENS not found in navigator.mjs — stripDeadTokens cannot be verified");
 } else {
   const liveToks = [...liveM[1].matchAll(/"([^"]+)"/g)].map(m => m[1]);
   const liveSet = new Set(liveToks);
@@ -138,7 +138,7 @@ if (!liveM) {
 console.log("\nG. every bracketed CORPUS section header maps to a real tab");
 const corpusM = /const CORPUS = `([\s\S]*?)`;/.exec(navSrc);
 if (!corpusM) {
-  fail("CORPUS block not found in navigator.js");
+  fail("CORPUS block not found in navigator.mjs");
 } else {
   const headers = [...corpusM[1].matchAll(/^\[([A-Z0-9 &/-]+)\]\s*$/gm)].map(m => m[1]);
   const orphans = headers.filter(h => !mapSet.has(h));

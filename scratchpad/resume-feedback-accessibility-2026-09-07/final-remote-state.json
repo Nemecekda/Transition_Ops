@@ -1,0 +1,21 @@
+{
+  "checked_utc": "2026-09-07 22:33:36 UTC",
+  "pr46": {
+    "state": "open",
+    "head": "f63ace2e41afcb01893ce5c2e7706c4881051b11",
+    "base": "d82516389ed5906febad467cfe57887acda97053",
+    "merged": false
+  },
+  "production": {
+    "site": "veteranbridge-tools",
+    "current_deploy": {
+      "id": "6a9c073e97694a000737014e",
+      "state": "ready"
+    }
+  },
+  "preview": {
+    "id": "6a9f2e3981fbb90008098f68",
+    "commit": "f63ace2e41afcb01893ce5c2e7706c4881051b11",
+    "state": "ready"
+  }
+}

@@ -1,0 +1,2 @@
+PASS structural {"inline_js": 1, "inline_json": 1, "javascript": 29, "json": 44, "yaml": 6}
+PASS changed-line curly quotes/NBSP/conflict markers zero; diff whitespace clean
