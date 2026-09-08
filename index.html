@@ -4244,19 +4244,22 @@ function AboutModal(props) {
         dialog.focus();
         return;
       }
-      const firstControl = controls[0];
-      const lastControl = controls[controls.length - 1];
-      if (event.shiftKey && document.activeElement === firstControl) {
-        event.preventDefault();
-        lastControl.focus();
-      } else if (!event.shiftKey && document.activeElement === lastControl) {
-        event.preventDefault();
-        firstControl.focus();
-      }
+      // Safari may skip links during native Tab traversal; own each dialog step.
+      event.preventDefault();
+      const currentIndex = controls.indexOf(document.activeElement);
+      const nextIndex = event.shiftKey
+        ? (currentIndex > 0 ? currentIndex - 1 : controls.length - 1)
+        : (currentIndex + 1) % controls.length;
+      controls[nextIndex].focus();
+    };
+    const handleFocusIn = function(event) {
+      if (!dialog.contains(event.target)) (focusable()[0] || dialog).focus();
     };
     document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("focusin", handleFocusIn);
     return function() {
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("focusin", handleFocusIn);
       const returnTarget = returnFocusRef.current;
       if (returnTarget && document.contains(returnTarget) && typeof returnTarget.focus === "function") returnTarget.focus();
     };
