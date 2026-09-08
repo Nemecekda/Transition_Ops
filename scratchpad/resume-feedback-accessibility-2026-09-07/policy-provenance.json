@@ -1,0 +1,47 @@
+{
+  "refs": {
+    "main": "d82516389ed5906febad467cfe57887acda97053",
+    "reviewed_clone": "0433f333e1de16d2dfd06e0cad4cb9a1ba025008",
+    "candidate": "f63ace2e41afcb01893ce5c2e7706c4881051b11"
+  },
+  "checks": [
+    {
+      "name": "RULES current-main OPM wording retained exactly",
+      "pass": true
+    },
+    {
+      "name": "RULES all other reviewed clone wording unchanged",
+      "pass": true
+    },
+    {
+      "name": "CORPUS current-main OPM wording retained exactly",
+      "pass": true
+    },
+    {
+      "name": "CORPUS all other reviewed clone wording unchanged",
+      "pass": true
+    },
+    {
+      "name": "reviewed tool manifest unchanged",
+      "pass": true
+    },
+    {
+      "name": "r-1-fedvip full main reminder object retained",
+      "pass": true
+    },
+    {
+      "name": "r-1-gar full main reminder object retained",
+      "pass": true
+    },
+    {
+      "name": "r-p1-fedvip full main reminder object retained",
+      "pass": true
+    },
+    {
+      "name": "candidate app hash equals recorded weekend integration",
+      "pass": true
+    }
+  ],
+  "verdict": "PASS - exact reviewed-source preservation; no new policy rating",
+  "limits": "Existing primary-source record dates retained. This is provenance reconciliation, not a new primary-source currency audit."
+}

@@ -8336,7 +8336,8 @@ whatsNewUnseen && React.createElement("div", {
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: 1, color: C.goldBright, fontWeight: 700, marginBottom: 4 } }, "FIX THESE BEFORE DRAFTING"),
           aiR.factWarnings.map(function(warning, i){ return React.createElement("div", { key: i, style: { fontSize: 11, color: C.textBody, lineHeight: 1.5 } }, "\u2022 " + warning); })),
         React.createElement("textarea", { "aria-label": "Confirmed resume fact sheet", value: aiR.facts, onChange: function(e){ var v=e.target.value; setAiR(function(p){ return Object.assign({}, p, { facts: v, factWarnings: [], relevantYears: "", relevantRoleIndexes: [], lengthPlan: null, out: "", auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false }); }); }, rows: 12, style: { ...S.input, resize: "vertical", fontFamily: "'Courier Prime', monospace", fontSize: 10.5 } })),
-      React.createElement("button", { disabled: aiR.loading, onClick: function() {
+      React.createElement("button", { type: "button", "aria-disabled": aiR.loading, "aria-describedby": aiR.err ? "tops-resume-error" : undefined, onClick: function() {
+        if (aiR.loading) return;
         var today = new Date().toISOString().slice(0,10);
         var used = 0; try { var rec = JSON.parse(window.__safeGet("tops_air_uses") || "{}"); used = rec.d === today ? rec.n : 0; } catch(e) {}
         if (used >= 3) { setAiR(function(p){ return Object.assign({}, p, { err: "Daily limit reached (3/day) \u2014 resets tomorrow. This keeps the tool free for everyone." }); }); return; }
@@ -8371,8 +8372,8 @@ whatsNewUnseen && React.createElement("div", {
             setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets, lengthPlan: nextLengthPlan, auditScorecard: nextScorecard, auditTrace: Array.isArray(res.d.trace) ? res.d.trace : [], auditBlockers: [], supportedKeywords: Array.isArray(res.d.supportedKeywords) ? res.d.supportedKeywords : [], auditGaps: Array.isArray(res.d.gaps) ? res.d.gaps : [] }); });
           })
           .catch(handleResumeTransportFailure);
-      }, style: { width: "100%", minHeight: 44, background: aiR.loading ? C.border : C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? (aiR.facts ? "DRAFTING\u2026 (10-15 SEC)" : "CHECKING FACTS\u2026") : (aiR.facts ? "DRAFT FROM CONFIRMED FACTS" : "BUILD MY FACT SHEET")),
-      aiR.err && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, aiR.err),
+      }, style: { width: "100%", minHeight: 44, background: C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? (aiR.facts ? "DRAFTING\u2026 (10-15 SEC)" : "CHECKING FACTS\u2026") : (aiR.facts ? "DRAFT FROM CONFIRMED FACTS" : "BUILD MY FACT SHEET")),
+      React.createElement("div", { id: "tops-resume-error", role: "alert", "aria-atomic": "true", style: { marginTop: aiR.err ? 10 : 0, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, aiR.err || ""),
       aiR.auditBlockers.length > 0 && React.createElement("div", { style: { marginTop: 10, padding: "11px 12px", background: "rgba(190,70,70,0.12)", border: "1px solid " + C.warning, borderRadius: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.warning, fontWeight: 700, marginBottom: 5 } }, "DRAFT WITHHELD \u2014 FIX THESE FIRST"),
         aiR.auditBlockers.map(function(blocker, i){ return React.createElement("div", { key: i, style: { fontSize: 11, color: C.textBody, lineHeight: 1.5 } }, "\u2022 " + blocker); })),

@@ -616,7 +616,7 @@ const DOCUMENT_AUDIT = String.raw`((zoomFactor) => {
     const large = size >= 24 || (size >= 18.66 && weight >= 700);
     const minimum = large ? 3 : 4.5;
     const ratio = contrast(foreground, background);
-    if (ratio + 0.05 < minimum) push("text contrast " + ratio.toFixed(2) + ":1 below " + minimum + ":1 at " + selectorFor(element));
+    if (ratio + 0.05 < minimum) push("text contrast " + ratio.toFixed(2) + ":1 below " + minimum + ":1 at " + selectorFor(element) + " foreground=" + style.color + " background=" + style.backgroundColor + " inline=" + element.getAttribute("style"));
   });
 
   const portraitExpected = innerHeight >= innerWidth;
@@ -759,6 +759,90 @@ async function runResumeSurfaceChecks(client, scenarioName) {
   })()`, false);
   check(after.labelsPresent, scenarioName + " visible Resume fields keep persistent labels");
   check(after.functionRequests === 0, scenarioName + " Resume semantics test makes zero function requests");
+  await runResumeFeedbackChecks(client, scenarioName);
+}
+
+async function runResumeFeedbackChecks(client, scenarioName) {
+  // Local-only delayed responses exercise the shipped React handler. No provider runs.
+  await evaluate(client, String.raw`(() => {
+    window.__topsResumeFeedback = { originalFetch: window.fetch, calls: 0, pending: null };
+    window.fetch = function(input, init) {
+      const url = typeof input === "string" ? input : input.url;
+      if (!/\/.netlify\/functions\/resume(?:$|\?)/.test(url)) {
+        return window.__topsResumeFeedback.originalFetch.call(this, input, init);
+      }
+      window.__topsResumeFeedback.calls += 1;
+      return new Promise((resolve) => { window.__topsResumeFeedback.pending = resolve; });
+    };
+    return true;
+  })()`, false);
+  try {
+    for (const mode of ["CIVILIAN", "FEDERAL"]) {
+      await evaluate(client, `(() => {
+        const group = document.querySelector('[role="group"][aria-label="Resume format"]');
+        Array.from(group.querySelectorAll('button')).find(b => b.textContent.includes(${JSON.stringify(mode)})).focus();
+        return true;
+      })()`, false);
+      await dispatchKey(client, "Enter", 0);
+      const cases = [
+        { name: "validation", status: 400, error: "Tell us what you actually did — at least a sentence or two." },
+        { name: "budget denial", status: 429, error: "Synthetic budget denial", moveFocus: true },
+        { name: "provider unavailable", status: 502, error: "Synthetic provider unavailable" },
+        { name: "non-JSON transport failure", status: 500, html: true, error: "Still warming up — give it 10 seconds and tap GENERATE once more." }
+      ];
+      for (const item of cases) {
+        const label = scenarioName + " " + mode + " " + item.name;
+        const before = await evaluate(client, String.raw`(() => {
+          const button = Array.from(document.querySelectorAll('#tops-resume-drafter-panel button')).find(b => b.textContent === 'BUILD MY FACT SHEET');
+          button.focus();
+          window.__topsResumeFeedback.button = button;
+          return window.__topsResumeFeedback.calls;
+        })()`, false);
+        await dispatchKey(client, "Enter", 0);
+        await waitForExpression(client, "!!window.__topsResumeFeedback.pending", label + " delayed request", 3000);
+        const busy = await evaluate(client, String.raw`(() => {
+          const b = window.__topsResumeFeedback.button;
+          return { focused: document.activeElement === b, disabled: b.disabled,
+            busy: b.getAttribute('aria-disabled') === 'true', text: b.textContent };
+        })()`, false);
+        check(busy.focused && !busy.disabled && busy.busy && busy.text === "CHECKING FACTS…", label + " busy button retains keyboard focus and exposes unavailable state", JSON.stringify(busy));
+        await dispatchKey(client, "Enter", 0);
+        await dispatchKey(client, " ", 0);
+        // Let native key activation and painting complete while the response is held.
+        await evaluate(client, "new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))", true);
+        if (item.name === "validation") {
+          const pendingAudit = await evaluate(client, DOCUMENT_AUDIT + "(" + "Number(getComputedStyle(document.documentElement).zoom)" + ")", false);
+          check(pendingAudit.failures.length === 0, label + " busy presentation retains readable contrast, reflow, and semantics", pendingAudit.failures.join(" | "));
+        }
+        check(await evaluate(client, "window.__topsResumeFeedback.calls", false) === before + 1, label + " repeated activation makes no duplicate request");
+        if (item.moveFocus) await dispatchKey(client, "Tab", 0);
+        await evaluate(client, `(() => {
+          window.__topsResumeFeedback.expectedFocus = document.activeElement;
+          const resolve = window.__topsResumeFeedback.pending;
+          window.__topsResumeFeedback.pending = null;
+          resolve(new Response(${JSON.stringify(item.html ? "<html>synthetic failure</html>" : JSON.stringify({ error: item.error }))}, {
+            status: ${item.status}, headers: { 'Content-Type': ${JSON.stringify(item.html ? "text/html" : "application/json")}, 'X-Transition-Ops-Resume-Handler': '1' }
+          }));
+          return true;
+        })()`, false);
+        await waitForExpression(client, "window.__topsResumeFeedback.button.textContent === 'BUILD MY FACT SHEET'", label + " completed request", 3000);
+        const result = await evaluate(client, String.raw`(() => {
+          const panel = document.getElementById('tops-resume-drafter-panel');
+          const alert = panel.querySelector('[role="alert"]');
+          return { text: alert && alert.textContent, atomic: alert && alert.getAttribute('aria-atomic'),
+            focusPreserved: document.activeElement === window.__topsResumeFeedback.expectedFocus,
+            available: window.__topsResumeFeedback.button.getAttribute('aria-disabled') === 'false',
+            calls: window.__topsResumeFeedback.calls };
+        })()`, false);
+        check(result.text === item.error && result.atomic === "true", label + " exact failure text is an atomic alert", JSON.stringify(result));
+        check(result.focusPreserved && result.available && result.calls === before + 1, label + " completion preserves current focus and allows a deliberate retry", JSON.stringify(result));
+        const tree = await client.send("Accessibility.getFullAXTree");
+        check(tree.nodes.some(node => node.role && node.role.value === "alert" && (node.properties || []).some(p => p.name === "live" && p.value.value === "assertive")), label + " browser accessibility tree exposes assertive alert semantics");
+      }
+    }
+  } finally {
+    await evaluate(client, "window.fetch = window.__topsResumeFeedback.originalFetch; delete window.__topsResumeFeedback; true", false);
+  }
 }
 
 async function runKeyboardChecks(client) {
