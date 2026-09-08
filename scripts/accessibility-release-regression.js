@@ -955,6 +955,56 @@ async function runKeyboardChecks(client) {
   check(visited.size >= 4, "keyboard traversal reaches multiple distinct controls", "distinct=" + visited.size);
 }
 
+async function runAboutTabPreferenceChecks(client) {
+  const skippedLinks = await evaluate(client, String.raw`(() => {
+    const dialog = document.querySelector('[role="dialog"][aria-labelledby="tops-about-title"]');
+    const close = dialog && dialog.querySelector('button[aria-label="Close About Transition OPS"]');
+    const link = dialog && dialog.querySelector('a[href]');
+    const background = document.querySelector('button[aria-label*="Switch to"]');
+    if (!close || !link || !background) return { ok: false, reason: "About controls or background fixture missing" };
+    const controls = [close, link];
+    const steps = [];
+    // Synthetic KeyboardEvents have no browser default. Model Safari's observed
+    // skipped-link default only when the app leaves Tab uncancelled.
+    for (const modifiers of [{shiftKey:false,altKey:false}, {shiftKey:true,altKey:false}, {shiftKey:false,altKey:true}, {shiftKey:true,altKey:true}]) {
+      close.focus();
+      for (let step = 0; step < controls.length * 2; step += 1) {
+        const before = controls.indexOf(document.activeElement);
+        const expected = (before + (modifiers.shiftKey ? -1 : 1) + controls.length) % controls.length;
+        const event = new KeyboardEvent("keydown", {key:"Tab",code:"Tab",bubbles:true,cancelable:true,...modifiers});
+        document.activeElement.dispatchEvent(event);
+        if (!event.defaultPrevented) background.focus();
+        steps.push({ ...modifiers, before, expected, actual:controls.indexOf(document.activeElement), cancelled:event.defaultPrevented, inside:dialog.contains(document.activeElement) });
+      }
+    }
+    close.focus();
+    return { ok:steps.every(step => step.inside && step.actual === step.expected), steps };
+  })()`, false);
+  console.log("ABOUT TAB SKIP FIXTURE " + JSON.stringify(skippedLinks));
+  check(skippedLinks.ok, "About cycles each Tab step when native traversal skips links", JSON.stringify(skippedLinks));
+
+  // Exercise real browser key dispatch too, including reverse and Option-Tab.
+  for (const modifiers of [0, 8, 1, 9]) {
+    await evaluate(client, "document.querySelector('[aria-label=\"Close About Transition OPS\"]').focus(); true", false);
+    for (let step = 0; step < 4; step += 1) {
+      const before = await evaluate(client, "document.activeElement.tagName", false);
+      await dispatchKey(client, "Tab", modifiers);
+      const after = await evaluate(client, "(() => { const d=document.querySelector('[aria-labelledby=\"tops-about-title\"]'); return {inside:d.contains(document.activeElement), tag:document.activeElement.tagName}; })()", false);
+      check(after.inside && after.tag !== before, "About actual Tab changes control and stays inside, modifiers=" + modifiers + " step=" + step);
+    }
+  }
+
+  const recovered = await evaluate(client, String.raw`(() => {
+    const dialog = document.querySelector('[aria-labelledby="tops-about-title"]');
+    const link = dialog.querySelector('a[href]');
+    const background = document.querySelector('button[aria-label*="Switch to"]');
+    link.focus();
+    background.focus();
+    return dialog.contains(document.activeElement) && document.activeElement.getAttribute("aria-label") === "Close About Transition OPS";
+  })()`, false);
+  check(recovered, "About recovers background focus while open");
+}
+
 async function runDialogChecks(client) {
   const opened = await evaluate(client, String.raw`(() => {
     const visible = (element) => {
@@ -999,6 +1049,7 @@ async function runDialogChecks(client) {
   check(!!dialog.name, "dialog has an accessible name");
   check(dialog.focusInside, "dialog receives focus on open");
   check(dialog.focusableCount > 0, "dialog contains an operable control");
+  await runAboutTabPreferenceChecks(client);
 
   for (let index = 0; index < Math.min(dialog.focusableCount + 2, 18); index += 1) {
     await dispatchKey(client, "Tab", 0);
@@ -1019,6 +1070,8 @@ async function runDialogChecks(client) {
     };
   })()`, false);
   check(restored.ok, "dialog restores focus to its invoker after Escape", JSON.stringify(restored));
+  const released = await evaluate(client, "(() => { const b=document.querySelector('button[aria-label*=\"Switch to\"]'); b.focus(); return document.activeElement === b; })()", false);
+  check(released, "About releases its focus guard after close");
 }
 
 async function run() {
