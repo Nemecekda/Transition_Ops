@@ -1,0 +1,54 @@
+{
+  "at": "2026-09-08T17:09:18.941635+00:00",
+  "prior_ledger": "/tmp/tops-production-prep-0fd3c45-2026-09-08/cache-ledger.json",
+  "post_release": "/tmp/tops-production-prep-0fd3c45-2026-09-08/post-release/README.md",
+  "sites": {
+    "veteranbridge": {
+      "site": "e8e39892-d7d1-47c0-b23a-847ed01120b8",
+      "published": {
+        "id": "6aa039a255936800098c8e74",
+        "commit_ref": "e9a84fe2c94cecd4b76b70880fc3a76a36e1e469",
+        "state": "ready",
+        "context": "production",
+        "branch": "main",
+        "created_at": "2026-09-08T16:36:50.931Z"
+      },
+      "new_records": [
+        {
+          "id": "6aa039a255936800098c8e74",
+          "commit_ref": "e9a84fe2c94cecd4b76b70880fc3a76a36e1e469",
+          "state": "ready",
+          "context": "production",
+          "branch": "main",
+          "created_at": "2026-09-08T16:36:50.931Z",
+          "worker_sha1": "1c86ea0d7356bd050d6e370da608b610f1037ec4",
+          "cache": 156
+        }
+      ],
+      "prior_high": 156,
+      "high": 156,
+      "delta_reaches_known_history": true
+    },
+    "clone": {
+      "site": "21f00a70-f6c6-45d5-bba5-6823e6bd9434",
+      "published": {
+        "id": "6aa031d0c00efd000812f107",
+        "commit_ref": "0fd3c45233c4c21437d55d646a310e6333d6825b",
+        "state": "ready",
+        "context": "production",
+        "branch": "ops/openai-parallel-clone",
+        "created_at": "2026-09-08T16:03:28.729Z"
+      },
+      "new_records": [],
+      "prior_high": 156,
+      "high": 156,
+      "delta_reaches_known_history": true
+    }
+  },
+  "active_worker_sha256": "fdbab32cb6e0e8ab009c1ff35e2046acf90b8c4d80b659676204f270eea8a8dc",
+  "public_production_matches": true,
+  "highest_evidenced": 156,
+  "candidate_allocation": 157,
+  "conflicting_served_use": false,
+  "limits": "Available history delta joined to prior completed inventory. Deleted/unreturned history not observable. Old v157 emergency patch is unapplied and was not reserved; never apply it after a different v157 worker ships. Recheck before hosted handoff."
+}

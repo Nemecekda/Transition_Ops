@@ -1,0 +1,541 @@
+{
+  "mode": "EDIT",
+  "status": " M index.html\n M pwa-sw.js\n M scripts/privacy-network-regression.js\n?? node_modules\n?? scratchpad/member-return-loop-2026-09-08/README.md\n?? scratchpad/member-return-loop-2026-09-08/accessibility-final.log\n?? scratchpad/member-return-loop-2026-09-08/accessibility.log\n?? scratchpad/member-return-loop-2026-09-08/adverse-network.json\n?? scratchpad/member-return-loop-2026-09-08/adverse.cjs\n?? scratchpad/member-return-loop-2026-09-08/adverse.json\n?? scratchpad/member-return-loop-2026-09-08/apply-scoped.py\n?? scratchpad/member-return-loop-2026-09-08/baseline-run1-selector-error.json\n?? scratchpad/member-return-loop-2026-09-08/baseline.json\n?? scratchpad/member-return-loop-2026-09-08/browser-episodes.cjs\n?? scratchpad/member-return-loop-2026-09-08/cache-check.py\n?? scratchpad/member-return-loop-2026-09-08/cache-edit.json\n?? scratchpad/member-return-loop-2026-09-08/cache-ledger.json\n?? scratchpad/member-return-loop-2026-09-08/candidate-keyboard.json\n?? scratchpad/member-return-loop-2026-09-08/candidate-provisional-before-cache-bump.json\n?? scratchpad/member-return-loop-2026-09-08/candidate.json\n?? scratchpad/member-return-loop-2026-09-08/date-and-preservation.cjs\n?? scratchpad/member-return-loop-2026-09-08/edit-assertions.json\n?? scratchpad/member-return-loop-2026-09-08/fixtures-v1.json\n?? scratchpad/member-return-loop-2026-09-08/fixtures-v1.sha256\n?? scratchpad/member-return-loop-2026-09-08/freeze-fixtures.cjs\n?? scratchpad/member-return-loop-2026-09-08/manifest.json\n?? scratchpad/member-return-loop-2026-09-08/openai-migration.log\n?? scratchpad/member-return-loop-2026-09-08/preservation-and-blindspots.json\n?? scratchpad/member-return-loop-2026-09-08/privacy-network-final.log\n?? scratchpad/member-return-loop-2026-09-08/privacy-network.log\n?? scratchpad/member-return-loop-2026-09-08/protocol-v1-recovered.md\n?? scratchpad/member-return-loop-2026-09-08/public-build.log\n?? scratchpad/member-return-loop-2026-09-08/public-manifest.json\n?? scratchpad/member-return-loop-2026-09-08/restore-fixtures.json\n?? scratchpad/member-return-loop-2026-09-08/runtime-ai-spend.log\n?? scratchpad/member-return-loop-2026-09-08/shared-preservation.json\n?? scratchpad/member-return-loop-2026-09-08/structural-check.py\n?? scratchpad/member-return-loop-2026-09-08/structural.json\n?? scratchpad/member-return-loop-2026-09-08/structural.log\n?? scratchpad/member-return-loop-2026-09-08/suite-exits.json\n?? scratchpad/member-return-loop-2026-09-08/sw-privacy.log\n?? scratchpad/member-return-loop-2026-09-08/update-version-check.py\n?? scratchpad/member-return-loop-2026-09-08/validation-summary.json\n?? scratchpad/member-return-loop-2026-09-08/version-test-edit.json\n",
+  "js_inventory": [
+    {
+      "path": "OneSignalSDKWorker.js",
+      "bytes": 76,
+      "exit": 0
+    },
+    {
+      "path": "netlify/functions/_shared/openai-budget.cjs",
+      "bytes": 29412,
+      "exit": 0
+    },
+    {
+      "path": "netlify/functions/_shared/openai-client.cjs",
+      "bytes": 2626,
+      "exit": 0
+    },
+    {
+      "path": "netlify/functions/jobs.js",
+      "bytes": 3933,
+      "exit": 0
+    },
+    {
+      "path": "netlify/functions/navigator.mjs",
+      "bytes": 48418,
+      "exit": 0
+    },
+    {
+      "path": "netlify/functions/resume.mjs",
+      "bytes": 96945,
+      "exit": 0
+    },
+    {
+      "path": "push/onesignal/OneSignalSDKWorker.js",
+      "bytes": 843,
+      "exit": 0
+    },
+    {
+      "path": "pwa-sw.js",
+      "bytes": 3933,
+      "exit": 0
+    },
+    {
+      "path": "scratchpad/alert-browser-test.cjs",
+      "bytes": 16492,
+      "exit": 0
+    },
+    {
+      "path": "scratchpad/alert-disabled-test.cjs",
+      "bytes": 1741,
+      "exit": 0
+    },
+    {
+      "path": "scratchpad/alert-persistence-test.cjs",
+      "bytes": 13383,
+      "exit": 0
+    },
+    {
+      "path": "scratchpad/alert-verification-synthetic.cjs",
+      "bytes": 5400,
+      "exit": 0
+    },
+    {
+      "path": "scratchpad/federal-hosted-1b6b586/hosted-1b6b586-diagnostic.cjs",
+      "bytes": 2735,
+      "exit": 0
+    },
+    {
+      "path": "scratchpad/federal-resume-iteration-10/iteration-10-scope.cjs",
+      "bytes": 3174,
+      "exit": 0
+    },
+    {
+      "path": "scratchpad/federal-resume-iteration-6/iteration-6-comparison.cjs",
+      "bytes": 2250,
+      "exit": 0
+    },
+    {
+      "path": "scratchpad/federal-resume-iteration-8/iteration-8-scope.cjs",
+      "bytes": 3370,
+      "exit": 0
+    },
+    {
+      "path": "scratchpad/federal-resume-iteration-9/iteration-9-scope.cjs",
+      "bytes": 3421,
+      "exit": 0
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/adverse.cjs",
+      "bytes": 13845,
+      "exit": 0
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/browser-episodes.cjs",
+      "bytes": 11167,
+      "exit": 0
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/date-and-preservation.cjs",
+      "bytes": 4254,
+      "exit": 0
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/freeze-fixtures.cjs",
+      "bytes": 5428,
+      "exit": 0
+    },
+    {
+      "path": "scripts/accessibility-release-regression.js",
+      "bytes": 70599,
+      "exit": 0
+    },
+    {
+      "path": "scripts/build-public.js",
+      "bytes": 8205,
+      "exit": 0
+    },
+    {
+      "path": "scripts/nav-token-regression.js",
+      "bytes": 8185,
+      "exit": 0
+    },
+    {
+      "path": "scripts/openai-migration-regression.js",
+      "bytes": 299375,
+      "exit": 0
+    },
+    {
+      "path": "scripts/policy-content-regression.js",
+      "bytes": 12910,
+      "exit": 0
+    },
+    {
+      "path": "scripts/privacy-network-regression.js",
+      "bytes": 38232,
+      "exit": 0
+    },
+    {
+      "path": "scripts/resume-docx-render-regression.js",
+      "bytes": 46283,
+      "exit": 0
+    },
+    {
+      "path": "scripts/runtime-ai-spend-regression.js",
+      "bytes": 68796,
+      "exit": 0
+    },
+    {
+      "path": "scripts/sw-privacy-regression.js",
+      "bytes": 31773,
+      "exit": 0
+    },
+    {
+      "path": "sw.js",
+      "bytes": 4033,
+      "exit": 0
+    },
+    {
+      "path": "vendor/react-dom.production.min.js",
+      "bytes": 131882,
+      "exit": 0
+    },
+    {
+      "path": "vendor/react.production.min.js",
+      "bytes": 10737,
+      "exit": 0
+    }
+  ],
+  "json_inventory": [
+    {
+      "path": ".github/scripts/tests/fixtures/coverage-blind.json",
+      "bytes": 455,
+      "result": "PASS"
+    },
+    {
+      "path": ".github/scripts/tests/fixtures/hostile-structure.json",
+      "bytes": 817,
+      "result": "PASS"
+    },
+    {
+      "path": ".github/scripts/tests/fixtures/malformed-result.json",
+      "bytes": 88,
+      "result": "PASS"
+    },
+    {
+      "path": ".github/scripts/tests/fixtures/packet-cvso-object.json",
+      "bytes": 8804,
+      "result": "PASS"
+    },
+    {
+      "path": ".github/scripts/tests/fixtures/packet-inputs-unread.json",
+      "bytes": 787,
+      "result": "PASS"
+    },
+    {
+      "path": ".github/scripts/tests/fixtures/packet-malformed.json",
+      "bytes": 125,
+      "result": "PASS"
+    },
+    {
+      "path": ".github/scripts/tests/fixtures/packet-no-cvso.json",
+      "bytes": 1049,
+      "result": "PASS"
+    },
+    {
+      "path": ".github/scripts/tests/fixtures/packet-normal.json",
+      "bytes": 2923,
+      "result": "PASS"
+    },
+    {
+      "path": ".github/scripts/tests/fixtures/packet-quiet.json",
+      "bytes": 552,
+      "result": "PASS"
+    },
+    {
+      "path": ".github/scripts/tests/fixtures/packet-resources-unchanged.json",
+      "bytes": 2781,
+      "result": "PASS"
+    },
+    {
+      "path": ".github/scripts/tests/fixtures/packet-voice-violations.json",
+      "bytes": 1053,
+      "result": "PASS"
+    },
+    {
+      "path": ".github/scripts/tests/fixtures/real-issue-14.json",
+      "bytes": 2893,
+      "result": "PASS"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 492,
+      "result": "PASS"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 25042,
+      "result": "PASS"
+    },
+    {
+      "path": "package.json",
+      "bytes": 758,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-1b6b586/evidence.json",
+      "bytes": 2181,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-1b6b586/proposed-extraction-number-gate.json",
+      "bytes": 3374,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-3347fb6/evidence.json",
+      "bytes": 2204,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-349770c/deployment.json",
+      "bytes": 856,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-349770c/draft-result.json",
+      "bytes": 8979,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-349770c/facts.json",
+      "bytes": 4898,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-7c79057/artifact-verification.json",
+      "bytes": 1216,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-7c79057/browser-final.json",
+      "bytes": 163,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-7c79057/deployment.json",
+      "bytes": 684,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-7c79057/draft-result.json",
+      "bytes": 12684,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-7c79057/facts.json",
+      "bytes": 4898,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-7c79057/phone-opening.json",
+      "bytes": 568,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-7c79057/released-draft.json",
+      "bytes": 5917,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-964a93e/deployment.json",
+      "bytes": 853,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-964a93e/draft-result.json",
+      "bytes": 6965,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-964a93e/facts.json",
+      "bytes": 4942,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-9f39034/deployment.json",
+      "bytes": 870,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-9f39034/draft-result.json",
+      "bytes": 955,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-9f39034/facts.json",
+      "bytes": 4900,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-fbf0996/deployment.json",
+      "bytes": 815,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-fbf0996/draft-result.json",
+      "bytes": 836,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-fbf0996/facts-verification.json",
+      "bytes": 324,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-hosted-fbf0996/facts.json",
+      "bytes": 4844,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-resume-iteration-10/manifest.json",
+      "bytes": 4271,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-resume-iteration-3/manifest.json",
+      "bytes": 1804,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-resume-iteration-4/manifest.json",
+      "bytes": 2333,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-resume-iteration-5/manifest.json",
+      "bytes": 2302,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-resume-iteration-6/manifest.json",
+      "bytes": 2683,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/federal-resume-readiness-evidence/manifest.json",
+      "bytes": 2737,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/adverse-network.json",
+      "bytes": 4101,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/adverse.json",
+      "bytes": 3238,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/baseline-run1-selector-error.json",
+      "bytes": 56006,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/baseline.json",
+      "bytes": 57284,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/cache-edit.json",
+      "bytes": 232,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/cache-ledger.json",
+      "bytes": 2045,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/candidate-keyboard.json",
+      "bytes": 62853,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/candidate-provisional-before-cache-bump.json",
+      "bytes": 62852,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/candidate.json",
+      "bytes": 62938,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/edit-assertions.json",
+      "bytes": 2455,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/fixtures-v1.json",
+      "bytes": 283085,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/manifest.json",
+      "bytes": 1345,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/preservation-and-blindspots.json",
+      "bytes": 4062,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/public-manifest.json",
+      "bytes": 5207,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/restore-fixtures.json",
+      "bytes": 141523,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/shared-preservation.json",
+      "bytes": 1677,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/structural.json",
+      "bytes": 14546,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/suite-exits.json",
+      "bytes": 307,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/validation-summary.json",
+      "bytes": 1775,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/member-return-loop-2026-09-08/version-test-edit.json",
+      "bytes": 231,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/resume-feedback-accessibility-2026-09-07/final-remote-state.json",
+      "bytes": 505,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/resume-feedback-accessibility-2026-09-07/fix-scope.json",
+      "bytes": 664,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/resume-feedback-accessibility-2026-09-07/hosted-rejections.json",
+      "bytes": 5674,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/resume-feedback-accessibility-2026-09-07/policy-provenance.json",
+      "bytes": 1299,
+      "result": "PASS"
+    },
+    {
+      "path": "scratchpad/resume-feedback-accessibility-2026-09-07/resolved-build-config.json",
+      "bytes": 392,
+      "result": "PASS"
+    }
+  ],
+  "inline": [
+    {
+      "block": 0,
+      "kind": "json",
+      "start_line": 46,
+      "end_line": 102,
+      "bytes": 2276,
+      "result": "PASS"
+    },
+    {
+      "block": 3,
+      "kind": "js",
+      "start_line": 431,
+      "end_line": 15509,
+      "bytes": 905418,
+      "result": "PASS"
+    }
+  ],
+  "added_runtime_encoding": "PASS",
+  "diff_check": "PASS",
+  "workflow_checks": "4S and YAML N/A: no workflow change",
+  "function_package": "4N N/A: no function/package/Netlify configuration change",
+  "result": "PASS"
+}

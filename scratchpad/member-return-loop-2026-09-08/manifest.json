@@ -1,0 +1,34 @@
+{
+  "at": "2026-09-08T17:19:46.396754+00:00",
+  "branch": "codex/member-return-loop",
+  "base_commit": "e9a84fe2c94cecd4b76b70880fc3a76a36e1e469",
+  "base_tree": "2c6fb29204e548d2351591cb91ad7ed25d316716",
+  "source_index_sha256": "494903fa373b112c99c8405fddae61d15d6ee9fb9c97fdd6164dcb69785ee4b0",
+  "dist_index_sha256": "494903fa373b112c99c8405fddae61d15d6ee9fb9c97fdd6164dcb69785ee4b0",
+  "worker_sha256": "8fa42be2bb1781a2095c0deac5fc85e858f18c7f89d8d450a097d9e937933e04",
+  "cache": 157,
+  "fixture_sha256": "59e94221f93c56ba8186de3cf162e018bbf65712f1a912f57433642a8944b9dc",
+  "metric": {
+    "N": 8,
+    "baseline_success": 6,
+    "baseline_failure": 2,
+    "candidate_success": 8,
+    "candidate_failure": 0,
+    "absolute_success_change_percentage_points": 25,
+    "failure_reduction": 1.0,
+    "target_met": true,
+    "retention": "UNMEASURED"
+  },
+  "local_server": "http://127.0.0.1:48158/",
+  "server_session": 60048,
+  "app_runtime_files_changed": [
+    "index.html",
+    "pwa-sw.js"
+  ],
+  "existing_test_files_changed": [
+    "scripts/privacy-network-regression.js"
+  ],
+  "new_test_evidence_path": "scratchpad/member-return-loop-2026-09-08",
+  "verification": "LOCAL AUTOMATION PASS; no hosted/manual release verdict",
+  "publishing": "Not pushed, merged or deployed. Feature commit recorded in coordinator post-commit file."
+}

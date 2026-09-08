@@ -1,0 +1,14 @@
+[
+  {
+    "edit": "version matches newest note helper",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 1
+  },
+  {
+    "edit": "replace obsolete v96 pin",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  }
+]

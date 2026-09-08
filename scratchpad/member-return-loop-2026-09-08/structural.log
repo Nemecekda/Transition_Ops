@@ -1,0 +1,47 @@
+EDIT MODE
+ M index.html
+ M pwa-sw.js
+ M scripts/privacy-network-regression.js
+?? node_modules
+?? scratchpad/member-return-loop-2026-09-08/README.md
+?? scratchpad/member-return-loop-2026-09-08/accessibility-final.log
+?? scratchpad/member-return-loop-2026-09-08/accessibility.log
+?? scratchpad/member-return-loop-2026-09-08/adverse-network.json
+?? scratchpad/member-return-loop-2026-09-08/adverse.cjs
+?? scratchpad/member-return-loop-2026-09-08/adverse.json
+?? scratchpad/member-return-loop-2026-09-08/apply-scoped.py
+?? scratchpad/member-return-loop-2026-09-08/baseline-run1-selector-error.json
+?? scratchpad/member-return-loop-2026-09-08/baseline.json
+?? scratchpad/member-return-loop-2026-09-08/browser-episodes.cjs
+?? scratchpad/member-return-loop-2026-09-08/cache-check.py
+?? scratchpad/member-return-loop-2026-09-08/cache-edit.json
+?? scratchpad/member-return-loop-2026-09-08/cache-ledger.json
+?? scratchpad/member-return-loop-2026-09-08/candidate-keyboard.json
+?? scratchpad/member-return-loop-2026-09-08/candidate-provisional-before-cache-bump.json
+?? scratchpad/member-return-loop-2026-09-08/candidate.json
+?? scratchpad/member-return-loop-2026-09-08/date-and-preservation.cjs
+?? scratchpad/member-return-loop-2026-09-08/edit-assertions.json
+?? scratchpad/member-return-loop-2026-09-08/fixtures-v1.json
+?? scratchpad/member-return-loop-2026-09-08/fixtures-v1.sha256
+?? scratchpad/member-return-loop-2026-09-08/freeze-fixtures.cjs
+?? scratchpad/member-return-loop-2026-09-08/manifest.json
+?? scratchpad/member-return-loop-2026-09-08/openai-migration.log
+?? scratchpad/member-return-loop-2026-09-08/preservation-and-blindspots.json
+?? scratchpad/member-return-loop-2026-09-08/privacy-network-final.log
+?? scratchpad/member-return-loop-2026-09-08/privacy-network.log
+?? scratchpad/member-return-loop-2026-09-08/protocol-v1-recovered.md
+?? scratchpad/member-return-loop-2026-09-08/public-build.log
+?? scratchpad/member-return-loop-2026-09-08/public-manifest.json
+?? scratchpad/member-return-loop-2026-09-08/restore-fixtures.json
+?? scratchpad/member-return-loop-2026-09-08/runtime-ai-spend.log
+?? scratchpad/member-return-loop-2026-09-08/shared-preservation.json
+?? scratchpad/member-return-loop-2026-09-08/structural-check.py
+?? scratchpad/member-return-loop-2026-09-08/structural.json
+?? scratchpad/member-return-loop-2026-09-08/structural.log
+?? scratchpad/member-return-loop-2026-09-08/suite-exits.json
+?? scratchpad/member-return-loop-2026-09-08/sw-privacy.log
+?? scratchpad/member-return-loop-2026-09-08/update-version-check.py
+?? scratchpad/member-return-loop-2026-09-08/validation-summary.json
+?? scratchpad/member-return-loop-2026-09-08/version-test-edit.json
+
+STRUCTURAL PASS 33 JS files, 69 JSON files, 2 inline blocks

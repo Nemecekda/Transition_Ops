@@ -1,0 +1,53 @@
+{
+  "at": "2026-09-08T17:17:54.104104+00:00",
+  "commands": [
+    {
+      "command": "npm run test:openai-migration",
+      "exit": 0,
+      "log": "openai-migration.log",
+      "sha256": "cbd8c9a7473ffa81ec223ceade2a804263dc37bb69a5e2bafae708d9e1dfd53b"
+    },
+    {
+      "command": "npm run test:sw-privacy",
+      "exit": 0,
+      "log": "sw-privacy.log",
+      "sha256": "1eb6a4c9b7205084ea09c23d953dcb660f629a874b68d1e73469b96b9d61086a"
+    },
+    {
+      "command": "npm run test:privacy-network",
+      "exit": 0,
+      "log": "privacy-network-final.log",
+      "sha256": "1da3172e66a6cb3b945ec148be7f0a4d1235d34c7fb735fb3b6b61afe4954a4a"
+    },
+    {
+      "command": "npm run test:runtime-ai-spend",
+      "exit": 0,
+      "log": "runtime-ai-spend.log",
+      "sha256": "97de30e5a104a36dce9898396364b9a23f422d1f31e0d06e2f17fdd95d6c0471"
+    },
+    {
+      "command": "npm run test:accessibility-release",
+      "exit": 0,
+      "log": "accessibility-final.log",
+      "sha256": "2a657b75a1337e0147831c823283dc3b2bcfe18d226a756d58b6ef1e4b3f59dc"
+    },
+    {
+      "command": "npm run build:public",
+      "exit": 0,
+      "log": "public-build.log",
+      "sha256": "a7bde0b02b7ed50fb2e0644e461ff6ee1d3330ea1d6325e7cd056bac2e4f5a04"
+    }
+  ],
+  "targeted_adverse": {
+    "pass": 27,
+    "fail": 0,
+    "file": "adverse.json"
+  },
+  "independent_keyboard": {
+    "pass": 8,
+    "fail": 0,
+    "file": "candidate-keyboard.json"
+  },
+  "required_structure": "structural.json",
+  "limits": "LOCAL AUTOMATION PASS; no manual AT, hosted candidate or production clearance. First privacy run exposed obsolete v96 assertion; fixed with stronger version-to-note match and negative control. Initial accessibility run lost its CDP target late; clean rerun passed all cases."
+}

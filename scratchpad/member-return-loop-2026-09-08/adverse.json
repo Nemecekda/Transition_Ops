@@ -1,0 +1,118 @@
+{
+  "at": "2026-09-08T17:11:46.330Z",
+  "indexSha256": "494903fa373b112c99c8405fddae61d15d6ee9fb9c97fdd6164dcb69785ee4b0",
+  "metricDenominator": false,
+  "rows": [
+    {
+      "name": "absent",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid JSON",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong shape",
+      "status": "PASS"
+    },
+    {
+      "name": "non-array tasks",
+      "status": "PASS"
+    },
+    {
+      "name": "non-boolean",
+      "status": "PASS"
+    },
+    {
+      "name": "storage reads unavailable",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicates: first valid boolean wins, including false",
+      "status": "PASS"
+    },
+    {
+      "name": "removed IDs ignored, omitted/new canonical IDs default, strict milestone ID type",
+      "status": "PASS"
+    },
+    {
+      "name": "corrupt keys isolated in both directions",
+      "status": "PASS"
+    },
+    {
+      "name": "meaning changes cannot be inferred from a stable ID",
+      "status": "PASS"
+    },
+    {
+      "name": "earlier contract: absent keys retain canonical defaults",
+      "status": "PASS"
+    },
+    {
+      "name": "earlier contract: old partial arrays keep marks and restore current canonical content and IDs",
+      "status": "PASS"
+    },
+    {
+      "name": "earlier contract: nonboolean flags are ignored",
+      "status": "PASS"
+    },
+    {
+      "name": "earlier contract: corrupt task key cannot prevent docs or notifications restoring",
+      "status": "PASS"
+    },
+    {
+      "name": "earlier contract: corrupt docs key cannot prevent later notification restoration",
+      "status": "PASS"
+    },
+    {
+      "name": "earlier contract: wrong-shaped saved values do not replace canonical arrays",
+      "status": "PASS"
+    },
+    {
+      "name": "hydration: no transient completion clobber in any mount write",
+      "status": "PASS"
+    },
+    {
+      "name": "native Home timeline/readiness focus and Home return",
+      "status": "PASS"
+    },
+    {
+      "name": "exact reminder clears blocking filters, replaces expanded target, native focus",
+      "status": "PASS"
+    },
+    {
+      "name": "same-day complete/reopen, counts, partial choice and Back without remount",
+      "status": "PASS"
+    },
+    {
+      "name": "first partial canonical order even when earlier milestone untouched",
+      "status": "PASS"
+    },
+    {
+      "name": "all complete and clean no-date states are honest; ordinary routes available",
+      "status": "PASS"
+    },
+    {
+      "name": "390/320/1280 Home and destination geometry, target size and focus",
+      "status": "PASS"
+    },
+    {
+      "name": "disabled storage loads canonical state, no save-success promise",
+      "status": "PASS"
+    },
+    {
+      "name": "site-data clearing removes marks on cold load",
+      "status": "PASS"
+    },
+    {
+      "name": "Guard/Reserve and spouse existing audience routes remain rendered",
+      "status": "PASS"
+    },
+    {
+      "name": "no browser exception or local function call",
+      "status": "PASS"
+    }
+  ],
+  "pass": 27,
+  "fail": 0,
+  "limits": "Synthetic automated controls, no manual AT. Stable IDs cannot establish completion after a meaning change; canonical ID governance still required."
+}
