@@ -845,6 +845,75 @@ async function runResumeFeedbackChecks(client, scenarioName) {
   }
 }
 
+async function privacyGeometry(client) {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    await evaluate(client, "(() => { if (document.activeElement) document.activeElement.blur(); window.scrollTo(0, document.scrollingElement.scrollHeight); return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))); })()", true);
+    const geometry = await evaluate(client, String.raw`(() => {
+      const target = Array.from(document.querySelectorAll('button,[role="button"]')).find(el => el.textContent.trim() === "Privacy");
+      const nav = document.querySelector(".bottom-nav");
+      if (!target || !nav) return { clear: false, reason: "Privacy or primary navigation missing" };
+      const r = target.getBoundingClientRect(), n = nav.getBoundingClientRect();
+      const zoom = Number(getComputedStyle(document.documentElement).zoom) || 1;
+      const points = [[r.left+3,r.top+3],[r.right-3,r.top+3],[r.left+3,r.bottom-3],[r.right-3,r.bottom-3],[(r.left+r.right)/2,(r.top+r.bottom)/2]];
+      const hits = points.every(([x,y]) => { const hit=document.elementFromPoint(x,y); return hit === target || target.contains(hit); });
+      const atEnd = Math.abs(document.scrollingElement.scrollHeight - innerHeight - scrollY) <= 2;
+      return { clear: atEnd && r.top >= 0 && r.bottom <= n.top - 5*zoom && r.left >= 0 && r.right <= innerWidth && r.width >= 44*zoom-1 && r.height >= 44*zoom-1 && hits,
+        atEnd, hits, scrollY, scrollHeight:document.scrollingElement.scrollHeight, clientHeight:document.scrollingElement.clientHeight, innerHeight, targetTop:r.top, targetBottom:r.bottom, navTop:n.top, navHeight:n.height,
+        width:r.width, height:r.height, gap:n.top-r.bottom, x:(r.left+r.right)/2, y:(r.top+r.bottom)/2 };
+    })()`, false);
+    if (geometry.atEnd || attempt === 4) return geometry;
+  }
+}
+
+async function runPrivacyPointerChecks(client, label) {
+  const geometry = await privacyGeometry(client);
+  check(geometry.clear, label + " unfocused Privacy fully clears navigation and receives pointer hits at maximum scroll", JSON.stringify(geometry));
+  console.log("PRIVACY GEOMETRY " + label + " " + JSON.stringify(geometry));
+  for (const type of ["mousePressed", "mouseReleased"]) {
+    await client.send("Input.dispatchMouseEvent", { type, x:geometry.x, y:geometry.y, button:"left", clickCount:1 });
+  }
+  await waitForExpression(client, "!!document.querySelector('#tops-about-title')", label + " pointer opens About", 5000);
+  check(await evaluate(client, "document.querySelector('[aria-labelledby=\"tops-about-title\"]').contains(document.activeElement)", false), label + " About receives focus after pointer activation");
+  await dispatchKey(client, "Escape", 0);
+  await waitForExpression(client, "!document.querySelector('#tops-about-title')", label + " Escape closes About", 5000);
+  check(await evaluate(client, "document.activeElement.textContent.trim() === 'Privacy'", false), label + " About restores Privacy focus");
+  await dispatchKey(client, "Enter", 0);
+  await waitForExpression(client, "!!document.querySelector('#tops-about-title')", label + " Enter reopens About", 5000);
+  await dispatchKey(client, "Escape", 0);
+  await waitForExpression(client, "!document.querySelector('#tops-about-title')", label + " keyboard Escape closes About", 5000);
+  await dispatchKey(client, "Tab", 0);
+  check((await privacyGeometry(client)).clear, label + " Privacy stays visible after focus leaves");
+}
+
+async function runPrivacyClearanceMatrix(client, origin) {
+  for (const scenario of [
+    {name:"desktop reported viewport",width:862,height:800,padding:0},
+    {name:"desktop wide",width:1440,height:900,padding:0},
+    {name:"mobile safe-area 34",width:375,height:667,padding:34},
+    {name:"mobile safe-area 59 and enlarged labels",width:320,height:640,padding:59,largeText:true},
+    {name:"landscape safe-area 21",width:667,height:375,padding:21}
+  ]) {
+    await client.send("Emulation.setDeviceMetricsOverride", { width:scenario.width,height:scenario.height,deviceScaleFactor:1,mobile:scenario.width<700 });
+    await client.send("Page.navigate", {url:origin+"/?tool=dashboard&a11y_privacy=1"});
+    await waitForExpression(client, "!!document.querySelector('.bottom-nav') && document.readyState === 'complete'", "Privacy matrix app", 12000);
+    if (scenario.padding) {
+      // Simulate the computed navigation padding supplied by a device safe area.
+      // This checks live resize handling; it is not an iPhone hardware/AT claim.
+      await evaluate(client, "document.querySelector('.bottom-nav').style.paddingBottom = " + JSON.stringify(scenario.padding+"px") + "; true", false);
+    }
+    if (scenario.largeText) await evaluate(client, "document.querySelectorAll('.bottom-nav .nav-label').forEach(el => el.style.fontSize = '20px'); true", false);
+    await delay(150);
+    await runPrivacyPointerChecks(client, scenario.name);
+    if (scenario.name === "desktop reported viewport") {
+      const saved = await evaluate(client, String.raw`(() => { const t=Array.from(document.querySelectorAll('[role=button]')).find(el=>el.textContent.trim()==="Privacy"); const saved=t.parentElement.style.paddingBottom; t.parentElement.style.paddingBottom="26px"; return saved; })()`, false);
+      const old = await privacyGeometry(client);
+      check(!old.clear && old.targetBottom > old.navTop, "Privacy regression rejects the original 26px footer defect", JSON.stringify(old));
+      await evaluate(client, "Array.from(document.querySelectorAll('[role=button]')).find(el=>el.textContent.trim()==='Privacy').parentElement.style.paddingBottom=" + JSON.stringify(saved) + "; true", false);
+      check((await privacyGeometry(client)).clear, "Privacy clearance restored after negative control");
+    }
+  }
+}
+
 async function runKeyboardChecks(client) {
   await evaluate(client, "(() => { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); window.scrollTo(0, 0); return true; })()", false);
   const visited = new Set();
@@ -1035,6 +1104,12 @@ async function run() {
           scenarioRoute + " semantics, reflow, targets, contrast, orientation, and reduced motion",
           audit && audit.failures ? audit.failures.join(" | ") : "audit returned no evidence"
         );
+        // CSS zoom multiplies 100vh in this fixture; use real viewport geometry
+        // for document-end checks, while retaining every existing zoom audit.
+        if (scenario.zoom === 1) {
+          const privacy = await privacyGeometry(client);
+          check(privacy.clear, scenarioRoute + " Privacy clears fixed navigation at maximum scroll", JSON.stringify(privacy));
+        }
         auditedRouteScenarios += 1;
         console.log("SCENARIO " + scenarioRoute + " " + JSON.stringify(audit.metrics));
       }
@@ -1053,6 +1128,7 @@ async function run() {
     await client.send("Page.navigate", { url: origin + "/?tool=dashboard&a11y_interaction=1" });
     await waitForExpression(client, "document.readyState === 'complete' && !document.querySelector('#root .seo-content')", "interaction fixture", 12000);
     await delay(100);
+    await runPrivacyClearanceMatrix(client, origin);
     await runKeyboardChecks(client);
     await runDialogChecks(client);
 
