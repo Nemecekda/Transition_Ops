@@ -1,5 +1,18 @@
 # Combined-app preview handoff
 
+> **Status note added 2026-09-08.** The body below is the 2026-09-07 record for
+> candidate `07a1d3b` on `codex/openai-weekend-integration`. That branch has
+> since been merged into `ops/openai-parallel-clone`, which is now at
+> `1803e511ff3d7001e15d41ff35465a1786657882`. The federal Resume blocker
+> described in the 2026-09-07 scratchpad status record is resolved and
+> hosted-tested at `7c79057`. Current candidate identity, the runtime delta
+> between `7c79057` and the tip, the two-origin cache measurements, and the
+> remaining pending items are in
+> [intel/openai-release-status-2026-09-08.md](openai-release-status-2026-09-08.md).
+> Nothing below is retracted; the steps below refer to their own candidate and
+> are historical.
+
+
 2026-09-07. PREVIEW WARRANTED: the integration changes app content, date
 handling, dormant alert machinery and active PWA cache. This is a preview
 preparation record, not production release approval.
