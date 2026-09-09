@@ -1312,3 +1312,44 @@ verification of the 2108 categories was performed for this entry.
   of this shape in the log's recent history. **Standing correction: agent work
   gets committed to its branch in the same session it is written, never left
   uncommitted for a later turn.**
+
+---
+
+## V-2026-019-EO-20260908 - September 8 records, benefits tools and employment order
+
+- **Rating:** CONFIRMED directive and independently verified existing VA/DOL
+  guidance; no completed implementation or new member eligibility inferred.
+- **Canonical source:** https://www.whitehouse.gov/presidential-actions/2026/09/accelerating-access-to-veterans-benefits-and-employment-opportunities/
+- **Access:** 2026-09-08, ladder tier 1, s2-intel. Signature/publication date
+  September 8, 2026; official fact sheet and Executive Orders index corroborate.
+  Parent's independent HTTP-200 capture at 23:07:33.164689 UTC: 300210 bytes,
+  SHA-256 `51add04a294087c213d492b49b5ad611828e20696fd10cedc2f7d3e9fe765949`.
+- **Source mapping:** section 2(a)(iii), 30-day agency record-sharing target;
+  2(b), 120-day IT-contract interoperability review/modification; 2(a)(i)-(ii)
+  and 3, 180-day ongoing sharing systems, digital tools and TAP/workforce
+  updates; 4(b)-(c), law/funding and no enforceable right/benefit limitation.
+- **Existing acts:** current VA BDD/standard-claim instructions, mode-specific
+  STR handling, personal eVetRecs/SF180 access, and installation TAP-office
+  registration guidance. Exact sources, dates, supersession limits, and each
+  act's A1-A4 assessment are in
+  [the source and impact packet](patch-2026-09-08-veteran-records-order.md).
+- **IMPACT: DECLINE / INOCULATE | A2 | s2-intel, integrated by s3-devops |
+  2026-09-08 | revisit NONE.** No EO-created member act. The public announcement
+  can prompt an incorrect inference of automatic claims or a guaranteed job.
+  Existing claims/TAP routes close the "what do I do now?" question in the same
+  ship. A4: NOTHING attributable to the order alone. EXPIRES: NONE for the
+  historical directive; re-verify when agencies establish availability.
+- **A1:** active separating members, applicable Guard/Reserve and separated
+  veterans for records/benefits context; spouse/family readers assisting a
+  member, with no new entitlement. Condition-triggered by the announcement,
+  not a personal deadline or promised opening date. A2: NOTHING - context;
+  separately assessed existing acts are SHIP - ACT in the linked packet.
+- **A3:** shared Policy Intel renderer at both current locations, DD214 intro,
+  TAP+ intro, v98 What's New pointer, and matching Navigator corpus. Tokens:
+  [VA PAY], [DD214], [CRITICAL WINDOWS], [RESOURCES]. Confusion sweep FIRED:
+  agency 30/120/180-day targets and TAP update. Personal window/reminder and
+  milestone data stay unchanged; calendar target calculations stay internal.
+- **Release status:** see the linked source and impact packet for implementation
+  scope, validation evidence, and release disposition. CONFIRMED rates source
+  content and does not certify deployment or agency implementation. No registry
+  changes accompany this finding.
