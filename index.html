@@ -569,6 +569,21 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 @media(prefers-reduced-motion:reduce){.tops-journey img{animation:none!important;transform:none!important}.onboard-feature-card{transition:none!important}.onboard-feature-card:hover{transform:none}}
 @media(forced-colors:active){.tops-journey{display:none}.onboard-welcome-hero{padding-top:70px}.onboard-brand-stencil{color:CanvasText}.tops-ets-housing{background:Canvas;border-color:CanvasText;padding-top:12px}.tops-ets-empty>div:not(.tops-journey){color:CanvasText!important}.tops-next-action{border-color:CanvasText!important}}
 /* TOPS_VISUAL_V2_END */
+/* TOPS_MOTION_STYLE_V3_BEGIN */
+.tops-journey>img,.tops-journey-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tops-journey>img{animation:none!important;transform:none!important}
+.tops-journey-video{display:block;object-position:62% 50%;opacity:0;transition:opacity .3s ease;pointer-events:none}
+.tops-journey-video.is-ready{opacity:1}
+.tops-welcome-scene .tops-journey-video{object-position:58% 50%}
+.tops-motion-toggle{position:absolute;z-index:3;top:16px;right:16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:112px;min-height:44px;padding:10px 13px;border:1px solid #b4a16680;border-radius:24px;background:#10170fec;box-shadow:0 3px 14px #0005,inset 0 1px 0 #ecd39122;color:#ecddb4;font-family:"Source Sans 3",sans-serif;font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.3px;pointer-events:auto;cursor:pointer;touch-action:manipulation;transition:background .2s ease,border-color .2s ease}
+.tops-motion-toggle:hover{background:#282d1c;border-color:#ddc582}
+.tops-motion-toggle:focus-visible{outline:3px solid #f2d285;outline-offset:3px}
+.tops-motion-toggle svg{flex:0 0 auto}
+@media(min-width:700px){.tops-welcome-scene .tops-motion-toggle{top:24px;right:24px}}
+@media(max-width:699px){.tops-welcome-scene .tops-journey-video{object-position:65% 50%}.tops-home-scene .tops-journey-video{object-position:64% 48%}.tops-welcome-scene .tops-motion-toggle{top:62px;right:16px}.tops-home-scene .tops-motion-toggle{top:12px;right:12px}}
+@media(prefers-reduced-motion:reduce){.tops-journey-video,.tops-motion-toggle{transition:none!important}}
+@media(forced-colors:active){.tops-motion-toggle{display:none}}
+/* TOPS_MOTION_STYLE_V3_END */
 </style>
 </head>
 <body>
@@ -3960,11 +3975,157 @@ function TopsArt(name, size, className) {
   var src = TOPS_BLENDER_ART[name];
   return src ? React.createElement("img", { src: src, alt: "", "aria-hidden": true, draggable: false, decoding: "async", width: size, height: size, className: "tops-art" + (className ? " " + className : "") }) : null;
 }
+// TOPS_MOTION_V3_BEGIN: optional, same-origin media; no member data or storage.
+var topsJourneySeen = Object.create(null);
 function TopsJourney(className) {
-  var src = TOPS_BLENDER_ART["journey-wide"];
-  return src ? React.createElement("div", { className: "tops-journey " + className, "aria-hidden": true },
-    React.createElement("img", { src: src, alt: "", draggable: false, decoding: "async", width: 1400, height: 820 })) : null;
+  return React.createElement(TopsJourneyMotion, { className: className });
 }
+function TopsJourneyMotion(props) {
+  var stageRef = React.useRef(null);
+  var videoRef = React.useRef(null);
+  var controlRef = React.useRef(null);
+  var statePair = React.useState("idle"), motionState = statePair[0], setMotionState = statePair[1];
+  var readyPair = React.useState(false), ready = readyPair[0], setReady = readyPair[1];
+  React.useEffect(function () {
+    var video = videoRef.current, stage = stageRef.current;
+    if (!video || !stage) return;
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    var forced = window.matchMedia("(forced-colors: active)");
+    var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    var disposed = false, visible = false, wantsPlayback = false, explicitPlayback = false, serial = 0, timer = null;
+    var key = props.className;
+    function automaticAllowed() {
+      return !reduced.matches && !forced.matches && !(connection &&
+        (connection.saveData || /^(slow-)?2g$/.test(connection.effectiveType || "")));
+    }
+    function stop(unload) {
+      serial += 1;
+      wantsPlayback = false;
+      clearTimeout(timer);
+      video.pause();
+      if (unload) {
+        video.removeAttribute("src");
+        video.load();
+        if (!disposed) setReady(false);
+      }
+      if (!disposed) setMotionState(video.ended ? "ended" : video.currentTime > 0 ? "paused" : "idle");
+    }
+    function start(explicit) {
+      if (disposed || document.visibilityState !== "visible" || (!visible && !explicit)) return;
+      if (!explicit && (!automaticAllowed() || topsJourneySeen[key])) return;
+      clearTimeout(timer);
+      topsJourneySeen[key] = true;
+      wantsPlayback = true;
+      explicitPlayback = explicit;
+      var attempt = ++serial;
+      if (!video.getAttribute("src")) {
+        var variant = window.matchMedia("(max-width: 699px)").matches ? "mobile" : "desktop";
+        video.src = "/art/journey/journey-motion-" + variant + ".mp4";
+        video.load();
+      }
+      if (video.ended) video.currentTime = 0;
+      video.muted = true;
+      video.defaultMuted = true;
+      setMotionState("playing");
+      try {
+        var playback = video.play();
+        if (playback && typeof playback.then === "function") {
+          playback.then(function () {
+            if (attempt !== serial) return;
+            if (disposed || !wantsPlayback || document.visibilityState !== "visible") video.pause();
+          }).catch(function () {
+            if (!disposed && attempt === serial) {
+              wantsPlayback = false;
+              setMotionState(video.currentTime > 0 ? "paused" : "idle");
+            }
+          });
+        }
+      } catch (error) {
+        wantsPlayback = false;
+        setMotionState("idle");
+      }
+    }
+    function schedule() {
+      clearTimeout(timer);
+      if (visible && automaticAllowed() && !topsJourneySeen[key] && document.visibilityState === "visible") {
+        timer = setTimeout(function () { start(false); }, 250);
+      }
+    }
+    function playing() {
+      if (disposed || !wantsPlayback || (!visible && !explicitPlayback) || document.visibilityState !== "visible") { video.pause(); return; }
+      setReady(true);
+      setMotionState("playing");
+    }
+    function paused() {
+      if (!disposed && video.paused && !video.ended) {
+        wantsPlayback = false;
+        setMotionState(video.currentTime > 0 ? "paused" : "idle");
+      }
+    }
+    function ended() {
+      wantsPlayback = false;
+      if (!disposed) setMotionState("ended");
+    }
+    function failed() {
+      stop(true);
+      if (!disposed) setMotionState("idle");
+    }
+    function preferenceChanged() {
+      if (!automaticAllowed()) stop(true);
+      else schedule();
+    }
+    function visibilityChanged() {
+      if (document.visibilityState !== "visible") stop(false);
+      else schedule();
+    }
+    function watch(query, callback, add) {
+      if (query.addEventListener) query[add ? "addEventListener" : "removeEventListener"]("change", callback);
+      else if (query.addListener) query[add ? "addListener" : "removeListener"](callback);
+    }
+    controlRef.current = function () {
+      if (wantsPlayback) stop(false);
+      else start(true);
+    };
+    video.addEventListener("playing", playing);
+    video.addEventListener("pause", paused);
+    video.addEventListener("ended", ended);
+    video.addEventListener("error", failed);
+    document.addEventListener("visibilitychange", visibilityChanged);
+    watch(reduced, preferenceChanged, true);
+    watch(forced, preferenceChanged, true);
+    if (connection && connection.addEventListener) connection.addEventListener("change", preferenceChanged);
+    // Without IntersectionObserver, the still and explicit Play control remain available.
+    var observer = window.IntersectionObserver ? new IntersectionObserver(function (entries) {
+      visible = entries.some(function (entry) { return entry.isIntersecting && entry.intersectionRatio >= 0.2; });
+      if (visible) schedule();
+      else stop(false);
+    }, { threshold: [0, 0.2] }) : null;
+    if (observer) observer.observe(stage);
+    else visible = true;
+    return function () {
+      disposed = true;
+      controlRef.current = null;
+      if (observer) observer.disconnect();
+      watch(reduced, preferenceChanged, false);
+      watch(forced, preferenceChanged, false);
+      if (connection && connection.removeEventListener) connection.removeEventListener("change", preferenceChanged);
+      document.removeEventListener("visibilitychange", visibilityChanged);
+      video.removeEventListener("playing", playing);
+      video.removeEventListener("pause", paused);
+      video.removeEventListener("ended", ended);
+      video.removeEventListener("error", failed);
+      stop(true);
+    };
+  }, [props.className]);
+  var label = motionState === "playing" ? "Pause scene" : motionState === "ended" ? "Replay scene" : "Play scene";
+  var icon = motionState === "playing" ? "M8 5h3v14H8zM15 5h3v14h-3z" : motionState === "ended" ? "M5 8V3L1 7l4 4V8a8 8 0 1 1-1 8H2A10 10 0 1 0 5 6z" : "M7 4v16l13-8z";
+  return React.createElement("div", { ref: stageRef, className: "tops-journey " + props.className, "data-motion-state": motionState },
+    React.createElement("img", { src: TOPS_BLENDER_ART["journey-wide"], alt: "", "aria-hidden": true, draggable: false, decoding: "async", width: 1400, height: 820 }),
+    React.createElement("video", { ref: videoRef, className: "tops-journey-video" + (ready ? " is-ready" : ""), muted: true, playsInline: true, preload: "none", tabIndex: -1, "aria-hidden": true, disablePictureInPicture: true, width: 1120, height: 656 }),
+    React.createElement("button", { className: "tops-motion-toggle", type: "button", onClick: function () { if (controlRef.current) controlRef.current(); }, "aria-label": label },
+      React.createElement("svg", { width: 13, height: 13, viewBox: "0 0 24 24", "aria-hidden": true, focusable: "false" }, React.createElement("path", { d: icon, fill: "currentColor" })), label));
+}
+// TOPS_MOTION_V3_END
 function TopsCompass(size) {
   return React.createElement("span", { className: "tops-compass", "aria-hidden": true, style: { width: size, height: size } },
     TopsArt("compass-base", 256), TopsArt("compass-needle", 256, "tops-compass-needle"));

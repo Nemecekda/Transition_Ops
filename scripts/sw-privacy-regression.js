@@ -38,6 +38,8 @@ const EXPECTED_PUBLIC_FILES = Object.freeze([
   "OneSignalSDKWorker.js",
   "_headers",
   "_redirects",
+  "art/journey/journey-motion-desktop.mp4",
+  "art/journey/journey-motion-mobile.mp4",
   "bdd-timeline/index.html",
   "erg-employer-brief.html",
   "erg-handoff.html",
@@ -268,7 +270,7 @@ async function runExecutableWorkerChecks() {
 function runPublicBuildChecks(publicBuilder) {
   check(
     JSON.stringify(publicBuilder.PUBLIC_FILES) === JSON.stringify(EXPECTED_PUBLIC_FILES),
-    "VG-112-1 public builder retains the exact 22-file allowlist"
+    "VG-112-1 public builder retains the exact 24-file allowlist (22 original plus 2 reviewed videos)"
   );
 
   const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tops-public-build-fixture-"));
@@ -425,7 +427,7 @@ function runPublicBuildChecks(publicBuilder) {
     stdio: ["ignore", "pipe", "pipe"]
   });
   check(
-    output.trim() === "PUBLIC BUILD PASS: 22 files -> dist",
+    output.trim() === "PUBLIC BUILD PASS: 24 files -> dist",
     "public build command produces the exact validated dist inventory"
   );
   const inventory = publicBuilder.assertOutputExact(publicBuilder.DIST, EXPECTED_PUBLIC_FILES);
