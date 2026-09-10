@@ -4014,7 +4014,8 @@ function TopsHeaderArt() {
 }
 // TOPS_HEADER_MOTION_V4_END
 // TOPS_MOTION_V3_BEGIN: optional, same-origin media; no member data or storage.
-var topsJourneySeen = Object.create(null);
+// Version 5: loop while visible; a deliberate pause lasts for this page session.
+var topsJourneyPaused = Object.create(null);
 function TopsJourney(className) {
   return React.createElement(TopsJourneyMotion, { className: className });
 }
@@ -4030,7 +4031,7 @@ function TopsJourneyMotion(props) {
     var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     var forced = window.matchMedia("(forced-colors: active)");
     var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    var disposed = false, visible = false, wantsPlayback = false, explicitPlayback = false, serial = 0, timer = null;
+    var disposed = false, visible = false, wantsPlayback = false, explicitPlayback = false, autoplayBlocked = false, serial = 0, timer = null;
     var key = props.className;
     function automaticAllowed() {
       return !reduced.matches && !forced.matches && !(connection &&
@@ -4049,12 +4050,19 @@ function TopsJourneyMotion(props) {
       if (!disposed) setMotionState(video.ended ? "ended" : video.currentTime > 0 ? "paused" : "idle");
     }
     function start(explicit) {
-      if (disposed || document.visibilityState !== "visible" || (!visible && !explicit)) return;
-      if (!explicit && (!automaticAllowed() || topsJourneySeen[key])) return;
+      if (disposed || forced.matches || document.visibilityState !== "visible" || (!visible && !explicit)) return;
+      if (wantsPlayback || (!explicit && (!automaticAllowed() || topsJourneyPaused[key] || autoplayBlocked))) return;
       clearTimeout(timer);
-      topsJourneySeen[key] = true;
+      if (explicit) {
+        topsJourneyPaused[key] = false;
+        autoplayBlocked = false;
+      }
       wantsPlayback = true;
       explicitPlayback = explicit;
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.loop = true;
       var attempt = ++serial;
       if (!video.getAttribute("src")) {
         var variant = window.matchMedia("(max-width: 699px)").matches ? "mobile" : "desktop";
@@ -4062,8 +4070,6 @@ function TopsJourneyMotion(props) {
         video.load();
       }
       if (video.ended) video.currentTime = 0;
-      video.muted = true;
-      video.defaultMuted = true;
       setMotionState("playing");
       try {
         var playback = video.play();
@@ -4074,18 +4080,20 @@ function TopsJourneyMotion(props) {
           }).catch(function () {
             if (!disposed && attempt === serial) {
               wantsPlayback = false;
+              autoplayBlocked = true;
               setMotionState(video.currentTime > 0 ? "paused" : "idle");
             }
           });
         }
       } catch (error) {
         wantsPlayback = false;
+        autoplayBlocked = true;
         setMotionState("idle");
       }
     }
     function schedule() {
       clearTimeout(timer);
-      if (visible && automaticAllowed() && !topsJourneySeen[key] && document.visibilityState === "visible") {
+      if (!disposed && visible && !wantsPlayback && automaticAllowed() && !topsJourneyPaused[key] && !autoplayBlocked && document.visibilityState === "visible") {
         timer = setTimeout(function () { start(false); }, 250);
       }
     }
@@ -4095,6 +4103,7 @@ function TopsJourneyMotion(props) {
       setMotionState("playing");
     }
     function paused() {
+      // Pause events are asynchronous; only the button records persistent user intent.
       if (!disposed && video.paused && !video.ended) {
         wantsPlayback = false;
         setMotionState(video.currentTime > 0 ? "paused" : "idle");
@@ -4103,8 +4112,10 @@ function TopsJourneyMotion(props) {
     function ended() {
       wantsPlayback = false;
       if (!disposed) setMotionState("ended");
+      schedule();
     }
     function failed() {
+      autoplayBlocked = true;
       stop(true);
       if (!disposed) setMotionState("idle");
     }
@@ -4121,9 +4132,26 @@ function TopsJourneyMotion(props) {
       else if (query.addListener) query[add ? "addListener" : "removeListener"](callback);
     }
     controlRef.current = function () {
-      if (wantsPlayback) stop(false);
-      else start(true);
+      if (wantsPlayback || !video.paused) {
+        topsJourneyPaused[key] = true;
+        stop(false);
+      } else start(true);
     };
+    function updateVisibility(intersecting, ratio) {
+      if (disposed) return;
+      visible = intersecting && ratio >= 0.2;
+      if (visible) schedule();
+      else if (!intersecting || !explicitPlayback) stop(false);
+    }
+    function fallbackVisibility() {
+      var rect = stage.getBoundingClientRect();
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      var height = window.innerHeight || document.documentElement.clientHeight;
+      var across = Math.max(0, Math.min(rect.right, width) - Math.max(rect.left, 0));
+      var down = Math.max(0, Math.min(rect.bottom, height) - Math.max(rect.top, 0));
+      var area = across * down;
+      updateVisibility(area > 0, area / Math.max(1, rect.width * rect.height));
+    }
     video.addEventListener("playing", playing);
     video.addEventListener("pause", paused);
     video.addEventListener("ended", ended);
@@ -4132,18 +4160,24 @@ function TopsJourneyMotion(props) {
     watch(reduced, preferenceChanged, true);
     watch(forced, preferenceChanged, true);
     if (connection && connection.addEventListener) connection.addEventListener("change", preferenceChanged);
-    // Without IntersectionObserver, the still and explicit Play control remain available.
     var observer = window.IntersectionObserver ? new IntersectionObserver(function (entries) {
-      visible = entries.some(function (entry) { return entry.isIntersecting && entry.intersectionRatio >= 0.2; });
-      if (visible) schedule();
-      else stop(false);
+      var entry = entries[entries.length - 1];
+      if (entry) updateVisibility(entry.isIntersecting, entry.intersectionRatio);
     }, { threshold: [0, 0.2] }) : null;
     if (observer) observer.observe(stage);
-    else visible = true;
+    else {
+      window.addEventListener("scroll", fallbackVisibility, { passive: true });
+      window.addEventListener("resize", fallbackVisibility);
+      fallbackVisibility();
+    }
     return function () {
       disposed = true;
       controlRef.current = null;
       if (observer) observer.disconnect();
+      else {
+        window.removeEventListener("scroll", fallbackVisibility);
+        window.removeEventListener("resize", fallbackVisibility);
+      }
       watch(reduced, preferenceChanged, false);
       watch(forced, preferenceChanged, false);
       if (connection && connection.removeEventListener) connection.removeEventListener("change", preferenceChanged);
@@ -4159,7 +4193,7 @@ function TopsJourneyMotion(props) {
   var icon = motionState === "playing" ? "M8 5h3v14H8zM15 5h3v14h-3z" : motionState === "ended" ? "M5 8V3L1 7l4 4V8a8 8 0 1 1-1 8H2A10 10 0 1 0 5 6z" : "M7 4v16l13-8z";
   return React.createElement("div", { ref: stageRef, className: "tops-journey " + props.className, "data-motion-state": motionState },
     React.createElement("img", { src: TOPS_BLENDER_ART["journey-wide"], alt: "", "aria-hidden": true, draggable: false, decoding: "async", width: 1400, height: 820 }),
-    React.createElement("video", { ref: videoRef, className: "tops-journey-video" + (ready ? " is-ready" : ""), muted: true, playsInline: true, preload: "none", tabIndex: -1, "aria-hidden": true, disablePictureInPicture: true, width: 1120, height: 656 }),
+    React.createElement("video", { ref: videoRef, className: "tops-journey-video" + (ready ? " is-ready" : ""), muted: true, playsInline: true, loop: true, preload: "none", tabIndex: -1, "aria-hidden": true, disablePictureInPicture: true, width: 1120, height: 656 }),
     React.createElement("button", { className: "tops-motion-toggle", type: "button", onClick: function () { if (controlRef.current) controlRef.current(); }, "aria-label": label },
       React.createElement("svg", { width: 13, height: 13, viewBox: "0 0 24 24", "aria-hidden": true, focusable: "false" }, React.createElement("path", { d: icon, fill: "currentColor" })), label));
 }
