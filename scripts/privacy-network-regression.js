@@ -86,18 +86,11 @@ function sourceChecks() {
   const pwaWorker = read("pwa-sw.js");
   const dedicatedWorker = read("push/onesignal/OneSignalSDKWorker.js");
 
-  const gaPatterns = [
-    /googletagmanager\.com\/gtag\/js/i,
-    /google-analytics\.com/i,
-    /\bwindow\.gtag\b/i,
-    /\bGoogleAnalyticsObject\b/i,
-    /\bdataLayer\b/,
-    /\bG-[A-Z0-9]{6,}\b/
-  ];
   check(
-    gaPatterns.every(function(pattern) { return !pattern.test(index); }) &&
+    countMatches(index, /id="tops-page-analytics"/g) === 1 &&
+      !/window\.__trackEvent\s*=/.test(index) &&
       !/added analytics so we can see which deadline alerts help most/i.test(index),
-    "browser source has no GA bootstrap, measurement ID, tag URL, or obsolete analytics claim"
+    "browser source has one bounded page-view bootstrap and no custom-event runtime"
   );
 
   const kitPatterns = [
@@ -860,6 +853,74 @@ async function runtimeScenario(name, chromePath, migratedFixture) {
   }
 }
 
+async function analyticsScenario(chromePath) {
+  const bootstrap = read("index.html").match(/<script id="tops-page-analytics">([\s\S]*?)<\/script>/)[1];
+  const sdkPath = process.env.TOPS_GA_SDK_FILE;
+  const sdk = sdkPath ? fs.readFileSync(sdkPath, "utf8") : null;
+  const proxy = createBlockingProxy();
+  const chrome = await launchChrome(chromePath, await listen(proxy.server));
+  const captured = [];
+  try {
+    const client = chrome.client;
+    await client.send("Page.enable");
+    await client.send("Runtime.enable");
+    await client.send("Fetch.enable", { patterns: [{ urlPattern: "*" }] });
+    client.on("Fetch.requestPaused", async function(event) {
+      const url = event.request.url;
+      captured.push({ url, body: event.request.postData || "", headers: event.request.headers });
+      let body;
+      let mime = "text/html";
+      if (event.resourceType === "Document") {
+        body = '<!doctype html><title>SYNTHETIC_PRIVATE_TITLE</title><script>' + bootstrap + '</script><form><input name="email" value="SYNTHETIC_PRIVATE_EMAIL"><input name="search" value="SYNTHETIC_PRIVATE_SEARCH"></form><a href="https://example.com/SYNTHETIC_PRIVATE_LINK">Link</a>';
+      } else if (url === "https://www.googletagmanager.com/gtag/js?id=G-RE7CRR2ZBB" && sdk) {
+        body = sdk;
+        mime = "application/javascript";
+      }
+      if (body !== undefined) {
+        await client.send("Fetch.fulfillRequest", { requestId: event.requestId, responseCode: 200, responseHeaders: [{ name: "Content-Type", value: mime }], body: Buffer.from(body).toString("base64") });
+      } else {
+        await client.send("Fetch.failRequest", { requestId: event.requestId, errorReason: "BlockedByClient" });
+      }
+    });
+    for (const origin of ["http://localhost", "https://preview.netlify.app", "https://transitionops.org"]) {
+      captured.length = 0;
+      await client.send("Page.navigate", { url: origin + "/?q=SYNTHETIC_PRIVATE_QUERY&utm_source=SYNTHETIC_PRIVATE_SOURCE&utm_campaign=SYNTHETIC_PRIVATE_CAMPAIGN&utm_term=SYNTHETIC_PRIVATE_TERM&gclid=SYNTHETIC_PRIVATE_GCLID#SYNTHETIC_PRIVATE_HASH", referrer: "https://example.com/SYNTHETIC_PRIVATE_REFERRER" });
+      await waitForExpression(client, "document.querySelector('form') !== null", "analytics fixture", 5000);
+      await delay(sdk ? 2200 : 100);
+      const queue = await evaluate(client, "({queue: Array.from(window.dataLayer || [], x => Array.from(x)), custom: typeof window.__trackEvent})");
+      const loaders = captured.filter(function(entry) { return /googletagmanager\.com\/gtag\/js/.test(entry.url); });
+      if (origin !== "https://transitionops.org") {
+        check(queue.queue.length === 0 && loaders.length === 0, "analytics disabled on " + origin);
+        continue;
+      }
+      check(loaders.length === 1 && queue.custom === "undefined", "production loads one Google tag and leaves custom events inert");
+      const pageViews = queue.queue.filter(function(entry) { return entry[0] === "event" && entry[1] === "page_view"; });
+      check(pageViews.length === 1 && JSON.stringify(pageViews[0][2]) === JSON.stringify({ page_location: "https://transitionops.org/", page_referrer: "", page_title: "Transition OPS" }), "one explicit page view contains only canonical location, empty referrer, and fixed title");
+      check(!JSON.stringify(queue.queue).includes("SYNTHETIC_PRIVATE"), "analytics queue excludes synthetic URL, campaign, title, referrer, and form values");
+      await evaluate(client, "document.querySelector('input').dispatchEvent(new Event('input', {bubbles:true})); document.querySelector('form').dispatchEvent(new Event('submit', {bubbles:true,cancelable:true})); history.pushState({}, '', '/?q=SYNTHETIC_PRIVATE_HISTORY'); document.dispatchEvent(new Event('scroll')); window.dispatchEvent(new Event('pagehide')); ");
+      await delay(sdk ? 2200 : 100);
+      if (sdk) {
+        const collect = captured.filter(function(entry) { return /google-analytics\.com\/.*collect/.test(entry.url); });
+        check(collect.length > 0, "real Google SDK attempted collection (all requests blocked)");
+        for (const request of collect) {
+          const transport = decodeURIComponent(request.url + "&" + request.body + JSON.stringify(request.headers));
+          check(!transport.includes("SYNTHETIC_PRIVATE"), "Google transport excludes synthetic sensitive values");
+          const params = new URL(request.url).searchParams;
+          check(params.get("dl") === "https://transitionops.org/" && params.get("dt") === "Transition OPS" && !params.get("dr"), "Google transport uses canonical location, fixed title, and empty referrer");
+          check(params.get("en") === "page_view" || params.get("en") === "user_engagement", "Google transport contains no form, search, or custom events");
+          console.log("GA TRANSPORT BLOCKED " + request.url + " " + request.body);
+        }
+        console.log("GA SDK SHA256 " + crypto.createHash("sha256").update(sdk).digest("hex"));
+      }
+      const iframe = await evaluate(client, "new Promise(resolve => { const f = document.createElement('iframe'); f.srcdoc = '<title>frame</title>'; f.onload = () => { const s = f.contentDocument.createElement('script'); s.textContent = " + JSON.stringify(bootstrap) + "; f.contentDocument.head.appendChild(s); resolve(!!f.contentWindow.dataLayer); }; document.body.appendChild(f); })", true);
+      check(iframe === false, "analytics disabled inside iframe");
+    }
+  } finally {
+    await stopChrome(chrome);
+    await closeServer(proxy.server);
+  }
+}
+
 async function run() {
   sourceChecks();
   const chromePath = findChrome();
@@ -868,6 +929,7 @@ async function run() {
   }
   console.log("RUNTIME BROWSER: " + chromePath);
   console.log("RUNTIME FIXTURE: synthetic data, local files, outbound proxy denied before network");
+  await analyticsScenario(chromePath);
   await runtimeScenario("NEW", chromePath, false);
   await runtimeScenario("MIGRATED", chromePath, true);
   console.log("PRIVACY-NETWORK REGRESSION PASS");

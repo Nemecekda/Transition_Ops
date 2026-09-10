@@ -12,6 +12,36 @@
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://transitionops.org/">
 
+<!-- Production page-view analytics. Custom app events remain disabled. -->
+<script id="tops-page-analytics">
+(function() {
+  if (window.top !== window.self || location.protocol !== "https:" ||
+      !/^(transitionops\.org|www\.transitionops\.org)$/.test(location.hostname) ||
+      !/^(\/|\/index\.html)$/.test(location.pathname)) return;
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { window.dataLayer.push(arguments); }
+  gtag("consent", "default", { ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied", analytics_storage: "granted" });
+  gtag("set", { page_location: "https://transitionops.org/", page_referrer: "", page_title: "Transition OPS", allow_google_signals: false, allow_ad_personalization_signals: false });
+  gtag("js", new Date());
+  gtag("config", "G-RE7CRR2ZBB", {
+    send_page_view: false,
+    page_location: "https://transitionops.org/",
+    page_referrer: "",
+    page_title: "Transition OPS",
+    allow_google_signals: false,
+    allow_ad_personalization_signals: false,
+    user_data: {},
+    cookie_flags: "SameSite=Lax;Secure"
+  });
+  gtag("event", "page_view", { page_location: "https://transitionops.org/", page_referrer: "", page_title: "Transition OPS" });
+  var tag = document.createElement("script");
+  tag.async = true;
+  tag.referrerPolicy = "no-referrer";
+  tag.src = "https://www.googletagmanager.com/gtag/js?id=G-RE7CRR2ZBB";
+  document.head.appendChild(tag);
+})();
+</script>
+
 <!-- OPEN GRAPH (LinkedIn, Facebook) ────────────────────────── -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Transition OPS">
@@ -4412,6 +4442,10 @@ function AboutModal(props) {
       color: C.goldBright
     }
   }, "Joint-force."), " Tools serve Soldiers, Sailors, Airmen, Marines, Guardians, and Coast Guardsmen. Active duty, Guard, Reserve, veterans, and military families."), /*#__PURE__*/React.createElement("div", {
+    style: sectionLabel
+  }, "SITE ANALYTICS"), /*#__PURE__*/React.createElement("p", {
+    style: bodyText
+  }, "Transition OPS uses Google Analytics to measure site visits. Google uses cookies and receives page-view information, browser and device details, and network request metadata."), /*#__PURE__*/React.createElement("div", {
     style: sectionLabel
   }, "PUSH ALERTS"), /*#__PURE__*/React.createElement("p", {
     style: bodyText
