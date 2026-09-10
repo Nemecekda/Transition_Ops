@@ -584,6 +584,22 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 @media(prefers-reduced-motion:reduce){.tops-journey-video,.tops-motion-toggle{transition:none!important}}
 @media(forced-colors:active){.tops-motion-toggle{display:none}}
 /* TOPS_MOTION_STYLE_V3_END */
+/* TOPS_HEADER_MOTION_V4_STYLE_BEGIN */
+.tops-app-header>.tops-header-art{position:absolute;inset:0;overflow:hidden;pointer-events:none;user-select:none;z-index:0;contain:paint}
+.tops-header-content{position:relative;z-index:1}
+.tops-header-art>svg{display:block;width:100%;height:100%;pointer-events:none}
+.tops-header-art:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,20,11,.57) 0%,rgba(6,20,11,.44) 28%,rgba(6,20,11,.12) 66%,rgba(6,20,11,.08));pointer-events:none}
+.tops-header-contours{opacity:.56;transform:none;transform-box:view-box;animation:tops-header-terrain-settle 4.2s cubic-bezier(.2,.65,.3,1) both}
+.tops-header-structure{opacity:.2}
+.tops-header-link{stroke-dasharray:1;stroke-dashoffset:0;opacity:.52;animation:tops-header-link-arrive 3.6s cubic-bezier(.2,.65,.3,1) both}
+.tops-header-light{position:absolute;top:-35%;bottom:-35%;left:-28%;width:28%;background:linear-gradient(90deg,transparent,rgba(221,193,118,.025) 22%,rgba(221,193,118,.17) 52%,rgba(238,215,157,.035) 77%,transparent);opacity:0;transform:translateX(470%) skewX(-18deg);pointer-events:none;animation:tops-header-light-pass 4.2s cubic-bezier(.2,.55,.3,1) both}
+@keyframes tops-header-terrain-settle{from{opacity:.16;transform:translate(-8px,4px)}to{opacity:.56;transform:none}}
+@keyframes tops-header-link-arrive{0%,10%{stroke-dashoffset:1;opacity:.18}78%{stroke-dashoffset:0;opacity:.72}100%{stroke-dashoffset:0;opacity:.52}}
+@keyframes tops-header-light-pass{0%{opacity:0;transform:translateX(0) skewX(-18deg)}12%{opacity:.95}78%{opacity:.72}100%{opacity:0;transform:translateX(470%) skewX(-18deg)}}
+@media(max-width:699px){.tops-header-art:after{background:linear-gradient(90deg,rgba(6,20,11,.59),rgba(6,20,11,.23) 70%,rgba(6,20,11,.12))}.tops-header-contours{opacity:.56}}
+@media(prefers-reduced-motion:reduce){.tops-header-contours,.tops-header-link,.tops-header-light{animation:none!important;transition:none!important}.tops-header-contours{transform:none!important;opacity:.56}.tops-header-link{stroke-dashoffset:0;opacity:.52}.tops-header-light{display:none}}
+@media(forced-colors:active){.tops-header-art{display:none}.tops-header-contours,.tops-header-link,.tops-header-light{animation:none!important}}
+/* TOPS_HEADER_MOTION_V4_STYLE_END */
 </style>
 </head>
 <body>
@@ -3975,6 +3991,28 @@ function TopsArt(name, size, className) {
   var src = TOPS_BLENDER_ART[name];
   return src ? React.createElement("img", { src: src, alt: "", "aria-hidden": true, draggable: false, decoding: "async", width: size, height: size, className: "tops-art" + (className ? " " + className : "") }) : null;
 }
+// TOPS_HEADER_MOTION_V4_BEGIN
+function TopsHeaderArt() {
+  return React.createElement("div", { className: "tops-header-art", "aria-hidden": true },
+    React.createElement("svg", { viewBox: "-50 -75 1300 340", preserveAspectRatio: "none", fill: "none", focusable: "false", "aria-hidden": true },
+      React.createElement("g", { className: "tops-header-contours", stroke: "#b0c29a", strokeWidth: 1 },
+        [
+          "M270 -22C278 34 350 82 427 64S574 -5 650 27S724 144 830 145S1033 75 1230 115",
+          "M294 -20C301 30 361 66 426 49S573 -22 659 12S743 129 829 129S1030 58 1230 98",
+          "M319 -19C326 23 373 51 428 34S574 -37 670 -4S759 113 829 113S1025 43 1230 81",
+          "M243 -24C252 42 341 99 430 81S575 13 641 43S706 159 830 162S1036 93 1230 133",
+          "M215 -24C226 49 329 118 433 98S577 31 630 61S688 177 831 180S1039 110 1230 150",
+          "M181 -23C198 65 318 137 436 116S576 48 619 79S670 195 829 198S1042 127 1230 170",
+          "M365 -30C367 10 400 24 440 7S555 -52 665 -31S792 95 833 95S1026 24 1225 62",
+          "M130 -30C151 85 309 166 448 139S574 64 607 97S652 218 830 221S1048 147 1230 193"
+        ].map(function (path, index) { return React.createElement("path", { key: index, d: path }); })),
+      React.createElement("g", { className: "tops-header-structure", stroke: "#d5c58d", strokeWidth: 1.1, strokeLinecap: "round", strokeLinejoin: "round" },
+        React.createElement("path", { d: "M260 166L1210 129M260 158L1210 121M512 149V170M562 147V169M755 140V163M805 138V161M998 130V156M1048 128V154" }),
+        React.createElement("path", { d: "M473 158L535 94L598 153M716 148L778 84L841 144M959 139L1021 75L1084 134M535 94V155M778 84V146M1021 75V137" })),
+      React.createElement("path", { className: "tops-header-link", d: "M-30 173L1200 126", pathLength: 1, stroke: "#d6ba72", strokeWidth: 1.8, strokeLinecap: "round" })),
+    React.createElement("span", { className: "tops-header-light" }));
+}
+// TOPS_HEADER_MOTION_V4_END
 // TOPS_MOTION_V3_BEGIN: optional, same-origin media; no member data or storage.
 var topsJourneySeen = Object.create(null);
 function TopsJourney(className) {
@@ -7246,7 +7284,8 @@ function App() {
       top: 0,
       zIndex: 100
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, TopsHeaderArt(), /*#__PURE__*/React.createElement("div", {
+    className: "tops-header-content",
     style: {
       display: "flex",
       flexWrap: "wrap",
