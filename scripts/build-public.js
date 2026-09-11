@@ -11,6 +11,8 @@ const PUBLIC_FILES = Object.freeze([
   "OneSignalSDKWorker.js",
   "_headers",
   "_redirects",
+  "art/journey/journey-motion-desktop.mp4",
+  "art/journey/journey-motion-mobile.mp4",
   "bdd-timeline/index.html",
   "erg-employer-brief.html",
   "erg-handoff.html",
