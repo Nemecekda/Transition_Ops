@@ -1877,7 +1877,7 @@ const CAREER_TARGETS = [
   whatYouHave: "Clearance eligibility, understanding of government operations, rank structure knowledge, documentation skills, mission-first mindset.",
   whatYouNeed: "Federal resume (different format than civilian), understanding of GS/GG pay scales, patience with USAJobs process.",
   steps: [{
-    action: "Build a FEDERAL resume (not a civilian resume — federal resumes are 4-6 pages, detail-heavy)",
+    action: "Prepare a tailored federal resume of two pages or less for USAJOBS. Follow the job announcement for required information and documents.",
     timeline: "Month 1",
     resource: "https://www.usajobs.gov/Help/how-to/account/documents/resume/build/"
   }, {
@@ -5827,6 +5827,80 @@ function topsRestoreDocuments() {
   });
 }
 
+const TOPS_TAP_PREP = {
+  t1: "Ask your TAP counselor which courses and Career Readiness Standards apply to your transition.",
+  t2: "Prepare your Individual Transition Plan, career gap analysis and spending plan for your TAP counselor to review.",
+  t12b: "Prepare your career gap worksheet in Career Pathway, Step 2, and note questions for your counselor.",
+  t17: "Prepare current and projected spending figures for your TAP financial review.",
+  t29: "Before Capstone, ask your TAP counselor what remains incomplete and what documents to bring. App checkmarks record your preparation; TAP staff and your commander or designee verify official completion."
+};
+
+const TOPS_GAP_KEY = "tops_career_gap_v1";
+const TOPS_GAP_ROWS = ["Skills", "Education and training", "Credentials"];
+function topsEmptyGap() {
+  return { version: 1, target: "", rows: TOPS_GAP_ROWS.map(function() { return { have: "", requirement: "", next: "", source: "" }; }) };
+}
+function topsValidateGap(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).sort().join(",") !== "rows,target,version" || value.version !== 1 || typeof value.target !== "string" || value.target.length > 160 || !Array.isArray(value.rows) || value.rows.length !== 3) return null;
+  if (!value.rows.every(function(row) {
+    return row && typeof row === "object" && !Array.isArray(row) && Object.keys(row).sort().join(",") === "have,next,requirement,source" && ["have", "requirement", "next", "source"].every(function(key) { return typeof row[key] === "string" && row[key].length <= (key === "source" ? 240 : 600); });
+  })) return null;
+  return { version: 1, target: value.target, rows: value.rows.map(function(row) { return { have: row.have, requirement: row.requirement, next: row.next, source: row.source }; }) };
+}
+function topsLoadGap() {
+  var empty = { draft: topsEmptyGap(), status: "Not saved. Your changes stay in this open page until you choose Save on this browser." };
+  if (window.__IS_IFRAME) return Object.assign({}, empty, { status: "Embedded view: this worksheet stays in this open page and cannot be saved here." });
+  try {
+    var raw = localStorage.getItem(TOPS_GAP_KEY);
+    if (raw === null) return empty;
+    var parsed;
+    try { parsed = raw.length <= 10000 ? JSON.parse(raw) : null; } catch (e) { parsed = null; }
+    var draft = topsValidateGap(parsed);
+    return draft ? { draft: draft, status: "Loaded your saved worksheet from this browser." } : Object.assign({}, empty, { status: "Saved worksheet could not be read. Start again or clear this worksheet." });
+  } catch (e) { return Object.assign({}, empty, { status: "Browser storage is unavailable. Your changes stay in this open page." }); }
+}
+function topsSaveGap(draft) {
+  if (window.__IS_IFRAME || !topsValidateGap(draft)) return false;
+  try { var raw = JSON.stringify(draft); window.__safeSet(TOPS_GAP_KEY, raw); return localStorage.getItem(TOPS_GAP_KEY) === raw; } catch (e) { return false; }
+}
+function topsClearGap() {
+  if (window.__IS_IFRAME) return true;
+  try { localStorage.removeItem(TOPS_GAP_KEY); return localStorage.getItem(TOPS_GAP_KEY) === null; } catch (e) { return false; }
+}
+function CareerGapWorksheet(props) {
+  useEffect(function() { var heading = document.getElementById("career-gap-heading"); if (heading) heading.focus(); }, []);
+  var C = props.colors;
+  var fieldStyle = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 10, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 5, font: "inherit" };
+  var buttonStyle = { minHeight: 44, padding: "10px 14px", background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.gold, borderRadius: 5, font: "inherit", cursor: "pointer" };
+  function edit(row, key, value) {
+    props.setState(function(previous) {
+      var draft = Object.assign({}, previous.draft, { rows: previous.draft.rows.map(function(item) { return Object.assign({}, item); }) });
+      if (row === null) draft.target = value; else draft.rows[row][key] = value;
+      return { draft: draft, status: window.__IS_IFRAME ? "Unsaved changes. Embedded view keeps this worksheet in this open page only." : "Unsaved changes. Choose Save on this browser to replace your saved worksheet." };
+    });
+  }
+  return React.createElement("section", { "aria-labelledby": "career-gap-heading", style: { padding: 14, marginBottom: 16, border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textBody } },
+    React.createElement("h3", { id: "career-gap-heading", tabIndex: -1, style: { color: C.textPrimary, margin: "0 0 10px" } }, "Your career gap analysis"),
+    React.createElement("p", { style: { lineHeight: 1.6 } }, "Compare your experience with the requirements of one civilian role, then choose your next action."),
+    React.createElement("p", { id: "career-gap-help", style: { lineHeight: 1.6 } }, "Use your service or civilian records and a current job posting or licensing source. Leave anything you have not confirmed blank. Do not enter sensitive records or personal identifiers."),
+    React.createElement("label", { htmlFor: "career-gap-target", style: { display: "block", marginBottom: 6 } }, "Target civilian occupation"),
+    React.createElement("input", { id: "career-gap-target", type: "text", maxLength: 160, autoComplete: "off", "aria-describedby": "career-gap-help", value: props.state.draft.target, onChange: function(e) { edit(null, "target", e.target.value); }, style: fieldStyle }),
+    TOPS_GAP_ROWS.map(function(label, i) { return React.createElement("details", { key: label, open: i === 0, style: { marginTop: 12 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", boxSizing: "border-box", color: C.goldBright, cursor: "pointer", fontWeight: 700 } }, label), React.createElement("fieldset", { style: { minWidth: 0, margin: "18px 0", padding: 12, border: "1px solid " + C.border, borderRadius: 5 } },
+      React.createElement("legend", { style: { color: C.goldBright, padding: "0 5px", fontWeight: 700 } }, label),
+      [["have", "What I have"], ["requirement", "What the role requires"], ["next", "What I need to do next"], ["source", "Evidence or source reference (optional)"]].map(function(field) {
+        var id = "career-gap-" + i + "-" + field[0];
+        return React.createElement("div", { key: field[0], style: { marginBottom: 12 } },
+          React.createElement("label", { htmlFor: id, style: { display: "block", marginBottom: 6 } }, field[1]),
+          React.createElement("textarea", { id: id, rows: field[0] === "source" ? 2 : 3, maxLength: field[0] === "source" ? 240 : 600, autoComplete: "off", value: props.state.draft.rows[i][field[0]], onChange: function(e) { edit(i, field[0], e.target.value); }, style: Object.assign({}, fieldStyle, { resize: "vertical" }) }));
+      }))); }),
+    React.createElement("p", { style: { lineHeight: 1.6 } }, "Saving keeps this worksheet on this browser, including on shared devices. It is separate from your Resume Drafter and does not verify qualifications or official TAP completion."),
+    React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 10 } },
+      React.createElement("button", { type: "button", disabled: window.__IS_IFRAME, style: buttonStyle, onClick: function() { var ok = topsSaveGap(props.state.draft); props.setState(function(p) { return Object.assign({}, p, { status: ok ? "Saved on this browser. Later edits need another save." : "Not saved. Browser storage is unavailable; keep this page open." }); }); } }, "Save on this browser"),
+      React.createElement("button", { type: "button", style: buttonStyle, onClick: function() { var ok = topsClearGap(); props.setState({ draft: topsEmptyGap(), status: ok ? (window.__IS_IFRAME ? "Worksheet cleared from this page." : "Worksheet cleared from this page and this browser.") : "Cleared from this page, but the saved copy could not be removed. Browser storage is unavailable." }); } }, "Clear worksheet")),
+    React.createElement("p", null, React.createElement("a", { href: "https://www.tapevents.mil/Assets/ResourceContent/TAP/Gap_Analysis_fillable.pdf", target: "_blank", rel: "noopener noreferrer", style: { color: C.goldBright } }, "Official TAP gap analysis worksheet (PDF)")),
+    React.createElement("p", { role: "status", "aria-live": "polite", "aria-atomic": "true", style: { color: C.textPrimary, lineHeight: 1.6, marginBottom: 0 } }, props.state.status));
+}
+
 function App() {
   const [theme, setTheme] = useState(() => {
     try {
@@ -6021,6 +6095,7 @@ function App() {
   const [onboardData, setOnboardData] = useState({ status: "", branch: "", etsDate: "", concern: "" });
   const [mosBranch, setMosBranch] = useState("");
   const [mosCode, setMosCode] = useState("");
+  const [gapState, setGapState] = useState(topsLoadGap);
   const [pathwayStep, setPathwayStep] = useState(0);
   const [pathwayType, setPathwayType] = useState("");
   const [pathwayMode, setPathwayMode] = useState("journey");
@@ -8827,7 +8902,7 @@ whatsNewUnseen && React.createElement("div", {
         color: C.inactive,
         marginBottom: 8
       }
-    }, "CHECKLIST (", progress.done, "/", progress.total, ")"), m.tasks.map(t => /*#__PURE__*/React.createElement("button", {
+    }, "CHECKLIST (", progress.done, "/", progress.total, ")"), m.tasks.some(t => TOPS_TAP_PREP[t.id]) && React.createElement("p", { style: { fontSize: 13, lineHeight: 1.6 } }, React.createElement("a", { href: "https://www.tapevents.mil/Assets/ResourceContent/TAP/DoD_MLG_Resource_Guide.pdf", target: "_blank", rel: "noopener noreferrer", style: { color: C.goldBright } }, "Official TAP preparation and review guide (PDF)")), m.tasks.map(t => React.createElement(React.Fragment, { key: t.id }, /*#__PURE__*/React.createElement("button", {
       key: t.id,
       onClick: () => toggleTask(m.id, t.id),
       style: {
@@ -8870,7 +8945,7 @@ whatsNewUnseen && React.createElement("div", {
         lineHeight: 1.5,
         fontFamily: "'Source Sans 3', sans-serif"
       }
-    }, t.text))));
+    }, t.text)), TOPS_TAP_PREP[t.id] && React.createElement("p", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.6, margin: "6px 12px 16px" } }, TOPS_TAP_PREP[t.id]), t.id === "t12b" && React.createElement("button", { type: "button", onClick: function() { setPathwayMode("planner"); setPathwayStep(1); setActiveTab("pathway"); }, style: { minHeight: 44, margin: "0 12px 16px", padding: "10px 14px", background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.gold, borderRadius: 5, font: "inherit", cursor: "pointer" } }, "Open career gap worksheet"))));
   })(), activeTab === "pathway" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { ...S.card, borderLeft: "3px solid " + C.greenBright, marginBottom: 14 } },
     React.createElement("button", { type: "button", "aria-expanded": aiR.open, "aria-controls": "tops-resume-drafter-panel", onClick: function() { setAiR(function(p){ return Object.assign({}, p, { open: !p.open }); }); if (window.__trackEvent) window.__trackEvent("ai_resume_opened", {}); }, style: { display: "flex", width: "100%", minHeight: 44, padding: 0, background: "transparent", border: "none", justifyContent: "space-between", alignItems: "center", textAlign: "left", color: "inherit", cursor: "pointer" } },
       React.createElement("span", { style: { display: "block", minWidth: 0 } },
@@ -8887,7 +8962,7 @@ whatsNewUnseen && React.createElement("div", {
               background: on ? C.greenBright : "transparent", color: on ? "#0E120B" : C.textSecondary, border: "1px solid " + (on ? C.greenBright : C.border) } },
             m === "standard" ? "CIVILIAN RESUME" : "FEDERAL (USAJOBS)");
         })),
-      aiR.mode === "federal" && React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.5, marginBottom: 8 } }, "Federal format: longer, more detailed, with [brackets] for hours/week, supervisor contacts, and veterans' preference \u2014 the blanks USAJOBS requires that only you can fill."),
+      aiR.mode === "federal" && React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.5, marginBottom: 8 } }, "For USAJOBS, tailor your resume to two pages or less and follow the job announcement for required information. Review any bracketed prompts before submitting."),
       aiR.mode !== "federal" && React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.5, marginBottom: 8 } }, "Civilian format omits optional details you have not confirmed. Review HONEST GAPS below the draft for facts you may want to add."),
       React.createElement("div", { style: { fontSize: 10.5, color: C.textSecondary, lineHeight: 1.5, marginBottom: 10, padding: "8px 10px", background: C.bg, border: "1px solid " + C.border, borderRadius: 7 } }, React.createElement("strong", { style: { color: C.goldBright } }, "AI USE NOTICE: "), "Using this tool sends your MOS/AFSC/rate, years served, target job title, skills, certifications, pasted experience, confirmed fact sheet, confirmed relevant years, selected supporting roles, and optional job description through Netlify to OpenAI. Your name, location, email, and phone stay in your browser and are added only after the draft passes review. OpenAI is called with store:false, but this is not a promise of zero provider retention. Do not enter Social Security numbers, medical records, or other sensitive information. This AI tool is optional."),
       aiR.mode !== "federal" && React.createElement("div", { style: { marginBottom: 10, padding: "11px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } },
@@ -9971,19 +10046,12 @@ whatsNewUnseen && React.createElement("div", {
     }
   }, "NEXT: IDENTIFY GAPS \u2192")), pathwayStep === 1 && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
-  }, "STEP 2: GAP ANALYSIS"), /*#__PURE__*/React.createElement("div", {
+  }, "STEP 2: GAP ANALYSIS"), React.createElement(CareerGapWorksheet, { colors: C, state: gapState, setState: setGapState }), React.createElement("details", { style: { marginBottom: 14 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.textPrimary, cursor: "pointer" } }, "More guidance"), /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
       padding: 14
     }
   }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13,
-      color: C.textBody,
-      lineHeight: 1.7,
-      marginBottom: 10
-    }
-  }, "Compare what you have to what the target job requires. The delta between those two is your mission objective. No gap = apply now. Gap exists = build a plan to close it."), /*#__PURE__*/React.createElement("div", {
     style: {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 12,
@@ -10173,7 +10241,7 @@ whatsNewUnseen && React.createElement("div", {
       color: C.textBody,
       lineHeight: 1.7
     }
-  }, "Many certs are FREE while on active duty through DOD COOL, your service's credentialing program (all six branches), and Tuition Assistance. The day you separate, those free programs end. Use every resource now.")), /*#__PURE__*/React.createElement("div", {
+  }, "Many certs are FREE while on active duty through DOD COOL, your service's credentialing program (all six branches), and Tuition Assistance. The day you separate, those free programs end. Use every resource now."))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -12502,7 +12570,7 @@ whatsNewUnseen && React.createElement("div", {
   }, {
     name: "USAJOBS Resume Builder",
     url: "https://www.usajobs.gov/Help/how-to/account/documents/resume/build/",
-    desc: "Build a federal resume. Federal resumes are 4-6 pages \u2014 different format than civilian. Use the builder."
+    desc: "USAJOBS is the federal government job portal. Prepare a tailored resume of two pages or less and follow each announcement for required documents."
   }].map((r, i) => /*#__PURE__*/React.createElement("a", {
     key: i,
     href: r.url,
