@@ -5981,6 +5981,43 @@ function GuardCareerSupport(props) {
   );
 }
 
+// Existing service categories customize navigation, not benefit eligibility.
+const TOPS_SERVICE_PROFILES = [["active", "Active duty"], ["guard", "Guard / Reserve"], ["separated", "Already separated"], ["retired", "Retired"], ["spouse", "Military spouse"]];
+function ServiceProfileEditor(props) {
+  var C = props.colors;
+  var valid = function(value) { return TOPS_SERVICE_PROFILES.some(function(row) { return row[0] === value; }); };
+  var draftPair = React.useState(valid(props.value) ? props.value : ""), draft = draftPair[0], setDraft = draftPair[1];
+  var messagePair = React.useState(""), message = messagePair[0], setMessage = messagePair[1];
+  var detailsRef = React.useRef(null), summaryRef = React.useRef(null), headingRef = React.useRef(null);
+  var sessionOnly = window.__IS_IFRAME === true;
+  var controlStyle = { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 6, background: C.bgCard, color: C.textPrimary, fontSize: 14, cursor: "pointer" };
+  function cancel() { setDraft(valid(props.value) ? props.value : ""); setMessage(""); detailsRef.current.open = false; summaryRef.current.focus(); }
+  function save() {
+    if (!valid(draft)) { setMessage("Choose a service profile before saving."); return; }
+    if (!sessionOnly) {
+      try { window.__safeSet("tops_user_status", draft); if (window.__safeGet("tops_user_status") !== draft) throw new Error("not_saved"); }
+      catch (e) { setMessage("Not saved. Your app view has not changed. Try again or cancel."); return; }
+    }
+    props.onSave(draft);
+    setMessage(sessionOnly ? "Service profile updated for this session only." : "Service profile updated.");
+    detailsRef.current.open = false;
+    window.requestAnimationFrame(function() { headingRef.current.focus(); });
+  }
+  return React.createElement("section", { "aria-labelledby": "service-profile-heading", style: { marginBottom: 14 } },
+    React.createElement("details", { ref: detailsRef },
+      React.createElement("summary", { ref: summaryRef, style: { minHeight: 44, cursor: "pointer", color: C.textSecondary, padding: "12px 0" } }, "My service profile"),
+      React.createElement("p", { id: "service-profile-help", style: { color: C.textSecondary, fontSize: 13, lineHeight: 1.6 } }, "Your selection customizes the app view; it does not determine benefit eligibility."),
+      React.createElement("label", { htmlFor: "service-profile-choice", style: { display: "block", color: C.textPrimary, marginBottom: 6 } }, "Service profile"),
+      React.createElement("select", { id: "service-profile-choice", value: draft, "aria-describedby": "service-profile-help service-profile-result", onChange: function(e) { setDraft(e.target.value); setMessage(""); }, style: Object.assign({}, controlStyle, { width: "100%", marginBottom: 12 }) },
+        React.createElement("option", { value: "" }, "Choose a service profile"), TOPS_SERVICE_PROFILES.map(function(row) { return React.createElement("option", { key: row[0], value: row[0] }, row[1]); })),
+      sessionOnly && React.createElement("p", { style: { color: C.textSecondary, fontSize: 13 } }, "Changes apply to this session only in this embedded view."),
+      React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap" } },
+        React.createElement("button", { type: "button", onClick: save, style: controlStyle }, sessionOnly ? "Apply for this session" : "Save"),
+        React.createElement("button", { type: "button", onClick: cancel, style: controlStyle }, "Cancel"))),
+    React.createElement("h2", { id: "service-profile-heading", ref: headingRef, tabIndex: -1, className: "sr-only" }, "Home"),
+    React.createElement("div", { id: "service-profile-result", role: "status", "aria-live": "polite", style: { color: C.textSecondary, fontSize: 13 } }, message));
+}
+
 function App() {
   const [theme, setTheme] = useState(() => {
     try {
@@ -6161,6 +6198,7 @@ function App() {
   const [jobsQ, setJobsQ] = useState({ open: false, keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "" });
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [whatsNewUnseen, setWhatsNewUnseen] = useState(function() { try { return window.__safeGet("tops_whatsnew_seen") !== APP_VERSION; } catch (e) { return false; } });
+  const serviceProfileEdit = useRef(false);
   const [userStatus, setUserStatus] = useState(function() { try { return window.__safeGet("tops_user_status") || ""; } catch(e) { return ""; } });
   // Onboarding state
   const [showOnboarding, setShowOnboarding] = useState(function() {
@@ -6422,7 +6460,7 @@ function App() {
   }, [activeTab]);
 
   useEffect(function() {
-    if (window.__trackEvent && userStatus) {
+    if (!serviceProfileEdit.current && window.__trackEvent && userStatus) {
       // Fire once per device — guard against re-firing on every session for returning users
       try {
         if (!window.__safeGet("tops_tracked_onboarding")) {
@@ -6592,7 +6630,7 @@ function App() {
         if (daysSince < 14) return;
       }
       setInstallBannerVisible(true);
-      if (window.__trackEvent) {
+      if (!serviceProfileEdit.current && window.__trackEvent) {
         window.__trackEvent("install_banner_shown", { user_status: userStatus });
       }
     } catch (e) {}
@@ -7791,7 +7829,7 @@ function App() {
       React.createElement("button", { type: "button", disabled: navBusy || !navInput.trim(), onClick: function(){ sendNavigator(); }, "aria-label": "Send Navigator question", style: { minHeight: 44, background: C.goldBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: navBusy || !navInput.trim() ? "default" : "pointer", opacity: navBusy || !navInput.trim() ? 0.5 : 1 } }, "SEND"))),
   navUnlocked && activeTab !== "navigator" && activeTab !== "dashboard" && /*#__PURE__*/React.createElement("div", { className: "tops-ask-launcher", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: "#0E120B", borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
   userStatus === "guard" && activeTab === "dashboard" && renderHomeNavigator(),
-  activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, whatsNewOpen && React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
+  activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, React.createElement(ServiceProfileEditor, { colors: C, value: userStatus, onSave: function(value) { serviceProfileEdit.current = true; setUserStatus(value); } }), whatsNewOpen && React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
     React.createElement("div", { onClick: function(e) { e.stopPropagation(); }, style: { background: C.bgCard, borderRadius: 12, width: "100%", maxWidth: 520, maxHeight: "82vh", overflowY: "auto", padding: "18px 18px 14px" } },
       React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 3, color: C.gold } }, "WHAT'S NEW \u2014 TRANSITION OPS"),
