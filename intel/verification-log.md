@@ -1353,3 +1353,399 @@ verification of the 2108 categories was performed for this entry.
   scope, validation evidence, and release disposition. CONFIRMED rates source
   content and does not certify deployment or agency implementation. No registry
   changes accompany this finding.
+
+
+## V-2026-022 - TAMP enrollment timing and eligibility scope (verified 10 September 2026)
+
+**Status:** CONFIRMED for the two existing app mismatches below, as rated by the retained S2 primary-source review and independently checked by force-mod. Classification: existing_app_error. No recent policy change or newly expanded eligibility is established by this baseline audit. No app content or release is approved by this record.
+
+**Enrollment timing:** The app's TRICARE TRANSITION action step says to enroll before the 20th to lock coverage on the first of the next month. [TAMP Prime instructions](https://www.tricare.mil/Plans/SpecialPrograms/TAMP/PrimeOptions), updated 17 April 2025, say members already enrolled in a Prime option must reenroll for TAMP, send the enrollment before leaving active duty, and have enrollment retroactive to separation. Exact proof: "Your enrollment date is retroactive to your separation date." The [TAMP overview](https://www.tricare.mil/TAMP) independently places the qualifying TAMP period at separation. The generic calendar-month instruction conflicts with this applicable route. Prime instructions must not be generalized to every plan or converted into a universal new deadline.
+
+**Eligibility scope:** The app's list omits preplanned-mission orders, qualifying Title 32 section 502(f) national-disaster orders, and sole-survivorship discharge. The current [TAMP overview](https://www.tricare.mil/TAMP), updated 15 May 2025, includes them. It also requires Selected Reserve affiliation immediately following release from regular active duty; agreement alone is incomplete. Its Guard/Reserve categories specify more than 30 consecutive days, whereas app shorthand says "30+." [Activation/deactivation scenarios](https://tricare.mil/Plans/Eligibility/NGRMandFamilies/CoverageScenarios), updated 17 June 2025, corroborate the more-than-30 threshold and coverage for the identified contingency/12304b/national-emergency scenarios. Service personnel determine eligibility and record it in DEERS; the app's incomplete checklist does not replace that determination.
+
+**Verification:** S2 accessed the primary bodies on 10 September 2026 at Tier 1; no access wall was encountered. This canonical entry transcribes that reviewed evidence and does not claim a new source read. Retained evidence consists of tool-return text, not original HTTP/PDF bytes. No prior source baseline establishes when a policy changed. The linked TAMP Select page was read as a companion, not used to apply Prime enrollment rules to Select. CHCBP was read only to cross-check the app's post-TAMP 60-day bridge statement.
+
+**App module:** TRICARE TRANSITION decision-window module; audited root index.html lines 3316, 3321, and 3323, with the rendered eligibility heading at 14658. The mapped statements also match the published app capture completed 10 September 2026 at 18:21:29.971 UTC; see the [scoped comparison and review brief](j1-s2-baseline-review-2026-09-10.md). This is mapped-statement equality, not a whole-app audit.
+
+**Member-impact:** PENDING formal assessment. The reviewed correction inputs concern separating members, qualifying Guard/Reserve members, and eligible families who could infer wrong enrollment timing or rule themselves out. Preserve service personnel and milConnect/DEERS as the determination route. These inputs are not a completed A1-A4 assessment, member-facing copy, or release authority.
+
+**Evidence packet:** [Reviewed source records](../scratchpad/j1-openai-local/private/evidence/cadence-pilot-2026-09-10/s2/baseline-review/proposed-verification-records.md), [source receipts and hashes](../scratchpad/j1-openai-local/private/evidence/cadence-pilot-2026-09-10/s2/baseline-review/source-receipt.json), and [independent review](../scratchpad/j1-openai-local/private/evidence/cadence-pilot-2026-09-10/force-mod/BASELINE-INDEPENDENT-REVIEW.json). Local private evidence; no new provider call or publication.
+
+---
+
+
+
+## V-2026-023 - GI Bill transfer allocations and Purple Heart/DES exception (verified 10 September 2026)
+
+**Status:** CONFIRMED for the two existing app mismatches below, preserving the retained S2 rating and independently reviewed scope. Classification: existing_app_error. This is not a newly enacted transfer benefit or unrestricted authority to add dependents after separation.
+
+**Post-separation allocations:** The app says people can "only reduce/revoke" transferred months after separation. [DoDI 1341.13, Change 1](https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/134113p.pdf), section 3.3.g.(2)(a)2, PDF page 14, permits modifying allocations and distributing unused/unallocated months to family members who received transferred benefits before separation or retirement; changes use milConnect. Exact proof: "distribute unallocated and unused months of benefits". [VA's transfer page](https://www.va.gov/education/transfer-post-9-11-gi-bill-benefits/) corroborates changes to unused transfers and the milConnect route. Section 3.3.g.(1)(a), PDF page 13, identifies a limited death-of-original-transferee exception to the normal bar; it does not establish unrestricted new-dependent transfers.
+
+**Purple Heart/DES qualification:** The app makes not being in an MEB an unqualified prerequisite, while placing its Purple Heart exception only beside the additional service obligation. DoDI section 3.3.b.(4)(e), PDF page 11, preserves TEB eligibility for otherwise eligible Purple Heart recipients still on active duty or in the Selected Reserve despite limited-duty/DES status. Exact proof: "regardless of whether they are on limited duty or processing through the DES". This exception must not be generalized to everyone undergoing a board.
+
+**Checked distinction:** VA's summary says six years at approval; controlling DoDI section 3.3.b.(3) uses the application/election date. The app's request-date wording is supported by DoDI, and this review proposes no correction to it. The DoDI is dated 25 October 2022, with Change 1 effective 8 November 2023; it is not a September 2026 issuance.
+
+**Verification:** S2 read the primary material at Tier 1 on 10 September 2026 without an access wall. The retained DoDI operative text covers sections 3.3.a-g relevant to these claims, with VA corroboration. This entry transcribes that reviewed evidence; it makes no new-read, original-PDF-byte, PDF-rendering, or recent-change claim. Independent force-mod review found no concrete sourcing correction required.
+
+**App module:** GI BILL TRANSFER, audited root index.html lines 3299 and 3303. The mapped statements match the published app capture completed 10 September 2026 at 18:21:29.971 UTC; scope is documented in the [review brief](j1-s2-baseline-review-2026-09-10.md).
+
+**Member-impact:** PENDING formal assessment. Reviewed correction inputs concern already-separated members with previously designated dependents and otherwise eligible serving Purple Heart recipients. The identified routes are milConnect and the service TEB office. No completed A1-A4 verdict, app copy, or release approval is recorded here.
+
+**Evidence packet:** [Reviewed source records](../scratchpad/j1-openai-local/private/evidence/cadence-pilot-2026-09-10/s2/baseline-review/proposed-verification-records.md), [source receipts and hashes](../scratchpad/j1-openai-local/private/evidence/cadence-pilot-2026-09-10/s2/baseline-review/source-receipt.json), and [independent review](../scratchpad/j1-openai-local/private/evidence/cadence-pilot-2026-09-10/force-mod/BASELINE-INDEPENDENT-REVIEW.json). Local private evidence; no new provider call or publication.
+
+---
+
+
+
+## V-2026-024 - BDD examination availability wording (verified 10 September 2026)
+
+**Status:** CONFIRMED wording mismatch, preserving the retained S2 rating and independent review. Classification: existing_app_error. The audit establishes no recent BDD policy change and does not globally re-rate related filing reminders or disability effective-date claims.
+
+**Claim and proof:** The BDD CLAIM prerequisite says "Availability for VA medical exams 45+ days after filing". Both [VA pre-discharge instructions](https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/), updated 18 June 2026, and [VBA BDD requirements](https://benefits.va.gov/BENEFITS/benefits-delivery-discharge-program.asp), updated 16 April 2025, describe availability during the 45-day period starting when the claim is submitted. VBA's exact proof: "Be available for 45 days from the date the claim is submitted to attend VA exams". The reviewed record notes clearer within-45-days wording elsewhere in the app; the inconsistent prerequisite is the correction candidate.
+
+**Checked/no correction in this sample:** The 180-to-90-day window, continuing standard pre-discharge claim route inside 90 days, SHA Part A requirement, and 30-day decision goal being a goal rather than a guarantee are supported by the two retained VA sources. These limited checks are not an audit of all disability/effective-date claims. Route-specific service-treatment-record handling remains a separate unresolved record, V-2026-025.
+
+**Verification:** S2 accessed both primary bodies at Tier 1 on 10 September 2026 without an access wall. This entry transcribes the reviewed source evidence and does not claim another source read. The two-source timing check and independent force-mod review support this bounded wording finding. No prior source version establishes when a change occurred.
+
+**App module:** BDD CLAIM prerequisite, audited root index.html line 3268. Its mapped statement matches the published app capture completed 10 September 2026 at 18:21:29.971 UTC; see the [review brief](j1-s2-baseline-review-2026-09-10.md).
+
+**Member-impact:** PENDING formal assessment before app copy or correction release. No completed A1-A4 verdict is claimed.
+
+**Evidence packet:** [Reviewed source records](../scratchpad/j1-openai-local/private/evidence/cadence-pilot-2026-09-10/s2/baseline-review/proposed-verification-records.md), [source receipts and hashes](../scratchpad/j1-openai-local/private/evidence/cadence-pilot-2026-09-10/s2/baseline-review/source-receipt.json), and [independent review](../scratchpad/j1-openai-local/private/evidence/cadence-pilot-2026-09-10/force-mod/BASELINE-INDEPENDENT-REVIEW.json). Local private evidence; no new provider call or publication.
+
+---
+
+
+
+## V-2026-025 - BDD online service-treatment-record instructions (reviewed 10 September 2026)
+
+**Status:** PROBABLE app-clarification need; unresolved source reconciliation. This preserves the S2 source-rated ambiguity. Classification: unresolved_evidence, with a possible existing app clarification. It is not an access failure, a confirmed reversal, or an approved records-requirement correction.
+
+**Claim and unresolved evidence:** [VA's current pre-discharge page](https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/), updated 18 June 2026, says VA will "get your service treatment records for you" when a BDD claim is filed online. The [older VBA BDD requirements page](https://benefits.va.gov/BENEFITS/benefits-delivery-discharge-program.asp), updated 16 April 2025, still broadly lists providing a copy, while distinguishing electronic STRs when not filing online. The app lists complete current-period STRs as a prerequisite. Route-specific guidance needs reconciliation before rewriting the records requirement; the unqualified app wording alone must not be used to tell a member to delay an online claim while obtaining a copy.
+
+**Verification:** Both primary sources were read by S2 at Tier 1 on 10 September 2026 without an access wall. PROBABLE reflects evidence/interpretation ambiguity after access, not an unread or blocked source. This canonical record transcribes the retained review; no additional primary-source research was performed. Independent force-mod review explicitly preserved online STR handling as unresolved.
+
+**App module:** BDD CLAIM prerequisite, audited root index.html line 3268. The mapped app statement matches the published app capture completed 10 September 2026 at 18:21:29.971 UTC, as documented in the [review brief](j1-s2-baseline-review-2026-09-10.md). Equality of app wording does not resolve the source ambiguity.
+
+**Member-impact:** NOT RUN. Under member-impact, a finding below CONFIRMED is not assessed. Resolve the route-specific source question before any proposed records-requirement copy or release.
+
+**Evidence packet:** [Reviewed source records](../scratchpad/j1-openai-local/private/evidence/cadence-pilot-2026-09-10/s2/baseline-review/proposed-verification-records.md), [source receipts and hashes](../scratchpad/j1-openai-local/private/evidence/cadence-pilot-2026-09-10/s2/baseline-review/source-receipt.json), and [independent review](../scratchpad/j1-openai-local/private/evidence/cadence-pilot-2026-09-10/force-mod/BASELINE-INDEPENDENT-REVIEW.json). Local private evidence; zero verified recent policy changes, no new provider call, and no app publication.
+
+
+---
+
+
+
+## S2-20260912-TRICARE-SPOUSE - Spouse-sponsored coverage pathway (verified September 12, 2026)
+
+**CONFIRMED: existing spouse-sponsored TRICARE pathway omitted from two reviewed app fields.** Review date: September 12, 2026, America/Chicago (September 13 UTC). Assessor: s2-intel. App correction: PROPOSED / NOT PUBLISHED. No release approval or live-production verification is conveyed by this record.
+
+### Verification
+
+Claim: A separating member can retain TRICARE eligibility as the family member of a spouse who independently qualifies as a TRICARE sponsor. Eligible enrollment changes have a 90-day window measured from separation or TAMP ending. Sponsorship in DEERS must be updated. This is conditional eligibility, not a benefit for every married separating member. Citation of record: [TRICARE Separating From Active Duty](https://www.tricare.mil/LifeEvents/Separating), operative table, accessed September 12, 2026; page updated April 22, 2026. Rung 1, source read successfully.
+
+Corroboration and executable instructions, all primary TRICARE pages read through rung 1 on the same access date:
+
+| Source | Verified contribution |
+|---|---|
+| [Qualifying Life Events](https://www.tricare.mil/LifeEvents/QLE) | 90-day duration, DEERS update before eligible enrollment changes, required fees or premiums. |
+| [Enroll or Purchase a Plan](https://www.tricare.mil/Plans/Enroll) | Independent page corroborates 90-day duration. Prime/Select enrollment rules differ from premium-based plans; late-enrollment reconsideration exists. No permanent-loss claim is supported. |
+| [DEERS](https://tricare.mil/deers) | Sponsor adds eligible family members through a Uniformed Services ID card office. DEERS registration and health-plan enrollment are separate steps. |
+| [Beneficiary Web Enrollment](https://tricare.mil/Plans/Eligibility/DEERS/BWE) | Enrollment route: milConnect, Benefits, Beneficiary Web Enrollment; some features depend on location. |
+| [Active Duty Service Members and Families](https://tricare.mil/Plans/Eligibility/ADSMandFamilies) | Corroborates spouse eligibility for an active-duty sponsor when registered in DEERS. No assumption that every sponsor offers the same plan. |
+
+Effective timing: operative guidance available now. No future effective date or termination appears in these sources. The page-update date is not treated as a policy effective date. The pilot already captured this rule September 10; this review establishes a preexisting app gap, not a newly announced rule. The duration has a second-page cross-check; the precise separation-or-TAMP anchor is stated in the topic-specific Separating page, not independently repeated in a second source read here.
+
+Source caution: the current [spouse companion](https://tricare.mil/LifeEvents/Separating/SpouseInMilitary) contains inconsistent pronouns about whose separation occurs. It was read; the ambiguous sentence is excluded from proof. Its office procedure is independently corroborated by the DEERS page. The saved capture's [Guard/Reserve coverage-scenarios companion](https://tricare.mil/Plans/Eligibility/NGRMandFamilies/CoverageScenarios) was also read; it does not establish the spouse exception. No browser escalation was needed, and no member-specific eligibility record was accessed.
+
+### App comparison
+
+Surface: Critical Windows, TRICARE TRANSITION, `id:"tricare"`; current local `index.html:3316` actionSteps and `index.html:3320` decisionBranch. Both omit this spouse pathway and both match the pilot's September 10 mapped claims after Unicode-escape normalization. Saved app SHA: `f7a62cc39cb7c6d0c2d8f94106f78919065c5faf44117acc3f614bd4ee403b01`. Current local SHA: `b8b653776e7182afa9c09f7909869752a8c8a2a887ee2393d3148eec41cef27e` at HEAD `0fd3c45233c4c21437d55d646a310e6333d6825b`. Exact evidence: [bounded app comparison](j1-s2-value-review-20260912/s2-app-evidence.json).
+
+Related record: V-2026-022 already documents the generic before-the-20th TAMP mismatch; reconcile the shared step under that retained review, without generalizing spouse timing to every plan.
+
+No live-production fetch and no whole-app completeness assertion. A related local reminder, `r-9-tri26.why` at line 2983, calls separation a QLE unconditionally; that same-rule sentence needs its eligibility qualification if this correction proceeds.
+
+### Member-impact assessment
+
+This assessment follows the verified claim above. SHIP - ACT is a usefulness recommendation; app wording, implementation, validation and Dean's release approval remain required.
+
+IMPACT: SHIP - ACT | A2/A3 | s2-intel | 2026-09-12 | revisit NONE
+
+A1 population: ALREADY SEPARATED; SPOUSE/FAMILY. Band: Post-Separation, from separation through the applicable 90-day enrollment window, or from the actual TAMP end through that applicable window. These are the same enrollment act with different event anchors, not two different acts. Excluded: this spouse route does not apply without an independently eligible sponsor spouse and family-member eligibility; this assessment does not cover retirement or Guard/Reserve deactivation as separate events. Timing: ACT AVAILABLE NOW for eligible members within their applicable window.
+
+A2 act: "Have your eligible sponsor spouse add you as a family member in DEERS at a Uniformed Services ID card office, then complete any required eligible plan enrollment changes through milConnect > Benefits > Beneficiary Web Enrollment within 90 days of separation or TAMP ending and pay any required fees or premiums."
+
+A3 surface(s): Critical Windows, TRICARE TRANSITION decision branch and action steps; related Reminders sentence. Token: [CRITICAL WINDOWS], confirmed in the app MAP and Navigator manifest; `node scripts/nav-token-regression.js` passed all assertions. Sweep trigger: FIRED - spouse 90-day enrollment window versus existing TAMP/CHCBP clocks and the generic before-the-20th step; S3 validation owns the narrow reconciliation, not this assessment.
+
+A4 cost: A CLOSED WINDOW. Missing the ordinary QLE enrollment-change period can restrict plan access; late reconsideration and other enrollment opportunities mean permanent forfeiture is not established. No savings amount or prevalence estimate is claimed.
+
+EXPIRES: NONE for the general guidance while authoritative rules remain unchanged; each member's event-relative window expires individually.
+
+Recommendation: stage a scoped correction for Dean's review. No automatic email to members, push, app update, merge, deployment, or Claude retirement follows from this rating.
+
+
+---
+
+
+
+---
+
+## S2-20260915-TRICARE-REFRESH - verified correction package
+
+CONFIRMED: existing app errors and a spouse-pathway omission; not a new September benefit or release approval. Source refresh and member-impact assessments retain V-2026-022 and S2-20260912-TRICARE-SPOUSE lineage. Assessor: S2 Intelligence; access date September 15, 2026 Central (September 16 UTC). Direct Tier 1 source read session began after 00:14:06 UTC; additional bounded reads are timestamped below. Provider crawl timestamps are not origin-fetch timestamps. No raw HTML/PDF archive is claimed. Local app SHA256 b8b653776e7182afa9c09f7909869752a8c8a2a887ee2393d3148eec41cef27e, HEAD 0fd3c45233c4c21437d55d646a310e6333d6825b. All line references from the packet are local, not relabeled production reads. S3 owns the fresh published/live comparison.
+
+## Primary-source register and operative evidence
+
+Each numbered source is a citation of record. Quotes are intentionally short; the surrounding findings paraphrase the opened body.
+
+1. **TAMP eligibility and service determination:** https://www.tricare.mil/TAMP — displayed updated May 15, 2025; reader crawl today. Eligibility section and Benefits section read. Exact timing proof: "the day immediately following release from regular active duty service". The complete category set is: involuntary honorable separation (including VSI and VSP, with the page's retired/retainer-pay qualification on VSP); Guard/Reserve release after more than 30 consecutive active-duty days for a preplanned mission or contingency operation; National Guard release after more than 30 consecutive days under Title 32 §502(f) for a President/Secretary of Defense-declared national disaster; contingency stop-loss release; release following a voluntary contingency extension shorter than one year; sole-survivorship discharge; and regular active-duty separation with agreement **and immediate next-day Selected Reserve membership**. Service personnel determine eligibility and record it in DEERS; milConnect displays it. Eligible family members may be covered. TAMP provides a qualifying 180-day premium-free period. Terminal leave remains active-duty coverage. This list is not a member self-certification.
+
+2. **TAMP Prime reenrollment:** https://www.tricare.mil/Plans/SpecialPrograms/TAMP/PrimeOptions — updated September 11, 2026; crawl two days ago. Reenroll section read. Exact proof: "Send it before you leave active duty so there is no break in coverage." An existing Prime-option enrollee must reenroll for TAMP; the effective enrollment date is retroactive to separation. Use online reenrollment or the regional contractor/USFHP. Available options and geography matter. This rule is specific to Prime options and does not establish a universal before-the-20th or first-of-next-month rule.
+
+3. **TAMP Select companion:** https://www.tricare.mil/Plans/SpecialPrograms/TAMP/SelectOptions — updated April 17, 2025; crawl today. Body read. Select/Select Overseas remain options, with their own provider and claim rules. This source does not impose Prime's reenrollment wording. The initial guessed `/Select` URL returned a nonretryable safe-open error; the authoritative link on the TAMP page led successfully to `/SelectOptions`. No access wall remains for this companion.
+
+4. **Separation and spouse exception:** https://www.tricare.mil/LifeEvents/Separating — updated April 22, 2026; crawl today. Event table and spouse qualification read. Ordinary separation is not itself a universal continuing-TRICARE QLE. Exception: an independently TRICARE-eligible sponsor spouse, and family-member eligibility under that spouse. The eligible enrollment-change period is 90 days from separation or TAMP end, as applicable. The sponsor updates the family relationship in DEERS. This is not automatic eligibility for every married separating member, nor a promise of every plan. The source separately distinguishes retirement and Guard/Reserve deactivation.
+
+5. **Spouse process corroboration:** https://www.tricare.mil/LifeEvents/Separating/SpouseInMilitary — updated November 21, 2024; reader crawl 1.8 years ago. The actual body was read; its older provider cache is a freshness limit. Exact proof: "Visit a local ID card office with your spouse". It identifies the sponsor relationship, dependent ID and sponsor-status-dependent plan options. The newer separation and DEERS pages independently support the operative instructions; this older page is corroboration, not sole support.
+
+6. **QLE timing and required steps:** https://www.tricare.mil/LifeEvents/QLE — updated April 22, 2026; crawl today. Exact proof: "Make the enrollment changes within 90 days following the QLE". Update DEERS, then make an eligible enrollment change once the record reflects it, paying required fees/premiums. Continued eligibility matters: someone who remains eligible for the same plan and wants to retain it may not need a plan change. The general QLE list does not override the specific spouse condition on the separation page.
+
+7. **DEERS family addition:** https://tricare.mil/deers — updated February 23, 2026; crawl today. Exact proof: "Only sponsors can add or remove family members". Family addition uses a local ID card office, with appointment scheduling linked at https://idco.dmdc.osd.mil/ . Contact-detail self-service is not equivalent to adding an eligible family member. Registration establishes the record; it does not replace enrollment in a plan that requires enrollment.
+
+8. **Enrollment and BWE:** https://www.tricare.mil/Plans/Enroll — updated September 23, 2025; crawl today; and https://www.tricare.mil/Plans/Eligibility/DEERS/BWE — updated February 23, 2026; crawl last month. Enrollment requirements, QLE rules and actual BWE navigation read. The latter's exact navigation is "Benefits" → "Beneficiary Web Enrollment (BWE)" after signing into milConnect. BWE supports specified eligible plans; it is not the CHCBP application route. The enrollment page distinguishes Prime/Select event enrollment from premium-plan purchase and explicitly offers contractor contact for late-enrollment reconsideration. No universal plan-selection or permanent-forfeiture promise follows.
+
+9. **Guard/Reserve cross-checks:** https://tricare.mil/Plans/Eligibility/NGRMandFamilies/CoverageScenarios — updated June 17, 2025, crawl today; and https://www.tricare.mil/LifeEvents/Deactivating — updated April 22, 2026, crawl today. Both operative bodies read. These corroborate the **more-than-30-day** threshold and qualifying preplanned/contingency routes. Coverage scenarios also name §12304b and specified national-emergency scenarios; do not erase those by shortening everything to contingency orders. Qualifying TAMP lasts 180 days; the scenarios call day 181 the loss of TAMP eligibility. Deactivation is a QLE with a 90-day plan-change window; it is distinct from ordinary separation. Deactivating says TAMP starts the first day after active duty ends. Use each person's documented actual end date, not imprecise app arithmetic.
+
+10. **CHCBP bridge and timing:** https://www.tricare.mil/Plans/SpecialPrograms/CHCBP — updated June 17, 2025; crawl today. Body read. Premium-based coverage remains a possible bridge for eligible members/families. The ordinary 60-day loss-of-TRICARE window includes TAMP loss. The listed service-member/TAMP scenarios permit up to 18 months; other populations may differ. This page also has a narrower TRS-loss sentence using 30 days. Do not generalize this package's regular-TRICARE/TAMP 60-day act to every TRS/TRR loss or resolve that separate textual issue by guesswork. Eligibility and plan-specific questions go to CHCBP contractor Humana Military, 800-444-5445.
+
+11. **CHCBP actual application and late inquiry:** https://www.tricare.mil/Plans/Enroll/CHCBP_Purchase — updated March 31, 2026; crawl two months ago. Purchasing Coverage and reconsideration sections read. Exact proof: "late initial enrollment". For regular-TRICARE or TAMP loss, purchase within 60 days; submit DD Form 2837 with proof and the initial 90-day payment to Humana Military, Attn: CHCBP, P.O. Box 740072, Louisville, KY 40201-7472. A late applicant is directed to contact the contractor about reconsideration. This supports removing the app's absolute "No recovery path" statement, **not** promising approval or extra time. The older crawl timestamp is a limit; current overview corroborates the ordinary TAMP-loss window.
+
+12. **Select enrollment route:** https://www.tricare.mil/Plans/Enroll/Select — updated March 31, 2026; crawl today. Actual enrollment instructions read. Exact proof: "Call your regional contractor first to discuss your options." BWE, phone and mail/fax routes exist. Humana is East; TriWest is West. Calling every regional contractor "Humana Military" is inaccurate. Use the regional-contractor link, preserving the separately named CHCBP contractor.
+
+13. **Retirement branch safeguard:** https://www.tricare.mil/LifeEvents/Retiring — updated July 31, 2026; crawl today. Event table, reenrollment and retroactive-enrollment paragraphs read. Exact proof: "you may request a retroactive enrollment up to 12 months". Active-duty retirees who want continuous Prime/Select coverage reenroll within 90 days; a late request may be possible within 12 months, with required back fees, and claims wait until enrollment completes. TFL is shown with Medicare Part A **and** Part B; age 65 alone is insufficient. The general enrollment page (#8) independently corroborates the Medicare condition. Do not extend this active-duty retirement rule to every Reserve retirement scenario.
+
+### Date and dollar cross-check disposition
+
+- TAMP's 180 days and the more-than-30 threshold: #1 corroborated by #9; the scenario page also explicitly anchors loss of eligibility at day 181.
+- Spouse enrollment's 90 days: #4 provides the separation/TAMP-end event anchors; #6 and #8 independently corroborate QLE timing and payment obligations.
+- Prime's before-departure instruction and retroactive separation date: specific plan page #2; #1/#9 corroborate the transitional period around release. No second source read here repeats the exact Prime sentence; do not claim otherwise or broaden it.
+- CHCBP's ordinary regular-TRICARE/TAMP 60 days: #10 and #11; specific TRS-loss language remains outside this act.
+- Retirement's 90 days: #13 and #6. The optional 12-month request detail is stated by #13; no new independent source is claimed for that detail.
+- No dollar amounts were introduced, reverified, or approved. Existing pharmacy figures, travel thresholds, emergency-room average and other healthcare costs remain outside this package.
+- Optional statutory cross-check `https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title10-section1145&num=0&edition=prelim` returned "(400) Timeout fetching" at Tier 1. Reported to root for browser escalation; S2 did not retry/bypass. The successfully read implementing agency sources support the core correction; the unread statute is not used as proof. Do not claim the statutory cross-check succeeded without root evidence.
+
+## A1–A4 core assessments, after existing canonical CONFIRMED entries
+
+These are usefulness judgments for review preparation, not approval to publish. All citations below refer to the source register. Token verification on the unmodified local files: `node scripts/nav-token-regression.js`, exit 0, ALL ASSERTIONS PASS; all 16 tokens matched app MAP, function manifest and LIVE_TOKENS.
+
+### V-2026-022 / T1 — determine eligibility without the incomplete checklist
+
+IMPACT: SHIP — ACT | A2/A3 | s2-intel | 2026-09-15 | revisit NONE
+
+A1 population: SEPARATING (active component); GUARD/RESERVE; SPOUSE/FAMILY; ALREADY SEPARATED. All four are justified only insofar as the member is in one of #1's service-determined categories, or an eligible family member. Band: 3 Months Out; 1 Month Out; Post-Separation, during the actual qualifying 180-day period. Timing: ACT AVAILABLE NOW. This does not confer TAMP on all people in those populations.
+
+A2 act: "Ask your service personnel office to determine your TAMP eligibility under the full qualifying-category list, and verify the resulting DEERS record in milConnect."
+
+A3 surfaces: Critical Windows eligibility and prerequisites; corresponding Guard/Reserve summary and healthcare timeline. Tokens: [CRITICAL WINDOWS], [GUARD/RESERVE], [RESOURCES]. Sweep trigger: FIRED — omitted categories, 30+ versus more than 30, immediate Selected Reserve affiliation, automatic-eligibility versus plan-enrollment confusion.
+
+A4 cost: MONEY — failure to establish eligible coverage can expose the member to healthcare charges; no amount claimed.
+
+EXPIRES: NONE for general guidance; individual TAMP coverage is event limited.
+
+### V-2026-022 / T2 — existing Prime enrollment is not automatic TAMP enrollment
+
+IMPACT: SHIP — ACT | A2/A3 | s2-intel | 2026-09-15 | revisit NONE
+
+A1 population: SEPARATING (active component); GUARD/RESERVE; SPOUSE/FAMILY. Band: 1 Month Out. Excluded: this before-departure act does not apply to already-separated members or someone outside a qualifying TAMP Prime-option route. Timing: ACT AVAILABLE NOW for qualifying current Prime-option enrollees approaching release.
+
+A2 act: "If you are TAMP-eligible and continuing an existing Prime option, submit your reenrollment through milConnect or your regional contractor/USFHP before leaving active duty to avoid a coverage break."
+
+A3 surfaces: Critical Windows shared action steps; healthcare timeline and any automatic-enrollment representation. Tokens: [CRITICAL WINDOWS], [RESOURCES]. Sweep trigger: FIRED — before-the-20th, next-month effective date, automatic enrollment, and generic reenrollment wording.
+
+A4 cost: MONEY — acting on the wrong enrollment instruction can interrupt access to covered care.
+
+EXPIRES: NONE; the recommended advance act ends at the individual's departure. This is not a newly invented forfeiture deadline.
+
+### S2-20260912-TRICARE-SPOUSE / T3 — qualified spouse route
+
+IMPACT: SHIP — ACT | A2/A3 | s2-intel | 2026-09-15 | revisit NONE
+
+A1 population: ALREADY SEPARATED; SPOUSE/FAMILY. Band: Post-Separation, event day through the applicable 90-day enrollment-change period from separation or actual TAMP end. Excluded: this route does not apply without an independently eligible sponsor spouse and eligibility as that spouse's family member; retirement/deactivation are separate events. Timing: ACT AVAILABLE NOW for those within the applicable window.
+
+A2 act: "Have your independently eligible sponsor spouse add you as an eligible family member in DEERS through an ID card office, then complete any required eligible plan enrollment change through milConnect → Benefits → Beneficiary Web Enrollment within 90 days of separation or TAMP ending, as applicable, and pay required fees or premiums."
+
+A3 surfaces: Critical Windows new conditional option, action steps, and r-9-tri26's QLE sentence. Tokens: [CRITICAL WINDOWS], [REMINDERS]. Sweep trigger: FIRED — spouse 90-day period versus TAMP and CHCBP clocks and the unconditional separation-QLE claim.
+
+A4 cost: A CLOSED WINDOW — the ordinary event-enrollment window can close; no permanent forfeiture or guaranteed late remedy is asserted.
+
+EXPIRES: NONE for the general rule; individual event window expires separately.
+
+### Registered confirmed collateral claims
+
+The following unique supplemental IDs register the confirmed collateral claims and assessments in this canonical append. Existing verification IDs remain intact.
+
+### S2-20260915-TRICARE-ENROLLMENT / T4 — Select and deactivation are separate paths
+
+Claim: CONFIRMED, #3/#8/#9/#12. Select requires eligible enrollment; Prime's before-departure rule must not be applied universally. Deactivation is a separate 90-day QLE.
+
+IMPACT: SHIP — ACT | A2/A3 | s2-intel | 2026-09-15 | revisit NONE
+A1 population: GUARD/RESERVE; SPOUSE/FAMILY. Band: Post-Separation, deactivation day through day 90; the app band label does not turn deactivation into leaving the Reserve. Excluded: this act does not apply to ordinary active-component separation lacking continuing TRICARE eligibility. Timing: ACT AVAILABLE NOW.
+A2 act: "After Guard/Reserve deactivation, update DEERS and make any needed eligible plan change through milConnect → Benefits → Beneficiary Web Enrollment within 90 days, contacting your regional TRICARE contractor to resolve plan eligibility or special circumstances."
+A3 surfaces: Critical Windows Guard note and its duplicated member-type callout; Guard/Reserve module. Tokens: [CRITICAL WINDOWS], [GUARD/RESERVE]. Sweep trigger: FIRED — separating versus deactivating, generic mandatory reenrollment, MTF-only shorthand.
+A4 cost: A CLOSED WINDOW.
+EXPIRES: NONE; individual event window expires separately.
+
+### S2-20260915-TRICARE-CHCBP / T5 — preserve both ordinary bridge anchors
+
+Claim: CONFIRMED, #10/#11. Regular-TRICARE loss without TAMP and actual TAMP end are both ordinary application anchors; CHCBP remains conditional and premium based.
+
+IMPACT: SHIP — ACT | A2/A3 | s2-intel | 2026-09-15 | revisit NONE
+A1 population: ALREADY SEPARATED; GUARD/RESERVE; SPOUSE/FAMILY. Band: Post-Separation, within 60 days of actual regular-TRICARE or TAMP eligibility loss. Excluded: this specific act does not set the clock for other losses such as TRS/TRR, and it does not apply before a qualifying loss. Timing: ACT AVAILABLE NOW for eligible applicants within that window.
+A2 act: "If you want CHCBP after losing regular TRICARE or TAMP, confirm eligibility with Humana Military at 800-444-5445 and submit DD Form 2837, required proof and the initial payment using the official CHCBP purchase instructions within 60 days of that loss."
+A3 surfaces: Critical Windows bridge steps and decision paths, timeline, related calendar/reminder text. Tokens: [CRITICAL WINDOWS], [RESOURCES], [REMINDERS], [TIMELINE]. Sweep trigger: FIRED — after-TAMP-only instructions, Day181+60 arithmetic, 90-day spouse clock versus 60-day bridge clock.
+A4 cost: A CLOSED WINDOW.
+EXPIRES: NONE; individual loss window expires separately.
+
+### S2-20260915-TRICARE-CHCBP / T6 — remove categorical no-remedy claim
+
+Claim: CONFIRMED for the official inquiry route, #11; approval of a late application remains UNVERIFIED for any particular member.
+
+IMPACT: SHIP — ACT | A2/A3 | s2-intel | 2026-09-15 | revisit NONE
+A1 population: ALREADY SEPARATED; GUARD/RESERVE; SPOUSE/FAMILY. Band: Post-Separation, after the person's ordinary initial-enrollment deadline; no authority-published new extended deadline established here. Excluded: this does not promise renewed qualification or additional time to an on-time applicant. Timing: ACT AVAILABLE NOW for an inquiry.
+A2 act: "If you missed CHCBP initial enrollment, contact Humana Military at 800-444-5445 to ask about the official late-enrollment reconsideration process."
+A3 surface: Critical Windows consequence. Token: [CRITICAL WINDOWS]. Sweep trigger: FIRED — no recovery path/permanent-forfeiture claim versus official reconsideration route.
+A4 cost: A LOST OR FORECLOSED ELECTION — the app's absolute can cause a member to forgo a permissible request; success is not established.
+EXPIRES: NONE; no new deadline inferred.
+
+### S2-20260915-TRICARE-RETIREMENT / T7 — preserve separate active-duty retirement route
+
+Claim: CONFIRMED, #13 corroborated on the 90-day window by #6. Medicare qualification uses #13/#8.
+
+IMPACT: SHIP — ACT | A2/A3 | s2-intel | 2026-09-15 | revisit NONE
+A1 population: ALREADY SEPARATED; SPOUSE/FAMILY. Band: Post-Separation, retirement through day 90. Excluded: this is for active-duty retirement and eligible family members, not ordinary separation, Guard/Reserve deactivation or every Reserve retirement situation. Timing: ACT AVAILABLE NOW.
+A2 act: "If retiring from active duty and keeping Prime or Select, complete eligible enrollment through milConnect → Benefits → Beneficiary Web Enrollment within 90 days of retirement and pay required enrollment fees."
+A3 surfaces: existing retirement branch and retirement callout. Token: [CRITICAL WINDOWS]. Sweep trigger: FIRED — separation, TAMP, retirement and age-65-only TFL shorthand.
+A4 cost: MONEY.
+EXPIRES: NONE; individual event window expires separately.
+
+### S2-20260915-TRICARE-RETIREMENT / T8 — distinct late-retirement act
+
+Claim: CONFIRMED inquiry/request route, #13; individual acceptance is not guaranteed.
+
+IMPACT: SHIP — ACT | A2/A3 | s2-intel | 2026-09-15 | revisit NONE
+A1 population: ALREADY SEPARATED; SPOUSE/FAMILY. Band: Post-Separation, after day 90 and no later than 12 months from active-duty retirement. Excluded: this does not apply to regular separation, deactivation or requests outside that authority's window. Timing: ACT AVAILABLE NOW for the identified eligible group.
+A2 act: "If you missed Prime or Select enrollment after active-duty retirement, request retroactive enrollment through your TRICARE contractor within 12 months of retirement and pay any required back enrollment fees."
+A3 surfaces: retirement pathway if the package discusses missed enrollment. Token: [CRITICAL WINDOWS]. Sweep trigger: FIRED — no-remedy absolute and confusion with spouse/CHCBP windows.
+A4 cost: A CLOSED WINDOW.
+EXPIRES: NONE for general guidance; 12-month individual window.
+
+
+
+### Resolved root handoff and additional bounded conditions
+
+## Statute access resolved at ladder Tier 2
+
+On September 15, 2026 (Central), root read the exact requested source in the orchestrator browser: https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title10-section1145&num=0&edition=prelim . The first navigation timed out; a later observed tab successfully showed `10 USC 1145: Health benefits`, current edition with laws in effect September 14, 2026. Root read (a)(1)-(4) and amendment history and handed the text to S2. The browser accessibility body was observed; export was unsupported, so no HTML byte archive or independent S2 browser read is claimed. The successful handoff was received before the recorded 2026-09-16 00:19:05 UTC observation. This is an orchestrator Tier 2 read, not human verification.
+
+The statute confirms the 180-day transitional period and categories including involuntary separation; Reserve active duty for more than 30 days under 12304b or 101(a)(13)(B); qualifying stop-loss; voluntary contingency extension shorter than one year; sole-survivorship; agreement to Selected Reserve membership; and qualifying Title 32 502(f) duty. The latter statutory category specifies a Congress/President-declared national emergency, President/Secretary of Defense authorization and federal funding. The amendment history identifies addition of (G) in 2022 and broadening of (B) in 2017; this is not a new September 2026 benefit.
+
+**Statute/agency distinction:** (a)(2)(F) says agreement to Selected Reserve membership; the immediately-next-day detail is in the implementing TRICARE TAMP guidance. The agency's Title 32 summary describes national-disaster orders using different declaring-authority language than statutory (G). Do not claim the two summaries are exhaustive verbatim equivalents or resolve that legal scope by inference. Keep service-personnel determination, link both sources, and describe the displayed list as TRICARE's qualifying-category guidance. For concise app wording, `qualifying Title 32 section 502(f) orders` plus the service determination route preserves the category without restating a disputed shorthand. The source-and-impact record's earlier failed statutory-fetch note is superseded only as to access; the initial failure remains historical evidence.
+
+## Additional primary reads for existing-branch coherence
+
+Both sources were opened and their actual operative bodies read at Tier 1 between **2026-09-16 00:19:36 and 00:19:37 UTC**, September 15 Central; reader crawl today. No origin-byte archive or new provider/model request is claimed.
+
+- https://www.va.gov/health-care/eligibility/ , displayed updated April 3, 2026: the basic requirements and enhanced/other eligibility paths show that a service-connected rating is not a universal condition of VA healthcare eligibility. **CONFIRMED bounded correction:** `VA health care if eligible`, linked to that official page, may replace the existing service-connected-only parenthetical in the already-present civilian option. This is a neutral qualification of an existing option, not a new application instruction, blanket eligibility promise or whole-VA-benefits verification. No expanded A2 is supplied or authorized. The earlier requirement #9's unresolved status is resolved only for that bounded phrase.
+- https://www.tricare.mil/LifeEvents/Activating , displayed updated April 22, 2026: members get active-duty-category benefits and family coverage on activation, subject to qualifying orders; Prime enrollment is described at arrival at the final duty station. **CONFIRMED safeguard:** do not turn the existing pre-mobilization reminder into a universal plan-enrollment deadline before departure. A service-personnel/DEERS eligibility check follows the existing verified act; active-duty eligibility and actual plan enrollment remain separate. The more-than-30-day threshold is supported by the already-read activation/deactivation scenarios. No new pre-activation filing deadline is inferred.
+
+## S2-20260915-TRICARE-SELECT — additional distinct Select act
+
+Claim: CONFIRMED. https://www.tricare.mil/Plans/SpecialPrograms/TAMP/SelectOptions and https://www.tricare.mil/Plans/Enroll/Select support eligible TAMP Select enrollment and regional-contractor questions; https://www.tricare.mil/Plans/Eligibility/DEERS/BWE supplies the portal. These were read at Tier 1 in the same source session documented in the source-and-impact record. This does not extend Prime's timing sentence to Select or impose a calendar-month cutoff.
+
+IMPACT: SHIP - ACT | A2/A3 | s2-intel | 2026-09-15 | revisit NONE
+A1 population: SEPARATING (active component); GUARD/RESERVE; SPOUSE/FAMILY; ALREADY SEPARATED. All four are included only as qualifying TAMP members/family selecting an available plan. Band: 1 Month Out for arranging the route and Post-Separation during the actual qualifying 180-day period; the same contractor/enrollment act applies, without an invented advance deadline. Timing: ACT AVAILABLE NOW for resolving the route; actual plan enrollment requires eligibility.
+A2 act: "If you qualify for TAMP and choose Select, contact your regional TRICARE contractor to confirm the applicable enrollment and effective-date requirements, then complete eligible enrollment through milConnect > Benefits > Beneficiary Web Enrollment."
+A3 surfaces: Critical Windows shared plan-selection/action step and healthcare timeline. Tokens: [CRITICAL WINDOWS], [RESOURCES]. Sweep trigger: FIRED - Prime-specific reenrollment versus Select enrollment and blanket calendar-month cutoff.
+A4 cost: MONEY - failure to complete applicable enrollment can interrupt access to covered care; no dollar magnitude claimed.
+EXPIRES: NONE for the rule; the person's TAMP eligibility is time limited.
+
+
+
+## S2-20260915-GIBILL-BDD-REFRESH - verified corrective acts
+
+CONFIRMED: existing GI Bill transfer and BDD timing errors, retaining V-2026-023 and V-2026-024 lineage. Refreshed September 15, 2026 Central by S2 at Tier 1. No new law, policy publication or app release is claimed. The following source record precedes its formal impact assessments.
+
+## Current primary evidence
+
+All five official sources below were opened successfully at policy-verification ladder tier 1 today. No source wall, secondary citation, authentication, or model-provider request was used.
+
+| Primary source | Actual material read and result |
+|---|---|
+| [DoDI 1341.13 PDF](https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/134113p.pdf) | Actual page-indexed PDF text, especially printed pages 10–14: 3.3.a, b.(4), f and g. Document is October 25, 2022, Change 1 November 8, 2023. General eligibility, limited-duty/DES exception, eligible-family conditions, initial designation, later modification and milConnect route were read together. |
+| [Official DoD issuance index](https://www.esd.whs.mil/Directives/issuances/dodi/) | The 1341.13 row still identifies Post-9/11 GI Bill, October 25, 2022, Change 1 November 8, 2023, linking the same issuance. This checks the currently listed version; no superseding version was listed in that row. |
+| [VA transfer guidance](https://www.va.gov/education/transfer-post-9-11-gi-bill-benefits/) | Current page, updated September 1, 2026. Read eligibility, Purple Heart note, milConnect transfer/change steps, unused dependent benefits and branch help. Corroborates modifying unused transfers through milConnect. The DoDI controls the specifically stated post-separation and Selected Reserve/DES scope. |
+| [VA pre-discharge guidance](https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/) | Actual eligibility/exclusion and filing sections: full-time active duty, known separation 180–90 days away, VA exam availability within the 45-day period beginning at claim submission. |
+| [VBA BDD guidance](https://benefits.va.gov/BENEFITS/benefits-delivery-discharge-program.asp) | Actual Program Requirements and How Do You Get Started sections. Independently states availability for 45 days from submission to attend VA exams; corroborates the 180–90-day filing window. |
+
+The PDF's text page boundaries identify printed pages 11, 13 and 14. Three web screenshot requests returned reference identifiers without visible raster images to this agent; **no visual PDF inspection is claimed**. These provisions are prose, and the complete operative wording and section/page boundaries were read from actual PDF text. `source-read-transcript.txt` retains returned primary text; the exact completion of page 14's operative provision is transcribed below. This packet is not an original-PDF-byte archive.
+
+### V-2026-023A — post-separation allocation: CONFIRMED
+
+DoDI 3.3.g.(2)(a)2, printed page 14, expressly permits a separated/retired individual to modify a previously approved allocation of unused benefits and to "distribute unallocated and unused months of benefits" for family members who received transferred benefits before separation or retirement. Section 3.3.g.(2)(b) directs modifications/revocations through the DMDC milConnect web application. VA's change/unused-benefits sections independently identify milConnect for changing transferred months, returning months, and transferring unused months to another eligible dependent.
+
+This does **not** permit an ordinary first transfer after separation or unrestricted addition of new dependents. DoDI 3.3.g.(1)(a), printed page 13, says new family members may not normally be added after separation/retirement and identifies a limited exception upon the originally designated family member's death. Do not turn the normal restriction into an absolute assertion that erases this exception; do not add detailed death-exception instructions without separately verifying that process.
+
+Current local mismatch: `index.html:3303` says "can only reduce/revoke"; `3297` also broadly says the door closes permanently. These need a clear distinction between obtaining initial approval while serving and later managing already approved transfers. Existing family-use limits and service-obligation consequences are not waived by modification.
+
+IMPACT: SHIP — ACT | A2/A3 | s2-intel | 2026-09-15 | revisit NONE
+
+A1 population: ALREADY SEPARATED; SPOUSE/FAMILY as the previously designated beneficiaries. Band: Post-Separation, T+0 onward, condition-triggered when unused entitlement needs reallocation; there is no universal post-separation day cutoff for this modification act. Existing entitlement and dependent-use conditions still apply. This does not apply to a person seeking an ordinary first transfer after separation, or permit unrestricted new dependents. Timing: ACT AVAILABLE NOW for an eligible existing transfer.
+
+A2 act: "If you have an approved transfer from before separation or retirement and unused entitlement to reallocate, use milConnect's Transfer of Education Benefits service to change the allocation or distribute unused/unallocated months only to eligible family members who received transferred benefits before you left service."
+
+A3 surface(s): Critical Windows → GI BILL TRANSFER, particularly consequence, whyMatters and explanatory action context; Navigator corpus only if S3's scoped consistency review finds equivalent claims. Token: [CRITICAL WINDOWS], live in the app MAP, Navigator manifest and LIVE_TOKENS; existing token regression passed today. Sweep trigger: FIRED — correction of the existing "only reduce/revoke" and permanent-door claims must reconcile initial approval versus later modification. S3 owns the sweep; S2 has not executed it.
+
+A4 cost: MONEY — failing to use an available reallocation can leave educational expenses without available transferred entitlement. No fixed amount or guarantee is claimed.
+
+EXPIRES: NONE for the rule; an individual's remaining entitlement and transferee-use eligibility constrain the act.
+
+### V-2026-023B — limited Purple Heart/DES exception: CONFIRMED
+
+DoDI 3.3.b.(4)(a), printed page 11, ordinarily requires members on limited duty or undergoing DES who have not applied for TEB to wait until that process is complete. Paragraph (e) expressly exempts Purple Heart recipients who remain on active duty or in the Selected Reserve, "regardless of whether they are on limited duty or processing through the DES." DoDI 3.3.a.(3), printed page 10, separately preserves all other applicable requirements and active-duty/Selected Reserve status at election. It exempts eligible Purple Heart recipients from the six-year and additional four-year service requirements. VA's Purple Heart note corroborates the service-requirement exception, although its compressed wording says active duty; use DoDI for the explicitly included Selected Reserve scope.
+
+DoDI uses the date of the member's application/election for the six-year calculation (3.3.b.(3)); VA's summary says approval date. Preserve the app's DoDI-supported request-date wording rather than copying that summary discrepancy.
+
+Current local mismatch: `index.html:3299` has an unqualified "Not currently flagged, MEB, or retention board" item, an unqualified six-year item, and a four-year ETS item. The neighboring policyUpdate mentions Purple Heart but does not resolve each contradictory prerequisite. The exception is **not** permission to bypass other service eligibility or disciplinary/retention restrictions, and eligibility is not guaranteed approval.
+
+IMPACT: SHIP — ACT | A2/A3 | s2-intel | 2026-09-15 | revisit NONE
+
+A1 population: SEPARATING (active component); GUARD/RESERVE while on active duty or in the Selected Reserve; SPOUSE/FAMILY as the proposed eligible recipients. Band: condition-triggered while the eligible Purple Heart recipient is still serving; no fixed transition band or month threshold is imposed by this exception. It can arise before final separation at any planning stage. This does not apply to already-separated people initiating an ordinary first transfer or to everyone undergoing limited duty/DES without the Purple Heart exception; other eligibility requirements remain. Timing: ACT AVAILABLE NOW for otherwise eligible serving recipients.
+
+A2 act: "If you are an otherwise eligible Purple Heart recipient still on active duty or in the Selected Reserve, submit your transfer request through milConnect's Transfer of Education Benefits service even if you are on limited duty or undergoing DES, and check the service's approval letter and request status there before you leave eligible service."
+
+A3 surface(s): Critical Windows → GI BILL TRANSFER prerequisites, policyUpdate and actionSteps, with adjacent initial-approval wording reconciled. Token: [CRITICAL WINDOWS], confirmed by the same passing token check. Sweep trigger: FIRED — limited exception versus the card's blanket MEB/retainability, six-year and four-year conditions. S3 owns execution; no general exception is approved for flagged or retention-board members.
+
+A4 cost: A LOST OR FORECLOSED ELECTION — treating DES status as an absolute bar can prevent an otherwise eligible serving Purple Heart recipient from electing transfer before leaving eligible service.
+
+EXPIRES: NONE for the policy; this initial-election route requires eligible service status at the time of election. No invented calendar deadline.
+
+### V-2026-024 — BDD exam availability: CONFIRMED
+
+VA's eligibility list says availability for VA exams within 45 days of claim submission; its exclusion list specifically concerns inability to attend during that period. VBA independently states: "Be available for 45 days from the date the claim is submitted to attend VA exams." The app's `index.html:3268` prerequisite instead says "45+ days after filing," which can imply waiting until after day 45. The correction concerns availability during the period beginning with submission, not a guaranteed exam date, a guaranteed decision date, or an instruction to delay filing.
+
+IMPACT: SHIP — ACT | A2/A3 | s2-intel | 2026-09-15 | revisit NONE
+
+A1 population: SEPARATING (active component); GUARD/RESERVE on qualifying full-time active duty. Band: 6 Months Out and 3 Months Out, covering the actual T−180 through T−90 BDD submission interval and the ensuing 45-day availability period. This does not apply to spouses/dependents or already-separated applicants, and does not override VA's other BDD eligibility/special-handling exclusions. Timing: ACT AVAILABLE NOW when the VA BDD eligibility checklist applies.
+
+A2 act: "If VA's Pre-discharge Claim eligibility checklist applies to you, be available for VA exams during the 45 days beginning on the date you submit your BDD claim."
+
+A3 surface(s): Critical Windows → BDD CLAIM prerequisites. Token: [CRITICAL WINDOWS], confirmed by the same passing token check. Sweep trigger: FIRED — misleading "45+" versus existing within-45-day wording in milestones/reminders and Lead Comms; the exam-availability period must also remain distinct from the 180–90-day submission window and SHA/separation-physical clocks. S3 owns that limited consistency sweep.
+
+A4 cost: A CLOSED WINDOW — losing access to the BDD processing channel when required exam availability is absent. This does not mean losing the right to file a standard disability claim or a guaranteed monetary loss.
+
+EXPIRES: NONE for the rule; member-specific availability is measured from that member's submission date.
+
+
+
+**Boundaries:** V-2026-025 remains PROBABLE/unresolved for online BDD STR handling; no records-requirement correction is authorized by the exam-timing finding. No new dollar magnitude, unrestricted new-dependent transfer, blanket DES exemption or automatic approval is supported. Canonical registration enables PAO/S3 review preparation; it does not authorize app publication, Git staging, merge or deployment. No app, pilot state, provider call, email or schedule changed in this append.
