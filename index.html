@@ -600,6 +600,10 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 @media(prefers-reduced-motion:reduce){.tops-header-contours,.tops-header-link,.tops-header-light{animation:none!important;transition:none!important}.tops-header-contours{transform:none!important;opacity:.56}.tops-header-link{stroke-dashoffset:0;opacity:.52}.tops-header-light{display:none}}
 @media(forced-colors:active){.tops-header-art{display:none}.tops-header-contours,.tops-header-link,.tops-header-light{animation:none!important}}
 /* TOPS_HEADER_MOTION_V4_STYLE_END */
+@media(max-width:600px){
+  .tops-tricare-decision-row{flex-direction:column;gap:4px!important}
+  .tops-tricare-decision-row>div{flex:0 1 auto!important;min-width:0}
+}
 </style>
 </head>
 <body>
@@ -1336,7 +1340,7 @@ const NOTIFICATIONS = [{
   id: "n30",
   monthsOut: 1,
   title: "ACTION: TRICARE Transition — Know Your Timeline",
-  body: "TRICARE Prime ends on separation day. If you qualify (mostly involuntary or contingency separations \u2014 not retirees), TAMP gives you 180 days of premium-free TRICARE. After TAMP, you must enroll in CHCBP (within 60 days of TAMP ending) or VA healthcare. Mark these dates NOW.",
+  body: "Ask your service personnel office to confirm TAMP eligibility and verify DEERS in milConnect. Qualifying members receive 180 days of premium-free TRICARE; plan enrollment requirements still apply. CHCBP is an optional paid bridge if eligible: apply within 60 days of losing regular TRICARE or TAMP. See Critical Windows for spouse, retirement and Reserve paths.",
   priority: "CRITICAL"
 }, {
   id: "n31",
@@ -2877,7 +2881,7 @@ const WHATS_NEW = [
   { v: "v97", date: "8 SEP 2026", note: "Continue your plan from Home: see task and document counts, reopen a partly completed checklist, or go straight to Documents. Saved completion marks now use current checklist content. Home timeline, readiness, and Next Action controls work with the keyboard; Next Action opens the matching reminder." },
   { v: "v96", date: "14 AUG 2026", note: "FIND YOUR POST buttons added to the VFW and American Legion cards in the VSO directory \u2014 one tap to each organization's official post locator. Use them to find your nearest post and a service officer before your BDD consultation." },
   { v: "v95", date: "13 AUG 2026", note: "Free year of ChatGPT Plus for transitioning members: veterans and retirees within 12 months of leaving active duty, service members within 12 months of transitioning. ID.me verification, personal accounts only. Read the card before you claim \u2014 it renews at the paid rate after the free year unless you cancel." },
-  { v: "v94", date: "31 JUL 2026", note: "THE GUARD PACKAGE. Two Careers, One Plan: COOL-funded certifications, your clearance as a career asset, the AGR/TPU/mil-tech decision tree, PME as civilian credentials, and the employer conversation scripts. Plus pre-mob and demob checklists, including TAMP: the 180 days of premium-free TRICARE most demobilizing members never hear about. Built by a Guard retiree who wishes someone had told him." },
+  { v: "v94", date: "31 JUL 2026", note: "THE GUARD PACKAGE. Two Careers, One Plan: COOL-funded certifications, your clearance as a career asset, the AGR/TPU/mil-tech decision tree, PME as civilian credentials, and the employer conversation scripts. Plus pre-mob and demob checklists, including TAMP: 180 days of premium-free TRICARE after a qualifying release from active duty, with eligibility determined by your service. Built by a Guard retiree who wishes someone had told him." },
   { v: "v93", date: "31 JUL 2026", note: "Notification taps now land you exactly where they point (yes, even on iPhone). New on VA PAY: the VA Home Loan basics (including the funding fee exemption most veterans never learn) and Protect Your Benefits, five habits that keep honest veterans out of trouble. Guard/Reserve: the clocks that end at your last drill, spelled out. And if the resource list ever feels like a lot, the Navigator now offers to just point you." },
   { v: "v92", date: "30 JUL 2026", note: "THE AI TRANSITION NAVIGATOR (BETA) IS LIVE. Tap the gold \u2726 ASK button on any tab. It knows your timeline, answers only from this app\u2019s verified content with sources you can tap, and routes you to real humans for everything else. It will never predict your rating or give financial advice \u2014 by design. Beta: tell us what to improve via FEEDBACK IS A GIFT." },
   { v: "v91", date: "29 JUL 2026", note: "Under the hood: the AI Transition Navigator pilot \u2014 grounded, cited answers from this app\u2019s verified content \u2014 is built and in private evaluation. Coming to a tab near you once it passes inspection." },
@@ -3011,14 +3015,14 @@ const HEALTHCARE_TIMELINE = [{
   action: "Last day of active duty TRICARE",
   status: "warning"
 }, {
-  phase: "Day 1 \u2013 Day 180",
+  phase: "Day 1 - Day 180 if TAMP-eligible",
   coverage: "TAMP",
-  action: "180 days of premium-free TRICARE. Automatic enrollment.",
+  action: "180 days of premium-free TRICARE if your service determines you qualify. Continuing an existing Prime option requires reenrollment; plan requirements apply.",
   status: "active"
 }, {
-  phase: "Day 181+",
-  coverage: "CHCBP or VA",
-  action: "Purchase CHCBP within 60 days of TAMP expiring, OR enroll in VA healthcare",
+  phase: "After active-duty coverage or TAMP",
+  coverage: "Next coverage, if eligible",
+  action: "CHCBP: confirm eligibility with Humana Military (800-444-5445); submit DD Form 2837, required proof and initial payment within 60 days of losing regular TRICARE or TAMP. Other paths include employer coverage, VA health care if eligible, or Marketplace coverage.",
   status: "warning"
 }, {
   phase: "VA Healthcare",
@@ -3178,14 +3182,14 @@ const SMART_REMINDERS = [
   {id:"r-1-gar",mo:1,cat:"GUARD/RESERVE",pri:"HIGH",title:"Entering the Gray Area \u2014 Establish Your DFAS Future Retiree Account",brief:"Guard/Reserve with 20 good years: your link to retired pay runs through a myPay account most members never set up.",items:["Establish your Future Retiree myPay account at mypay.dfas.mil \u2014 easier now while your login is active","Keep contact info current in THREE systems: DFAS, DEERS, and your branch \u2014 updates do not transfer between them","DFAS sends a retired pay prompt at age 59 ONLY if your account has a current email on file","Retired pay is NOT automatic \u2014 apply through your service (Army: HRC Gray Area Retirements Branch, not DFAS) 9 months to 90 days before eligibility age","Gray area retains commissary, exchange, MWR access, and select TRICARE plans"],deadline:"Set up before losing routine myPay access",why:"Members who fall off the radar in the gray area face serious delays when retired pay eligibility arrives.",link:"https://www.dfas.mil/RetiredMilitary/plan/Gray-Area-Retirees/"},
   {id:"r-0-ets",mo:0,cat:"ADMIN",pri:"CRITICAL",title:"SEPARATION DAY — Verify Everything",brief:"Before you drive off for the last time, make sure your paperwork is squared away.",items:["VERIFY DD214 — read every line before signing","Obtain multiple certified copies","Verify sep code, RE code, characterization","Secure medical and dental records"],deadline:"TODAY",why:"Your DD214 is your new birth certificate. Get it right.",link:null},
   {id:"r-p1",mo:-1,cat:"BENEFITS",pri:"CRITICAL",title:"First 30 Days — File Unemployment & Activate Benefits",brief:"Several critical windows open at separation and close fast.",items:["File unemployment IMMEDIATELY (DD214 = proof)","Register for VA healthcare if not done","Monitor VA.gov for C&P exam schedule","Apply veteran's preference (SF-15)","Veteran driver's license designation"],deadline:"State unemployment deadlines start from sep date",why:"Unemployment (UCX) can mean roughly $1,300-$2,200/month of bridge income depending on your state. Don't leave it on the table.",link:null},
-  {id:"r-p1-fedvip",mo:-1,cat:"BENEFITS",pri:"HIGH",title:"FEDVIP Backstop \u2014 30 Days Left on the Window (Retirees)",brief:"If you retired without enrolling in FEDVIP dental/vision, the 60-day window is half gone.",items:["Enroll now at BENEFEDS.gov \u2014 after day 60 the next opportunity is Federal Benefits Open Season (Nov\u2013Dec)","Retiree TRICARE enrollment is also NOT automatic \u2014 retirement is a Qualifying Life Event with a 90-day enrollment period at tricare.mil"],deadline:"Day 60 after retirement date (FEDVIP); day 90 (TRICARE QLE)",why:"Two separate non-automatic enrollments \u2014 FEDVIP and retiree TRICARE \u2014 expire in your first 90 days out. Both are routinely missed.",link:"https://www.benefeds.gov/"},
+  {id:"r-p1-fedvip",mo:-1,cat:"BENEFITS",pri:"HIGH",title:"FEDVIP Backstop \u2014 30 Days Left on the Window (Retirees)",brief:"If you retired without enrolling in FEDVIP dental/vision, the 60-day window is half gone.",items:["Enroll now at BENEFEDS.gov \u2014 after day 60 the next opportunity is Federal Benefits Open Season (Nov\u2013Dec)","After active-duty retirement, complete eligible Prime/Select enrollment through milConnect BWE within 90 days and pay required fees. If late, request retroactive enrollment through your TRICARE contractor within 12 months; required back fees apply."],deadline:"Day 60 after retirement date (FEDVIP); day 90 (TRICARE QLE)",why:"FEDVIP and retiree TRICARE have separate enrollment rules. For Prime/Select after active-duty retirement, the normal enrollment window is 90 days; the contractor can handle a retroactive request within 12 months.",link:"https://www.benefeds.gov/"},
   {id:"r-p4",mo:-4,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F SGLI to VGLI — The Clock Is Running",brief:"Free SGLI coverage ends 120 days after separation. VGLI with NO health exam is available only through day 240.",items:["Day 0-120: SGLI continues free — compare VGLI vs commercial term rates NOW","Day 0-240: VGLI guaranteed acceptance, no medical exam","Day 241-485: VGLI still possible but medical evidence required — can be denied","Day 486+: VGLI window closed permanently","If service-connected conditions exist, VGLI may be your only option","Apply at myvgli.prudential.com or 1-800-419-1473"],deadline:"240 days post-separation for no-exam VGLI — HARD DEADLINE",why:"After day 240 you must prove good health. PTSD, sleep apnea, or musculoskeletal conditions can disqualify you on the civilian market.",link:"https://www.va.gov/life-insurance/options-eligibility/vgli/"},
-  {id:"r-p6",mo:-6,cat:"HEALTH",pri:"HIGH",title:"TAMP Ending — Healthcare Decision",brief:"180-day TAMP TRICARE is ending. You need a plan.",items:["VA-rated: verify enrollment and Priority Group","Employed: enroll in employer healthcare","Retiring: TRICARE Retired (Prime, Select, For Life at 65)","Otherwise: ACA marketplace (HealthCare.gov)","VA doesn't cover routine dental unless 100%"],deadline:"180 days post-separation",why:"One ER visit without coverage averages $2,200+.",link:"https://www.tricare.mil/Plans/Leaving"},
+  {id:"r-p6",mo:-6,cat:"HEALTH",pri:"HIGH",title:"TAMP Coverage Check",brief:"If your service confirmed TAMP, its 180-day coverage period may be ending. Verify your coverage dates in milConnect.",items:["VA-rated: verify enrollment and Priority Group","Employed: enroll in employer healthcare","Active-duty retirees: Prime/Select enrollment rules apply; TRICARE For Life requires Medicare Part A and Part B","Otherwise: ACA marketplace (HealthCare.gov)","VA doesn't cover routine dental unless 100%"],deadline:"Your actual TAMP end date, if eligible",why:"One ER visit without coverage averages $2,200+.",link:"https://www.tricare.mil/Plans/Leaving"},
   {id:"r-p12",mo:-12,cat:"BENEFITS",pri:"HIGH",title:"One-Year AAR — Benefits & Career",brief:"You've been out a year. Time for an honest after-action review.",items:["Review VA claim — file supplemental if needed","Career at target level and salary?","If underemployed, use VET HUB tools","Check VR&E (Ch.31) eligibility","Rebalance TSP/retirement accounts"],deadline:"Self-imposed 12-month AAR",why:"Veterans who don't course-correct in Year 1 are more likely to stay underemployed.",link:null},
   {id:"r-18-iler",mo:18,cat:"BENEFITS",pri:"HIGH",title:"Verify Your ILER Exposure Record",brief:"FY26 NDAA codified the Individual Longitudinal Exposure Record. Your toxic exposure history now flows directly to the VA — verify it while you can still fix it.",items:["Pull your ILER through milConnect","Cross-check deployments, burn pit locations, and known exposure events","Report gaps or errors through your medical channel NOW — corrections are 10x harder after DD214","Gather buddy statements for any exposure not yet documented"],deadline:"Before separation — while records can still be corrected in uniform",why:"The VA now receives your complete exposure history up front to speed toxic-exposure claims. Errors or gaps in that record follow you into the claims process.",link:"https://milconnect.dmdc.osd.mil"},
   {id:"r-15-tap26",mo:15,cat:"ADMIN",pri:"ADVISORY",title:"New TAP Rules In Effect — FY26 NDAA",brief:"Congress overhauled TAP in December 2025. Know what changed and use it.",items:["Pre-separation counseling now delivered in person whenever possible — request it","DoD now tracks WHEN you start TAP — late starts are visible to your command","Financial counseling expanded: individualized guidance on loans and debt management","Spouses: TAP pilot program launching at 5 installations — ask your Transition Center","Guard/Reserve: waiver provision allows TAP every 3 years unless circumstances changed"],deadline:"Statutory TAP start remains NLT 365 days before separation",why:"Only about half of transitioning service members start TAP on time. Congress added these accountability measures because late starts cost real money in missed benefits.",link:"https://www.dodtap.mil"},
   {id:"r-12-gib48",mo:12,cat:"BENEFITS",pri:"HIGH",title:"GI Bill — Check for 48 Months of Entitlement",brief:"Rudisill (2024) and Perkins (2026) court rulings: served two qualifying periods? You may rate up to 48 months of combined education benefits — not 36.",items:["Pull your education benefits eligibility letter on VA.gov","Identify qualifying periods: one under Montgomery GI Bill, one under Post-9/11","If previously capped at 36 months, request a review — VA updated its awarding process","Factor a potential extra 12 months into your education and VR&E plan"],deadline:"Verify before locking in your education plan",why:"Twelve additional months can mean a full year of tuition plus BAH. VA updated its awarding process. Check your eligibility on VA.gov.",link:"https://benefits.va.gov/gibill/"},
-  {id:"r-9-tri26",mo:9,cat:"HEALTH",pri:"MEDIUM",title:"TRICARE 2026 — Costs and Access Changed",brief:"Pharmacy copays rose 1 JAN 2026 and access rules shifted. Budget your post-separation healthcare with current numbers.",items:["Retail (30-day): $16 generic / $48 brand-name","Home delivery (90-day): $14 generic / $44 brand / $85 non-formulary","Military pharmacies remain $0 for all covered medications","Prime travel benefit threshold for specialty care reduced from 100 to 75 miles for active-duty family members (retirees remain at 100 miles)","TRICARE Open Season runs Nov-Dec annually — plan changes happen then or at a Qualifying Life Event"],deadline:"Open Season window if changing plans",why:"Separation IS a Qualifying Life Event — but knowing 2026 costs before you choose between TAMP, CHCBP, employer coverage, or VA care prevents budget surprises.",link:"https://www.tricare.mil/changes"},
+  {id:"r-9-tri26",mo:9,cat:"HEALTH",pri:"MEDIUM",title:"TRICARE 2026 — Costs and Access Changed",brief:"Pharmacy copays rose 1 JAN 2026 and access rules shifted. Budget your post-separation healthcare with current numbers.",items:["Retail (30-day): $16 generic / $48 brand-name","Home delivery (90-day): $14 generic / $44 brand / $85 non-formulary","Military pharmacies remain $0 for all covered medications","Prime travel benefit threshold for specialty care reduced from 100 to 75 miles for active-duty family members (retirees remain at 100 miles)","TRICARE Open Season runs Nov-Dec annually — plan changes happen then or at a Qualifying Life Event"],deadline:"Open Season window if changing plans",why:"Ordinary separation does not give everyone a TRICARE enrollment QLE. If you qualify under an independently eligible sponsor spouse, required eligible plan changes are due within 90 days of separation or TAMP ending, as applicable. Retirement and deactivation have separate rules.",link:"https://www.tricare.mil/changes"},
   {id:"r-6-vettec",mo:6,cat:"CAREER",pri:"HIGH",title:"VET TEC 2.0 — Tech Training Is Back",brief:"The VA's high-tech training program returned under the Dole Act. Applications opened JUN 2026 and are open now. Capped at 4,000 paid participants per fiscal year — slots will go fast.",items:["Eligible: a veteran discharged other than dishonorable, OR a service member within 180 days of separating — and EITHER path also requires 36+ months of active duty and being under 62 when VA approves your application","Covers tuition, monthly housing allowance, and books through VA-approved providers","Fields: computer programming, computer software, data processing, information sciences, media application","CHANGED FROM THE ORIGINAL: if you have remaining GI Bill or DEA entitlement, VET TEC 2.0 now charges 1 month of entitlement per month of full-time training — factor this into your education plan","Preferred providers must place 70% of graduates in-field within 180 days or refund tuition to VA","Apply at VA.gov — VA Form 22-10297"],deadline:"Annual cap of 4,000 participants — apply early in the fiscal year",why:"Accelerated tech training with housing allowance, without committing to a degree program. But the entitlement charge means the old 'doesn't touch your GI Bill' advice no longer applies — verify your math first.",link:"https://www.va.gov/education/other-va-education-benefits/vet-tec-2/"},
   {id:"r-3-dgib",mo:3,cat:"BENEFITS",pri:"HIGH",title:"Digital GI Bill — Verify Your Payments",brief:"The VA's $2.3B Digital GI Bill system has documented payment failures under active congressional oversight. Trust but verify.",items:["Confirm your School Certifying Official submitted your enrollment certification","Verify your Certificate of Eligibility is on file with the school","Monitor your first BAH payment date — do not assume it processed","Payment problems: call the VA Education Call Center at 1-888-442-4551 immediately"],deadline:"Before your first tuition deadline and rent payment",why:"Automation now handles most education claims, but documented failures have left student veterans waiting on housing payments. Your rent does not wait for a system fix.",link:"https://www.va.gov/education/gi-bill-comparison-tool/"}
 ];
@@ -3470,7 +3474,7 @@ const CRITICAL_WINDOWS = [
     startDay:-180, hardStartDay:-180, endDay:-90, irrevocable:true, channelOnly:true,
     shortDesc:"Pre-discharge VA disability claim. File T-180 to T-90 only. VBA goal: decision within 30 days after separation; not guaranteed.",
     whyMatters:"BDD lets VA review service treatment records, schedule needed exams, and evaluate the claim before separation. VBA's stated goal is a decision within 30 days after separation, not a guarantee.",
-    prerequisites:["Confirmed separation date (180–90 days away)","Complete Service Treatment Records from current period","Completed SHA — Part A Self-Assessment","Availability for VA medical exams 45+ days after filing"],
+    prerequisites:["Confirmed separation date (180–90 days away)","Complete Service Treatment Records from current period","Completed SHA — Part A Self-Assessment","Availability for VA exams during the 45 days beginning on the date you submit your BDD claim"],
     actionSteps:["Request complete STRs at T-180 — medical, dental, mental health (separately)","Gather private medical records for service-connected conditions","Complete SHA Part A Self-Assessment","File VA Form 21-526EZ (check BDD box, upper-left) via VA.gov or BDD intake site","Attend every scheduled C&P exam"],
     forms:["VA Form 21-526EZ (BDD)","SHA Part A DBQ"],
     pocs:["VA.gov","Installation TAP VA Benefits Briefing","VA 1-800-827-1000"],
@@ -3495,38 +3499,38 @@ const CRITICAL_WINDOWS = [
     reminderDays:[-180,-120,-90,-60,-30]
   },
   {
-    id:"teb", num:5, name:"GI BILL TRANSFER", fullName:"Transfer of Education Benefits (TEB)",
+    id:"teb", num:5, name:"GI BILL INITIAL TRANSFER", fullName:"Transfer of Education Benefits (TEB)",
     authority:"38 U.S.C. § 3319 · DoDI 1341.13",
     startDay:-730, hardStartDay:-365, endDay:-1, irrevocable:true,
     shortDesc:"Transfer up to 36 months of Post-9/11 GI Bill to spouse or dependents. MUST be approved while on active duty or in Selected Reserve.",
-    whyMatters:"Potentially $100,000+ in education funding. Once you separate, this door closes PERMANENTLY. Even one day past separation and the transfer cannot be initiated.",
-    policyUpdate:"FY20 NDAA removed the 16-year maximum-service rule. Members with 16+ years may still transfer. Purple Heart recipients (on/after 31 Aug 2018) may transfer regardless of time in service with no additional service obligation.",
-    prerequisites:["6+ years of service on date of request","Agreement to serve 4 additional years (unless Purple Heart exception)","ETS date supports the 4-year obligation — extend contract if needed","Dependents enrolled in DEERS","Not currently flagged, MEB, or retention board"],
-    actionSteps:["Verify ETS date supports 4-year obligation; extend contract if required (allow processing time)","Confirm dependents are in DEERS","Log in to milConnect → Benefits → Transfer of Education Benefits","Allocate months to each dependent (whole months >0)","Service Rep approves, rejects, or sets to pending","Sign Statement of Understanding if required by branch"],
+    whyMatters:"Initial transfer approval must be obtained while on active duty or in the Selected Reserve. After separation or retirement, an approved transfer can still be modified within the rules for unused entitlement.",
+    policyUpdate:"FY20 NDAA removed the 16-year maximum-service rule. Members with 16+ years may still transfer. Otherwise eligible Purple Heart recipients on active duty or in the Selected Reserve are exempt from the six-year and additional four-year service requirements, including while on limited duty or undergoing the Disability Evaluation System (DES). Other eligibility and approval requirements still apply.",
+    prerequisites:["6+ years of service on the request date, unless the Purple Heart exception applies","Agreement and ability to serve 4 additional years, unless the Purple Heart exception applies","Eligible dependents enrolled in DEERS","Service eligibility and approval requirements met; limited duty or DES ordinarily delays a first request, except for otherwise eligible serving Purple Heart recipients"],
+    actionSteps:["Unless the Purple Heart exception applies, verify your separation date supports the 4-year obligation; extend your contract if required","Confirm eligible dependents are in DEERS","Submit your request in milConnect > Benefits > Transfer of Education Benefits","Allocate whole months greater than zero to each eligible dependent receiving a transfer","Check your service approval letter and request status in milConnect before leaving eligible service","Sign the Statement of Understanding if required by your branch"],
     forms:["milConnect TEB portal","VA Form 22-1990e (for dependent use AFTER DoD approves)"],
     pocs:["milConnect.dmdc.osd.mil","Branch education services office"],
-    consequence:"PERMANENT forfeiture of the transfer option. Post-separation: can only reduce/revoke months for dependents already approved. Cannot add new spouse (remarriage) or children born after separation.",
+    consequence:"An ordinary first transfer cannot be initiated after separation. If you already had an approved transfer, use milConnect TEB to change allocations or distribute unused/unallocated months to eligible family members who received transferred benefits before separation or retirement. New family members cannot normally be added after leaving service.",
     decisionBranch:{title:"Spouse usage timing",options:[{condition:"Member separated BEFORE 1 Jan 2013",result:"Spouse must use transferred benefits within 15 years of member's separation"},{condition:"Member separated ON/AFTER 1 Jan 2013",result:"Spouse has no time limit"},{condition:"Child transferee",result:"Must use benefits before age 26, regardless of separation date"}]},
-    guardReserve:"Applies to members currently in Selected Reserve as well as active duty. Transition to IRR closes the window.",
+    guardReserve:"Initial transfer approval requires active-duty or Selected Reserve status. Leaving the Selected Reserve for the IRR closes that initial-approval route; the rules for modifying an already-approved transfer remain separate.",
     sources:[{label:"VA TEB",url:"https://www.va.gov/education/transfer-post-9-11-gi-bill-benefits/"},{label:"DoDI 1341.13",url:"https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/134113p.pdf"}],
     reminderDays:[-730,-540,-365,-180,-90,-60,-30]
   },
   {
-    id:"tricare", num:6, name:"TRICARE TRANSITION", fullName:"TAMP → CHCBP / TRS / TRR / Civilian",
+    id:"tricare", num:6, name:"TRICARE TRANSITION", fullName:"TAMP / Spouse / Retiree / Reserve / Civilian coverage",
     authority:"10 U.S.C. § 1145 · TRICARE Policy Manual Ch. 10",
-    startDay:0, hardStartDay:0, endDay:240, irrevocable:false,
-    shortDesc:"TAMP: 180 days of premium-free TRICARE after separation (if eligible). CHCBP application: 60 days after TAMP ends.",
-    whyMatters:"Gap in health coverage is one of the most financially catastrophic outcomes of poor separation planning. TAMP is the primary 180-day cushion — but only for qualifying separations. Retirees NOT eligible for TAMP.",
-    prerequisites:["Verify TAMP eligibility in DEERS via milConnect","Determine post-separation TRICARE plan (Prime vs Select)","Family members updated in DEERS"],
-    actionSteps:["T-60: Verify TAMP eligibility in DEERS","T-30: Select post-separation plan; re-enrollment required (you are leaving active-duty TRICARE system)","T-7: Submit TRICARE enrollment before the 20th of the month to lock 1st-of-next-month coverage","Day 181: TAMP ends — must have next coverage in place","Day 181+60: CHCBP application deadline (if using CHCBP bridge)"],
-    forms:["Regional TRICARE contractor enrollment","DD214 (proof of separation characterization)"],
-    pocs:["milConnect (DEERS)","Humana Military (regional contractor)","CHCBP via Humana Military"],
-    consequence:"Miss CHCBP 60-day window: limited to civilian market (ACA), VA health care (if enrolled), TRS/TRR (if Guard/Reserve qualifying). No recovery path to CHCBP once missed.",
-    decisionBranch:{title:"Post-TAMP coverage pathway",options:[{condition:"Retiring from active duty",result:"TRICARE Prime/Select → TRICARE For Life at 65. NOT eligible for TAMP."},{condition:"Guard/Reserve, qualifying activation",result:"TRICARE Reserve Select after TAMP — or CHCBP as backup"},{condition:"Separating to civilian life",result:"VA health care (if service-connected) + CHCBP up to 18 months (apply within 60 days of TAMP end) → ACA Marketplace"},{condition:"Retiring Reserve, under 60",result:"TRICARE Retired Reserve (TRR) — or CHCBP as backup"}]},
-    tampEligibility:["Involuntary separation under honorable conditions","VSI or VSP without retired/retainer pay entitlement","Guard/Reserve separating from 30+ consecutive days active duty for contingency","Separation following involuntary retention (stop-loss) for contingency","Separation after voluntarily staying on active duty <1 year for contingency","Separation from active duty with agreement to join Selected Reserve"],
-    note:"NOT eligible for TAMP while on terminal leave — active-duty TRICARE continues. Retirees NOT eligible. Dishonorable NOT eligible.",
-    guardReserve:"Active-duty TRICARE during activation → TAMP (if qualifying contingency orders 30+ days) → TRS on return to Selected Reserve. Submit new TRICARE enrollment within 90 days of last day on active duty or be limited to MTF-only.",
-    sources:[{label:"TRICARE TAMP",url:"https://www.tricare.mil/TAMP"},{label:"TRICARE Activation/Deactivation",url:"https://tricare.mil/Plans/Eligibility/NGRMandFamilies/CoverageScenarios"}],
+    irrevocable:false,
+    shortDesc:"TAMP provides 180 days of premium-free TRICARE if your service determines you qualify. CHCBP: apply within 60 days of losing regular TRICARE or TAMP.",
+    whyMatters:"Your coverage path depends on your service status and eligibility. TAMP does not apply to every separation, and existing Prime enrollment does not automatically continue under TAMP.",
+    prerequisites:["If using TAMP: service personnel determination of eligibility, recorded in DEERS","Eligibility for the plan you intend to use after active duty","Eligible family members recorded in DEERS"],
+    actionSteps:["Ask your service personnel office to determine TAMP eligibility; verify the DEERS record in milConnect","If TAMP-eligible and continuing an existing Prime option, reenroll through milConnect or your regional contractor/USFHP before leaving active duty; enrollment is retroactive to separation","TAMP Select: confirm enrollment and effective-date requirements with your regional contractor, then complete eligible enrollment through milConnect > Benefits > Beneficiary Web Enrollment (BWE)","Eligible spouse route: have your sponsor spouse add you in DEERS at an ID card office; complete required eligible plan enrollment through BWE within 90 days of separation or TAMP ending, as applicable, and pay required fees or premiums","CHCBP after regular TRICARE or TAMP: confirm eligibility with Humana Military at 800-444-5445; submit DD Form 2837, required proof and initial payment within 60 days of the actual coverage loss"],
+    forms:["Eligible plan enrollment through milConnect BWE or the plan contractor","DD Form 2837, required proof and initial payment for CHCBP"],
+    pocs:["Service personnel office: TAMP eligibility","Regional TRICARE contractor / USFHP: plan enrollment","Humana Military: CHCBP, 800-444-5445"],
+    consequence:"Missed the CHCBP initial enrollment window? Contact Humana Military at 800-444-5445 about late-enrollment reconsideration. Approval is not guaranteed; this does not extend the 60-day deadline for loss of regular TRICARE or TAMP.",
+    decisionBranch:{"title":"Coverage paths - eligibility applies","options":[{"condition":"Retiring from active duty","result":"Prime/Select: complete eligible enrollment through milConnect BWE within 90 days of retirement and pay required fees. TAMP does not apply. TRICARE For Life requires Medicare Part A and Part B."},{"condition":"Guard/Reserve, qualifying release from active duty","result":"TAMP if your service determines you qualify; afterward, TRICARE Reserve Select or CHCBP if eligible. Deactivation has its own 90-day plan-change window."},{"condition":"Spouse independently eligible to sponsor TRICARE","result":"If eligible as that spouse's family member, have the sponsor update DEERS at an ID card office, then complete required eligible plan enrollment through BWE within 90 days of separation or TAMP ending, as applicable; fees or premiums may apply."},{"condition":"Separating to civilian life","result":"CHCBP, employer coverage, VA health care if eligible, or Marketplace coverage. For CHCBP after regular TRICARE or TAMP, apply within 60 days of the actual coverage loss."},{"condition":"Retiring Reserve, under 60","result":"TRICARE Retired Reserve or other coverage if eligible; this differs from active-duty retirement."}]},
+    tampEligibility:["Involuntary separation from active duty under honorable conditions, including qualifying VSI or VSP separation; the VSP route excludes entitlement to retired or retainer pay","Guard/Reserve release after more than 30 consecutive days of active duty for a preplanned mission or contingency operation","National Guard release after more than 30 consecutive days under qualifying Title 32 section 502(f) orders","Release after involuntary retention on active duty (stop-loss) for a contingency operation","Release after voluntarily extending active duty for less than one year in support of a contingency operation","Sole-survivorship discharge","Separation from regular active duty with an agreement to join the Selected Reserve and membership beginning the next day"],
+    note:"These categories follow TRICARE guidance. Your service determines TAMP eligibility and records it in DEERS; this list is not a self-certification. Terminal leave remains active-duty coverage. Retirement follows separate TRICARE rules. Prime reenrollment and Select enrollment requirements differ.",
+    guardReserve:"After Guard/Reserve deactivation, update DEERS and complete any needed eligible plan change through milConnect BWE within 90 days. Ask your regional contractor about plan eligibility or special circumstances. TAMP depends on qualifying orders and your service's determination; eligible Selected Reserve members may use TRS afterward.",
+    sources:[{"label":"TAMP eligibility","url":"https://www.tricare.mil/TAMP"},{"label":"TAMP Prime reenrollment","url":"https://www.tricare.mil/Plans/SpecialPrograms/TAMP/PrimeOptions"},{"label":"Select enrollment","url":"https://www.tricare.mil/Plans/Enroll/Select"},{"label":"Separation and spouse coverage","url":"https://www.tricare.mil/LifeEvents/Separating"},{"label":"milConnect BWE","url":"https://www.tricare.mil/Plans/Eligibility/DEERS/BWE"},{"label":"Deactivation","url":"https://www.tricare.mil/LifeEvents/Deactivating"},{"label":"CHCBP application","url":"https://www.tricare.mil/Plans/Enroll/CHCBP_Purchase"},{"label":"Active-duty retirement","url":"https://www.tricare.mil/LifeEvents/Retiring"},{"label":"VA health care eligibility","url":"https://www.va.gov/health-care/eligibility/"},{"label":"10 U.S.C. 1145","url":"https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title10-section1145&num=0&edition=prelim"}],
     reminderDays:[-60,-30,-7,60,150,180,240]
   },
   {
@@ -3594,6 +3598,7 @@ function daysToETSDate(dateStr) {
 // Returns {state, color, label} for a window given days until ETS
 function getCriticalWindowStatus(win, daysOut, C) {
   if (daysOut === null) return {state:"unknown", color:C.inactive, label:"SET ETS DATE"};
+  if (win.id === "tricare") return {state:"guidance", color:C.greenBright, label:daysOut > 0 ? "PLAN COVERAGE NOW" : "CHECK COVERAGE DATES"};
   var todayOffsetFromETS = -daysOut;
   var startDay = win.startDay;
   var endDay = win.endDay;
@@ -3652,7 +3657,7 @@ function generateCriticalWindowReminders(userStatus) {
         title: "[" + w.name + "] " + w.shortDesc.split(".")[0],
         brief: w.whyMatters,
         items: w.actionSteps || [],
-        deadline: dayOffset < 0 ? "T" + dayOffset + " days (pre-separation)" : dayOffset === 0 ? "Separation day" : "T+" + dayOffset + " days (post-separation)",
+        deadline: w.id === "tricare" ? "Enrollment deadlines depend on your plan and actual coverage-loss date." : dayOffset < 0 ? "T" + dayOffset + " days (pre-separation)" : dayOffset === 0 ? "Separation day" : "T+" + dayOffset + " days (post-separation)",
         why: w.consequence,
         link: w.sources && w.sources.length ? w.sources[0].url : null,
         origin: "cw",
@@ -3713,7 +3718,7 @@ const READINESS_CATS = [
   ]},
   {id:"wellness",name:"HEALTH & WELLNESS",icon:"\uD83E\uDDE0",color:"#1a3a1a",qs:[
     {id:"w1",t:"Completed all medical/dental while covered.",w:2},
-    {id:"w2",t:"Healthcare plan for after TAMP (180 days).",w:2},
+    {id:"w2",t:"Healthcare plan for when active-duty coverage or any qualifying TAMP period ends.",w:2},
     {id:"w3",t:"Support network outside military.",w:2},
     {id:"w4",t:"Addressed or addressing mental health needs.",w:3},
     {id:"w5",t:"Fitness routine independent of military facilities.",w:1}
@@ -3955,7 +3960,7 @@ function downloadDeadlineICS(sepDate, trackEvent) {
     [0, "SEPARATION DAY", "Get certified DD214 copies. File unemployment. Verify sep code, RE code, characterization."],
     [90, "SCRA protections end (T+90)", "Most Servicemembers Civil Relief Act protections expire around 90 days after separation."],
     [120, "SGLI free coverage ENDS (T+120)", "Your free SGLI life insurance ends today. VGLI no-medical window still open to day 240."],
-    [180, "TAMP ends (if eligible) (T+180)", "Transitional TRICARE ends. CHCBP purchase window is 60 days from today. VA healthcare: enroll now."],
+    [180, "TAMP coverage check (T+180, if eligible)", "This date is a planning estimate, not proof of coverage. Verify actual TAMP eligibility and end date in milConnect. If choosing CHCBP after regular TRICARE or TAMP, confirm eligibility with Humana Military (800-444-5445) and submit DD Form 2837, proof and initial payment within 60 days of the actual loss."],
     [200, "VGLI internal deadline (T+200)", "Submit your VGLI application now \u2014 buffer before the hard T+240 no-medical cutoff."],
     [240, "VGLI no-medical window CLOSES (T+240)", "After today, VGLI requires medical underwriting and can be denied. myvgli.prudential.com"]
   ];
@@ -7873,7 +7878,7 @@ function App() {
           React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.75, marginBottom: 6 } }, "Orders in hand? Work this list before you report."),
           ["SCRA kicks in on activation: request the 6% interest cap on debts you held BEFORE service or activation (send the request with orders attached), and know your lease termination rights for longer activations",
            "Family: care plan current, DEERS updated, POA executed, SGLI beneficiaries reviewed",
-           "TRICARE: on 30+ day orders you and your family move to active-duty coverage; confirm enrollment before you leave",
+           "TRICARE: activation for more than 30 consecutive days can establish active-duty benefits for you and eligible family members; have your service personnel office confirm eligibility and the DEERS record.",
            "Employer: written USERRA notice, dates, point of contact while you are gone",
            "Finances: automate the bills, brief whoever holds the POA"
           ].map(function(t, ti) {
@@ -7883,7 +7888,7 @@ function App() {
         React.createElement("div", { style: { ...S.card, padding: 14, marginTop: 12 } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "DEMOBILIZATION: DO NOT WALK PAST THESE"),
           React.createElement("div", { style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.75, marginBottom: 6 } }, "The demob line moves fast. These are the items members lose by rushing."),
-          ["TAMP: after a 30+ consecutive day contingency activation you get 180 DAYS of premium-free TRICARE. Most demobilizing members have never heard of it. Confirm it at demob",
+          ["TAMP: a qualifying release from active duty provides 180 days of premium-free TRICARE. Guard/Reserve routes include more than 30 consecutive days for a preplanned mission or contingency, and more than 30 consecutive days of qualifying National Guard Title 32 section 502(f) duty. Ask your service personnel office to determine eligibility and verify DEERS in milConnect.",
            "BDD: coming off Title 10 with a known release date can put you in the VA claim window (180 to 90 days before release). Ask at the demob site",
            "Health assessments: complete the PDHA at demob and the PDHRA in the 90 to 180 day window after; document EVERYTHING while it is fresh",
            "Points and early retirement: confirm your mobilization days post to your points statement, and log qualifying active service now; it can pull your retired pay start earlier in 90-day increments",
@@ -14171,7 +14176,7 @@ whatsNewUnseen && React.createElement("div", {
       lineHeight: 1.8,
       fontFamily: "'Source Sans 3', sans-serif"
     }
-  }, /*#__PURE__*/React.createElement("div", null, "\u25CF", " TAMP (qualifying separations only): 180 days free TRICARE"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " Must ACTIVELY enroll in VA healthcare"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " Combat vets: 10-year enhanced eligibility"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " CHCBP: purchase within 60 days of TAMP expiring"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " VA dental limited — apply within 180 days of separation for one-time care")))), subTab === "documents" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", null, "\u25CF", " TAMP (service-determined eligibility): 180 days of premium-free TRICARE; plan enrollment requirements apply"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " Must ACTIVELY enroll in VA healthcare"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " Combat vets: 10-year enhanced eligibility"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " CHCBP if eligible: apply within 60 days of losing regular TRICARE or TAMP"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " VA dental limited — apply within 180 days of separation for one-time care")))), subTab === "documents" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
       padding: 14
@@ -15083,7 +15088,7 @@ whatsNewUnseen && React.createElement("div", {
             React.createElement("div", { style: { fontSize: 11, color: C.gold, letterSpacing: 2, fontWeight: 700, fontFamily: "'Oswald', sans-serif", margin: "8px 0" } }, "ACTION ITEMS"),
             r.items.map(function(item, i) { return React.createElement("div", { key: i, style: { padding: "6px 0 6px 14px", fontSize: 13, lineHeight: 1.5, color: C.textBody, borderLeft: "2px solid " + C.green, marginBottom: 6 } }, item); }),
             r.deadline && React.createElement("div", { style: { padding: "10px 12px", background: "rgba(139,0,0,0.15)", border: "1px solid rgba(139,0,0,0.3)", borderRadius: 8, marginTop: 10, fontSize: 13, lineHeight: 1.5 } },
-              React.createElement("strong", { style: { color: C.danger, fontSize: 10, letterSpacing: 1, fontFamily: "'Oswald', sans-serif" } }, "DEADLINE:"),
+              React.createElement("strong", { style: { color: C.danger, fontSize: 10, letterSpacing: 1, fontFamily: "'Oswald', sans-serif" } }, r.cwId === "tricare" ? "COVERAGE DATES:" : "DEADLINE:"),
               React.createElement("br"), React.createElement("span", { style: { color: C.danger } }, r.deadline)
             ),
             r.why && React.createElement("div", { style: { padding: "10px 12px", background: "rgba(139,125,60,0.1)", border: "1px solid rgba(139,125,60,0.2)", borderRadius: 8, marginTop: 8, fontSize: 13, lineHeight: 1.5 } },
@@ -15110,7 +15115,7 @@ whatsNewUnseen && React.createElement("div", {
     }, /*#__PURE__*/React.createElement("div", { style: { minWidth: 0, flex: 1 } }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.textPrimary, fontWeight: 600, letterSpacing: 0.5 } }, "DON'T MISS THESE WINDOWS"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.5, marginTop: 3 } }, TOPS_PUSH_ENABLED ? "Get a reminder before each window closes - timed to your date. Review the data notice before choosing." : TOPS_PUSH_DISABLED_COPY)), TOPS_PUSH_ENABLED ? /*#__PURE__*/React.createElement("button", { onClick: handleEnableNotifs, disabled: pushBusy, style: { flexShrink: 0, background: C.accent, color: C.bg, border: "none", borderRadius: 8, padding: "10px 14px", fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: pushBusy ? "default" : "pointer", opacity: pushBusy ? 0.6 : 1 } }, "REMIND ME") : /*#__PURE__*/React.createElement("span", { style: { flexShrink: 0, border: "1px solid " + C.border, borderRadius: 8, padding: "9px 12px", fontFamily: "'Oswald', sans-serif", fontSize: 10, color: C.inactive, letterSpacing: 1 } }, "UPDATE IN PROGRESS")) : null;
     var visible = criticalFilter === "ALL" ? windows.concat([SCRA_WINDOW]) : windows.filter(function(w) {
       var s = getCriticalWindowStatus(w, daysOut, C);
-      if (criticalFilter === "OPEN") return s.state === "open" || s.state === "open_early" || s.state === "closing" || s.state === "closing_critical";
+      if (criticalFilter === "OPEN") return s.state === "guidance" || s.state === "open" || s.state === "open_early" || s.state === "closing" || s.state === "closing_critical";
       if (criticalFilter === "CLOSING") return s.state === "closing" || s.state === "closing_critical";
       if (criticalFilter === "MISSED") return s.state === "missed" || s.state === "missed_perm" || s.state === "missed_channel";
       return true;
@@ -15118,7 +15123,7 @@ whatsNewUnseen && React.createElement("div", {
     var phaseLabel = daysOut === null ? "—" :
       daysOut > 540 ? "PLANNING" : daysOut > 365 ? "PRE-TAP" : daysOut > 180 ? "TAP ACTIVE" :
       daysOut > 90 ? "BDD WINDOW" : daysOut > 30 ? "FINAL PREP" : daysOut > 0 ? "IMMINENT" :
-      daysOut === 0 ? "SEPARATION DAY" : daysOut > -180 ? "TAMP ACTIVE" :
+      daysOut === 0 ? "SEPARATION DAY" : daysOut > -180 ? "TAMP PERIOD - IF ELIGIBLE" :
       daysOut > -240 ? "VGLI NO-MEDICAL" : daysOut > -485 ? "VGLI MEDICAL" : "POST-WINDOWS";
 
     if (daysOut === null) {
@@ -15155,12 +15160,12 @@ whatsNewUnseen && React.createElement("div", {
 
       userStatus === "retired" && React.createElement("div", {style:{background:"rgba(139,125,60,0.12)", border:"1px solid " + C.gold, borderRadius:8, padding:"10px 12px", marginBottom:12}},
         React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:C.gold, marginBottom:4}}, "\u258C RETIREE PATHWAY"),
-        React.createElement("div", {style:{fontSize:13, color:C.textBody, lineHeight:1.6}}, "Retirees are NOT eligible for TAMP. Transition to TRICARE Prime/Select — TRICARE For Life at 65. TAP recommended start: T-730 (24 months). SkillBridge hidden (not applicable).")
+        React.createElement("div", {style:{fontSize:13, color:C.textBody, lineHeight:1.6}}, "Active-duty retirement follows separate TRICARE rules, not TAMP. Complete eligible Prime/Select enrollment through milConnect BWE within 90 days and pay required fees. TRICARE For Life requires Medicare Part A and Part B. TAP recommended start: T-730 (24 months). SkillBridge hidden (not applicable).")
       ),
 
       userStatus === "guard" && React.createElement("div", {style:{background:"rgba(74,93,35,0.12)", border:"1px solid " + C.green, borderRadius:8, padding:"10px 12px", marginBottom:12}},
         React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:2, color:C.greenBright, marginBottom:4}}, "\u258C GUARD / RESERVE PATHWAY"),
-        React.createElement("div", {style:{fontSize:13, color:C.textBody, lineHeight:1.6}}, "Most windows apply only if activated 180+ days on Title 10. TRICARE path: active-duty TRICARE → TAMP (if qualifying) → TRS on return to Selected Reserve. Submit new TRICARE enrollment within 90 days of last active-duty day or be limited to MTF-only.")
+        React.createElement("div", {style:{fontSize:13, color:C.textBody, lineHeight:1.6}}, "Most windows apply only if activated 180+ days on Title 10. TRICARE follows different eligibility rules: TAMP depends on qualifying orders and service determination. After deactivation, update DEERS and complete any needed eligible plan change through milConnect BWE within 90 days; contact your regional contractor about eligibility or special circumstances. Eligible Selected Reserve members may use TRS afterward.")
       ),
 
       separationDate && React.createElement("button", { onClick: function() { if (downloadDeadlineICS(separationDate, window.__trackEvent)) showToast("DEADLINES SAVED \u2014 open the file to add to your calendar"); }, style: { width: "100%", marginBottom: 12, padding: "13px", background: "none", border: "1px dashed " + C.gold, borderRadius: 8, color: C.gold, fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1.5, cursor: "pointer" } }, "\uD83D\uDCC5 ADD MY DEADLINES TO CALENDAR (.ICS)"),
@@ -15221,7 +15226,7 @@ whatsNewUnseen && React.createElement("div", {
               })
             ),
             w.tampEligibility && React.createElement("div", {style:{marginTop:12}},
-              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:6}}, "TAMP ELIGIBILITY (must meet \u22651)"),
+              React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:6}}, "TAMP CATEGORIES IN TRICARE GUIDANCE - SERVICE DETERMINES ELIGIBILITY"),
               w.tampEligibility.map(function(item, i) {
                 return React.createElement("div", {key:i, style:{fontSize:13, color:C.textBody, lineHeight:1.5, marginBottom:4, paddingLeft:16, position:"relative"}},
                   React.createElement("span", {style:{position:"absolute", left:0, color:C.greenBright, fontFamily:"'Oswald',sans-serif"}}, "\u25B8"),
@@ -15232,7 +15237,7 @@ whatsNewUnseen && React.createElement("div", {
             w.decisionBranch && React.createElement("div", {style:{marginTop:14, background:C.bg, border:"1px solid " + C.border, borderRadius:4, padding:"10px 12px"}},
               React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.greenBright, marginBottom:8}}, "\u25C7 DECISION BRANCH \u00B7 " + w.decisionBranch.title),
               w.decisionBranch.options.map(function(opt, i) {
-                return React.createElement("div", {key:i, style:{display:"flex", gap:8, marginBottom:8, fontSize:13, lineHeight:1.5}},
+                return React.createElement("div", {key:i, className:w.id === "tricare" ? "tops-tricare-decision-row" : undefined, style:{display:"flex", gap:8, marginBottom:8, fontSize:13, lineHeight:1.5}},
                   React.createElement("div", {style:{flex:"0 0 40%", color:C.textPrimary, fontFamily:"'Oswald',sans-serif", fontSize:11, letterSpacing:0.5}}, "IF " + opt.condition),
                   React.createElement("div", {style:{flex:1, color:C.textBody, paddingLeft:10, borderLeft:"1px solid " + C.border}}, "\u2192 " + opt.result)
                 );
