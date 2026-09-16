@@ -6280,6 +6280,8 @@ function App() {
   // Smart Reminder Engine state
   const [dismissedReminders, setDismissedReminders] = useState(function() { try { var v = window.__safeGet("tops_dismissed_reminders"); return v ? JSON.parse(v) : {}; } catch(e) { return {}; } });
   const [reminderExpanded, setReminderExpanded] = useState(null);
+  const [focusedReminderId, setFocusedReminderId] = useState(null);
+  const [reminderNotice, setReminderNotice] = useState("");
   const [expandedWindow, setExpandedWindow] = useState(null);
   const [criticalFilter, setCriticalFilter] = useState("ALL");
   const [reminderFilterPri, setReminderFilterPri] = useState("ALL");
@@ -6293,6 +6295,10 @@ function App() {
     if (tab === "timeline") setSelectedMilestone(milestoneId || null);
     if (tab === "resources") setSubTab("documents");
     if (tab === "reminders") {
+      var focusedId = target.slice("tops-reminder-".length);
+      setFocusedReminderId(invoker && invoker.indexOf("tops-home-") === 0 ? focusedId : null);
+      setReminderNotice("");
+      if (invoker && invoker.indexOf("tops-home-") === 0) continuationFocus.current = "tops-focused-title";
       setReminderFilterPri("ALL");
       setReminderFilterCat("ALL");
       setShowDismissed(false);
@@ -6304,7 +6310,7 @@ function App() {
     var id = continuationFocus.current || (activeTab === "dashboard" && continuationReturn.current);
     if (!id) return;
     var frame = requestAnimationFrame(function() {
-      var target = document.getElementById(id);
+      var target = document.getElementById(id) || (activeTab === "dashboard" && document.getElementById("tops-home-timeline"));
       if (!target) return;
       target.focus();
       target.scrollIntoView({ block: "center" });
@@ -6312,7 +6318,8 @@ function App() {
       if (activeTab === "dashboard") continuationReturn.current = null;
     });
     return function() { cancelAnimationFrame(frame); };
-  }, [activeTab, selectedMilestone, subTab, reminderExpanded]);
+  }, [activeTab, selectedMilestone, subTab, reminderExpanded, focusedReminderId, dismissedReminders]);
+  useEffect(function() { if (activeTab !== "reminders") setFocusedReminderId(null); }, [activeTab]);
   // Readiness Score state
   const [readinessAnswers, setReadinessAnswers] = useState(function() { try { var v = window.__safeGet("tops_readiness"); return v ? JSON.parse(v) : {}; } catch(e) { return {}; } });
   const [readinessCatOpen, setReadinessCatOpen] = useState(null);
@@ -8035,7 +8042,7 @@ function App() {
     return React.createElement("div", null,
       // Home actions retain the date/dismissed filter and use established priority values; ties keep array order.
       urgentReminders.length > 0 && React.createElement("section", { className: "tops-home-actions", "aria-labelledby": "tops-home-actions-title", style: { "--home-heading": C.textPrimary, "--home-accent": C.gold, "--home-button": C.green, "--home-button-text": C.textOnFill, "--home-elevated": C.bgElevated } },
-        React.createElement("h2", { id: "tops-home-actions-title" }, "Your next step"),
+        React.createElement("h2", { id: "tops-home-actions-title", tabIndex: -1 }, "Your next step"),
         React.createElement("article", { className: "tops-home-primary" },
           React.createElement("div", { className: "tops-home-eyebrow" }, "NEXT ACTION"),
           React.createElement("h3", null, urgentReminders[0].title.replace(/\u26A0\uFE0F /g, "")),
@@ -15068,6 +15075,38 @@ whatsNewUnseen && React.createElement("div", {
     if (reminderFilterCat !== "ALL") filtered = filtered.filter(function(x) { return x.cat === reminderFilterCat; });
     if (reminderFilterPri !== "ALL") filtered = filtered.filter(function(x) { return x.pri === reminderFilterPri; });
     if (!showDismissed) filtered = filtered.filter(function(x) { return !dismissedReminders[x.id]; });
+
+    // Focused Home action: reuse the reminder record and its existing completion store.
+    var focusedReminder = SMART_REMINDERS.find(function(r) { return r.id === focusedReminderId; });
+    if (focusedReminder) {
+      var r = focusedReminder;
+      var isComplete = !!dismissedReminders[r.id];
+      var nextReminder = etsMonths === null ? null : SMART_REMINDERS.filter(function(item) { var d = item.mo - etsMonths; return d >= -1 && d <= 3 && !dismissedReminders[item.id] && item.id !== r.id; }).sort(function(a, b) { var rank = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, ADVISORY: 3 }; return (rank[a.pri] === undefined ? 9 : rank[a.pri]) - (rank[b.pri] === undefined ? 9 : rank[b.pri]); })[0];
+      var actionStyle = { minHeight: 44, minWidth: 44, padding: "10px 16px", border: "1px solid " + C.border, borderRadius: 6, background: C.bgElevated, color: C.textPrimary, fontSize: 14, cursor: "pointer" };
+      return React.createElement("section", { "aria-labelledby": "tops-focused-title", style: { color: C.textBody } },
+        React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 20 } },
+          React.createElement("button", { type: "button", style: actionStyle, onClick: function() { continuationReturn.current = "tops-home-actions-title"; setActiveTab("dashboard"); } }, "Back to Home"),
+          React.createElement("button", { type: "button", style: actionStyle, onClick: function() { setFocusedReminderId(null); continuationFocus.current = "tops-reminder-" + r.id; setReminderExpanded(r.id); setShowDismissed(isComplete); } }, "All reminders")
+        ),
+        React.createElement("h2", { id: "tops-focused-title", tabIndex: -1, style: { color: C.textPrimary, fontSize: 26, lineHeight: 1.3, margin: "0 0 12px" } }, r.title),
+        React.createElement("div", { role: "status", "aria-live": "polite", style: { marginBottom: 12 } }, reminderNotice),
+        isComplete && React.createElement("div", { style: { padding: 18, marginBottom: 20, border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard } },
+          React.createElement("p", { style: { marginTop: 0 } }, "This reminder is marked complete."),
+          React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 10 } },
+            React.createElement("button", { id: "tops-focused-undo", type: "button", style: actionStyle, onClick: function() { setDismissedReminders(function(p) { var n = Object.assign({}, p); delete n[r.id]; return n; }); setReminderNotice("Reminder restored."); continuationFocus.current = "tops-focused-title"; } }, "Undo"),
+            nextReminder && React.createElement("button", { type: "button", style: actionStyle, onClick: function() { setFocusedReminderId(nextReminder.id); setReminderNotice(""); continuationFocus.current = "tops-focused-title"; } }, "Next action: " + nextReminder.title)
+          ),
+          !nextReminder && React.createElement("p", null, "No remaining reminders currently match your Home action window. You can review all reminders or restore this reminder.")
+        ),
+        React.createElement("p", { style: { lineHeight: 1.7 } }, r.brief),
+        React.createElement("h3", { style: { color: C.textPrimary } }, "Action items"),
+        React.createElement("ol", { style: { paddingLeft: 24, lineHeight: 1.7 } }, r.items.map(function(item, i) { return React.createElement("li", { key: i, style: { paddingLeft: 4, marginBottom: 14 } }, item); })),
+        r.deadline && React.createElement("div", { style: { padding: 16, border: "1px solid " + C.border, borderRadius: 8, marginBottom: 16, lineHeight: 1.7, background: C.bgElevated } }, React.createElement("h3", { style: { color: C.textPrimary, marginTop: 0 } }, "Timing"), r.deadline),
+        r.why && React.createElement("p", { style: { lineHeight: 1.7 } }, React.createElement("strong", null, "Why this matters: "), r.why),
+        r.link && React.createElement("a", { href: r.link, target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline", marginBottom: 16 } }, "Open Resource"),
+        !isComplete && React.createElement("div", { style: { marginTop: 16 } }, React.createElement("button", { type: "button", style: Object.assign({}, actionStyle, { background: C.green, color: C.textOnFill }), onClick: function() { setDismissedReminders(function(p) { var n = Object.assign({}, p); n[r.id] = true; return n; }); setReminderNotice("Reminder marked complete."); continuationFocus.current = "tops-focused-undo"; } }, "Mark reminder complete"))
+      );
+    }
 
     return React.createElement("div", null,
       !separationDate && React.createElement("div", { style: { marginBottom: 12 } },
