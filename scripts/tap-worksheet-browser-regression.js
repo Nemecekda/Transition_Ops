@@ -21,6 +21,12 @@ async function status(){return ev('document.querySelector("[role=status]").textC
 async function click(text){await ev('Array.from(document.querySelectorAll("button")).find(b=>b.textContent==='+JSON.stringify(text)+').click()');}
 await c.send("Page.navigate",{url});await ready();
 assert.equal(await ev('document.activeElement.id'),"career-gap-heading");
+// Legacy saved worksheet loads without a persistence migration.
+await ev('localStorage.setItem("tops_career_gap_v1",JSON.stringify({version:1,target:"SYNTHETIC legacy role",rows:[0,1,2].map(i=>({have:"",requirement:"",next:"",source:""}))}))');
+await c.send("Page.reload");await ready();
+assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_gap_v1")).version'),1);
+assert.equal(await ev('document.getElementById("career-gap-target").value'),"SYNTHETIC legacy role");
+
 // Real browser text insertion then immediately activate save in the next CDP command.
 for(let i=0;i<5;i++){
  await ev('document.getElementById("career-gap-target").focus()');
@@ -32,6 +38,18 @@ for(let i=0;i<5;i++){
 await ev('document.getElementById("career-gap-0-have").focus()');await c.send("Input.insertText",{text:sentinels[1]});await click("Save on this browser");
 await c.send("Page.reload");await ready();assert.equal(await ev('document.getElementById("career-gap-0-have").value'),sentinels[1]);assert.equal(await ev('document.querySelectorAll("img").length'),0);
 await ev('document.getElementById("career-gap-target").focus()');await c.send("Input.insertText",{text:"UNSAVED"});await c.send("Page.reload");await ready();assert.equal(await ev('document.getElementById("career-gap-target").value.includes("UNSAVED")'),false);
+// Optional fields remain local and appear in a deterministic summary.
+await ev('Array.from(document.querySelectorAll("summary")).find(s=>s.textContent==="Prepare for a counselor meeting").click()');
+await ev('document.getElementById("career-prep-opportunity").focus()');await c.send("Input.insertText",{text:"SYNTHETIC_LATEST_GAP_PROGRAM"});
+await ev('document.getElementById("career-prep-questions").focus()');await c.send("Input.insertText",{text:"SYNTHETIC_LATEST_GAP_QUESTION"});
+await click("Review counselor summary");
+await helpers.waitForExpression(c,'document.activeElement.id === "career-prep-summary-heading"',"summary heading focus",3000);
+assert.ok(await ev('document.querySelector("section").textContent.includes("SYNTHETIC_LATEST_GAP_QUESTION")'));
+assert.equal(await ev('Array.from(document.querySelectorAll("dt")).some(n=>n.textContent==="Public office contact reference")'),false);
+await click("Back to edit worksheet");await helpers.waitForExpression(c,'document.activeElement.id === "career-gap-heading"',"edit heading focus",3000);
+assert.equal(await ev('document.getElementById("career-prep-opportunity").value'),"SYNTHETIC_LATEST_GAP_PROGRAM");
+await click("Save on this browser");assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_gap_v1")).version'),2);
+await c.send("Page.reload");await ready();assert.equal(await ev('document.getElementById("career-prep-questions").value'),"SYNTHETIC_LATEST_GAP_QUESTION");
 await c.send("Emulation.setDeviceMetricsOverride",{width:320,height:700,deviceScaleFactor:1,mobile:true});
 assert.ok(await ev('document.documentElement.scrollWidth<=320'));
 await ev('Array.from(document.querySelectorAll("summary")).find(s=>s.textContent==="Education and training").focus()');
@@ -41,5 +59,5 @@ await click("Clear worksheet");assert.equal(await ev('localStorage.getItem("tops
 // Denial remains visibly truthful when the existing silent storage helper cannot save.
 await ev('window.__safeSet=function(){};document.getElementById("career-gap-target").focus()');await c.send("Input.insertText",{text:"DENIED_SYNTHETIC"});await click("Save on this browser");assert.match(await status(),/^Not saved/);assert.equal(await ev('document.getElementById("career-gap-target").value'),"DENIED_SYNTHETIC");
 assert.equal(errors.length,0);for(const text of attempts)for(const sentinel of sentinels)assert.ok(!text.includes(sentinel));
-console.log("TAP BROWSER PASS: actual React worksheet; five latest-keystroke immediate saves; saved/unsaved reload; plaintext injection; 320px no overflow; keyboard disclosure; clear/reload; save denial; no sentinel in network attempts; zero exceptions");
+console.log("TAP BROWSER PASS: actual React worksheet; five latest-keystroke immediate saves; saved/unsaved reload; plaintext injection; 320px no overflow; keyboard disclosure; clear/reload; save denial; v1 read/v2 explicit save; partial summary/back focus; counselor reload; no sentinel in network attempts; zero exceptions");
 }finally{await helpers.stopChrome(chrome);await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e.stack);process.exitCode=1;});

@@ -15,7 +15,7 @@ const localStorage = {
   removeItem(key) { touches++; if (denied) throw new Error("denied"); storage.delete(key); }
 };
 const forbidden = () => { throw new Error("Worksheet must not contact or log answers"); };
-const ctx = { localStorage, window: { __IS_IFRAME: false, __safeSet(k,v) { try { localStorage.setItem(k,v); } catch (_) {} }, __trackEvent: forbidden }, fetch: forbidden, console: {log: forbidden}, navigator: {sendBeacon: forbidden}, useEffect: f => f(), document: {getElementById(id) { return {focus() {focused=id;}}; }}, React: {createElement(type, props, ...children) {return {type,props:props||{},children:children.flat(Infinity)};}} };
+const ctx = { localStorage, window: { __IS_IFRAME: false, __safeSet(k,v) { try { localStorage.setItem(k,v); } catch (_) {} }, __trackEvent: forbidden }, fetch: forbidden, console: {log: forbidden}, navigator: {sendBeacon: forbidden}, useState: initial => [initial, () => {}], useEffect: f => f(), document: {getElementById(id) { return {focus() {focused=id;}}; }}, React: {createElement(type, props, ...children) {return {type,props:props||{},children:children.flat(Infinity)};}} };
 vm.runInNewContext(code + '\nthis.api={empty:topsEmptyGap,validate:topsValidateGap,load:topsLoadGap,save:topsSaveGap,clear:topsClearGap,render:CareerGapWorksheet,key:TOPS_GAP_KEY};',ctx);
 const api = ctx.api;
 let state = api.load();
@@ -23,11 +23,11 @@ function nodes(n) { return !n || typeof n !== "object" ? [] : [n,...n.children.f
 function view() { return nodes(api.render({colors:{}, state, setState(next) {state=typeof next === "function" ? next(state) : next;}})); }
 function field(id,value) {const n=view().find(n=>n.props.id===id); assert.ok(n,id);n.props.onChange({target:{value}});}
 function click(label) {const n=view().find(n=>n.type==="button" && n.children.includes(label));assert.ok(n,label);n.props.onClick();}
-assert.equal(view().filter(n=>n.type==="textarea").length,12);
+assert.equal(view().filter(n=>n.type==="textarea").length,17);
 assert.equal(focused,"career-gap-heading");
-assert.deepEqual(view().filter(n=>n.type==="details").map(n=>n.props.open),[true,false,false]);
+assert.deepEqual(view().filter(n=>n.type==="details").map(n=>n.props.open),[undefined,true,false,false]);
 const labels = view().filter(n=>n.type==="label").map(n=>n.props.htmlFor);
-for (const n of view().filter(n=>["input","textarea"].includes(n.type))) assert.ok(labels.includes(n.props.id));
+for (const n of view().filter(n=>["input","textarea","select"].includes(n.type))) assert.ok(labels.includes(n.props.id));
 const sentinel = '<img src=x onerror="fetch(\"SYNTHETIC_GAP_SENTINEL\")">';
 field("career-gap-target",sentinel);field("career-gap-0-have",sentinel);
 assert.equal(state.draft.target,sentinel);
@@ -42,7 +42,7 @@ field("career-gap-target","changed but unsaved");assert.equal(api.load().draft.t
 click("Save on this browser");assert.equal(api.load().draft.target,"changed but unsaved");
 click("Clear worksheet");assert.equal(state.draft.target,"");assert.equal(api.load().draft.target,"");assert.equal(storage.get("unrelated"),"retain");assert.equal(storage.has(api.key),false);
 const valid=api.empty();valid.target="x".repeat(160);valid.rows[0].have="x".repeat(600);valid.rows[1].source="x".repeat(240);assert.ok(api.validate(valid));
-for(const mutate of [d=>d.target="x".repeat(161),d=>d.rows[0].have="x".repeat(601),d=>d.rows[1].source="x".repeat(241),d=>d.rows.pop(),d=>d.rows[0].next=42,d=>d.version=2,d=>d.extra="x"]) { const d=api.empty();mutate(d);assert.equal(api.validate(d),null);assert.equal(api.save(d),false); }
+for(const mutate of [d=>d.target="x".repeat(161),d=>d.rows[0].have="x".repeat(601),d=>d.rows[1].source="x".repeat(241),d=>d.rows.pop(),d=>d.rows[0].next=42,d=>d.version=3,d=>d.extra="x"]) { const d=api.empty();mutate(d);assert.equal(api.validate(d),null);assert.equal(api.save(d),false); }
 for(const raw of ['{broken',JSON.stringify({version:1,target:"",rows:[]}),"x".repeat(10001)]) {storage.set(api.key,raw);const load=api.load();assert.equal(load.draft.target,"");assert.match(load.status,/could not be read/);}
 api.clear();denied=true;field("career-gap-target","temporary");click("Save on this browser");assert.match(state.status,/^Not saved/);assert.equal(state.draft.target,"temporary");click("Clear worksheet");assert.match(state.status,/could not be removed/);assert.equal(state.draft.target,"");assert.match(api.load().status,/unavailable/);
 denied=false;ctx.window.__IS_IFRAME=true;const before=touches;assert.equal(api.save(api.empty()),false);assert.equal(api.clear(),true);assert.match(api.load().status,/Embedded/);assert.equal(touches,before);assert.equal(view().find(n=>n.type==="button" && n.children.includes("Save on this browser")).props.disabled,true);

@@ -5837,15 +5837,21 @@ const TOPS_TAP_PREP = {
 
 const TOPS_GAP_KEY = "tops_career_gap_v1";
 const TOPS_GAP_ROWS = ["Skills", "Education and training", "Credentials"];
+const TOPS_PREP_OFFICES = ["", "TAP counselor", "Education office", "Employment adviser", "Other"];
+const TOPS_PREP_STATUSES = ["", "Not contacted", "Contacted", "Waiting for a response", "Response received"];
+const TOPS_PREP_LIMITS = { opportunity: 160, source: 240, questions: 600, reference: 160, followup: 240 };
+function topsEmptyPrep() { return { opportunity: "", source: "", questions: "", office: "", reference: "", followup: "", status: "" }; }
 function topsEmptyGap() {
-  return { version: 1, target: "", rows: TOPS_GAP_ROWS.map(function() { return { have: "", requirement: "", next: "", source: "" }; }) };
+  return { version: 2, target: "", rows: TOPS_GAP_ROWS.map(function() { return { have: "", requirement: "", next: "", source: "" }; }), prep: topsEmptyPrep() };
 }
 function topsValidateGap(value) {
-  if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).sort().join(",") !== "rows,target,version" || value.version !== 1 || typeof value.target !== "string" || value.target.length > 160 || !Array.isArray(value.rows) || value.rows.length !== 3) return null;
+  if (!value || typeof value !== "object" || Array.isArray(value) || ![1, 2].includes(value.version) || Object.keys(value).sort().join(",") !== (value.version === 1 ? "rows,target,version" : "prep,rows,target,version") || typeof value.target !== "string" || value.target.length > 160 || !Array.isArray(value.rows) || value.rows.length !== 3) return null;
+  var prep = value.version === 1 ? topsEmptyPrep() : value.prep;
+  if (!prep || typeof prep !== "object" || Array.isArray(prep) || Object.keys(prep).sort().join(",") !== "followup,office,opportunity,questions,reference,source,status" || !TOPS_PREP_OFFICES.includes(prep.office) || !TOPS_PREP_STATUSES.includes(prep.status) || !Object.keys(TOPS_PREP_LIMITS).every(function(key) { return typeof prep[key] === "string" && prep[key].length <= TOPS_PREP_LIMITS[key]; })) return null;
   if (!value.rows.every(function(row) {
     return row && typeof row === "object" && !Array.isArray(row) && Object.keys(row).sort().join(",") === "have,next,requirement,source" && ["have", "requirement", "next", "source"].every(function(key) { return typeof row[key] === "string" && row[key].length <= (key === "source" ? 240 : 600); });
   })) return null;
-  return { version: 1, target: value.target, rows: value.rows.map(function(row) { return { have: row.have, requirement: row.requirement, next: row.next, source: row.source }; }) };
+  return { version: 2, target: value.target, rows: value.rows.map(function(row) { return { have: row.have, requirement: row.requirement, next: row.next, source: row.source }; }), prep: Object.assign({}, prep) };
 }
 function topsLoadGap() {
   var empty = { draft: topsEmptyGap(), status: "Not saved. Your changes stay in this open page until you choose Save on this browser." };
@@ -5854,21 +5860,23 @@ function topsLoadGap() {
     var raw = localStorage.getItem(TOPS_GAP_KEY);
     if (raw === null) return empty;
     var parsed;
-    try { parsed = raw.length <= 10000 ? JSON.parse(raw) : null; } catch (e) { parsed = null; }
+    try { parsed = raw.length <= 60000 ? JSON.parse(raw) : null; } catch (e) { parsed = null; }
     var draft = topsValidateGap(parsed);
     return draft ? { draft: draft, status: "Loaded your saved worksheet from this browser." } : Object.assign({}, empty, { status: "Saved worksheet could not be read. Start again or clear this worksheet." });
   } catch (e) { return Object.assign({}, empty, { status: "Browser storage is unavailable. Your changes stay in this open page." }); }
 }
 function topsSaveGap(draft) {
-  if (window.__IS_IFRAME || !topsValidateGap(draft)) return false;
-  try { var raw = JSON.stringify(draft); window.__safeSet(TOPS_GAP_KEY, raw); return localStorage.getItem(TOPS_GAP_KEY) === raw; } catch (e) { return false; }
+  var normalized = topsValidateGap(draft);
+  if (window.__IS_IFRAME || !normalized) return false;
+  try { var raw = JSON.stringify(normalized); window.__safeSet(TOPS_GAP_KEY, raw); return localStorage.getItem(TOPS_GAP_KEY) === raw; } catch (e) { return false; }
 }
 function topsClearGap() {
   if (window.__IS_IFRAME) return true;
   try { localStorage.removeItem(TOPS_GAP_KEY); return localStorage.getItem(TOPS_GAP_KEY) === null; } catch (e) { return false; }
 }
 function CareerGapWorksheet(props) {
-  useEffect(function() { var heading = document.getElementById("career-gap-heading"); if (heading) heading.focus(); }, []);
+  var [showSummary, setShowSummary] = useState(false);
+  useEffect(function() { var heading = document.getElementById(showSummary ? "career-prep-summary-heading" : "career-gap-heading"); if (heading) heading.focus(); }, [showSummary]);
   var C = props.colors;
   var fieldStyle = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 10, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 5, font: "inherit" };
   var buttonStyle = { minHeight: 44, padding: "10px 14px", background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.gold, borderRadius: 5, font: "inherit", cursor: "pointer" };
@@ -5879,12 +5887,34 @@ function CareerGapWorksheet(props) {
       return { draft: draft, status: window.__IS_IFRAME ? "Unsaved changes. Embedded view keeps this worksheet in this open page only." : "Unsaved changes. Choose Save on this browser to replace your saved worksheet." };
     });
   }
+  function editPrep(key, value) {
+    props.setState(function(previous) { return { draft: Object.assign({}, previous.draft, { prep: Object.assign({}, previous.draft.prep, { [key]: value }) }), status: window.__IS_IFRAME ? "Unsaved changes. Embedded view keeps this worksheet in this open page only." : "Unsaved changes. Choose Save on this browser to replace your saved worksheet." }; });
+  }
+  if (showSummary) {
+    var sections = [];
+    function add(label, value) { if (value.trim()) sections.push(React.createElement("div", { key: label, style: { marginBottom: 14 } }, React.createElement("dt", { style: { fontWeight: 700, color: C.goldBright } }, label), React.createElement("dd", { style: { margin: "5px 0 0", whiteSpace: "pre-wrap", overflowWrap: "anywhere", lineHeight: 1.6 } }, value))); }
+    add("Target civilian occupation", props.state.draft.target);
+    props.state.draft.rows.forEach(function(row, i) { [["have", "What I have"], ["requirement", "What the role requires"], ["next", "What I need to do next"], ["source", "Source or evidence"]].forEach(function(field) { add(TOPS_GAP_ROWS[i] + " - " + field[1], row[field[0]]); }); });
+    [["opportunity", "Job or training opportunity"], ["source", "Opportunity source or reference"], ["questions", "Questions to discuss"], ["office", "Office"], ["reference", "Public office contact reference"], ["followup", "My next follow-up action"], ["status", "Contact status (reported by you)"]].forEach(function(field) { add(field[1], props.state.draft.prep[field[0]]); });
+    return React.createElement("section", { "aria-labelledby": "career-prep-summary-heading", style: { padding: 14, border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textBody } },
+      React.createElement("h3", { id: "career-prep-summary-heading", tabIndex: -1, style: { color: C.textPrimary, marginBottom: 12 } }, "Counselor preparation summary"),
+      React.createElement("p", { style: { lineHeight: 1.6, marginBottom: 14 } }, "Prepared by you for discussion with a counselor. This summary does not verify qualifications, official completion or receipt by an office."),
+      React.createElement("button", { type: "button", style: buttonStyle, onClick: function() { setShowSummary(false); } }, "Back to edit worksheet"),
+      sections.length ? React.createElement("dl", { style: { marginTop: 18 } }, sections) : React.createElement("p", { style: { lineHeight: 1.6, marginTop: 18 } }, "No notes entered yet. Return to the worksheet to add an occupation, gaps or questions."),
+      React.createElement("p", { role: "status", "aria-live": "polite", style: { lineHeight: 1.6, marginTop: 14 } }, props.state.status));
+  }
   return React.createElement("section", { "aria-labelledby": "career-gap-heading", style: { padding: 14, marginBottom: 16, border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textBody } },
     React.createElement("h3", { id: "career-gap-heading", tabIndex: -1, style: { color: C.textPrimary, margin: "0 0 10px" } }, "Your career gap analysis"),
+    React.createElement("button", { type: "button", style: buttonStyle, onClick: function() { setShowSummary(true); } }, "Review counselor summary"),
     React.createElement("p", { style: { lineHeight: 1.6 } }, "Compare your experience with the requirements of one civilian role, then choose your next action."),
     React.createElement("p", { id: "career-gap-help", style: { lineHeight: 1.6 } }, "Use your service or civilian records and a current job posting or licensing source. Leave anything you have not confirmed blank. Do not enter sensitive records or personal identifiers."),
     React.createElement("label", { htmlFor: "career-gap-target", style: { display: "block", marginBottom: 6 } }, "Target civilian occupation"),
     React.createElement("input", { id: "career-gap-target", type: "text", maxLength: 160, autoComplete: "off", "aria-describedby": "career-gap-help", value: props.state.draft.target, onChange: function(e) { edit(null, "target", e.target.value); }, style: fieldStyle }),
+    React.createElement("details", { style: { marginTop: 14, marginBottom: 14 } },
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.goldBright, cursor: "pointer", fontWeight: 700 } }, "Prepare for a counselor meeting"),
+      React.createElement("p", { style: { lineHeight: 1.6, marginBottom: 12 } }, "Optional: add the opportunity, questions and public office reference you want to discuss. Do not enter personal counselor details, medical records or personal identifiers."),
+      [["opportunity", "Job or training opportunity"], ["source", "Source link or reference"], ["questions", "Questions to discuss"], ["reference", "Public office contact reference"], ["followup", "My next follow-up action"]].map(function(field) { var id = "career-prep-" + field[0]; return React.createElement("div", { key: field[0], style: { marginBottom: 12 } }, React.createElement("label", { htmlFor: id, style: { display: "block", marginBottom: 6 } }, field[1]), React.createElement("textarea", { id: id, rows: field[0] === "questions" ? 3 : 2, maxLength: TOPS_PREP_LIMITS[field[0]], autoComplete: "off", value: props.state.draft.prep[field[0]], onChange: function(e) { editPrep(field[0], e.target.value); }, style: Object.assign({}, fieldStyle, { resize: "vertical" }) })); }),
+      [["office", "Office", TOPS_PREP_OFFICES], ["status", "Contact status (reported by you)", TOPS_PREP_STATUSES]].map(function(field) { var id = "career-prep-" + field[0]; return React.createElement("div", { key: field[0], style: { marginBottom: 12 } }, React.createElement("label", { htmlFor: id, style: { display: "block", marginBottom: 6 } }, field[1]), React.createElement("select", { id: id, value: props.state.draft.prep[field[0]], onChange: function(e) { editPrep(field[0], e.target.value); }, style: fieldStyle }, field[2].map(function(option) { return React.createElement("option", { key: option, value: option }, option || "Not entered"); }))); })),
     TOPS_GAP_ROWS.map(function(label, i) { return React.createElement("details", { key: label, open: i === 0, style: { marginTop: 12 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", boxSizing: "border-box", color: C.goldBright, cursor: "pointer", fontWeight: 700 } }, label), React.createElement("fieldset", { style: { minWidth: 0, margin: "18px 0", padding: 12, border: "1px solid " + C.border, borderRadius: 5 } },
       React.createElement("legend", { style: { color: C.goldBright, padding: "0 5px", fontWeight: 700 } }, label),
       [["have", "What I have"], ["requirement", "What the role requires"], ["next", "What I need to do next"], ["source", "Evidence or source reference (optional)"]].map(function(field) {
