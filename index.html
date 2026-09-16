@@ -7594,10 +7594,10 @@ function App() {
     return React.createElement("button", { key: t.id, onClick: function() { setActiveTab(t.id); setSelectedMilestone(null); }, style: { padding: "10px 12px", background: activeTab === t.id ? C.border : "transparent", border: "none", borderBottom: activeTab === t.id ? "2px solid " + C.gold : "2px solid transparent", color: activeTab === t.id ? C.textPrimary : C.inactive, fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.5, cursor: "pointer", whiteSpace: "nowrap" } }, t.label);
   }))),
 
-  /*#__PURE__*/React.createElement("main", {
+  /*#__PURE__*/React.createElement(activeTab === "reminders" && focusedReminderId ? "div" : "main", {
     className: "content-area",
     style: {
-      padding: "14px 14px 120px"
+      padding: activeTab === "reminders" && focusedReminderId ? "14px 14px 0" : "14px 14px 120px"
     }
   },
 
@@ -15083,7 +15083,7 @@ whatsNewUnseen && React.createElement("div", {
       var isComplete = !!dismissedReminders[r.id];
       var nextReminder = etsMonths === null ? null : SMART_REMINDERS.filter(function(item) { var d = item.mo - etsMonths; return d >= -1 && d <= 3 && !dismissedReminders[item.id] && item.id !== r.id; }).sort(function(a, b) { var rank = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, ADVISORY: 3 }; return (rank[a.pri] === undefined ? 9 : rank[a.pri]) - (rank[b.pri] === undefined ? 9 : rank[b.pri]); })[0];
       var actionStyle = { minHeight: 44, minWidth: 44, padding: "10px 16px", border: "1px solid " + C.border, borderRadius: 6, background: C.bgElevated, color: C.textPrimary, fontSize: 14, cursor: "pointer" };
-      return React.createElement("section", { "aria-labelledby": "tops-focused-title", style: { color: C.textBody } },
+      return React.createElement("main", { className: "content-area", "aria-labelledby": "tops-focused-title", style: { color: C.textBody, padding: "14px 14px 120px" } },
         React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 20 } },
           React.createElement("button", { type: "button", style: actionStyle, onClick: function() { continuationReturn.current = "tops-home-actions-title"; setActiveTab("dashboard"); } }, "Back to Home"),
           React.createElement("button", { type: "button", style: actionStyle, onClick: function() { setFocusedReminderId(null); continuationFocus.current = "tops-reminder-" + r.id; setReminderExpanded(r.id); setShowDismissed(isComplete); } }, "All reminders")

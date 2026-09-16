@@ -28,6 +28,8 @@ function nodes(node) { return !node || typeof node !== "object" ? [] : [node, ..
 function view() { return nodes(vm.runInNewContext("(function(){" + render + "})()", sandbox)); }
 function button(label) { const found = view().find(n => n.type === "button" && n.children.some(x => typeof x === "string" && x.startsWith(label))); assert.ok(found, label); return found; }
 let initial = view();
+assert.equal(initial[0].type, "main", "Focused content owns its page landmark");
+assert.equal(initial[0].props.className, "content-area", "Focused content retains app responsive inset");
 for (const exact of [bdd.title, bdd.brief, ...bdd.items, bdd.deadline, bdd.why].filter(Boolean)) assert.ok(initial.some(n => n.children.includes(exact)), "exact reminder text retained");
 assert.equal(initial.find(n => n.type === "a").props.href, bdd.link);
 button("Mark reminder complete").props.onClick();
