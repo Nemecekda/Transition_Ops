@@ -7,6 +7,9 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 const path = require("node:path");
 const source = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
+const palette = {};
+const themeStart = source.indexOf("const THEMES = {");
+vm.runInNewContext(source.slice(themeStart, source.indexOf("\n};", themeStart) + 3) + "\nthis.themes = THEMES;", palette);
 const selection = source.match(/var urgentReminders = [^\n]+;/)[0];
 const renderStart = source.indexOf("      urgentReminders.length > 0 && React.createElement(\"section\", { className: \"tops-home-actions\"");
 assert.ok(renderStart > 0);
@@ -23,7 +26,7 @@ const reminders = [
 function run(months, dismissed, data = reminders) {
   const calls = [];
   const sandbox = {
-    etsMonths: months, dismissedReminders: dismissed, SMART_REMINDERS: data,
+    etsMonths: months, dismissedReminders: dismissed, SMART_REMINDERS: data, C: palette.themes.tactical,
     React: { createElement: (type, props, ...children) => ({ type, props: props || {}, children: children.flat(Infinity) }) },
     openPlanRoute: (...args) => calls.push(args)
   };
