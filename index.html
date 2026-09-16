@@ -5906,6 +5906,12 @@ function CareerGapWorksheet(props) {
   return React.createElement("section", { "aria-labelledby": "career-gap-heading", style: { padding: 14, marginBottom: 16, border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textBody } },
     React.createElement("h3", { id: "career-gap-heading", tabIndex: -1, style: { color: C.textPrimary, margin: "0 0 10px" } }, "Your career gap analysis"),
     React.createElement("button", { type: "button", style: buttonStyle, onClick: function() { setShowSummary(true); } }, "Review counselor summary"),
+    props.officeOffer && React.createElement("aside", { "aria-label": "Selected public office", style: { padding: 12, marginTop: 12, border: "1px solid " + C.border, borderRadius: 6 } },
+      React.createElement("p", { style: { lineHeight: 1.6 } }, props.officeOffer.name),
+      React.createElement("p", { style: { overflowWrap: "anywhere", lineHeight: 1.6 } }, props.officeOffer.url),
+      React.createElement("p", { style: { lineHeight: 1.6 } }, "Your existing notes are unchanged. Add this public reference only if you want it in your worksheet. Nothing is sent to this office."),
+      React.createElement("button", { type: "button", style: buttonStyle, onClick: function() { editPrep("reference", props.officeOffer.url); props.clearOfficeOffer(); } }, props.state.draft.prep.reference ? "Replace public office reference" : "Use this public office reference"),
+      React.createElement("button", { type: "button", style: buttonStyle, onClick: props.clearOfficeOffer }, "Dismiss office suggestion")),
     React.createElement("p", { style: { lineHeight: 1.6 } }, "Compare your experience with the requirements of one civilian role, then choose your next action."),
     React.createElement("p", { id: "career-gap-help", style: { lineHeight: 1.6 } }, "Use your service or civilian records and a current job posting or licensing source. Leave anything you have not confirmed blank. Do not enter sensitive records or personal identifiers."),
     React.createElement("label", { htmlFor: "career-gap-target", style: { display: "block", marginBottom: 6 } }, "Target civilian occupation"),
@@ -5929,6 +5935,42 @@ function CareerGapWorksheet(props) {
       React.createElement("button", { type: "button", style: buttonStyle, onClick: function() { var ok = topsClearGap(); props.setState({ draft: topsEmptyGap(), status: ok ? (window.__IS_IFRAME ? "Worksheet cleared from this page." : "Worksheet cleared from this page and this browser.") : "Cleared from this page, but the saved copy could not be removed. Browser storage is unavailable." }); } }, "Clear worksheet")),
     React.createElement("p", null, React.createElement("a", { href: "https://www.tapevents.mil/Assets/ResourceContent/TAP/Gap_Analysis_fillable.pdf", target: "_blank", rel: "noopener noreferrer", style: { color: C.goldBright } }, "Official TAP gap analysis worksheet (PDF)")),
     React.createElement("p", { role: "status", "aria-live": "polite", "aria-atomic": "true", style: { color: C.textPrimary, lineHeight: 1.6, marginBottom: 0 } }, props.state.status));
+}
+
+
+function GuardCareerSupport(props) {
+  var [area, setArea] = useState("national");
+  var C = props.colors;
+  var action = { minHeight: 44, padding: "11px 14px", background: C.bg, border: "1px solid " + C.gold, borderRadius: 6, color: C.textPrimary, font: "inherit", cursor: "pointer" };
+  var offices = [
+    { name: "Find a Family Assistance Center", url: "https://www.militaryonesource.mil/resources/tools/national-guard-family-program-lookup/", why: "Find local referral support across military components." },
+    { name: "Army Reserve Family Programs", url: "https://www.usar.army.mil/arfp/", why: "Find Army Reserve family support contacts." },
+    { name: "Military OneSource", url: "https://www.militaryonesource.mil/resources/millife-guides/eligibility-for-military-onesource-services/", why: "Serving Guard and Reserve members and eligible immediate families can get support regardless of activation status." }
+  ];
+  if (area === "wi") offices.unshift({ name: "Wisconsin Service Member Support", url: "https://dma.wi.gov/service-member-support-division/", why: "Connect with Wisconsin's service member and family support team." });
+  return React.createElement("section", { "aria-labelledby": "guard-career-heading", style: { padding: 16, marginBottom: 14, border: "1px solid " + C.gold, borderRadius: 10, background: C.bgCard, color: C.textBody } },
+    React.createElement("h2", { id: "guard-career-heading", style: { color: C.textPrimary, fontSize: 22, margin: "0 0 10px" } }, "Your career, throughout your service"),
+    React.createElement("p", { style: { lineHeight: 1.6 } }, "Build your civilian career while you serve. Keep a target role, your next step and the questions you want help answering."),
+    props.target.trim() && React.createElement("p", { style: { overflowWrap: "anywhere", lineHeight: 1.6 } }, React.createElement("strong", null, "Your target: "), props.target),
+    React.createElement("button", { type: "button", style: action, onClick: function() { props.openPlan(null); } }, props.target.trim() ? "Continue my career plan" : "Work on my career plan"),
+    React.createElement("p", { style: { fontSize: 13, lineHeight: 1.6 } }, "Compare your experience with a role's requirements and choose your next action."),
+    React.createElement("details", null,
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.goldBright, cursor: "pointer", fontWeight: 700 } }, "Employers that pledged support"),
+      React.createElement("p", { style: { lineHeight: 1.6 } }, "An ESGR Statement of Support records an employer's pledge to support Guard and Reserve employees. Use it as a starting point, then check the employer's current jobs and military-leave policies."),
+      React.createElement("p", { style: { lineHeight: 1.6 } }, "A signed pledge does not establish an award, an open job or a hiring guarantee. Results depend on the selected signing-date range."),
+      [["Find ESGR pledge signers", "https://maps.esgrevents.mil/"], ["About the ESGR pledge", "https://www.esgr.mil/Employers/Statement-of-Support"], ["Recognize a supportive supervisor", "https://www.esgr.mil/Service-Members-Family/Nominate-your-Employer"]].map(function(link) { return React.createElement("a", { key: link[1], href: link[1], target: "_blank", rel: "noopener noreferrer", style: { display: "block", minHeight: 44, boxSizing: "border-box", padding: "12px 0", color: C.goldBright, lineHeight: 1.5 } }, link[0]); }),
+      React.createElement("p", { style: { lineHeight: 1.6 } }, "The Patriot Award recognizes supervisors nominated for supporting Guard and Reserve employees.")),
+    React.createElement("details", null,
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.goldBright, cursor: "pointer", fontWeight: 700 } }, "Find career and family support"),
+      React.createElement("p", { style: { lineHeight: 1.6 } }, "Find an office for your question, then add its public contact reference to your plan. Referral access does not establish eligibility for every program."),
+      React.createElement("label", { htmlFor: "guard-support-area", style: { display: "block", marginBottom: 6 } }, "Support directory"),
+      React.createElement("select", { id: "guard-support-area", value: area, onChange: function(e) { setArea(e.target.value === "wi" ? "wi" : "national"); }, style: Object.assign({}, action, { width: "100%" }) }, React.createElement("option", { value: "national" }, "National resources"), React.createElement("option", { value: "wi" }, "Wisconsin example + national resources")),
+      React.createElement("p", { style: { fontSize: 13, lineHeight: 1.6 } }, "This choice does not set your residence or component. Office names vary by state and component."),
+      offices.map(function(office) { return React.createElement("div", { key: office.url, style: { padding: "12px 0", borderTop: "1px solid " + C.border } },
+        React.createElement("a", { href: office.url, target: "_blank", rel: "noopener noreferrer", style: { display: "inline-block", minHeight: 44, padding: "10px 0", boxSizing: "border-box", color: C.goldBright, lineHeight: 1.6 } }, office.name),
+        React.createElement("p", { style: { lineHeight: 1.6 } }, office.why),
+        React.createElement("button", { type: "button", style: action, "aria-label": "Prepare my question for " + office.name, onClick: function() { props.openPlan(office); } }, "Prepare my question")); }))
+  );
 }
 
 function App() {
@@ -6122,10 +6164,11 @@ function App() {
     } catch(e) { return true; }
   });
   const [onboardStep, setOnboardStep] = useState(0);
-  const [onboardData, setOnboardData] = useState({ status: "", branch: "", etsDate: "", concern: "" });
+  const [onboardData, setOnboardData] = useState(function() { var branch = ""; try { var saved = window.__safeGet("tops_user_branch"); if (["army", "navy", "air_force", "marines", "coast_guard", "space_force"].includes(saved)) branch = saved; } catch (e) {} return { status: "", branch: branch, etsDate: "", concern: "" }; });
   const [mosBranch, setMosBranch] = useState("");
   const [mosCode, setMosCode] = useState("");
   const [gapState, setGapState] = useState(topsLoadGap);
+  const [guardOfficeOffer, setGuardOfficeOffer] = useState(null);
   const [pathwayStep, setPathwayStep] = useState(0);
   const [pathwayType, setPathwayType] = useState("");
   const [pathwayMode, setPathwayMode] = useState("journey");
@@ -7872,12 +7915,7 @@ function App() {
             )
           );
         })(),
-        // Welcome header
-        React.createElement("div", { style: { padding: "16px 14px", borderRadius: 12, marginBottom: 14, background: "linear-gradient(135deg, " + C.bgElevated + ", " + C.bgCard + ")", border: "1px solid " + C.border, textAlign: "center" } },
-          React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif", marginBottom: 6 } }, "GUARD / RESERVE"),
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 18, fontWeight: 700, color: C.textPrimary, lineHeight: 1.3, marginBottom: 6 } }, "Your Military Training Has Civilian Value"),
-          React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.6 } }, "Use the tools below to translate your skills, find career matches, explore benefits, and connect with employers who value military training.")
-        ),
+        React.createElement(GuardCareerSupport, { colors: C, target: gapState.draft.target, openPlan: function(office) { setGuardOfficeOffer(office); setPathwayMode("planner"); setPathwayStep(1); setActiveTab("pathway"); window.scrollTo(0, 0); } }),
 
         // v72: same one-tap tool row the standard dashboard gets
         React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 12 } },
@@ -7924,6 +7962,7 @@ function App() {
           )
         ),
 
+        React.createElement("details", { style: { marginBottom: 14 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.goldBright, cursor: "pointer", fontWeight: 700 } }, "More Guard and Reserve guidance"),
         // Guard-specific intel card
         React.createElement("div", { style: { ...S.card, padding: 14, borderColor: C.gold } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "GUARD / RESERVE INTEL"),
@@ -8087,6 +8126,7 @@ function App() {
             return React.createElement("div", { key: ti, style: { fontSize: 12.5, color: C.textBody, lineHeight: 1.7, marginTop: 7, paddingLeft: 10, borderLeft: "2px solid " + C.border } }, t);
           })),
 
+        ),
         // Quick links for more tools
         React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginTop: 6, marginBottom: 8 } }, "MORE TOOLS"),
         React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 } },
@@ -8099,12 +8139,12 @@ function App() {
         ),
 
         // Planning to separate callout
-        React.createElement("div", { className: "dash-card", style: { borderColor: C.goldBright, borderStyle: "dashed", margin: "14px 0 10px", cursor: "pointer" }, onClick: function() { setUserStatus("active"); window.__safeSet("tops_user_status", "active"); showToast("Switched to Active Duty transition view."); } },
+        React.createElement("button", { type: "button", className: "dash-card", style: { width: "100%", minHeight: 44, textAlign: "left", color: C.textPrimary, borderColor: C.goldBright, borderStyle: "dashed", margin: "14px 0 10px", cursor: "pointer" }, onClick: function() { setActiveTab("timeline"); window.scrollTo(0, 0); } },
           React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
             React.createElement("span", { style: { fontSize: 20 } }, "\u2694\uFE0F"),
             React.createElement("div", { style: { flex: 1 } },
-              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.goldBright, letterSpacing: 1 } }, "PLANNING TO SEPARATE OR GO FULL-TIME?"),
-              React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, marginTop: 2 } }, "Tap here to switch to the full transition timeline with ETS countdown, reminders, and separation checklist.")
+              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.goldBright, letterSpacing: 1 } }, "Open transition timeline"),
+              React.createElement("div", { style: { fontSize: 11, color: C.textSecondary, marginTop: 2 } }, "Plan your transition while keeping your Guard/Reserve profile.")
             ),
             React.createElement("span", { style: { fontSize: 14, color: C.goldBright } }, "\u2192")
           )
@@ -10076,7 +10116,7 @@ whatsNewUnseen && React.createElement("div", {
     }
   }, "NEXT: IDENTIFY GAPS \u2192")), pathwayStep === 1 && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
-  }, "STEP 2: GAP ANALYSIS"), React.createElement(CareerGapWorksheet, { colors: C, state: gapState, setState: setGapState }), React.createElement("details", { style: { marginBottom: 14 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.textPrimary, cursor: "pointer" } }, "More guidance"), /*#__PURE__*/React.createElement("div", {
+  }, "STEP 2: GAP ANALYSIS"), React.createElement(CareerGapWorksheet, { colors: C, state: gapState, setState: setGapState, officeOffer: guardOfficeOffer, clearOfficeOffer: function() { setGuardOfficeOffer(null); } }), React.createElement("details", { style: { marginBottom: 14 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.textPrimary, cursor: "pointer" } }, "More guidance"), /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
       padding: 14
