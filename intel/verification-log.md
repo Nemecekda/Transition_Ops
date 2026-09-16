@@ -1749,3 +1749,93 @@ EXPIRES: NONE for the rule; member-specific availability is measured from that m
 
 
 **Boundaries:** V-2026-025 remains PROBABLE/unresolved for online BDD STR handling; no records-requirement correction is authorized by the exam-timing finding. No new dollar magnitude, unrestricted new-dependent transfer, blanket DES exemption or automatic approval is supported. Canonical registration enables PAO/S3 review preparation; it does not authorize app publication, Git staging, merge or deployment. No app, pilot state, provider call, email or schedule changed in this append.
+
+
+<!-- Append-only release packet. Append the records below to the isolated release verification log; do not replace existing records. Prepared 2026-09-16 from implementation-content.md. -->
+
+## GRC-01 - Family Assistance Center referral route
+
+CONFIRMED | 2026-09-16 | S2 | Primary source, rung 1 direct read.
+Source: https://www.militaryonesource.mil/resources/tools/national-guard-family-program-lookup/
+Claim: The official locator describes referral services for geographically dispersed families and retirees from all military components. The descriptive page was read; individual state results were not audited. Referral access does not establish eligibility for every referred program.
+IMPACT: SHIP - ACT | A2 | S2 | 2026-09-16 | revisit NONE
+A1 population: GUARD/RESERVE; SPOUSE/FAMILY; ALREADY SEPARATED where covered as retirees/families. Band: condition-triggered, no fixed separation band or day offset. Excluded: this does not promise every downstream service to every caller. Timing: ACT AVAILABLE NOW.
+A2 act: "Use the National Guard Family Program Lookup to find a Family Assistance Center for referral support."
+A3 surface: Guard/Reserve Home support links. Token: NONE; no Navigator token added. Sweep trigger: NONE.
+A4 cost: NOTHING established beyond the usefulness of a direct support route.
+EXPIRES: NONE identified.
+
+## GRC-02 - Wisconsin support office route
+
+CONFIRMED | 2026-09-16 | S2 | Primary source, rung 1 direct read.
+Source: https://dma.wi.gov/service-member-support-division/
+Claim: Wisconsin DMA publishes its Service Member Support Division and referral services, including employment/financial, TRICARE and ID/DEERS topics. Supports a Wisconsin office route, not a universal J9 title or benefit entitlement.
+IMPACT: SHIP - ACT | A2 | S2 | 2026-09-16 | revisit NONE
+A1 population: GUARD/RESERVE; SPOUSE/FAMILY; ALREADY SEPARATED within the office's published service-member/veteran/family scope. Band: condition-triggered, no fixed separation band or day offset. Excluded: this does not identify Wisconsin as the national office or establish eligibility for its individual programs. Timing: ACT AVAILABLE NOW.
+A2 act: "Contact Wisconsin's Service Member Support Division through its official page for a support referral."
+A3 surface: Guard/Reserve Home support links, explicitly labeled Wisconsin. Token: NONE. Sweep trigger: NONE.
+A4 cost: NOTHING established.
+EXPIRES: NONE identified.
+
+## GRC-03 - Army Reserve Family Programs route
+
+CONFIRMED | 2026-09-16 | S2 | Primary source, rung 1 direct read.
+Source: https://www.usar.army.mil/arfp/
+Claim: Army Reserve Family Programs supports Soldiers and families assigned to the command and links coordinators. This is an Army Reserve route, not a universal federal Reserve office.
+IMPACT: SHIP - ACT | A2 | S2 | 2026-09-16 | revisit NONE
+A1 population: GUARD/RESERVE, specifically Army Reserve; SPOUSE/FAMILY within the program's stated scope. Band: condition-triggered, no fixed separation band. Excluded: this does not designate the Army Reserve office as the support channel for other Reserve branches. Timing: ACT AVAILABLE NOW.
+A2 act: "Use Army Reserve Family Programs' official page to find its support contacts."
+A3 surface: Guard/Reserve Home support links. Token: NONE. Sweep trigger: NONE.
+A4 cost: NOTHING established.
+EXPIRES: NONE identified.
+
+## GRC-04 - Military OneSource serving-member route
+
+CONFIRMED | 2026-09-16 | S2 | Primary source, rung 1 direct read.
+Source: https://www.militaryonesource.mil/resources/millife-guides/eligibility-for-military-onesource-services/
+Claim: Serving Guard and Reserve members are listed regardless of activation status; immediate families are also listed. Former members, extended families and specific subprograms have separate rules. No indefinite veteran access is asserted.
+IMPACT: SHIP - ACT | A2 | S2 | 2026-09-16 | revisit NONE
+A1 population: GUARD/RESERVE; SPOUSE/FAMILY within immediate-family eligibility. Band: condition-triggered, no fixed separation band. Excluded: this serving-member statement does not establish indefinite access for former members or full eligibility for all extended family/subprograms. Timing: ACT AVAILABLE NOW.
+A2 act: "Use Military OneSource's eligibility page and contact options to confirm the support available for your situation."
+A3 surface: Guard/Reserve Home support links. Token: NONE. Sweep trigger: NONE.
+A4 cost: NOTHING established.
+EXPIRES: NONE identified.
+
+## GRC-05 - ESGR Statement of Support meaning
+
+CONFIRMED | 2026-09-16 | S2 | Rung 2: root read official page in Chrome and handed text down to analyst; direct retrieval had returned 502.
+Source: https://www.esgr.mil/Employers/Statement-of-Support
+Claim: The pledge concerns USERRA compliance, equipping managers to support Guard/Reserve employees, valuing service skills and encouraging hiring opportunities, and continuing member/family support. Signing alone establishes neither an award nor an actual vacancy or hiring guarantee. No individual employer's compliance is verified.
+IMPACT: SHIP - ACT | A2 | S2 | 2026-09-16 | revisit NONE
+A1 population: GUARD/RESERVE; SPOUSE/FAMILY helping with employer research. Band: condition-triggered career exploration, no fixed separation band. Excluded: this does not certify an employer, establish an opening or guarantee hiring for any applicant. Timing: ACT AVAILABLE NOW.
+A2 act: "Read ESGR's Statement of Support page to understand the pledge and use its official supportive-employer finder."
+A3 surface: Guard/Reserve Home employer disclosure. Token: NONE. Sweep trigger: NONE; recognition is explicitly distinguished from jobs and awards.
+A4 cost: NOTHING established; bounded explanation prevents an unsupported inference.
+EXPIRES: NONE identified.
+
+## GRC-06 - ESGR official pledge map
+
+CONFIRMED | 2026-09-16 | S2 | Rung 2: root followed the official Statement page link and tested the map in Chrome.
+Source: https://maps.esgrevents.mil/
+Claim: Public SoS map exposes Company and Signed Date Range controls. One company-name query returned a matching dated signing record. This verifies that tested search path, not completeness, current hiring, company-wide support or every record. Results are signing-date filtered. No test company, result count or fixed default range is published in app copy.
+IMPACT: SHIP - ACT | A2 | S2 | 2026-09-16 | revisit NONE
+A1 population: GUARD/RESERVE; SPOUSE/FAMILY helping with employer research. Band: condition-triggered career exploration, no fixed separation band. Excluded: this does not establish current vacancies or employment guarantees for any applicant. Timing: ACT AVAILABLE NOW.
+A2 act: "Use ESGR's official pledge map to find recorded signers, then check the employer's current careers page for openings."
+A3 surface: Guard/Reserve Home employer discovery link; member manually records a chosen role/reference in existing Career Gap fields. Token: NONE. Sweep trigger: NONE; pledge discovery is distinct from a live job feed.
+A4 cost: NOTHING established.
+EXPIRES: NONE identified.
+Access limitation: the in-app browser produced a certificate-authority error; Chrome loaded normally without override. The Statement page is the descriptive fallback. No claim that all browser surfaces were successful.
+
+## GRC-07 - Recognize a supportive supervisor
+
+CONFIRMED | 2026-09-16 | S2 | Rung 2: root read official nomination information in Chrome and handed text down.
+Source: https://www.esgr.mil/Service-Members-Family/Nominate-your-Employer
+Claim: Patriot Award recognition concerns supervisors/bosses nominated by Guard/Reserve employees for direct support; spouses may also nominate their supervisors. It is distinct from signing a Statement of Support. Official linked form: https://esgr.csd.disa.mil/fan/PatriotAwardNomination . Form not tested or submitted; route goes to the information page. No nomination dates or additional award eligibility is asserted.
+IMPACT: SHIP - ACT | A2 | S2 | 2026-09-16 | revisit NONE
+A1 population: GUARD/RESERVE; SPOUSE/FAMILY specifically eligible spouses. Band: condition-triggered recognition, no fixed separation band. Excluded: this does not authorize every family member or every former member to nominate under the verified employee/spouse scope. Timing: ACT AVAILABLE NOW for official information; form submission not tested.
+A2 act: "Use ESGR's official nomination information page to learn how to recognize a supportive supervisor."
+A3 surface: Guard/Reserve Home employer disclosure. Token: NONE. Sweep trigger: NONE; award nomination is distinguished from a signed pledge.
+A4 cost: NOTHING established.
+EXPIRES: NONE identified.
+
+Implementation evidence is separate from these external-source records. These entries do not verify persistence, privacy, employer-plan usability, production availability, retention or job placement. Member-entered status is not an official submission or receipt.
