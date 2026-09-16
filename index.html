@@ -604,6 +604,26 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
   .tops-tricare-decision-row{flex-direction:column;gap:4px!important}
   .tops-tricare-decision-row>div{flex:0 1 auto!important;min-width:0}
 }
+/* Simple Home: readable action hierarchy, scoped to the live reminder cards. */
+.tops-home-actions{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:12px 0 26px;color:#f1f6f7}
+.tops-home-actions h2{font-size:clamp(28px,5vw,42px);line-height:1.15;letter-spacing:-.04em;margin:0 0 22px;color:var(--t-body-text)}
+.tops-home-actions .tops-home-secondary-title{font-size:15px;letter-spacing:0;margin:26px 0 12px}
+.tops-home-primary{background:linear-gradient(115deg,#183b40,#142934 78%);border:1px solid #63898a;border-radius:20px;padding:30px}
+.tops-home-actions h3{font:650 26px/1.25 system-ui,sans-serif;letter-spacing:-.025em;margin:14px 0}
+.tops-home-actions p{font-size:16px;line-height:1.65;margin:0 0 16px;color:#c5d6dc;overflow-wrap:anywhere}
+.tops-home-eyebrow{font-size:12px;letter-spacing:.13em;color:#7de2cb;font-weight:750}
+.tops-home-actions .tops-home-timing{font-size:14px;color:#f1f6f7}
+.tops-home-action-button{min-height:48px;min-width:44px;background:#7de2cb;color:#07251f;border:1px solid #7de2cb;border-radius:8px;padding:12px 20px;font:750 15px/1.5 system-ui,sans-serif;cursor:pointer}
+.tops-home-action-button:hover{background:#a1eedc}
+.tops-home-action-button:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.tops-home-secondary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px}
+.tops-home-secondary{background:#101f2b;border:1px solid #63898a;border-radius:14px;padding:24px}
+.tops-home-secondary h3{font-size:20px}.tops-home-secondary p{font-size:14px}
+.tops-home-action-quiet{background:transparent;color:#7de2cb}.tops-home-action-quiet:hover{background:#203742}
+.tops-tricare-overview{padding:0 22px 22px;font:15px/1.65 system-ui,sans-serif;color:var(--t-body-text)}
+.tops-tricare-overview p{margin:0 0 18px}.tops-tricare-overview strong{display:block;margin-bottom:6px}
+@media(max-width:620px){.tops-home-primary{padding:24px}.tops-home-actions h3{font-size:23px}.tops-home-secondary-grid{grid-template-columns:1fr}.tops-home-secondary h3{font-size:20px}.tops-home-action-button{width:100%}.tops-tricare-overview{padding:0 16px 18px}}
+@media(forced-colors:active){.tops-home-primary,.tops-home-secondary{background:Canvas;color:CanvasText;border-color:CanvasText}.tops-home-actions p,.tops-home-eyebrow,.tops-home-actions .tops-home-timing{color:CanvasText}.tops-home-action-button{background:ButtonFace;color:ButtonText;border-color:ButtonText}.tops-home-action-button:focus-visible{outline-color:Highlight}}
 </style>
 </head>
 <body>
@@ -8010,9 +8030,31 @@ function App() {
     });
     var remDismissed = Object.keys(dismissedReminders).length;
     var remTotal = SMART_REMINDERS.length;
-    var urgentReminders = etsMonths !== null ? SMART_REMINDERS.filter(function(r) { var d = r.mo - etsMonths; return d >= -1 && d <= 3 && !dismissedReminders[r.id]; }).slice(0, 3) : [];
+    var urgentReminders = etsMonths !== null ? SMART_REMINDERS.filter(function(r) { var d = r.mo - etsMonths; return d >= -1 && d <= 3 && !dismissedReminders[r.id]; }).sort(function(a, b) { var rank = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, ADVISORY: 3 }; return (rank[a.pri] === undefined ? 9 : rank[a.pri]) - (rank[b.pri] === undefined ? 9 : rank[b.pri]); }).slice(0, 3) : [];
 
     return React.createElement("div", null,
+      // Home actions retain the date/dismissed filter and use established priority values; ties keep array order.
+      urgentReminders.length > 0 && React.createElement("section", { className: "tops-home-actions", "aria-labelledby": "tops-home-actions-title" },
+        React.createElement("h2", { id: "tops-home-actions-title" }, "Your next step"),
+        React.createElement("article", { className: "tops-home-primary" },
+          React.createElement("div", { className: "tops-home-eyebrow" }, "NEXT ACTION"),
+          React.createElement("h3", null, urgentReminders[0].title.replace(/\u26A0\uFE0F /g, "")),
+          urgentReminders[0].deadline && React.createElement("p", { className: "tops-home-timing" }, urgentReminders[0].deadline),
+          React.createElement("button", { id: "tops-home-next-action", className: "tops-home-action-button", type: "button", onClick: function() { openPlanRoute("reminders", "tops-reminder-" + urgentReminders[0].id, "tops-home-next-action"); } }, "View steps", React.createElement("span", { "aria-hidden": true }, " \u2192"))
+        ),
+        urgentReminders.length > 1 && React.createElement("h2", { className: "tops-home-secondary-title" }, "Also on your plan"),
+        urgentReminders.length > 1 && React.createElement("div", { className: "tops-home-secondary-grid" },
+          urgentReminders.slice(1).filter(function(r, i, items) { return r.id !== urgentReminders[0].id && items.findIndex(function(item) { return item.id === r.id; }) === i; }).map(function(r) {
+            return React.createElement("article", { className: "tops-home-secondary", key: r.id },
+              React.createElement("div", { className: "tops-home-eyebrow" }, r.cat),
+              React.createElement("h3", null, r.title),
+              r.deadline && React.createElement("p", { className: "tops-home-timing" }, r.deadline),
+              React.createElement("button", { id: "tops-home-secondary-" + r.id, className: "tops-home-action-button tops-home-action-quiet", type: "button", onClick: function() { openPlanRoute("reminders", "tops-reminder-" + r.id, "tops-home-secondary-" + r.id); } }, "View steps", React.createElement("span", { "aria-hidden": true }, " \u2192"))
+            );
+          })
+        )
+      ),
+
       // ═══ v49 INSTRUMENT: timeline ring + ETS countdown fused ═══
       (function() {
         var daysOut = daysToETSDate(separationDate);
@@ -8059,17 +8101,6 @@ function App() {
           )
         );
       })(),
-
-      // ═══ v49 NEXT ACTION (replaces pulsing urgent card) ═══
-      urgentReminders.length > 0 && React.createElement("button", { id: "tops-home-next-action", className: "tops-next-action", type: "button", style: { width: "100%", textAlign: "left", border: "1px solid " + C.border, background: C.bgCard, borderRadius: 12, padding: "14px 16px", marginBottom: 12, display: "flex", alignItems: "center", gap: 13, cursor: "pointer" }, onClick: function() { openPlanRoute("reminders", "tops-reminder-" + urgentReminders[0].id, "tops-home-next-action"); } },
-        React.createElement("div", { style: { width: 3, alignSelf: "stretch", borderRadius: 4, background: C.accent, flexShrink: 0 } }),
-        React.createElement("div", { style: { minWidth: 0 } },
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 3, color: C.gold } }, "NEXT ACTION"),
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 15, color: C.textPrimary, marginTop: 3 } }, urgentReminders[0].title.replace(/\u26A0\uFE0F /g, "")),
-          React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: C.gold, marginTop: 3 } }, (urgentReminders[0].deadline || urgentReminders[0].brief || "").toUpperCase().slice(0, 52) + (urgentReminders.length > 1 ? "  \u00B7  +" + (urgentReminders.length - 1) + " MORE" : ""))
-        ),
-        React.createElement("div", { style: { marginLeft: "auto", color: C.gold, fontSize: 18 } }, "\u203A")
-      ),
 
       React.createElement("section", { className: "tops-continue-card", "aria-labelledby": "tops-continue-title", style: { background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, padding: 14, marginBottom: 12 } },
         React.createElement("h2", { id: "tops-continue-title", style: { fontFamily: "'Oswald', sans-serif", fontSize: 17, fontWeight: 600, color: C.textPrimary, margin: "0 0 6px" } }, "Continue your plan"),
@@ -15180,7 +15211,7 @@ whatsNewUnseen && React.createElement("div", {
         var s = getCriticalWindowStatus(w, daysOut, C);
         var isExpanded = expandedWindow === w.id;
         return React.createElement("div", {key:w.id, style:{background:C.bgCard, border:"1px solid " + (s.state === "closing" || s.state === "closing_critical" ? s.color : C.border), borderLeft:"4px solid " + s.color, borderRadius:8, marginBottom:10, overflow:"hidden"}},
-          React.createElement("button", {onClick:function(){ setExpandedWindow(isExpanded ? null : w.id); }, style:{width:"100%", background:"transparent", border:"none", padding:"14px 16px", cursor:"pointer", textAlign:"left", color:"inherit", fontFamily:"inherit"}},
+          React.createElement("button", {"aria-expanded":isExpanded, "aria-controls":"tops-window-detail-" + w.id, onClick:function(){ setExpandedWindow(isExpanded ? null : w.id); }, style:{width:"100%", background:"transparent", border:"none", padding:"14px 16px", cursor:"pointer", textAlign:"left", color:"inherit", fontFamily:"inherit"}},
             React.createElement("div", {style:{display:"flex", alignItems:"center", gap:10}},
               React.createElement("div", {style:{width:28, height:28, borderRadius:4, background:s.color, opacity:0.2, border:"1px solid " + s.color, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Oswald',sans-serif", fontSize:13, fontWeight:700, color:s.color, flexShrink:0}}, w.num),
               React.createElement("div", {style:{flex:1}},
@@ -15192,9 +15223,15 @@ whatsNewUnseen && React.createElement("div", {
               ),
               React.createElement("div", {style:{fontSize:16, color:C.textSecondary}}, isExpanded ? "−" : "+")
             ),
-            !isExpanded && React.createElement("div", {style:{fontSize:13, color:C.textBody, marginTop:8, lineHeight:1.5}}, w.shortDesc)
+            !isExpanded && w.id !== "tricare" && React.createElement("div", {style:{fontSize:13, color:C.textBody, marginTop:8, lineHeight:1.5}}, w.shortDesc),
+            w.id === "tricare" && React.createElement("div", {style:{fontSize:14, color:C.textPrimary, marginTop:12, lineHeight:1.5}}, "Plan rules and coverage paths")
           ),
-          isExpanded && React.createElement("div", {style:{padding:"0 16px 16px"}},
+          w.id === "tricare" && React.createElement("div", {className:"tops-tricare-overview"},
+            React.createElement("p", null, w.whyMatters),
+            React.createElement("p", null, React.createElement("strong", null, "Next step"), w.actionSteps[0]),
+            React.createElement("p", null, React.createElement("strong", null, "Timing"), w.shortDesc)
+          ),
+          React.createElement("div", {id:"tops-window-detail-" + w.id, hidden:!isExpanded, style:{padding:"0 16px 16px"}},
             React.createElement("div", {style:{marginTop:12}},
               React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:9, letterSpacing:2, color:C.gold, marginBottom:4}}, "AUTHORITY"),
               React.createElement("div", {style:{fontSize:13, color:C.textBody, lineHeight:1.5}}, w.authority)
