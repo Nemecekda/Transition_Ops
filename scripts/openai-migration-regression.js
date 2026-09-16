@@ -2941,9 +2941,11 @@ async function run() {
     const federalGenerationCall = calls[calls.length - 2];
     const federalSystemSource = fs.readFileSync(resumePath, "utf8").match(/const systemFederal = `([\s\S]*?)`;/)[1];
     const federalScopedFactRules = `\n\nSCOPED FACT RULES:\nThe supplied draft-eligible fact view is the sole controlling fact source. Use no member fact unless it appears there. Preserve every job title, employer or unit, degree, school, certification, and license byte-for-byte. Include every role's exact title and employer or unit even under one-page pressure. The job posting supplies targeting language only, never facts about the member. Return plain text only: no markdown markers. Avoid generic filler.`;
-    assert.equal(crypto.createHash("sha256").update(federalSystemSource).digest("hex"), "1c2350dbb8ce1f5db98dbdc4afd19581020fd3087865fc42b209a872cee77d91");
+    assert.equal(crypto.createHash("sha256").update(federalSystemSource.replace("Prepare a tailored federal resume of two pages or less for USAJOBS and follow the job announcement for required information. Preserve every confirmed role and exact identity; use concise, relevant detail supported by the supplied facts, never invention.", "Federal resumes are longer and more detailed than civilian resumes - that detail must come from what they stated, never invention.")).digest("hex"), "1c2350dbb8ce1f5db98dbdc4afd19581020fd3087865fc42b209a872cee77d91");
     assert.equal(federalGenerationCall.instructions, federalSystemSource + federalScopedFactRules, "RDM-194 uses exactly the approved federal readiness prompt plus unchanged scoped fact rules");
     assert.doesNotMatch(federalGenerationCall.instructions, /REQUEST-LOCAL LENGTH PROFILE|regardless of page count/);
+    assert.ok(federalGenerationCall.instructions.includes("Prepare a tailored federal resume of two pages or less for USAJOBS and follow the job announcement for required information. Preserve every confirmed role and exact identity; use concise, relevant detail supported by the supplied facts, never invention."), "Current USAJOBS two-page guidance reaches actual federal generation request");
+    assert.doesNotMatch(federalGenerationCall.instructions, /Federal resumes are longer|4-6 pages/);
     return passingAudit(request);
   });
   const stagesBeforeFederalCore = clientStages.length;
