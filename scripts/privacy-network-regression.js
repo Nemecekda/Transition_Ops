@@ -179,13 +179,14 @@ function sourceChecks() {
   );
   check(hasStaleActivePushCopy(staleMutation), "POFF-01 obsolete push-copy mutation fails");
 
+  // Navigation refresh removes the automatic banner and cross-tab strip; manual guidance remains.
   check(
     countMatches(index, /One tap\. Add Transition OPS to your home screen for direct access\./) === 1 &&
       countMatches(index, /Two steps in Safari\. Add Transition OPS to your Home Screen for direct access\./) === 1 &&
       countMatches(index, /This in-app browser cannot install Transition OPS\./) === 1 &&
       countMatches(index, /Track critical transition windows/) === 1 &&
-      countMatches(index, /Direct access\. No app store\./) === 1 &&
-      countMatches(index, /\(not \\"Add Bookmark\\"\)/) === 3,
+      countMatches(index, /Direct access\. No app store\./) === 0 &&
+      countMatches(index, /\(not \\"Add Bookmark\\"\)/) === 2,
     "POFF-02 install surfaces use direct-access guidance without a push promise"
   );
 
@@ -193,12 +194,11 @@ function sourceChecks() {
   const installCardLine = lineContaining(index, "\\uD83D\\uDCF2 INSTALL TRANSITION OPS");
   const installFooterLine = lineContaining(index, "After installing: open Transition OPS from your home screen.");
   check(
-    installStripLine.includes("TOPS_PUSH_DISABLED_COPY") &&
-      installStripLine.includes("Android: browser menu \\u2192 Install App or Add to Home Screen.") &&
+    installStripLine === "" &&
       installCardLine.includes("Install Transition OPS on your home screen for direct access.") &&
       installCardLine.includes("TOPS_PUSH_DISABLED_COPY") &&
       installFooterLine.includes("TOPS_PUSH_DISABLED_COPY"),
-    "POFF-03 install strip, card, and footer state that push is disabled"
+    "POFF-03 automatic strip is absent; remaining install card and footer state that push is disabled"
   );
 
   function releaseVersionMatchesNotes(text) {
