@@ -6002,6 +6002,19 @@ function topsFollowWrite(key, value) {
   if (window.__IS_IFRAME) return true;
   try { var raw = JSON.stringify(value); window.__safeSet(key, raw); return window.__safeGet(key) === raw; } catch(e) { return false; }
 }
+function topsExtraFollowups(reminders, progress, dismissed, visible, now) {
+  var seen = {}, today = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+  var items = reminders.filter(function(r) {
+    var value = progress[r.id];
+    if (seen[r.id] || !value || (value.status !== "working" && value.status !== "waiting") || dismissed[r.id] || visible.some(function(item) { return item.id === r.id; })) return false;
+    seen[r.id] = true;
+    return true;
+  }).sort(function(a, b) {
+    var left = topsFollowDate(progress[a.id].date), right = topsFollowDate(progress[b.id].date);
+    return left === right ? 0 : !left ? 1 : !right ? -1 : left < right ? -1 : 1;
+  });
+  return { items: items, due: items.filter(function(r) { var date = topsFollowDate(progress[r.id].date); return date && date <= today; }).length };
+}
 function topsFollowLabel(value) {
   if (!value) return "Not started";
   var text = value.status === "waiting" ? "Waiting for help" : "Working on it";
@@ -8195,7 +8208,8 @@ function App() {
     var remDismissed = Object.keys(dismissedReminders).length;
     var remTotal = SMART_REMINDERS.length;
     var urgentReminders = etsMonths !== null ? SMART_REMINDERS.filter(function(r) { var d = r.mo - etsMonths; return d >= -1 && d <= 3 && !dismissedReminders[r.id]; }).sort(function(a, b) { var rank = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, ADVISORY: 3 }; return (rank[a.pri] === undefined ? 9 : rank[a.pri]) - (rank[b.pri] === undefined ? 9 : rank[b.pri]); }).slice(0, 3) : [];
-    var extraFollowups = SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)).filter(function(r) { return followProgress[r.id] && !dismissedReminders[r.id] && !urgentReminders.some(function(u) { return u.id === r.id; }); });
+    var followupSummary = topsExtraFollowups(SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)), followProgress, dismissedReminders, urgentReminders, new Date());
+    var extraFollowups = followupSummary.items;
 
     return React.createElement("div", null,
       // Home actions retain the date/dismissed filter and use established priority values; ties keep array order.
@@ -8221,7 +8235,7 @@ function App() {
           })
         ),
         extraFollowups.length > 0 && React.createElement("details", { style: { margin: "16px 0" } },
-          React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", color: C.textPrimary, fontWeight: 700 } }, "Continue what you started"),
+          React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", color: C.textPrimary, fontWeight: 700 } }, "Continue what you started", followupSummary.due > 0 && React.createElement("span", { style: { display: "block", fontSize: 14, fontWeight: 400, marginTop: 4 } }, followupSummary.due + (followupSummary.due === 1 ? " personal follow-up due" : " personal follow-ups due"))),
           extraFollowups.map(function(r) { return React.createElement("div", { key: r.id, style: { padding: "12px 0", borderTop: "1px solid " + C.border } },
             React.createElement("h3", { style: { fontSize: 16, margin: "0 0 6px" } }, r.title),
             React.createElement("p", { style: { fontSize: 14, margin: "0 0 8px", lineHeight: 1.6 } }, topsFollowLabel(followProgress[r.id])),
