@@ -5955,6 +5955,7 @@ function GuardCareerSupport(props) {
   return React.createElement("section", { "aria-labelledby": "guard-career-heading", style: { padding: 16, marginBottom: 14, border: "1px solid " + C.gold, borderRadius: 10, background: C.bgCard, color: C.textBody } },
     React.createElement("h2", { id: "guard-career-heading", style: { color: C.textPrimary, fontSize: 22, margin: "0 0 10px" } }, "Your career, throughout your service"),
     React.createElement("p", { style: { lineHeight: 1.6 } }, "Build your civilian career while you serve. Keep a target role, your next step and the questions you want help answering."),
+    props.followup,
     props.target.trim() && React.createElement("p", { style: { overflowWrap: "anywhere", lineHeight: 1.6 } }, React.createElement("strong", null, "Your target: "), props.target),
     opportunity.trim() && React.createElement("p", { style: { overflowWrap: "anywhere", lineHeight: 1.6 } }, React.createElement("strong", null, "Your opportunity: "), opportunity),
     next.trim() && React.createElement("p", { style: { overflowWrap: "anywhere", whiteSpace: "pre-wrap", lineHeight: 1.6 } }, React.createElement("strong", null, "Your next step: "), next),
@@ -5979,6 +5980,64 @@ function GuardCareerSupport(props) {
         React.createElement("p", { style: { lineHeight: 1.6 } }, office.why),
         React.createElement("button", { type: "button", style: action, "aria-label": "Prepare my question for " + office.name, onClick: function() { props.openPlan(office); } }, "Prepare my question")); }))
   );
+}
+
+// Follow-through stores only bounded reminder IDs, statuses and calendar dates.
+const TOPS_FOLLOW_KEY = "tops_reminder_progress_v1";
+function topsFollowDate(value) {
+  if (typeof value !== "string" || !/^20\d\d-\d\d-\d\d$/.test(value)) return "";
+  var d = new Date(value + "T12:00:00Z");
+  return Number.isFinite(d.getTime()) && d.toISOString().slice(0, 10) === value ? value : "";
+}
+function topsFollowRead() {
+  try {
+    var raw = JSON.parse(window.__safeGet(TOPS_FOLLOW_KEY)), clean = {};
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return clean;
+    SMART_REMINDERS.concat(generateCriticalWindowReminders("guard"), generateCriticalWindowReminders("active"), generateCriticalWindowReminders("separated"), generateCriticalWindowReminders("retired"), generateCriticalWindowReminders("spouse")).forEach(function(r) { var v = raw[r.id]; if (v && (v.status === "working" || v.status === "waiting")) clean[r.id] = { status: v.status, date: topsFollowDate(v.date) }; });
+    return clean;
+  } catch(e) { return {}; }
+}
+function topsFollowWrite(key, value) {
+  if (window.__IS_IFRAME) return true;
+  try { var raw = JSON.stringify(value); window.__safeSet(key, raw); return window.__safeGet(key) === raw; } catch(e) { return false; }
+}
+function topsFollowLabel(value) {
+  if (!value) return "Not started";
+  var text = value.status === "waiting" ? "Waiting for help" : "Working on it";
+  if (value.date) { var now = new Date(), today = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0"); text += value.date <= today ? " · Follow-up due " + new Date(value.date + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) : " · Follow up " + new Date(value.date + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }); }
+  return text;
+}
+function ReminderProgress(props) {
+  var C = props.colors, saved = props.value;
+  var initial = props.done ? "done" : saved ? saved.status : "working";
+  var [editing, setEditing] = useState(false), [status, setStatus] = useState(initial), [date, setDate] = useState(saved ? saved.date : ""), [message, setMessage] = useState("");
+  var button = React.useRef(null), heading = React.useRef(null), firstChoice = React.useRef(null);
+  useEffect(function() { if (editing && firstChoice.current) firstChoice.current.focus(); }, [editing]);
+  var control = { minHeight: 44, minWidth: 44, padding: "10px 14px", font: "inherit", border: "1px solid " + C.border, borderRadius: 7, background: C.bgElevated, color: C.textPrimary, cursor: "pointer" };
+  function end() { setEditing(false); window.requestAnimationFrame(function() { if (button.current) button.current.focus(); }); }
+  function save(clear) {
+    if (!clear && date && !topsFollowDate(date)) { setMessage("Choose a valid follow-up date."); return; }
+    var ok = props.save(clear ? "clear" : status, clear || status === "done" ? "" : date);
+    if (ok !== true) { setMessage(ok === "uncertain" ? "Could not confirm the saved progress. Keep this page open and try saving again. A partial change may be saved in this browser." : "Could not confirm this change was saved. Try again or cancel."); return; }
+    setMessage(window.__IS_IFRAME ? "Updated for this session only." : clear ? "Progress cleared on this browser." : "Progress saved on this browser."); end();
+  }
+  return React.createElement("section", { "aria-labelledby": "follow-progress-heading", style: { background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, padding: 18, margin: "20px 0" } },
+    React.createElement("h3", { id: "follow-progress-heading", ref: heading, style: { color: C.textPrimary, margin: "0 0 8px" } }, "Your progress"),
+    React.createElement("p", { style: { lineHeight: 1.6, margin: "0 0 12px" } }, props.done ? "Done · Marked by you" : topsFollowLabel(saved)),
+    !editing && React.createElement("button", { ref: button, type: "button", style: control, onClick: function() { setStatus(initial); setDate(saved ? saved.date : ""); setMessage(""); setEditing(true); } }, props.done ? "Reopen or update" : saved ? "Update progress" : "Track this step"),
+    editing && React.createElement("div", null,
+      React.createElement("fieldset", { style: { border: 0, padding: 0, margin: "0 0 16px", minWidth: 0 } }, React.createElement("legend", { style: { marginBottom: 8 } }, "Where are you with this step?"),
+        React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } }, [["working", "Working on it"], ["waiting", "Waiting for help"], ["done", "Done"]].map(function(row) { return React.createElement("label", { key: row[0], style: Object.assign({}, control, { display: "flex", alignItems: "center", gap: 8, borderColor: status === row[0] ? C.gold : C.border }) }, React.createElement("input", { ref: row[0] === "working" ? firstChoice : null, type: "radio", name: "follow-status", value: row[0], checked: status === row[0], onChange: function() { setStatus(row[0]); } }), row[1]); }))),
+      status !== "done" && React.createElement("div", null,
+        React.createElement("label", { htmlFor: "follow-date", style: { display: "block", marginBottom: 8 } }, "My follow-up date (optional)"),
+        React.createElement("input", { id: "follow-date", type: "date", min: "2000-01-01", max: "2099-12-31", value: date, "aria-describedby": "follow-date-help", onChange: function(e) { setDate(e.target.value); }, style: Object.assign({}, control, { width: "100%", boxSizing: "border-box", minWidth: 0 }) }),
+        React.createElement("p", { id: "follow-date-help", style: { fontSize: 13, lineHeight: 1.6 } }, "Shown on Home when you return. This does not change official deadlines or send a notification.")),
+      React.createElement("p", { style: { fontSize: 13, lineHeight: 1.6 } }, window.__IS_IFRAME ? "Progress lasts only for this session." : "Saved on this browser, including shared devices. Clear progress when you no longer need it."),
+      React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 10 } },
+        React.createElement("button", { type: "button", style: Object.assign({}, control, { background: C.green, color: C.textOnFill }), onClick: function() { save(false); } }, "Save progress"),
+        React.createElement("button", { type: "button", style: control, onClick: function() { setMessage(""); end(); } }, "Cancel"),
+        (saved || props.done) && React.createElement("button", { type: "button", style: control, onClick: function() { save(true); } }, "Clear progress"))),
+    React.createElement("p", { role: "status", "aria-live": "polite", "aria-atomic": "true", style: { lineHeight: 1.6, marginBottom: 0 } }, message));
 }
 
 // Existing service categories customize navigation, not benefit eligibility.
@@ -6473,7 +6532,22 @@ function App() {
     }
   }, [userStatus]);
   // Smart Reminder Engine state
-  const [dismissedReminders, setDismissedReminders] = useState(function() { try { var v = window.__safeGet("tops_dismissed_reminders"); return v ? JSON.parse(v) : {}; } catch(e) { return {}; } });
+  const [dismissedReminders, setDismissedReminders] = useState(function() { try { var v = window.__safeGet("tops_dismissed_reminders"); var parsed = v ? JSON.parse(v) : {}; return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {}; } catch(e) { return {}; } });
+  const [followProgress, setFollowProgress] = useState(topsFollowRead);
+  function saveFollowProgress(id, status, date) {
+    var next = Object.assign({}, followProgress), done = Object.assign({}, dismissedReminders);
+    if (status === "working" || status === "waiting") next[id] = { status: status, date: date }; else delete next[id];
+    if (status === "done") done[id] = true; else delete done[id];
+    // Verify both stores before changing rendered truth; rollback the first on failure.
+    var progressChanged = JSON.stringify(next) !== JSON.stringify(followProgress);
+    var doneChanged = JSON.stringify(done) !== JSON.stringify(dismissedReminders);
+    if (progressChanged && !topsFollowWrite(TOPS_FOLLOW_KEY, next)) return false;
+    if (doneChanged && !topsFollowWrite("tops_dismissed_reminders", done)) {
+      if (progressChanged && !topsFollowWrite(TOPS_FOLLOW_KEY, followProgress)) return "uncertain";
+      return false;
+    }
+    setFollowProgress(next); setDismissedReminders(done); return true;
+  }
   const [reminderExpanded, setReminderExpanded] = useState(null);
   const [focusedReminderId, setFocusedReminderId] = useState(null);
   const [reminderNotice, setReminderNotice] = useState("");
@@ -6535,7 +6609,7 @@ function App() {
   const [pcsMiles, setPcsMiles] = useState("");
   const [pcsSection, setPcsSection] = useState("summary");
   // Persist new state
-  useEffect(function() { try { window.__safeSet("tops_dismissed_reminders", JSON.stringify(dismissedReminders)); } catch(e) {} }, [dismissedReminders]);
+  // Reminder completion is saved explicitly with readback in saveFollowProgress.
   useEffect(function() { try { window.__safeSet("tops_readiness", JSON.stringify(readinessAnswers)); } catch(e) {} }, [readinessAnswers]);
   const showToast = useCallback(msg => {
     setToast(msg);
@@ -7962,7 +8036,7 @@ function App() {
             )
           );
         })(),
-        React.createElement(GuardCareerSupport, { colors: C, target: gapState.draft.target, opportunity: gapState.draft.prep.opportunity, next: gapState.draft.prep.followup.trim() ? gapState.draft.prep.followup : (gapState.draft.rows.find(function(row) { return row.next.trim(); }) || {}).next || "", openPlan: function(office, prepare) { setPrepareOpportunity(!!prepare); setGuardOfficeOffer(office); setPathwayMode("planner"); setPathwayStep(1); setActiveTab("pathway"); window.scrollTo(0, 0); } }),
+        React.createElement(GuardCareerSupport, { followup: React.createElement("div", null, SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)).filter(function(r) { return followProgress[r.id] && !dismissedReminders[r.id]; }).map(function(r) { return React.createElement("div", { key: r.id, style: { marginBottom: 14, padding: 12, border: "1px solid " + C.border, borderRadius: 8 } }, React.createElement("strong", null, r.title), React.createElement("p", null, topsFollowLabel(followProgress[r.id])), React.createElement("button", { id: "tops-home-follow-" + r.id, type: "button", style: { minHeight: 44, padding: "10px 14px", background: C.bg, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 6 }, onClick: function() { openPlanRoute("reminders", "tops-reminder-" + r.id, "tops-home-follow-" + r.id); } }, "Continue step")); })), colors: C, target: gapState.draft.target, opportunity: gapState.draft.prep.opportunity, next: gapState.draft.prep.followup.trim() ? gapState.draft.prep.followup : (gapState.draft.rows.find(function(row) { return row.next.trim(); }) || {}).next || "", openPlan: function(office, prepare) { setPrepareOpportunity(!!prepare); setGuardOfficeOffer(office); setPathwayMode("planner"); setPathwayStep(1); setActiveTab("pathway"); window.scrollTo(0, 0); } }),
 
         // v72: same one-tap tool row the standard dashboard gets
         React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 12 } },
@@ -8230,15 +8304,17 @@ function App() {
     var remDismissed = Object.keys(dismissedReminders).length;
     var remTotal = SMART_REMINDERS.length;
     var urgentReminders = etsMonths !== null ? SMART_REMINDERS.filter(function(r) { var d = r.mo - etsMonths; return d >= -1 && d <= 3 && !dismissedReminders[r.id]; }).sort(function(a, b) { var rank = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, ADVISORY: 3 }; return (rank[a.pri] === undefined ? 9 : rank[a.pri]) - (rank[b.pri] === undefined ? 9 : rank[b.pri]); }).slice(0, 3) : [];
+    var extraFollowups = SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)).filter(function(r) { return followProgress[r.id] && !dismissedReminders[r.id] && !urgentReminders.some(function(u) { return u.id === r.id; }); });
 
     return React.createElement("div", null,
       // Home actions retain the date/dismissed filter and use established priority values; ties keep array order.
-      urgentReminders.length > 0 && React.createElement("section", { className: "tops-home-actions", "aria-labelledby": "tops-home-actions-title", style: { "--home-heading": C.textPrimary, "--home-accent": C.gold, "--home-button": C.green, "--home-button-text": C.textOnFill, "--home-elevated": C.bgElevated } },
+      (urgentReminders.length > 0 || extraFollowups.length > 0) && React.createElement("section", { className: "tops-home-actions", "aria-labelledby": "tops-home-actions-title", style: { "--home-heading": C.textPrimary, "--home-accent": C.gold, "--home-button": C.green, "--home-button-text": C.textOnFill, "--home-elevated": C.bgElevated } },
         React.createElement("h2", { id: "tops-home-actions-title", tabIndex: -1 }, "Your next step"),
-        React.createElement("article", { className: "tops-home-primary" },
+        urgentReminders.length > 0 && React.createElement("article", { className: "tops-home-primary" },
           React.createElement("div", { className: "tops-home-eyebrow" }, "NEXT ACTION"),
           React.createElement("h3", null, urgentReminders[0].title.replace(/\u26A0\uFE0F /g, "")),
           urgentReminders[0].deadline && React.createElement("p", { className: "tops-home-timing" }, urgentReminders[0].deadline),
+          followProgress[urgentReminders[0].id] && React.createElement("p", { style: { lineHeight: 1.6 } }, topsFollowLabel(followProgress[urgentReminders[0].id])),
           React.createElement("button", { id: "tops-home-next-action", className: "tops-home-action-button", type: "button", onClick: function() { openPlanRoute("reminders", "tops-reminder-" + urgentReminders[0].id, "tops-home-next-action"); } }, "View steps", React.createElement("span", { "aria-hidden": true }, " \u2192"))
         ),
         urgentReminders.length > 1 && React.createElement("h2", { className: "tops-home-secondary-title" }, "Also on your plan"),
@@ -8248,10 +8324,17 @@ function App() {
               React.createElement("div", { className: "tops-home-eyebrow" }, r.cat),
               React.createElement("h3", null, r.title),
               r.deadline && React.createElement("p", { className: "tops-home-timing" }, r.deadline),
+              followProgress[r.id] && React.createElement("p", { style: { lineHeight: 1.6 } }, topsFollowLabel(followProgress[r.id])),
               React.createElement("button", { id: "tops-home-secondary-" + r.id, className: "tops-home-action-button tops-home-action-quiet", type: "button", onClick: function() { openPlanRoute("reminders", "tops-reminder-" + r.id, "tops-home-secondary-" + r.id); } }, "View steps", React.createElement("span", { "aria-hidden": true }, " \u2192"))
             );
           })
-        )
+        ),
+        extraFollowups.length > 0 && React.createElement("details", { style: { margin: "16px 0" } },
+          React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", color: C.textPrimary, fontWeight: 700 } }, "Continue what you started"),
+          extraFollowups.map(function(r) { return React.createElement("div", { key: r.id, style: { padding: "12px 0", borderTop: "1px solid " + C.border } },
+            React.createElement("h3", { style: { fontSize: 16, margin: "0 0 6px" } }, r.title),
+            React.createElement("p", { style: { fontSize: 14, margin: "0 0 8px", lineHeight: 1.6 } }, topsFollowLabel(followProgress[r.id])),
+            React.createElement("button", { id: "tops-home-follow-" + r.id, className: "tops-home-action-button tops-home-action-quiet", type: "button", onClick: function() { openPlanRoute("reminders", "tops-reminder-" + r.id, "tops-home-follow-" + r.id); } }, "Continue step")); }))
       ),
 
       // ═══ v49 INSTRUMENT: timeline ring + ETS countdown fused ═══
@@ -15262,7 +15345,7 @@ whatsNewUnseen && React.createElement("div", {
     if (!showDismissed) filtered = filtered.filter(function(x) { return !dismissedReminders[x.id]; });
 
     // Focused Home action: reuse the reminder record and its existing completion store.
-    var focusedReminder = SMART_REMINDERS.find(function(r) { return r.id === focusedReminderId; });
+    var focusedReminder = SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)).find(function(r) { return r.id === focusedReminderId; });
     if (focusedReminder) {
       var r = focusedReminder;
       var isComplete = !!dismissedReminders[r.id];
@@ -15278,18 +15361,19 @@ whatsNewUnseen && React.createElement("div", {
         isComplete && React.createElement("div", { style: { padding: 18, marginBottom: 20, border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard } },
           React.createElement("p", { style: { marginTop: 0 } }, "This reminder is marked complete."),
           React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 10 } },
-            React.createElement("button", { id: "tops-focused-undo", type: "button", style: actionStyle, onClick: function() { setDismissedReminders(function(p) { var n = Object.assign({}, p); delete n[r.id]; return n; }); setReminderNotice("Reminder restored."); continuationFocus.current = "tops-focused-title"; } }, "Undo"),
+            React.createElement("button", { id: "tops-focused-undo", type: "button", style: actionStyle, onClick: function() { if (saveFollowProgress(r.id, "clear", "") !== true) { setReminderNotice("Could not confirm saving. Keep this page open and check your progress before continuing."); return; } setReminderNotice("Reminder restored."); continuationFocus.current = "tops-focused-title"; } }, "Reopen task"),
             nextReminder && React.createElement("button", { type: "button", style: actionStyle, onClick: function() { setFocusedReminderId(nextReminder.id); setReminderNotice(""); continuationFocus.current = "tops-focused-title"; } }, "Next action: " + nextReminder.title)
           ),
           !nextReminder && React.createElement("p", null, "No remaining reminders currently match your Home action window. You can review all reminders or restore this reminder.")
         ),
+        React.createElement(ReminderProgress, { key: r.id, colors: C, value: followProgress[r.id], done: isComplete, save: function(status, date) { return saveFollowProgress(r.id, status, date); } }),
         React.createElement("p", { style: { lineHeight: 1.7 } }, r.brief),
         React.createElement("h3", { style: { color: C.textPrimary } }, "Action items"),
         React.createElement("ol", { style: { paddingLeft: 24, lineHeight: 1.7 } }, r.items.map(function(item, i) { return React.createElement("li", { key: i, style: { paddingLeft: 4, marginBottom: 14 } }, item); })),
         r.deadline && React.createElement("div", { style: { padding: 16, border: "1px solid " + C.border, borderRadius: 8, marginBottom: 16, lineHeight: 1.7, background: C.bgElevated } }, React.createElement("h3", { style: { color: C.textPrimary, marginTop: 0 } }, "Timing"), r.deadline),
         r.why && React.createElement("p", { style: { lineHeight: 1.7 } }, React.createElement("strong", null, "Why this matters: "), r.why),
         r.link && React.createElement("a", { href: r.link, target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline", marginBottom: 16 } }, "Open Resource"),
-        !isComplete && React.createElement("div", { style: { marginTop: 16 } }, React.createElement("button", { type: "button", style: Object.assign({}, actionStyle, { background: C.green, color: C.textOnFill }), onClick: function() { setDismissedReminders(function(p) { var n = Object.assign({}, p); n[r.id] = true; return n; }); setReminderNotice("Reminder marked complete."); continuationFocus.current = "tops-focused-undo"; } }, "Mark reminder complete"))
+        !isComplete && React.createElement("div", { style: { marginTop: 16 } }, React.createElement("button", { type: "button", style: Object.assign({}, actionStyle, { background: C.green, color: C.textOnFill }), onClick: function() { if (saveFollowProgress(r.id, "done", "") !== true) { setReminderNotice("Could not confirm saving. Keep this page open and check your progress before continuing."); return; } setReminderNotice("Reminder marked complete."); continuationFocus.current = "tops-focused-undo"; } }, "Mark reminder complete"))
       );
     }
 
@@ -15352,8 +15436,7 @@ whatsNewUnseen && React.createElement("div", {
             ),
             r.link && React.createElement("div", { style: { marginTop: 8 } }, React.createElement("a", { href: r.link, target: "_blank", rel: "noopener noreferrer", style: { fontSize: 12, color: C.greenBright, textDecoration: "underline" } }, "Open Resource \u2192")),
             React.createElement("div", { style: { marginTop: 12 } },
-              !isDis ? React.createElement("button", { onClick: function() { setDismissedReminders(function(p) { var n = Object.assign({}, p); n[r.id] = true; return n; }); setReminderExpanded(null); }, style: { padding: "8px 16px", background: "rgba(74,93,35,0.3)", border: "1px solid " + C.green, borderRadius: 4, color: C.greenBright, fontSize: 11, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, "\u2713 MARK COMPLETE") :
-              React.createElement("button", { onClick: function() { setDismissedReminders(function(p) { var n = Object.assign({}, p); delete n[r.id]; return n; }); }, style: { padding: "8px 16px", background: "rgba(139,0,0,0.2)", border: "1px solid #8B0000", borderRadius: 4, color: C.danger, fontSize: 11, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, "\u21A9 RESTORE")
+              React.createElement("button", { type: "button", style: { minHeight: 44, padding: "10px 16px", background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 6, color: C.textPrimary, cursor: "pointer" }, onClick: function() { setFocusedReminderId(r.id); continuationFocus.current = "tops-focused-title"; } }, isDis ? "Review completed step" : "View steps")
             )
           )
         );
