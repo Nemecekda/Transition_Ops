@@ -49,8 +49,12 @@
 }
 </script>
 
+<script id="tops-guide-theme">
+(function(){var theme="professional";try{if(window.top===window.self&&localStorage.getItem("tops_theme")==="tactical")theme="tactical";}catch(e){}document.documentElement.setAttribute("data-tops-theme",theme);})();
+</script>
 <style>
-  :root{--canvas:#0E120B;--surface:#161B11;--ink:#EDE7D4;--dim:#9C9577;--gold:#F0C419;--ok:#8BB83C}
+  :root{color-scheme:light;--canvas:#FBF8EF;--surface:#F3F0E5;--ink:#293923;--body:#343C30;--dim:#535C4B;--gold:#6B5A1E;--ok:#425736;--button-ink:#FFFFFF}
+  :root[data-tops-theme="tactical"]{color-scheme:dark;--canvas:#0E120B;--surface:#161B11;--ink:#EDE7D4;--body:#d8d0bb;--dim:#9C9577;--gold:#F0C419;--ok:#8BB83C;--button-ink:#0E120B}
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--canvas);color:var(--ink);font-family:-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.65;padding:0 0 60px}
   .wrap{max-width:760px;margin:0 auto;padding:0 22px}
@@ -59,21 +63,21 @@
   h1{font-size:33px;line-height:1.2;margin:8px 0 14px;letter-spacing:-0.5px}
   h2{font-size:23px;margin:34px 0 12px;color:var(--ink)}
   h3{font-size:17px;margin:22px 0 8px;color:var(--ok)}
-  p{margin-bottom:14px;color:#d8d0bb}
+  p{margin-bottom:14px;color:var(--body)}
   .lead{font-size:18px;color:var(--ink)}
   .box{background:var(--surface);border-radius:12px;padding:20px 22px;margin:22px 0;border-left:3px solid var(--gold)}
-  .ex{background:var(--surface);border-radius:10px;padding:16px 18px;margin:14px 0;font-family:'JetBrains Mono',monospace;font-size:14px;color:#d8d0bb}
+  .ex{background:var(--surface);border-radius:10px;padding:16px 18px;margin:14px 0;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--body)}
   .ex b{color:var(--gold)}
-  .cta{display:inline-block;background:var(--gold);color:#0E120B;font-weight:700;text-decoration:none;padding:14px 26px;border-radius:10px;margin:10px 0;font-size:16px}
+  .cta{display:inline-block;background:var(--gold);color:var(--button-ink);font-weight:700;text-decoration:none;padding:14px 26px;border-radius:10px;margin:10px 0;font-size:16px}
   .cta-wrap{text-align:center;margin:36px 0}
   a{color:var(--ok)}
-  ul{margin:0 0 14px 22px}li{margin-bottom:7px;color:#d8d0bb}
+  ul{margin:0 0 14px 22px}li{margin-bottom:7px;color:var(--body)}
   footer{margin-top:48px;padding-top:22px;border-top:1px solid var(--surface);font-size:13px;color:var(--dim)}
   .step{display:flex;gap:12px;margin-bottom:10px}.step b{color:var(--gold);flex-shrink:0}
 </style>
 </head>
 <body>
-<div class="wrap">
+<main class="wrap">
 <header>
   <div class="eyebrow">Transition OPS — Free Veteran Toolkit</div>
   <h1>VA Math Explained: How the VA Combines Disability Ratings</h1>
@@ -148,6 +152,6 @@ Round 66 → <b>70% combined</b>
   <p>Transition OPS is an independent resource and is not affiliated with the U.S. Department of Veterans Affairs or Department of Defense. Compensation figures change annually; always verify your specific situation against official VA sources. This page is educational and does not constitute benefits advice.</p>
   <p style="margin-top:10px"><a href="https://transitionops.org/">transitionops.org</a> — Free Military Transition Toolkit</p>
 </footer>
-</div>
+</main>
 </body>
 </html>

@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<script id="tops-theme-prepaint">
+(function() {
+  var theme = "professional";
+  try { if (window.top === window.self && localStorage.getItem("tops_theme") === "tactical") theme = "tactical"; } catch (e) {}
+  document.documentElement.setAttribute("data-tops-theme", theme);
+})();
+</script>
 
 <!-- PRIMARY META ─────────────────────────────────────────── -->
 <title>Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits</title>
@@ -66,7 +73,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Transition OPS">
 <meta name="application-name" content="Transition OPS">
-<meta name="theme-color" content="#0E120B">
+<meta name="theme-color" content="#FBF8EF">
 <meta name="format-detection" content="telephone=no">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -136,7 +143,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
 <style>
-:root{--t-bg:#0E120B;--t-bg-card:#161B11;--t-border:#222A19;--t-nav-bg:#0f120b;--t-overlay:rgba(10,12,8,0.95);--t-body-text:#d4cbb3}
+:root{color-scheme:light;--t-bg:#FBF8EF;--t-bg-card:#F3F0E5;--t-border:#C9C7B8;--t-nav-bg:#FBF8EF;--t-overlay:rgba(250,250,248,0.97);--t-body-text:#343C30}
+:root[data-tops-theme="tactical"]{color-scheme:dark;--t-bg:#0E120B;--t-bg-card:#161B11;--t-border:#222A19;--t-nav-bg:#0f120b;--t-overlay:rgba(10,12,8,0.95);--t-body-text:#d4cbb3}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body,#root{height:100%;width:100%;margin:0;padding:0}
 body{background:var(--t-bg);font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--t-body-text);-webkit-font-smoothing:antialiased}
@@ -603,6 +611,35 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 @media(max-width:600px){
   .tops-tricare-decision-row{flex-direction:column;gap:4px!important}
   .tops-tricare-decision-row>div{flex:0 1 auto!important;min-width:0}
+}
+/* Light surfaces share the app palette; artwork and paper previews retain their own ink. */
+#root button,#root [role="button"],#root [role="checkbox"],#root input:not([type="checkbox"]):not([type="radio"]),#root select{min-height:44px!important;min-width:44px!important}
+@media(forced-colors:none){
+:root:not([data-tops-theme="tactical"]) .seo-content{background:#FBF8EF!important;color:#343C30!important}
+:root:not([data-tops-theme="tactical"]) .seo-content p,:root:not([data-tops-theme="tactical"]) .seo-content li{color:#343C30!important}
+:root:not([data-tops-theme="tactical"]) .seo-content h1,:root:not([data-tops-theme="tactical"]) .seo-content h2,:root:not([data-tops-theme="tactical"]) .seo-content h3{color:#293923!important}
+:root:not([data-tops-theme="tactical"]) .seo-content a{color:#425736!important}
+:root:not([data-tops-theme="tactical"]) .seo-content strong,:root:not([data-tops-theme="tactical"]) .seo-content div{color:#293923!important}
+:root[data-tops-theme="professional"] .onboard-welcome-root{background:#FBF8EF}
+:root[data-tops-theme="professional"] .onboard-welcome-hero{background:#F3F0E5;border-color:#C9C7B8;box-shadow:0 16px 40px #29392312}
+:root[data-tops-theme="professional"] .tops-welcome-scene:after{background:linear-gradient(90deg,#F3F0E5 0%,#F3F0E5f5 35%,#F3F0E530 80%),linear-gradient(0deg,#F3F0E5,transparent 70%)}
+:root[data-tops-theme="professional"] .onboard-title{color:#293923;text-shadow:none}
+:root[data-tops-theme="professional"] .onboard-brand-stencil,:root[data-tops-theme="professional"] .onboard-tagline-lead,:root[data-tops-theme="professional"] .onboard-features-eyebrow,:root[data-tops-theme="professional"] .onboard-stat-number{color:#6B5A1E}
+:root[data-tops-theme="professional"] .onboard-description,:root[data-tops-theme="professional"] .onboard-features-title{color:#293923}
+:root[data-tops-theme="professional"] .onboard-micro-copy,:root[data-tops-theme="professional"] .onboard-trust-line,:root[data-tops-theme="professional"] .onboard-stat-label,:root[data-tops-theme="professional"] .onboard-feature-desc{color:#535C4B}
+:root[data-tops-theme="professional"] .onboard-cta-skip{color:#425736}
+:root[data-tops-theme="professional"] .onboard-feature-card,:root[data-tops-theme="professional"] .onboard-features-footer{background:#F3F0E5;border-color:#C9C7B8;box-shadow:none}
+:root[data-tops-theme="professional"] .onboard-feature-label{color:#293923}
+:root[data-tops-theme="professional"] .onboard-feature-card>div:last-child{color:#425736!important}
+:root[data-tops-theme="professional"] .tops-ets-housing{background:#F3F0E5;border-color:#C9C7B8;box-shadow:0 10px 26px #29392310}
+:root[data-tops-theme="professional"] .tops-home-scene:after{background:linear-gradient(90deg,#F3F0E580,transparent 75%),linear-gradient(0deg,#F3F0E5,transparent 90%)}
+:root[data-tops-theme="professional"] .tops-ets-empty>.tops-home-scene:after{background:linear-gradient(0deg,#F3F0E5 0%,#F3F0E5f5 35%,#F3F0E530 100%)}
+:root[data-tops-theme="professional"] .tops-ets-empty>div:not(.tops-journey){color:#293923!important}
+:root[data-tops-theme="professional"] .tops-ets-live{box-shadow:inset 0 2px 12px #29392312}
+:root[data-tops-theme="professional"] .tops-motion-toggle{background:#F3F0E5;color:#293923;border-color:#6B5A1E;box-shadow:none}
+:root[data-tops-theme="professional"] .tops-motion-toggle:hover{background:#ECEBDD;border-color:#425736}
+:root[data-tops-theme="professional"] .onboard-feature-card:focus-visible,:root[data-tops-theme="professional"] .tops-motion-toggle:focus-visible{outline-color:#425736}
+@media(max-width:699px){:root[data-tops-theme="professional"] .tops-welcome-scene:after{background:linear-gradient(0deg,#F3F0E5 0%,#F3F0E500 80%),linear-gradient(180deg,#F3F0E5b0,transparent 55%)}}
 }
 /* Simple Home: readable action hierarchy, scoped to the live reminder cards. */
 .tops-home-actions{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:12px 0 26px;color:var(--home-heading)}
@@ -3070,7 +3107,7 @@ const THEMES = {
     warning: "#E09A52",
     gradStart: "#1C2315",
     bgWarning: "#2a2518",
-    inactive: "#8a8468",
+    inactive: "#A39B81",
     bgElevated: "#1C2315",
     accent: "#F0C419",
     danger: "#E66A6A",
@@ -3106,6 +3143,16 @@ const THEMES = {
 // RESOURCE DIRECTORY — Single source of truth for veteran resources
 // Filterable by category, cost, eligibility. URLs verified per audit.
 // ═══════════════════════════════════════════════════════════════
+function topsThemeInk(C, color) {
+  if (C.isLight) return color;
+  return { "#4a5d23": "#A4BD75", "#8b6914": "#D6BC75", "#2d5f2d": "#A4BD75", "#2c5f2d": "#A4BD75", "#6b4423": "#D6B18C", "#4a4a4a": "#B5AB8C", "#8b0000": "#E66A6A", "#1b3a4b": "#88BED6", "#c0392b": "#E66A6A" }[String(color).toLowerCase()] || color;
+}
+function topsFillInk(color) {
+  var hex = String(color).replace("#", "");
+  if (!/^[0-9a-f]{6}$/i.test(hex)) return "#FFFFFF";
+  var channels = [0, 2, 4].map(function(i) { var value = parseInt(hex.slice(i, i + 2), 16) / 255; return value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4); });
+  return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722 > 0.179 ? "#0E120B" : "#FFFFFF";
+}
 const RESOURCE_CATEGORIES = {
   education:        { label: "EDUCATION & ACADEMIC",         color: "#4A5D23", icon: "🎓" },
   certs:            { label: "CERTS & TECH TRAINING",        color: "#2C5F2D", icon: "📜" },
@@ -4432,7 +4479,7 @@ function FeedbackModal(props) {
   const inputBase = {
     width: "100%",
     padding: "10px 12px",
-    background: C.isLight === true ? "#FFFFFF" : "#141810",
+    background: C.isLight === true ? C.bg : "#141810",
     border: "1px solid " + C.border,
     color: C.textPrimary,
     fontFamily: "'Source Sans 3', sans-serif",
@@ -4451,7 +4498,7 @@ function FeedbackModal(props) {
     color: C.inactive,
     lineHeight: 1.5,
     padding: "9px 11px",
-    background: C.isLight === true ? "#F7F7F5" : "#141810",
+    background: C.isLight === true ? C.bgElevated : "#141810",
     border: "1px dashed " + C.border,
     marginBottom: 14,
     borderRadius: 4
@@ -6107,6 +6154,7 @@ function App() {
   useEffect(function() {
     try {
       var r = document.documentElement.style;
+      document.documentElement.setAttribute("data-tops-theme", theme);
       r.setProperty("--t-bg", C.bg);
       r.setProperty("--t-bg-card", C.bgCard);
       r.setProperty("--t-border", C.border);
@@ -6609,7 +6657,7 @@ function App() {
       setReminderFilterPri("ALL");
       setReminderFilterCat("ALL");
       setShowDismissed(false);
-      setReminderExpanded(target.slice("tops-reminder-".length));
+      setReminderExpanded(target.indexOf("tops-reminder-") === 0 ? target.slice("tops-reminder-".length) : null);
     }
     setActiveTab(tab);
   }
@@ -7204,7 +7252,7 @@ function App() {
     };
     if (STATE_TAX_DATA.noTaxRetiredPay.includes(s)) return {
       status: "NO TAX ON RETIRED PAY",
-      color: "#6B8E23",
+      color: (C.isLight ? C.greenBright : "#6B8E23"),
       detail: "This state exempts military retired pay from state income tax."
     };
     if (STATE_TAX_DATA.someTax.includes(s)) return {
@@ -7214,7 +7262,7 @@ function App() {
     };
     if (STATE_TAX_DATA.fullTax.includes(s)) return {
       status: "FULL TAX ON RETIRED PAY",
-      color: "#8B0000",
+      color: C.danger,
       detail: "All military retired pay is taxed. Factor into planning."
     };
     return null;
@@ -7232,7 +7280,7 @@ function App() {
 
   // ═══════════ FIRST-TIME ONBOARDING FLOW ═══════════
   if (showOnboarding) {
-    var obC = THEMES.tactical;
+    var obC = C;
     var obSteps = [
       // Step 0: Welcome — Responsive (Desktop two-column + Mobile stacked)
       function() {
@@ -7282,7 +7330,7 @@ function App() {
               fontFamily: "'Oswald', sans-serif",
               fontSize: 10,
               fontWeight: 700,
-              color: "#d4cbb3",
+              color: (C.isLight ? C.textBody : "#d4cbb3"),
               letterSpacing: 1,
               lineHeight: 1
             }
@@ -7375,42 +7423,42 @@ function App() {
       },
             // Step 1: Military Status
       function() {
-        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 1 OF 4"),
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "WHAT'S YOUR STATUS?"),
-          React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, "This helps us surface the right tools and timelines for your situation."),
+        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: (C.isLight ? C.bg : "#0E120B") } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: (C.isLight ? C.gold : "#9C9577"), marginBottom: 6 } }, "STEP 1 OF 4"),
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: (C.isLight ? C.textBody : "#d4cbb3"), letterSpacing: 2, marginBottom: 8 } }, "WHAT'S YOUR STATUS?"),
+          React.createElement("div", { style: { fontSize: 13, color: (C.isLight ? C.textSecondary : "#b5ab8c"), marginBottom: 32, lineHeight: 1.5 } }, "This helps us surface the right tools and timelines for your situation."),
           [{id:"active",label:"ACTIVE DUTY",desc:"Currently serving, planning transition",icon:"\uD83C\uDF96\uFE0F"},{id:"guard",label:"GUARD / RESERVE",desc:"Leverage your military training in a civilian career",icon:"\u2694\uFE0F"},{id:"separated",label:"ALREADY SEPARATED",desc:"Recently transitioned, navigating benefits",icon:"\uD83C\uDFE0"},{id:"retired",label:"RETIRED",desc:"20+ years, managing retirement benefits",icon:"\u2B50"},{id:"spouse",label:"MILITARY SPOUSE",desc:"Supporting a transitioning service member",icon:"\uD83D\uDC9C"}].map(function(s) {
             var isActive = onboardData.status === s.id;
-            return React.createElement("button", { key: s.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {status: s.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : "#161B11", border: isActive ? "2px solid #4A5D23" : "1px solid #222A19", borderRadius: 12, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
+            return React.createElement("button", { key: s.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {status: s.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : (C.isLight ? C.bgCard : "#161B11"), border: isActive ? (C.isLight ? "2px solid " + C.green : "2px solid #4A5D23") : (C.isLight ? "1px solid " + C.border : "1px solid #222A19"), borderRadius: 12, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
               React.createElement("span", { style: { fontSize: 24 } }, s.icon),
               React.createElement("div", null,
-                React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: isActive ? "#d4cbb3" : "#a09878", letterSpacing: 1, fontWeight: 700 } }, s.label),
-                React.createElement("div", { style: { fontSize: 11, color: "#8a8468", marginTop: 2 } }, s.desc)
+                React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: isActive ? (C.isLight ? C.textBody : "#d4cbb3") : (C.isLight ? C.textSecondary : "#a09878"), letterSpacing: 1, fontWeight: 700 } }, s.label),
+                React.createElement("div", { style: { fontSize: 11, color: (C.isLight ? C.inactive : "#8a8468"), marginTop: 2 } }, s.desc)
               )
             );
           }),
           React.createElement("div", { style: { flex: 1 } }),
-          React.createElement("button", { disabled: !onboardData.status, onClick: function() { setOnboardStep(2); }, style: { width: "100%", padding: "14px", background: "linear-gradient(135deg, #4A5D23, #2D5016)", border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: onboardData.status ? "pointer" : "default", opacity: onboardData.status ? 1 : 0.35, transition: "opacity 0.2s" } }, "CONTINUE \u2192")
+          React.createElement("button", { disabled: !onboardData.status, onClick: function() { setOnboardStep(2); }, style: { width: "100%", padding: "14px", background: (C.isLight ? C.green : "linear-gradient(135deg, #4A5D23, #2D5016)"), border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: onboardData.status ? "pointer" : "default", opacity: onboardData.status ? 1 : 0.35, transition: "opacity 0.2s" } }, "CONTINUE \u2192")
         );
       },
       // Step 2: Branch
       function() {
-        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 2 OF 4"),
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "BRANCH OF SERVICE"),
-          React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32 } }, "Select your branch."),
+        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: (C.isLight ? C.bg : "#0E120B") } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: (C.isLight ? C.gold : "#9C9577"), marginBottom: 6 } }, "STEP 2 OF 4"),
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: (C.isLight ? C.textBody : "#d4cbb3"), letterSpacing: 2, marginBottom: 8 } }, "BRANCH OF SERVICE"),
+          React.createElement("div", { style: { fontSize: 13, color: (C.isLight ? C.textSecondary : "#b5ab8c"), marginBottom: 32 } }, "Select your branch."),
           React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 } },
             [{id:"army",label:"ARMY"},{id:"navy",label:"NAVY"},{id:"air_force",label:"AIR FORCE"},{id:"marines",label:"MARINES"},{id:"coast_guard",label:"COAST GUARD"},{id:"space_force",label:"SPACE FORCE"}].map(function(b) {
               var isActive = onboardData.branch === b.id;
-              return React.createElement("button", { key: b.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {branch: b.id}); }); }, style: { padding: "18px 12px", background: isActive ? "rgba(74,93,35,0.2)" : "#161B11", border: isActive ? "2px solid #4A5D23" : "1px solid #222A19", borderRadius: 12, cursor: "pointer" } },
-                React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: isActive ? "#d4cbb3" : "#a09878", letterSpacing: 2, fontWeight: 700 } }, b.label)
+              return React.createElement("button", { key: b.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {branch: b.id}); }); }, style: { padding: "18px 12px", background: isActive ? "rgba(74,93,35,0.2)" : (C.isLight ? C.bgCard : "#161B11"), border: isActive ? (C.isLight ? "2px solid " + C.green : "2px solid #4A5D23") : (C.isLight ? "1px solid " + C.border : "1px solid #222A19"), borderRadius: 12, cursor: "pointer" } },
+                React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: isActive ? (C.isLight ? C.textBody : "#d4cbb3") : (C.isLight ? C.textSecondary : "#a09878"), letterSpacing: 2, fontWeight: 700 } }, b.label)
               );
             })
           ),
           React.createElement("div", { style: { flex: 1 } }),
           React.createElement("div", { style: { display: "flex", gap: 10, marginTop: 30 } },
-            React.createElement("button", { onClick: function() { setOnboardStep(1); }, style: { flex: 1, padding: "14px", background: "none", border: "1px solid #222A19", borderRadius: 8, color: "#b5ab8c", fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK"),
-            React.createElement("button", { disabled: !onboardData.branch, onClick: function() { setOnboardStep(3); }, style: { flex: 2, padding: "14px", background: "linear-gradient(135deg, #4A5D23, #2D5016)", border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: onboardData.branch ? "pointer" : "default", opacity: onboardData.branch ? 1 : 0.35, transition: "opacity 0.2s" } }, "CONTINUE \u2192")
+            React.createElement("button", { onClick: function() { setOnboardStep(1); }, style: { flex: 1, padding: "14px", background: "none", border: (C.isLight ? "1px solid " + C.border : "1px solid #222A19"), borderRadius: 8, color: (C.isLight ? C.textSecondary : "#b5ab8c"), fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK"),
+            React.createElement("button", { disabled: !onboardData.branch, onClick: function() { setOnboardStep(3); }, style: { flex: 2, padding: "14px", background: (C.isLight ? C.green : "linear-gradient(135deg, #4A5D23, #2D5016)"), border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: onboardData.branch ? "pointer" : "default", opacity: onboardData.branch ? 1 : 0.35, transition: "opacity 0.2s" } }, "CONTINUE \u2192")
           )
         );
       },
@@ -7419,17 +7467,17 @@ function App() {
         var isSeparated = onboardData.status === "separated" || onboardData.status === "retired";
         var isGuard = onboardData.status === "guard";
         if (isGuard) {
-          return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
-            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 3 OF 3"),
-            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "WHAT BRINGS YOU HERE?"),
-            React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, "Your military training has civilian value. Tell us what you're looking to do and we'll point you to the right tools."),
+          return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: (C.isLight ? C.bg : "#0E120B") } },
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: (C.isLight ? C.gold : "#9C9577"), marginBottom: 6 } }, "STEP 3 OF 3"),
+            React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: (C.isLight ? C.textBody : "#d4cbb3"), letterSpacing: 2, marginBottom: 8 } }, "WHAT BRINGS YOU HERE?"),
+            React.createElement("div", { style: { fontSize: 13, color: (C.isLight ? C.textSecondary : "#b5ab8c"), marginBottom: 32, lineHeight: 1.5 } }, "Your military training has civilian value. Tell us what you're looking to do and we'll point you to the right tools."),
             [{id:"career",label:"TRANSLATE MY TRAINING",desc:"Map my MOS/rating/AFSC, tech school, or military schools to civilian careers and certifications",icon:"\uD83C\uDFAF"},{id:"benefits",label:"VA BENEFITS & EDUCATION",desc:"VA disability, GI Bill, VR&E, healthcare eligibility",icon:"\uD83C\uDFE5"},{id:"newmos",label:"JUST COMPLETED NEW TRAINING",desc:"Finished AIT/tech school, retrained, or earned a new specialty \u2014 show me what it's worth",icon:"\uD83D\uDCDC"},{id:"start",label:"EXPLORE ALL TOOLS",desc:"Show me everything available",icon:"\uD83D\uDCCB"}].concat(onboardData.status === "guard" ? [{id:"points",label:"MY RESERVE RETIREMENT",desc:"What are my points worth? Read my points letter and plan for retired pay at 60",icon:"\u2B50"}] : []).map(function(c) {
               var isActive = onboardData.concern === c.id;
-              return React.createElement("button", { key: c.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {concern: c.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : "#161B11", border: isActive ? "2px solid #4A5D23" : "1px solid #222A19", borderRadius: 12, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
+              return React.createElement("button", { key: c.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {concern: c.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : (C.isLight ? C.bgCard : "#161B11"), border: isActive ? (C.isLight ? "2px solid " + C.green : "2px solid #4A5D23") : (C.isLight ? "1px solid " + C.border : "1px solid #222A19"), borderRadius: 12, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
                 React.createElement("span", { style: { fontSize: 24 } }, c.icon),
                 React.createElement("div", null,
-                  React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: isActive ? "#d4cbb3" : "#a09878", letterSpacing: 1, fontWeight: 700 } }, c.label),
-                  React.createElement("div", { style: { fontSize: 11, color: "#8a8468", marginTop: 2 } }, c.desc)
+                  React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: isActive ? (C.isLight ? C.textBody : "#d4cbb3") : (C.isLight ? C.textSecondary : "#a09878"), letterSpacing: 1, fontWeight: 700 } }, c.label),
+                  React.createElement("div", { style: { fontSize: 11, color: (C.isLight ? C.inactive : "#8a8468"), marginTop: 2 } }, c.desc)
                 )
               );
             }),
@@ -7444,40 +7492,40 @@ function App() {
               setActiveTab(routeMap[onboardData.concern] || "dashboard");
               setShowOnboarding(false);
               showToast("WELCOME TO TRANSITION OPS");
-            }, style: { width: "100%", padding: "16px", background: "linear-gradient(135deg, #4A5D23, #2D5016)", border: "none", borderRadius: 12, color: "#fff", fontSize: 16, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 3, cursor: onboardData.concern ? "pointer" : "default", opacity: onboardData.concern ? 1 : 0.35, transition: "opacity 0.2s", boxShadow: "0 4px 20px rgba(74,93,35,0.4)" } }, "LAUNCH TRANSITION OPS \u2192"),
+            }, style: { width: "100%", padding: "16px", background: (C.isLight ? C.green : "linear-gradient(135deg, #4A5D23, #2D5016)"), border: "none", borderRadius: 12, color: "#fff", fontSize: 16, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 3, cursor: onboardData.concern ? "pointer" : "default", opacity: onboardData.concern ? 1 : 0.35, transition: "opacity 0.2s", boxShadow: "0 4px 20px rgba(74,93,35,0.4)" } }, "LAUNCH TRANSITION OPS \u2192"),
             React.createElement("div", { style: { display: "flex", gap: 10, marginTop: 10 } },
-              React.createElement("button", { onClick: function() { setOnboardStep(2); }, style: { flex: 1, padding: "14px", background: "none", border: "1px solid #222A19", borderRadius: 8, color: "#b5ab8c", fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK")
+              React.createElement("button", { onClick: function() { setOnboardStep(2); }, style: { flex: 1, padding: "14px", background: "none", border: (C.isLight ? "1px solid " + C.border : "1px solid #222A19"), borderRadius: 8, color: (C.isLight ? C.textSecondary : "#b5ab8c"), fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK")
             )
           );
         }
-        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 3 OF 4"),
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, isSeparated ? "WHEN DID YOU SEPARATE?" : "WHEN IS YOUR ETS / EAOS?"),
-          React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, isSeparated ? "This helps us identify benefits and deadlines that may still apply." : "This activates your personalized timeline, reminders, and countdown."),
-          React.createElement("input", { type: "date", defaultValue: onboardData.etsDate, min: "1990-01-01", max: "2040-12-31", onBlur: function(e) { if (e.target.value) setOnboardData(function(p) { return Object.assign({}, p, {etsDate: e.target.value}); }); }, onChange: function(e) { if (e.target.value) setOnboardData(function(p) { return Object.assign({}, p, {etsDate: e.target.value}); }); }, style: { width: "100%", padding: "16px", background: "#0f120b", border: "2px solid #222A19", borderRadius: 12, color: "#d4cbb3", fontSize: 18, fontFamily: "'Courier Prime', monospace", textAlign: "center", marginBottom: 16 } }),
+        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: (C.isLight ? C.bg : "#0E120B") } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: (C.isLight ? C.gold : "#9C9577"), marginBottom: 6 } }, "STEP 3 OF 4"),
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: (C.isLight ? C.textBody : "#d4cbb3"), letterSpacing: 2, marginBottom: 8 } }, isSeparated ? "WHEN DID YOU SEPARATE?" : "WHEN IS YOUR ETS / EAOS?"),
+          React.createElement("div", { style: { fontSize: 13, color: (C.isLight ? C.textSecondary : "#b5ab8c"), marginBottom: 32, lineHeight: 1.5 } }, isSeparated ? "This helps us identify benefits and deadlines that may still apply." : "This activates your personalized timeline, reminders, and countdown."),
+          React.createElement("input", { type: "date", "aria-label": "Separation date", defaultValue: onboardData.etsDate, min: "1990-01-01", max: "2040-12-31", onBlur: function(e) { if (e.target.value) setOnboardData(function(p) { return Object.assign({}, p, {etsDate: e.target.value}); }); }, onChange: function(e) { if (e.target.value) setOnboardData(function(p) { return Object.assign({}, p, {etsDate: e.target.value}); }); }, style: { width: "100%", padding: "16px", background: (C.isLight ? C.bg : "#0f120b"), border: (C.isLight ? "2px solid " + C.border : "2px solid #222A19"), borderRadius: 12, color: (C.isLight ? C.textBody : "#d4cbb3"), fontSize: 18, fontFamily: "'Courier Prime', monospace", textAlign: "center", marginBottom: 16 } }),
           !onboardData.etsDate && React.createElement("div", { style: { textAlign: "center", marginBottom: 20 } },
-            React.createElement("button", { onClick: function() { setOnboardStep(4); }, style: { background: "none", border: "none", color: "#8a8468", fontSize: 11, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "I DON'T KNOW YET \u2014 SKIP")
+            React.createElement("button", { onClick: function() { setOnboardStep(4); }, style: { background: "none", border: "none", color: (C.isLight ? C.inactive : "#8a8468"), fontSize: 11, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "I DON'T KNOW YET \u2014 SKIP")
           ),
           React.createElement("div", { style: { flex: 1 } }),
           React.createElement("div", { style: { display: "flex", gap: 10, marginTop: 30 } },
-            React.createElement("button", { onClick: function() { setOnboardStep(2); }, style: { flex: 1, padding: "14px", background: "none", border: "1px solid #222A19", borderRadius: 8, color: "#b5ab8c", fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK"),
-            React.createElement("button", { disabled: !onboardData.etsDate, onClick: function() { setOnboardStep(4); }, style: { flex: 2, padding: "14px", background: "linear-gradient(135deg, #4A5D23, #2D5016)", border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: onboardData.etsDate ? "pointer" : "default", opacity: onboardData.etsDate ? 1 : 0.35, transition: "opacity 0.2s" } }, "CONTINUE \u2192")
+            React.createElement("button", { onClick: function() { setOnboardStep(2); }, style: { flex: 1, padding: "14px", background: "none", border: (C.isLight ? "1px solid " + C.border : "1px solid #222A19"), borderRadius: 8, color: (C.isLight ? C.textSecondary : "#b5ab8c"), fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK"),
+            React.createElement("button", { disabled: !onboardData.etsDate, onClick: function() { setOnboardStep(4); }, style: { flex: 2, padding: "14px", background: (C.isLight ? C.green : "linear-gradient(135deg, #4A5D23, #2D5016)"), border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: onboardData.etsDate ? "pointer" : "default", opacity: onboardData.etsDate ? 1 : 0.35, transition: "opacity 0.2s" } }, "CONTINUE \u2192")
           )
         );
       },
       // Step 4: Biggest concern
       function() {
-        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: "#0E120B" } },
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: "#9C9577", marginBottom: 6 } }, "STEP 4 OF 4"),
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: "#d4cbb3", letterSpacing: 2, marginBottom: 8 } }, "BIGGEST CONCERN?"),
-          React.createElement("div", { style: { fontSize: 13, color: "#b5ab8c", marginBottom: 32, lineHeight: 1.5 } }, "We'll point you to the most relevant tools first."),
+        return React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 24px 40px", background: (C.isLight ? C.bg : "#0E120B") } },
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: (C.isLight ? C.gold : "#9C9577"), marginBottom: 6 } }, "STEP 4 OF 4"),
+          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 22, fontWeight: 700, color: (C.isLight ? C.textBody : "#d4cbb3"), letterSpacing: 2, marginBottom: 8 } }, "BIGGEST CONCERN?"),
+          React.createElement("div", { style: { fontSize: 13, color: (C.isLight ? C.textSecondary : "#b5ab8c"), marginBottom: 32, lineHeight: 1.5 } }, "We'll point you to the most relevant tools first."),
           [{id:"career",label:"FINDING A CAREER",desc:"Resume, job search, SkillBridge, career mapping",icon:"\uD83C\uDFAF"},{id:"benefits",label:"VA BENEFITS & CLAIMS",desc:"Disability rating, BDD, healthcare, GI Bill",icon:"\uD83C\uDFE5"},{id:"money",label:"FINANCIAL READINESS",desc:"Pay gap, TSP, budgeting, SBP, taxes",icon:"\uD83D\uDCB0"},{id:"start",label:"JUST GETTING STARTED",desc:"Don't know where to begin \u2014 show me everything",icon:"\uD83D\uDCCB"}].concat(onboardData.status === "guard" ? [{id:"points",label:"MY RESERVE RETIREMENT",desc:"What are my points worth? Read my points letter and plan for retired pay at 60",icon:"\u2B50"}] : []).map(function(c) {
             var isActive = onboardData.concern === c.id;
-            return React.createElement("button", { key: c.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {concern: c.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : "#161B11", border: isActive ? "2px solid #4A5D23" : "1px solid #222A19", borderRadius: 12, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
+            return React.createElement("button", { key: c.id, onClick: function() { setOnboardData(function(p) { return Object.assign({}, p, {concern: c.id}); }); }, style: { display: "flex", alignItems: "center", gap: 14, padding: "16px", background: isActive ? "rgba(74,93,35,0.2)" : (C.isLight ? C.bgCard : "#161B11"), border: isActive ? (C.isLight ? "2px solid " + C.green : "2px solid #4A5D23") : (C.isLight ? "1px solid " + C.border : "1px solid #222A19"), borderRadius: 12, marginBottom: 10, cursor: "pointer", width: "100%", textAlign: "left" } },
               React.createElement("span", { style: { fontSize: 24 } }, c.icon),
               React.createElement("div", null,
-                React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: isActive ? "#d4cbb3" : "#a09878", letterSpacing: 1, fontWeight: 700 } }, c.label),
-                React.createElement("div", { style: { fontSize: 11, color: "#8a8468", marginTop: 2 } }, c.desc)
+                React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: isActive ? (C.isLight ? C.textBody : "#d4cbb3") : (C.isLight ? C.textSecondary : "#a09878"), letterSpacing: 1, fontWeight: 700 } }, c.label),
+                React.createElement("div", { style: { fontSize: 11, color: (C.isLight ? C.inactive : "#8a8468"), marginTop: 2 } }, c.desc)
               )
             );
           }),
@@ -7499,8 +7547,8 @@ function App() {
             setActiveTab(routeMap[onboardData.concern] || "dashboard");
             setShowOnboarding(false);
             showToast("WELCOME TO TRANSITION OPS");
-          }, style: { width: "100%", padding: "16px", background: "linear-gradient(135deg, #4A5D23, #2D5016)", border: "none", borderRadius: 12, color: "#fff", fontSize: 16, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 3, cursor: onboardData.concern ? "pointer" : "default", opacity: onboardData.concern ? 1 : 0.35, transition: "opacity 0.2s", boxShadow: "0 4px 20px rgba(74,93,35,0.4)" } }, "LAUNCH TRANSITION OPS \u2192"),
-          React.createElement("button", { onClick: function() { setOnboardStep(3); }, style: { width: "100%", marginTop: 10, padding: "13px", background: "none", border: "1px solid #222A19", borderRadius: 8, color: "#b5ab8c", fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK")
+          }, style: { width: "100%", padding: "16px", background: (C.isLight ? C.green : "linear-gradient(135deg, #4A5D23, #2D5016)"), border: "none", borderRadius: 12, color: "#fff", fontSize: 16, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 3, cursor: onboardData.concern ? "pointer" : "default", opacity: onboardData.concern ? 1 : 0.35, transition: "opacity 0.2s", boxShadow: "0 4px 20px rgba(74,93,35,0.4)" } }, "LAUNCH TRANSITION OPS \u2192"),
+          React.createElement("button", { onClick: function() { setOnboardStep(3); }, style: { width: "100%", marginTop: 10, padding: "13px", background: "none", border: (C.isLight ? "1px solid " + C.border : "1px solid #222A19"), borderRadius: 8, color: (C.isLight ? C.textSecondary : "#b5ab8c"), fontSize: 13, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer" } }, "\u2190 BACK")
         );
       }
     ];
@@ -7796,7 +7844,7 @@ function App() {
     React.createElement("div", { style: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 6 } },
       TopsCompass(44),
       React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 17, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "AI TRANSITION NAVIGATOR"),
-      React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 1.5, color: C.isLight ? "#FFFFFF" : "#0E120B", background: C.goldBright, borderRadius: 4, padding: "2px 7px" } }, "BETA")),
+      React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 1.5, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), background: C.goldBright, borderRadius: 4, padding: "2px 7px" } }, "BETA")),
     React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.45, marginBottom: 6 } }, "Answers only from Transition OPS verified content. Educational information \u2014 not benefits counseling, not affiliated with VA or DoD. Beta: spot something off? Tap FEEDBACK IS A GIFT. In crisis: Veterans Crisis Line 988, press 1."),
     React.createElement("div", { style: { fontSize: 10.5, color: C.textSecondary, lineHeight: 1.45, marginBottom: 10, padding: "8px 10px", background: C.bg, border: "1px solid " + C.border, borderRadius: 7 } }, React.createElement("strong", { style: { color: C.goldBright } }, "AI USE NOTICE: "), "Sending a question sends your current question, this chat history, and any saved separation date or service status through Netlify to OpenAI to generate an answer. OpenAI is called with store:false, but this is not a promise of zero provider retention. Do not enter Social Security numbers, medical records, or other sensitive information. The Navigator is optional; the rest of Transition Ops remains available without it."),
     React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 } },
@@ -7813,9 +7861,9 @@ function App() {
         return React.createElement("button", { key: i3, type: "button", disabled: navBusy, onClick: function(){ sendNavigator(ch); }, style: { minHeight: 44, background: "transparent", fontFamily: "inherit", textAlign: "left", fontSize: 11.5, color: C.textSecondary, border: "1px solid " + C.border, borderRadius: 14, padding: "6px 11px", cursor: navBusy ? "default" : "pointer", opacity: navBusy ? 0.5 : 1 } }, ch);
       })),
     React.createElement("div", { style: { display: "flex", gap: 8 } },
-      React.createElement("input", { value: navInput, onChange: function(e){ setNavInput(e.target.value); }, onKeyDown: function(e){ if (e.key === "Enter") sendNavigator(); }, "aria-label": "Ask the Transition Navigator", placeholder: "Ask about your transition\u2026", style: { flex: 1, minWidth: 0, minHeight: 44, background: "#1A2114", border: "1px solid #4A5A35", borderRadius: 8, color: "#F2EFE4", caretColor: "#E8C547", fontWeight: 600, padding: 12, fontSize: 16, fontFamily: "inherit", WebkitTextFillColor: "#F2EFE4", opacity: 1 } }),
-      React.createElement("button", { type: "button", disabled: navBusy || !navInput.trim(), onClick: function(){ sendNavigator(); }, "aria-label": "Send Navigator question", style: { minHeight: 44, background: C.goldBright, color: C.isLight ? "#FFFFFF" : "#0E120B", border: "none", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: navBusy || !navInput.trim() ? "default" : "pointer", opacity: navBusy || !navInput.trim() ? 0.5 : 1 } }, "SEND"))),
-  navUnlocked && activeTab !== "navigator" && activeTab !== "dashboard" && /*#__PURE__*/React.createElement("div", { className: "tops-ask-launcher", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: C.isLight ? "#FFFFFF" : "#0E120B", borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
+      React.createElement("input", { value: navInput, onChange: function(e){ setNavInput(e.target.value); }, onKeyDown: function(e){ if (e.key === "Enter") sendNavigator(); }, "aria-label": "Ask the Transition Navigator", placeholder: "Ask about your transition\u2026", style: { flex: 1, minWidth: 0, minHeight: 44, background: C.isLight ? C.bg : "#1A2114", border: "1px solid " + (C.isLight ? C.border : "#4A5A35"), borderRadius: 8, color: C.isLight ? C.textPrimary : "#F2EFE4", caretColor: C.isLight ? C.textPrimary : "#E8C547", fontWeight: 600, padding: 12, fontSize: 16, fontFamily: "inherit", WebkitTextFillColor: C.isLight ? C.textPrimary : "#F2EFE4", opacity: 1 } }),
+      React.createElement("button", { type: "button", disabled: navBusy || !navInput.trim(), onClick: function(){ sendNavigator(); }, "aria-label": "Send Navigator question", style: { minHeight: 44, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), border: "none", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: navBusy || !navInput.trim() ? "default" : "pointer", opacity: navBusy || !navInput.trim() ? 0.5 : 1 } }, "SEND"))),
+  navUnlocked && activeTab !== "navigator" && activeTab !== "dashboard" && /*#__PURE__*/React.createElement("div", { className: "tops-ask-launcher", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
   userStatus === "guard" && activeTab === "dashboard" && renderHomeNavigator(),
   activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, React.createElement(ServiceProfileEditor, { colors: C, value: userStatus, onSave: function(value) { serviceProfileEdit.current = true; setUserStatus(value); } }), whatsNewOpen && React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
     React.createElement("div", { onClick: function(e) { e.stopPropagation(); }, style: { background: C.bgCard, borderRadius: 12, width: "100%", maxWidth: 520, maxHeight: "82vh", overflowY: "auto", padding: "18px 18px 14px" } },
@@ -8283,7 +8331,7 @@ function App() {
               React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: C.textPrimary } }, doneTasks, React.createElement("span", { style: { color: C.inactive } }, "/" + totalTasks)),
               React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.inactive, marginTop: 3 } }, "TASKS")),
             React.createElement("button", { id: "tops-home-readiness", type: "button", style: { textAlign: "center", cursor: "pointer", background: "transparent", border: 0, padding: 0, minWidth: 44, minHeight: 44 }, onClick: function() { openPlanRoute("readiness", "tops-plan-readiness", "tops-home-readiness"); } },
-              React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: rInfo.c } }, rScore),
+              React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: topsThemeInk(C, rInfo.c) } }, rScore),
               React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.inactive, marginTop: 3 } }, "READINESS"))
           )
         );
@@ -8549,7 +8597,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         background: C.green,
         border: "none",
         borderRadius: 4,
-        color: C.textPrimary,
+        color: (C.isLight ? C.textOnFill : C.textPrimary),
         fontFamily: "'Oswald', sans-serif",
         fontSize: 13,
         letterSpacing: 1,
@@ -8601,7 +8649,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       style: {
         fontFamily: "'Oswald', sans-serif",
         fontSize: 13,
-        color: "#6B8E23",
+        color: (C.isLight ? C.greenBright : "#6B8E23"),
         letterSpacing: 1
       }
     }, "APP INSTALLED"), /*#__PURE__*/React.createElement("div", {
@@ -8701,7 +8749,12 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     );
   })()),
 
-  activeTab === "timeline" && !selectedMilestone && /*#__PURE__*/React.createElement("div", { id: "tops-plan-timeline", role: "region", "aria-label": "Timeline", tabIndex: -1 }, /*#__PURE__*/React.createElement("div", {
+  activeTab === "timeline" && !selectedMilestone && /*#__PURE__*/React.createElement("div", { id: "tops-plan-timeline", role: "region", "aria-label": "Timeline", tabIndex: -1 },
+  React.createElement("nav", { "aria-label": "My Plan tools", style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 } },
+    [{ id: "reminders", label: "Reminders & follow-ups", target: "tops-plan-reminders" }, { id: "resources", label: "Documents", target: "tops-plan-documents" }, { id: "readiness", label: "Readiness", target: "tops-plan-readiness" }].map(function(tool) {
+      return React.createElement("button", { key: tool.id, id: "tops-plan-shortcut-" + tool.id, type: "button", style: { minHeight: 44, minWidth: 44, flex: "1 1 150px", padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgElevated, color: C.textPrimary, font: "inherit", fontSize: 14, fontWeight: 600, cursor: "pointer", textAlign: "left" }, onClick: function() { openPlanRoute(tool.id, tool.target, "tops-plan-shortcut-" + tool.id); } }, tool.label);
+    })
+  ), /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
       padding: 14
@@ -8716,7 +8769,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       marginBottom: 6
     }
   }, "ETS / EAOS / SEPARATION DATE"), /*#__PURE__*/React.createElement("input", {
-    type: "date",
+    type: "date", "aria-label": "Separation date",
     defaultValue: separationDate,
     min: "1990-01-01",
     max: "2040-12-31",
@@ -8733,7 +8786,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     if (diff <= 0) return "STATUS: Post-separation. Focus on First 90 Days.";
     return "STATUS: T-" + diff + " months. " + (diff > 12 ? "Use this time wisely." : diff > 6 ? "Critical planning phase." : diff > 3 ? "Accelerate admin actions." : "Final execution. No time to waste.");
   })())), /*#__PURE__*/React.createElement("div", {
-    onClick: () => setActiveTab("vethub"),
+    role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, onClick: () => setActiveTab("vethub"),
     style: {
       ...S.card,
       padding: "12px 16px",
@@ -8766,7 +8819,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       marginLeft: 10
     }
   }, "\u2192")), /*#__PURE__*/React.createElement("div", {
-    onClick: openAbout,
+    role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, onClick: openAbout,
     style: { marginTop: 14, marginBottom: 4, padding: "11px 14px", background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" }
   }, /*#__PURE__*/React.createElement("div", {
     style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.6 }
@@ -8842,7 +8895,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         fontFamily: "'Oswald', sans-serif",
         fontSize: 11,
         letterSpacing: 2,
-        color: cat.color,
+        color: topsThemeInk(C, cat.color),
         background: cat.color + "22",
         padding: "1px 6px",
         borderRadius: 4
@@ -8931,7 +8984,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         fontFamily: "'Oswald', sans-serif",
         fontSize: 11,
         letterSpacing: 3,
-        color: cat.color,
+        color: topsThemeInk(C, cat.color),
         marginBottom: 4
       }
     }, cat.label, " \u2014 ", m.monthsOut > 0 ? "T-" + m.monthsOut + " MONTHS" : "POST-SEPARATION"), /*#__PURE__*/React.createElement("div", {
@@ -9046,7 +9099,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     }, "\u2713")), /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 13,
-        color: t.done ? "#6B8E23" : C.textBody,
+        color: t.done ? (C.isLight ? C.greenBright : "#6B8E23") : C.textBody,
         textDecoration: t.done ? "line-through" : "none",
         lineHeight: 1.5,
         fontFamily: "'Source Sans 3', sans-serif"
@@ -9065,7 +9118,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           var on = aiR.mode === m;
           return React.createElement("button", { key: m, type: "button", "aria-pressed": on, onClick: function() { setAiR(function(p){ return Object.assign({}, p, { mode: m }); }); },
             style: { flex: 1, minHeight: 44, textAlign: "center", padding: "9px 6px", borderRadius: 8, cursor: "pointer", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1, fontWeight: 700,
-              background: on ? C.greenBright : "transparent", color: on ? (C.isLight ? "#FFFFFF" : "#0E120B") : C.textSecondary, border: "1px solid " + (on ? C.greenBright : C.border) } },
+              background: on ? C.greenBright : "transparent", color: on ? (C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B")) : C.textSecondary, border: "1px solid " + (on ? C.greenBright : C.border) } },
             m === "standard" ? "CIVILIAN RESUME" : "FEDERAL (USAJOBS)");
         })),
       aiR.mode === "federal" && React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.5, marginBottom: 8 } }, "For USAJOBS, tailor your resume to two pages or less and follow the job announcement for required information. Review any bracketed prompts before submitting."),
@@ -9082,7 +9135,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           var selected = aiR.lengthPreference === option.id;
           return React.createElement("button", { key: option.id, type: "button", "aria-pressed": selected, onClick: function() { setAiR(function(p){
             return Object.assign({}, p, { lengthPreference: option.id, lengthPlan: null, out: "", auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false });
-          }); }, style: { flex: "1 1 120px", minHeight: 44, padding: "8px 7px", borderRadius: 7, cursor: "pointer", fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: 0.5, fontWeight: 700, background: selected ? C.greenBright : "transparent", color: selected ? (C.isLight ? "#FFFFFF" : "#0E120B") : C.textSecondary, border: "1px solid " + (selected ? C.greenBright : C.border) } }, option.label);
+          }); }, style: { flex: "1 1 120px", minHeight: 44, padding: "8px 7px", borderRadius: 7, cursor: "pointer", fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: 0.5, fontWeight: 700, background: selected ? C.greenBright : "transparent", color: selected ? (C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B")) : C.textSecondary, border: "1px solid " + (selected ? C.greenBright : C.border) } }, option.label);
         })),
         aiR.facts && React.createElement("div", { style: { marginTop: 10, paddingTop: 9, borderTop: "1px solid " + C.border } },
           React.createElement("div", { style: { fontSize: 10.5, color: C.textSecondary, lineHeight: 1.5, marginBottom: 7 } }, "Confirm only years that directly match this target. Leave blank if unavailable. Check each role that supports the target. We never calculate relevant experience from age, total service, dates, titles, or the job posting."),
@@ -9164,7 +9217,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
             setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets, lengthPlan: nextLengthPlan, auditScorecard: nextScorecard, auditTrace: Array.isArray(res.d.trace) ? res.d.trace : [], auditBlockers: [], supportedKeywords: Array.isArray(res.d.supportedKeywords) ? res.d.supportedKeywords : [], auditGaps: Array.isArray(res.d.gaps) ? res.d.gaps : [] }); });
           })
           .catch(handleResumeTransportFailure);
-      }, style: { width: "100%", minHeight: 44, background: C.greenBright, color: C.isLight ? "#FFFFFF" : "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? (aiR.facts ? "DRAFTING\u2026 (10-15 SEC)" : "CHECKING FACTS\u2026") : (aiR.facts ? "DRAFT FROM CONFIRMED FACTS" : "BUILD MY FACT SHEET")),
+      }, style: { width: "100%", minHeight: 44, background: C.greenBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? (aiR.facts ? "DRAFTING\u2026 (10-15 SEC)" : "CHECKING FACTS\u2026") : (aiR.facts ? "DRAFT FROM CONFIRMED FACTS" : "BUILD MY FACT SHEET")),
       React.createElement("div", { id: "tops-resume-error", role: "alert", "aria-atomic": "true", style: { marginTop: aiR.err ? 10 : 0, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, aiR.err || ""),
       aiR.auditBlockers.length > 0 && React.createElement("div", { style: { marginTop: 10, padding: "11px 12px", background: "rgba(190,70,70,0.12)", border: "1px solid " + C.warning, borderRadius: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.warning, fontWeight: 700, marginBottom: 5 } }, "DRAFT WITHHELD \u2014 FIX THESE FIRST"),
@@ -9239,7 +9292,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           document.body.appendChild(a); a.click(); document.body.removeChild(a);
           setTimeout(function(){ URL.revokeObjectURL(objectUrl); }, 0);
           trackResumeDownload();
-        }, style: { width: "100%", marginTop: 8, background: C.goldBright, color: C.isLight ? "#FFFFFF" : "#0E120B", border: "none", borderRadius: 8, padding: "12px", fontFamily: "'Oswald', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1.5, cursor: "pointer" } }, aiR.mode === "federal" ? "\u2B07 DOWNLOAD AS WORD DOC" : "\u2B07 DOWNLOAD WORD DOCX"),
+        }, style: { width: "100%", marginTop: 8, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), border: "none", borderRadius: 8, padding: "12px", fontFamily: "'Oswald', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1.5, cursor: "pointer" } }, aiR.mode === "federal" ? "\u2B07 DOWNLOAD AS WORD DOC" : "\u2B07 DOWNLOAD WORD DOCX"),
         React.createElement("button", { onClick: function() { if (navigator.clipboard) { navigator.clipboard.writeText(aiR.out).then(function(){ showToast(aiR.mode === "federal" ? "RESUME COPIED \u2014 fill the [brackets], then send." : "RESUME COPIED \u2014 review the draft and honest gaps, then send."); }); } if (window.__trackEvent) window.__trackEvent("ai_resume_copied", {}); }, style: { marginTop: 8, background: "transparent", color: C.greenBright, border: "1px solid " + C.greenBright, borderRadius: 8, padding: "9px 16px", fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: "pointer" } }, "COPY RESUME"), /*#__PURE__*/React.createElement("a", {
         href: "https://www.dol.gov/agencies/vets/programs/tap/employment-navigator-partnership", target: "_blank", rel: "noopener noreferrer",
         onClick: function() { if (window.__trackEvent) window.__trackEvent("enpp_handoff_tapped", {}); },
@@ -9278,7 +9331,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
             setJobsQ(function(p){ return Object.assign({}, p, { loading: false, jobs: res.d.jobs || [], count: res.d.count || 0, note: res.d.note || "" }); });
           })
           .catch(function(){ setJobsQ(function(p){ return Object.assign({}, p, { loading: false, err: "Search hiccup \u2014 the State Job Banks link in Resources always works." }); }); });
-      }, style: { width: "100%", background: jobsQ.loading ? C.border : C.goldBright, color: C.isLight ? "#FFFFFF" : "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: jobsQ.loading ? "wait" : "pointer" } }, jobsQ.loading ? "SEARCHING\u2026" : "SEARCH LIVE OPENINGS"),
+      }, style: { width: "100%", background: jobsQ.loading ? C.border : C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: jobsQ.loading ? "wait" : "pointer" } }, jobsQ.loading ? "SEARCHING\u2026" : "SEARCH LIVE OPENINGS"),
       jobsQ.err && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, jobsQ.err),
       jobsQ.note && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, jobsQ.note),
       jobsQ.jobs && jobsQ.jobs.length > 0 && React.createElement("div", { style: { marginTop: 12 } },
@@ -9975,7 +10028,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         background: C.green,
         border: "none",
         borderRadius: 4,
-        color: C.textPrimary,
+        color: (C.isLight ? C.textOnFill : C.textPrimary),
         fontFamily: "'Oswald', sans-serif",
         fontSize: 13,
         letterSpacing: 2,
@@ -10034,7 +10087,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       marginBottom: 8
     }
   }, /*#__PURE__*/React.createElement("select", {
-    value: mosBranch,
+    "aria-label": "Branch of service", value: mosBranch,
     onChange: e => setMosBranch(e.target.value),
     style: {
       width: "100%",
@@ -10063,7 +10116,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     value: "space+force"
   }, "Space Force")), /*#__PURE__*/React.createElement("input", {
     type: "text",
-    value: mosCode,
+    "aria-label": "MOS / NEC / AFSC code", value: mosCode,
     onChange: e => setMosCode(e.target.value.toUpperCase()),
     placeholder: "Enter MOS / NEC / AFSC",
     style: {
@@ -10085,7 +10138,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       padding: "12px 14px",
       background: C.green,
       borderRadius: 4,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       fontFamily: "'Oswald', sans-serif",
       fontSize: 13,
       letterSpacing: 1,
@@ -10143,7 +10196,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       background: C.green,
       border: "none",
       borderRadius: 4,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       fontFamily: "'Oswald', sans-serif",
       fontSize: 14,
       letterSpacing: 2,
@@ -10251,7 +10304,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     gap: "DEGREE REQUIRED",
     desc: "Target role requires Bachelor's/Master's — plan for GI Bill or VR&E education path (2-4 years)",
     icon: "🎓",
-    color: "#4A90D9",
+    color: (C.isLight ? "#275F7B" : "#4A90D9"),
     timeline: "LONG"
   }, {
     gap: "CERTIFICATION NEEDED",
@@ -10269,7 +10322,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     gap: "EXPERIENCE GAP",
     desc: "Have the knowledge, need civilian reps — SkillBridge, fellowship, or apprenticeship to bridge",
     icon: "📋",
-    color: "#6B8E23",
+    color: (C.isLight ? C.greenBright : "#6B8E23"),
     timeline: "SHORT"
   }, {
     gap: "SOFT SKILL TRANSLATION",
@@ -10315,7 +10368,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     style: {
       fontFamily: "'Courier Prime', monospace",
       fontSize: 10,
-      color: g.timeline === "IMMEDIATE" ? C.greenBright : g.timeline === "SHORT" ? C.goldBright : g.timeline === "MEDIUM" ? C.warning : "#4A90D9",
+      color: g.timeline === "IMMEDIATE" ? C.greenBright : g.timeline === "SHORT" ? C.goldBright : g.timeline === "MEDIUM" ? C.warning : (C.isLight ? "#275F7B" : "#4A90D9"),
       background: C.bgCard,
       padding: "2px 6px",
       borderRadius: 4
@@ -10375,7 +10428,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       background: C.green,
       border: "none",
       borderRadius: 4,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       fontFamily: "'Oswald', sans-serif",
       fontSize: 14,
       letterSpacing: 2,
@@ -10401,7 +10454,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       ...S.card,
       padding: 14,
       cursor: "pointer",
-      borderColor: pathwayType === "college" ? "#4A90D9" : C.border
+      borderColor: pathwayType === "college" ? (C.isLight ? "#275F7B" : "#4A90D9") : C.border
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -10423,7 +10476,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     style: {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 14,
-      color: "#4A90D9"
+      color: (C.isLight ? "#275F7B" : "#4A90D9")
     }
   }, "COLLEGE / DEGREE PATH"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -10619,7 +10672,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       ...S.card,
       padding: 14,
       cursor: "pointer",
-      borderColor: pathwayType === "experience" ? "#6B8E23" : C.border
+      borderColor: pathwayType === "experience" ? (C.isLight ? C.greenBright : "#6B8E23") : C.border
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -10641,7 +10694,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     style: {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 14,
-      color: "#6B8E23"
+      color: (C.isLight ? C.greenBright : "#6B8E23")
     }
   }, "SKILLBRIDGE / EXPERIENCE PATH"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -10734,7 +10787,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       background: C.green,
       border: "none",
       borderRadius: 4,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       fontFamily: "'Oswald', sans-serif",
       fontSize: 14,
       letterSpacing: 2,
@@ -10772,7 +10825,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     name: "GI Bill BAH (if in school)",
     desc: "Monthly housing allowance while enrolled, at the E-5 w/dependents rate for your school's ZIP. Tax-free. Varies widely by location.",
     icon: "🏠",
-    color: "#4A90D9"
+    color: (C.isLight ? "#275F7B" : "#4A90D9")
   }, {
     name: "Unemployment (UCX)",
     desc: "Most separating members qualify, depending on state rules and discharge. File immediately at separation. Typically $300-500/wk \u2014 varies by state.",
@@ -10787,7 +10840,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     name: "VR&E Subsistence Allowance",
     desc: "If using VR&E (Ch. 31), monthly subsistence allowance while training. Can be used after GI Bill.",
     icon: "📋",
-    color: "#6B8E23"
+    color: (C.isLight ? C.greenBright : "#6B8E23")
   }].map((r, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
@@ -10929,7 +10982,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     name: "Microsoft MSSA",
     type: "PAID TRAINING \u2192 JOB",
     desc: "17-week cloud/cybersecurity bootcamp. Paid stipend during training. Guaranteed interview with Microsoft at completion. Accepts all branches.",
-    color: "#4A90D9"
+    color: (C.isLight ? "#275F7B" : "#4A90D9")
   }, {
     name: "Amazon Career Choice",
     type: "TUITION + JOB",
@@ -10939,7 +10992,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     name: "Hiring Our Heroes Fellowship",
     type: "12-WEEK PAID FELLOWSHIP",
     desc: "Fortune 500 companies. Full-time fellowship last 12 weeks of service (SkillBridge). 90%+ hire rate. Closes experience gap and pays military salary.",
-    color: "#6B8E23"
+    color: (C.isLight ? C.greenBright : "#6B8E23")
   }, {
     name: "Salesforce Trailhead Military",
     type: "FREE CERT → PIPELINE",
@@ -10964,7 +11017,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     name: "Teaching (State Pathways)",
     type: "LICENSE PATHWAY",
     desc: "The federal Troops to Teachers program ended in 2024, but many states run successor programs and alternative licensure paths for veterans. Teacher-shortage districts actively recruit vets.",
-    color: "#4A90D9"
+    color: (C.isLight ? "#275F7B" : "#4A90D9")
   }].map((p, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
@@ -11050,7 +11103,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       background: C.green,
       border: "none",
       borderRadius: 4,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       fontFamily: "'Oswald', sans-serif",
       fontSize: 14,
       letterSpacing: 2,
@@ -11263,7 +11316,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       padding: "12px 14px",
       background: C.green,
       borderRadius: 4,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       fontFamily: "'Oswald', sans-serif",
       fontSize: 13,
       letterSpacing: 1,
@@ -11377,7 +11430,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     text: "My current salary matches or exceeds the civilian equivalent of my military role",
     pts: 16
   }].map(item => /*#__PURE__*/React.createElement("div", {
-    key: item.id,
+    key: item.id, role: "checkbox", "aria-checked": !!vetScore[item.id], tabIndex: 0, onKeyDown: topsKeyboardActivate,
     onClick: () => setVetScore(prev => ({
       ...prev,
       [item.id]: !prev[item.id]
@@ -11459,7 +11512,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         fontFamily: "'Oswald', sans-serif",
         fontSize: 36,
         fontWeight: 700,
-        color: gradeColor
+        color: topsThemeInk(C, gradeColor)
       }
     }, pct, /*#__PURE__*/React.createElement("span", {
       style: {
@@ -11470,7 +11523,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         fontFamily: "'Oswald', sans-serif",
         fontSize: 14,
         letterSpacing: 3,
-        color: gradeColor,
+        color: topsThemeInk(C, gradeColor),
         marginTop: 2
       }
     }, grade), /*#__PURE__*/React.createElement("div", {
@@ -11603,7 +11656,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       fontSize: 10,
       padding: "2px 6px",
       background: C.green,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       borderRadius: 4,
       fontFamily: "'Oswald', sans-serif",
       letterSpacing: 1
@@ -11663,7 +11716,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     style: {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 13,
-      color: "#C0392B",
+      color: C.danger,
       marginBottom: 6
     }
   }, "VR&E CHAPTER 31 ", "\u2014", " THE MOST UNDERUSED BENEFIT IN THE VA"), /*#__PURE__*/React.createElement("div", {
@@ -11774,7 +11827,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       fontSize: 9,
       padding: "2px 6px",
       background: r.tag === "FREE" ? C.greenBright : r.tag === "VA BENEFIT" ? C.gold : C.green,
-      color: C.isLight === true ? "#FFFFFF" : C.bg,
+      color: topsFillInk(r.tag === "FREE" ? C.greenBright : r.tag === "VA BENEFIT" ? C.gold : C.green),
       borderRadius: 4,
       fontFamily: "'Oswald', sans-serif",
       letterSpacing: 1
@@ -11981,7 +12034,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       fontSize: 9,
       padding: "2px 6px",
       background: b.urgency === "high" ? "#C0392B" : b.urgency === "medium" ? C.goldBright : C.green,
-      color: "#FFFFFF",
+      color: topsFillInk(b.urgency === "high" ? "#C0392B" : b.urgency === "medium" ? C.goldBright : C.green),
       borderRadius: 4,
       fontFamily: "'Oswald', sans-serif",
       letterSpacing: 1
@@ -12009,7 +12062,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       padding: "6px 12px",
       background: C.green,
       borderRadius: 4,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       fontSize: 11,
       fontFamily: "'Oswald', sans-serif",
       letterSpacing: 1,
@@ -12145,7 +12198,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       letterSpacing: 2,
       cursor: "pointer"
     }
-  }, "SHARE WITH A VETERAN"))), activeTab === "resources" && /*#__PURE__*/React.createElement("div", null, navUnlocked && React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { ...S.card, padding: "10px 14px", borderColor: C.gold, cursor: "pointer", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 } },
+  }, "SHARE WITH A VETERAN"))), activeTab === "resources" && /*#__PURE__*/React.createElement("div", null, navUnlocked && React.createElement("div", { role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { ...S.card, padding: "10px 14px", borderColor: C.gold, cursor: "pointer", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 } },
     React.createElement("span", { style: { color: C.goldBright, fontSize: 15 } }, "\u2726"),
     React.createElement("span", { style: { fontSize: 12.5, color: C.textSecondary, lineHeight: 1.5 } }, "A lot of resources live below. Or skip the scrolling: tell the Navigator your situation and it will point you.")),
   /*#__PURE__*/React.createElement("a", {
@@ -12242,7 +12295,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       whiteSpace: "nowrap",
       flexShrink: 0
     }
-  }, st.label))), subTab === "directory" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 14 } }, /*#__PURE__*/React.createElement("div", { style: S.cardTitle }, "RESOURCE DIRECTORY"), /*#__PURE__*/React.createElement("div", { style: { ...S.bodyText, lineHeight: 1.7, marginBottom: 10 } }, "Filter by what you need. Every resource here has been verified or flagged for review. Tap any card to open the resource site."), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "CATEGORY"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 } }, ["ALL"].concat(Object.keys(RESOURCE_CATEGORIES)).map(cat => /*#__PURE__*/React.createElement("button", { key: cat, onClick: () => setResourceFilter({ ...resourceFilter, category: cat }), style: { padding: "9px 12px", background: resourceFilter.category === cat ? C.green : "transparent", border: "1px solid " + (resourceFilter.category === cat ? C.green : C.border), borderRadius: 4, color: resourceFilter.category === cat ? C.textOnFill : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, cat === "ALL" ? "ALL" : RESOURCE_CATEGORIES[cat].label))), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "COST"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 } }, [{ id: "ALL", label: "ALL" }, { id: "free", label: "FREE" }, { id: "gi_bill", label: "GI BILL" }, { id: "paid", label: "PAID" }].map(c => /*#__PURE__*/React.createElement("button", { key: c.id, onClick: () => setResourceFilter({ ...resourceFilter, cost: c.id }), style: { padding: "9px 12px", background: resourceFilter.cost === c.id ? C.gold : "transparent", border: "1px solid " + (resourceFilter.cost === c.id ? C.gold : C.border), borderRadius: 4, color: resourceFilter.cost === c.id ? C.bg : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, c.label))), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "ELIGIBILITY"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap" } }, [{ id: "ALL", label: "ALL" }, { id: "veteran", label: "VETERAN" }, { id: "active", label: "ACTIVE DUTY" }, { id: "spouse", label: "SPOUSE" }, { id: "guard_reserve", label: "GUARD/RESERVE" }].map(e => /*#__PURE__*/React.createElement("button", { key: e.id, onClick: () => setResourceFilter({ ...resourceFilter, eligibility: e.id }), style: { padding: "9px 12px", background: resourceFilter.eligibility === e.id ? "#1B3A4B" : "transparent", border: "1px solid " + (resourceFilter.eligibility === e.id ? "#1B3A4B" : C.border), borderRadius: 4, color: resourceFilter.eligibility === e.id ? C.textOnFill : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, e.label)))), (function() { var filtered = RESOURCES.filter(function(r) { if (resourceFilter.category !== "ALL" && r.category !== resourceFilter.category) return false; if (resourceFilter.cost !== "ALL" && r.cost !== resourceFilter.cost) return false; if (resourceFilter.eligibility !== "ALL" && r.eligibility.indexOf(resourceFilter.eligibility) === -1) return false; return true; }); if (filtered.length === 0) { return /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 20, textAlign: "center" } }, /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.inactive } }, "No resources match the current filters. Try broadening your selection.")); } var grouped = {}; filtered.forEach(function(r) { if (!grouped[r.category]) grouped[r.category] = []; grouped[r.category].push(r); }); return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.greenBright, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginBottom: 8, marginTop: 10 } }, filtered.length + " RESOURCE" + (filtered.length !== 1 ? "S" : "") + " MATCH YOUR FILTERS"), Object.keys(grouped).map(function(catKey) { var cat = RESOURCE_CATEGORIES[catKey] || { color: C.gold, icon: "", label: catKey.toUpperCase() }; return /*#__PURE__*/React.createElement("div", { key: catKey, style: { marginBottom: 14 } }, /*#__PURE__*/React.createElement("div", { style: { ...S.sectionLabel, color: cat.color } }, cat.icon + " " + cat.label), grouped[catKey].map(function(r) { return /*#__PURE__*/React.createElement("a", { key: r.id, href: r.url, target: "_blank", rel: "noopener noreferrer", style: { display: "block", padding: "12px 14px", marginBottom: 5, background: r.priority ? "linear-gradient(135deg, " + C.bgCard + ", " + C.gradStart + ")" : C.bgCard, border: "1px solid " + (r.priority ? C.gold : C.border), borderLeft: r.priority ? "3px solid " + C.gold : "1px solid " + C.border, borderRadius: 4, textDecoration: "none" } }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 } }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: r.priority ? C.goldBright : C.textPrimary, fontWeight: 600 } }, (r.priority ? "⭐ " : "") + r.name, r.relationship === "partner" && /*#__PURE__*/React.createElement("span", { style: { marginLeft: 7, fontSize: 9, padding: "2px 5px", background: C.bg, color: C.inactive, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, fontWeight: 400, border: "1px solid " + C.border, verticalAlign: "middle", whiteSpace: "nowrap" } }, "PARTNER")), /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: C.greenBright } }, "→")), /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.5, marginBottom: 6 } }, r.description), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap" } }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: r.cost === "free" ? C.green : r.cost === "gi_bill" ? "#1B3A4B" : C.bg, color: r.cost === "free" || r.cost === "gi_bill" ? C.textOnFill : C.inactive, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, r.cost === "free" ? "FREE" : r.cost === "gi_bill" ? "GI BILL" : "PAID"), r.eligibility.map(function(elig) { return /*#__PURE__*/React.createElement("span", { key: elig, style: { fontSize: 9, padding: "2px 6px", background: C.bg, color: C.inactive, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, border: "1px solid " + C.border } }, elig.toUpperCase().replace("_", "/")); }), !r.verified && /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: "rgba(139,105,20,0.2)", color: C.gold, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, "⚠ VERIFY"))); })); })); })()),subTab === "vsos" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, st.label))), subTab === "directory" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 14 } }, /*#__PURE__*/React.createElement("div", { style: S.cardTitle }, "RESOURCE DIRECTORY"), /*#__PURE__*/React.createElement("div", { style: { ...S.bodyText, lineHeight: 1.7, marginBottom: 10 } }, "Filter by what you need. Every resource here has been verified or flagged for review. Tap any card to open the resource site."), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "CATEGORY"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 } }, ["ALL"].concat(Object.keys(RESOURCE_CATEGORIES)).map(cat => /*#__PURE__*/React.createElement("button", { key: cat, onClick: () => setResourceFilter({ ...resourceFilter, category: cat }), style: { padding: "9px 12px", background: resourceFilter.category === cat ? C.green : "transparent", border: "1px solid " + (resourceFilter.category === cat ? C.green : C.border), borderRadius: 4, color: resourceFilter.category === cat ? C.textOnFill : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, cat === "ALL" ? "ALL" : RESOURCE_CATEGORIES[cat].label))), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "COST"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 } }, [{ id: "ALL", label: "ALL" }, { id: "free", label: "FREE" }, { id: "gi_bill", label: "GI BILL" }, { id: "paid", label: "PAID" }].map(c => /*#__PURE__*/React.createElement("button", { key: c.id, onClick: () => setResourceFilter({ ...resourceFilter, cost: c.id }), style: { padding: "9px 12px", background: resourceFilter.cost === c.id ? C.gold : "transparent", border: "1px solid " + (resourceFilter.cost === c.id ? C.gold : C.border), borderRadius: 4, color: resourceFilter.cost === c.id ? C.bg : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, c.label))), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "ELIGIBILITY"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap" } }, [{ id: "ALL", label: "ALL" }, { id: "veteran", label: "VETERAN" }, { id: "active", label: "ACTIVE DUTY" }, { id: "spouse", label: "SPOUSE" }, { id: "guard_reserve", label: "GUARD/RESERVE" }].map(e => /*#__PURE__*/React.createElement("button", { key: e.id, onClick: () => setResourceFilter({ ...resourceFilter, eligibility: e.id }), style: { padding: "9px 12px", background: resourceFilter.eligibility === e.id ? "#1B3A4B" : "transparent", border: "1px solid " + (resourceFilter.eligibility === e.id ? "#1B3A4B" : C.border), borderRadius: 4, color: resourceFilter.eligibility === e.id ? C.textOnFill : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, e.label)))), (function() { var filtered = RESOURCES.filter(function(r) { if (resourceFilter.category !== "ALL" && r.category !== resourceFilter.category) return false; if (resourceFilter.cost !== "ALL" && r.cost !== resourceFilter.cost) return false; if (resourceFilter.eligibility !== "ALL" && r.eligibility.indexOf(resourceFilter.eligibility) === -1) return false; return true; }); if (filtered.length === 0) { return /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 20, textAlign: "center" } }, /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.inactive } }, "No resources match the current filters. Try broadening your selection.")); } var grouped = {}; filtered.forEach(function(r) { if (!grouped[r.category]) grouped[r.category] = []; grouped[r.category].push(r); }); return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.greenBright, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginBottom: 8, marginTop: 10 } }, filtered.length + " RESOURCE" + (filtered.length !== 1 ? "S" : "") + " MATCH YOUR FILTERS"), Object.keys(grouped).map(function(catKey) { var cat = RESOURCE_CATEGORIES[catKey] || { color: C.gold, icon: "", label: catKey.toUpperCase() }; return /*#__PURE__*/React.createElement("div", { key: catKey, style: { marginBottom: 14 } }, /*#__PURE__*/React.createElement("div", { style: { ...S.sectionLabel, color: topsThemeInk(C, cat.color) } }, cat.icon + " " + cat.label), grouped[catKey].map(function(r) { return /*#__PURE__*/React.createElement("a", { key: r.id, href: r.url, target: "_blank", rel: "noopener noreferrer", style: { display: "block", padding: "12px 14px", marginBottom: 5, background: r.priority ? "linear-gradient(135deg, " + C.bgCard + ", " + C.gradStart + ")" : C.bgCard, border: "1px solid " + (r.priority ? C.gold : C.border), borderLeft: r.priority ? "3px solid " + C.gold : "1px solid " + C.border, borderRadius: 4, textDecoration: "none" } }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 } }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: r.priority ? C.goldBright : C.textPrimary, fontWeight: 600 } }, (r.priority ? "⭐ " : "") + r.name, r.relationship === "partner" && /*#__PURE__*/React.createElement("span", { style: { marginLeft: 7, fontSize: 9, padding: "2px 5px", background: C.bg, color: C.inactive, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, fontWeight: 400, border: "1px solid " + C.border, verticalAlign: "middle", whiteSpace: "nowrap" } }, "PARTNER")), /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: C.greenBright } }, "→")), /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.5, marginBottom: 6 } }, r.description), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap" } }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: r.cost === "free" ? C.green : r.cost === "gi_bill" ? "#1B3A4B" : C.bg, color: r.cost === "free" || r.cost === "gi_bill" ? C.textOnFill : C.inactive, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, r.cost === "free" ? "FREE" : r.cost === "gi_bill" ? "GI BILL" : "PAID"), r.eligibility.map(function(elig) { return /*#__PURE__*/React.createElement("span", { key: elig, style: { fontSize: 9, padding: "2px 6px", background: C.bg, color: C.inactive, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, border: "1px solid " + C.border } }, elig.toUpperCase().replace("_", "/")); }), !r.verified && /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: "rgba(139,105,20,0.2)", color: C.gold, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, "⚠ VERIFY"))); })); })); })()),subTab === "vsos" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
       padding: 14
@@ -12420,7 +12473,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
   }, org.desc), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 10,
-      color: "#6B8E23",
+      color: (C.isLight ? C.greenBright : "#6B8E23"),
       marginTop: 3,
       paddingLeft: 22
     }
@@ -12568,7 +12621,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       padding: "10px 14px",
       background: C.green,
       borderRadius: 4,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       fontFamily: "'Oswald', sans-serif",
       fontSize: 13,
       letterSpacing: 1,
@@ -13564,7 +13617,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       padding: "10px 14px",
       background: C.green,
       borderRadius: 4,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       fontFamily: "'Oswald', sans-serif",
       fontSize: 13,
       letterSpacing: 1,
@@ -14097,7 +14150,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       padding: "8px 16px",
       background: C.green,
       borderRadius: 4,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       fontFamily: "'Oswald', sans-serif",
       fontSize: 13,
       letterSpacing: 1,
@@ -14235,7 +14288,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     style: {
       fontSize: 9,
       background: C.green,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       padding: "1px 5px",
       borderRadius: 4,
       fontFamily: "'Oswald', sans-serif",
@@ -14263,7 +14316,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
   }, co.locations)), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 10,
-      color: "#6B8E23",
+      color: (C.isLight ? C.greenBright : "#6B8E23"),
       marginTop: 4
     }
   }, co.url.replace("https://", "")))), week.notes && /*#__PURE__*/React.createElement("div", {
@@ -14323,7 +14376,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
   }, r.name), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
-      color: "#6B8E23",
+      color: (C.isLight ? C.greenBright : "#6B8E23"),
       marginLeft: 8
     }
   }, "\u2192"))))), subTab === "healthcare" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -14469,7 +14522,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     style: {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 14,
-      color: d.obtained ? "#6B8E23" : C.textPrimary,
+      color: d.obtained ? (C.isLight ? C.greenBright : "#6B8E23") : C.textPrimary,
       textDecoration: d.obtained ? "line-through" : "none"
     }
   }, d.name), /*#__PURE__*/React.createElement("div", {
@@ -14523,7 +14576,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     style: {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 12,
-      color: d.obtained ? "#6B8E23" : C.textPrimary,
+      color: d.obtained ? (C.isLight ? C.greenBright : "#6B8E23") : C.textPrimary,
       textDecoration: d.obtained ? "line-through" : "none"
     }
   }, d.name), /*#__PURE__*/React.createElement("div", {
@@ -14561,7 +14614,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     type: "text",
     value: userState,
     onChange: e => setUserState(e.target.value.toUpperCase().slice(0, 2)),
-    placeholder: "TX, FL, VA...",
+    "aria-label": "Search states", placeholder: "TX, FL, VA...",
     maxLength: 2,
     style: {
       ...S.input,
@@ -14659,7 +14712,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     count: 9
   }, {
     category: "NO TAX ON RETIRED PAY",
-    color: "#6B8E23",
+    color: (C.isLight ? C.greenBright : "#6B8E23"),
     states: "AL, AR, CT, HI, IA, IL, KS, LA, MA, ME, MI, MN, MO, MS, NJ, NY, NC, ND, OH, OK, OR, PA, WI, WV, DC",
     detail: "These states have income tax but specifically exempt military retired pay. Conditions or limitations may apply — check your state's fact sheet.",
     count: 25
@@ -14671,7 +14724,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     count: 14
   }, {
     category: "FULL TAX ON ALL RETIRED PAY",
-    color: "#8B0000",
+    color: C.danger,
     states: "CA, MT, UT",
     detail: "All military retired pay is subject to full state income tax with no military-specific exemption. Factor this heavily into your relocation decision.",
     count: 3
@@ -14696,7 +14749,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     style: {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 12,
-      color: cat.color,
+      color: topsThemeInk(C, cat.color),
       letterSpacing: 1
     }
   }, cat.category), /*#__PURE__*/React.createElement("span", {
@@ -14704,7 +14757,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       fontSize: 10,
       padding: "2px 6px",
       background: cat.color,
-      color: "#FFFFFF",
+      color: topsFillInk(cat.color),
       borderRadius: 4,
       fontFamily: "'Oswald', sans-serif"
     }
@@ -14917,7 +14970,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       padding: "10px 16px",
       background: C.green,
       borderRadius: 4,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       fontFamily: "'Oswald', sans-serif",
       fontSize: 13,
       letterSpacing: 1,
@@ -15054,7 +15107,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       marginBottom: 6
     }
   }, "BRANCH OF SERVICE"), /*#__PURE__*/React.createElement("select", {
-    value: mosBranch,
+    "aria-label": "Branch of service", value: mosBranch,
     onChange: e => setMosBranch(e.target.value),
     style: {
       width: "100%",
@@ -15097,7 +15150,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     }
   }, "MOS / NEC / AFSC CODE"), /*#__PURE__*/React.createElement("input", {
     type: "text",
-    value: mosCode,
+    "aria-label": "MOS / NEC / AFSC code", value: mosCode,
     onChange: e => setMosCode(e.target.value.toUpperCase()),
     placeholder: "e.g. 11B, 0311, HM, 3D0X2",
     style: {
@@ -15120,7 +15173,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       background: C.green,
       border: "none",
       borderRadius: 4,
-      color: C.textPrimary,
+      color: (C.isLight ? C.textOnFill : C.textPrimary),
       fontFamily: "'Oswald', sans-serif",
       fontSize: 13,
       letterSpacing: 1,
@@ -15284,9 +15337,10 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     }
 
     return React.createElement("div", null,
+      React.createElement("h2", { id: "tops-plan-reminders", tabIndex: -1, style: { fontSize: 20, margin: "0 0 16px", color: C.textPrimary } }, "Reminders & follow-ups"),
       !separationDate && React.createElement("div", { style: { marginBottom: 12 } },
         React.createElement("label", { style: { fontSize: 11, color: C.gold, letterSpacing: 2, fontWeight: 700, fontFamily: "'Oswald', sans-serif" } }, "SET YOUR ETS DATE TO ACTIVATE REMINDERS"),
-        React.createElement("input", { type: "date", defaultValue: separationDate, min: "1990-01-01", max: "2040-12-31", onBlur: function(e) { if (e.target.value && e.target.value !== separationDate) setSeparationDate(e.target.value); }, style: { width: "100%", padding: "12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, fontSize: 15, fontFamily: "'Courier Prime', monospace", marginTop: 6 } })
+        React.createElement("input", { type: "date", "aria-label": "Separation date", defaultValue: separationDate, min: "1990-01-01", max: "2040-12-31", onBlur: function(e) { if (e.target.value && e.target.value !== separationDate) setSeparationDate(e.target.value); }, style: { width: "100%", padding: "12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, fontSize: 15, fontFamily: "'Courier Prime', monospace", marginTop: 6 } })
       ),
       etsMonths !== null && React.createElement("div", { style: { padding: "10px 0 12px", marginBottom: 10, background: etsMonths <= 2 ? "rgba(192,57,43,0.14)" : C.bgElevated, border: "1px solid " + (etsMonths <= 2 ? C.danger : C.border), borderRadius: 8, display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: 14, paddingRight: 14 } },
         React.createElement("div", null,
@@ -15298,7 +15352,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           React.createElement("div", { style: { fontSize: 10, color: C.gold } }, etsMonths > 0 ? "MO TO ETS" : etsMonths === 0 ? "ETS TODAY" : "MO POST-SEP")
         )
       ),
-      urgentR.length > 0 && React.createElement("div", { style: { padding: "12px 14px", background: "linear-gradient(135deg,#3d1111,#2a0808)", border: "1px solid #8B0000", borderRadius: 8, marginBottom: 12, animation: "pulse 2s ease-in-out infinite" } },
+      urgentR.length > 0 && React.createElement("div", { style: { padding: "12px 14px", background: (C.isLight ? "#FBEAE8" : "linear-gradient(135deg,#3d1111,#2a0808)"), border: "1px solid #8B0000", borderRadius: 8, marginBottom: 12, animation: "pulse 2s ease-in-out infinite" } },
         React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.danger, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 6 } }, "\u26A0\uFE0F IMMEDIATE ACTION REQUIRED"),
         urgentR.map(function(r) { return React.createElement("div", { key: r.id, style: { fontSize: 12, color: C.danger, padding: "3px 0", cursor: "pointer" }, onClick: function() { setReminderExpanded(r.id); } }, "\u2192 " + r.title.replace(/\u26A0\uFE0F /g, "")); })
       ),
@@ -15376,7 +15430,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:3, color:C.gold, marginBottom:6}}, "\u258C CRITICAL WINDOWS"),
           React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:700, color:C.textPrimary, marginBottom:10}}, "SET YOUR SEPARATION DATE"),
           React.createElement("div", {style:{fontSize:13, color:C.textBody, lineHeight:1.7, marginBottom:12}}, "Critical Windows tracks seven time-bound windows where missing the date costs money, benefits, or both. The tracker activates once you enter your ETS / EAOS / retirement date."),
-          React.createElement("input", {type:"date", defaultValue:separationDate, min:"1990-01-01", max:"2040-12-31", onBlur:function(e){ if (e.target.value && e.target.value !== separationDate) handleETSChange(e.target.value); }, style:S.input})
+          React.createElement("input", {type:"date", "aria-label":"Separation date", defaultValue:separationDate, min:"1990-01-01", max:"2040-12-31", onBlur:function(e){ if (e.target.value && e.target.value !== separationDate) handleETSChange(e.target.value); }, style:S.input})
         )
       );
     }
@@ -15555,7 +15609,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
             React.createElement("circle", { cx: 90, cy: 90, r: 80, fill: "none", stroke: rInfo.c, strokeWidth: 10, strokeDasharray: (rScore / 100) * 502.65 + " 502.65", strokeLinecap: "round", style: { transition: "stroke-dasharray 0.8s ease" } })
           ),
           React.createElement("div", { style: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" } },
-            React.createElement("div", { style: { fontSize: 48, fontWeight: 700, color: rInfo.c, fontFamily: "'Oswald', sans-serif", lineHeight: 1 } }, rScore),
+            React.createElement("div", { style: { fontSize: 48, fontWeight: 700, color: topsThemeInk(C, rInfo.c), fontFamily: "'Oswald', sans-serif", lineHeight: 1 } }, rScore),
             React.createElement("div", { style: { fontSize: 12, color: C.gold } }, "/ 100")
           )
         ),
@@ -15568,7 +15622,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         var isOpen = readinessCatOpen === cat.id;
         var done = cat.qs.filter(function(q) { return readinessAnswers[q.id]; }).length;
         return React.createElement("div", { key: cat.id },
-          React.createElement("div", { style: { margin: "8px 0", padding: 14, background: isOpen ? "rgba(74,93,35,0.1)" : C.bgCard, border: "1px solid " + (isOpen ? cat.color : C.border), borderRadius: 8, cursor: "pointer" }, onClick: function() { setReadinessCatOpen(isOpen ? null : cat.id); } },
+          React.createElement("div", { role: "button", "aria-expanded": isOpen, tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { margin: "8px 0", padding: 14, background: isOpen ? "rgba(74,93,35,0.1)" : C.bgCard, border: "1px solid " + (isOpen ? cat.color : C.border), borderRadius: 8, cursor: "pointer" }, onClick: function() { setReadinessCatOpen(isOpen ? null : cat.id); } },
             React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } },
               React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
                 React.createElement("span", { style: { fontSize: 20 } }, cat.icon),
@@ -15577,7 +15631,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
                   React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 2 } }, done + "/" + cat.qs.length + " confirmed")
                 )
               ),
-              React.createElement("div", { style: { fontSize: 22, fontWeight: 700, color: ci.c, fontFamily: "'Oswald', sans-serif" } }, cs + "%")
+              React.createElement("div", { style: { fontSize: 22, fontWeight: 700, color: topsThemeInk(C, ci.c), fontFamily: "'Oswald', sans-serif" } }, cs + "%")
             ),
             React.createElement("div", { style: { marginTop: 8, height: 6, borderRadius: 4, background: C.border, overflow: "hidden" } },
               React.createElement("div", { style: { height: "100%", width: cs + "%", background: cat.color, borderRadius: 4, transition: "width 0.6s ease" } })
@@ -15585,8 +15639,8 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           ),
           isOpen && React.createElement("div", { style: { padding: "4px 0 12px" } },
             cat.qs.map(function(q) {
-              return React.createElement("div", { key: q.id, style: { display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 4px", borderBottom: "1px solid " + C.border, cursor: "pointer" }, onClick: function() { setReadinessAnswers(function(p) { var n = Object.assign({}, p); n[q.id] = !p[q.id]; return n; }); } },
-                React.createElement("div", { style: { width: 22, height: 22, minWidth: 22, borderRadius: 4, border: readinessAnswers[q.id] ? "2px solid " + C.green : "2px solid " + C.border, background: readinessAnswers[q.id] ? C.green : "transparent", display: "flex", alignItems: "center", justifyContent: "center", color: C.textPrimary, fontSize: 14, fontWeight: 700 } }, readinessAnswers[q.id] ? "\u2713" : ""),
+              return React.createElement("div", { key: q.id, role: "checkbox", "aria-checked": !!readinessAnswers[q.id], tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 4px", borderBottom: "1px solid " + C.border, cursor: "pointer" }, onClick: function() { setReadinessAnswers(function(p) { var n = Object.assign({}, p); n[q.id] = !p[q.id]; return n; }); } },
+                React.createElement("div", { style: { width: 22, height: 22, minWidth: 22, borderRadius: 4, border: readinessAnswers[q.id] ? "2px solid " + C.green : "2px solid " + C.border, background: readinessAnswers[q.id] ? C.green : "transparent", display: "flex", alignItems: "center", justifyContent: "center", color: C.textOnFill, fontSize: 14, fontWeight: 700 } }, readinessAnswers[q.id] ? "\u2713" : ""),
                 React.createElement("div", { style: { flex: 1 } },
                   React.createElement("div", { style: { fontSize: 13, color: readinessAnswers[q.id] ? C.greenBright : C.textBody, lineHeight: 1.4, textDecoration: readinessAnswers[q.id] ? "line-through" : "none", opacity: readinessAnswers[q.id] ? 0.7 : 1 } }, q.t),
                   q.w >= 3 && React.createElement("div", { style: { fontSize: 9, color: C.gold, marginTop: 3, letterSpacing: 1, fontFamily: "'Oswald', sans-serif" } }, "HIGH IMPACT")
@@ -15606,7 +15660,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           "Tracking, but gaps remain. Any category below 70% is a risk area. Each unchecked item = real money, benefits, or opportunities on the line."
         ),
         rScore >= 80 && React.createElement("div", { style: { padding: 14, background: "rgba(74,93,35,0.15)", border: "1px solid rgba(74,93,35,0.3)", borderRadius: 8, fontSize: 13, color: C.greenBright, lineHeight: 1.5 } },
-          React.createElement("strong", { style: { color: "#a8cf6a", fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, "STRONG POSTURE:"), React.createElement("br"), React.createElement("br"),
+          React.createElement("strong", { style: { color: (C.isLight ? C.greenBright : "#a8cf6a"), fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, "STRONG POSTURE:"), React.createElement("br"), React.createElement("br"),
           "Well-prepared. The difference between 80% and 100% saves thousands or months of frustration. You didn't half-step in uniform \u2014 don't start now."
         )
       )
@@ -15716,7 +15770,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         React.createElement("div", { style: { marginTop: showQuick ? 14 : 0, borderTop: showQuick ? "1px solid " + C.border : "none", paddingTop: showQuick ? 14 : 0 } },
           React.createElement("div", { style: { fontSize: 11, color: C.inactive, marginBottom: 8 } }, "Or add any condition:"),
           React.createElement("div", { style: { display: "flex", gap: 8, marginBottom: 10 } },
-            React.createElement("input", { id: "vaCondName", type: "text", placeholder: "Condition name (e.g. Left Knee)", style: { flex: 1, padding: "10px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, fontSize: 14, fontFamily: "'Courier Prime', monospace" } })
+            React.createElement("input", { id: "vaCondName", "aria-label": "Condition name", type: "text", placeholder: "Condition name (e.g. Left Knee)", style: { flex: 1, padding: "10px 12px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, fontSize: 14, fontFamily: "'Courier Prime', monospace" } })
           ),
           React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "RATING"),
           React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 6, marginBottom: 12 } },
@@ -15957,7 +16011,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       React.createElement("div",{style:{...S.card,padding:16}},
         React.createElement("div",{style:{fontFamily:"'Oswald',sans-serif",fontSize:12,color:C.greenBright,letterSpacing:2,marginBottom:12}},"SELECT YOUR PROFILE"),
         React.createElement("label",{style:{fontSize:10,color:C.inactive,letterSpacing:1,fontFamily:"'Oswald',sans-serif",display:"block",marginBottom:4}},"PAY GRADE"),
-        React.createElement("select",{value:pcsGrade,onChange:function(e){setPcsGrade(e.target.value);},style:{width:"100%",padding:"12px",borderRadius:4,marginBottom:14,background:C.bg,border:"1px solid "+(pcsGrade?C.greenBright:C.border),color:pcsGrade?C.textPrimary:C.inactive,fontFamily:"'Courier Prime',monospace",fontSize:13,appearance:"none",WebkitAppearance:"none"}},
+        React.createElement("select",{"aria-label":"Pay grade",value:pcsGrade,onChange:function(e){setPcsGrade(e.target.value);},style:{width:"100%",padding:"12px",borderRadius:4,marginBottom:14,background:C.bg,border:"1px solid "+(pcsGrade?C.greenBright:C.border),color:pcsGrade?C.textPrimary:C.inactive,fontFamily:"'Courier Prime',monospace",fontSize:13,appearance:"none",WebkitAppearance:"none"}},
           React.createElement("option",{value:""},"-- Select Grade --"),
           React.createElement("optgroup",{label:"OFFICER"},PCS_GRADES.filter(function(g){return g.c==="Officer";}).map(function(g){return React.createElement("option",{key:g.v,value:g.v},g.l);})),
           React.createElement("optgroup",{label:"WARRANT"},PCS_GRADES.filter(function(g){return g.c==="Warrant";}).map(function(g){return React.createElement("option",{key:g.v,value:g.v},g.l);})),
@@ -16051,7 +16105,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           ),
           React.createElement("div",{style:{...S.card,padding:14}},
             React.createElement("div",{style:{fontFamily:"'Oswald',sans-serif",fontSize:12,color:C.greenBright,letterSpacing:2,marginBottom:10}},"MALT CALCULATOR"),
-            React.createElement("input",{type:"number",value:pcsMiles,onChange:function(e){setPcsMiles(e.target.value);},placeholder:"Distance to Home of Selection (miles)",style:{...S.input,marginBottom:12}}),
+            React.createElement("input",{type:"number",value:pcsMiles,onChange:function(e){setPcsMiles(e.target.value);},"aria-label":"Distance to Home of Selection (miles)",placeholder:"Distance to Home of Selection (miles)",style:{...S.input,marginBottom:12}}),
             pcsData.mi>0 && React.createElement("div",{style:{display:"flex",gap:8}},
               React.createElement(StatBox,{label:"1 POV",value:fmtD(pcsData.maltT),sub:fmt(pcsData.mi)+" mi \u00D7 "+fmtD(PCS_MALT)}),
               React.createElement(StatBox,{label:"2 POVs",value:fmtD(pcsData.maltT2),sub:"Both vehicles authorized",color:C.goldBright})
