@@ -139,7 +139,7 @@
 :root{--t-bg:#0E120B;--t-bg-card:#161B11;--t-border:#222A19;--t-nav-bg:#0f120b;--t-overlay:rgba(10,12,8,0.95);--t-body-text:#d4cbb3}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body,#root{height:100%;width:100%;margin:0;padding:0}
-body{background:var(--t-bg);font-family:"Courier Prime","Courier New",monospace;color:var(--t-body-text);-webkit-font-smoothing:antialiased}
+body{background:var(--t-bg);font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--t-body-text);-webkit-font-smoothing:antialiased}
 #root{width:100%;max-width:100%}
 html{scroll-padding-bottom:calc(var(--tops-nav-height,64px) + 12px)}
 /* Compact screens keep support controls in document flow, clear of plan actions. */
@@ -170,7 +170,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--t-nav-bg);border-top:1px solid var(--t-border);z-index:200;padding-bottom:env(safe-area-inset-bottom,0)}
 .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 6px;background:none;border:none;cursor:pointer;transition:all 0.2s}
 .bottom-nav button .nav-icon{font-size:20px;line-height:1}
-.bottom-nav button .nav-label{font-size:10px;letter-spacing:1px;font-family:'Oswald',sans-serif}
+.bottom-nav button .nav-label{font-size:12px;letter-spacing:0.2px;font-family:'Oswald',sans-serif}
 .more-overlay{position:fixed;inset:0;background:var(--t-overlay);z-index:250;display:flex;flex-direction:column;justify-content:flex-start;padding:40px 24px 70px;overflow-y:auto;animation:slideUp 0.25s ease}
 .more-overlay button{display:flex;align-items:center;gap:14px;padding:18px 16px;background:var(--t-bg-card);border:1px solid var(--t-border);border-radius:12px;margin-bottom:10px;cursor:pointer;width:100%;text-align:left}
 .content-area:empty{padding:0 !important}
@@ -3079,25 +3079,26 @@ const THEMES = {
     overlay: "rgba(10,12,8,0.95)"
   },
   professional: {
-    bg: "#FFFFFF",
-    bgCard: "#F7F7F5",
-    border: "#D4D4D4",
-    textPrimary: "#1A1A1A",
-    textSecondary: "#5A5A5A",
-    textBody: "#333333",
+    isLight: true,
+    bg: "#FBF8EF",
+    bgCard: "#F3F0E5",
+    border: "#C9C7B8",
+    textPrimary: "#293923",
+    textSecondary: "#535C4B",
+    textBody: "#343C30",
     gold: "#6B5A1E",
     goldBright: "#7A5C0F",
-    green: "#2C5234",
+    green: "#425736",
     greenBright: "#1B6B35",
     warning: "#9A4D00",
-    gradStart: "#EFEFEA",
+    gradStart: "#ECEBDD",
     bgWarning: "#FFF5EB",
     inactive: "#6B6B6B",
-    bgElevated: "#EFEFEA",
+    bgElevated: "#ECEBDD",
     accent: "#7A5A06",
     danger: "#C0392B",
     textOnFill: "#FFFFFF",
-    navBg: "#FFFFFF",
+    navBg: "#FBF8EF",
     overlay: "rgba(250,250,248,0.97)"
   }
 };
@@ -4431,7 +4432,7 @@ function FeedbackModal(props) {
   const inputBase = {
     width: "100%",
     padding: "10px 12px",
-    background: C.bg === "#FFFFFF" ? "#FFFFFF" : "#141810",
+    background: C.isLight === true ? "#FFFFFF" : "#141810",
     border: "1px solid " + C.border,
     color: C.textPrimary,
     fontFamily: "'Source Sans 3', sans-serif",
@@ -4450,7 +4451,7 @@ function FeedbackModal(props) {
     color: C.inactive,
     lineHeight: 1.5,
     padding: "9px 11px",
-    background: C.bg === "#FFFFFF" ? "#F7F7F5" : "#141810",
+    background: C.isLight === true ? "#F7F7F5" : "#141810",
     border: "1px dashed " + C.border,
     marginBottom: 14,
     borderRadius: 4
@@ -5955,6 +5956,7 @@ function GuardCareerSupport(props) {
   return React.createElement("section", { "aria-labelledby": "guard-career-heading", style: { padding: 16, marginBottom: 14, border: "1px solid " + C.gold, borderRadius: 10, background: C.bgCard, color: C.textBody } },
     React.createElement("h2", { id: "guard-career-heading", style: { color: C.textPrimary, fontSize: 22, margin: "0 0 10px" } }, "Your career, throughout your service"),
     React.createElement("p", { style: { lineHeight: 1.6 } }, "Build your civilian career while you serve. Keep a target role, your next step and the questions you want help answering."),
+    props.followup,
     props.target.trim() && React.createElement("p", { style: { overflowWrap: "anywhere", lineHeight: 1.6 } }, React.createElement("strong", null, "Your target: "), props.target),
     opportunity.trim() && React.createElement("p", { style: { overflowWrap: "anywhere", lineHeight: 1.6 } }, React.createElement("strong", null, "Your opportunity: "), opportunity),
     next.trim() && React.createElement("p", { style: { overflowWrap: "anywhere", whiteSpace: "pre-wrap", lineHeight: 1.6 } }, React.createElement("strong", null, "Your next step: "), next),
@@ -5979,6 +5981,64 @@ function GuardCareerSupport(props) {
         React.createElement("p", { style: { lineHeight: 1.6 } }, office.why),
         React.createElement("button", { type: "button", style: action, "aria-label": "Prepare my question for " + office.name, onClick: function() { props.openPlan(office); } }, "Prepare my question")); }))
   );
+}
+
+// Follow-through stores only bounded reminder IDs, statuses and calendar dates.
+const TOPS_FOLLOW_KEY = "tops_reminder_progress_v1";
+function topsFollowDate(value) {
+  if (typeof value !== "string" || !/^20\d\d-\d\d-\d\d$/.test(value)) return "";
+  var d = new Date(value + "T12:00:00Z");
+  return Number.isFinite(d.getTime()) && d.toISOString().slice(0, 10) === value ? value : "";
+}
+function topsFollowRead() {
+  try {
+    var raw = JSON.parse(window.__safeGet(TOPS_FOLLOW_KEY)), clean = {};
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return clean;
+    SMART_REMINDERS.concat(generateCriticalWindowReminders("guard"), generateCriticalWindowReminders("active"), generateCriticalWindowReminders("separated"), generateCriticalWindowReminders("retired"), generateCriticalWindowReminders("spouse")).forEach(function(r) { var v = raw[r.id]; if (v && (v.status === "working" || v.status === "waiting")) clean[r.id] = { status: v.status, date: topsFollowDate(v.date) }; });
+    return clean;
+  } catch(e) { return {}; }
+}
+function topsFollowWrite(key, value) {
+  if (window.__IS_IFRAME) return true;
+  try { var raw = JSON.stringify(value); window.__safeSet(key, raw); return window.__safeGet(key) === raw; } catch(e) { return false; }
+}
+function topsFollowLabel(value) {
+  if (!value) return "Not started";
+  var text = value.status === "waiting" ? "Waiting for help" : "Working on it";
+  if (value.date) { var now = new Date(), today = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0"); text += value.date <= today ? " · Follow-up due " + new Date(value.date + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) : " · Follow up " + new Date(value.date + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }); }
+  return text;
+}
+function ReminderProgress(props) {
+  var C = props.colors, saved = props.value;
+  var initial = props.done ? "done" : saved ? saved.status : "working";
+  var [editing, setEditing] = useState(false), [status, setStatus] = useState(initial), [date, setDate] = useState(saved ? saved.date : ""), [message, setMessage] = useState("");
+  var button = React.useRef(null), heading = React.useRef(null), firstChoice = React.useRef(null);
+  useEffect(function() { if (editing && firstChoice.current) firstChoice.current.focus(); }, [editing]);
+  var control = { minHeight: 44, minWidth: 44, padding: "10px 14px", font: "inherit", border: "1px solid " + C.border, borderRadius: 7, background: C.bgElevated, color: C.textPrimary, cursor: "pointer" };
+  function end() { setEditing(false); window.requestAnimationFrame(function() { if (button.current) button.current.focus(); }); }
+  function save(clear) {
+    if (!clear && date && !topsFollowDate(date)) { setMessage("Choose a valid follow-up date."); return; }
+    var ok = props.save(clear ? "clear" : status, clear || status === "done" ? "" : date);
+    if (ok !== true) { setMessage(ok === "uncertain" ? "Could not confirm the saved progress. Keep this page open and try saving again. A partial change may be saved in this browser." : "Could not confirm this change was saved. Try again or cancel."); return; }
+    setMessage(window.__IS_IFRAME ? "Updated for this session only." : clear ? "Progress cleared on this browser." : "Progress saved on this browser."); end();
+  }
+  return React.createElement("section", { "aria-labelledby": "follow-progress-heading", style: { background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, padding: 18, margin: "20px 0" } },
+    React.createElement("h3", { id: "follow-progress-heading", ref: heading, style: { color: C.textPrimary, margin: "0 0 8px" } }, "Your progress"),
+    React.createElement("p", { style: { lineHeight: 1.6, margin: "0 0 12px" } }, props.done ? "Done · Marked by you" : topsFollowLabel(saved)),
+    !editing && React.createElement("button", { ref: button, type: "button", style: control, onClick: function() { setStatus(initial); setDate(saved ? saved.date : ""); setMessage(""); setEditing(true); } }, props.done ? "Reopen or update" : saved ? "Update progress" : "Track this step"),
+    editing && React.createElement("div", null,
+      React.createElement("fieldset", { style: { border: 0, padding: 0, margin: "0 0 16px", minWidth: 0 } }, React.createElement("legend", { style: { marginBottom: 8 } }, "Where are you with this step?"),
+        React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } }, [["working", "Working on it"], ["waiting", "Waiting for help"], ["done", "Done"]].map(function(row) { return React.createElement("label", { key: row[0], style: Object.assign({}, control, { display: "flex", alignItems: "center", gap: 8, borderColor: status === row[0] ? C.gold : C.border }) }, React.createElement("input", { ref: row[0] === "working" ? firstChoice : null, type: "radio", name: "follow-status", value: row[0], checked: status === row[0], onChange: function() { setStatus(row[0]); } }), row[1]); }))),
+      status !== "done" && React.createElement("div", null,
+        React.createElement("label", { htmlFor: "follow-date", style: { display: "block", marginBottom: 8 } }, "My follow-up date (optional)"),
+        React.createElement("input", { id: "follow-date", type: "date", min: "2000-01-01", max: "2099-12-31", value: date, "aria-describedby": "follow-date-help", onChange: function(e) { setDate(e.target.value); }, style: Object.assign({}, control, { width: "100%", boxSizing: "border-box", minWidth: 0 }) }),
+        React.createElement("p", { id: "follow-date-help", style: { fontSize: 13, lineHeight: 1.6 } }, "Shown on Home when you return. This does not change official deadlines or send a notification.")),
+      React.createElement("p", { style: { fontSize: 13, lineHeight: 1.6 } }, window.__IS_IFRAME ? "Progress lasts only for this session." : "Saved on this browser, including shared devices. Clear progress when you no longer need it."),
+      React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 10 } },
+        React.createElement("button", { type: "button", style: Object.assign({}, control, { background: C.green, color: C.textOnFill }), onClick: function() { save(false); } }, "Save progress"),
+        React.createElement("button", { type: "button", style: control, onClick: function() { setMessage(""); end(); } }, "Cancel"),
+        (saved || props.done) && React.createElement("button", { type: "button", style: control, onClick: function() { save(true); } }, "Clear progress"))),
+    React.createElement("p", { role: "status", "aria-live": "polite", "aria-atomic": "true", style: { lineHeight: 1.6, marginBottom: 0 } }, message));
 }
 
 // Existing service categories customize navigation, not benefit eligibility.
@@ -6023,10 +6083,10 @@ function App() {
     try {
       if (!window.__IS_IFRAME) {
         const t = window.__safeGet("tops_theme");
-        return t === "professional" ? "professional" : "tactical";
+        return t === "tactical" ? "tactical" : "professional";
       }
     } catch (e) {}
-    return "tactical";
+    return "professional";
   });
   const C = THEMES[theme];
   const REMINDER_PRIORITIES = REMINDER_PRIORITIES_BY_THEME[theme];
@@ -6040,7 +6100,7 @@ function App() {
       r.setProperty("--t-nav-bg", C.navBg);
       r.setProperty("--t-overlay", C.overlay);
       r.setProperty("--t-body-text", C.textBody);
-      r.setProperty("--t-picker-invert", C.bg === "#FFFFFF" ? "0" : "0.7");
+      r.setProperty("--t-picker-invert", theme === "professional" ? "0" : "0.7");
       var m = document.querySelector('meta[name="theme-color"]');
       if (m) m.setAttribute("content", C.bg);
     } catch (e) {}
@@ -6318,6 +6378,30 @@ function App() {
   }
   const [showNotifPanel, setShowNotifPanel] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const primaryNavFocus = useRef(false);
+  const toolsDialogRef = useRef(null);
+  React.useLayoutEffect(function() {
+    if (!showMoreMenu || !toolsDialogRef.current) return;
+    var dialog = toolsDialogRef.current, invoker = document.activeElement;
+    var controls = function() { return Array.from(dialog.querySelectorAll("button,a[href],input,select,textarea,[tabindex='0']")).filter(function(el) { return !el.disabled && el.getBoundingClientRect().height > 0; }); };
+    var siblings = Array.from(dialog.parentElement.children).filter(function(el) { return el !== dialog; }).map(function(el) { var old = el.inert; el.inert = true; return [el, old]; });
+    var first = controls()[0] || dialog; first.focus();
+    function keys(event) {
+      if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); setShowMoreMenu(false); }
+      if (event.key === "Tab") { event.preventDefault(); var list = controls(), i = list.indexOf(document.activeElement); if (list.length) list[(i + (event.shiftKey ? list.length - 1 : 1)) % list.length].focus(); }
+    }
+    function keep(event) { if (!dialog.contains(event.target)) (controls()[0] || dialog).focus(); }
+    document.addEventListener("keydown", keys); document.addEventListener("focusin", keep);
+    return function() { document.removeEventListener("keydown", keys); document.removeEventListener("focusin", keep); siblings.forEach(function(row) { row[0].inert = row[1]; }); if (invoker && document.contains(invoker)) invoker.focus(); };
+  }, [showMoreMenu]);
+  useEffect(function() {
+    if (!primaryNavFocus.current || showMoreMenu) return;
+    primaryNavFocus.current = false;
+    window.requestAnimationFrame(function() {
+      var target = document.querySelector(".content-area h2, .content-area h3, main.content-area");
+      if (target) { target.setAttribute("tabindex", "-1"); target.focus(); }
+    });
+  }, [activeTab, showMoreMenu]);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const aboutReturnFocusRef = useRef(null);
@@ -6473,7 +6557,22 @@ function App() {
     }
   }, [userStatus]);
   // Smart Reminder Engine state
-  const [dismissedReminders, setDismissedReminders] = useState(function() { try { var v = window.__safeGet("tops_dismissed_reminders"); return v ? JSON.parse(v) : {}; } catch(e) { return {}; } });
+  const [dismissedReminders, setDismissedReminders] = useState(function() { try { var v = window.__safeGet("tops_dismissed_reminders"); var parsed = v ? JSON.parse(v) : {}; return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {}; } catch(e) { return {}; } });
+  const [followProgress, setFollowProgress] = useState(topsFollowRead);
+  function saveFollowProgress(id, status, date) {
+    var next = Object.assign({}, followProgress), done = Object.assign({}, dismissedReminders);
+    if (status === "working" || status === "waiting") next[id] = { status: status, date: date }; else delete next[id];
+    if (status === "done") done[id] = true; else delete done[id];
+    // Verify both stores before changing rendered truth; rollback the first on failure.
+    var progressChanged = JSON.stringify(next) !== JSON.stringify(followProgress);
+    var doneChanged = JSON.stringify(done) !== JSON.stringify(dismissedReminders);
+    if (progressChanged && !topsFollowWrite(TOPS_FOLLOW_KEY, next)) return false;
+    if (doneChanged && !topsFollowWrite("tops_dismissed_reminders", done)) {
+      if (progressChanged && !topsFollowWrite(TOPS_FOLLOW_KEY, followProgress)) return "uncertain";
+      return false;
+    }
+    setFollowProgress(next); setDismissedReminders(done); return true;
+  }
   const [reminderExpanded, setReminderExpanded] = useState(null);
   const [focusedReminderId, setFocusedReminderId] = useState(null);
   const [reminderNotice, setReminderNotice] = useState("");
@@ -6535,7 +6634,7 @@ function App() {
   const [pcsMiles, setPcsMiles] = useState("");
   const [pcsSection, setPcsSection] = useState("summary");
   // Persist new state
-  useEffect(function() { try { window.__safeSet("tops_dismissed_reminders", JSON.stringify(dismissedReminders)); } catch(e) {} }, [dismissedReminders]);
+  // Reminder completion is saved explicitly with readback in saveFollowProgress.
   useEffect(function() { try { window.__safeSet("tops_readiness", JSON.stringify(readinessAnswers)); } catch(e) {} }, [readinessAnswers]);
   const showToast = useCallback(msg => {
     setToast(msg);
@@ -6617,24 +6716,7 @@ function App() {
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
-// PWA install banner — show after onboarding for non-installed users
-  useEffect(() => {
-    if (window.__IS_IFRAME) return;
-    try {
-      const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-      if (isStandalone) return;
-      if (!userStatus) return;
-      const dismissedAt = window.__safeGet("install_banner_dismissed_at");
-      if (dismissedAt) {
-        const daysSince = (Date.now() - parseInt(dismissedAt, 10)) / 86400000;
-        if (daysSince < 14) return;
-      }
-      setInstallBannerVisible(true);
-      if (!serviceProfileEdit.current && window.__trackEvent) {
-        window.__trackEvent("install_banner_shown", { user_status: userStatus });
-      }
-    } catch (e) {}
-  }, [userStatus]);
+// Install is member-initiated from More or the collapsed Home instructions.
 
   // Track successful PWA installs (fires on Android/Chrome when user confirms)
   useEffect(() => {
@@ -6720,41 +6802,7 @@ function App() {
   // because it never touches storage or the shared handler. Every path funnels
   // into the separationDate STATE, so that is what this watches. It also means
   // this build changes none of those five controls.
-  useEffect(() => {
-    if (window.__IS_IFRAME) return;
-    if (captureBaselineRef.current === null) {
-      try {
-        captureBaselineRef.current = window.__safeGet("etsDate") || window.__safeGet("tops_sep_date") || "";
-      } catch (e) { captureBaselineRef.current = ""; }
-    }
-    if (!separationDate) return;                          // the dashboard EDIT affordance clears it
-    if (separationDate === captureBaselineRef.current) return;
-    captureBaselineRef.current = separationDate;
-
-    // Dismissal ladder: one dismissal buys 14 days, a second is permanent.
-    var count = 0, at = 0, done = null;
-    try {
-      count = parseInt(window.__safeGet("tops_capture_dismiss_count") || "0", 10) || 0;
-      at = parseInt(window.__safeGet("tops_capture_dismissed_at") || "0", 10) || 0;
-      done = window.__safeGet("tops_capture_done");
-    } catch (e) {}
-    if (done === "1") return;
-    if (count >= 2) return;
-    if (count === 1 && at && (Date.now() - at) / 86400000 < 14) return;
-
-    var standalone = false;
-    try {
-      standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-    } catch (e) {}
-    var branch = __captureBranch(!!deferredPrompt, navigator.userAgent || "", standalone, navigator.maxTouchPoints);
-    if (!branch) return;
-
-    setCaptureCard({ branch: branch });
-    if (window.__trackEvent) {
-      window.__trackEvent("capture_card_shown", { branch: branch });
-      if (branch === "ios") window.__trackEvent("capture_install_ios_shown", {});
-    }
-  }, [separationDate, deferredPrompt]);
+  // Contextual automatic install capture is not mounted in this layout.
 
   // Share the live nav height with the capture card and persistent footer.
   // offsetHeight includes safe-area padding; observe font/size changes too.
@@ -6807,6 +6855,7 @@ function App() {
       window.removeEventListener("resize", keepFocusVisible);
     };
   }, []);
+
 
   const handleCaptureInstall = useCallback(() => {
     if (window.__trackEvent) window.__trackEvent("capture_install_native", {});
@@ -7445,9 +7494,22 @@ function App() {
     return obSteps[onboardStep]();
   }
 
+  function renderPolicyNotice() { return !sitrepDismissed && React.createElement("div", { style: { background: C.bgElevated, borderRadius: 12, padding: "12px 14px", marginBottom: 12, display: "flex", alignItems: "center", gap: 12 } },
+    React.createElement("div", { className: "tops-policy-copy-action", onClick: function() { setPolicyPanelOpen(true); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { display: "block", flex: 1, minWidth: 0, minHeight: 44, cursor: "pointer" } },
+    (function() {
+      var chip = "IN EFFECT";
+      return React.createElement("div", { style: { background: C.isLight === true ? "rgba(122,90,6,0.12)" : "rgba(240,196,25,0.14)", color: C.accent, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 12, padding: "7px 11px", borderRadius: 8, whiteSpace: "nowrap", display: "inline-block", marginBottom: 8 } }, chip);
+    })(),
+    React.createElement("div", { style: { minWidth: 0 } },
+      React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.textPrimary, letterSpacing: 0.5 } }, "Patriot Pipeline is LIVE \u2014 SkillBridge approval presumption in effect"),
+      React.createElement("div", { style: { fontSize: 13, color: C.gold, marginTop: 2, lineHeight: 1.4 } }, "DIB requests approved absent readiness impact \u00B7 incentive guidance pending release \u00B7 Tap for sources")
+    )),
+    React.createElement("button", { onClick: function(e) { e.stopPropagation(); setSitrepDismissed(true); try { localStorage.setItem("tops_sitrep_jul2026", "1"); } catch (err) {} }, "aria-label": "Dismiss", style: { background: "none", border: "none", marginLeft: "auto", color: C.textSecondary, fontSize: 16, padding: 0, minWidth: 44, minHeight: 44, flexShrink: 0, cursor: "pointer" } }, "\u2715")
+  ); }
+
   return /*#__PURE__*/React.createElement("div", {
     style: {
-      fontFamily: "'Courier Prime', 'Courier New', monospace",
+      fontFamily: "'Source Sans 3', system-ui, -apple-system, sans-serif",
       background: C.bg,
       color: C.textBody,
       minHeight: "100vh",
@@ -7455,91 +7517,11 @@ function App() {
       margin: "0 auto",
       position: "relative"
     }
-  },/*#__PURE__*/React.createElement("div", {
-      key: "install-banner-wrapper",
-      // Suppressed while the capture card is up. Both ask for the install;
-      // showing them together is the nag this build exists to remove.
-      style: { display: installBannerVisible && !captureCard ? "block" : "none" }
-    },
-      /*#__PURE__*/React.createElement("div", {
-        style: {
-          background: "linear-gradient(135deg, " + C.bgElevated + " 0%, " + C.bgCard + " 100%)",
-          borderBottom: "2px solid " + C.gold,
-          padding: "10px 14px"
-        }
-      },
-        /*#__PURE__*/React.createElement("div", {
-          style: {
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            maxWidth: 900,
-            margin: "0 auto"
-          }
-        },
-          /*#__PURE__*/React.createElement("div", { style: { fontSize: 20, flexShrink: 0 } }, "📱"),
-          /*#__PURE__*/React.createElement("div", { style: { flex: 1, minWidth: 0 } },
-            /*#__PURE__*/React.createElement("div", {
-              style: {
-                fontFamily: "'Oswald', sans-serif",
-                fontSize: 12,
-                fontWeight: 700,
-                color: C.goldBright,
-                letterSpacing: 1.5,
-                lineHeight: 1.2
-              }
-            }, "INSTALL TRANSITION OPS"),
-            /*#__PURE__*/React.createElement("div", {
-              style: {
-                fontSize: 11,
-                color: C.textSecondary,
-                marginTop: 2,
-                lineHeight: 1.3
-              }
-            }, "Direct access. No app store.")
-          ),
-          /*#__PURE__*/React.createElement("button", {
-            onClick: handleInstallBannerClick,
-            style: {
-              padding: "7px 12px",
-              minHeight: 44,
-              background: C.gold,
-              border: "none",
-              borderRadius: 4,
-              color: C.bg,
-              fontFamily: "'Oswald', sans-serif",
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: 1.5,
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-              flexShrink: 0
-            }
-          }, "INSTALL"),
-          /*#__PURE__*/React.createElement("button", {
-            onClick: handleInstallBannerDismiss,
-            "aria-label": "Dismiss",
-            style: {
-              padding: 0,
-              minWidth: 44,
-              minHeight: 44,
-              background: "transparent",
-              border: "1px solid " + C.border,
-              borderRadius: 4,
-              color: C.inactive,
-              fontFamily: "'Oswald', sans-serif",
-              fontSize: 11,
-              cursor: "pointer",
-              flexShrink: 0
-            }
-          }, "✕")
-        )
-      )
-    ), renderCaptureCard(), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
     className: "tops-app-header",
     style: {
-      background: theme === "tactical" ? C.bg : "linear-gradient(180deg, #2C5234 0%, #1A3A24 100%)",
-      borderBottom: theme === "tactical" ? "1px solid " + C.border : "3px solid #2C5234",
+      background: C.bg,
+      borderBottom: "1px solid " + C.border,
       padding: "18px 18px 12px",
       position: "sticky",
       top: 0,
@@ -7559,14 +7541,14 @@ function App() {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 12,
       letterSpacing: 4,
-      color: theme === "tactical" ? C.gold : "#A8D5B5"
+      color: C.gold
     }
   }, "VETERAN BRIDGE SOLUTIONS"), /*#__PURE__*/React.createElement("h1", {
     style: {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 22,
       fontWeight: 600,
-      color: theme === "tactical" ? C.textPrimary : "#FFFFFF",
+      color: C.textPrimary,
       letterSpacing: 2,
       lineHeight: 1.1,
       marginTop: 2,
@@ -7597,7 +7579,7 @@ function App() {
       fontSize: 10,
       letterSpacing: 1
     }
-  }, theme === "tactical" ? "\u263D" : "\u2600", " ", theme === "tactical" ? "PRO" : "TAC"), activeTab !== "dashboard" && /*#__PURE__*/React.createElement("button", {
+  }, theme === "tactical" ? "\u263D" : "\u2600", " ", theme === "tactical" ? "Light" : "Dark"), activeTab !== "dashboard" && /*#__PURE__*/React.createElement("button", {
     onClick: () => { setActiveTab("dashboard"); window.scrollTo(0, 0); },
     "aria-label": "Go to home screen",
     style: {
@@ -7797,26 +7779,19 @@ function App() {
   },
 
   // ═══════════ DASHBOARD TAB ═══════════
-  (function() {
-    var sa = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-    if (sa || installStripX || (installBannerVisible && !captureCard) || captureCard) return null;
-    return /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, background: "rgba(212,175,55,0.10)", border: "1px solid " + C.gold, borderRadius: 8, padding: "9px 12px", marginBottom: 12 } },
-      React.createElement("div", { className: "tops-install-copy-action", onClick: handleInstallBannerClick, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { fontSize: 11.5, color: C.textPrimary, lineHeight: 1.45, flex: 1, minWidth: 0, minHeight: 44, display: "block", cursor: "pointer" } },
-        "\uD83D\uDCF2 ", React.createElement("strong", null, "Install Transition OPS \u2014 tap here."), " iPhone: ", React.createElement("strong", { style: { color: C.goldBright } }, "Share \u2192 Add to Home Screen"), " (not \"Add Bookmark\"). Android: browser menu \u2192 Install App or Add to Home Screen. ", TOPS_PUSH_DISABLED_COPY),
-      React.createElement("div", { onClick: function() { setInstallStripX(true); try { window.__safeSet("tops_install_strip_x", "1"); } catch(e) {} }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, "aria-label": "Dismiss install prompt", style: { color: C.inactive, fontSize: 15, cursor: "pointer", minWidth: 44, minHeight: 44, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 } }, "\u2715"));
-  })(), activeTab === "navigator" && /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "70vh" } },
+   activeTab === "navigator" && /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "70vh" } },
     React.createElement("div", { style: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 6 } },
       TopsCompass(44),
       React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 17, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "AI TRANSITION NAVIGATOR"),
-      React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 1.5, color: "#0E120B", background: C.goldBright, borderRadius: 4, padding: "2px 7px" } }, "BETA")),
+      React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 1.5, color: C.isLight ? "#FFFFFF" : "#0E120B", background: C.goldBright, borderRadius: 4, padding: "2px 7px" } }, "BETA")),
     React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.45, marginBottom: 6 } }, "Answers only from Transition OPS verified content. Educational information \u2014 not benefits counseling, not affiliated with VA or DoD. Beta: spot something off? Tap FEEDBACK IS A GIFT. In crisis: Veterans Crisis Line 988, press 1."),
     React.createElement("div", { style: { fontSize: 10.5, color: C.textSecondary, lineHeight: 1.45, marginBottom: 10, padding: "8px 10px", background: C.bg, border: "1px solid " + C.border, borderRadius: 7 } }, React.createElement("strong", { style: { color: C.goldBright } }, "AI USE NOTICE: "), "Sending a question sends your current question, this chat history, and any saved separation date or service status through Netlify to OpenAI to generate an answer. OpenAI is called with store:false, but this is not a promise of zero provider retention. Do not enter Social Security numbers, medical records, or other sensitive information. The Navigator is optional; the rest of Transition Ops remains available without it."),
     React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 } },
       navMsgs.length === 0 && React.createElement("div", { style: { ...S.card, padding: 12, borderLeft: "3px solid " + C.gold, fontSize: 13, lineHeight: 1.55, color: C.textSecondary } }, (function(){ try { var sd = window.__safeGet("tops_sep_date"); if (sd) { var dd = Math.round((new Date(sd + "T00:00:00") - new Date()) / 86400000); return "Navigator online \u2014 your timeline is loaded (" + (dd >= 0 ? "T-" + dd + " days to separation" : Math.abs(dd) + " days post-separation") + "). Ask me anything, or add context \u2014 component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook."; } } catch(e) {} return "Navigator online. Tell me where you are in your transition \u2014 time remaining, component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook. Anything beyond my data, I\u2019ll route you to a human."; })()),
       navMsgs.map(function(m, i2) {
         return React.createElement("div", { key: i2, style: m.r === "u"
-          ? { alignSelf: "flex-end", maxWidth: "88%", background: "#223018", border: "1px solid " + C.border, borderRadius: 10, padding: "9px 12px", fontSize: 13.5, lineHeight: 1.55, whiteSpace: "pre-wrap" }
-          : { alignSelf: "flex-start", maxWidth: "92%", background: C.cardBg, border: "1px solid " + C.border, borderLeft: "3px solid " + C.gold, borderRadius: 10, padding: "9px 12px", fontSize: 13.5, lineHeight: 1.6, whiteSpace: "pre-wrap" } },
+          ? { alignSelf: "flex-end", maxWidth: "88%", background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 10, padding: "9px 12px", fontSize: 13.5, lineHeight: 1.55, whiteSpace: "pre-wrap" }
+          : { alignSelf: "flex-start", maxWidth: "92%", background: C.bgCard, border: "1px solid " + C.border, borderLeft: "3px solid " + C.gold, borderRadius: 10, padding: "9px 12px", fontSize: 13.5, lineHeight: 1.6, whiteSpace: "pre-wrap" } },
           m.r === "b" ? renderNavText(m.t) : m.t);
       }),
       navBusy && React.createElement("div", { style: { fontSize: 12, fontStyle: "italic", color: C.inactive } }, "Navigator consulting verified data\u2026")),
@@ -7826,8 +7801,8 @@ function App() {
       })),
     React.createElement("div", { style: { display: "flex", gap: 8 } },
       React.createElement("input", { value: navInput, onChange: function(e){ setNavInput(e.target.value); }, onKeyDown: function(e){ if (e.key === "Enter") sendNavigator(); }, "aria-label": "Ask the Transition Navigator", placeholder: "Ask about your transition\u2026", style: { flex: 1, minWidth: 0, minHeight: 44, background: "#1A2114", border: "1px solid #4A5A35", borderRadius: 8, color: "#F2EFE4", caretColor: "#E8C547", fontWeight: 600, padding: 12, fontSize: 16, fontFamily: "inherit", WebkitTextFillColor: "#F2EFE4", opacity: 1 } }),
-      React.createElement("button", { type: "button", disabled: navBusy || !navInput.trim(), onClick: function(){ sendNavigator(); }, "aria-label": "Send Navigator question", style: { minHeight: 44, background: C.goldBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: navBusy || !navInput.trim() ? "default" : "pointer", opacity: navBusy || !navInput.trim() ? 0.5 : 1 } }, "SEND"))),
-  navUnlocked && activeTab !== "navigator" && activeTab !== "dashboard" && /*#__PURE__*/React.createElement("div", { className: "tops-ask-launcher", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: "#0E120B", borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
+      React.createElement("button", { type: "button", disabled: navBusy || !navInput.trim(), onClick: function(){ sendNavigator(); }, "aria-label": "Send Navigator question", style: { minHeight: 44, background: C.goldBright, color: C.isLight ? "#FFFFFF" : "#0E120B", border: "none", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: navBusy || !navInput.trim() ? "default" : "pointer", opacity: navBusy || !navInput.trim() ? 0.5 : 1 } }, "SEND"))),
+  navUnlocked && activeTab !== "navigator" && activeTab !== "dashboard" && /*#__PURE__*/React.createElement("div", { className: "tops-ask-launcher", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: C.isLight ? "#FFFFFF" : "#0E120B", borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
   userStatus === "guard" && activeTab === "dashboard" && renderHomeNavigator(),
   activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, React.createElement(ServiceProfileEditor, { colors: C, value: userStatus, onSave: function(value) { serviceProfileEdit.current = true; setUserStatus(value); } }), whatsNewOpen && React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
     React.createElement("div", { onClick: function(e) { e.stopPropagation(); }, style: { background: C.bgCard, borderRadius: 12, width: "100%", maxWidth: 520, maxHeight: "82vh", overflowY: "auto", padding: "18px 18px 14px" } },
@@ -7924,18 +7899,7 @@ function App() {
       React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "Set your date to arm the mission clock, timeline, and deadline reminders.")
     ),
     React.createElement("span", { style: { color: C.goldBright, fontSize: 18, flexShrink: 0 } }, "\u203A")
-  ), !sitrepDismissed && React.createElement("div", { style: { background: C.bgElevated, borderRadius: 12, padding: "12px 14px", marginBottom: 12, display: "flex", alignItems: "center", gap: 12 } },
-    React.createElement("div", { className: "tops-policy-copy-action", onClick: function() { setPolicyPanelOpen(true); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { display: "block", flex: 1, minWidth: 0, minHeight: 44, cursor: "pointer" } },
-    (function() {
-      var chip = "IN EFFECT";
-      return React.createElement("div", { style: { background: C.bg === "#FFFFFF" ? "rgba(122,90,6,0.12)" : "rgba(240,196,25,0.14)", color: C.accent, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 12, padding: "7px 11px", borderRadius: 8, whiteSpace: "nowrap", display: "inline-block", marginBottom: 8 } }, chip);
-    })(),
-    React.createElement("div", { style: { minWidth: 0 } },
-      React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.textPrimary, letterSpacing: 0.5 } }, "Patriot Pipeline is LIVE \u2014 SkillBridge approval presumption in effect"),
-      React.createElement("div", { style: { fontSize: 13, color: C.gold, marginTop: 2, lineHeight: 1.4 } }, "DIB requests approved absent readiness impact \u00B7 incentive guidance pending release \u00B7 Tap for sources")
-    )),
-    React.createElement("button", { onClick: function(e) { e.stopPropagation(); setSitrepDismissed(true); try { localStorage.setItem("tops_sitrep_jul2026", "1"); } catch (err) {} }, "aria-label": "Dismiss", style: { background: "none", border: "none", marginLeft: "auto", color: C.textSecondary, fontSize: 16, padding: 0, minWidth: 44, minHeight: 44, flexShrink: 0, cursor: "pointer" } }, "\u2715")
-  ), (function() {
+  ),  (function() {
 
     // ═══════════ GUARD / RESERVE DASHBOARD ═══════════
     if (userStatus === "guard") {
@@ -7962,7 +7926,8 @@ function App() {
             )
           );
         })(),
-        React.createElement(GuardCareerSupport, { colors: C, target: gapState.draft.target, opportunity: gapState.draft.prep.opportunity, next: gapState.draft.prep.followup.trim() ? gapState.draft.prep.followup : (gapState.draft.rows.find(function(row) { return row.next.trim(); }) || {}).next || "", openPlan: function(office, prepare) { setPrepareOpportunity(!!prepare); setGuardOfficeOffer(office); setPathwayMode("planner"); setPathwayStep(1); setActiveTab("pathway"); window.scrollTo(0, 0); } }),
+        React.createElement(GuardCareerSupport, { followup: React.createElement("div", null, SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)).filter(function(r) { return followProgress[r.id] && !dismissedReminders[r.id]; }).map(function(r) { return React.createElement("div", { key: r.id, style: { marginBottom: 14, padding: 12, border: "1px solid " + C.border, borderRadius: 8 } }, React.createElement("strong", null, r.title), React.createElement("p", null, topsFollowLabel(followProgress[r.id])), React.createElement("button", { id: "tops-home-follow-" + r.id, type: "button", style: { minHeight: 44, padding: "10px 14px", background: C.bg, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 6 }, onClick: function() { openPlanRoute("reminders", "tops-reminder-" + r.id, "tops-home-follow-" + r.id); } }, "Continue step")); })), colors: C, target: gapState.draft.target, opportunity: gapState.draft.prep.opportunity, next: gapState.draft.prep.followup.trim() ? gapState.draft.prep.followup : (gapState.draft.rows.find(function(row) { return row.next.trim(); }) || {}).next || "", openPlan: function(office, prepare) { setPrepareOpportunity(!!prepare); setGuardOfficeOffer(office); setPathwayMode("planner"); setPathwayStep(1); setActiveTab("pathway"); window.scrollTo(0, 0); } }),
+        renderPolicyNotice(),
 
         // v72: same one-tap tool row the standard dashboard gets
         React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 12 } },
@@ -8230,15 +8195,17 @@ function App() {
     var remDismissed = Object.keys(dismissedReminders).length;
     var remTotal = SMART_REMINDERS.length;
     var urgentReminders = etsMonths !== null ? SMART_REMINDERS.filter(function(r) { var d = r.mo - etsMonths; return d >= -1 && d <= 3 && !dismissedReminders[r.id]; }).sort(function(a, b) { var rank = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, ADVISORY: 3 }; return (rank[a.pri] === undefined ? 9 : rank[a.pri]) - (rank[b.pri] === undefined ? 9 : rank[b.pri]); }).slice(0, 3) : [];
+    var extraFollowups = SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)).filter(function(r) { return followProgress[r.id] && !dismissedReminders[r.id] && !urgentReminders.some(function(u) { return u.id === r.id; }); });
 
     return React.createElement("div", null,
       // Home actions retain the date/dismissed filter and use established priority values; ties keep array order.
-      urgentReminders.length > 0 && React.createElement("section", { className: "tops-home-actions", "aria-labelledby": "tops-home-actions-title", style: { "--home-heading": C.textPrimary, "--home-accent": C.gold, "--home-button": C.green, "--home-button-text": C.textOnFill, "--home-elevated": C.bgElevated } },
+      (urgentReminders.length > 0 || extraFollowups.length > 0) && React.createElement("section", { className: "tops-home-actions", "aria-labelledby": "tops-home-actions-title", style: { "--home-heading": C.textPrimary, "--home-accent": C.gold, "--home-button": C.green, "--home-button-text": C.textOnFill, "--home-elevated": C.bgElevated } },
         React.createElement("h2", { id: "tops-home-actions-title", tabIndex: -1 }, "Your next step"),
-        React.createElement("article", { className: "tops-home-primary" },
+        urgentReminders.length > 0 && React.createElement("article", { className: "tops-home-primary" },
           React.createElement("div", { className: "tops-home-eyebrow" }, "NEXT ACTION"),
           React.createElement("h3", null, urgentReminders[0].title.replace(/\u26A0\uFE0F /g, "")),
           urgentReminders[0].deadline && React.createElement("p", { className: "tops-home-timing" }, urgentReminders[0].deadline),
+          followProgress[urgentReminders[0].id] && React.createElement("p", { style: { lineHeight: 1.6 } }, topsFollowLabel(followProgress[urgentReminders[0].id])),
           React.createElement("button", { id: "tops-home-next-action", className: "tops-home-action-button", type: "button", onClick: function() { openPlanRoute("reminders", "tops-reminder-" + urgentReminders[0].id, "tops-home-next-action"); } }, "View steps", React.createElement("span", { "aria-hidden": true }, " \u2192"))
         ),
         urgentReminders.length > 1 && React.createElement("h2", { className: "tops-home-secondary-title" }, "Also on your plan"),
@@ -8248,10 +8215,17 @@ function App() {
               React.createElement("div", { className: "tops-home-eyebrow" }, r.cat),
               React.createElement("h3", null, r.title),
               r.deadline && React.createElement("p", { className: "tops-home-timing" }, r.deadline),
+              followProgress[r.id] && React.createElement("p", { style: { lineHeight: 1.6 } }, topsFollowLabel(followProgress[r.id])),
               React.createElement("button", { id: "tops-home-secondary-" + r.id, className: "tops-home-action-button tops-home-action-quiet", type: "button", onClick: function() { openPlanRoute("reminders", "tops-reminder-" + r.id, "tops-home-secondary-" + r.id); } }, "View steps", React.createElement("span", { "aria-hidden": true }, " \u2192"))
             );
           })
-        )
+        ),
+        extraFollowups.length > 0 && React.createElement("details", { style: { margin: "16px 0" } },
+          React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", color: C.textPrimary, fontWeight: 700 } }, "Continue what you started"),
+          extraFollowups.map(function(r) { return React.createElement("div", { key: r.id, style: { padding: "12px 0", borderTop: "1px solid " + C.border } },
+            React.createElement("h3", { style: { fontSize: 16, margin: "0 0 6px" } }, r.title),
+            React.createElement("p", { style: { fontSize: 14, margin: "0 0 8px", lineHeight: 1.6 } }, topsFollowLabel(followProgress[r.id])),
+            React.createElement("button", { id: "tops-home-follow-" + r.id, className: "tops-home-action-button tops-home-action-quiet", type: "button", onClick: function() { openPlanRoute("reminders", "tops-reminder-" + r.id, "tops-home-follow-" + r.id); } }, "Continue step")); }))
       ),
 
       // ═══ v49 INSTRUMENT: timeline ring + ETS countdown fused ═══
@@ -8312,6 +8286,7 @@ function App() {
       ),
 
       renderHomeNavigator(),
+      renderPolicyNotice(),
 
       // ═══ v72 SITREP DELTA — what changed since your last check-in ═══
       sitrepDelta && React.createElement("div", { onClick: function() { setPolicyPanelOpen(true); }, style: { background: C.bgElevated, border: "1px solid " + C.border, borderLeft: "3px solid " + C.goldBright, borderRadius: 12, padding: "12px 15px", marginBottom: 12, cursor: "pointer" } },
@@ -8324,7 +8299,7 @@ function App() {
 // It disappears on tap and does not return until APP_VERSION moves again.
 // Sits BELOW NEXT ACTION deliberately: the ETS ring and the next deadline
 // are the operational core, and a changelog does not outrank them.
-whatsNewUnseen && React.createElement("div", {
+whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.textSecondary, cursor: "pointer" } }, "Updates"), React.createElement("div", {
   onClick: function() { setWhatsNewOpen(true); setWhatsNewUnseen(false); try { window.__safeSet("tops_whatsnew_seen", APP_VERSION); } catch (e) {} },
   role: "button",
   tabIndex: 0,
@@ -8334,7 +8309,7 @@ whatsNewUnseen && React.createElement("div", {
    React.createElement("div", { style: { minWidth: 0, flex: 1 } },
      React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "WHAT'S NEW"),
      React.createElement("div", { style: { fontSize: 11, color: C.gold, marginTop: 1 } }, WHATS_NEW[0] ? WHATS_NEW[0].note.slice(0, 60) + (WHATS_NEW[0].note.length > 60 ? "\u2026" : "") : "")),
-   React.createElement("span", { style: { marginLeft: "auto", color: C.gold, fontSize: 17, flexShrink: 0 } }, "\u203A")),
+   React.createElement("span", { style: { marginLeft: "auto", color: C.gold, fontSize: 17, flexShrink: 0 } }, "\u203A"))),
    // ═══ v70 PRIORITY TOOLS — the calculators, one tap from home ═══
       React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 12 } },
         [{id:"vamath",icon:"calc",label:"VA MATH"},{id:"vapay",icon:"dollar",label:"VA PAY"},{id:"reminders",icon:"bell",label:"REMINDERS"},{id:"taxes",icon:"percent",label:"TAX"}].map(function(q) {
@@ -8392,7 +8367,7 @@ whatsNewUnseen && React.createElement("div", {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const isAndroid = /Android/.test(navigator.userAgent);
     const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-    return !isStandalone ? /*#__PURE__*/React.createElement("div", {
+    return React.createElement("details", { style: { marginBottom: 14 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.textSecondary, cursor: "pointer" } }, "Install Transition OPS"), !isStandalone ? /*#__PURE__*/React.createElement("div", {
       style: {
         ...S.card,
         padding: 16,
@@ -8620,11 +8595,11 @@ whatsNewUnseen && React.createElement("div", {
         fontSize: 11,
         color: C.textSecondary
       }
-    }, "Running in standalone mode"))));
-  })(), React.createElement("div", { onClick: function() { setDashMoreOpen(!dashMoreOpen); if (window.__trackEvent) window.__trackEvent("dash_more_toggled", { open: !dashMoreOpen }); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "13px 16px", background: "#161B11", border: "1px solid #222A19", borderRadius: 10, marginBottom: 12, cursor: "pointer" } },
+    }, "Running in standalone mode")))));
+  })(), React.createElement("div", { onClick: function() { setDashMoreOpen(!dashMoreOpen); if (window.__trackEvent) window.__trackEvent("dash_more_toggled", { open: !dashMoreOpen }); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "13px 16px", background: C.bgCard, border: "1px solid " + C.border, borderRadius: 10, marginBottom: 12, cursor: "pointer" } },
         React.createElement("div", null,
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 2, color: C.gold, fontWeight: 600 } }, "MORE TOOLS & INTEL"),
-          React.createElement("div", { style: { fontSize: 10.5, color: "#8A8468", marginTop: 2 } }, "SkillBridge feed \u00B7 career maps \u00B7 documents \u00B7 spouse resources \u00B7 app updates")
+          React.createElement("div", { style: { fontSize: 10.5, color: C.textSecondary, marginTop: 2 } }, "SkillBridge feed \u00B7 career maps \u00B7 documents \u00B7 spouse resources \u00B7 app updates")
         ),
         React.createElement("span", { style: { color: C.gold, fontSize: 14, transform: dashMoreOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" } }, "\u203A")
       ),
@@ -9076,7 +9051,7 @@ whatsNewUnseen && React.createElement("div", {
           var on = aiR.mode === m;
           return React.createElement("button", { key: m, type: "button", "aria-pressed": on, onClick: function() { setAiR(function(p){ return Object.assign({}, p, { mode: m }); }); },
             style: { flex: 1, minHeight: 44, textAlign: "center", padding: "9px 6px", borderRadius: 8, cursor: "pointer", fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1, fontWeight: 700,
-              background: on ? C.greenBright : "transparent", color: on ? "#0E120B" : C.textSecondary, border: "1px solid " + (on ? C.greenBright : C.border) } },
+              background: on ? C.greenBright : "transparent", color: on ? (C.isLight ? "#FFFFFF" : "#0E120B") : C.textSecondary, border: "1px solid " + (on ? C.greenBright : C.border) } },
             m === "standard" ? "CIVILIAN RESUME" : "FEDERAL (USAJOBS)");
         })),
       aiR.mode === "federal" && React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.5, marginBottom: 8 } }, "For USAJOBS, tailor your resume to two pages or less and follow the job announcement for required information. Review any bracketed prompts before submitting."),
@@ -9093,7 +9068,7 @@ whatsNewUnseen && React.createElement("div", {
           var selected = aiR.lengthPreference === option.id;
           return React.createElement("button", { key: option.id, type: "button", "aria-pressed": selected, onClick: function() { setAiR(function(p){
             return Object.assign({}, p, { lengthPreference: option.id, lengthPlan: null, out: "", auditScorecard: [], auditTrace: [], auditBlockers: [], supportedKeywords: [], auditGaps: [], showTrace: false });
-          }); }, style: { flex: "1 1 120px", minHeight: 44, padding: "8px 7px", borderRadius: 7, cursor: "pointer", fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: 0.5, fontWeight: 700, background: selected ? C.greenBright : "transparent", color: selected ? "#0E120B" : C.textSecondary, border: "1px solid " + (selected ? C.greenBright : C.border) } }, option.label);
+          }); }, style: { flex: "1 1 120px", minHeight: 44, padding: "8px 7px", borderRadius: 7, cursor: "pointer", fontFamily: "'Oswald', sans-serif", fontSize: 10.5, letterSpacing: 0.5, fontWeight: 700, background: selected ? C.greenBright : "transparent", color: selected ? (C.isLight ? "#FFFFFF" : "#0E120B") : C.textSecondary, border: "1px solid " + (selected ? C.greenBright : C.border) } }, option.label);
         })),
         aiR.facts && React.createElement("div", { style: { marginTop: 10, paddingTop: 9, borderTop: "1px solid " + C.border } },
           React.createElement("div", { style: { fontSize: 10.5, color: C.textSecondary, lineHeight: 1.5, marginBottom: 7 } }, "Confirm only years that directly match this target. Leave blank if unavailable. Check each role that supports the target. We never calculate relevant experience from age, total service, dates, titles, or the job posting."),
@@ -9175,7 +9150,7 @@ whatsNewUnseen && React.createElement("div", {
             setAiR(function(p){ return Object.assign({}, p, { loading: false, out: res.d.bullets, lengthPlan: nextLengthPlan, auditScorecard: nextScorecard, auditTrace: Array.isArray(res.d.trace) ? res.d.trace : [], auditBlockers: [], supportedKeywords: Array.isArray(res.d.supportedKeywords) ? res.d.supportedKeywords : [], auditGaps: Array.isArray(res.d.gaps) ? res.d.gaps : [] }); });
           })
           .catch(handleResumeTransportFailure);
-      }, style: { width: "100%", minHeight: 44, background: C.greenBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? (aiR.facts ? "DRAFTING\u2026 (10-15 SEC)" : "CHECKING FACTS\u2026") : (aiR.facts ? "DRAFT FROM CONFIRMED FACTS" : "BUILD MY FACT SHEET")),
+      }, style: { width: "100%", minHeight: 44, background: C.greenBright, color: C.isLight ? "#FFFFFF" : "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: aiR.loading ? "wait" : "pointer" } }, aiR.loading ? (aiR.facts ? "DRAFTING\u2026 (10-15 SEC)" : "CHECKING FACTS\u2026") : (aiR.facts ? "DRAFT FROM CONFIRMED FACTS" : "BUILD MY FACT SHEET")),
       React.createElement("div", { id: "tops-resume-error", role: "alert", "aria-atomic": "true", style: { marginTop: aiR.err ? 10 : 0, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, aiR.err || ""),
       aiR.auditBlockers.length > 0 && React.createElement("div", { style: { marginTop: 10, padding: "11px 12px", background: "rgba(190,70,70,0.12)", border: "1px solid " + C.warning, borderRadius: 8 } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.2, color: C.warning, fontWeight: 700, marginBottom: 5 } }, "DRAFT WITHHELD \u2014 FIX THESE FIRST"),
@@ -9250,7 +9225,7 @@ whatsNewUnseen && React.createElement("div", {
           document.body.appendChild(a); a.click(); document.body.removeChild(a);
           setTimeout(function(){ URL.revokeObjectURL(objectUrl); }, 0);
           trackResumeDownload();
-        }, style: { width: "100%", marginTop: 8, background: C.goldBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "12px", fontFamily: "'Oswald', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1.5, cursor: "pointer" } }, aiR.mode === "federal" ? "\u2B07 DOWNLOAD AS WORD DOC" : "\u2B07 DOWNLOAD WORD DOCX"),
+        }, style: { width: "100%", marginTop: 8, background: C.goldBright, color: C.isLight ? "#FFFFFF" : "#0E120B", border: "none", borderRadius: 8, padding: "12px", fontFamily: "'Oswald', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1.5, cursor: "pointer" } }, aiR.mode === "federal" ? "\u2B07 DOWNLOAD AS WORD DOC" : "\u2B07 DOWNLOAD WORD DOCX"),
         React.createElement("button", { onClick: function() { if (navigator.clipboard) { navigator.clipboard.writeText(aiR.out).then(function(){ showToast(aiR.mode === "federal" ? "RESUME COPIED \u2014 fill the [brackets], then send." : "RESUME COPIED \u2014 review the draft and honest gaps, then send."); }); } if (window.__trackEvent) window.__trackEvent("ai_resume_copied", {}); }, style: { marginTop: 8, background: "transparent", color: C.greenBright, border: "1px solid " + C.greenBright, borderRadius: 8, padding: "9px 16px", fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: "pointer" } }, "COPY RESUME"), /*#__PURE__*/React.createElement("a", {
         href: "https://www.dol.gov/agencies/vets/programs/tap/employment-navigator-partnership", target: "_blank", rel: "noopener noreferrer",
         onClick: function() { if (window.__trackEvent) window.__trackEvent("enpp_handoff_tapped", {}); },
@@ -9289,7 +9264,7 @@ whatsNewUnseen && React.createElement("div", {
             setJobsQ(function(p){ return Object.assign({}, p, { loading: false, jobs: res.d.jobs || [], count: res.d.count || 0, note: res.d.note || "" }); });
           })
           .catch(function(){ setJobsQ(function(p){ return Object.assign({}, p, { loading: false, err: "Search hiccup \u2014 the State Job Banks link in Resources always works." }); }); });
-      }, style: { width: "100%", background: jobsQ.loading ? C.border : C.goldBright, color: "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: jobsQ.loading ? "wait" : "pointer" } }, jobsQ.loading ? "SEARCHING\u2026" : "SEARCH LIVE OPENINGS"),
+      }, style: { width: "100%", background: jobsQ.loading ? C.border : C.goldBright, color: C.isLight ? "#FFFFFF" : "#0E120B", border: "none", borderRadius: 8, padding: "13px", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, cursor: jobsQ.loading ? "wait" : "pointer" } }, jobsQ.loading ? "SEARCHING\u2026" : "SEARCH LIVE OPENINGS"),
       jobsQ.err && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.warning, lineHeight: 1.5 } }, jobsQ.err),
       jobsQ.note && React.createElement("div", { style: { marginTop: 10, fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, jobsQ.note),
       jobsQ.jobs && jobsQ.jobs.length > 0 && React.createElement("div", { style: { marginTop: 12 } },
@@ -9328,7 +9303,7 @@ whatsNewUnseen && React.createElement("div", {
       background: pathwayMode === "journey" ? C.green : C.bgCard,
       border: "1px solid " + (pathwayMode === "journey" ? C.greenBright : C.border),
       borderRadius: 4,
-      color: pathwayMode === "journey" ? C.textPrimary : C.inactive,
+      color: pathwayMode === "journey" ? C.textOnFill : C.inactive,
       fontFamily: "'Oswald', sans-serif",
       fontSize: 12,
       letterSpacing: 2,
@@ -9343,7 +9318,7 @@ whatsNewUnseen && React.createElement("div", {
       background: pathwayMode === "planner" ? C.green : C.bgCard,
       border: "1px solid " + (pathwayMode === "planner" ? C.greenBright : C.border),
       borderRadius: 4,
-      color: pathwayMode === "planner" ? C.textPrimary : C.inactive,
+      color: pathwayMode === "planner" ? C.textOnFill : C.inactive,
       fontFamily: "'Oswald', sans-serif",
       fontSize: 12,
       letterSpacing: 2,
@@ -11398,7 +11373,7 @@ whatsNewUnseen && React.createElement("div", {
       alignItems: "flex-start",
       gap: 10,
       padding: "8px 10px",
-      background: vetScore[item.id] ? C.bg === "#FFFFFF" ? "#E8F5E9" : C.bgElevated : C.bg,
+      background: vetScore[item.id] ? C.isLight === true ? "#E8F5E9" : C.bgElevated : C.bg,
       border: "1px solid " + (vetScore[item.id] ? C.greenBright : C.border),
       borderRadius: 4,
       marginBottom: 4,
@@ -11419,7 +11394,7 @@ whatsNewUnseen && React.createElement("div", {
     }
   }, vetScore[item.id] && /*#__PURE__*/React.createElement("span", {
     style: {
-      color: C.bg === "#FFFFFF" ? "#FFFFFF" : C.bg,
+      color: C.isLight === true ? "#FFFFFF" : C.bg,
       fontSize: 13,
       fontWeight: 700
     }
@@ -11624,7 +11599,7 @@ whatsNewUnseen && React.createElement("div", {
       fontSize: 10,
       padding: "2px 6px",
       background: C.gold,
-      color: C.bg === "#FFFFFF" ? "#FFFFFF" : C.bg,
+      color: C.isLight === true ? "#FFFFFF" : C.bg,
       borderRadius: 4,
       fontFamily: "'Oswald', sans-serif"
     }
@@ -11785,7 +11760,7 @@ whatsNewUnseen && React.createElement("div", {
       fontSize: 9,
       padding: "2px 6px",
       background: r.tag === "FREE" ? C.greenBright : r.tag === "VA BENEFIT" ? C.gold : C.green,
-      color: C.bg === "#FFFFFF" ? "#FFFFFF" : C.bg,
+      color: C.isLight === true ? "#FFFFFF" : C.bg,
       borderRadius: 4,
       fontFamily: "'Oswald', sans-serif",
       letterSpacing: 1
@@ -11867,7 +11842,7 @@ whatsNewUnseen && React.createElement("div", {
     style: {
       display: "block",
       padding: "11px 13px",
-      background: co.highlight ? C.bg === "#FFFFFF" ? "#F0F7F0" : C.gradStart : C.bgCard,
+      background: co.highlight ? C.isLight === true ? "#F0F7F0" : C.gradStart : C.bgCard,
       border: "1px solid " + (co.highlight ? C.greenBright : C.border),
       borderLeft: co.highlight ? "4px solid " + C.greenBright : "4px solid transparent",
       borderRadius: 4,
@@ -12074,7 +12049,7 @@ whatsNewUnseen && React.createElement("div", {
       display: "block",
       padding: "10px 12px",
       marginBottom: 5,
-      background: i === 0 ? C.bg === "#FFFFFF" ? "#FFF8E1" : C.gradStart : C.bg,
+      background: i === 0 ? C.isLight === true ? "#FFF8E1" : C.gradStart : C.bg,
       border: "1px solid " + (i === 0 ? C.goldBright : C.border),
       borderRadius: 4,
       textDecoration: "none"
@@ -12097,7 +12072,7 @@ whatsNewUnseen && React.createElement("div", {
       fontSize: 9,
       padding: "2px 6px",
       background: C.gold,
-      color: C.bg === "#FFFFFF" ? "#FFFFFF" : C.bg,
+      color: C.isLight === true ? "#FFFFFF" : C.bg,
       borderRadius: 4,
       fontFamily: "'Oswald', sans-serif"
     }
@@ -12150,7 +12125,7 @@ whatsNewUnseen && React.createElement("div", {
       background: C.greenBright,
       border: "none",
       borderRadius: 4,
-      color: C.bg === "#FFFFFF" ? "#FFFFFF" : C.bg,
+      color: C.isLight === true ? "#FFFFFF" : C.bg,
       fontFamily: "'Oswald', sans-serif",
       fontSize: 14,
       letterSpacing: 2,
@@ -15262,7 +15237,7 @@ whatsNewUnseen && React.createElement("div", {
     if (!showDismissed) filtered = filtered.filter(function(x) { return !dismissedReminders[x.id]; });
 
     // Focused Home action: reuse the reminder record and its existing completion store.
-    var focusedReminder = SMART_REMINDERS.find(function(r) { return r.id === focusedReminderId; });
+    var focusedReminder = SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)).find(function(r) { return r.id === focusedReminderId; });
     if (focusedReminder) {
       var r = focusedReminder;
       var isComplete = !!dismissedReminders[r.id];
@@ -15278,18 +15253,19 @@ whatsNewUnseen && React.createElement("div", {
         isComplete && React.createElement("div", { style: { padding: 18, marginBottom: 20, border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard } },
           React.createElement("p", { style: { marginTop: 0 } }, "This reminder is marked complete."),
           React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 10 } },
-            React.createElement("button", { id: "tops-focused-undo", type: "button", style: actionStyle, onClick: function() { setDismissedReminders(function(p) { var n = Object.assign({}, p); delete n[r.id]; return n; }); setReminderNotice("Reminder restored."); continuationFocus.current = "tops-focused-title"; } }, "Undo"),
+            React.createElement("button", { id: "tops-focused-undo", type: "button", style: actionStyle, onClick: function() { if (saveFollowProgress(r.id, "clear", "") !== true) { setReminderNotice("Could not confirm saving. Keep this page open and check your progress before continuing."); return; } setReminderNotice("Reminder restored."); continuationFocus.current = "tops-focused-title"; } }, "Reopen task"),
             nextReminder && React.createElement("button", { type: "button", style: actionStyle, onClick: function() { setFocusedReminderId(nextReminder.id); setReminderNotice(""); continuationFocus.current = "tops-focused-title"; } }, "Next action: " + nextReminder.title)
           ),
           !nextReminder && React.createElement("p", null, "No remaining reminders currently match your Home action window. You can review all reminders or restore this reminder.")
         ),
+        React.createElement(ReminderProgress, { key: r.id, colors: C, value: followProgress[r.id], done: isComplete, save: function(status, date) { return saveFollowProgress(r.id, status, date); } }),
         React.createElement("p", { style: { lineHeight: 1.7 } }, r.brief),
         React.createElement("h3", { style: { color: C.textPrimary } }, "Action items"),
         React.createElement("ol", { style: { paddingLeft: 24, lineHeight: 1.7 } }, r.items.map(function(item, i) { return React.createElement("li", { key: i, style: { paddingLeft: 4, marginBottom: 14 } }, item); })),
         r.deadline && React.createElement("div", { style: { padding: 16, border: "1px solid " + C.border, borderRadius: 8, marginBottom: 16, lineHeight: 1.7, background: C.bgElevated } }, React.createElement("h3", { style: { color: C.textPrimary, marginTop: 0 } }, "Timing"), r.deadline),
         r.why && React.createElement("p", { style: { lineHeight: 1.7 } }, React.createElement("strong", null, "Why this matters: "), r.why),
         r.link && React.createElement("a", { href: r.link, target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline", marginBottom: 16 } }, "Open Resource"),
-        !isComplete && React.createElement("div", { style: { marginTop: 16 } }, React.createElement("button", { type: "button", style: Object.assign({}, actionStyle, { background: C.green, color: C.textOnFill }), onClick: function() { setDismissedReminders(function(p) { var n = Object.assign({}, p); n[r.id] = true; return n; }); setReminderNotice("Reminder marked complete."); continuationFocus.current = "tops-focused-undo"; } }, "Mark reminder complete"))
+        !isComplete && React.createElement("div", { style: { marginTop: 16 } }, React.createElement("button", { type: "button", style: Object.assign({}, actionStyle, { background: C.green, color: C.textOnFill }), onClick: function() { if (saveFollowProgress(r.id, "done", "") !== true) { setReminderNotice("Could not confirm saving. Keep this page open and check your progress before continuing."); return; } setReminderNotice("Reminder marked complete."); continuationFocus.current = "tops-focused-undo"; } }, "Mark reminder complete"))
       );
     }
 
@@ -15352,8 +15328,7 @@ whatsNewUnseen && React.createElement("div", {
             ),
             r.link && React.createElement("div", { style: { marginTop: 8 } }, React.createElement("a", { href: r.link, target: "_blank", rel: "noopener noreferrer", style: { fontSize: 12, color: C.greenBright, textDecoration: "underline" } }, "Open Resource \u2192")),
             React.createElement("div", { style: { marginTop: 12 } },
-              !isDis ? React.createElement("button", { onClick: function() { setDismissedReminders(function(p) { var n = Object.assign({}, p); n[r.id] = true; return n; }); setReminderExpanded(null); }, style: { padding: "8px 16px", background: "rgba(74,93,35,0.3)", border: "1px solid " + C.green, borderRadius: 4, color: C.greenBright, fontSize: 11, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, "\u2713 MARK COMPLETE") :
-              React.createElement("button", { onClick: function() { setDismissedReminders(function(p) { var n = Object.assign({}, p); delete n[r.id]; return n; }); }, style: { padding: "8px 16px", background: "rgba(139,0,0,0.2)", border: "1px solid #8B0000", borderRadius: 4, color: C.danger, fontSize: 11, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, "\u21A9 RESTORE")
+              React.createElement("button", { type: "button", style: { minHeight: 44, padding: "10px 16px", background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 6, color: C.textPrimary, cursor: "pointer" }, onClick: function() { setFocusedReminderId(r.id); continuationFocus.current = "tops-focused-title"; } }, isDis ? "Review completed step" : "View steps")
             )
           )
         );
@@ -16174,13 +16149,14 @@ whatsNewUnseen && React.createElement("div", {
   }, "Bridging the gap between service and civilian success.")),
 
   // ═══════════  MENU OVERLAY ═══════════
-  showMoreMenu && /*#__PURE__*/React.createElement("div", { className: "more-overlay", role: "dialog", "aria-modal": true, "aria-label": "More tools", style: { left: 0, right: 0, marginLeft: "auto", marginRight: "auto", transform: "none" } },
+  showMoreMenu && /*#__PURE__*/React.createElement("div", { ref: toolsDialogRef, tabIndex: -1, className: "more-overlay", role: "dialog", "aria-modal": true, "aria-label": showMoreMenu === "benefits" ? "Benefits" : "More tools", style: { left: 0, right: 0, marginLeft: "auto", marginRight: "auto", transform: "none" } },
     React.createElement("div", { style: { textAlign: "right", marginBottom: 20 } },
-      React.createElement("button", { onClick: function() { setShowMoreMenu(false); }, style: { background: "none", border: "none", color: C.textPrimary, fontSize: 28, cursor: "pointer", padding: "0 4px" } }, "\u2715")
+      React.createElement("button", { "aria-label": showMoreMenu === "benefits" ? "Close Benefits menu" : "Close More menu", onClick: function() { setShowMoreMenu(false); }, style: { background: "none", border: "none", color: C.textPrimary, fontSize: 28, cursor: "pointer", padding: "0 4px" } }, "\u2715")
     ),
-    React.createElement("div", { style: { fontSize: 11, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif", marginBottom: 14 } }, "MORE TOOLS"),
-    [{id:"reminders",icon:"bell",label:"REMINDERS & ALERTS",desc:"Deadline reminders timed to your separation date"},{id:"critical",icon:"alert",label:"CRITICAL WINDOWS",desc:"Time-bound windows where missing the date costs money or benefits"},{id:"readiness",icon:"gauge",label:"READINESS SCORE",desc:"Self-assessment across transition categories"},{id:"vamath",icon:"calc",label:"VA MATH CALCULATOR",desc:"Estimate a combined rating using 38 CFR 4.25 Table I"},{id:"vapay",icon:"dollar",label:"VA PAY ESTIMATOR",desc:"Calculate your monthly disability compensation"},{id:"finalpcs",icon:"box",label:"FINAL PCS ENTITLEMENTS",desc:"Weight allowances, MALT, move timelines by grade"},{id:"vethub",icon:"medal",label:"VET HUB",desc:"Career score, benefits, employers, entrepreneurship"},{id:"resources",icon:"link",label:"RESOURCES",desc:"VSOs, SkillBridge, healthcare, document vault"},{id:"taxes",icon:"percent",label:"TAX INTEL",desc:"State tax on retired pay, MSRRA, residency"},{id:"dd214",icon:"doc",label:"DD214 GUIDE",desc:"Verification checklist, service record review"}].map(function(m) {
-      return React.createElement("button", { key: m.id, className: "tops-more-tool", onClick: function() { setActiveTab(m.id); setShowMoreMenu(false); }, style: undefined },
+    React.createElement("h2", { style: { fontSize: 26, lineHeight: 1.25, color: C.textPrimary, letterSpacing: 0.5, fontFamily: "'Oswald', sans-serif", marginBottom: 14 } }, showMoreMenu === "benefits" ? "Benefits" : "More tools"),
+    showMoreMenu === "benefits" && React.createElement("p", { style: { color: C.textSecondary, lineHeight: 1.6, marginBottom: 16 } }, "Find guidance and tools for your benefits decisions."),
+    [{id:"reminders",icon:"bell",label:"REMINDERS & ALERTS",desc:"Deadline reminders timed to your separation date"},{id:"critical",icon:"alert",label:"CRITICAL WINDOWS",desc:"Time-bound windows where missing the date costs money or benefits"},{id:"readiness",icon:"gauge",label:"READINESS SCORE",desc:"Self-assessment across transition categories"},{id:"vamath",icon:"calc",label:"VA MATH CALCULATOR",desc:"Estimate a combined rating using 38 CFR 4.25 Table I"},{id:"vapay",icon:"dollar",label:"VA PAY ESTIMATOR",desc:"Calculate your monthly disability compensation"},{id:"finalpcs",icon:"box",label:"FINAL PCS ENTITLEMENTS",desc:"Weight allowances, MALT, move timelines by grade"},{id:"vethub",icon:"medal",label:"VET HUB",desc:"Career score, benefits, employers, entrepreneurship"},{id:"resources",icon:"link",label:"RESOURCES",desc:"VSOs, SkillBridge, healthcare, document vault"},{id:"taxes",icon:"percent",label:"TAX INTEL",desc:"State tax on retired pay, MSRRA, residency"},{id:"dd214",icon:"doc",label:"DD214 GUIDE",desc:"Verification checklist, service record review"}].filter(function(m) { return showMoreMenu !== "benefits" || ["critical","vamath","vapay","resources","taxes"].indexOf(m.id) !== -1; }).map(function(m) {
+      return React.createElement("button", { key: m.id, className: "tops-more-tool", onClick: function() { primaryNavFocus.current = true; setActiveTab(m.id); setShowMoreMenu(false); }, style: undefined },
         React.createElement("span", { style: { color: C.gold, flexShrink: 0 } }, TopsToolArt(m.id, m.icon, 54)),
         React.createElement("div", { style: { flex: 1 } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 15, color: C.textPrimary, letterSpacing: 1 } }, m.label),
@@ -16189,16 +16165,19 @@ whatsNewUnseen && React.createElement("div", {
         React.createElement("span", { style: { color: C.gold, fontSize: 18 } }, "\u2192")
       );
     }),
+    showMoreMenu !== "benefits" && navUnlocked && React.createElement("button", { className: "tops-more-tool", type: "button", onClick: function() { primaryNavFocus.current = true; setActiveTab("navigator"); setShowMoreMenu(false); } }, "Navigator"),
+    showMoreMenu !== "benefits" && React.createElement("button", { className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); window.requestAnimationFrame(handleInstallBannerClick); } }, "Install Transition OPS"),
     React.createElement("button", { onClick: function() { setShowMoreMenu(false); }, style: { marginTop: 10, padding: "14px 0", background: "none", border: "1px solid " + C.border, borderRadius: 12, color: C.inactive, fontSize: 12, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer", width: "100%", textAlign: "center" } }, "CLOSE")
   ),
 
   // ═══════════ BOTTOM NAVIGATION BAR ═══════════
   /*#__PURE__*/React.createElement("div", { className: "bottom-nav", role: "navigation", "aria-label": "Primary" },
-    (userStatus === "guard" ? [{id:"dashboard",icon:"home",label:"HOME"},{id:"pathway",icon:"target",label:"CAREER"},{id:"vamath",icon:"calc",label:"VA MATH"},{id:"vapay",icon:"dollar",label:"VA PAY"},{id:"vethub",icon:"medal",label:"VET HUB"},{id:"more",icon:"grid",label:"MORE"}] : [{id:"dashboard",icon:"home",label:"HOME"},{id:"timeline",icon:"calendar",label:"TIMELINE"},{id:"critical",icon:"alert",label:"CRITICAL"},{id:"vamath",icon:"calc",label:"VA CALC"},{id:"pathway",icon:"target",label:"CAREER"},{id:"more",icon:"grid",label:"MORE"}]).map(function(n) {
-      var isActive = n.id === "more" ? showMoreMenu : activeTab === n.id;
-      return React.createElement("button", { key: n.id, onClick: function() {
-        if (n.id === "more") { setShowMoreMenu(!showMoreMenu); }
-        else { setActiveTab(n.id); setSelectedMilestone(null); setShowMoreMenu(false); }
+    [{id:"dashboard",icon:"home",label:"Home"},{id:"timeline",icon:"calendar",label:"My Plan"},{id:"pathway",icon:"target",label:"Career"},{id:"benefits",icon:"medal",label:"Benefits"},{id:"more",icon:"grid",label:"More"}].map(function(n) {
+      var isActive = showMoreMenu ? n.id === (showMoreMenu === "benefits" ? "benefits" : "more") : n.id === "more" ? ["finalpcs","navigator"].indexOf(activeTab) !== -1 : n.id === "benefits" ? ["critical","vamath","vapay","resources","taxes"].indexOf(activeTab) !== -1 : n.id === "timeline" ? ["timeline","reminders","readiness","dd214"].indexOf(activeTab) !== -1 : n.id === "pathway" ? ["pathway","vethub"].indexOf(activeTab) !== -1 : activeTab === n.id;
+      return React.createElement("button", { key: n.id, type: "button", "aria-current": isActive && !showMoreMenu ? "page" : undefined, "aria-expanded": n.id === "more" || n.id === "benefits" ? (n.id === "more" ? showMoreMenu === true : showMoreMenu === "benefits") : undefined, onClick: function() {
+        if (n.id === "more") { setShowMoreMenu(showMoreMenu === true ? false : true); }
+        else if (n.id === "benefits") { setShowMoreMenu(showMoreMenu === "benefits" ? false : "benefits"); }
+        else { primaryNavFocus.current = true; setActiveTab(n.id); setSelectedMilestone(null); setShowMoreMenu(false); }
       } },
         React.createElement("span", { className: "nav-icon", style: { color: isActive ? C.goldBright : C.inactive, transition: "color 0.2s" } }, TIcon(n.icon, 22)),
         React.createElement("span", { className: "nav-label", style: { color: isActive ? C.textPrimary : C.inactive, transition: "color 0.2s" } }, n.label)
@@ -16251,7 +16230,7 @@ whatsNewUnseen && React.createElement("div", {
     tabIndex: 0,
     onKeyDown: topsKeyboardActivate,
     style: { display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 44, minHeight: 44, fontSize: 11, color: C.inactive, cursor: "pointer", borderBottom: "1px dotted " + C.border }
-  }, "Privacy")),
+  }, "Privacy"), React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5, marginTop: 4 } }, TOPS_PUSH_DISABLED_COPY)),
 
   aboutOpen && /*#__PURE__*/React.createElement(AboutModal, { C: C, returnFocus: aboutReturnFocusRef.current, onClose: function() { setAboutOpen(false); } })
   );

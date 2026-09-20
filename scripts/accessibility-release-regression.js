@@ -1143,7 +1143,7 @@ async function run() {
         await client.send("Page.navigate", { url: origin + "/?tool=" + encodeURIComponent(route) + "&a11y_scenario=" + encodeURIComponent(scenario.name) });
         await waitForExpression(
           client,
-          "document.readyState === 'complete' && !!document.querySelector('#root') && !document.querySelector('#root .seo-content') && !document.body.innerText.includes('Loading error')",
+          "location.href === " + JSON.stringify(origin + "/?tool=" + encodeURIComponent(route) + "&a11y_scenario=" + encodeURIComponent(scenario.name)) + " && document.readyState === 'complete' && !!document.querySelector('#root') && !document.querySelector('#root .seo-content') && !document.body.innerText.includes('Loading error')",
           scenarioRoute + " rendered app",
           12000
         );

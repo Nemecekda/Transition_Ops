@@ -15,7 +15,7 @@ const bdd = ctx.data.find(r => /bdd/i.test(r.id));
 assert.ok(bdd);
 const state = { focusedReminderId: bdd.id, dismissedReminders: {}, reminderNotice: "", etsMonths: 140 / 30.44 };
 const sandbox = Object.assign(state, {
-  SMART_REMINDERS: ctx.data, C: {}, continuationFocus: { current: null }, continuationReturn: { current: null },
+  SMART_REMINDERS: ctx.data, generateCriticalWindowReminders: () => [], userStatus: "active", ReminderProgress: () => {}, followProgress: {}, saveFollowProgress: (id, status) => { if (status === "done") state.dismissedReminders[id] = true; else delete state.dismissedReminders[id]; return true; }, C: {}, continuationFocus: { current: null }, continuationReturn: { current: null },
   React: { createElement: (type, props, ...children) => ({ type, props: props || {}, children: children.flat(Infinity) }) },
   setDismissedReminders: fn => { state.dismissedReminders = fn(state.dismissedReminders); },
   setFocusedReminderId: id => { state.focusedReminderId = id; },
@@ -37,21 +37,14 @@ assert.equal(state.dismissedReminders[bdd.id], true);
 assert.equal(state.reminderNotice, "Reminder marked complete.");
 assert.equal(state.continuationFocus.current, "tops-focused-undo");
 const next = button("Next action:");
-button("Undo").props.onClick();
+button("Reopen task").props.onClick();
 assert.equal(state.dismissedReminders[bdd.id], undefined);
 assert.equal(state.continuationFocus.current, "tops-focused-title");
 button("Mark reminder complete").props.onClick();
 next.props.onClick();
 assert.notEqual(state.focusedReminderId, bdd.id);
 assert.equal(state.continuationFocus.current, "tops-focused-title");
-// Execute the app's actual persistence effect and reload initializer.
-let saved;
-sandbox.window = { __safeSet: (key, value) => { assert.equal(key, "tops_dismissed_reminders"); saved = value; }, __safeGet: key => { assert.equal(key, "tops_dismissed_reminders"); return saved; } };
-sandbox.useEffect = fn => fn();
-vm.runInNewContext(source.match(/  useEffect\(function\(\) \{ try \{ window\.__safeSet\("tops_dismissed_reminders"[^\n]+/)[0], sandbox);
-sandbox.useState = fn => [fn(), () => {}];
-vm.runInNewContext(source.match(/  const \[dismissedReminders, setDismissedReminders\] = useState[^\n]+/)[0].replace("const [dismissedReminders, setDismissedReminders]", "var [reloaded, setter]") + "\nthis.restored = reloaded;", sandbox);
-assert.equal(sandbox.restored[bdd.id], true);
+// Verified persistence and reload run in followthrough-regression.js.
 state.focusedReminderId = bdd.id;
 state.dismissedReminders = Object.fromEntries(ctx.data.map(r => [r.id, true]));
 assert.ok(view().some(n => n.children.includes("No remaining reminders currently match your Home action window. You can review all reminders or restore this reminder.")));
@@ -60,4 +53,4 @@ button("All reminders").props.onClick();
 assert.equal(state.focusedReminderId, null);
 assert.equal(state.showDismissed, true);
 assert.equal(state.continuationFocus.current, "tops-reminder-" + bdd.id);
-console.log("FOCUSED ACTION PASS: exact full content/resource; completion; Undo; next eligible; focus intents; existing storage reload; all-done window; completed-list restore access");
+console.log("FOCUSED ACTION PASS: exact full content/resource; completion; Undo; next eligible; focus intents;  all-done window; completed-list restore access");

@@ -22,6 +22,17 @@ click("Clear worksheet");assert.equal(store.has(api.key),false);assert.equal(sto
 assert.doesNotMatch(code,/fetch\(|sendBeacon\(|__trackEvent\(|console\.|dangerouslySetInnerHTML|\.innerHTML|navigator\.clipboard|window\.print/);
 // Preserve pre-worksheet data and exact Resume state; Guard routing has its own regression.
 const base=cp.execFileSync("git",["show","93e1a9e3274b5a08ef85132df726e81d18bf9901:index.html"],{cwd:root,encoding:"utf8",maxBuffer:4*1024*1024});
-assert.equal(source.slice(0,source.indexOf("const TOPS_GAP_KEY =")),base.slice(0,base.indexOf("const TOPS_GAP_KEY =")));
+// Preserve the entire prefix after only the reviewed visual substitutions.
+let expectedPrefix=base.slice(0,base.indexOf("const TOPS_GAP_KEY ="));
+const actualPrefix=source.slice(0,source.indexOf("const TOPS_GAP_KEY ="));
+function reviewedReplace(oldText,newText,count){assert.equal(expectedPrefix.split(oldText).length-1,count);expectedPrefix=expectedPrefix.split(oldText).join(newText);}
+reviewedReplace('font-family:"Courier Prime","Courier New",monospace;color:var(--t-body-text)','font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--t-body-text)',1);
+reviewedReplace('.bottom-nav button .nav-label{font-size:10px;letter-spacing:1px;','.bottom-nav button .nav-label{font-size:12px;letter-spacing:0.2px;',1);
+reviewedReplace('C.bg === "#FFFFFF"','C.isLight === true',2);
+const themeBlock=text=>{const start=text.indexOf("const THEMES = {");const end=text.indexOf("\n};",start)+3;assert.ok(start>0&&end>start);return text.slice(start,end);};
+const approvedTheme=themeBlock(actualPrefix);
+assert.equal(require("node:crypto").createHash("sha256").update(approvedTheme).digest("hex"),"16124b7249e22b25bbecd79ccea0ef4fbe8c193246983de9fa0de9b06fcb1496");
+reviewedReplace(themeBlock(expectedPrefix),approvedTheme,1);
+assert.equal(actualPrefix,expectedPrefix);
 assert.equal(source.slice(source.indexOf("const [aiR, setAiR]"),source.indexOf("const [jobsQ")),base.slice(base.indexOf("const [aiR, setAiR]"),base.indexOf("const [jobsQ")));
 console.log("COUNSELOR PREPARATION PASS: v1 exact read/no write; explicit v2 save/reload; bounded/closed fields and enums; max escaped payload; deterministic partial/empty summary; member-reported status; plaintext source; focus/back edit; scoped clear; no worksheet network/log/analytics; pre-worksheet data and Resume state unchanged");

@@ -11,7 +11,7 @@ const palette = {};
 const themeStart = source.indexOf("const THEMES = {");
 vm.runInNewContext(source.slice(themeStart, source.indexOf("\n};", themeStart) + 3) + "\nthis.themes = THEMES;", palette);
 const selection = source.match(/var urgentReminders = [^\n]+;/)[0];
-const renderStart = source.indexOf("      urgentReminders.length > 0 && React.createElement(\"section\", { className: \"tops-home-actions\"");
+const renderStart = source.indexOf("      (urgentReminders.length > 0 || extraFollowups.length > 0) && React.createElement(\"section\", { className: \"tops-home-actions\"");
 assert.ok(renderStart > 0);
 const renderEnd = source.indexOf("      // ═══ v49 INSTRUMENT", renderStart);
 const render = source.slice(renderStart, renderEnd);
@@ -26,7 +26,7 @@ const reminders = [
 function run(months, dismissed, data = reminders) {
   const calls = [];
   const sandbox = {
-    etsMonths: months, dismissedReminders: dismissed, SMART_REMINDERS: data, C: palette.themes.tactical,
+    extraFollowups: [], followProgress: {}, topsFollowLabel: () => "", etsMonths: months, dismissedReminders: dismissed, SMART_REMINDERS: data, C: palette.themes.tactical,
     React: { createElement: (type, props, ...children) => ({ type, props: props || {}, children: children.flat(Infinity) }) },
     openPlanRoute: (...args) => calls.push(args)
   };
