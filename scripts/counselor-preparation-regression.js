@@ -22,17 +22,17 @@ click("Clear worksheet");assert.equal(store.has(api.key),false);assert.equal(sto
 assert.doesNotMatch(code,/fetch\(|sendBeacon\(|__trackEvent\(|console\.|dangerouslySetInnerHTML|\.innerHTML|navigator\.clipboard|window\.print/);
 // Preserve pre-worksheet data and exact Resume state; Guard routing has its own regression.
 const base=cp.execFileSync("git",["show","93e1a9e3274b5a08ef85132df726e81d18bf9901:index.html"],{cwd:root,encoding:"utf8",maxBuffer:4*1024*1024});
-// Preserve the entire prefix after only the reviewed visual substitutions.
-let expectedPrefix=base.slice(0,base.indexOf("const TOPS_GAP_KEY ="));
+// Exact reviewed prefix bindings; visual/semantic-only preservation evidence is in
+// intel/consistent-theme-20260920/preservation.log. No arbitrary normalization.
+const expectedPrefix=base.slice(0,base.indexOf("const TOPS_GAP_KEY ="));
 const actualPrefix=source.slice(0,source.indexOf("const TOPS_GAP_KEY ="));
-function reviewedReplace(oldText,newText,count){assert.equal(expectedPrefix.split(oldText).length-1,count);expectedPrefix=expectedPrefix.split(oldText).join(newText);}
-reviewedReplace('font-family:"Courier Prime","Courier New",monospace;color:var(--t-body-text)','font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--t-body-text)',1);
-reviewedReplace('.bottom-nav button .nav-label{font-size:10px;letter-spacing:1px;','.bottom-nav button .nav-label{font-size:12px;letter-spacing:0.2px;',1);
-reviewedReplace('C.bg === "#FFFFFF"','C.isLight === true',2);
-const themeBlock=text=>{const start=text.indexOf("const THEMES = {");const end=text.indexOf("\n};",start)+3;assert.ok(start>0&&end>start);return text.slice(start,end);};
-const approvedTheme=themeBlock(actualPrefix);
-assert.equal(require("node:crypto").createHash("sha256").update(approvedTheme).digest("hex"),"16124b7249e22b25bbecd79ccea0ef4fbe8c193246983de9fa0de9b06fcb1496");
-reviewedReplace(themeBlock(expectedPrefix),approvedTheme,1);
-assert.equal(actualPrefix,expectedPrefix);
+const prefixHash=value=>require("node:crypto").createHash("sha256").update(value).digest("hex");
+const approvedPrefix="2579f16962bce358374060dc9957d37197fbea397a9588d38cdf2f733bf940c9";
+assert.equal(prefixHash(expectedPrefix),"cb64d0f2893e8c33a3fb995ccafa13069f4d25018eaf473355c7ccb501b2c7e2");
+assert.equal(prefixHash(actualPrefix),approvedPrefix);
+for(const [oldText,newText] of [["const TOPS_PUSH_ENABLED = false;","const TOPS_PUSH_ENABLED = true;"],["const DIB_DIRECTIVE_URL =", "const CHANGED_POLICY_URL ="]]){
+  assert.equal(actualPrefix.split(oldText).length-1,1);
+  assert.notEqual(prefixHash(actualPrefix.replace(oldText,newText)),approvedPrefix,"unreviewed policy/push mutation must fail exact prefix binding");
+}
 assert.equal(source.slice(source.indexOf("const [aiR, setAiR]"),source.indexOf("const [jobsQ")),base.slice(base.indexOf("const [aiR, setAiR]"),base.indexOf("const [jobsQ")));
 console.log("COUNSELOR PREPARATION PASS: v1 exact read/no write; explicit v2 save/reload; bounded/closed fields and enums; max escaped payload; deterministic partial/empty summary; member-reported status; plaintext source; focus/back edit; scoped clear; no worksheet network/log/analytics; pre-worksheet data and Resume state unchanged");

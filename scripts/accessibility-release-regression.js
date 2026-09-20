@@ -404,9 +404,9 @@ const LOCAL_FIXTURE_SCRIPT = String.raw`
   } catch (error) {}
 })();`;
 
-const DOCUMENT_AUDIT = String.raw`((zoomFactor) => {
+const DOCUMENT_AUDIT = String.raw`((zoomFactor, failureLimit = 80) => {
   const failures = [];
-  const push = (message) => { if (failures.length < 80) failures.push(message); };
+  const push = (message) => { if (failures.length < failureLimit) failures.push(message); };
   const styleOf = (element) => getComputedStyle(element);
   const visible = (element) => {
     if (!(element instanceof Element)) return false;
@@ -1168,6 +1168,58 @@ async function run() {
       }
     }
     check(auditedRouteScenarios === SCENARIOS.length * AUDIT_ROUTES.length, "A11Y-NR-05 all configured route scenarios executed", "actual=" + auditedRouteScenarios);
+
+    if (process.env.TOPS_THEME_MATRIX === "1") {
+      const paletteRoutes = ["dashboard", "timeline", "reminders", "readiness", "pathway", "vethub", "critical", "vamath", "vapay", "resources", "taxes", "finalpcs", "navigator", "dd214"];
+      const paletteFailures = [];
+      for (const paletteWidth of [320, 375]) {
+      await client.send("Emulation.setDeviceMetricsOverride", { width: paletteWidth, height: 812, deviceScaleFactor: 1, mobile: true });
+      for (const palette of ["professional", "tactical"]) {
+        await evaluate(client, "localStorage.setItem('tops_theme', " + JSON.stringify(palette) + "); true", false);
+        for (const route of paletteRoutes.concat(["/va-math/", "/bdd-timeline/"])) {
+          const url = origin + (route.startsWith("/") ? route : "/?tool=" + route);
+          await client.send("Page.navigate", { url });
+          await waitForExpression(client, "location.href === " + JSON.stringify(url) + " && document.readyState === 'complete' && document.documentElement.getAttribute('data-tops-theme') === " + JSON.stringify(palette) + " && !document.querySelector('#root .seo-content') && !document.body.innerText.includes('Loading error')", "palette " + palette + " " + route, 12000);
+          await delay(150);
+          const audit = await evaluate(client, DOCUMENT_AUDIT + "(1, 10000)", false);
+          check(audit.failures.length < 10000, "palette audit not truncated " + palette + " " + route);
+          const contrastFailures = audit.failures.filter((failure) => failure.startsWith("text contrast "));
+          const scopedFailures = audit.failures.filter((failure) => !(route.startsWith("/") && ["no visible navigation landmark", "no programmatic status or alert announcement region exists"].includes(failure)));
+          if (scopedFailures.length) paletteFailures.push(paletteWidth + " " + palette + " " + route + ": " + scopedFailures.join(" | "));
+          check(audit.metrics.docWidth <= audit.metrics.clientWidth + 1, "PALETTE no horizontal overflow " + paletteWidth + " " + palette + " " + route, JSON.stringify(audit.metrics));
+          console.log((contrastFailures.length ? "FAIL" : "PASS") + " PALETTE rendered text contrast " + palette + " " + route + " " + contrastFailures.join(" | "));
+          console.log("PALETTE SCOPE text contrast only " + palette + " " + route + " other accessibility findings=" + audit.failures.filter((failure) => !failure.startsWith("text contrast ")).length);
+          console.log("PALETTE OTHER " + JSON.stringify({ width: paletteWidth, theme: palette, route, findings: audit.failures.filter((failure) => !failure.startsWith("text contrast ")) }));
+          if (route === "readiness" || route === "vethub") {
+            if (route === "readiness") {
+              await evaluate(client, "document.querySelector('[role=button][aria-expanded]').focus(); true", false);
+              await dispatchKey(client, "Enter");
+              await waitForExpression(client, "!!document.querySelector('[role=button][aria-expanded=true]')", "readiness keyboard expansion", 3000);
+            }
+            await evaluate(client, "document.querySelector('[role=checkbox]').focus(); true", false);
+            await delay(150);
+            const initiallyChecked = await evaluate(client, "document.activeElement.getAttribute('aria-checked')", false);
+            check(initiallyChecked === "true" || initiallyChecked === "false", route + " checkbox owns keyboard focus");
+            await dispatchKey(client, " ");
+            await waitForExpression(client, "document.activeElement.getAttribute('aria-checked') === " + JSON.stringify(initiallyChecked === "true" ? "false" : "true"), route + " Space toggles item", 3000);
+            await delay(150);
+            const expanded = await evaluate(client, DOCUMENT_AUDIT + "(1, 10000)", false);
+            if (expanded.failures.length) paletteFailures.push(paletteWidth + " " + palette + " " + route + " checked/expanded: " + expanded.failures.join(" | "));
+            await dispatchKey(client, " ");
+            await waitForExpression(client, "document.activeElement.getAttribute('aria-checked') === " + JSON.stringify(initiallyChecked), route + " Space restores initial item state", 3000);
+            console.log("PASS keyboard expand/toggle/reverse " + paletteWidth + " " + palette + " " + route);
+          }
+          if (process.env.TOPS_THEME_EVIDENCE_DIR && ["dashboard", "navigator", "vamath", "/bdd-timeline/"].includes(route)) {
+            const shot = await client.send("Page.captureScreenshot", { format: "png" });
+            fs.mkdirSync(process.env.TOPS_THEME_EVIDENCE_DIR, { recursive: true });
+            fs.writeFileSync(path.join(process.env.TOPS_THEME_EVIDENCE_DIR, paletteWidth + "-" + palette + "-" + route.replaceAll("/", "") + ".png"), Buffer.from(shot.data, "base64"));
+          }
+        }
+      }
+      }
+      await evaluate(client, "localStorage.setItem('tops_theme', 'professional'); true", false);
+      check(paletteFailures.length === 0, "all app routes pass full rendered audit; static guides omit inapplicable navigation/live-status requirements", paletteFailures.join("\n"));
+    }
 
     await client.send("Emulation.setDeviceMetricsOverride", {
       width: 375,
