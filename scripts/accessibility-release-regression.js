@@ -1181,6 +1181,20 @@ async function run() {
           await client.send("Page.navigate", { url });
           await waitForExpression(client, "location.href === " + JSON.stringify(url) + " && document.readyState === 'complete' && document.documentElement.getAttribute('data-tops-theme') === " + JSON.stringify(palette) + " && !document.querySelector('#root .seo-content') && !document.body.innerText.includes('Loading error')", "palette " + palette + " " + route, 12000);
           await delay(150);
+          if (!route.startsWith("/")) {
+            const structure = await evaluate(client, `(() => {
+              const mains = [...document.querySelectorAll('main')].filter(e => e.getClientRects().length);
+              const main = mains[0];
+              const heading = [...document.querySelectorAll('div')].find(e => e.childElementCount === 0 && e.textContent === 'VA COMBINED RATING');
+              const ask = document.querySelector('.tops-ask-launcher');
+              return { mains: mains.length, nested: !!document.querySelector('main main'), contentLength: main ? main.innerText.length : 0,
+                vaFormInside: !!(main && main.contains(document.querySelector('#vaCondName'))),
+                headingGap: heading && ask ? heading.getBoundingClientRect().top - ask.getBoundingClientRect().bottom : null };
+            })()`, false);
+            check(structure.mains === 1 && !structure.nested && structure.contentLength > 30, 'active tool belongs to one main ' + paletteWidth + ' ' + palette + ' ' + route, JSON.stringify(structure));
+            if (route === 'vamath') check(structure.vaFormInside && structure.headingGap >= 8 && structure.headingGap <= 24, 'VA Math form in main and no empty spacer ' + paletteWidth + ' ' + palette, JSON.stringify(structure));
+            console.log('TOOL STRUCTURE ' + JSON.stringify({width: paletteWidth, theme: palette, route, ...structure}));
+          }
           const audit = await evaluate(client, DOCUMENT_AUDIT + "(1, 10000)", false);
           check(audit.failures.length < 10000, "palette audit not truncated " + palette + " " + route);
           const contrastFailures = audit.failures.filter((failure) => failure.startsWith("text contrast "));
@@ -1208,6 +1222,21 @@ async function run() {
             await dispatchKey(client, " ");
             await waitForExpression(client, "document.activeElement.getAttribute('aria-checked') === " + JSON.stringify(initiallyChecked), route + " Space restores initial item state", 3000);
             console.log("PASS keyboard expand/toggle/reverse " + paletteWidth + " " + palette + " " + route);
+          }
+          if (route === 'dashboard') {
+            const savedDates = await evaluate(client, "(() => { const previous = [localStorage.getItem('etsDate'), localStorage.getItem('tops_sep_date')]; const date = new Date(); date.setMonth(date.getMonth() + 6); const value = date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0'); localStorage.setItem('etsDate',value); localStorage.setItem('tops_sep_date',value); return previous; })()", false);
+            await client.send('Page.navigate', {url});
+            await waitForExpression(client, "!!document.querySelector('#tops-home-next-action')", 'seeded Home action', 3000);
+            await evaluate(client, "document.querySelector('#tops-home-next-action').focus(); true", false);
+            await dispatchKey(client, 'Enter');
+            await waitForExpression(client, "!!document.querySelector('main #tops-focused-title') && document.activeElement.id === 'tops-focused-title'", 'Home opens focused reminder inside main and completes scheduled focus', 3000);
+            const focused = await evaluate(client, "({count: document.querySelectorAll('main').length, nested: !!document.querySelector('main main'), ownsFocus: document.activeElement.id === 'tops-focused-title'})", false);
+            check(focused.count === 1 && !focused.nested && focused.ownsFocus, 'focused reminder has one main and heading focus ' + paletteWidth + ' ' + palette, JSON.stringify(focused));
+            const focusedAudit = await evaluate(client, DOCUMENT_AUDIT + '(1, 10000)', false);
+            check(focusedAudit.failures.length === 0, 'focused reminder full audit ' + paletteWidth + ' ' + palette, focusedAudit.failures.join(' | '));
+            await evaluate(client, "['etsDate','tops_sep_date'].forEach((key,index) => { const value = " + JSON.stringify(savedDates) + "[index]; if(value === null) localStorage.removeItem(key); else localStorage.setItem(key,value); }); true", false);
+            await client.send('Page.navigate', {url});
+            await waitForExpression(client, "location.href === " + JSON.stringify(url) + " && document.readyState === 'complete' && !!document.querySelector('main.content-area') && !document.querySelector('#tops-focused-title')", 'return Home for screenshot', 3000);
           }
           if (process.env.TOPS_THEME_EVIDENCE_DIR && ["dashboard", "navigator", "vamath", "/bdd-timeline/"].includes(route)) {
             const shot = await client.send("Page.captureScreenshot", { format: "png" });
