@@ -7640,7 +7640,7 @@ function App() {
       fontSize: 10,
       letterSpacing: 1
     }
-  }, theme === "tactical" ? "\u263D" : "\u2600", " ", theme === "tactical" ? "Light" : "Dark"), activeTab !== "dashboard" && /*#__PURE__*/React.createElement("button", {
+  }, theme === "tactical" ? "\u263D" : "\u2600", " ", theme === "tactical" ? "Light" : "Dark"), activeTab !== "dashboard" && !["vamath","vapay","vethub","resources","taxes","dd214","finalpcs"].includes(activeTab) && /*#__PURE__*/React.createElement("button", {
     onClick: () => { setActiveTab("dashboard"); window.scrollTo(0, 0); },
     "aria-label": "Go to home screen",
     style: {
@@ -7819,18 +7819,6 @@ function App() {
       fontSize: 13
     }
   }, "All alerts acknowledged."))),
-
-  // Secondary tab sub-header (shows only when on VET HUB, Resources, Tax Intel, DD214)
-  ["vamath","vapay","vethub","resources","taxes","dd214","finalpcs"].includes(activeTab) && /*#__PURE__*/React.createElement("div", {
-    style: { display: "flex", alignItems: "center", gap: 10, padding: "8px 14px", background: C.bgCard, borderBottom: "1px solid " + C.border, position: "sticky", top: 76, zIndex: 50 }
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: function() { setActiveTab("dashboard"); },
-    style: { background: "none", border: "1px solid " + C.border, borderRadius: 4, color: C.textSecondary, fontSize: 11, padding: "10px 14px", cursor: "pointer", fontFamily: "'Oswald', sans-serif", letterSpacing: 1 }
-  }, "\u2190 HOME"), /*#__PURE__*/React.createElement("div", {
-    style: { flex: 1, display: "flex", gap: 4, overflowX: "auto", WebkitOverflowScrolling: "touch" }
-  }, [{id:"vamath",label:"VA MATH"},{id:"vapay",label:"VA PAY"},{id:"finalpcs",label:"FINAL PCS"},{id:"vethub",label:"VET HUB"},{id:"resources",label:"RESOURCES"},{id:"taxes",label:"TAX INTEL"},{id:"dd214",label:"DD214"}].map(function(t) {
-    return React.createElement("button", { key: t.id, onClick: function() { setActiveTab(t.id); setSelectedMilestone(null); }, style: { padding: "10px 12px", background: activeTab === t.id ? C.border : "transparent", border: "none", borderBottom: activeTab === t.id ? "2px solid " + C.gold : "2px solid transparent", color: activeTab === t.id ? C.textPrimary : C.inactive, fontFamily: "'Oswald', sans-serif", fontSize: 11, letterSpacing: 1.5, cursor: "pointer", whiteSpace: "nowrap" } }, t.label);
-  }))),
 
   /*#__PURE__*/React.createElement(activeTab === "reminders" && focusedReminderId ? "div" : "main", {
     className: "content-area",
@@ -15291,7 +15279,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       color: C.inactive,
       marginTop: 2
     }
-  }, tool.desc))))))),
+  }, tool.desc)))))),
 
   // ═══════════ SMART REMINDER ENGINE TAB ═══════════
   activeTab === "reminders" && /*#__PURE__*/React.createElement("div", null, (function() {
@@ -16166,7 +16154,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         React.createElement("div",{style:{fontSize:13,color:C.inactive,marginTop:8,lineHeight:1.6}},"Your personalized Final PCS entitlements will populate automatically.")
       )
     );
-  })()),
+  })())),
 
   /*#__PURE__*/React.createElement("div", {
     style: {
