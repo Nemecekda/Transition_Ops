@@ -274,45 +274,22 @@ jobs:
               notes.append(s)
               print(f"::warning::{s}")
 
-          # ---- extract the model's JSON out of the CLI envelope ----------
-          raw = open("out/analysis-result.json").read()
-          def find_obj(text):
-              try:
-                  return json.loads(text)
-              except Exception:
-                  pass
-              i = text.find("{")
-              while i != -1:
-                  depth, j = 0, i
-                  while j < len(text):
-                      if text[j] == "{": depth += 1
-                      elif text[j] == "}":
-                          depth -= 1
-                          if depth == 0:
-                              try:
-                                  return json.loads(text[i:j+1])
-                              except Exception:
-                                  break
-                      j += 1
-                  i = text.find("{", i + 1)
-              return None
-
-          env = find_obj(raw)
-          payload = None
-          if isinstance(env, dict) and "findings" in env:
-              payload = env
-          elif isinstance(env, dict):
-              payload = find_obj(str(env.get("result", "")))
-          if not isinstance(payload, dict) or "findings" not in payload:
-              note("model output did not contain a parseable findings object; "
-                   "treating this run as ZERO findings and reporting the parse failure. "
-                   "Nothing is being inferred from an unreadable response.")
-              payload = {"findings": [], "coverage_note": "UNPARSEABLE MODEL OUTPUT", "j1_issues_consumed": []}
-
-          findings = payload.get("findings") or []
-          if not isinstance(findings, list):
-              note("findings was not a list; treated as empty")
-              findings = []
+          # Decode only the complete response contract; quoted braces are data.
+          import runpy
+          contract = runpy.run_path(".github/scripts/j2-analysis-contract.py")
+          payload, receipt = contract["load_analysis"]("out/analysis-result.json", "out/j1-index.json")
+          json.dump(receipt, open("out/analysis-parse.json", "w"), indent=2)
+          if payload is None:
+              note("analysis response rejected (" + receipt["reason"] + "); "
+                   "ZERO accepted coverage. Gathered inputs are reported separately. "
+                   "See the content-free analysis-parse.json receipt and retained run evidence.")
+              payload = {"findings": [], "coverage_note": "ANALYSIS RESPONSE REJECTED", "j1_issues_consumed": []}
+          elif receipt["format"] == "json_fence":
+              note("model used a JSON code fence contrary to the prompt; "
+                   "the complete enclosed object passed the response contract. No inner object was salvaged.")
+          if receipt["status"] == "accepted" and receipt["accepted_count"] < receipt["gathered_count"]:
+              note("accepted model coverage omits gathered J1 inputs; omitted inputs remain unchecked.")
+          findings = payload["findings"]
 
           app_lines = {}
           if os.path.exists("out/app-figures.txt"):
@@ -452,6 +429,7 @@ jobs:
                      "n1_used": used, "n1_budget": budget,
                      "n1_downgraded": downgraded_by_n1,
                      "notes": notes,
+                     "analysis_parse": receipt,
                      "coverage_note": payload.get("coverage_note", ""),
                      "j1_issues_consumed": payload.get("j1_issues_consumed", [])},
                     open("out/decisions.json", "w"), indent=2)
@@ -705,11 +683,15 @@ jobs:
                   if eyes_note:
                       parts.append(f"{len(eyes_note)} control failure(s)")
                   fh.write(f"{n_eyes} item(s) may need your eyes: {', '.join(parts)}.\n\n")
-              fh.write(f"J2 weekly analysis pass. Run {os.environ['RUN_ID']}.\n\n")
+              fh.write(f"J2 weekly analysis report. Run {os.environ['RUN_ID']}.\n\n")
               fh.write("CORRELATION ONLY. Nothing here is rated. A scheduled job has only ladder\n"
                        "rung 1, so every rating it could emit would be premature. Rating is\n"
                        "s2-intel work in an interactive session; the ship decision is Dean's.\n\n")
-              fh.write(f"COVERAGE  {len(d['j1_issues_consumed'])} J1 issue(s) consumed · "
+              parse = d["analysis_parse"]
+              gathered = parse["gathered_count"]
+              fh.write(f"INPUTS  {gathered if gathered is not None else 'unknown'} J1 issue(s) gathered. "
+                       f"ANALYSIS  {parse['status']} ({parse['reason']}); format {parse['format'] or 'unavailable'}.\n\n")
+              fh.write(f"COVERAGE  {len(d['j1_issues_consumed'])} J1 issue(s) accepted from model-reported coverage · "
                        f"{len(by('CORRELATED'))} correlated · {len(by('DIVERGENT'))} divergent · "
                        f"{len(by('NEEDS-LADDER'))} need the ladder · "
                        f"{len(by('NO-APP-EXPOSURE'))} no app exposure\n\n")
