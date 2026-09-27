@@ -1839,3 +1839,13 @@ A4 cost: NOTHING established.
 EXPIRES: NONE identified.
 
 Implementation evidence is separate from these external-source records. These entries do not verify persistence, privacy, employer-plan usability, production availability, retention or job placement. Member-entered status is not an official submission or receipt.
+
+## PG-DD214-20260927 - Edition-aware DD214 review fields
+
+CONFIRMED | 2026-09-27 | S2 dd214_verify | Primary-source direct review.
+Sources: https://www.dol.gov/node/178814 and https://www.archives.gov/personnel-records-center/dd-214
+Claim: DD214 field numbering varies by edition; service dates/totals, specialty, awards, education, remarks, characterization and separation-code fields must be identified by their names on the member's copy. DOL's comparison distinguishes current-period net active service from prior active service. NARA lists relevant service-record categories but does not establish every skill, achievement or current credential.
+App disposition: replace the fixed-number checklist with neutral field-name prompts and a linked DOL edition comparison. Remove the incorrect legacy 12d label and unsupported highest-rank/every-award/all-schools-and-certifications/Honorable-only instructions. No new eligibility, correction-process or benefits claim.
+Member action: review the named fields against service records, then manually select only relevant career entries for the separate career-notes worksheet flow.
+Scope: DD214 page checklist and career-record context only; neighboring BDD, executive-order and Reserve-office text was not re-verified by this entry. DoDI PDF returned 403 and was not used as evidence.
+Evidence: [source review](personal-guide-20260927/dd214-source-review.md). Implementation and release gates remain separate; no production publication implied.
