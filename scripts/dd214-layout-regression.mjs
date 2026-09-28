@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import { careerPageLayout } from '../vendor/dd214-reader.mjs';
-const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8'),ctx={};vm.createContext(ctx);vm.runInContext(html.slice(html.indexOf('function topsCareerSensitive('),html.indexOf('function topsCareerEvidence('))+'this.extract=topsCareerExcerptCandidates;',ctx);
+const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8'),ctx={};vm.createContext(ctx);vm.runInContext(html.slice(html.indexOf('function topsCareerSensitive('),html.indexOf('function topsCheckedCareerAnalysis('))+'this.extract=topsCareerExcerptCandidates;this.automatic=topsAutomaticCareerEvidence;this.evidence=topsCareerEvidence;',ctx);
 const word=(text,x,y,w=340)=>({text,bbox:{x0:x,y0:y,x1:x+w,y1:y+20},confidence:95});
 const lines=[word('11. PRIMARY SPECIALTY',20,20),word('7Z9X SYNTHETIC SYSTEMS MAINTENANCE',20,50),word('Maintained test equipment and completed training checks',20,80),word('13. AWARDS',20,140),word('14. MILITARY EDUCATION',520,140),word('SYNTHETIC TEAM RECOGNITION',20,170),word('SYNTHETIC SYSTEMS COURSE',520,170),word('Unit achievement entry',20,200),word('Eight-week classroom program',520,200),word('15. OTHER FIELD',20,260),word('16. OTHER FIELD',520,260),word('Do not include this unrelated entry',20,290)];
 const layout=careerPageLayout(lines.map(w=>({words:[w]})),1000,1000),raw='RAW SYNTHETIC WORD ORDER UNCHANGED',page={number:1,text:raw,method:'ocr',layout};
@@ -30,3 +30,17 @@ const rawOnly='PRIMARY SPECIALTY\nSYNTHETIC equipment maintenance course\nMILITA
 const rawPage={number:2,method:'ocr',text:rawOnly};const rawFound=ctx.extract([rawPage]);assert.equal(rawFound.rows.length,1);assert.equal(rawFound.rows[0].text,'SYNTHETIC equipment maintenance course');assert.equal(rawFound.rows[0].page,2);assert.equal(rawPage.text,rawOnly);
 assert.equal(ctx.extract([{...rawPage,text:'PRIMARY SPECIALTY\nMILITARY EDUCATION\n11'}]).rows.length,0);
 console.log('LAYOUT PASS uncertain-page reliable line recovery; no skew/gutter/PII line; bounded raw-line fallback; no joining, rewriting or preselection');
+
+const damagedAwards=careerPageLayout([{words:[word('13. AWARDS',20,100),word('OVERLAP',30,100)]},{words:[word('14. MILITARY EDUCATION',520,100)]},{words:[word('NAME PRIVATE',20,140),word('MIXED AWARD',30,140)]},{words:[word('SYNTHETIC SYSTEMS COURSE',520,140)]},{words:[word('Eight-week classroom program',520,170)]}],1000,1000);
+const auto=ctx.automatic([{number:1,method:'ocr',text:'RAW PRIVATE',layout:damagedAwards}],'');assert.equal(auto.excerpts.length,1);assert.equal(auto.excerpts[0].text,'SYNTHETIC SYSTEMS COURSE Eight-week classroom program');assert.ok(!JSON.stringify(auto).includes('PRIVATE'));
+assert.equal(ctx.automatic([{number:1,method:'ocr',text:rawOnly}]),null);
+assert.equal(ctx.automatic([{number:1,method:'ocr',text:rawOnly,layout:{...damagedAwards,incomplete:true}}]),null);
+const low=structuredClone(damagedAwards);low.lines.find(l=>l.words[0].text==='SYNTHETIC SYSTEMS COURSE').words[0].confidence=60;assert.equal(ctx.automatic([{...page,layout:low}]),null);
+const overlap=structuredClone(damagedAwards);overlap.lines.find(l=>l.words[0].text==='SYNTHETIC SYSTEMS COURSE').uncertain=true;overlap.lines.find(l=>l.words[0].text==='SYNTHETIC SYSTEMS COURSE').splitSafe=false;assert.equal(ctx.automatic([{...page,layout:overlap}]),null);
+assert.equal(ctx.automatic([{...page,layout:simple(['13. AWARDS','SYNTHETIC EQUIPMENT AWARD'])}]),null);
+assert.equal(ctx.automatic([{...page,layout:simple(['14. MILITARY EDUCATION','NAME SYNTHETIC INSTRUCTOR COURSE'])}]),null);
+console.log('AUTOMATIC PASS isolated training survives uncertain awards column; unknown/incomplete/low-confidence/overlapping/identity/awards excluded; no generic raw fallback auto-send');
+const joinedRows=careerPageLayout([{words:[word('13. AWARDS',20,100,180),word('OVERLAP',30,100,180),word('14. MILITARY EDUCATION',520,100)]},{words:[word('NAME PRIVATE',20,140,180),word('MIXED AWARD',30,140,180),word('SYNTHETIC SYSTEMS COURSE',520,140)]},{words:[word('Eight-week classroom program',520,170)]}],1000,1000);
+assert.equal(joinedRows.uncertain,true);assert.equal(ctx.automatic([{...page,layout:joinedRows}]).excerpts[0].text,'SYNTHETIC SYSTEMS COURSE Eight-week classroom program');
+const skewedRows=careerPageLayout([{words:[word('14. MILITARY EDUCATION',520,100)],skewed:true},{words:[word('SYNTHETIC SYSTEMS COURSE',520,140)]}],1000,1000);assert.equal(ctx.automatic([{...page,layout:skewedRows}]),null);
+console.log('AUTOMATIC PASS OCR same-line merged columns split only at geometric gutter; overlap excluded per run; skewed header never sent');

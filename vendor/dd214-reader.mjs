@@ -4,24 +4,24 @@ const BASE = new URL('./', import.meta.url);
 const asset = path => new URL(path, BASE).href;
 const fail = code => Object.assign(new Error(code), { code });
 export function careerPageLayout(lines, width, height) {
-  const result = { lines: [], uncertain: false, width, height };
-  if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0 || !Array.isArray(lines)) return { ...result, uncertain:true };
+  const result = { lines: [], uncertain: false, incomplete: false, width, height };
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0 || !Array.isArray(lines)) return { ...result, uncertain:true, incomplete:true };
   let count = 0;
   for (const line of lines) {
     let uncertain = !!line.skewed;
     const words = [];
     for (const word of line.words || []) {
-      if (count >= 3000) { uncertain = true; break; }
+      if (count >= 3000) { uncertain = true; result.incomplete = true; break; }
       const b = word.bbox;
       count++;
-      if (typeof word.text !== 'string' || !b || ![b.x0,b.y0,b.x1,b.y1].every(Number.isFinite) || b.x0 < 0 || b.y0 < 0 || b.x1 > width + 2 || b.y1 > height + 2 || b.x1 <= b.x0 || b.y1 <= b.y0) { uncertain = true; continue; }
+      if (typeof word.text !== 'string' || !b || ![b.x0,b.y0,b.x1,b.y1].every(Number.isFinite) || b.x0 < 0 || b.y0 < 0 || b.x1 > width + 2 || b.y1 > height + 2 || b.x1 <= b.x0 || b.y1 <= b.y0) { uncertain = true; result.incomplete = true; continue; }
       words.push({ text: word.text, bbox: { ...b }, confidence: Number.isFinite(word.confidence) ? word.confidence : null });
     }
     words.sort((a,b) => a.bbox.x0 - b.bbox.x0);
     if (words.some((w,i) => i && w.bbox.x0 < words[i-1].bbox.x1 - 2)) uncertain = true;
     if (uncertain) result.uncertain = true;
-    if (words.length) result.lines.push({ words, uncertain });
-    if (count >= 3000) { result.uncertain = true; break; }
+    if (words.length) result.lines.push({ words, uncertain, splitSafe: !line.skewed && !result.incomplete });
+    if (count >= 3000) { result.uncertain = true; result.incomplete = true; break; }
   }
   if (!result.lines.length) result.uncertain = true;
   return result;
