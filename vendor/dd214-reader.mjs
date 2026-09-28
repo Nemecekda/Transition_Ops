@@ -3,6 +3,44 @@
 const BASE = new URL('./', import.meta.url);
 const asset = path => new URL(path, BASE).href;
 const fail = code => Object.assign(new Error(code), { code });
+export function careerPageLayout(lines, width, height) {
+  const result = { lines: [], uncertain: false, width, height };
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0 || !Array.isArray(lines)) return { ...result, uncertain:true };
+  let count = 0;
+  for (const line of lines) {
+    if (line.skewed) result.uncertain = true;
+    const words = [];
+    for (const word of line.words || []) {
+      if (count >= 3000) { result.uncertain = true; break; }
+      const b = word.bbox;
+      count++;
+      if (typeof word.text !== 'string' || !b || ![b.x0,b.y0,b.x1,b.y1].every(Number.isFinite) || b.x0 < 0 || b.y0 < 0 || b.x1 > width + 2 || b.y1 > height + 2 || b.x1 <= b.x0 || b.y1 <= b.y0) { result.uncertain = true; continue; }
+      words.push({ text: word.text, bbox: { ...b }, confidence: Number.isFinite(word.confidence) ? word.confidence : null });
+    }
+    words.sort((a,b) => a.bbox.x0 - b.bbox.x0);
+    if (words.some((w,i) => i && w.bbox.x0 < words[i-1].bbox.x1 - 2)) result.uncertain = true;
+    if (words.length) result.lines.push({ words });
+    if (count >= 3000) { result.uncertain = true; break; }
+  }
+  if (!result.lines.length) result.uncertain = true;
+  return result;
+}
+function ocrLayout(result, width, height) {
+  const lines = (result.blocks || []).flatMap(b => (b.paragraphs || []).flatMap(p => p.lines || []));
+  return careerPageLayout(lines.map(line => ({ words: line.words, skewed: !!line.baseline && Math.abs(line.baseline.y1-line.baseline.y0) > Math.max(3, Math.abs(line.baseline.x1-line.baseline.x0)*0.08) })), width, height);
+}
+function pdfLayout(items, width, height) {
+  const lines = [];
+  for (const item of items) {
+    if (typeof item.str !== 'string' || !item.str.trim()) continue;
+    const t = item.transform, h = Math.abs(item.height || t[3]);
+    const word = { text: item.str, bbox: { x0:t[4], y0:height-t[5]-h, x1:t[4]+item.width, y1:height-t[5] }, confidence:null };
+    let line = lines.find(l => Math.abs(l.y-word.bbox.y0) < Math.max(2,h*0.4));
+    if (!line) { line={ y:word.bbox.y0, words:[], skewed:false }; lines.push(line); }
+    line.words.push(word); if (Math.abs(t[1]) > 0.1 || Math.abs(t[2]) > 0.1) line.skewed=true;
+  }
+  return careerPageLayout(lines, width, height);
+}
 function imageDimensions(bytes, png) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   if (png && bytes.length >= 24) return [view.getUint32(16), view.getUint32(20)];
@@ -40,11 +78,12 @@ export async function readCareerDocument(file, { signal, onProgress } = {}) {
   const abort = () => stop('CANCELLED');
   const wait = promise => { if (stopped) throw fail(signal?.aborted ? 'CANCELLED' : 'TIMEOUT'); return Promise.race([promise, stopPromise]); };
   const progress = value => { if (!stopped && typeof onProgress === 'function') { try { onProgress(value); } catch {} } };
-  const append = (number, text, method, confidence) => {
+  const append = (number, text, method, confidence, layout) => {
     text = text.replace(/\u0000/g, '').trim();
     total += text.length;
     if (text.length > 15000 || total > 40000) throw fail('TEXT_TOO_LONG');
-    pages.push({ number, text, method, confidence });
+    pages.push({ number, text, method, confidence, layout });
+    if (layout?.uncertain) warnings.push('LAYOUT_UNCERTAIN:' + number);
     if (!text) warnings.push('PAGE_NO_TEXT:' + number);
     if (method === 'ocr' && (confidence === null || confidence < 70)) warnings.push('LOW_OCR_CONFIDENCE:' + number);
   };
@@ -67,7 +106,7 @@ export async function readCareerDocument(file, { signal, onProgress } = {}) {
       await job('loadLanguage', { langs: 'eng', options: { langPath: asset('tesseract/'), cacheMethod: 'none', gzip: true, lstmOnly: true } });
       await job('initialize', { langs: 'eng', oem: 1, config: {} });
     }
-    return job('recognize', { image: bytes, options: {}, output: { text: true } });
+    return job('recognize', { image: bytes, options: {}, output: { text: true, blocks: true } });
   };
   const canvasBytes = async () => {
     const blob = await wait(new Promise(resolve => canvas.toBlob(resolve, 'image/png')));
@@ -99,16 +138,16 @@ export async function readCareerDocument(file, { signal, onProgress } = {}) {
         const ops = await wait(page.getOperatorList());
         const hasImages = ops.fnArray.some(fn => [lib.OPS.paintImageXObject, lib.OPS.paintInlineImageXObject, lib.OPS.paintImageMaskXObject, lib.OPS.paintImageXObjectRepeat].includes(fn));
         // A partial text layer/header must never hide a scanned body.
-        if (!hasImages && (text.match(/[A-Za-z0-9]/g) || []).length >= 40) append(number, text, 'text', null);
+        const natural = page.getViewport({ scale: 1 });
+        if (!hasImages && (text.match(/[A-Za-z0-9]/g) || []).length >= 40) append(number, text, 'text', null, pdfLayout(content.items, natural.width, natural.height));
         else {
-          const natural = page.getViewport({ scale: 1 });
           const scale = Math.min(2.5, Math.sqrt(3000000 / (natural.width * natural.height)));
           const viewport = page.getViewport({ scale });
           canvas = document.createElement('canvas'); canvas.width = Math.max(1, Math.floor(viewport.width)); canvas.height = Math.max(1, Math.floor(viewport.height));
           render = page.render({ canvasContext: canvas.getContext('2d'), viewport, annotationMode: lib.AnnotationMode.DISABLE });
           await wait(render.promise); render = null;
           const result = await ocr(await canvasBytes());
-          append(number, result.text || '', 'ocr', Number.isFinite(result.confidence) ? result.confidence : null);
+          append(number, result.text || '', 'ocr', Number.isFinite(result.confidence) ? result.confidence : null, ocrLayout(result, canvas.width, canvas.height));
           warnings.push('VERIFY_OCR_PAGE:' + number);
           canvas.width = 0; canvas.height = 0; canvas = null;
         }
@@ -125,7 +164,7 @@ export async function readCareerDocument(file, { signal, onProgress } = {}) {
       canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
       bitmap.close(); bitmap = null;
       const result = await ocr(await canvasBytes());
-      append(1, result.text || '', 'ocr', Number.isFinite(result.confidence) ? result.confidence : null);
+      append(1, result.text || '', 'ocr', Number.isFinite(result.confidence) ? result.confidence : null, ocrLayout(result, canvas.width, canvas.height));
     }
     return { pages, warnings };
   } catch (error) {

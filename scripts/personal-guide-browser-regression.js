@@ -35,6 +35,8 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
  await ev('document.getElementById("tops-guide-details").open=true');
  await c.send("Emulation.setDeviceMetricsOverride",{width:320,height:900,deviceScaleFactor:1,mobile:true});
  // Native keyboard opens/closes the guide disclosure and moves to its labelled select.
+ // Let the scheduled worksheet-to-Home return-focus frame finish before this independent keyboard scenario.
+ await ev('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
  await ev('document.querySelector("#tops-guide-details > summary").focus()');
  console.log("KEYBOARD BEFORE",await ev('({active:document.activeElement.outerHTML,open:document.getElementById("tops-guide-details").open,dialogs:Array.from(document.querySelectorAll("[role=dialog]")).map(n=>n.textContent.slice(0,80))})'));
  await c.send("Input.dispatchKeyEvent",{type:"keyDown",key:"Enter",code:"Enter",text:"\r",unmodifiedText:"\r",windowsVirtualKeyCode:13,nativeVirtualKeyCode:13});await c.send("Input.dispatchKeyEvent",{type:"keyUp",key:"Enter",code:"Enter",windowsVirtualKeyCode:13,nativeVirtualKeyCode:13});
