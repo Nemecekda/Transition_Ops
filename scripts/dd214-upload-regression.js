@@ -1,8 +1,14 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),code=fs.readFileSync(path.join(root,'netlify/functions/navigator.mjs'),'utf8'),copy=x=>JSON.parse(JSON.stringify(x));
-const c={};vm.createContext(c);vm.runInContext(html.slice(html.indexOf('const TOPS_GAP_KEY ='),html.indexOf('function CareerGapWorksheet('))+html.slice(html.indexOf('function topsBackupShape('),html.indexOf('function topsBackupReminderIds('))+html.split('// DD214_UPLOAD_START\n')[1].split('// DD214_UPLOAD_END')[0]+'\nthis.a={gap:topsEmptyGap,extract:topsCareerExcerptCandidates,evidence:topsCareerEvidence,check:topsCheckedCareerAnalysis,preview:topsUploadWorksheetPreview};',c);const a=c.a;
+const c={};vm.createContext(c);vm.runInContext(html.slice(html.indexOf('const TOPS_GAP_KEY ='),html.indexOf('function CareerGapWorksheet('))+html.slice(html.indexOf('function topsBackupShape('),html.indexOf('function topsBackupReminderIds('))+html.split('// DD214_UPLOAD_START\n')[1].split('// DD214_UPLOAD_END')[0]+'\nthis.a={gap:topsEmptyGap,extract:topsCareerExcerptCandidates,evidence:topsCareerEvidence,check:topsCheckedCareerAnalysis,preview:topsUploadWorksheetPreview,experience:topsReviewedExperience};',c);const a=c.a;
 const evidence={target:'Mechanic',excerpts:[{id:'E1',text:'PRIMARY SPECIALTY Aircraft maintenance training',page:1,method:'text'}]},candidate={aspect:'technical',skill:'Equipment inspection',evidenceIds:['E1'],question:'What equipment did you personally inspect?'},result={candidates:[candidate]};
+assert.ok(a.experience(candidate,evidence,'yes','Equipment inspection','I checked assigned equipment'));
+assert.equal(a.experience(candidate,evidence,'no','Equipment inspection','I checked assigned equipment'),null);
+assert.equal(a.experience(candidate,evidence,'yes','Equipment inspection',''),null);
+assert.equal(a.experience(candidate,evidence,'some','Equipment inspection','I checked assigned equipment'),null);
+assert.ok(a.experience(candidate,evidence,'some','Checking assigned tools','I checked assigned equipment'));
+assert.equal(a.experience({...candidate,evidenceIds:['E9']},evidence,'yes','Checking tools','I checked assigned equipment'),null);
 const layoutPage=text=>({number:1,method:'text',text,layout:{width:1000,height:1000,uncertain:false,lines:text.split('\n').map((t,i)=>({words:[{text:t,bbox:{x0:20,y0:20+i*30,x1:800,y1:40+i*30}}]}))}});
 assert.equal(a.extract([layoutPage('NAME PRIVATE_SYNTHETIC\nPRIMARY SPECIALTY Aircraft maintenance training\nSSN 123-45-6789\nNAME HIDDEN')]).rows.length,0);
 assert.equal(a.extract([layoutPage('PRIMARY SPECIALTY: Aircraft maintenance training')]).rows.length,1);
