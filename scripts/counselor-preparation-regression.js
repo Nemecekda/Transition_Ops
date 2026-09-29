@@ -1,7 +1,7 @@
 "use strict";
 const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path"),vm=require("node:vm"),cp=require("node:child_process");
 const root=path.resolve(__dirname,"..");const source=fs.readFileSync(path.join(root,"index.html"),"utf8");
-const code=source.slice(source.indexOf("const TOPS_GAP_KEY ="),source.indexOf("\nfunction App() {"));
+const code=source.slice(source.indexOf("const TOPS_GAP_KEY ="),source.indexOf("// DD214_UPLOAD_START"));
 const store=new Map([["unrelated","retained"]]);let writes=0,show=false,focus="",state;
 const ctx={window:{__IS_IFRAME:false,__safeSet(k,v){writes++;store.set(k,v);}},localStorage:{getItem:k=>store.get(k)||null,removeItem:k=>store.delete(k)},useState:()=>[show,v=>{show=v;}],useEffect:f=>f(),document:{getElementById:id=>({focus(){focus=id;}})},React:{createElement:(type,props,...children)=>({type,props:props||{},children:children.flat(Infinity)})}};
 vm.runInNewContext(code+'\nthis.api={empty:topsEmptyGap,validate:topsValidateGap,load:topsLoadGap,save:topsSaveGap,clear:topsClearGap,render:CareerGapWorksheet,key:TOPS_GAP_KEY};',ctx);const api=ctx.api;

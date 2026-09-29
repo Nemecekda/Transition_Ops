@@ -5988,6 +5988,230 @@ function CareerGapWorksheet(props) {
 }
 
 
+// DD214_UPLOAD_START
+function topsCareerSensitive(text) { return /\b\d{3}[- ]?\d{2}[- ]?\d{4}\b|\b(?:social security|ssn|date of birth|birth date|discharge|character of service|separation code|reentry code|medical|home address)\b|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(text); }
+function topsCareerExcerptCandidates(pages, automaticOnly) {
+  var result = [], omitted = 0, headings = 0, uncertain = 0;
+  var label = /^(?:\d{1,2}[a-z]?[.)]?\s*)?(PRIMARY SPECIALT(?:Y|IES)|MILITARY SPECIALT(?:Y|IES)|SPECIALT(?:Y|IES)|MILITARY EDUCATION|UNIFORMED SERVICE EDUCATION|SERVICE EDUCATION|EDUCATION(?: AND TRAINING)?|TRAINING|DECORATIONS AND AWARDS|DECORATIONS(?:,? MEDALS,? BADGES,? CITATIONS AND CAMPAIGN RIBBONS AWARDED)?|AWARDS)(?=\s|[:.-]|$)(?:\s*[:.-]?\s*)/i;
+  function headerMatch(text) { var match = text.match(label); if (!match) return null; var rest = text.slice(match[0].length).trim(), numbered = /^\d{1,2}[a-z]?[.)]?\s/.test(text), colon = text.indexOf(":") >= 0 && text.indexOf(":") < match[0].length; return numbered || (match[1] === match[1].toUpperCase() && (!rest || /^\([^)]*\)$/.test(rest) || colon)) ? match : null; }
+  pages.forEach(function(page) {
+    var layout = page.layout;
+    if (automaticOnly && (!layout || layout.incomplete || !Array.isArray(layout.lines) || !layout.lines.length)) { uncertain++; return; }
+    if (!automaticOnly && (!layout || !Array.isArray(layout.lines) || layout.uncertain)) {
+      uncertain++;
+      // A bad line must not discard unrelated readable lines. Never join or
+      // assign a section to this fallback; the member checks each source line.
+      var fallback = layout && Array.isArray(layout.lines) && layout.lines.length ? layout.lines.slice(0, 3000) : String(page.text || "").split(/\r?\n/).slice(0, 3000).map(function(text) { return { raw: text }; });
+      fallback.forEach(function(line) {
+        var text;
+        if (typeof line.raw === "string") { if (/\t|\s{3,}|\|/.test(line.raw)) return; text = line.raw.trim(); }
+        else {
+          if (line.uncertain !== false || !Array.isArray(line.words) || !line.words.length) return;
+          var words = line.words; text = words.map(function(word) { return word.text; }).join(" ").trim();
+          if (words.some(function(word, i) { return i && word.bbox.x0 - words[i - 1].bbox.x1 > Math.max(24, 2 * (word.bbox.y1 - word.bbox.y0)); })) return;
+        }
+        if (headerMatch(text) || text.length < 20 || text.split(/\s+/).length < 3 || !/\b(?:maintenance|repair|technician|systems|equipment|operations|logistics|course|training|instructor|supervised|managed|trained|inspected|operated|award|medal)\b/i.test(text)) return;
+        if (topsCareerSensitive(text) || /\b(?:name|grade|rank|service dates|record of service|home of record|place of entry|signature|remarks|address|telephone|phone|separation)\b/i.test(text) || /^\(?\s*(?:NUMBER,? TITLE|YEARS? AND MONTHS?|COURSE TITLE|WEEKS? COMPLETED|SEE (?:REMARKS|CONTINUATION))\b/i.test(text) || /^[\d\W]+$/.test(text)) return;
+        if (text.length > 400 || /[\u0000-\u001f\u007f]/.test(text) || result.length >= 24) { omitted++; return; }
+        result.push({ key: "p" + page.number + "-" + result.length, category: "Possible career text", uncertain: true, text: text, original: text, page: page.number, method: page.method, selected: false });
+      });
+      return;
+    }
+    var runs = [];
+    layout.lines.forEach(function(line) {
+      var words = line.words || [], group = [];
+      function flush() { if (!group.length) return; var boxes = group.map(function(w) { return w.bbox; }); runs.push({ text: group.map(function(w) { return w.text; }).join(" ").trim(), x: boxes[0].x0, right: boxes[boxes.length - 1].x1, y: Math.min.apply(null, boxes.map(function(b) { return b.y0; })), h: Math.max.apply(null, boxes.map(function(b) { return b.y1 - b.y0; })), uncertain: (!!line.uncertain && !line.splitSafe) || group.some(function(w, i) { return i && w.bbox.x0 < group[i - 1].bbox.x1 - 2; }), lowConfidence: page.method === "ocr" && group.some(function(w) { return typeof w.confidence !== "number" || w.confidence < 75; }) }); group = []; }
+      words.forEach(function(word) { var prior = group[group.length - 1]; if (prior && word.bbox.x0 - prior.bbox.x1 > Math.max(24, 2 * (word.bbox.y1 - word.bbox.y0))) flush(); group.push(word); }); flush();
+    });
+    runs.sort(function(a,b) { return a.y - b.y || a.x - b.x; });
+    var markers = runs.filter(function(run) { return headerMatch(run.text) || (/^\d{1,2}[a-z]?[.)]\s*[A-Z][A-Z ]{3}/.test(run.text) || /^\d{1,2}[a-z]?\s+(?:RECORD OF SERVICE|SERVICE DATES|NAME|GRADE|PAY GRADE|LAST DUTY|HOME OF RECORD|PLACE OF ENTRY|DATE OF|RESERVE OBLIGATION|REMARKS|SEPARATION|CHARACTER OF SERVICE|REENTRY|SIGNATURE|OTHER FIELD)\b/.test(run.text)); });
+    markers.forEach(function(header) {
+      var match = headerMatch(header.text); if (!match) return; headings++;
+      var category = /education|training/i.test(match[1]) ? "Education / training" : /decoration|award/i.test(match[1]) ? "Awards" : "Specialty";
+      if (automaticOnly && (category === "Awards" || header.uncertain || header.lowConfidence)) return;
+      var right = layout.width, bottom = header.y + header.h * 14;
+      markers.forEach(function(other) { if (other === header) return; if (Math.abs(other.y - header.y) <= header.h && other.x > header.x + header.h * 3) right = Math.min(right, other.x - header.h); });
+      markers.forEach(function(other) { if (other.y > header.y + header.h && other.x >= header.x - header.h && other.x < right) bottom = Math.min(bottom, other.y); });
+      if (automaticOnly && runs.some(function(run) { return (run.uncertain || run.lowConfidence) && run.y + run.h > header.y && run.y < bottom && run.right > header.x - header.h && run.x < right; })) return;
+      var source = [], content = [];
+      runs.forEach(function(run) {
+        if (run.y < header.y - 1 || run.y >= bottom || run.x < header.x - header.h || run.x > header.x + header.h * 3 || run.right > right) return;
+        if (run !== header && markers.indexOf(run) >= 0) return;
+        var text = run === header ? run.text.slice(match[0].length).trim() : run.text;
+        source.push(run.text);
+        if (!text || /^[\d\W]+$/.test(text) || /^\([^)]*\)$/.test(text) || /^(?:NUMBER,? TITLE|YEARS? AND MONTHS?|COURSE TITLE|WEEKS? COMPLETED|AWARDED|SEE (?:REMARKS|CONTINUATION))\b/i.test(text)) return;
+        if (topsCareerSensitive(text)) { content = []; bottom = run.y; return; }
+        content.push(text);
+      });
+      var text = content.join(" ");
+      if (automaticOnly && /\b(?:name|grade|rank|service dates|record of service|home of record|place of entry|signature|remarks|address|telephone|phone|separation|birth|ssn)\b/i.test(text)) return;
+      if (!text || !/[A-Za-z]{3}/.test(text)) return;
+      if (text.length > 400 || /[\u0000-\u001f\u007f]/.test(text) || result.length >= 24) { omitted++; return; }
+      result.push({ key: "p" + page.number + "-" + result.length, category: category, text: text, original: source.join("\n"), page: page.number, method: page.method, selected: false });
+    });
+  });
+  return { rows: result, omitted: omitted, headings: headings, uncertain: uncertain };
+}
+function topsAutomaticCareerEvidence(pages, target) {
+  var found = topsCareerExcerptCandidates(pages, true);
+  return topsCareerEvidence(found.rows.slice(0, 6).map(function(row) { return Object.assign({}, row, { selected: true }); }), target || "");
+}
+function topsCareerEvidence(rows, target) {
+  if (typeof target !== "string" || target.length > 120 || /[\u0000-\u001f\u007f]/.test(target) || topsCareerSensitive(target)) return null;
+  var picked = rows.filter(function(row) { return row.selected; });
+  if (!picked.length || picked.length > 6 || !picked.every(function(row) { return typeof row.text === "string" && !!row.text.trim() && row.text.length <= 400 && !/[\u0000-\u001f\u007f]/.test(row.text) && !topsCareerSensitive(row.text) && Number.isInteger(row.page) && row.page >= 1 && row.page <= 4 && ["text", "ocr"].includes(row.method); })) return null;
+  return { target: target, excerpts: picked.map(function(row, i) { return { id: "E" + (i + 1), text: row.text, page: row.page, method: row.method }; }) };
+}
+function topsCheckedCareerAnalysis(value, evidence) {
+  if (!topsBackupShape(value, ["candidates"]) || !Array.isArray(value.candidates) || value.candidates.length > 5) return null;
+  var seen = new Set(), ids = evidence.excerpts.map(function(row) { return row.id; });
+  if (!value.candidates.every(function(row) { if (!topsBackupShape(row, ["aspect", "skill", "evidenceIds", "question"]) || !["technical", "operations", "communication", "leadership", "training"].includes(row.aspect) || seen.has(row.aspect) || ![row.skill, row.question].every(function(text) { return typeof text === "string" && !!text.trim() && text.length <= 180 && !/[\u0000-\u001f\u007f]/.test(text) && !topsCareerSensitive(text); }) || !Array.isArray(row.evidenceIds) || !row.evidenceIds.length || row.evidenceIds.length > ids.length || new Set(row.evidenceIds).size !== row.evidenceIds.length || !row.evidenceIds.every(function(id) { return ids.includes(id); })) return false; seen.add(row.aspect); return true; })) return null;
+  return value;
+}
+function topsTentativeExperience(candidate, evidence, response, wording) {
+  if (!topsCheckedCareerAnalysis({ candidates: [candidate] }, evidence) || !["yes", "some"].includes(response) || typeof wording !== "string" || !wording.trim() || wording.length > 180 || /[\u0000-\u001f\u007f]/.test(wording) || topsCareerSensitive(wording) || (response === "some" && wording.trim().toLowerCase() === candidate.skill.trim().toLowerCase())) return null;
+  return { wording: wording.trim(), example: "", target: evidence.target, tentative: true, partial: response === "some" };
+}
+function topsReviewedExperience(candidate, evidence, response, wording, example) {
+  if (!topsCheckedCareerAnalysis({ candidates: [candidate] }, evidence) || !["yes", "some"].includes(response) || ![wording, example].every(function(text) { return typeof text === "string" && !!text.trim() && text.length <= 180 && !/[\u0000-\u001f\u007f]/.test(text) && !topsCareerSensitive(text); })) return null;
+  if (response === "some" && wording.trim().toLowerCase() === candidate.skill.trim().toLowerCase()) return null;
+  return { response: response, wording: wording.trim(), example: example.trim(), evidenceIds: candidate.evidenceIds.slice() };
+}
+function topsUploadWorksheetPreview(candidate, evidence, wording, example, gap, quote, manualOrigin) {
+  if (!topsCheckedCareerAnalysis({ candidates: [candidate] }, evidence) || ![wording, example].every(function(text) { return typeof text === "string" && !!text.trim() && text.length <= 180 && !/[\u0000-\u001f\u007f]/.test(text) && !topsCareerSensitive(text); })) return null;
+  var normalized = topsValidateGap(gap); if (!normalized) return null;
+  var row = candidate.aspect === "training" ? 1 : 0;
+  var refItem = quote && evidence.excerpts.find(function(item) { return candidate.evidenceIds.includes(item.id) && item.id === quote.id && typeof quote.text === "string" && !!quote.text.trim() && quote.text.length <= 180 && item.text.includes(quote.text); });
+  if (!refItem) return null;
+  var note = "My reviewed career wording: " + wording + "\nMy supporting example: " + example;
+  var source = manualOrigin ? "Member-entered career note " + refItem.id + ": " + quote.text : "DD214 p" + refItem.page + " " + refItem.id + " (" + refItem.method + ", member-reviewed): " + quote.text;
+  var have = normalized.rows[row].have + (normalized.rows[row].have ? "\n\n" : "") + note, ref = normalized.rows[row].source + (normalized.rows[row].source ? "\n" : "") + source;
+  if (have.length > 600 || ref.length > 240) return null;
+  return { before: JSON.stringify(gap), row: row, draft: Object.assign({}, normalized, { rows: normalized.rows.map(function(item, i) { return i === row ? Object.assign({}, item, { have: have, source: ref }) : item; }) }) };
+}
+function CareerDocumentUpload(props) {
+  var C = props.colors, [pages, setPages] = useState([]), [rows, setRows] = useState([]), [target, setTarget] = useState(""), [busy, setBusy] = useState(""), [message, setMessage] = useState(""), [notice, setNotice] = useState(""), [analysis, setAnalysis] = useState(null), [chosen, setChosen] = useState(null), [wording, setWording] = useState(""), [example, setExample] = useState(""), [preview, setPreview] = useState(null), [confirmed, setConfirmed] = useState(false);
+  var [quoteId, setQuoteId] = useState(""), [quoteText, setQuoteText] = useState(""), [drafts, setDrafts] = useState({});
+  var [responses, setResponses] = useState({}), [experience, setExperience] = useState(null), [selectedFile, setSelectedFile] = useState(null), [needsManual, setNeedsManual] = useState(false), [manualEntry, setManualEntry] = useState("");
+  var job = useRef(null), generation = useRef(0), reviewHeading = useRef(null), uploadInput = useRef(null), consumed = useRef(false);
+  var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 10, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 6, font: "inherit" }, button = { minHeight: 44, minWidth: 44, padding: "10px 14px", margin: "8px 8px 0 0", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 6, font: "inherit", cursor: "pointer" };
+  useEffect(function() { return function() { generation.current++; if (job.current) job.current.abort(); }; }, []);
+  useEffect(function() { if ((preview || analysis) && reviewHeading.current) reviewHeading.current.focus(); }, [preview, analysis]);
+  function invalidate() { setAnalysis(null); setChosen(null); setWording(""); setExample(""); setQuoteId(""); setQuoteText(""); setPreview(null); setConfirmed(false); setResponses({}); setExperience(null); setDrafts({}); consumed.current = false; }
+  function respond(index, response) {
+    if (chosen === index && responses[index] === response) return;
+    var item = analysis.result.candidates[index], nextDrafts = Object.assign({}, drafts);
+    if (chosen !== null) nextDrafts[chosen] = { wording: wording, example: example, quoteId: quoteId, quoteText: quoteText };
+    var draft = nextDrafts[index], id = draft && item.evidenceIds.includes(draft.quoteId) ? draft.quoteId : item.evidenceIds[0], text = analysis.evidence.excerpts.find(function(row) { return row.id === id; }).text;
+    setDrafts(nextDrafts); setResponses(Object.assign({}, responses, { [index]: response })); setExperience(null); setPreview(null); setConfirmed(false); setChosen(response === "no" ? null : index);
+    setWording(draft ? (response === "some" && draft.wording.trim().toLowerCase() === item.skill.trim().toLowerCase() ? "" : draft.wording) : response === "some" ? "" : item.skill);
+    setExample(draft ? draft.example : ""); setQuoteId(id); setQuoteText(draft ? draft.quoteText : text.length > 180 ? text.slice(0, 180).replace(/\s+\S*$/, "") : text);
+    if (response === "no") setMessage("Not part of your role. This suggestion will not be used.");
+    else setTimeout(function() { var input = document.getElementById(response === "some" ? "tops-upload-wording" : "tops-upload-explore"); if (input) input.focus(); }, 0);
+  }
+  function cancel() { generation.current++; if (job.current) job.current.abort(); job.current = null; setBusy(""); setMessage("Canceled. No new analysis or worksheet notes were added."); }
+  function clear() { cancel(); setSelectedFile(null); setNeedsManual(false); setManualEntry(""); setPages([]); setRows([]); setTarget(""); setNotice(""); invalidate(); if (uploadInput.current) { uploadInput.current.value = ""; uploadInput.current.focus(); } setMessage("File text, excerpts and analysis cleared from this tool. Worksheet copies and downloaded backups are unchanged."); }
+  function chooseFile(event) { var file = event.target.files && event.target.files[0]; event.target.value = ""; if (!file) return; cancel(); invalidate(); setPages([]); setRows([]); setNotice(""); setSelectedFile(file); setNeedsManual(false); setManualEntry(""); setMessage("Ready. Choose Analyze my experience when you want to continue."); }
+  async function read() {
+    var file = selectedFile; if (!file || busy) return;
+    cancel(); setPages([]); setRows([]); invalidate(); setNotice(""); var token = generation.current, controller = new AbortController(); job.current = controller; setBusy("Reading file locally"); setMessage("");
+    try { var reader = await import("./vendor/dd214-reader.mjs"); if (token !== generation.current) return; var result = await reader.readCareerDocument(file, { signal: controller.signal, onProgress: function(progress) { if (token === generation.current) setBusy(progress && progress.phase === "ocr" ? "Reading scanned content locally" + (typeof progress.progress === "number" ? " - " + Math.round(progress.progress * 100) + "%" : "") : progress && progress.page ? "Reading page " + progress.page + " of " + progress.pages + " locally" : "Reading file locally; scanned pages can take longer"); } }); if (token !== generation.current) return;
+      setPages(result.pages); setBusy("Selecting role and training details"); var automatic = topsAutomaticCareerEvidence(result.pages, target); setNotice((result.warnings || []).length ? "Some text could not be read or separated reliably. Only supported career fields were considered; details are available below." : "");
+      if (!automatic) { setNeedsManual(true); setMessage("We could not separate usable career details from this file. Enter a role or training entry, or try a clearer copy. Nothing was sent."); return; }
+      setNeedsManual(false); setRows(automatic.excerpts); await analyze(automatic);
+    } catch (error) { if (token === generation.current) { setNeedsManual(true); var errors = { FILE_TOO_LARGE: "Choose a file no larger than 5 MB.", TOO_MANY_PAGES: "Choose a PDF with no more than 4 pages.", PASSWORD_PROTECTED: "This PDF is password-protected. Choose an unlocked copy you are authorized to use.", TEXT_TOO_LONG: "This document has more text than this tool can safely review. Choose a shorter copy.", IMAGE_TOO_LARGE: "Choose an image no larger than 12 megapixels.", TIMEOUT: "Local reading reached its 3-minute limit. Try a smaller or clearer copy.", CANCELLED: "Local reading was canceled.", UNSUPPORTED_FILE: "Choose a PDF, JPG or PNG file.", OCR_FAILED: "The scanned text could not be read. Try a clearer image or enter details instead." }; setMessage(errors[error && (error.code || error.message)] || "This file could not be read. Try a clearer PDF or image, or enter details instead."); } }
+    finally { if (token === generation.current) { setBusy(""); job.current = null; } }
+  }
+  function startAnalysis() { if (busy) return; if (needsManual) { var text = manualEntry.trim(), evidence = text && topsCareerEvidence([{ text: "Member-entered role or training: " + text, page: 1, method: "text", selected: true }], target); if (!evidence) { setMessage("Enter a short role or training entry without personal details."); return; } setRows(evidence.excerpts.map(function(row) { return Object.assign({}, row, { manual: true }); })); analyze(evidence, true); } else read(); }
+  async function analyze(evidence, manualOrigin) {
+    if (!evidence) return;
+    var counter; try { var day = new Date().toISOString().slice(0, 10); counter = JSON.parse(window.__safeGet("tops_nav_pilot") || "{}"); if (counter.d !== day) counter = { d: day, n: 0 }; if (counter.n >= 20) { setMessage("Navigator's daily request limit has been reached. Your excerpts remain here."); return; } counter.n++; window.__safeSet("tops_nav_pilot", JSON.stringify(counter)); } catch (e) {}
+    var token = ++generation.current, controller = new AbortController(); job.current = controller; setBusy("Finding possible experience"); setAnalysis(null); setChosen(null); setPreview(null); setResponses({}); setExperience(null); setDrafts({}); var timeout = setTimeout(function() { controller.abort(); }, 35000);
+    try { var response = await fetch("/.netlify/functions/navigator", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ careerEvidence: evidence }), signal: controller.signal }); var data = await response.json(); if (token !== generation.current) return; var checked = response.ok && topsCheckedCareerAnalysis(data.careerAnalysis, evidence); if (!checked) { setMessage(response.ok ? "The analysis could not be checked. Your excerpts are retained; no suggestions were added." : data && typeof data.error === "string" ? data.error : "Analysis is unavailable. Your excerpts are retained."); return; } setAnalysis({ result: checked, evidence: evidence, manual: manualOrigin === true }); setMessage(data.dryRun ? "Preview test response: no model call was made." : "Review these possibilities and the cited excerpts. They are not verified skills or credentials."); }
+    catch (e) { if (token === generation.current) setMessage("Analysis stopped or was unavailable. Your excerpts remain here. Review and send again if you choose."); }
+    finally { clearTimeout(timeout); if (token === generation.current) { setBusy(""); job.current = null; } }
+  }
+  function renderExperienceReview() {
+    var item = analysis.result.candidates[chosen], exploration = experience ? { wording: experience.wording, example: experience.example, target: analysis.evidence.target, tentative: false } : topsTentativeExperience(item, analysis.evidence, responses[chosen], wording);
+    return React.createElement("div", null, React.createElement("label", { htmlFor: "tops-upload-wording" }, responses[chosen] === "some" ? "Which part did you do?" : "Career wording I can support"), React.createElement("input", { id: "tops-upload-wording", value: wording, maxLength: 180, style: field, onChange: function(e) { setWording(e.target.value); setExperience(null); setPreview(null); setConfirmed(false); } }), React.createElement("button", { id: "tops-upload-explore", type: "button", disabled: !exploration, style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { if (exploration && props.onExplore) props.onExplore(exploration); } }, "Explore career connections"), React.createElement("p", null, "A starting point based on your selection. You do not need a work example to explore."), React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Add evidence to my worksheet (optional)"), React.createElement("label", { htmlFor: "tops-upload-example" }, "Describe one example from your work or training"), React.createElement("input", { id: "tops-upload-example", value: example, maxLength: 180, style: field, onChange: function(e) { setExample(e.target.value); setExperience(null); setPreview(null); setConfirmed(false); } }), React.createElement("button", { type: "button", style: button, onClick: function() { var checked = topsReviewedExperience(analysis.result.candidates[chosen], analysis.evidence, responses[chosen], wording, example); setExperience(checked); setPreview(null); setConfirmed(false); setMessage(checked ? "Ready to compare in this page. Not saved yet." : responses[chosen] === "some" ? "Describe only the part you did and add one actual example." : "Add the wording you can support and one actual example."); } }, "Use my description"),
+      experience && React.createElement("p", { "data-experience-connections": true }, "Supporting description ready for worksheet review: " + experience.wording),
+      experience && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Review worksheet note"), React.createElement("p", null, "The exact source quote is prepared below. Review it before adding a note to your worksheet."), React.createElement("label", { htmlFor: "tops-upload-quote-id" }, "Supporting excerpt for my worksheet"), React.createElement("select", { id: "tops-upload-quote-id", value: quoteId, style: field, onChange: function(e) { var id = e.target.value; setQuoteId(id); setQuoteText(analysis.evidence.excerpts.find(function(row) { return row.id === id; }).text); setPreview(null); setConfirmed(false); } }, analysis.result.candidates[chosen].evidenceIds.map(function(id) { return React.createElement("option", { key: id, value: id }, id); })), React.createElement("label", { htmlFor: "tops-upload-quote" }, "Exact supporting quote (up to 180 characters)"), React.createElement("textarea", { id: "tops-upload-quote", value: quoteText, rows: 2, maxLength: 180, style: field, onChange: function(e) { setQuoteText(e.target.value); setPreview(null); setConfirmed(false); } }), React.createElement("p", null, "Keep an exact part of the selected excerpt. You can shorten this quote locally without another AI request; do not add or rewrite words."), React.createElement("button", { type: "button", style: button, onClick: function() { var next = experience && topsReviewedExperience(analysis.result.candidates[chosen], analysis.evidence, responses[chosen], wording, example) && topsUploadWorksheetPreview(analysis.result.candidates[chosen], analysis.evidence, wording, example, props.gap, { id: quoteId, text: quoteText }, analysis.manual); setConfirmed(false); consumed.current = false; setPreview(next); if (!next) setMessage("Add a supporting example and plain career wording. The complete notes and cited excerpts must fit alongside your worksheet (600 characters for notes, 240 for sources). Choose a shorter exact supporting quote below; no new analysis is needed. Nothing is truncated."); } }, "Review worksheet addition"))));
+  }
+  return React.createElement("section", { "aria-labelledby": "tops-upload-heading", style: { padding: 16, marginBottom: 16, border: "1px solid " + C.border, borderRadius: 10, background: C.bgCard, color: C.textPrimary } },
+    React.createElement("h2", { id: "tops-upload-heading", tabIndex: -1, style: { fontSize: 20, marginTop: 0 } }, "Find experience you can use"),
+    React.createElement(analysis ? "details" : "div", null, analysis && React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Analyze again or change file"),
+    React.createElement("p", null, "Choose your DD214. We will look for role and training details in the background, then you tell us which possible experiences fit."),
+    React.createElement("label", { htmlFor: "tops-upload-file" }, "Choose DD214"), React.createElement("input", { id: "tops-upload-file", ref: uploadInput, type: "file", accept: ".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg", disabled: !!busy, onChange: chooseFile, "aria-describedby": "tops-upload-consent tops-upload-status", style: Object.assign({}, field, { padding: "10px 0" }) }),
+    selectedFile && React.createElement("p", null, "File ready: " + selectedFile.name),
+    needsManual && React.createElement("div", null, React.createElement("label", { htmlFor: "tops-upload-manual" }, "Role or training entry"), React.createElement("textarea", { id: "tops-upload-manual", rows: 2, maxLength: 360, value: manualEntry, disabled: !!busy, style: field, onChange: function(e) { setManualEntry(e.target.value); invalidate(); } })),
+    React.createElement("p", { id: "tops-upload-consent", style: { lineHeight: 1.6 } }, needsManual ? "Analyze sends the role or training entry you type and your optional career goal through Transition OPS and Netlify to OpenAI. Remove personal details first. Choosing Analyze means you agree." : "Analyze reads your file locally and automatically sends up to six short role or training entries and your optional career goal through Transition OPS and Netlify to OpenAI. The full file is not sent. Automatic selection may miss personal details. Choosing Analyze means you agree."),
+    React.createElement("button", { type: "button", disabled: !!busy || (!selectedFile && !needsManual) || (needsManual && !manualEntry.trim()), style: button, onClick: startAnalysis }, "Analyze my experience"),
+    !selectedFile && !needsManual && React.createElement("button", { type: "button", style: button, onClick: function() { setNeedsManual(true); setMessage("Enter a role or training entry without personal details."); } }, "Enter a role or training instead"),
+    busy && React.createElement("div", null, React.createElement("p", { role: "status", "aria-live": "polite" }, busy), React.createElement("button", { type: "button", style: button, onClick: cancel }, "Cancel processing")),
+    React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Text used and source details"),
+      React.createElement("p", { id: "tops-upload-limits" }, "PDF, JPG or PNG, up to 5 MB; PDF up to 4 pages; images up to 12 megapixels. Local reading can take up to 3 minutes. English OCR can misread text. Up to six entries of 400 characters are sent. Provider retention may apply. Unreliable or unsupported fields are excluded from automatic analysis; no document captures all your experience."),
+      notice && React.createElement("p", null, notice), React.createElement("label", { htmlFor: "tops-upload-target" }, "Civilian role or field to explore (optional)"), React.createElement("input", { id: "tops-upload-target", value: target, maxLength: 120, disabled: !!busy, style: field, onChange: function(e) { setTarget(e.target.value); invalidate(); } }),
+      React.createElement("h3", null, "Career text selected for analysis"), rows.length ? rows.map(function(row) { return React.createElement("p", { key: row.id, style: { overflowWrap: "anywhere" } }, row.id + (row.manual ? " (member-entered): " : " (page " + row.page + ", " + row.method + "): ") + row.text); }) : React.createElement("p", null, "Nothing selected yet."),
+      pages.length > 0 && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Full extracted text on this device"), React.createElement("p", null, "Full extracted pages are not sent with the analysis. They may contain personal details."), pages.map(function(page) { return React.createElement("div", { key: page.number }, React.createElement("h4", null, "Page " + page.number + " - " + page.method), React.createElement("pre", { style: { whiteSpace: "pre-wrap", overflowWrap: "anywhere", font: "inherit" } }, page.text)); })))),
+    analysis && React.createElement("div", null, React.createElement("h3", { ref: reviewHeading, tabIndex: -1 }, "Review possible experience"), React.createElement("p", null, "A role or course does not establish what you did. Choose the response that matches your own experience."), !analysis.result.candidates.length && React.createElement("p", null, "No useful possibilities were found. Try a clearer file, or use the manual career notes below."), analysis.result.candidates.map(function(item, i) { return React.createElement("article", { key: item.aspect, "aria-labelledby": "tops-experience-" + i, style: { border: "1px solid " + C.border, borderRadius: 8, padding: 16, marginBottom: 12 } }, React.createElement("h4", { id: "tops-experience-" + i }, "You may have experience with " + item.skill + "."), React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Why this was suggested"), analysis.evidence.excerpts.filter(function(row) { return item.evidenceIds.includes(row.id); }).map(function(row) { return React.createElement("p", { key: row.id, style: { overflowWrap: "anywhere" } }, "Suggested from: " + row.text + (analysis.manual ? " (" + row.id + ", member-entered)" : " (" + row.id + ", page " + row.page + ", " + row.method + ")")); }), React.createElement("p", null, "This entry is a starting point. It does not establish what you did.")), React.createElement("p", null, item.question), React.createElement("p", null, "Did this match your work?"), [["yes", "Yes, I did this"], ["some", "Some of this"], ["no", "Not part of my role"]].map(function(choice) { return React.createElement("button", { key: choice[0], type: "button", style: Object.assign({}, button, responses[i] === choice[0] ? { background: C.green, color: C.textOnFill, borderColor: C.green, fontWeight: 700 } : {}), "aria-pressed": responses[i] === choice[0], onClick: function() { respond(i, choice[0]); } }, choice[1]); }), responses[i] === "no" && React.createElement("p", null, "Not part of your role. This suggestion will not be used."), chosen === i && renderExperienceReview()); }),
+      preview && React.createElement("div", null, React.createElement("h3", { ref: reviewHeading, tabIndex: -1 }, "Confirm worksheet addition"), React.createElement("p", null, "These notes enter your worksheet draft. Choose Save on this browser there to keep them. Plan backups include current worksheet notes, even before saving."), React.createElement("p", null, "Target: " + (preview.draft.target || "Not entered") + " | " + TOPS_GAP_ROWS[preview.row]), React.createElement("p", { style: { whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, preview.draft.rows[preview.row].have), React.createElement("p", { style: { whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, preview.draft.rows[preview.row].source), React.createElement("label", { style: { display: "flex", gap: 10, alignItems: "center", minHeight: 44 } }, React.createElement("input", { type: "checkbox", checked: confirmed, onChange: function(e) { setConfirmed(e.target.checked); } }), "I can support this wording and example and reviewed the full addition."), React.createElement("button", { type: "button", disabled: !confirmed, style: button, onClick: function() { if (!confirmed || consumed.current) return; consumed.current = true; if (!props.onTransfer(preview)) { setPreview(null); setConfirmed(false); setMessage("Your worksheet changed. Review the addition again before confirming."); return; } clear(); } }, "Add confirmed notes to worksheet"))),
+    React.createElement("button", { type: "button", style: button, onClick: clear }, "Clear file and analysis"), React.createElement("p", { id: "tops-upload-status", role: "status", "aria-live": "polite", style: { lineHeight: 1.6 } }, message));
+}
+// DD214_UPLOAD_END
+// DD214_CAREER_START
+function topsEmptyServiceNotes() { return { category: "skills", entry: "", example: "", civilian: "", reference: "" }; }
+function topsServiceNotesPreview(value, gap) {
+  var limits = { entry: 160, example: 180, civilian: 160, reference: 60 }, normalized = topsValidateGap(gap);
+  if (!normalized || !value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).sort().join(",") !== "category,civilian,entry,example,reference" || !["skills", "education"].includes(value.category) || !Object.keys(limits).every(function(k) { return typeof value[k] === "string" && value[k].length <= limits[k] && !/[\u0000-\u001f\u007f]/.test(value[k]); }) || !value.entry.trim()) return { ok: false, reason: "entry" };
+  var row = value.category === "skills" ? 0 : 1;
+  var notes = "DD214 entry (entered by me): " + value.entry;
+  if (value.example.trim()) notes += "\nMy work example: " + value.example;
+  if (value.civilian.trim()) notes += "\nMy civilian wording: " + value.civilian;
+  var source = "Member-selected DD214 career entry" + (value.reference.trim() ? ": " + value.reference : "");
+  var have = normalized.rows[row].have + (normalized.rows[row].have ? "\n\n" : "") + notes;
+  var reference = normalized.rows[row].source + (normalized.rows[row].source ? "\n" : "") + source;
+  if (have.length > 600 || reference.length > 240) return { ok: false, reason: "limit" };
+  var result = Object.assign({}, normalized, { rows: normalized.rows.map(function(item, i) { return i === row ? Object.assign({}, item, { have: have, source: reference }) : Object.assign({}, item); }) });
+  return { ok: true, row: row, before: JSON.stringify(gap), intake: JSON.stringify(value), draft: result };
+}
+function topsServiceNotesTransfer(preview, value, gap) {
+  if (!preview || !preview.ok || preview.before !== JSON.stringify(gap) || preview.intake !== JSON.stringify(value)) return null;
+  var current = topsServiceNotesPreview(value, gap);
+  return current.ok && JSON.stringify(current.draft) === JSON.stringify(preview.draft) ? current.draft : null;
+}
+function ServiceCareerNotes(props) {
+  var [draft, setDraft] = useState(topsEmptyServiceNotes), [preview, setPreview] = useState(null), [reviewed, setReviewed] = useState(false), [message, setMessage] = useState("");
+  var heading = useRef(null), consumed = useRef(false), focusEntry = useRef(false);
+  useEffect(function() { if (preview && heading.current) heading.current.focus(); else if (focusEntry.current) { focusEntry.current = false; var entry = document.getElementById("tops-service-entry"); if (entry) entry.focus(); } }, [preview, draft]);
+  var C = props.colors, field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 10, font: "inherit", color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 6 }, button = { minHeight: 44, minWidth: 44, padding: "10px 14px", margin: "8px 8px 0 0", font: "inherit", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 6, cursor: "pointer" };
+  function edit(key, value) { setDraft(Object.assign({}, draft, { [key]: value })); setPreview(null); setReviewed(false); setMessage(""); consumed.current = false; }
+  function input(key, label, limit) { return React.createElement("div", { style: { marginTop: 12 } }, React.createElement("label", { htmlFor: "tops-service-" + key }, label), React.createElement("input", { id: "tops-service-" + key, value: draft[key], maxLength: limit, autoComplete: "off", style: field, "aria-describedby": "tops-service-help tops-service-status", onChange: function(e) { edit(key, e.target.value); } })); }
+  return React.createElement("section", { "aria-labelledby": "tops-service-heading", style: { padding: 16, marginBottom: 16, background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 10 } },
+    React.createElement("h2", { id: "tops-service-heading", tabIndex: -1, style: { fontSize: 20, marginTop: 0 } }, "Use your service record for career planning"),
+    React.createElement("p", { style: { lineHeight: 1.6 } }, "Start with one career entry, then describe how you used it in your work. Review the notes before adding them to your career worksheet."),
+    React.createElement("p", { id: "tops-service-help", style: { lineHeight: 1.6 } }, "Enter only selected career details. Do not paste your whole DD214 or include identifiers, medical details or discharge information. This tool does not read or verify your document and makes no AI request."),
+    !preview && React.createElement("div", null,
+      React.createElement("label", { htmlFor: "tops-service-category" }, "Where will these notes go?"),
+      React.createElement("select", { id: "tops-service-category", value: draft.category, style: field, onChange: function(e) { edit("category", e.target.value); } }, React.createElement("option", { value: "skills" }, "Skills"), React.createElement("option", { value: "education" }, "Education and training")),
+      input("entry", "Selected specialty or training entry from your DD214", 160),
+      input("reference", "Entry label or reference (optional)", 60),
+      React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Describe how you used this (optional)"),
+        React.createElement("p", { style: { lineHeight: 1.6 } }, "Describe a task you performed or tools you used. Include results only if you can support them. Use the existing military crosswalk below to explore civilian work; a possible match is not proof of your experience."),
+        input("example", "How I used this in my work", 180), input("civilian", "Skill or experience in civilian terms (my wording)", 160),
+        React.createElement("p", { style: { lineHeight: 1.6 } }, "Your wording is a draft to discuss and compare with job requirements. A training entry alone does not establish a current credential.")),
+      React.createElement("button", { type: "button", style: button, onClick: function() { var next = topsServiceNotesPreview(draft, props.gap); setReviewed(false); consumed.current = false; if (!next.ok) { setMessage(next.reason === "limit" ? "These notes will not fit alongside your worksheet notes. Shorten your entries or review the existing worksheet; nothing was changed." : "Enter a career entry using plain text within the field limits, then review again."); return; } setPreview(next); setMessage(""); } }, "Review worksheet notes")),
+    preview && React.createElement("div", null,
+      React.createElement("h3", { id: "tops-service-preview", ref: heading, tabIndex: -1 }, "Review before adding to your worksheet"),
+      React.createElement("p", { style: { lineHeight: 1.6 } }, "Destination: " + TOPS_GAP_ROWS[preview.row] + ". Worksheet target: " + (preview.draft.target || "Not entered") + ". These notes append to What I have and Source. Other worksheet fields stay unchanged."),
+      React.createElement("dl", { style: { overflowWrap: "anywhere" } }, [["DD214 entry - entered by you", draft.entry], ["Work example - described by you", draft.example], ["Civilian wording - drafted by you", draft.civilian], ["Resulting What I have notes", preview.draft.rows[preview.row].have], ["Resulting source notes", preview.draft.rows[preview.row].source]].map(function(row) { return React.createElement("div", { key: row[0] }, React.createElement("dt", { style: { fontWeight: 700 } }, row[0]), React.createElement("dd", { style: { margin: "4px 0 12px", whiteSpace: "pre-wrap" } }, row[1] || "Not entered")); })),
+      React.createElement("label", { style: { display: "flex", gap: 10, alignItems: "center", minHeight: 44 } }, React.createElement("input", { type: "checkbox", checked: reviewed, onChange: function(e) { setReviewed(e.target.checked); } }), "I reviewed the wording and its sources and can support what I entered."),
+      React.createElement("button", { type: "button", style: button, onClick: function() { focusEntry.current = true; setPreview(null); setReviewed(false); setMessage("Entries kept for editing."); } }, "Back to edit"),
+      React.createElement("button", { type: "button", style: button, disabled: !reviewed, onClick: function() { if (!reviewed || consumed.current) return; consumed.current = true; var next = topsServiceNotesTransfer(preview, draft, props.gap); if (!next || !props.onTransfer(preview, draft)) { setPreview(null); setReviewed(false); consumed.current = false; setMessage("Your worksheet changed after this preview. Review the notes again before adding them."); return; } setDraft(topsEmptyServiceNotes()); setPreview(null); setReviewed(false); } }, "Add these notes to my worksheet")),
+    React.createElement("p", { style: { lineHeight: 1.6 } }, "These entry fields stay in this open tool. After adding notes, choose Save on this browser in the worksheet to keep them. Plan backups include the current worksheet notes, even before saving. Leaving this tool clears these entry fields."),
+    React.createElement("button", { type: "button", style: button, onClick: function() { focusEntry.current = true; setDraft(topsEmptyServiceNotes()); setPreview(null); setReviewed(false); consumed.current = false; setMessage("Entry fields cleared. Notes already added to the worksheet are unchanged."); } }, "Clear these entries"),
+    React.createElement("p", { id: "tops-service-status", role: "status", "aria-live": "polite", style: { lineHeight: 1.6 } }, message));
+}
+// DD214_CAREER_END
 function GuardCareerSupport(props) {
   var [area, setArea] = useState("national");
   var C = props.colors;
@@ -6138,6 +6362,298 @@ function ServiceProfileEditor(props) {
     React.createElement("div", { id: "service-profile-result", role: "status", "aria-live": "polite", style: { color: C.textSecondary, fontSize: 13 } }, message));
 }
 
+// PERSONAL_GUIDE_START
+const TOPS_GUIDE_KEY = "tops_personal_guide_v1";
+const TOPS_GUIDE_PATHS = { transition: "Prepare to leave service", skills: "Build new skills", change: "Change careers" };
+const TOPS_GUIDE_FIELDS = { pathway: "My pathway", currentRole: "My current role or experience", targetRole: "My target role or field", goal: "My next goal" };
+function topsEmptyGuide() { return { version: 1, pathway: "", currentRole: "", targetRole: "", goal: "" }; }
+function topsValidateGuide(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).sort().join(",") !== "currentRole,goal,pathway,targetRole,version" || value.version !== 1 || typeof value.pathway !== "string" || !(value.pathway === "" || Object.prototype.hasOwnProperty.call(TOPS_GUIDE_PATHS, value.pathway))) return null;
+  if (!["currentRole", "targetRole", "goal"].every(function(k) { return typeof value[k] === "string" && value[k].length <= 120 && !/[\u0000-\u001f\u007f]/.test(value[k]); })) return null;
+  return { version: 1, pathway: value.pathway, currentRole: value.currentRole, targetRole: value.targetRole, goal: value.goal };
+}
+function topsLoadGuide() {
+  var empty = { draft: topsEmptyGuide(), ready: false, status: "Use this guide without saving, or choose Save guide details to keep them on this browser." };
+  if (window.__IS_IFRAME) return Object.assign({}, empty, { status: "Embedded view: guide details are not saved for your next visit. You can still use this guide in this open page." });
+  try {
+    var raw = localStorage.getItem(TOPS_GUIDE_KEY);
+    if (raw === null) return empty;
+    var draft = raw.length <= 3000 ? topsValidateGuide(JSON.parse(raw)) : null;
+    return draft ? { draft: draft, ready: !!draft.pathway, status: "Loaded your saved guide details from this browser." } : Object.assign({}, empty, { status: "Saved guide details could not be read. Start again or clear the saved guide." });
+  } catch (e) { return Object.assign({}, empty, { status: "Guide storage could not be read. You can still use this guide in this open page." }); }
+}
+function topsSaveGuide(draft) {
+  var value = topsValidateGuide(draft);
+  if (!value || !value.pathway || window.__IS_IFRAME) return false;
+  try { var raw = JSON.stringify(value); window.__safeSet(TOPS_GUIDE_KEY, raw); return localStorage.getItem(TOPS_GUIDE_KEY) === raw; } catch (e) { return false; }
+}
+function topsClearGuide() {
+  if (window.__IS_IFRAME) return true;
+  try { localStorage.removeItem(TOPS_GUIDE_KEY); return localStorage.getItem(TOPS_GUIDE_KEY) === null; } catch (e) { return false; }
+}
+function topsGuideSelection(draft, selected) {
+  var value = topsValidateGuide(draft), fields = {};
+  if (!value) return fields;
+  Object.keys(TOPS_GUIDE_FIELDS).forEach(function(k) { if (selected[k] === true && value[k].trim()) fields[k] = value[k]; });
+  return fields;
+}
+function topsGuideHasWorksheetNotes(gap) {
+  return !!gap && ((gap.rows || []).some(function(row) { return Object.keys(row).some(function(k) { return typeof row[k] === "string" && row[k].trim(); }); }) || Object.keys(gap.prep || {}).some(function(k) { return typeof gap.prep[k] === "string" && gap.prep[k].trim(); }));
+}
+function topsGuideWorksheetTarget(gap, target, expectedTarget) {
+  var normalized = topsValidateGap(gap);
+  if (!normalized || typeof target !== "string" || !target.trim() || target.length > 120 || /[\u0000-\u001f\u007f]/.test(target) || normalized.target !== expectedTarget) return null;
+  return Object.assign({}, normalized, { target: target.trim() });
+}
+function topsGuideActions(draft, gap, follow, dismissed) {
+  var value = topsValidateGuide(draft);
+  if (!value || !value.pathway) return [];
+  var target = value.targetRole.trim(), existing = gap && gap.target && gap.target.trim();
+  var waiting = Object.keys(follow || {}).filter(function(id) { return !dismissed[id] && ["working", "waiting"].includes(follow[id].status); }).length;
+  var reason = target ? "You want to explore " + target + "." : "You chose " + TOPS_GUIDE_PATHS[value.pathway].toLowerCase() + ".";
+  var nextRow = gap && Array.isArray(gap.rows) && (!target || target === existing) ? gap.rows.find(function(row) { return row && ["have", "requirement", "next"].every(function(k) { return typeof row[k] === "string" && row[k].trim(); }); }) : null;
+  var career = { id: "career", title: !target && !existing ? "Choose a role to explore" : nextRow ? "Review your worksheet for this target" : "Compare the role with your experience", why: nextRow ? "Your worksheet has experience, requirement and next-action notes. Check that they still fit your current target before deciding what to do; existing notes may need updating." : reason + (existing && target && existing !== target ? " Your worksheet still names " + existing + ". Keep it, or review the target change below." : " Use a current job posting to compare what you have with what the role requires."), route: "career" };
+  var resources = { id: "resources", title: value.pathway === "skills" ? "Compare training options" : "Explore employment support", why: value.pathway === "skills" ? (value.currentRole.trim() ? "Build on your current experience: " + value.currentRole.trim() + ". " : "Choose one skill to practice. ") + "Compare program requirements, time and cost; a career change is not required." : "Use employment resources to find support for your next move.", route: value.pathway === "skills" ? "certs" : "employment" };
+  var money = { id: "money", title: "Review the money side of your plan", why: "Before committing to training or a job change, list income, essential expenses and training costs. Money Basics is a starting point; this app does not yet build a household budget.", route: "money" };
+  var actions = value.pathway === "transition" ? [{ id: "readiness", title: "Review your transition readiness", why: "You chose to prepare for civilian life. Review what is ready and what still needs attention; a separation date is not required to start.", route: "readiness" }, career, { id: "documents", title: "Review the documents you need", why: "Use the existing document checklist to prepare for your next conversation or application.", route: "documents" }] : value.pathway === "skills" && !target ? [resources, career, money] : [career, resources, money];
+  if (waiting) actions.push({ id: "followups", title: "Review existing follow-ups", why: "My Plan has " + waiting + " follow-up" + (waiting === 1 ? "" : "s") + " marked working or waiting. These may relate to a different goal.", route: "followups" });
+  return actions;
+}
+// CAREER_ACTION_START
+const TOPS_ACTION_KEY = "tops_career_action_v1";
+function topsEmptyAction() { return { version: 1, text: "", date: "", done: false, context: null }; }
+function topsValidateAction(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).sort().join(",") !== "context,date,done,text,version" || value.version !== 1 || typeof value.text !== "string" || value.text.length > 240 || /[\u0000-\u001f\u007f]/.test(value.text) || typeof value.date !== "string" || (value.date !== "" && topsFollowDate(value.date) !== value.date) || typeof value.done !== "boolean") return null;
+  if (!value.text.trim()) return value.text === "" && value.date === "" && value.done === false && value.context === null ? topsEmptyAction() : null;
+  var context = topsValidateGuide(value.context);
+  return context && context.pathway ? { version: 1, text: value.text, date: value.date, done: value.done, context: context } : null;
+}
+function topsActionMatches(action, guide) { var context = action && topsValidateGuide(action.context), g = topsValidateGuide(guide); return !!action && typeof action.text === "string" && !!action.text.trim() && !!context && !!g && JSON.stringify(context) === JSON.stringify(g); }
+function topsLoadAction() {
+  var empty = { draft: topsEmptyAction(), status: "Write one step you can take. Save it on this browser when you are ready." };
+  if (window.__IS_IFRAME) return Object.assign({}, empty, { status: "Embedded view: your step stays in this open page only." });
+  try { var raw = localStorage.getItem(TOPS_ACTION_KEY); if (raw === null) return empty; var value = raw.length <= 6000 ? topsValidateAction(JSON.parse(raw)) : null; return value ? { draft: value, status: "Loaded your saved career step from this browser." } : Object.assign({}, empty, { status: "Saved career step could not be read. Your saved copy is unchanged until you save or clear it." }); } catch (e) { return Object.assign({}, empty, { status: "Career step storage could not be read. You can work in this open page." }); }
+}
+function topsSaveAction(value) { var a = topsValidateAction(value); if (!a || window.__IS_IFRAME) return false; try { var raw = JSON.stringify(a); window.__safeSet(TOPS_ACTION_KEY, raw); return localStorage.getItem(TOPS_ACTION_KEY) === raw; } catch (e) { return false; } }
+function topsClearAction() { if (window.__IS_IFRAME) return true; try { localStorage.removeItem(TOPS_ACTION_KEY); return localStorage.getItem(TOPS_ACTION_KEY) === null; } catch (e) { return false; } }
+function CareerAction(props) {
+  var C = props.colors, a = props.state.draft, matches = topsActionMatches(a, props.guide), stale = !!a.text && !matches;
+  var focusEditor = useRef(false);
+  useEffect(function() { if (focusEditor.current && !stale) { focusEditor.current = false; var input = document.getElementById("tops-action-text"); if (input) input.focus(); } }, [a, stale]);
+  var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 10, font: "inherit", color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 6 };
+  var button = { minHeight: 44, minWidth: 44, margin: "8px 8px 0 0", padding: "10px 14px", font: "inherit", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 6, cursor: "pointer" };
+  function update(next) { props.setState({ draft: next, status: topsValidateAction(next) ? "Unsaved changes. Choose Save career step to keep this step on this browser." : "Check your step: use plain text within 240 characters and a valid target date from 2000 through 2099, or leave the date blank. Your edits are not saved." }); }
+  function edit(key, value) { var next = Object.assign({}, a, { [key]: value }); if (key === "text") { if (!value.trim()) next = topsEmptyAction(); else { next.context = a.context || topsValidateGuide(props.guide); next.done = false; } } update(next); }
+  return React.createElement("div", { id: "tops-career-action", style: { borderTop: "1px solid " + C.border, padding: "12px 0" } },
+    React.createElement("h3", { style: { fontSize: 18, margin: "0 0 8px" } }, stale ? "Step from an earlier goal" : "My next career step"),
+    stale && React.createElement("div", null,
+      React.createElement("p", { style: { lineHeight: 1.6, overflowWrap: "anywhere" } }, "Your guide details changed. This step still belongs to: " + (a.context.targetRole || a.context.currentRole || TOPS_GUIDE_PATHS[a.context.pathway]) + (a.context.goal ? " - " + a.context.goal : "") + ". Review it before using it for your current goal."),
+      React.createElement("dl", { style: { overflowWrap: "anywhere" } }, [["Earlier pathway", TOPS_GUIDE_PATHS[a.context.pathway]], ["Earlier role or experience", a.context.currentRole], ["Earlier target", a.context.targetRole], ["Earlier goal", a.context.goal]].map(function(row) { return React.createElement("div", { key: row[0] }, React.createElement("dt", { style: { fontWeight: 700 } }, row[0]), React.createElement("dd", { style: { margin: "4px 0 10px" } }, row[1] || "Not entered")); })),
+      React.createElement("p", { style: { overflowWrap: "anywhere" } }, a.text),
+      React.createElement("p", null, a.done ? "Marked done for the earlier goal." : "Not marked done for the earlier goal."),
+      React.createElement("p", null, "Using it for your current goal resets it to not done. Save afterward to keep the change."),
+      React.createElement("button", { type: "button", style: button, onClick: function() { focusEditor.current = true; update(Object.assign({}, a, { context: topsValidateGuide(props.guide), done: false })); } }, "Use this step for current goal")),
+    !stale && React.createElement("div", null,
+      a.done && React.createElement("p", { role: "status" }, "You marked this step done. Reopen it to continue, or edit the text to start another step."),
+      React.createElement("label", { htmlFor: "tops-action-text" }, "What will you do next?"),
+      React.createElement("input", { id: "tops-action-text", value: a.text, maxLength: 240, autoComplete: "off", style: field, "aria-describedby": "tops-action-help", onChange: function(e) { edit("text", e.target.value); } }),
+      React.createElement("label", { htmlFor: "tops-action-date", style: { display: "block", marginTop: 12 } }, "Target date (optional)"),
+      React.createElement("input", { id: "tops-action-date", type: "date", min: "2000-01-01", max: "2099-12-31", value: a.date, disabled: !a.text.trim(), "aria-describedby": "tops-action-status", "aria-invalid": !!a.date && topsFollowDate(a.date) !== a.date, style: field, onChange: function(e) { edit("date", e.target.value); } }),
+      React.createElement("p", { id: "tops-action-help", style: { lineHeight: 1.6 } }, "Keep this focused on a work or training step. Leave out sensitive information. The date is your planning target; it does not send a notification. Editing a completed step's text marks it not done."),
+      a.text.trim() && React.createElement("button", { type: "button", style: button, onClick: function() { update(Object.assign({}, a, { done: !a.done })); } }, a.done ? "Reopen step" : "Mark done"),
+      React.createElement("button", { type: "button", disabled: !!window.__IS_IFRAME || !topsValidateAction(a), style: button, onClick: function() { props.setState(Object.assign({}, props.state, { status: topsSaveAction(a) ? "Career step saved on this browser. Later edits and done or reopen changes need another save." : "Career step could not be saved. Keep this page open or download your plan." })); } }, "Save career step")),
+    React.createElement("p", { id: "tops-action-status", role: "status", "aria-live": "polite", style: { lineHeight: 1.6 } }, props.state.status),
+    React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Clear career step"),
+      React.createElement("p", null, "Remove this career step from this page and this browser? Your guide, worksheet and other progress stay unchanged."),
+      React.createElement("button", { type: "button", style: button, onClick: function() { if (topsClearAction()) props.setState({ draft: topsEmptyAction(), status: "Career step cleared from this page" + (window.__IS_IFRAME ? "." : " and this browser.") }); else props.setState(Object.assign({}, props.state, { status: "Saved career step could not be cleared. Your step is unchanged; try again." })); } }, "Confirm clear career step")));
+}
+// CAREER_ACTION_END
+function PersonalGuide(props) {
+  var C = props.colors, state = props.state, draft = state.draft;
+  var [selected, setSelected] = useState({});
+  var [confirmClear, setConfirmClear] = useState(false);
+  var fields = topsGuideSelection(draft, selected);
+  var actions = topsGuideActions(draft, props.gap, props.follow, props.dismissed);
+  var fieldStyle = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 10, border: "1px solid " + C.border, borderRadius: 6, color: C.textPrimary, background: C.bg, font: "inherit" };
+  var buttonStyle = { minWidth: 44, minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 6, color: C.textPrimary, background: C.bgCard, font: "inherit", cursor: "pointer" };
+  function change(k, v) { setSelected({}); var next = Object.assign({}, draft, { [k]: v }), valid = topsValidateGuide(next); props.setState({ draft: next, ready: !!valid && !!next.pathway, status: !valid ? "Use plain text within 120 characters per field; remove control characters to see your next step." : "Updated for this page. Choose Save guide details to keep these details on this browser." }); }
+  function clear() {
+    setSelected({});
+    if (!topsClearGuide()) { props.setState(Object.assign({}, state, { status: "Saved guide details could not be cleared. Your details remain here; try again." })); return; }
+    setConfirmClear(false); props.setState({ draft: topsEmptyGuide(), ready: false, status: "Saved guide details cleared from this browser. Your other tools and follow-ups are unchanged." });
+  }
+  function renderAction(action, primary) {
+    var target = draft.targetRole.trim(), existing = props.gap && props.gap.target || "";
+    var transfer = action.route === "career" && target && target !== existing.trim();
+    return React.createElement("div", { key: action.id, style: { borderTop: "1px solid " + C.border, padding: "12px 0" } },
+      React.createElement("h3", { style: { fontSize: primary ? 18 : 16, margin: "0 0 6px" } }, primary ? "Your next step: " + action.title : action.title),
+      React.createElement("p", { style: { color: C.textSecondary, lineHeight: 1.6, overflowWrap: "anywhere" } }, action.why),
+      React.createElement("button", { id: "tops-guide-action-" + action.id, type: "button", style: Object.assign({}, buttonStyle, primary ? { background: C.green, color: C.textOnFill, borderColor: C.green, fontWeight: 700 } : {}), onClick: function() { if (transfer && !existing.trim()) props.onTarget(target, existing); else props.onRoute(action.route, "tops-guide-action-" + action.id); } }, transfer && !existing.trim() ? "Use this target in my worksheet" : transfer ? "Continue my existing worksheet" : action.title),
+      transfer && !existing.trim() && React.createElement("p", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.5 } }, "Adds " + target + " to the worksheet in this page. " + (topsGuideHasWorksheetNotes(props.gap) ? "Existing notes are kept for review. Save there only after checking them." : "Save there if you want to return to it.")),
+      transfer && !!existing.trim() && React.createElement("details", { id: "tops-guide-target-review" },
+        React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Review target change"),
+        React.createElement("p", { style: { overflowWrap: "anywhere" } }, "Current worksheet target: " + existing),
+        React.createElement("p", { style: { overflowWrap: "anywhere" } }, "Proposed target: " + target),
+        React.createElement("p", { style: { color: C.textSecondary, lineHeight: 1.6 } }, (topsGuideHasWorksheetNotes(props.gap) ? "Your notes and counselor preparation stay intact and may refer to the old target. Review them for the new role before saving the worksheet. " : "") + "This changes the open worksheet; your saved copy stays unchanged until you save there."),
+        React.createElement("button", { type: "button", style: buttonStyle, onClick: function() { props.onTarget(target, existing); } }, "Replace worksheet target")));
+  }
+  return React.createElement("section", { "aria-labelledby": "tops-guide-heading", style: { border: "1px solid " + C.border, borderRadius: 12, padding: 16, marginBottom: 14, background: C.bgCard } },
+    React.createElement("h2", { id: "tops-guide-heading", tabIndex: -1, style: { fontSize: 20, margin: "0 0 8px", color: C.textPrimary } }, state.ready ? "Continue your career guide" : "Your career guide"),
+    React.createElement("p", { style: { color: C.textSecondary, lineHeight: 1.6 } }, "Choose a direction. Add details only if they help."),
+    React.createElement("label", { htmlFor: "tops-guide-pathway" }, "What are you working toward?"),
+    React.createElement("select", { id: "tops-guide-pathway", value: draft.pathway, "aria-describedby": "tops-guide-status", style: fieldStyle, onChange: function(e) { change("pathway", e.target.value); } }, React.createElement("option", { value: "" }, "Choose a pathway"), Object.keys(TOPS_GUIDE_PATHS).map(function(k) { return React.createElement("option", { key: k, value: k }, TOPS_GUIDE_PATHS[k]); })),
+    React.createElement("details", { id: "tops-guide-details" },
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", color: C.textPrimary } }, "Add or edit details (optional)"),
+      React.createElement("p", { id: "tops-guide-help", style: { lineHeight: 1.6, color: C.textSecondary } }, "Details are optional. Keep each entry within 120 characters and focused on work goals. Leave out sensitive personal or service information. Editing these details does not save them."),
+      [["currentRole", "Current role or experience (optional)", "For example, equipment maintenance"], ["targetRole", "Role or field you want to explore (optional)", "For example, project coordination"], ["goal", "What would you like to accomplish next? (optional)", "For example, compare two training options"]].map(function(row) { return React.createElement("div", { key: row[0], style: { marginTop: 12 } }, React.createElement("label", { htmlFor: "tops-guide-" + row[0] }, row[1]), React.createElement("input", { id: "tops-guide-" + row[0], value: draft[row[0]], maxLength: 120, placeholder: row[2], "aria-describedby": "tops-guide-help", style: fieldStyle, onChange: function(e) { change(row[0], e.target.value); } })); }),
+      React.createElement("p", { style: { fontSize: 13, color: C.textSecondary } }, "Your next step updates as you edit. Nothing is copied to another tool automatically.")),
+    React.createElement("p", { id: "tops-guide-status", role: "status", "aria-live": "polite", style: { lineHeight: 1.6, color: C.textSecondary } }, state.status),
+    state.ready && React.createElement("div", null,
+      draft.targetRole && React.createElement("p", { style: { overflowWrap: "anywhere" } }, "Your focus: " + draft.targetRole),
+      draft.goal && React.createElement("p", { style: { overflowWrap: "anywhere" } }, "Your next goal: " + draft.goal),
+      props.actionState && React.createElement("details", { id: "tops-action-details", open: props.actionState.draft.text ? true : undefined }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, props.actionState.draft.text ? "My career step" : "Add my own next step"), React.createElement(CareerAction, { colors: C, guide: draft, state: props.actionState, setState: props.setActionState })),
+      !(props.actionState && topsActionMatches(props.actionState.draft, draft)) && actions[0] && renderAction(actions[0], true),
+      React.createElement("details", { id: "tops-guide-other-steps" }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Other useful steps"), actions.slice(props.actionState && topsActionMatches(props.actionState.draft, draft) ? 0 : 1).map(function(action) { return renderAction(action, false); }), React.createElement("button", { type: "button", id: "tops-guide-service-record", style: buttonStyle, onClick: function() { props.onRoute("records", "tops-guide-service-record"); } }, "Use my military record")),
+      React.createElement("button", { type: "button", style: buttonStyle, disabled: !!window.__IS_IFRAME, onClick: function() { props.setState(Object.assign({}, state, { status: topsSaveGuide(draft) ? "Your guide details are saved in this browser. Your career step has its own save control." : "Your changes could not be saved in this browser. Keep this page open to continue, or try again." })); } }, "Save guide details"),
+      React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Review details for Navigator"),
+        React.createElement("p", null, "Choose what to share with Navigator. Selections apply to one request and start a new Navigator conversation."),
+        Object.keys(TOPS_GUIDE_FIELDS).filter(function(k) { return !!draft[k].trim(); }).map(function(k) { return React.createElement("label", { key: k, style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10 } }, React.createElement("input", { type: "checkbox", checked: selected[k] === true, onChange: function(e) { setSelected(Object.assign({}, selected, { [k]: e.target.checked })); } }), TOPS_GUIDE_FIELDS[k]); }),
+        React.createElement("p", null, "Message to Navigator: Help me choose one practical next step using the guide details I selected."),
+        React.createElement("div", { "aria-label": "Selected guide details", style: { overflowWrap: "anywhere" } }, Object.keys(fields).length ? Object.keys(fields).map(function(k) { return React.createElement("p", { key: k }, TOPS_GUIDE_FIELDS[k] + ": " + (k === "pathway" ? TOPS_GUIDE_PATHS[fields[k]] : fields[k])); }) : React.createElement("p", null, "No details selected.")),
+        React.createElement("p", { style: { lineHeight: 1.6, color: C.textSecondary } }, "When you send this message, the selected details go to Transition OPS and OpenAI to help Navigator respond. Saving your guide does not send these details to Navigator. Clearing your guide does not delete information previously sent to Navigator."),
+        React.createElement("button", { type: "button", disabled: !Object.keys(fields).length || props.busy, style: buttonStyle, onClick: function() { props.onAsk(fields); setSelected({}); } }, "Send selected details to Navigator"),
+        React.createElement("button", { type: "button", style: buttonStyle, onClick: function() { setSelected({}); props.onRoute("navigator", "tops-guide-heading"); } }, "Open Navigator without guide details"))),
+    React.createElement("details", { open: confirmClear, onToggle: function(e) { setConfirmClear(e.currentTarget.open); } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Clear saved guide"),
+      React.createElement("p", null, "Remove this guide's pathway and career details from this browser and this page? This does not clear worksheets, My Plan progress or information previously sent to Navigator."),
+      React.createElement("button", { type: "button", style: buttonStyle, onClick: clear }, "Confirm clear saved guide")));
+}
+// PERSONAL_GUIDE_END
+
+// PLAN_BACKUP_START
+const TOPS_PLAN_BACKUP_LIMIT = 131072;
+const TOPS_PLAN_BACKUP_KEYS = [TOPS_GUIDE_KEY, TOPS_GAP_KEY, "taskProgress", "docProgress", TOPS_FOLLOW_KEY, "tops_dismissed_reminders"];
+const TOPS_PLAN_BACKUP_ALL_KEYS = TOPS_PLAN_BACKUP_KEYS.concat(TOPS_ACTION_KEY);
+function topsBackupShape(value, keys) {
+  return !!value && typeof value === "object" && !Array.isArray(value) && Object.keys(value).sort().join(",") === keys.slice().sort().join(",");
+}
+function topsBackupReminderIds() {
+  return new Set(SMART_REMINDERS.concat.apply(SMART_REMINDERS, ["guard", "active", "separated", "retired", "spouse"].map(generateCriticalWindowReminders)).map(function(row) { return row.id; }));
+}
+function topsValidatePlanBackup(value) {
+  if (!topsBackupShape(value, ["format", "version", "sections"]) || value.format !== "transition-ops-plan" || ![1, 2].includes(value.version)) return null;
+  var s = value.sections;
+  if (!topsBackupShape(s, ["guide", "careerWorksheet", "taskProgress", "documentProgress", "followupProgress", "completedReminders"].concat(value.version === 2 ? ["careerAction"] : []))) return null;
+  var careerAction = value.version === 2 ? topsValidateAction(s.careerAction) : null;
+  if (value.version === 2 && !careerAction) return null;
+  var guide = topsValidateGuide(s.guide), gap = topsValidateGap(s.careerWorksheet);
+  if (!guide || !gap || s.careerWorksheet.version !== 2 || !Array.isArray(s.taskProgress) || s.taskProgress.length > TRANSITION_MILESTONES.length || !Array.isArray(s.documentProgress) || s.documentProgress.length > DOCUMENT_VAULT.length) return null;
+  var seen = new Set();
+  if (!s.taskProgress.every(function(m) {
+    if (!topsBackupShape(m, ["id", "tasks"])) return false;
+    var source = TRANSITION_MILESTONES.find(function(row) { return row.id === m.id; });
+    if (!topsBackupShape(m, ["id", "tasks"]) || !source || seen.has(m.id) || !Array.isArray(m.tasks) || m.tasks.length > source.tasks.length) return false;
+    seen.add(m.id); var tasks = new Set();
+    return m.tasks.every(function(t) { if (!topsBackupShape(t, ["id", "done"]) || typeof t.done !== "boolean" || tasks.has(t.id) || !source.tasks.some(function(row) { return row.id === t.id; })) return false; tasks.add(t.id); return true; });
+  })) return null;
+  seen = new Set();
+  if (!s.documentProgress.every(function(d) { if (!topsBackupShape(d, ["id", "obtained"]) || typeof d.obtained !== "boolean" || seen.has(d.id) || !DOCUMENT_VAULT.some(function(row) { return row.id === d.id; })) return false; seen.add(d.id); return true; })) return null;
+  var known = topsBackupReminderIds(), progress = s.followupProgress, done = s.completedReminders;
+  if (!progress || typeof progress !== "object" || Array.isArray(progress) || !done || typeof done !== "object" || Array.isArray(done) || Object.keys(progress).length > known.size || Object.keys(done).length > known.size) return null;
+  if (!Object.keys(progress).every(function(id) { var row = progress[id]; return known.has(id) && !Object.prototype.hasOwnProperty.call(done, id) && topsBackupShape(row, ["status", "date"]) && ["working", "waiting"].includes(row.status) && typeof row.date === "string" && (row.date === "" || topsFollowDate(row.date) === row.date); })) return null;
+  if (!Object.keys(done).every(function(id) { return known.has(id) && done[id] === true; })) return null;
+  return { format: "transition-ops-plan", version: value.version, sections: Object.assign({ guide: guide, careerWorksheet: gap, taskProgress: s.taskProgress.map(function(m) { return { id: m.id, tasks: m.tasks.map(function(t) { return { id: t.id, done: t.done }; }) }; }), documentProgress: s.documentProgress.map(function(d) { return { id: d.id, obtained: d.obtained }; }), followupProgress: Object.fromEntries(Object.keys(progress).map(function(id) { return [id, { status: progress[id].status, date: progress[id].date }]; })), completedReminders: Object.fromEntries(Object.keys(done).map(function(id) { return [id, true]; })) }, value.version === 2 ? { careerAction: careerAction } : {}) };
+}
+function topsCreatePlanBackup(value) {
+  var known = topsBackupReminderIds(), done = {}, follow = {};
+  Object.keys(value.completedReminders).forEach(function(id) { if (known.has(id) && value.completedReminders[id] === true) done[id] = true; });
+  Object.keys(value.followupProgress).forEach(function(id) { if (known.has(id) && !done[id]) follow[id] = value.followupProgress[id]; });
+  return topsValidatePlanBackup({ format: "transition-ops-plan", version: 2, sections: { guide: value.guide, careerWorksheet: value.careerWorksheet, taskProgress: value.taskProgress.map(function(m) { return { id: m.id, tasks: m.tasks.map(function(t) { return { id: t.id, done: t.done }; }) }; }), documentProgress: value.documentProgress.map(function(d) { return { id: d.id, obtained: d.obtained }; }), followupProgress: follow, completedReminders: done, careerAction: value.careerAction === undefined ? topsEmptyAction() : value.careerAction } });
+}
+function topsParsePlanBackup(text) {
+  try { if (typeof text !== "string" || new TextEncoder().encode(text).length > TOPS_PLAN_BACKUP_LIMIT) return null; return topsValidatePlanBackup(JSON.parse(text)); } catch (e) { return null; }
+}
+function topsBackupProgressState(sections) {
+  return { milestones: TRANSITION_MILESTONES.map(function(m) { var saved = sections.taskProgress.find(function(row) { return row.id === m.id; }); return Object.assign({}, m, { tasks: m.tasks.map(function(t) { var flag = saved && saved.tasks.find(function(row) { return row.id === t.id; }); return Object.assign({}, t, { done: flag ? flag.done : false }); }) }); }), documents: DOCUMENT_VAULT.map(function(d) { var flag = sections.documentProgress.find(function(row) { return row.id === d.id; }); return Object.assign({}, d, { obtained: flag ? flag.obtained : false }); }) };
+}
+function topsRestorePlanBackup(value) {
+  var valid = topsValidatePlanBackup(value);
+  if (!valid || window.__IS_IFRAME) return { ok: false, reason: "unavailable" };
+  var keys = valid.version === 2 ? TOPS_PLAN_BACKUP_ALL_KEYS : TOPS_PLAN_BACKUP_KEYS;
+  var s = valid.sections, values = [s.guide, s.careerWorksheet, s.taskProgress, s.documentProgress, s.followupProgress, s.completedReminders].concat(valid.version === 2 ? [s.careerAction] : []).map(function(section) { return JSON.stringify(section); }), before;
+  try { before = keys.map(function(key) { return localStorage.getItem(key); }); } catch (e) { return { ok: false, reason: "read" }; }
+  try {
+    keys.forEach(function(key, i) { localStorage.setItem(key, values[i]); if (localStorage.getItem(key) !== values[i]) throw new Error("write"); });
+    if (!keys.every(function(key, i) { return localStorage.getItem(key) === values[i]; })) throw new Error("verify");
+    return { ok: true, sections: s, progress: topsBackupProgressState(s) };
+  } catch (e) {
+    keys.forEach(function(key, i) { try { if (before[i] === null) localStorage.removeItem(key); else localStorage.setItem(key, before[i]); } catch (ignored) {} });
+    var rolledBack = false;
+    try { rolledBack = keys.every(function(key, i) { return localStorage.getItem(key) === before[i]; }); } catch (ignored) {}
+    return { ok: false, reason: rolledBack ? "rolled-back" : "partial" };
+  }
+}
+function PlanBackup(props) {
+  var [preview, setPreview] = useState(null), [message, setMessage] = useState(""), [reading, setReading] = useState(false);
+  var generation = useRef(0), input = useRef(null), heading = useRef(null), reviewed = useRef(null);
+  function fingerprint() { return JSON.stringify([topsCreatePlanBackup(props.value), TOPS_PLAN_BACKUP_ALL_KEYS.map(function(key) { return localStorage.getItem(key); })]); }
+  useEffect(function() { if (preview && heading.current) heading.current.focus(); }, [preview]);
+  useEffect(function() { return function() { generation.current++; }; }, []);
+  var C = props.colors, button = { minHeight: 44, minWidth: 44, padding: "10px 14px", marginRight: 8, marginTop: 8, font: "inherit", border: "1px solid " + C.border, borderRadius: 6, background: C.bgCard, color: C.textPrimary, cursor: "pointer" };
+  function cancel() { generation.current++; setReading(false); setPreview(null); setMessage("Restore canceled. Your current plan is unchanged."); if (input.current) { input.current.value = ""; input.current.focus(); } }
+  function download() {
+    var value = topsCreatePlanBackup(props.value);
+    if (!value) { setMessage("This plan could not be backed up. Check the guide and worksheet entries, then try again."); return; }
+    var text = JSON.stringify(value, null, 2);
+    if (new TextEncoder().encode(text).length > TOPS_PLAN_BACKUP_LIMIT) { setMessage("This plan is too large for the backup format. No file was created."); return; }
+    var url, link;
+    try { url = URL.createObjectURL(new Blob([text], { type: "application/json" })); link = document.createElement("a"); link.href = url; link.download = "transition-ops-plan-" + new Date().toISOString().slice(0, 10) + ".json"; document.body.appendChild(link); link.click(); setMessage("Backup file prepared. Check your downloads."); }
+    catch (e) { setMessage("The download could not start. Your current plan is unchanged."); }
+    finally { if (link) link.remove(); if (url) setTimeout(function() { URL.revokeObjectURL(url); }, 1000); }
+  }
+  function readFile(event) {
+    var file = event.target.files && event.target.files[0], token = ++generation.current;
+    event.target.value = "";
+    setPreview(null); setReading(false);
+    if (!file) { setMessage("No backup selected. Your current plan is unchanged."); return; }
+    if (file.size > TOPS_PLAN_BACKUP_LIMIT || file.size === 0) { setMessage("Choose a plan backup no larger than 128 KB. Your current plan is unchanged."); event.target.value = ""; return; }
+    setReading(true); setMessage("Reading the selected backup in this browser.");
+    file.text().then(function(text) { if (token !== generation.current) return; setReading(false); var value = topsParsePlanBackup(text); if (!value) { setMessage("This file is not a supported plan backup. Your current plan is unchanged."); return; } reviewed.current = fingerprint(); setPreview(value); setMessage("Review the sections below before replacing your plan."); }).catch(function() { if (token === generation.current) { setReading(false); setMessage("The backup could not be read. Your current plan is unchanged."); } });
+  }
+  function restore() {
+    try { if (reviewed.current !== fingerprint()) { setPreview(null); setMessage("Your current or saved plan changed. Choose the backup again to review it before restoring."); return; } } catch (e) { setPreview(null); setMessage("Saved items could not be checked. Restore did not start."); return; }
+    var result = topsRestorePlanBackup(preview);
+    if (result.ok) { props.onRestore(result); setPreview(null); if (input.current) input.current.value = ""; setMessage("Plan restored in this page and saved on this browser. Other app data is unchanged."); }
+    else setMessage(result.reason === "partial" ? "Restore failed and some saved items could not be put back. Your open plan is unchanged, but saved copies may differ. Keep this page open and download your current plan before reloading." : result.reason === "rolled-back" ? "Restore failed. The previous saved items were put back, and your open plan is unchanged." : "Restore could not start. Your current plan is unchanged.");
+  }
+  return React.createElement("section", { "aria-label": "Plan backup", style: { border: "1px solid " + C.border, borderRadius: 12, padding: "4px 16px", marginBottom: 14, background: C.bgCard, color: C.textPrimary } },
+    React.createElement("details", { id: "tops-plan-backup" }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Back up or restore my plan"),
+      React.createElement("p", { style: { lineHeight: 1.6 } }, "Download your career plan and progress currently open in this page, including unsaved edits. This does not save those edits in the app. No account is needed."),
+      React.createElement("p", { style: { lineHeight: 1.6 } }, "Includes guide details, your career step and its goal details, career worksheet and counselor notes, My Plan task and document checkmarks, completed reminders, and follow-up statuses and dates. Does not include Resume Drafter content, Navigator chats, service profile or separation date, readiness answers, VA or pay inputs, or alert settings."),
+      React.createElement("p", { style: { lineHeight: 1.6 } }, "This readable file contains your notes and progress and is not encrypted. Keep it somewhere private. Anyone with the file can read what you entered."),
+      React.createElement("button", { type: "button", style: button, onClick: download }, "Download my plan"),
+      React.createElement("label", { htmlFor: "tops-backup-file", style: { display: "block", marginTop: 16 } }, "Restore my plan"),
+      React.createElement("input", { id: "tops-backup-file", ref: input, type: "file", accept: ".json,application/json", disabled: !!window.__IS_IFRAME, onChange: readFile, "aria-describedby": "tops-backup-file-help tops-backup-status", style: { display: "block", maxWidth: "100%", minHeight: 44, padding: "10px 0", font: "inherit" } }),
+      React.createElement("p", { id: "tops-backup-file-help", style: { fontSize: 13, lineHeight: 1.6 } }, window.__IS_IFRAME ? "Restore is unavailable in an embedded view. Open Transition OPS directly to restore on this browser." : "Choose a Transition OPS plan JSON file, up to 128 KB. This feature reads the selected file in this browser; it does not send the file to a server."),
+      reading && React.createElement("button", { type: "button", style: button, onClick: cancel }, "Cancel reading"),
+      preview && React.createElement("div", { style: { borderTop: "1px solid " + C.border, paddingTop: 12 } },
+        React.createElement("h3", { ref: heading, tabIndex: -1, id: "tops-backup-review", style: { fontSize: 18 } }, "Review your backup"),
+        React.createElement("p", { style: { lineHeight: 1.6 } }, "Confirming replaces all " + (preview.version === 2 ? "seven" : "six") + " sections below in this page and in this browser's saved plan, including unsaved edits. Empty sections clear their current values. Download your current plan first if you want to keep it."),
+        preview.version === 1 && React.createElement("p", null, "This older backup has no career step. Your current and saved career step will stay unchanged. Review it against the restored guide afterward."),
+        preview.version === 2 && React.createElement("p", { style: { overflowWrap: "anywhere" } }, "Career step: " + (preview.sections.careerAction.text || "Empty - clears your current step") + (preview.sections.careerAction.date ? "; target date " + preview.sections.careerAction.date : "") + (preview.sections.careerAction.text ? (preview.sections.careerAction.done ? "; marked done" : "; not marked done") : "") + (preview.sections.careerAction.text && !topsActionMatches(preview.sections.careerAction, preview.sections.guide) ? ". This step belongs to different guide details and will need review." : "")),
+        React.createElement("p", { style: { lineHeight: 1.6 } }, "Service profile and separation date are not included. Set those separately on another browser to restore your timeline context. Resume, Navigator chats and other tool data are unchanged."),
+        React.createElement("dl", { style: { overflowWrap: "anywhere" } }, [["Current role or experience", preview.sections.guide.currentRole], ["Target role or field", preview.sections.guide.targetRole], ["Next goal", preview.sections.guide.goal]].map(function(row) { return React.createElement("div", { key: row[0], style: { marginBottom: 8 } }, React.createElement("dt", { style: { fontWeight: 700 } }, row[0]), React.createElement("dd", { style: { margin: "4px 0" } }, row[1] || "Not entered")); })),
+        React.createElement("ul", null,
+          React.createElement("li", null, "Guide details: " + (TOPS_GUIDE_PATHS[preview.sections.guide.pathway] || "No pathway selected")),
+          React.createElement("li", { style: { overflowWrap: "anywhere" } }, "Career worksheet and counselor notes: " + (preview.sections.careerWorksheet.target || "No target entered")),
+          React.createElement("li", null, "Task progress: " + preview.sections.taskProgress.reduce(function(n, m) { return n + m.tasks.filter(function(t) { return t.done; }).length; }, 0) + " checked"),
+          React.createElement("li", null, "Document progress: " + preview.sections.documentProgress.filter(function(d) { return d.obtained; }).length + " checked"),
+          React.createElement("li", null, "Follow-ups: " + Object.keys(preview.sections.followupProgress).length),
+          React.createElement("li", null, "Completed reminders: " + Object.keys(preview.sections.completedReminders).length)),
+        React.createElement("button", { type: "button", style: button, onClick: restore }, "Replace with this backup"), React.createElement("button", { type: "button", style: button, onClick: cancel }, "Keep my current plan")),
+      React.createElement("p", { id: "tops-backup-status", role: "status", "aria-live": "polite", style: { lineHeight: 1.6 } }, message)));
+}
+// PLAN_BACKUP_END
+
 function App() {
   const [theme, setTheme] = useState(() => {
     try {
@@ -6247,7 +6763,9 @@ function App() {
   const [navMsgs, setNavMsgs] = useState([]);
   const [navInput, setNavInput] = useState("");
   const [navBusy, setNavBusy] = useState(false);
-  const sendNavigator = function(preset) {
+  const [guideState, setGuideState] = useState(topsLoadGuide);
+  const [actionState, setActionState] = useState(topsLoadAction);
+  const sendNavigator = function(preset, guideFields) {
     var q = (preset || navInput).trim();
     if (!q || navBusy) return;
     try {
@@ -6258,12 +6776,12 @@ function App() {
       o.n++; window.__safeSet("tops_nav_pilot", JSON.stringify(o));
     } catch (e) {}
     setNavInput("");
-    var next = navMsgs.concat([{ r: "u", t: q }]);
+    var next = (guideFields ? [] : navMsgs).concat([{ r: "u", t: q }]);
     setNavMsgs(next); setNavBusy(true);
     var ctx = "";
     try {
       var sd = window.__safeGet("tops_sep_date");
-      if (sd) {
+      if (sd && !guideFields) {
         var dd = Math.round((new Date(sd + "T00:00:00") - new Date()) / 86400000);
         ctx = "Separation date: " + sd + " (" + (dd >= 0 ? "T-" + dd + " days out" : Math.abs(dd) + " days AFTER separation") + ").";
         var st = window.__safeGet("tops_status"); if (st) ctx += " Status: " + st + ".";
@@ -6271,7 +6789,7 @@ function App() {
     } catch (e) {}
     fetch("/.netlify/functions/navigator", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ context: ctx, daysOut: (function(){ try { var sd2 = window.__safeGet("tops_sep_date"); if (sd2) return Math.round((new Date(sd2 + "T00:00:00") - new Date()) / 86400000); } catch(e){} return null; })(), messages: next.map(function(m){ return { role: m.r === "u" ? "user" : "assistant", content: m.t }; }) })
+      body: JSON.stringify({ context: ctx, guideContext: guideFields || undefined, daysOut: (function(){ if (guideFields) return null; try { var sd2 = window.__safeGet("tops_sep_date"); if (sd2) return Math.round((new Date(sd2 + "T00:00:00") - new Date()) / 86400000); } catch(e){} return null; })(), messages: next.map(function(m){ return { role: m.r === "u" ? "user" : "assistant", content: m.t }; }) })
     }).then(function(r){ return r.json(); }).then(function(data){
       setNavBusy(false);
       if (data && data.reply) setNavMsgs(function(m){ return m.concat([{ r: "b", t: data.reply }]); });
@@ -6340,9 +6858,12 @@ function App() {
   const [pathwayStep, setPathwayStep] = useState(0);
   const [pathwayType, setPathwayType] = useState("");
   const [pathwayMode, setPathwayMode] = useState("journey");
+  const [careerExperienceContext, setCareerExperienceContext] = useState(null);
   const [journeyMOS, setJourneyMOS] = useState("");
   const [journeyTarget, setJourneyTarget] = useState("");
   const [milestones, setMilestones] = useState(topsRestoreMilestones);
+  const restorePlanEffects = useRef({ tasks: false, documents: false });
+  const [guideRestoreRevision, setGuideRestoreRevision] = useState(0);
   const [selectedMilestone, setSelectedMilestone] = useState(null);
   const [separationDate, setSeparationDate] = useState("");
   const [separationDateFocused, setSeparationDateFocused] = useState(false);
@@ -6667,6 +7188,7 @@ function App() {
     var frame = requestAnimationFrame(function() {
       var target = document.getElementById(id) || (activeTab === "dashboard" && document.getElementById("tops-home-timeline"));
       if (!target) return;
+      for (var parent = target.parentElement; parent; parent = parent.parentElement) { if (parent.tagName === "DETAILS") parent.open = true; }
       target.focus();
       target.scrollIntoView({ block: "center" });
       continuationFocus.current = null;
@@ -6750,12 +7272,14 @@ function App() {
   // Save task progress
   useEffect(() => {
     if (window.__IS_IFRAME) return;
+    if (restorePlanEffects.current.tasks) { restorePlanEffects.current.tasks = false; return; }
     try {
       window.__safeSet("taskProgress", JSON.stringify(milestones));
     } catch (e) {}
   }, [milestones]);
   useEffect(() => {
     if (window.__IS_IFRAME) return;
+    if (restorePlanEffects.current.documents) { restorePlanEffects.current.documents = false; return; }
     try {
       window.__safeSet("docProgress", JSON.stringify(documents));
     } catch (e) {}
@@ -7821,6 +8345,7 @@ function App() {
   }, "All alerts acknowledged."))),
 
   /*#__PURE__*/React.createElement(activeTab === "reminders" && focusedReminderId ? "div" : "main", {
+    id: "tops-main-content", tabIndex: -1,
     className: "content-area",
     style: {
       padding: activeTab === "reminders" && focusedReminderId ? "14px 14px 0" : "14px 14px 120px"
@@ -7852,6 +8377,29 @@ function App() {
       React.createElement("input", { value: navInput, onChange: function(e){ setNavInput(e.target.value); }, onKeyDown: function(e){ if (e.key === "Enter") sendNavigator(); }, "aria-label": "Ask the Transition Navigator", placeholder: "Ask about your transition\u2026", style: { flex: 1, minWidth: 0, minHeight: 44, background: C.isLight ? C.bg : "#1A2114", border: "1px solid " + (C.isLight ? C.border : "#4A5A35"), borderRadius: 8, color: C.isLight ? C.textPrimary : "#F2EFE4", caretColor: C.isLight ? C.textPrimary : "#E8C547", fontWeight: 600, padding: 12, fontSize: 16, fontFamily: "inherit", WebkitTextFillColor: C.isLight ? C.textPrimary : "#F2EFE4", opacity: 1 } }),
       React.createElement("button", { type: "button", disabled: navBusy || !navInput.trim(), onClick: function(){ sendNavigator(); }, "aria-label": "Send Navigator question", style: { minHeight: 44, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), border: "none", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: navBusy || !navInput.trim() ? "default" : "pointer", opacity: navBusy || !navInput.trim() ? 0.5 : 1 } }, "SEND"))),
   navUnlocked && activeTab !== "navigator" && activeTab !== "dashboard" && /*#__PURE__*/React.createElement("div", { className: "tops-ask-launcher", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
+  activeTab === "dashboard" && React.createElement(PersonalGuide, { key: guideRestoreRevision, colors: C, state: guideState, setState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, follow: followProgress, dismissed: dismissedReminders, busy: navBusy, onTarget: function(target, expectedTarget) {
+    var updated = topsGuideWorksheetTarget(gapState.draft, target, expectedTarget);
+    if (!updated) { setGuideState(Object.assign({}, guideState, { status: "The worksheet changed or this target could not be used. Review the current target and try again." })); return; }
+    setGapState({ draft: updated, status: topsGuideHasWorksheetNotes(gapState.draft) ? "Target updated in this page. Existing notes and counselor preparation are unchanged and may refer to another role. Review them before choosing Save on this browser; your saved worksheet has not changed." : "Target added to this worksheet. Save on this browser if you want to return to it. Your saved worksheet has not changed." });
+    setPathwayMode("planner"); setPathwayStep(1); continuationFocus.current = "career-gap-target"; continuationReturn.current = "tops-guide-action-career"; setActiveTab("pathway");
+  }, onAsk: function(fields) { setActiveTab("navigator"); sendNavigator("Help me choose one practical next step using the guide details I selected.", fields); }, onRoute: function(route, invoker) {
+    if (route === "career") { setPathwayMode("planner"); setPathwayStep(1); continuationFocus.current = "career-gap-heading"; continuationReturn.current = invoker; setActiveTab("pathway"); }
+    else if (route === "certs" || route === "employment") { setSubTab("directory"); setResourceFilter({ category: route, cost: "ALL", eligibility: "ALL" }); continuationFocus.current = "tops-main-content"; continuationReturn.current = invoker; setActiveTab("resources"); }
+    else if (route === "records") { continuationFocus.current = "tops-upload-heading"; continuationReturn.current = invoker; setActiveTab("dd214"); }
+    else if (route === "documents") openPlanRoute("resources", "tops-plan-documents", invoker);
+    else if (route === "readiness") openPlanRoute("readiness", "tops-plan-readiness", invoker);
+    else if (route === "followups") openPlanRoute("reminders", "tops-plan-reminders", invoker);
+    else { continuationFocus.current = route === "money" ? "tops-guide-money" : "tops-main-content"; continuationReturn.current = invoker; setActiveTab(route === "money" ? "vapay" : "navigator"); }
+  } }),
+  activeTab === "dashboard" && React.createElement(PlanBackup, { colors: C, value: { guide: guideState.draft, careerAction: actionState.draft, careerWorksheet: gapState.draft, taskProgress: milestones, documentProgress: documents, followupProgress: followProgress, completedReminders: dismissedReminders }, onRestore: function(result) {
+    restorePlanEffects.current = { tasks: true, documents: true };
+    setGuideState({ draft: result.sections.guide, ready: !!result.sections.guide.pathway, status: "Guide details restored and saved on this browser." });
+    setGapState({ draft: result.sections.careerWorksheet, status: "Worksheet restored and saved on this browser. Review the notes for your current goal." });
+    setMilestones(result.progress.milestones); setDocuments(result.progress.documents);
+    setFollowProgress(result.sections.followupProgress); setDismissedReminders(result.sections.completedReminders);
+    if (Object.prototype.hasOwnProperty.call(result.sections, "careerAction")) setActionState({ draft: result.sections.careerAction, status: "Career step restored and saved on this browser." });
+    setGuideRestoreRevision(function(value) { return value + 1; });
+  } }),
   userStatus === "guard" && activeTab === "dashboard" && renderHomeNavigator(),
   activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, React.createElement(ServiceProfileEditor, { colors: C, value: userStatus, onSave: function(value) { serviceProfileEdit.current = true; setUserStatus(value); } }), whatsNewOpen && React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
     React.createElement("div", { onClick: function(e) { e.stopPropagation(); }, style: { background: C.bgCard, borderRadius: 12, width: "100%", maxWidth: 520, maxHeight: "82vh", overflowY: "auto", padding: "18px 18px 14px" } },
@@ -9093,7 +9641,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         fontFamily: "'Source Sans 3', sans-serif"
       }
     }, t.text)), TOPS_TAP_PREP[t.id] && React.createElement("p", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.6, margin: "6px 12px 16px" } }, TOPS_TAP_PREP[t.id]), t.id === "t12b" && React.createElement("button", { type: "button", onClick: function() { setPathwayMode("planner"); setPathwayStep(1); setActiveTab("pathway"); }, style: { minHeight: 44, margin: "0 12px 16px", padding: "10px 14px", background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.gold, borderRadius: 5, font: "inherit", cursor: "pointer" } }, "Open career gap worksheet"))));
-  })(), activeTab === "pathway" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { ...S.card, borderLeft: "3px solid " + C.greenBright, marginBottom: 14 } },
+  })(), activeTab === "pathway" && /*#__PURE__*/React.createElement("div", null, careerExperienceContext && React.createElement("section", { "aria-labelledby": "tops-career-context", style: { ...S.card, marginBottom: 14 } }, React.createElement("h3", { id: "tops-career-context" }, careerExperienceContext.tentative ? "Possibility to explore" : "Experience to compare"), React.createElement("p", null, (careerExperienceContext.tentative ? "Experience you selected: " : "Your description: ") + careerExperienceContext.wording), careerExperienceContext.example && React.createElement("p", null, "Your example: " + careerExperienceContext.example), careerExperienceContext.tentative && React.createElement("p", null, careerExperienceContext.partial ? "You selected only part of this possibility. Treat it as a starting point for research, not a confirmed qualification." : "This is a tentative starting point based on your selection, not a confirmed qualification."), careerExperienceContext.target && React.createElement("p", null, "Your target: " + careerExperienceContext.target), React.createElement("p", null, "Use this experience to compare the pathways below. This is your description, not a verified qualification or job match. It stays in this page session; it is not saved to your worksheet or backup."), React.createElement("button", { type: "button", onClick: function() { setCareerExperienceContext(null); }, style: { minHeight: 44, padding: "10px 14px", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 6, font: "inherit" } }, "Clear experience context")), /*#__PURE__*/React.createElement("div", { style: { ...S.card, borderLeft: "3px solid " + C.greenBright, marginBottom: 14 } },
     React.createElement("button", { type: "button", "aria-expanded": aiR.open, "aria-controls": "tops-resume-drafter-panel", onClick: function() { setAiR(function(p){ return Object.assign({}, p, { open: !p.open }); }); if (window.__trackEvent) window.__trackEvent("ai_resume_opened", {}); }, style: { display: "flex", width: "100%", minHeight: 44, padding: 0, background: "transparent", border: "none", justifyContent: "space-between", alignItems: "center", textAlign: "left", color: "inherit", cursor: "pointer" } },
       React.createElement("span", { style: { display: "block", minWidth: 0 } },
         React.createElement("span", { style: { display: "block", fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.greenBright, fontWeight: 700 } }, "\u2728 AI RESUME DRAFTER \u2014 FREE"),
@@ -14982,7 +15530,18 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       letterSpacing: 1,
       textDecoration: "none"
     }
-  }, "MILITARY ONESOURCE FREE TAX SERVICES ", "\u2192")), activeTab === "dd214" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, "MILITARY ONESOURCE FREE TAX SERVICES ", "\u2192")), activeTab === "dd214" && React.createElement(CareerDocumentUpload, { colors: C, gap: gapState.draft, onExplore: function(context) { setCareerExperienceContext(context); setPathwayMode("journey"); setJourneyTarget(""); setActiveTab("pathway"); window.scrollTo(0, 0); }, onTransfer: function(preview) {
+    var next = preview && preview.before === JSON.stringify(gapState.draft) && topsValidateGap(preview.draft);
+    if (!next) return false;
+    setGapState({ draft: next, status: "Your reviewed career wording, example and cited excerpts were added to this open worksheet. Review them for your target role, then save on this browser if you choose. Your saved worksheet is unchanged." });
+    setPathwayMode("planner"); setPathwayStep(1); continuationFocus.current = "career-gap-" + preview.row + "-have"; setActiveTab("pathway"); return true;
+  } }), activeTab === "dd214" && React.createElement("details", { style: { marginBottom: 16 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 16px", cursor: "pointer" } }, "Enter details instead"), React.createElement(ServiceCareerNotes, { colors: C, gap: gapState.draft, onTransfer: function(preview, intake) {
+    var next = topsServiceNotesTransfer(preview, intake, gapState.draft);
+    if (!next) return false;
+    setGapState({ draft: next, status: "Notes added to the open worksheet. Review them against your target role, then save on this browser if you want to keep them. Your saved worksheet is unchanged." });
+    setPathwayMode("planner"); setPathwayStep(1); continuationFocus.current = "career-gap-" + preview.row + "-have"; setActiveTab("pathway");
+    return true;
+  } })), activeTab === "dd214" && /*#__PURE__*/React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 16px", cursor: "pointer" } }, "DD214 records and resources"), /*#__PURE__*/React.createElement("div", {
     style: S.card
   }, /*#__PURE__*/React.createElement("div", {
     style: S.cardTitle
@@ -14995,38 +15554,30 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.8 } },
       "Readiness Division Retirement Services Offices do not process, generate, or issue DD214s. Sending your DD214 request there buries their inbox and costs you days waiting on a redirect. Your DD214 is issued at your separation point when you come off active duty orders. For copies or corrections after the fact, go through HRC Soldier Records or milConnect.")), /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
-  }, "CRITICAL BLOCKS TO VERIFY"), [{
-    block: "Block 4a",
-    label: "Grade/Rate/Rank",
-    note: "Ensure highest rank is correct"
+  }, "FIELDS TO REVIEW"), React.createElement("p", { style: S.bodyText }, "Field numbers vary by DD214 edition. Use the field names on your copy and review them against your service records. ", React.createElement("a", { href: "https://www.dol.gov/node/178814", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "DOL form-edition comparison")), [{
+    label: "Grade, rate, or rank",
+    note: "Check the recorded grade, rate, or rank."
   }, {
-    block: "Block 12a",
-    label: "Date Entered AD",
-    note: "Affects retirement calculations"
+    label: "Service dates and totals",
+    note: "Check the dates and each service total separately."
   }, {
-    block: "Block 12d",
-    label: "Net Active Service",
-    note: "Cross-reference with LES"
+    label: "Military specialty",
+    note: "Review the specialty recorded on your form."
   }, {
-    block: "Block 13",
-    label: "Decorations & Medals",
-    note: "List EVERY award"
+    label: "Decorations and awards",
+    note: "Review the recorded awards against your service records."
   }, {
-    block: "Block 14",
-    label: "Military Education",
-    note: "All PME, schools, certs"
+    label: "Military or uniformed service education",
+    note: "Review the courses recorded on your form."
   }, {
-    block: "Block 18",
     label: "Remarks",
-    note: "MOS translation, qualifications"
+    note: "Read the remarks for additional details about your service."
   }, {
-    block: "Block 24",
     label: "Character of Service",
-    note: "Must read Honorable"
+    note: "Check that the recorded characterization matches your separation records."
   }, {
-    block: "Block 26",
     label: "Separation Code",
-    note: "Research your code"
+    note: "Review the recorded code with your separation paperwork."
   }].map((item, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
@@ -15046,12 +15597,6 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     style: {
       fontFamily: "'Oswald', sans-serif",
       fontSize: 13,
-      color: C.gold
-    }
-  }, item.block), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontFamily: "'Oswald', sans-serif",
-      fontSize: 13,
       color: C.textPrimary
     }
   }, item.label)), /*#__PURE__*/React.createElement("div", {
@@ -15060,7 +15605,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       color: C.textSecondary,
       fontFamily: "'Source Sans 3', sans-serif"
     }
-  }, item.note))), /*#__PURE__*/React.createElement("div", {
+  }, item.note)))), activeTab === "dd214" && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 16px", cursor: "pointer" } }, "Military-to-civilian career crosswalk"), /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
       marginTop: 12,
@@ -15924,7 +16469,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         else if (navigator.clipboard) { navigator.clipboard.writeText(txt); showToast("LINK COPIED"); }
       }, style: { width: "100%", padding: "14px", background: "linear-gradient(135deg, " + C.green + ", " + C.greenBright + ")", border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer", marginTop: 8 } }, "\uD83D\uDCE4 SHARE THIS TOOL"),
       React.createElement("div", { style: { background: C.bgCard, border: "1px solid " + C.border, borderLeft: "3px solid " + C.greenBright, borderRadius: 10, padding: "15px 16px", marginTop: 14 } },
-        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.greenBright, fontWeight: 700, marginBottom: 4 } }, "\uD83D\uDCB0 MONEY BASICS \u2014 THE MYMONEY FIVE"),
+        React.createElement("div", { id: "tops-guide-money", tabIndex: -1, style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.greenBright, fontWeight: 700, marginBottom: 4 } }, "\uD83D\uDCB0 MONEY BASICS \u2014 THE MYMONEY FIVE"),
         React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.55, marginBottom: 12 } }, "Your first civilian paycheck works differently. The U.S. Treasury teaches five money fundamentals \u2014 here's each one, translated for transition:"),
         [
           ["EARN", "Your civilian salary won't have BAH, BAS, or tax-free allowances baked in \u2014 know your real take-home number before you accept an offer."],

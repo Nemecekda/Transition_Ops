@@ -56,8 +56,48 @@ const EXPECTED_PUBLIC_FILES = Object.freeze([
   "sw.js",
   "transition-ops-public-qr.png",
   "va-math/index.html",
+  "vendor/dd214-reader.mjs",
+  "vendor/pdfjs/LICENSE",
+  "vendor/pdfjs/pdf.min.mjs",
+  "vendor/pdfjs/pdf.worker.min.mjs",
+  "vendor/pdfjs/standard_fonts/FoxitDingbats.pfb",
+  "vendor/pdfjs/standard_fonts/FoxitFixed.pfb",
+  "vendor/pdfjs/standard_fonts/FoxitFixedBold.pfb",
+  "vendor/pdfjs/standard_fonts/FoxitFixedBoldItalic.pfb",
+  "vendor/pdfjs/standard_fonts/FoxitFixedItalic.pfb",
+  "vendor/pdfjs/standard_fonts/FoxitSerif.pfb",
+  "vendor/pdfjs/standard_fonts/FoxitSerifBold.pfb",
+  "vendor/pdfjs/standard_fonts/FoxitSerifBoldItalic.pfb",
+  "vendor/pdfjs/standard_fonts/FoxitSerifItalic.pfb",
+  "vendor/pdfjs/standard_fonts/FoxitSymbol.pfb",
+  "vendor/pdfjs/standard_fonts/LICENSE_FOXIT",
+  "vendor/pdfjs/standard_fonts/LICENSE_LIBERATION",
+  "vendor/pdfjs/standard_fonts/LiberationSans-Bold.ttf",
+  "vendor/pdfjs/standard_fonts/LiberationSans-BoldItalic.ttf",
+  "vendor/pdfjs/standard_fonts/LiberationSans-Italic.ttf",
+  "vendor/pdfjs/standard_fonts/LiberationSans-Regular.ttf",
+  "vendor/pdfjs/wasm/LICENSE_JBIG2",
+  "vendor/pdfjs/wasm/LICENSE_OPENJPEG",
+  "vendor/pdfjs/wasm/LICENSE_PDFJS_JBIG2",
+  "vendor/pdfjs/wasm/LICENSE_PDFJS_OPENJPEG",
+  "vendor/pdfjs/wasm/LICENSE_PDFJS_QCMS",
+  "vendor/pdfjs/wasm/LICENSE_QCMS",
+  "vendor/pdfjs/wasm/jbig2.wasm",
+  "vendor/pdfjs/wasm/jbig2_nowasm_fallback.js",
+  "vendor/pdfjs/wasm/openjpeg.wasm",
+  "vendor/pdfjs/wasm/openjpeg_nowasm_fallback.js",
+  "vendor/pdfjs/wasm/qcms_bg.wasm",
   "vendor/react-dom.production.min.js",
-  "vendor/react.production.min.js"
+  "vendor/react.production.min.js",
+  "vendor/tesseract/CORE-LICENSE",
+  "vendor/tesseract/ENGLISH-DATA-LICENSE",
+  "vendor/tesseract/LICENSE",
+  "vendor/tesseract/eng.traineddata.gz",
+  "vendor/tesseract/tesseract-core-lstm.wasm.js",
+  "vendor/tesseract/tesseract-core-relaxedsimd-lstm.wasm.js",
+  "vendor/tesseract/tesseract-core-simd-lstm.wasm.js",
+  "vendor/tesseract/worker.min.js",
+  "vendor/tesseract/worker.min.js.LICENSE.txt"
 ]);
 
 function read(relativePath) {
@@ -270,7 +310,7 @@ async function runExecutableWorkerChecks() {
 function runPublicBuildChecks(publicBuilder) {
   check(
     JSON.stringify(publicBuilder.PUBLIC_FILES) === JSON.stringify(EXPECTED_PUBLIC_FILES),
-    "VG-112-1 public builder retains the exact 24-file allowlist (22 original plus 2 reviewed videos)"
+    "VG-112-1 public builder retains the exact 64-file allowlist (24 established plus 40 local reader assets)"
   );
 
   const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tops-public-build-fixture-"));
@@ -427,7 +467,7 @@ function runPublicBuildChecks(publicBuilder) {
     stdio: ["ignore", "pipe", "pipe"]
   });
   check(
-    output.trim() === "PUBLIC BUILD PASS: 24 files -> dist",
+    output.trim() === "PUBLIC BUILD PASS: 64 files -> dist",
     "public build command produces the exact validated dist inventory"
   );
   const inventory = publicBuilder.assertOutputExact(publicBuilder.DIST, EXPECTED_PUBLIC_FILES);
