@@ -6499,7 +6499,8 @@ function PersonalGuide(props) {
   }
   return React.createElement("section", { "aria-labelledby": "tops-guide-heading", style: { border: "1px solid " + C.border, borderRadius: 12, padding: 16, marginBottom: 14, background: C.bgCard } },
     React.createElement("h2", { id: "tops-guide-heading", tabIndex: -1, style: { fontSize: 20, margin: "0 0 8px", color: C.textPrimary } }, state.ready ? "Continue your career guide" : "Your career guide"),
-    React.createElement("p", { style: { color: C.textSecondary, lineHeight: 1.6 } }, "Choose a direction. Add details only if they help."),
+    React.createElement("p", { style: { color: C.textSecondary, lineHeight: 1.6 } }, "Choose a pathway to see a suggested next step, then use its button to open the tool. Details are optional."),
+    React.createElement("button", { id: "tops-guide-open-plan", type: "button", style: buttonStyle, onClick: function() { props.onRoute("career", "tops-guide-open-plan"); } }, "Open my career plan"),
     React.createElement("label", { htmlFor: "tops-guide-pathway" }, "What are you working toward?"),
     React.createElement("select", { id: "tops-guide-pathway", value: draft.pathway, "aria-describedby": "tops-guide-status", style: fieldStyle, onChange: function(e) { change("pathway", e.target.value); } }, React.createElement("option", { value: "" }, "Choose a pathway"), Object.keys(TOPS_GUIDE_PATHS).map(function(k) { return React.createElement("option", { key: k, value: k }, TOPS_GUIDE_PATHS[k]); })),
     React.createElement("details", { id: "tops-guide-details" },
@@ -7165,6 +7166,13 @@ function App() {
   const [showDismissed, setShowDismissed] = useState(false);
   const continuationFocus = useRef(null);
   const continuationReturn = useRef(null);
+  const [continuationRevision, setContinuationRevision] = useState(0);
+  function focusCareerWorksheet(id) {
+    var guide = document.getElementById("tops-career-guide");
+    if (guide) guide.open = false;
+    continuationFocus.current = id;
+    setContinuationRevision(function(value) { return value + 1; });
+  }
   function openPlanRoute(tab, target, invoker, milestoneId) {
     continuationFocus.current = target;
     continuationReturn.current = invoker;
@@ -7195,7 +7203,7 @@ function App() {
       if (activeTab === "dashboard") continuationReturn.current = null;
     });
     return function() { cancelAnimationFrame(frame); };
-  }, [activeTab, selectedMilestone, subTab, reminderExpanded, focusedReminderId, dismissedReminders]);
+  }, [activeTab, selectedMilestone, subTab, reminderExpanded, focusedReminderId, dismissedReminders, continuationRevision]);
   useEffect(function() { if (activeTab !== "reminders") setFocusedReminderId(null); }, [activeTab]);
   // Readiness Score state
   const [readinessAnswers, setReadinessAnswers] = useState(function() { try { var v = window.__safeGet("tops_readiness"); return v ? JSON.parse(v) : {}; } catch(e) { return {}; } });
@@ -8377,21 +8385,24 @@ function App() {
       React.createElement("input", { value: navInput, onChange: function(e){ setNavInput(e.target.value); }, onKeyDown: function(e){ if (e.key === "Enter") sendNavigator(); }, "aria-label": "Ask the Transition Navigator", placeholder: "Ask about your transition\u2026", style: { flex: 1, minWidth: 0, minHeight: 44, background: C.isLight ? C.bg : "#1A2114", border: "1px solid " + (C.isLight ? C.border : "#4A5A35"), borderRadius: 8, color: C.isLight ? C.textPrimary : "#F2EFE4", caretColor: C.isLight ? C.textPrimary : "#E8C547", fontWeight: 600, padding: 12, fontSize: 16, fontFamily: "inherit", WebkitTextFillColor: C.isLight ? C.textPrimary : "#F2EFE4", opacity: 1 } }),
       React.createElement("button", { type: "button", disabled: navBusy || !navInput.trim(), onClick: function(){ sendNavigator(); }, "aria-label": "Send Navigator question", style: { minHeight: 44, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), border: "none", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: navBusy || !navInput.trim() ? "default" : "pointer", opacity: navBusy || !navInput.trim() ? 0.5 : 1 } }, "SEND"))),
   navUnlocked && activeTab !== "navigator" && activeTab !== "dashboard" && /*#__PURE__*/React.createElement("div", { className: "tops-ask-launcher", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
-  activeTab === "dashboard" && React.createElement(PersonalGuide, { key: guideRestoreRevision, colors: C, state: guideState, setState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, follow: followProgress, dismissed: dismissedReminders, busy: navBusy, onTarget: function(target, expectedTarget) {
+  activeTab !== "dashboard" && continuationReturn.current && continuationReturn.current.indexOf("tops-guide-") === 0 && React.createElement("button", { type: "button", style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" }, onClick: function() { continuationFocus.current = continuationReturn.current; continuationReturn.current = null; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("pathway"); } }, "Back to career guide"),
+  activeTab === "pathway" && React.createElement("details", { id: "tops-career-guide", style: { marginBottom: 14 } },
+  React.createElement("summary", { style: { minHeight: 44, padding: "12px 16px", cursor: "pointer", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary } }, "Open my career guide"),
+  React.createElement(PersonalGuide, { key: guideRestoreRevision, colors: C, state: guideState, setState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, follow: followProgress, dismissed: dismissedReminders, busy: navBusy, onTarget: function(target, expectedTarget) {
     var updated = topsGuideWorksheetTarget(gapState.draft, target, expectedTarget);
     if (!updated) { setGuideState(Object.assign({}, guideState, { status: "The worksheet changed or this target could not be used. Review the current target and try again." })); return; }
     setGapState({ draft: updated, status: topsGuideHasWorksheetNotes(gapState.draft) ? "Target updated in this page. Existing notes and counselor preparation are unchanged and may refer to another role. Review them before choosing Save on this browser; your saved worksheet has not changed." : "Target added to this worksheet. Save on this browser if you want to return to it. Your saved worksheet has not changed." });
-    setPathwayMode("planner"); setPathwayStep(1); continuationFocus.current = "career-gap-target"; continuationReturn.current = "tops-guide-action-career"; setActiveTab("pathway");
-  }, onAsk: function(fields) { setActiveTab("navigator"); sendNavigator("Help me choose one practical next step using the guide details I selected.", fields); }, onRoute: function(route, invoker) {
-    if (route === "career") { setPathwayMode("planner"); setPathwayStep(1); continuationFocus.current = "career-gap-heading"; continuationReturn.current = invoker; setActiveTab("pathway"); }
+    setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-target"); continuationReturn.current = "tops-guide-action-career"; setActiveTab("pathway");
+  }, onAsk: function(fields) { continuationReturn.current = "tops-guide-heading"; setActiveTab("navigator"); sendNavigator("Help me choose one practical next step using the guide details I selected.", fields); }, onRoute: function(route, invoker) {
+    if (route === "career") { setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-heading"); continuationReturn.current = invoker; setActiveTab("pathway"); }
     else if (route === "certs" || route === "employment") { setSubTab("directory"); setResourceFilter({ category: route, cost: "ALL", eligibility: "ALL" }); continuationFocus.current = "tops-main-content"; continuationReturn.current = invoker; setActiveTab("resources"); }
     else if (route === "records") { continuationFocus.current = "tops-upload-heading"; continuationReturn.current = invoker; setActiveTab("dd214"); }
     else if (route === "documents") openPlanRoute("resources", "tops-plan-documents", invoker);
     else if (route === "readiness") openPlanRoute("readiness", "tops-plan-readiness", invoker);
     else if (route === "followups") openPlanRoute("reminders", "tops-plan-reminders", invoker);
     else { continuationFocus.current = route === "money" ? "tops-guide-money" : "tops-main-content"; continuationReturn.current = invoker; setActiveTab(route === "money" ? "vapay" : "navigator"); }
-  } }),
-  activeTab === "dashboard" && React.createElement(PlanBackup, { colors: C, value: { guide: guideState.draft, careerAction: actionState.draft, careerWorksheet: gapState.draft, taskProgress: milestones, documentProgress: documents, followupProgress: followProgress, completedReminders: dismissedReminders }, onRestore: function(result) {
+  } })),
+  activeTab === "timeline" && !selectedMilestone && React.createElement(PlanBackup, { colors: C, value: { guide: guideState.draft, careerAction: actionState.draft, careerWorksheet: gapState.draft, taskProgress: milestones, documentProgress: documents, followupProgress: followProgress, completedReminders: dismissedReminders }, onRestore: function(result) {
     restorePlanEffects.current = { tasks: true, documents: true };
     setGuideState({ draft: result.sections.guide, ready: !!result.sections.guide.pathway, status: "Guide details restored and saved on this browser." });
     setGapState({ draft: result.sections.careerWorksheet, status: "Worksheet restored and saved on this browser. Review the notes for your current goal." });
@@ -8400,7 +8411,6 @@ function App() {
     if (Object.prototype.hasOwnProperty.call(result.sections, "careerAction")) setActionState({ draft: result.sections.careerAction, status: "Career step restored and saved on this browser." });
     setGuideRestoreRevision(function(value) { return value + 1; });
   } }),
-  userStatus === "guard" && activeTab === "dashboard" && renderHomeNavigator(),
   activeTab === "dashboard" && /*#__PURE__*/React.createElement("div", { className: "fade-in" }, React.createElement(ServiceProfileEditor, { colors: C, value: userStatus, onSave: function(value) { serviceProfileEdit.current = true; setUserStatus(value); } }), whatsNewOpen && React.createElement("div", { onClick: function() { setWhatsNewOpen(false); }, style: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 250, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 12px", overflowY: "auto" } },
     React.createElement("div", { onClick: function(e) { e.stopPropagation(); }, style: { background: C.bgCard, borderRadius: 12, width: "100%", maxWidth: 520, maxHeight: "82vh", overflowY: "auto", padding: "18px 18px 14px" } },
       React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } },
@@ -8536,6 +8546,7 @@ function App() {
           })
         ),
 
+        renderHomeNavigator(),
         // Primary action cards
         React.createElement("div", { className: "dash-card", style: { borderColor: C.greenBright, borderWidth: 2, margin: "0 0 10px", cursor: "pointer" }, onClick: function() { setActiveTab("pathway"); } },
           React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12 } },

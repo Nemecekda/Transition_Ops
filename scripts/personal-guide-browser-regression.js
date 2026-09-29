@@ -15,10 +15,10 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
  const ev=x=>h.evaluate(c,x,true),wait=(x,label)=>h.waitForExpression(c,x,label,7000);
  const click=text=>ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==='+JSON.stringify(text)+').click()');
  const input=(id,value)=>ev('var n=document.getElementById('+JSON.stringify(id)+');Object.getOwnPropertyDescriptor(n.tagName==="SELECT"?HTMLSelectElement.prototype:HTMLInputElement.prototype,"value").set.call(n,'+JSON.stringify(value)+');n.dispatchEvent(new Event(n.tagName==="SELECT"?"change":"input",{bubbles:true}));');
- const home=async()=>{await c.send("Page.navigate",{url:url+"/?tool=dashboard"});await wait('!!document.getElementById("tops-guide-heading")','guide loaded');};
+ const home=async()=>{await c.send("Page.navigate",{url:url+"/?tool=pathway"});await wait('!!document.getElementById("tops-guide-heading")','guide loaded');await ev('document.getElementById("tops-career-guide").open=true');};
  await home();await ev('localStorage.clear();localStorage.setItem("tops_onboarded","1");localStorage.setItem("tops_user_status","separated");localStorage.setItem("unrelated_guide_sentinel","retain");');await home();
  for(const pathway of ["transition","skills","change"]){
-  await input("tops-guide-pathway",pathway);assert.equal(await ev('document.getElementById("tops-guide-pathway").closest("details")'),null);await ev('document.getElementById("tops-guide-details").open=true');await input("tops-guide-targetRole","SYNTHETIC_GUIDE_TARGET");await input("tops-guide-currentRole","SYNTHETIC_PRIVATE_ROLE");
+  await input("tops-guide-pathway",pathway);assert.equal(await ev('document.getElementById("tops-guide-pathway").closest("details").id'),'tops-career-guide');await ev('document.getElementById("tops-guide-details").open=true');await input("tops-guide-targetRole","SYNTHETIC_GUIDE_TARGET");await input("tops-guide-currentRole","SYNTHETIC_PRIVATE_ROLE");
   assert.equal(await ev('document.querySelectorAll("[id^=tops-guide-action-]").length'),3);assert.equal(await ev('localStorage.getItem("tops_personal_guide_v1")'),null);assert.equal(nav.length,0);
   assert.equal(await ev('Array.from(document.querySelectorAll("[id^=tops-guide-action-]")).filter(n=>!n.closest("details:not([open])")).length'),1);assert.equal(await ev('document.getElementById("tops-guide-other-steps").open'),false);
  }
@@ -30,8 +30,8 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
  const prior={version:2,target:"SYNTHETIC_OLD_ROLE",rows:[{have:"SYNTHETIC evidence",requirement:"SYNTHETIC requirement",next:"SYNTHETIC_OLD_NEXT",source:"SYNTHETIC source"},...Array.from({length:2},()=>({have:"",requirement:"",next:"",source:""}))],prep:{opportunity:"",source:"",questions:"SYNTHETIC counselor questions",office:"",reference:"",followup:"",status:""}};const priorRaw=JSON.stringify(prior);
  await ev('localStorage.setItem("tops_career_gap_v1",'+JSON.stringify(priorRaw)+')');await home();
  assert.equal(await ev('document.getElementById("tops-guide-target-review").open'),false);await click("Continue my existing worksheet");await wait('!!document.getElementById("career-gap-target")','continue old target');assert.equal(await ev('document.getElementById("career-gap-target").value'),prior.target);assert.equal(await ev('localStorage.getItem("tops_career_gap_v1")'),priorRaw);
- await click("Home");await wait('!!document.getElementById("tops-guide-heading")','return to guide');await ev('document.getElementById("tops-guide-target-review").open=true');assert.ok(await ev('document.getElementById("tops-guide-target-review").textContent.includes("SYNTHETIC_OLD_ROLE")'));await click("Replace worksheet target");await wait('!!document.getElementById("career-gap-target")','replace target');assert.equal(await ev('document.getElementById("career-gap-target").value'),"SYNTHETIC_GUIDE_TARGET");assert.equal(await ev('document.getElementById("career-gap-0-next").value'),"SYNTHETIC_OLD_NEXT");assert.equal(await ev('document.getElementById("career-prep-questions").value'),prior.prep.questions);assert.equal(await ev('localStorage.getItem("tops_career_gap_v1")'),priorRaw);
- await click("Home");await wait('!!document.getElementById("tops-guide-heading")','return after replacement');assert.ok(!await ev('document.querySelector("section[aria-labelledby=tops-guide-heading]").textContent.includes("SYNTHETIC_OLD_NEXT")'));
+ await click("Back to career guide");await wait('!!document.getElementById("tops-guide-heading")','return to guide');await ev('document.getElementById("tops-guide-target-review").open=true');assert.ok(await ev('document.getElementById("tops-guide-target-review").textContent.includes("SYNTHETIC_OLD_ROLE")'));await click("Replace worksheet target");await wait('!!document.getElementById("career-gap-target")','replace target');assert.equal(await ev('document.getElementById("career-gap-target").value'),"SYNTHETIC_GUIDE_TARGET");assert.equal(await ev('document.getElementById("career-gap-0-next").value'),"SYNTHETIC_OLD_NEXT");assert.equal(await ev('document.getElementById("career-prep-questions").value'),prior.prep.questions);assert.equal(await ev('localStorage.getItem("tops_career_gap_v1")'),priorRaw);
+ await click("Back to career guide");await wait('!!document.getElementById("tops-guide-heading")','return after replacement');assert.ok(!await ev('document.querySelector("section[aria-labelledby=tops-guide-heading]").textContent.includes("SYNTHETIC_OLD_NEXT")'));
  await ev('document.getElementById("tops-guide-details").open=true');
  await c.send("Emulation.setDeviceMetricsOverride",{width:320,height:900,deviceScaleFactor:1,mobile:true});
  // Native keyboard opens/closes the guide disclosure and moves to its labelled select.
@@ -56,6 +56,27 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
  await ev('document.getElementById("tops-guide-details").open=true');await input("tops-guide-pathway","skills");
  await ev('window.__originalGuideSet=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw Error("blocked")};');await click("Save guide details");assert.ok(await ev('document.getElementById("tops-guide-status").textContent.includes("could not be saved")'));await ev('Storage.prototype.setItem=window.__originalGuideSet');
  await c.send("Network.enable");await c.send("Network.emulateNetworkConditions",{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});await input("tops-guide-pathway","change");assert.equal(await ev('document.querySelectorAll("[id^=tops-guide-action-]").length'),3);
+ // Home contains neither setup panel; both remain reachable through primary navigation.
+ await click("Home");await wait('Array.from(document.querySelectorAll("input")).some(n=>n.getAttribute("aria-label")==="Search Transition OPS")','Home search');
+ assert.equal(await ev('!!document.getElementById("tops-guide-heading")'),false);
+ assert.equal(await ev('!!document.getElementById("tops-plan-backup")'),false);
+ if(process.env.TOPS_HOME_SCREENSHOT_DIR){
+  fs.mkdirSync(process.env.TOPS_HOME_SCREENSHOT_DIR,{recursive:true});
+  for(const width of [375,1280]){
+   await c.send("Emulation.setDeviceMetricsOverride",{width,height:900,deviceScaleFactor:1,mobile:width<600});
+   await ev('window.scrollTo(0,0);new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+   const shot=await c.send("Page.captureScreenshot",{format:"png"});
+   fs.writeFileSync(path.join(process.env.TOPS_HOME_SCREENSHOT_DIR,"home-"+width+".png"),Buffer.from(shot.data,"base64"));
+  }
+ }
+ await click("My Plan");await wait('!!document.getElementById("tops-plan-backup")','backup in My Plan');
+ await click("Career");await wait('!!document.getElementById("tops-career-guide")','guide in Career');
+ assert.equal(await ev('document.getElementById("tops-career-guide").open'),false);
+ await ev('document.querySelector("#tops-career-guide > summary").click()');
+ await click("Open my career plan");await wait('document.activeElement.id==="career-gap-heading"','explicit plan focus');
+ assert.equal(await ev('document.getElementById("tops-career-guide").open'),false);
+ await click("Back to career guide");await wait('document.activeElement.id==="tops-guide-open-plan"','guide return focus');
+ assert.equal(await ev('document.getElementById("tops-career-guide").open'),true);
  assert.equal(requests.filter(r=>r.includes("SYNTHETIC_PRIVATE_ROLE")).length,0);assert.equal(errors.length,0);
  console.log("GUIDE BROWSER PASS: Chrome; three separated-veteran pathways without date; optional save/reload; keyboard disclosure/select; 320/375 reflow; unchecked consent; labelled preview equals selected payload; stubbed send only; scoped clear; corrupt and denied storage; offline planning; no private-role transfer; zero JS errors");
  } finally {if(chrome)await h.stopChrome(chrome);await new Promise(r=>server.close(r));}
