@@ -1,0 +1,23 @@
+{
+  "date": "2026-09-30",
+  "status": "published",
+  "url": "https://transitionops.org",
+  "deploy_id": "6abd0b2464b4bda977a290d2",
+  "published_at": "2026-09-30T13:15:43.656Z",
+  "commit": "92051ddc3b1e451bd0a0b322a9f5566b3a21450f",
+  "cache": "transition-ops-v184",
+  "previous_deploy": "6abcfb6cb29c750b75d60610",
+  "checks": [
+    "All required local suites passed before freeze",
+    "Hosted app and worker byte-identical to tested candidate",
+    "Hosted draft opens with input focus; return restores next-move heading focus; no model request",
+    "62 hosted runtime records match path, size, SHA1; separate resolved configuration record unchanged",
+    "Live app and worker byte-identical to candidate"
+  ],
+  "limits": "Manual AT matrix not performed; no hosted model or field usefulness/retention measurement. GitHub main remains261f48f; synchronize local releases before a Git-backed deployment.",
+  "tree": "d246e4397aa7096b75bd73e09bf2f966f354a33e",
+  "control_plane": {
+    "sha1": "6a4727b7f10012e63da7459305dcead72f6d1711",
+    "size": 2727
+  }
+}

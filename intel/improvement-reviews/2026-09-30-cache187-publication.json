@@ -1,0 +1,19 @@
+{
+  "status": "published",
+  "url": "https://transitionops.org",
+  "commit": "9707339bb2f3d66611d051e0b9daafc0f55010a2",
+  "tree": "48f216df011e8ea31c23b6347e5dc98c354f0b87",
+  "cache": "transition-ops-v187",
+  "deploy_id": "6abd1416e8be4ea7d3408e56",
+  "published_at": "2026-09-30T13:53:37.879Z",
+  "prior_deploy": "6abd0fe7f1d5bad49daf13c5",
+  "checks": [
+    "Required local suites passed",
+    "Hosted root welcome opens Home with heading focus",
+    "Hosted start choice reveals next action without saving a plan",
+    "Live starting cards rendered",
+    "Candidate/live app and worker match tested bytes",
+    "62 runtime records match path/size/SHA1; single control record matches CLI serialization"
+  ],
+  "limits": "Manual AT matrix not performed. No field usefulness, delight or retention evidence. AI tested with stubs only. GitHub synchronization of CLI releases remains pending."
+}
