@@ -37,12 +37,37 @@ await click('Send this question');await wait('document.querySelector("#tops-plan
 assert.ok(await ev('Array.from(document.querySelectorAll("button")).some(n=>n.textContent.includes("[RESOURCES")&&n.getBoundingClientRect().height>=44)'));
 
 assert.equal(calls.length,before+1);const sent=calls.at(-1);assert.equal(sent.messages.length,1);assert.equal(sent.messages[0].content,draft+'\nSYNTHETIC_EDIT');assert.equal(sent.context,'');assert.equal(sent.daysOut,null);assert.equal(sent.guideContext,undefined);assert.ok(!JSON.stringify(sent).includes('PRIVATE'));assert.ok(!JSON.stringify(sent).includes('EXISTING_CHAT'));assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
+// The answer does not become a saved step without review and explicit save.
+assert.equal(await ev('document.getElementById("tops-answer-action-text").value'),'');
+await input('#tops-answer-action-text','SYNTHETIC_CHOSEN_STEP');
+for(const width of [320,375]){await c.send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:true});assert.ok(await ev('document.documentElement.scrollWidth<=window.innerWidth'));}
+await ev('document.getElementById("tops-answer-action-title").scrollIntoView({block:"center"});new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');const actionShot=await c.send('Page.captureScreenshot',{format:'png'});fs.writeFileSync('/tmp/tops-answer-action-mobile.png',Buffer.from(actionShot.data,'base64'));
+
+const beforeReview=calls.length;
+await click('Review this step before saving');await wait('document.activeElement.id==="tops-action-text"','chosen step editor focus');
+assert.equal(calls.length,beforeReview);assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
+assert.equal(await ev('document.getElementById("tops-action-text").value'),'SYNTHETIC_CHOSEN_STEP');
+await ev('window.__saveSet=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw Error("blocked")};');
+await click('Save career step');assert.ok(await ev('document.getElementById("tops-action-status").textContent.includes("could not be saved")'));await ev('Storage.prototype.setItem=window.__saveSet');
+await click('Save career step');assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).text'),'SYNTHETIC_CHOSEN_STEP');
+await click('Send this question');await wait('!!document.getElementById("tops-answer-action-text")','new answer review');
+await input('#tops-answer-action-text','SYNTHETIC_REPLACEMENT');
+assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Review this step before saving").disabled'),true);
+await ev('document.getElementById("tops-answer-replace").click()');await click('Review this step before saving');
+assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).text'),'SYNTHETIC_CHOSEN_STEP');
+assert.equal(await ev('document.getElementById("tops-action-text").value'),'SYNTHETIC_REPLACEMENT');
 await click('Return to existing Navigator chat');await wait('!!document.querySelector("input[aria-label=\\\"Ask the Transition Navigator\\\"]")','existing chat restored');
 assert.equal(await ev('document.querySelector("input[aria-label=\\\"Ask the Transition Navigator\\\"]").value'),'SYNTHETIC_UNSENT');assert.ok(await ev('document.body.textContent.includes("SYNTHETIC_EXISTING_CHAT")'));
 await click('Home');await wait('!!document.getElementById("tops-loop-help")','Home again');await ev('document.querySelector("#tops-loop-help summary").click()');await click('Resume my Navigator draft');await wait('!!document.getElementById("tops-plan-question")','resume');assert.equal(await ev('document.getElementById("tops-plan-question").value'),draft+'\nSYNTHETIC_EDIT');
 failure=true;await click('Send this question');await wait('document.querySelector("#tops-plan-question-title").closest("section").textContent.includes("SYNTHETIC service unavailable")','failed request visible');assert.equal(await ev('document.getElementById("tops-plan-question").value'),draft+'\nSYNTHETIC_EDIT');
+assert.equal(await ev('document.getElementById("tops-answer-action-title")'),null);
 const limitCalls=calls.length;await ev('localStorage.setItem("tops_nav_pilot",JSON.stringify({d:new Date().toISOString().slice(0,10),n:20}))');await click('Send this question');await wait('document.querySelector("#tops-plan-question-title").closest("section").textContent.includes("daily limit reached")','limit shown in plan panel');assert.equal(calls.length,limitCalls);
 await click('Return to my next move');await wait('document.activeElement.id==="tops-loop-title"','Home focus restored');
 await ev('document.querySelector("#tops-loop-help summary").click()');await click('Resume my Navigator draft');await wait('!!document.getElementById("tops-plan-question")','resume for discard');await click('Discard this draft and answer');await wait('!!document.getElementById("tops-loop-help")','discard returns Home');await ev('document.querySelector("#tops-loop-help summary").click()');assert.ok(await ev('document.getElementById("tops-loop-help").textContent.includes("Open draft in Navigator")'));assert.equal(await ev('document.querySelectorAll("#tops-loop-help input:checked").length'),0);
-assert.deepEqual(errors,[]);console.log('MEMBER NAVIGATOR PASS: opt-in context, zero-call drafting, exact isolated payload, preserved chat/unsent text, editable retry, limit denial, resume/discard, return focus, 320/375/1280. All endpoint replies stubbed; no live model calls.');
+failure=false;await ev('localStorage.removeItem("tops_nav_pilot")');
+await click('Open draft in Navigator');await wait('!!document.getElementById("tops-plan-question")','new question');await click('Send this question');await wait('!!document.getElementById("tops-answer-action-text")','answer before direction change');
+await click('Return to my next move');await wait('!!document.getElementById("tops-loop-direction")','Home direction');await ev('document.querySelector("#tops-loop-direction summary").click()');await input('#tops-loop-target','SYNTHETIC_CHANGED_DIRECTION');await click('Save my direction');
+await ev('document.querySelector("#tops-loop-help summary").click()');await click('Resume my Navigator draft');await wait('!!document.getElementById("tops-answer-action-title")','stale answer');
+assert.equal(await ev('document.getElementById("tops-answer-action-text")'),null);assert.ok(await ev('document.body.textContent.includes("Your direction or service path changed after this question")'));assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).text'),'SYNTHETIC_CHOSEN_STEP');
+assert.deepEqual(errors,[]);console.log('MEMBER NAVIGATOR PASS: opt-in context, zero-call drafting, exact isolated payload, preserved chat/unsent text, editable retry, limit denial, resume/discard, return focus, 320/375/1280. Answer action: explicit review/save, denied storage, replacement acknowledgement, no request on review, direction drift blocked, error responses excluded. All endpoint replies stubbed; no live model calls.');
 }finally{if(chrome)await h.stopChrome(chrome);await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e.stack);process.exitCode=1;});

@@ -6657,6 +6657,31 @@ function MemberPlanningLoop(props) {
 }
 // MEMBER_LOOP_END
 
+function NavigatorNextStep(props) {
+  var C = props.colors, guide = topsValidateGuide(props.guide), action = props.state.draft;
+  var [text, setText] = useState(""), [replace, setReplace] = useState(false), [editing, setEditing] = useState(false);
+  useEffect(function() { setReplace(false); }, [action, guide && JSON.stringify(guide)]);
+  var sameDirection = !!guide && !!guide.pathway && JSON.stringify(guide) === JSON.stringify(props.questionGuide) && props.profile === props.questionProfile;
+  var candidate = topsValidateAction({ version: 1, text: text.trim(), date: "", done: false, context: guide });
+  var button = { minHeight: 44, minWidth: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgElevated, color: C.textPrimary, font: "inherit", cursor: "pointer" };
+  return React.createElement("section", { "aria-labelledby": "tops-answer-action-title", style: { borderTop: "1px solid " + C.border, marginTop: 16, paddingTop: 12 } },
+    React.createElement("h3", { id: "tops-answer-action-title" }, "Turn this guidance into a next step"),
+    !sameDirection ? React.createElement("p", { role: "status" }, guide && guide.pathway ? "Your direction or service path changed after this question was drafted. Return to your next move and start a new question for your current situation before adding a step here." : "Choose your direction in Your next move first. Then open a new question so the step belongs to the right plan.") :
+    React.createElement("div", null,
+      React.createElement("p", null, "For: " + TOPS_GUIDE_PATHS[guide.pathway] + (guide.targetRole ? " - " + guide.targetRole : "")),
+      React.createElement("p", { id: "tops-answer-action-help", style: { lineHeight: 1.6 } }, "Write one action you want to take from this guidance, in your own words. Review its fit and any requirements before saving. The answer does not verify eligibility or qualifications."),
+      !editing && React.createElement("div", null,
+        React.createElement("label", { htmlFor: "tops-answer-action-text" }, "The action I want to take"),
+        React.createElement("textarea", { id: "tops-answer-action-text", rows: 3, maxLength: 240, value: text, "aria-describedby": "tops-answer-action-help", onChange: function(e) { setText(e.target.value); setReplace(false); }, style: { width: "100%", boxSizing: "border-box", padding: 10, minHeight: 88, margin: "8px 0", font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 6 } }),
+        action.text && React.createElement("div", null, React.createElement("p", null, "Step currently in your editor: " + action.text), React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10 } }, React.createElement("input", { id: "tops-answer-replace", type: "checkbox", checked: replace, onChange: function(e) { setReplace(e.target.checked); } }), "Replace this step in the editor. My saved copy changes only when I save.")),
+        React.createElement("button", { type: "button", style: button, disabled: !text.trim() || !candidate || (!!action.text && !replace), onClick: function() {
+          if (!sameDirection || !candidate || !candidate.text || (action.text && !replace)) return;
+          props.setState({ draft: candidate, status: "Your chosen step is ready to review, not saved. Add a target date if useful, then choose Save career step." }); setEditing(true);
+          requestAnimationFrame(function() { var input = document.getElementById("tops-action-text"); if (input) input.focus(); });
+        } }, "Review this step before saving")),
+      editing && React.createElement(CareerAction, { colors: C, guide: guide, state: props.state, setState: props.setState })));
+}
+
 // PLAN_BACKUP_START
 const TOPS_PLAN_BACKUP_LIMIT = 131072;
 const TOPS_PLAN_BACKUP_KEYS = [TOPS_GUIDE_KEY, TOPS_GAP_KEY, "taskProgress", "docProgress", TOPS_FOLLOW_KEY, "tops_dismissed_reminders"];
@@ -6907,11 +6932,11 @@ function App() {
     } catch (e) {}
     if (!planOnly) setNavInput("");
     var next = (guideFields || planOnly ? [] : navMsgs).concat([{ r: "u", t: q }]);
-    function deliver(text) {
-      if (planOnly) setPlanQuestion(function(current) { return current && Object.assign({}, current, { reply: text }); });
+    function deliver(text, answered) {
+      if (planOnly) setPlanQuestion(function(current) { return current && Object.assign({}, current, { reply: text, answered: !!answered }); });
       else setNavMsgs(function(m) { return m.concat([{ r: "b", t: text }]); });
     }
-    if (planOnly) setPlanQuestion(function(current) { return Object.assign({}, current, { reply: "" }); });
+    if (planOnly) setPlanQuestion(function(current) { return Object.assign({}, current, { reply: "", answered: false }); });
     else setNavMsgs(next);
     setNavBusy(true);
     var ctx = "";
@@ -6928,7 +6953,7 @@ function App() {
       body: JSON.stringify({ context: ctx, guideContext: guideFields || undefined, daysOut: (function(){ if (guideFields || planOnly) return null; try { var sd2 = window.__safeGet("tops_sep_date"); if (sd2) return Math.round((new Date(sd2 + "T00:00:00") - new Date()) / 86400000); } catch(e){} return null; })(), messages: next.map(function(m){ return { role: m.r === "u" ? "user" : "assistant", content: m.t }; }) })
     }).then(function(r){ return r.json(); }).then(function(data){
       setNavBusy(false);
-      deliver(data && data.reply ? data.reply : (data && data.error) || "Brief interruption \u2014 try again.");
+      deliver(data && data.reply ? data.reply : (data && data.error) || "Brief interruption \u2014 try again.", !!(data && data.reply));
     }).catch(function(){ setNavBusy(false); deliver("Connection hiccup \u2014 try again in a moment."); });
   };
   useEffect(function() {
@@ -7948,7 +7973,7 @@ function App() {
   }
   function renderMemberLoop() {
     return React.createElement(MemberPlanningLoop, { colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, hasDraft: !!planQuestion, onDraft: navUnlocked ? function(text) {
-      if (!planQuestion) setPlanQuestion({ text: text, reply: "" });
+      if (!planQuestion) setPlanQuestion({ text: text, reply: "", answered: false, guide: topsValidateGuide(guideState.draft), profile: userStatus });
       setPlanQuestionOpen(true); continuationFocus.current = "tops-plan-question"; continuationReturn.current = "tops-loop-title"; setActiveTab("navigator");
     } : null, onRoute: function(route) {
       if (route === "training" || route === "support") { setSubTab("directory"); setResourceFilter({ category: route === "training" ? "certs" : guideState.draft.pathway === "transition" ? "ALL" : "employment", cost: "ALL", eligibility: "ALL" }); continuationFocus.current = "tops-page-title"; continuationReturn.current = "tops-loop-title"; setActiveTab("resources"); return; }
@@ -7965,10 +7990,11 @@ function App() {
       React.createElement("h3", { id: "tops-plan-question-title", style: { color: C.textPrimary, marginTop: 0 } }, "Help with my next move"),
       React.createElement("p", { id: "tops-plan-question-notice", style: { lineHeight: 1.6 } }, "Send this question sends the text below through Netlify to OpenAI. The app excludes other saved plan details and your existing chat from this request. OpenAI is called with store:false; this does not promise zero provider retention. Leave out sensitive information. This draft and answer last only while this page stays open."),
       React.createElement("label", { htmlFor: "tops-plan-question" }, "Review and edit my question"),
-      React.createElement("textarea", { id: "tops-plan-question", "aria-describedby": "tops-plan-question-notice", rows: 8, maxLength: 1500, value: planQuestion.text, readOnly: navBusy, onChange: function(e) { setPlanQuestion(Object.assign({}, planQuestion, { text: e.target.value, reply: "" })); }, style: { width: "100%", boxSizing: "border-box", minHeight: 140, padding: 12, margin: "8px 0", background: C.bg, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", fontSize: 16 } }),
+      React.createElement("textarea", { id: "tops-plan-question", "aria-describedby": "tops-plan-question-notice", rows: 8, maxLength: 1500, value: planQuestion.text, readOnly: navBusy, onChange: function(e) { setPlanQuestion(Object.assign({}, planQuestion, { text: e.target.value, reply: "", answered: false })); }, style: { width: "100%", boxSizing: "border-box", minHeight: 140, padding: 12, margin: "8px 0", background: C.bg, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", fontSize: 16 } }),
       React.createElement("button", { type: "button", style: button, disabled: navBusy || !planQuestion.text.trim(), onClick: function() { sendNavigator(planQuestion.text, null, true); } }, "Send this question"),
       React.createElement("div", { role: "status", "aria-live": "polite", style: { whiteSpace: "pre-wrap", lineHeight: 1.6, marginTop: 12 } }, navBusy ? "Navigator is working. Your saved next step stays unchanged." : planQuestion.reply ? renderNavText(planQuestion.reply) : "Draft ready. Choose Send this question to request an answer."),
-      React.createElement("p", { style: { lineHeight: 1.6 } }, "Use the answer to decide what to do next. It does not verify eligibility or update your plan. Return to Your next move to edit and save your step."),
+      React.createElement("p", { style: { lineHeight: 1.6 } }, "Use the answer to decide what to do next. Your saved plan changes only when you choose Save career step."),
+      planQuestion.answered && !navBusy && React.createElement(NavigatorNextStep, { colors: C, questionGuide: planQuestion.guide, questionProfile: planQuestion.profile, profile: userStatus, guide: guideState.draft, state: actionState, setState: setActionState }),
       React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
         React.createElement("button", { type: "button", style: button, onClick: function() { continuationFocus.current = "tops-loop-title"; setActiveTab("dashboard"); } }, "Return to my next move"),
         React.createElement("button", { type: "button", style: button, onClick: function() { setPlanQuestionOpen(false); continuationFocus.current = "tops-page-title"; setContinuationRevision(function(value) { return value + 1; }); } }, "Return to existing Navigator chat"),
