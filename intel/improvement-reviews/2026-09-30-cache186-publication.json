@@ -1,0 +1,18 @@
+{
+  "status": "published",
+  "url": "https://transitionops.org",
+  "commit": "769ce43c8224da6098d5362a7ba5048ac14d5b81",
+  "tree": "c42852855d3d42728a55cb551748f054be12bcc3",
+  "cache": "transition-ops-v186",
+  "deploy_id": "6abd0fe7f1d5bad49daf13c5",
+  "published_at": "2026-09-30T13:35:43.805Z",
+  "prior_deploy": "6abd0cf6cae6232047e80df2",
+  "checks": [
+    "All required local suites previously passed on byte-identical candidate",
+    "Hosted Home rendered",
+    "Candidate and live app/worker byte-identical to tested files",
+    "62 runtime records path/size/SHA1 verified with unique case normalization",
+    "One control-plane record matches resolved CLI configuration; dist excludes config"
+  ],
+  "limits": "Manual AT matrix not performed. No live model tests or field retention evidence. GitHub synchronization remains pending; production is this CLI release."
+}

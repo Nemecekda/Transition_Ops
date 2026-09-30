@@ -11,6 +11,14 @@ const ev=x=>h.evaluate(c,x,true),wait=(x,label)=>h.waitForExpression(c,x,label,7
 const input=(id,value)=>ev('var n=document.getElementById('+JSON.stringify(id)+');Object.getOwnPropertyDescriptor(n.tagName==="SELECT"?HTMLSelectElement.prototype:HTMLInputElement.prototype,"value").set.call(n,'+JSON.stringify(value)+');n.dispatchEvent(new Event(n.tagName==="SELECT"?"change":"input",{bubbles:true}));');
 const home=async()=>{await c.send('Page.navigate',{url:url+'/?tool=dashboard'});await wait('!!document.getElementById("tops-loop-title")','member loop Home');};
 await home();
+await ev('localStorage.clear()');await c.send('Page.navigate',{url:url+'/'});await wait('!!document.querySelector(".onboard-cta-primary")','first visit welcome');
+assert.equal(await ev('document.querySelector(".onboard-cta-primary").textContent'),'FIND MY STARTING POINT');
+await click('PERSONALIZE MY VIEW (OPTIONAL)');await wait('document.body.textContent.includes("STEP 1 OF 4")','optional setup still reachable');
+assert.equal(await ev('localStorage.getItem("tops_user_status")'),null);
+await c.send('Page.navigate',{url:url+'/'});await wait('!!document.querySelector(".onboard-cta-primary")','welcome again');
+await click('FIND MY STARTING POINT');await wait('document.activeElement.id==="tops-loop-title"','welcome routes and focuses starting points');
+assert.equal(await ev('document.querySelectorAll("#tops-member-starts button").length'),3);
+for(const key of ['tops_user_status','tops_personal_guide_v1','tops_career_action_v1','tops_sep_date'])assert.equal(await ev('localStorage.getItem('+JSON.stringify(key)+')'),null);
 const selection=await ev('(()=>{const g={version:1,pathway:"change",targetRole:"SYNTHETIC_TARGET",currentRole:"",goal:""},a=topsEmptyAction();const gap={target:"SYNTHETIC_TARGET",rows:[{next:"SYNTHETIC_MEMBER_NEXT"}]};return {matching:topsMemberMove(g,a,gap,"guard"),mismatch:topsMemberMove(g,a,{...gap,target:"OLD_TARGET"},"guard")};})()');
 assert.equal(selection.matching.title,'SYNTHETIC_MEMBER_NEXT');assert.notEqual(selection.mismatch.title,'SYNTHETIC_MEMBER_NEXT');
 const timingCases=await ev('(()=>{const g={version:1,pathway:"change",targetRole:"ROLE",currentRole:"",goal:""},a={version:1,text:"STEP",date:"2026-09-30",done:false,context:g};return {today:topsMemberTiming(g,a,"2026-09-30"),past:topsMemberTiming(g,a,"2026-10-01"),future:topsMemberTiming(g,a,"2026-09-29"),done:topsMemberTiming(g,{...a,done:true},"2026-10-01"),stale:topsMemberTiming({...g,targetRole:"NEW"},a,"2026-10-01"),missing:topsMemberTiming(g,{...a,date:""},"2026-10-01"),bad:topsMemberTiming(g,{...a,date:"2026-02-30"},"2026-10-01")};})()');
@@ -18,8 +26,25 @@ assert.equal(timingCases.today.kind,'today');assert.equal(timingCases.past.kind,
 await c.send('Emulation.setTimezoneOverride',{timezoneId:'Pacific/Honolulu'});assert.equal(await ev('topsMemberLocalDay(new Date("2026-09-30T00:30:00Z"))'),'2026-09-29');
 await c.send('Emulation.setTimezoneOverride',{timezoneId:'Europe/Berlin'});assert.equal(await ev('topsMemberLocalDay(new Date("2026-09-30T00:30:00Z"))'),'2026-09-30');
 await c.send('Emulation.setTimezoneOverride',{timezoneId:'America/Chicago'});
-for(const [profile,pathway] of [['active','transition'],['separated','change'],['retired','change'],['guard','change'],['guard','skills'],['spouse','change']]){
+for(const [profile,pathway] of [['','change'],['active','transition'],['separated','change'],['retired','change'],['guard','change'],['guard','skills'],['spouse','change']]){
  await ev('localStorage.clear();localStorage.setItem("tops_onboarded","1");localStorage.setItem("tops_user_status",'+JSON.stringify(profile)+');');await home();
+ const starts=await ev('topsMemberStarts('+JSON.stringify(profile)+')');
+ assert.equal(starts[0].pathway,profile==='active'?'transition':'change');
+ for(const start of starts){
+  assert.equal(await ev('document.querySelectorAll("#tops-member-starts button").length'),3);
+  await ev('document.querySelector('+JSON.stringify('#tops-member-starts button[aria-label="'+start.title+'"]')+').click()');
+  await wait('document.activeElement.id==="tops-loop-title"','starting point focus');
+  assert.equal(await ev('localStorage.getItem("tops_personal_guide_v1")'),null);
+  assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
+  assert.equal(await ev('localStorage.getItem("tops_sep_date")'),null);
+  assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("Choose this next step")'));
+  assert.ok(await ev('document.getElementById("tops-home-tools-title").closest("section").textContent.includes("All tools")'));
+  await home();
+ }
+ if(profile==='guard'&&process.env.TOPS_LOOP_SCREENSHOT_DIR){
+  fs.mkdirSync(process.env.TOPS_LOOP_SCREENSHOT_DIR,{recursive:true});await c.send('Emulation.setDeviceMetricsOverride',{width:375,height:900,deviceScaleFactor:1,mobile:true});
+  const startShot=await c.send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(process.env.TOPS_LOOP_SCREENSHOT_DIR,'starting-points.png'),Buffer.from(startShot.data,'base64'));
+ }
  assert.equal(await ev('document.getElementById("tops-loop-direction").open'),false);
  await ev('document.querySelector("#tops-loop-direction summary").click()');
  await input('tops-loop-path',pathway);
@@ -101,5 +126,5 @@ assert.notEqual(await ev('localStorage.getItem("tops_career_action_v1")'),before
 // No loop member text is sent, and no AI endpoint is requested.
 assert.equal(requests.filter(r=>r.includes('SYNTHETIC_')||r.includes('/.netlify/functions/')).length,0);
 assert.deepEqual(errors,[]);
-console.log('MEMBER LOOP PASS: five profiles; explicit direction save; no date requirement; choose/edit/save/reload; completion/reflection; goal drift review; orphan-step recovery; save denial; 320/375; zero model calls/member-text requests/errors');
+console.log('MEMBER LOOP PASS: seven visitor/path scenarios; all three visible starts without storage; explicit direction save; no date requirement; choose/edit/save/reload; completion/reflection; goal drift review; orphan-step recovery; save denial; 320/375; zero model calls/member-text requests/errors');
 }finally{if(chrome)await h.stopChrome(chrome);await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e.stack);process.exitCode=1;});
