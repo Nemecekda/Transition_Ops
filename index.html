@@ -6327,6 +6327,22 @@ function ReminderProgress(props) {
 
 // Existing service categories customize navigation, not benefit eligibility.
 const TOPS_SERVICE_PROFILES = [["active", "Active duty"], ["guard", "Guard / Reserve"], ["separated", "Already separated"], ["retired", "Retired"], ["spouse", "Military spouse"]];
+// Shared destinations keep Home, search and page orientation consistent.
+const TOPS_TOOL_CHOICES = [
+  { id: "timeline", title: "My Plan", description: "Review your timeline and unfinished tasks", keywords: "next step checklist transition date" },
+  { id: "pathway", title: "Career", description: "Explore roles, build your plan or work on a resume", keywords: "career guide job skills resume worksheet" },
+  { id: "vamath", title: "VA rating calculator", description: "Estimate a combined disability rating", keywords: "va math disability percentage calculator" },
+  { id: "vapay", title: "VA pay estimator", description: "Explore compensation estimates", keywords: "va pay money benefits compensation" },
+  { id: "resources", title: "Resources and support", description: "Find services, training and document guidance", keywords: "help vso support training skillbridge documents" },
+  { id: "reminders", title: "Reminders and follow-ups", description: "Review deadlines and steps you are working on", keywords: "next action deadline reminder followup" },
+  { id: "dd214", title: "DD214 and service records", description: "Review your record and experience", keywords: "dd214 dd 214 service record military experience" },
+  { id: "taxes", title: "State tax information", description: "Explore state guidance for planning", keywords: "tax state residency retired pay" },
+  { id: "readiness", title: "Readiness check", description: "Review gaps in your transition plan", keywords: "readiness assessment score" },
+  { id: "finalpcs", title: "Final move", description: "Open the final PCS planning tools", keywords: "final pcs move moving relocation" },
+  { id: "vethub", title: "Veteran hub", description: "Explore veteran career and benefit resources", keywords: "veteran employers benefits training" },
+  { id: "critical", title: "Critical windows", description: "Review time-sensitive transition guidance", keywords: "critical windows deadlines" },
+  { id: "navigator", title: "Navigator", description: "Ask for help choosing a next step", keywords: "ask navigator help" }
+];
 function ServiceProfileEditor(props) {
   var C = props.colors;
   var valid = function(value) { return TOPS_SERVICE_PROFILES.some(function(row) { return row[0] === value; }); };
@@ -7801,6 +7817,23 @@ function App() {
   }, []);
   const activeNotifCount = NOTIFICATIONS.filter(n => !dismissedNotifs.has(n.id)).length;
   const totalProgress = getTotalProgress();
+  function openExperienceTool(id) {
+    primaryNavFocus.current = true;
+    setSelectedMilestone(null);
+    setShowMoreMenu(false);
+    setActiveTab(id);
+    window.scrollTo(0, 0);
+  }
+  function renderHomeTools() {
+    return React.createElement("section", { "aria-labelledby": "tops-home-tools-title", style: { marginBottom: 16 } },
+      React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" } },
+        React.createElement("h2", { id: "tops-home-tools-title", style: { fontSize: 20, color: C.textPrimary, margin: "0 0 8px" } }, "What would you like to do?"),
+        React.createElement("button", { type: "button", onClick: function() { setShowMoreMenu(true); }, style: { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary, font: "inherit", cursor: "pointer" } }, "All tools")),
+      React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 } },
+        [["timeline", "Work on my plan"], ["pathway", "Explore careers"], ["vamath", "Calculate a VA rating"], ["resources", "Find support"]].map(function(item) {
+          return React.createElement("button", { key: item[0], type: "button", onClick: function() { openExperienceTool(item[0]); }, style: { minHeight: 60, padding: "14px 12px", textAlign: "left", border: "1px solid " + C.border, borderRadius: 10, background: C.bgCard, color: C.textPrimary, font: "inherit", fontSize: 15, lineHeight: 1.4, cursor: "pointer" } }, item[1]);
+        })));
+  }
   function renderHomeNavigator() {
     return navUnlocked && /*#__PURE__*/React.createElement("div", { className: "tops-navigator-card", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { ...S.card, padding: 14, borderColor: C.gold, cursor: "pointer", marginBottom: 12 } },
     TopsCompass(72),
@@ -8172,7 +8205,7 @@ function App() {
       fontSize: 10,
       letterSpacing: 1
     }
-  }, theme === "tactical" ? "\u263D" : "\u2600", " ", theme === "tactical" ? "Light" : "Dark"), activeTab !== "dashboard" && !["vamath","vapay","vethub","resources","taxes","dd214","finalpcs"].includes(activeTab) && /*#__PURE__*/React.createElement("button", {
+  }, theme === "tactical" ? "\u263D" : "\u2600", " ", theme === "tactical" ? "Light" : "Dark"), activeTab !== "dashboard" && /*#__PURE__*/React.createElement("button", {
     onClick: () => { setActiveTab("dashboard"); window.scrollTo(0, 0); },
     "aria-label": "Go to home screen",
     style: {
@@ -8202,13 +8235,13 @@ function App() {
       fontSize: 13,
       letterSpacing: 1
     }
-  }, "ALERTS", activeNotifCount > 0 && /*#__PURE__*/React.createElement("span", {
+  }, "UPDATES", activeNotifCount > 0 && /*#__PURE__*/React.createElement("span", {
     style: {
       position: "absolute",
       top: -6,
       right: 0,
-      background: "#8B0000",
-      color: "#fff",
+      background: C.bgElevated,
+      color: C.textPrimary,
       borderRadius: "50%",
       width: 16,
       height: 16,
@@ -8223,7 +8256,7 @@ function App() {
     onClick: function() { setShowNotifPanel(false); },
     role: "dialog",
     "aria-modal": true,
-    "aria-label": "Alerts",
+    "aria-label": "Updates",
     style: {
       position: "fixed",
       top: 0,
@@ -8268,7 +8301,7 @@ function App() {
       color: C.textPrimary,
       letterSpacing: 2
     }
-  }, "ALERTS (", activeNotifCount, ")"), /*#__PURE__*/React.createElement("button", {
+  }, "UPDATES (", activeNotifCount, ")"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setShowNotifPanel(false),
     style: {
       background: "none",
@@ -8350,7 +8383,7 @@ function App() {
       color: C.inactive,
       fontSize: 13
     }
-  }, "All alerts acknowledged."))),
+  }, "All updates acknowledged."))),
 
   /*#__PURE__*/React.createElement(activeTab === "reminders" && focusedReminderId ? "div" : "main", {
     id: "tops-main-content", tabIndex: -1,
@@ -8361,6 +8394,9 @@ function App() {
   },
 
   // ═══════════ DASHBOARD TAB ═══════════
+  activeTab !== "dashboard" && React.createElement("div", { id: "tops-page-orientation", style: { display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 16 } },
+    React.createElement("h2", { id: "tops-page-title", tabIndex: -1, style: { fontSize: 22, margin: 0, color: C.textPrimary } }, (TOPS_TOOL_CHOICES.find(function(tool) { return tool.id === activeTab; }) || { title: "Tools" }).title),
+    React.createElement("button", { type: "button", onClick: function() { setShowMoreMenu(true); }, style: { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary, font: "inherit", cursor: "pointer" } }, "All tools")),
    activeTab === "navigator" && /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "70vh" } },
     React.createElement("div", { style: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 6 } },
       TopsCompass(44),
@@ -8386,6 +8422,15 @@ function App() {
       React.createElement("button", { type: "button", disabled: navBusy || !navInput.trim(), onClick: function(){ sendNavigator(); }, "aria-label": "Send Navigator question", style: { minHeight: 44, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), border: "none", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: navBusy || !navInput.trim() ? "default" : "pointer", opacity: navBusy || !navInput.trim() ? 0.5 : 1 } }, "SEND"))),
   navUnlocked && activeTab !== "navigator" && activeTab !== "dashboard" && /*#__PURE__*/React.createElement("div", { className: "tops-ask-launcher", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
   activeTab !== "dashboard" && continuationReturn.current && continuationReturn.current.indexOf("tops-guide-") === 0 && React.createElement("button", { type: "button", style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" }, onClick: function() { continuationFocus.current = continuationReturn.current; continuationReturn.current = null; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("pathway"); } }, "Back to career guide"),
+  activeTab === "pathway" && React.createElement("nav", { "aria-label": "Career shortcuts", style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 } },
+    [["Career guide", "tops-guide-heading"], ["Career plan", "career-gap-heading"], ["Resume drafter", "tops-resume-drafter-panel"]].map(function(item) {
+      return React.createElement("button", { key: item[1], type: "button", onClick: function() {
+        continuationReturn.current = null;
+        if (item[1] === "career-gap-heading") { setPathwayMode("planner"); setPathwayStep(1); }
+        if (item[1] === "tops-resume-drafter-panel") setAiR(function(previous) { return Object.assign({}, previous, { open: true }); });
+        focusCareerWorksheet(item[1]);
+      }, style: { minHeight: 44, padding: "10px 14px", background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" } }, item[0]);
+    })),
   activeTab === "pathway" && React.createElement("details", { id: "tops-career-guide", style: { marginBottom: 14 } },
   React.createElement("summary", { style: { minHeight: 44, padding: "12px 16px", cursor: "pointer", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary } }, "Open my career guide"),
   React.createElement(PersonalGuide, { key: guideRestoreRevision, colors: C, state: guideState, setState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, follow: followProgress, dismissed: dismissedReminders, busy: navBusy, onTarget: function(target, expectedTarget) {
@@ -8446,7 +8491,9 @@ function App() {
       React.createElement("div", { onClick: function() { setPolicyPanelOpen(false); setActiveTab("vapay"); }, style: { marginTop: 12, fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.greenBright, cursor: "pointer" } }, "FULL ANALYSIS: VA PAY \u2192 2026 POLICY INTEL \u2192")
     )
   ), React.createElement("div", { style: { marginBottom: 14 } },
-    React.createElement("input", { type: "text", "aria-label": "Search Transition OPS", value: searchQ, onChange: function(e) { setSearchQ(e.target.value); }, placeholder: "\uD83D\uDD0D FIND: VGLI, SkillBridge, GI Bill, terminal leave...", style: { width: "100%", boxSizing: "border-box", padding: "13px 16px", background: C.bgCard, border: "1px solid transparent", borderRadius: 12, color: C.textPrimary, fontSize: 14, fontFamily: "'JetBrains Mono', monospace", outline: "none" } }),
+    React.createElement("label", { htmlFor: "tops-home-search", style: { display: "block", color: C.textPrimary, fontSize: 16, fontWeight: 600, marginBottom: 8 } }, "Find a tool or topic"),
+    React.createElement("input", { id: "tops-home-search", type: "search", "aria-label": "Search Transition OPS", value: searchQ, onChange: function(e) { setSearchQ(e.target.value); }, placeholder: "Try resume, VA math, DD214 or a benefit", style: { width: "100%", boxSizing: "border-box", minHeight: 48, padding: "13px 16px", background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, color: C.textPrimary, fontSize: 16, fontFamily: "inherit" } }),
+    searchQ && React.createElement("button", { type: "button", onClick: function() { setSearchQ(""); document.getElementById("tops-home-search").focus(); }, style: { minHeight: 44, padding: "8px 12px", border: "1px solid " + C.border, borderRadius: 8, marginTop: 8, color: C.textPrimary, background: C.bgCard, font: "inherit", cursor: "pointer" } }, "Clear search"),
     searchQ.length >= 2 && (function() {
       var q = searchQ.toLowerCase().split(/\s+/).filter(function(t) { return t.length > 0; });
       function score(fields) {
@@ -8460,6 +8507,10 @@ function App() {
         return s;
       }
       var hits = [];
+      TOPS_TOOL_CHOICES.filter(function(tool) { return tool.id !== "navigator" || navUnlocked; }).forEach(function(tool) {
+        var s = score([tool.title, tool.description, tool.keywords]);
+        if (s > 0) hits.push({ s: s + 4, tag: "TOOL", tagColor: C.textPrimary, title: tool.title, snip: tool.description, act: "tab", tab: tool.id });
+      });
       SMART_REMINDERS.forEach(function(r) {
         var s = score([r.title, r.brief || "", r.why || "", r.cat || "", (r.items || []).join(" ")]);
         if (s > 0) hits.push({ s: s, tag: "REMINDER", tagColor: C.accent, title: r.title, snip: r.brief || r.why || "", act: "tab", tab: "reminders" });
@@ -8486,7 +8537,9 @@ function App() {
       });
       hits.sort(function(a, b) { return b.s - a.s; });
       hits = hits.slice(0, 10);
-      if (hits.length === 0) return React.createElement(React.Fragment, null, React.createElement("div", { style: { marginTop: 6, padding: "10px 14px", background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, fontSize: 12, color: C.textSecondary } }, "No matches in the app for \u201C" + searchQ + "\u201D. Try a benefit name, program, or deadline (e.g. VGLI, TAP, BDD)."), navUnlocked && React.createElement("div", { onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { marginTop: 8, padding: "10px 14px", background: C.bgCard, border: "1px solid " + C.gold, borderRadius: 8, fontSize: 12.5, color: C.goldBright, cursor: "pointer", fontWeight: 600 } }, "\u2726 Ask the Navigator instead. It knows this app cold."));
+      if (hits.length === 0) return React.createElement("div", { role: "status", style: { marginTop: 8, padding: 14, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, color: C.textSecondary } },
+        React.createElement("p", null, "No matches. Try a tool, benefit or program name, or browse all tools."),
+        React.createElement("button", { type: "button", onClick: function() { setShowMoreMenu(true); }, style: { minHeight: 44, padding: "10px 14px", background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" } }, "Browse all tools"));
       return React.createElement("div", { style: { marginTop: 6, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, overflow: "hidden" } }, hits.map(function(h, i) {
         var inner = [
           React.createElement("div", { key: "t", style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 3 } },
@@ -8497,7 +8550,7 @@ function App() {
         ];
         var rowStyle = { display: "block", padding: "10px 14px", borderBottom: i < hits.length - 1 ? "1px solid " + C.border : "none", cursor: "pointer", textDecoration: "none" };
         if (h.act === "url") return React.createElement("a", { key: i, href: h.url, target: "_blank", rel: "noopener noreferrer", style: rowStyle }, inner);
-        return React.createElement("div", { key: i, onClick: function() { setActiveTab(h.tab); setSearchQ(""); }, style: rowStyle }, inner);
+        return React.createElement("button", { key: i, type: "button", onClick: function() { openExperienceTool(h.tab); setSearchQ(""); }, style: Object.assign({}, rowStyle, { width: "100%", minHeight: 44, textAlign: "left", background: "transparent", border: 0, borderBottom: rowStyle.borderBottom, font: "inherit" }) }, inner);
       }));
     })()
   ), exploredOnly && !separationDate && !userStatus && React.createElement("div", { onClick: function() { setOnboardStep(1); setShowOnboarding(true); }, style: { background: "linear-gradient(135deg, rgba(139,125,60,0.16), rgba(139,125,60,0.05))", border: "1px solid " + C.gold, borderRadius: 12, padding: "13px 15px", marginBottom: 12, display: "flex", alignItems: "center", gap: 12, cursor: "pointer" } },
@@ -8511,7 +8564,9 @@ function App() {
     // ═══════════ GUARD / RESERVE DASHBOARD ═══════════
     if (userStatus === "guard") {
       return React.createElement("div", null,
-        separationDate && (function() {
+        renderHomeTools(),
+        separationDate && React.createElement("details", { id: "tops-home-date", style: { marginBottom: 14 } },
+        React.createElement("summary", { style: { minHeight: 44, padding: "12px 14px", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, cursor: "pointer" } }, "View my transition countdown"), (function() {
           var daysOut = daysToETSDate(separationDate);
           if (daysOut === null || daysOut < 0) return null;
           var RUNWAY = 540, CIRC = 659.7;
@@ -8532,7 +8587,7 @@ function App() {
               )
             )
           );
-        })(),
+        })()),
         React.createElement(GuardCareerSupport, { followup: React.createElement("div", null, SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)).filter(function(r) { return followProgress[r.id] && !dismissedReminders[r.id]; }).map(function(r) { return React.createElement("div", { key: r.id, style: { marginBottom: 14, padding: 12, border: "1px solid " + C.border, borderRadius: 8 } }, React.createElement("strong", null, r.title), React.createElement("p", null, topsFollowLabel(followProgress[r.id])), React.createElement("button", { id: "tops-home-follow-" + r.id, type: "button", style: { minHeight: 44, padding: "10px 14px", background: C.bg, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 6 }, onClick: function() { openPlanRoute("reminders", "tops-reminder-" + r.id, "tops-home-follow-" + r.id); } }, "Continue step")); })), colors: C, target: gapState.draft.target, opportunity: gapState.draft.prep.opportunity, next: gapState.draft.prep.followup.trim() ? gapState.draft.prep.followup : (gapState.draft.rows.find(function(row) { return row.next.trim(); }) || {}).next || "", openPlan: function(office, prepare) { setPrepareOpportunity(!!prepare); setGuardOfficeOffer(office); setPathwayMode("planner"); setPathwayStep(1); setActiveTab("pathway"); window.scrollTo(0, 0); } }),
         renderPolicyNotice(),
 
@@ -8838,6 +8893,9 @@ function App() {
       ),
 
       // ═══ v49 INSTRUMENT: timeline ring + ETS countdown fused ═══
+      renderHomeTools(),
+      React.createElement("details", { id: "tops-home-date", style: { marginBottom: 14 } },
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 14px", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, cursor: "pointer" } }, separationDate ? "View or edit my transition date" : "Add a transition date (optional)"),
       (function() {
         var daysOut = daysToETSDate(separationDate);
         if (!separationDate) {
@@ -8882,7 +8940,7 @@ function App() {
               React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.inactive, marginTop: 3 } }, "READINESS"))
           )
         );
-      })(),
+      })()),
 
       React.createElement("section", { className: "tops-continue-card", "aria-labelledby": "tops-continue-title", style: { background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, padding: 14, marginBottom: 12 } },
         React.createElement("h2", { id: "tops-continue-title", style: { fontFamily: "'Oswald', sans-serif", fontSize: 17, fontWeight: 600, color: C.textPrimary, margin: "0 0 6px" } }, "Continue your plan"),
@@ -9659,7 +9717,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         React.createElement("span", { style: { display: "block", fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "First, we pull out your facts for review. Then we draft from only what you confirm. Civilian and federal formats. 3 free drafts a day.")),
       React.createElement("span", { "aria-hidden": "true", style: { color: C.greenBright, fontSize: 16, transform: aiR.open ? "rotate(90deg)" : "none" } }, "\u203A")),
     !aiR.open && React.createElement("div", { id: "tops-resume-drafter-panel", hidden: true }),
-    aiR.open && React.createElement("div", { id: "tops-resume-drafter-panel", style: { marginTop: 12 } },
+    aiR.open && React.createElement("div", { id: "tops-resume-drafter-panel", tabIndex: -1, role: "region", "aria-label": "Resume drafter", style: { marginTop: 12 } },
       React.createElement("div", { role: "group", "aria-label": "Resume format", style: { display: "flex", gap: 8, marginBottom: 10 } },
         ["standard", "federal"].map(function(m) {
           var on = aiR.mode === m;
@@ -16767,6 +16825,9 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     ),
     React.createElement("h2", { style: { fontSize: 26, lineHeight: 1.25, color: C.textPrimary, letterSpacing: 0.5, fontFamily: "'Oswald', sans-serif", marginBottom: 14 } }, showMoreMenu === "benefits" ? "Benefits" : "More tools"),
     showMoreMenu === "benefits" && React.createElement("p", { style: { color: C.textSecondary, lineHeight: 1.6, marginBottom: 16 } }, "Find guidance and tools for your benefits decisions."),
+    showMoreMenu !== "benefits" && TOPS_TOOL_CHOICES.filter(function(tool) { return tool.id === "timeline" || tool.id === "pathway"; }).map(function(tool) {
+      return React.createElement("button", { key: tool.id, type: "button", className: "tops-more-tool", onClick: function() { openExperienceTool(tool.id); } }, tool.title);
+    }),
     [{id:"reminders",icon:"bell",label:"REMINDERS & ALERTS",desc:"Deadline reminders timed to your separation date"},{id:"critical",icon:"alert",label:"CRITICAL WINDOWS",desc:"Time-bound windows where missing the date costs money or benefits"},{id:"readiness",icon:"gauge",label:"READINESS SCORE",desc:"Self-assessment across transition categories"},{id:"vamath",icon:"calc",label:"VA MATH CALCULATOR",desc:"Estimate a combined rating using 38 CFR 4.25 Table I"},{id:"vapay",icon:"dollar",label:"VA PAY ESTIMATOR",desc:"Calculate your monthly disability compensation"},{id:"finalpcs",icon:"box",label:"FINAL PCS ENTITLEMENTS",desc:"Weight allowances, MALT, move timelines by grade"},{id:"vethub",icon:"medal",label:"VET HUB",desc:"Career score, benefits, employers, entrepreneurship"},{id:"resources",icon:"link",label:"RESOURCES",desc:"VSOs, SkillBridge, healthcare, document vault"},{id:"taxes",icon:"percent",label:"TAX INTEL",desc:"State tax on retired pay, MSRRA, residency"},{id:"dd214",icon:"doc",label:"DD214 GUIDE",desc:"Verification checklist, service record review"}].filter(function(m) { return showMoreMenu !== "benefits" || ["critical","vamath","vapay","resources","taxes"].indexOf(m.id) !== -1; }).map(function(m) {
       return React.createElement("button", { key: m.id, className: "tops-more-tool", onClick: function() { primaryNavFocus.current = true; setActiveTab(m.id); setShowMoreMenu(false); }, style: undefined },
         React.createElement("span", { style: { color: C.gold, flexShrink: 0 } }, TopsToolArt(m.id, m.icon, 54)),

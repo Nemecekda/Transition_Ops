@@ -68,6 +68,11 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
    const shot=await c.send("Page.captureScreenshot",{format:"png"});
    fs.writeFileSync(path.join(process.env.TOPS_HOME_SCREENSHOT_DIR,"home-"+width+".png"),Buffer.from(shot.data,"base64"));
   }
+  await ev('Array.from(document.querySelectorAll("button")).find(n=>n.getAttribute("aria-label")==="Switch to dark theme").click()');
+  await c.send("Emulation.setDeviceMetricsOverride",{width:375,height:900,deviceScaleFactor:1,mobile:true});
+  await ev('window.scrollTo(0,0);new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+  const darkShot=await c.send("Page.captureScreenshot",{format:"png"});
+  fs.writeFileSync(path.join(process.env.TOPS_HOME_SCREENSHOT_DIR,"home-dark-375.png"),Buffer.from(darkShot.data,"base64"));
  }
  await click("My Plan");await wait('!!document.getElementById("tops-plan-backup")','backup in My Plan');
  await click("Career");await wait('!!document.getElementById("tops-career-guide")','guide in Career');
@@ -77,6 +82,30 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
  assert.equal(await ev('document.getElementById("tops-career-guide").open'),false);
  await click("Back to career guide");await wait('document.activeElement.id==="tops-guide-open-plan"','guide return focus');
  assert.equal(await ev('document.getElementById("tops-career-guide").open'),true);
+ // Cross-app task navigation must preserve data and move focus to usable destinations.
+ await click("Career plan");await wait('document.activeElement.id==="career-gap-heading"','career shortcut focus');
+ await click("Resume drafter");await wait('document.activeElement.id==="tops-resume-drafter-panel"','resume shortcut focus');
+ await click("Career guide");await wait('document.activeElement.id==="tops-guide-heading"','guide shortcut focus');
+ assert.equal(nav.length,1);
+ await click("Home");await wait('!!document.getElementById("tops-home-search")','search ready');
+ assert.equal(await ev('document.getElementById("tops-home-date").open'),false);
+ for(const pair of [["resume","Career"],["VA math","VA rating calculator"],["DD214","DD214 and service records"]]){
+  await input("tops-home-search",pair[0]);
+  await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent.startsWith('+JSON.stringify("TOOL"+pair[1])+')).click()');
+  await wait('document.getElementById("tops-page-title")?.textContent==='+JSON.stringify(pair[1]),'search destination');
+  assert.equal(await ev('Array.from(document.querySelectorAll("button")).some(n=>n.getAttribute("aria-label")==="Go to home screen")'),true);
+  await ev('Array.from(document.querySelectorAll("button")).find(n=>n.getAttribute("aria-label")==="Go to home screen").click()');
+  await wait('!!document.getElementById("tops-home-search")','return Home');
+ }
+ await input("tops-home-search","zzzz-no-match");await click("Browse all tools");
+ await wait('!!document.querySelector("[role=dialog]")','tool dialog');
+ await c.send("Input.dispatchKeyEvent",{type:"keyDown",key:"Escape",code:"Escape",windowsVirtualKeyCode:27});
+ await wait('!document.querySelector("[role=dialog]")','escape closes tools');
+ await click("Clear search");assert.equal(await ev('document.activeElement.id'),"tops-home-search");
+ for(const width of [320,375,1280]){
+  await c.send("Emulation.setDeviceMetricsOverride",{width,height:900,deviceScaleFactor:1,mobile:width<600});
+  assert.ok(await ev('document.documentElement.scrollWidth<=window.innerWidth'));
+ }
  assert.equal(requests.filter(r=>r.includes("SYNTHETIC_PRIVATE_ROLE")).length,0);assert.equal(errors.length,0);
  console.log("GUIDE BROWSER PASS: Chrome; three separated-veteran pathways without date; optional save/reload; keyboard disclosure/select; 320/375 reflow; unchecked consent; labelled preview equals selected payload; stubbed send only; scoped clear; corrupt and denied storage; offline planning; no private-role transfer; zero JS errors");
  } finally {if(chrome)await h.stopChrome(chrome);await new Promise(r=>server.close(r));}
