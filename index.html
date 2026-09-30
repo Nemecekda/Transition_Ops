@@ -6996,10 +6996,12 @@ function App() {
   useEffect(function() {
     if (!primaryNavFocus.current || showMoreMenu) return;
     primaryNavFocus.current = false;
-    window.requestAnimationFrame(function() {
+    var frame = window.requestAnimationFrame(function() {
+      if (continuationFocus.current) return;
       var target = document.querySelector(".content-area h2, .content-area h3, main.content-area");
       if (target) { target.setAttribute("tabindex", "-1"); target.focus(); }
     });
+    return function() { window.cancelAnimationFrame(frame); };
   }, [activeTab, showMoreMenu]);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -7210,13 +7212,14 @@ function App() {
     var id = continuationFocus.current || (activeTab === "dashboard" && continuationReturn.current);
     if (!id) return;
     var frame = requestAnimationFrame(function() {
+      if (continuationFocus.current && continuationFocus.current !== id) return;
       var target = document.getElementById(id) || (activeTab === "dashboard" && document.getElementById("tops-home-timeline"));
       if (!target) return;
       for (var parent = target.parentElement; parent; parent = parent.parentElement) { if (parent.tagName === "DETAILS") parent.open = true; }
-      target.focus();
-      target.scrollIntoView({ block: "center" });
       continuationFocus.current = null;
       if (activeTab === "dashboard") continuationReturn.current = null;
+      target.focus();
+      target.scrollIntoView({ block: "center" });
     });
     return function() { cancelAnimationFrame(frame); };
   }, [activeTab, selectedMilestone, subTab, reminderExpanded, focusedReminderId, dismissedReminders, continuationRevision]);
@@ -12804,9 +12807,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       letterSpacing: 2,
       cursor: "pointer"
     }
-  }, "SHARE WITH A VETERAN"))), activeTab === "resources" && /*#__PURE__*/React.createElement("div", null, navUnlocked && React.createElement("div", { role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, style: { ...S.card, padding: "10px 14px", borderColor: C.gold, cursor: "pointer", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 } },
-    React.createElement("span", { style: { color: C.goldBright, fontSize: 15 } }, "\u2726"),
-    React.createElement("span", { style: { fontSize: 12.5, color: C.textSecondary, lineHeight: 1.5 } }, "A lot of resources live below. Or skip the scrolling: tell the Navigator your situation and it will point you.")),
+  }, "SHARE WITH A VETERAN"))), activeTab === "resources" && /*#__PURE__*/React.createElement("div", null,
   React.createElement("details", { style: { marginBottom: 14 } },
   React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.textSecondary, cursor: "pointer" } }, "Resources for workplace groups"),
   /*#__PURE__*/React.createElement("a", {
