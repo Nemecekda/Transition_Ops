@@ -7830,7 +7830,7 @@ function App() {
         React.createElement("h2", { id: "tops-home-tools-title", style: { fontSize: 20, color: C.textPrimary, margin: "0 0 8px" } }, "What would you like to do?"),
         React.createElement("button", { type: "button", onClick: function() { setShowMoreMenu(true); }, style: { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary, font: "inherit", cursor: "pointer" } }, "All tools")),
       React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 } },
-        [["timeline", "Work on my plan"], ["pathway", "Explore careers"], ["vamath", "Calculate a VA rating"], ["resources", "Find support"]].map(function(item) {
+        [["timeline", "View my transition checklist"], ["pathway", "Explore careers"], ["vamath", "Calculate a VA rating"], ["resources", "Find benefits, services & support"]].map(function(item) {
           return React.createElement("button", { key: item[0], type: "button", onClick: function() { openExperienceTool(item[0]); }, style: { minHeight: 60, padding: "14px 12px", textAlign: "left", border: "1px solid " + C.border, borderRadius: 10, background: C.bgCard, color: C.textPrimary, font: "inherit", fontSize: 15, lineHeight: 1.4, cursor: "pointer" } }, item[1]);
         })));
   }
