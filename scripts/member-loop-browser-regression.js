@@ -1,0 +1,93 @@
+"use strict";
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http'),os=require('node:os'),{spawn}=require('node:child_process');
+const root=path.resolve(__dirname,'..'),utility=fs.readFileSync(path.join(__dirname,'privacy-network-regression.js'),'utf8');
+const h=new Function('fs','path','os','spawn',utility.slice(utility.indexOf('function findChrome()'),utility.indexOf('const PROBE_SCRIPT ='))+'\nreturn {findChrome,launchChrome,stopChrome,evaluate,waitForExpression};')(fs,path,os,spawn);
+const server=http.createServer((req,res)=>{const p=path.join(root,req.url.split('?')[0]==='/'?'index.html':req.url.split('?')[0]);if(!fs.existsSync(p)||!fs.statSync(p).isFile()){res.writeHead(404);return res.end();}res.setHeader('Content-Type',p.endsWith('.js')?'text/javascript':p.endsWith('.html')?'text/html':'application/octet-stream');res.end(fs.readFileSync(p));});
+(async()=>{let chrome;const requests=[],errors=[];try{
+await new Promise(r=>server.listen(0,'127.0.0.1',r));const url='http://127.0.0.1:'+server.address().port;chrome=await h.launchChrome(h.findChrome(),12);const c=chrome.client;
+await c.send('Fetch.enable',{patterns:[{urlPattern:'*'}]});c.on('Fetch.requestPaused',async e=>{requests.push(e.request.url+' '+(e.request.postData||''));await c.send(e.request.url.startsWith(url)?'Fetch.continueRequest':'Fetch.failRequest',e.request.url.startsWith(url)?{requestId:e.requestId}:{requestId:e.requestId,errorReason:'BlockedByClient'});});
+await c.send('Runtime.enable');c.on('Runtime.exceptionThrown',e=>errors.push(e.exceptionDetails.text));await c.send('Page.enable');
+const ev=x=>h.evaluate(c,x,true),wait=(x,label)=>h.waitForExpression(c,x,label,7000),click=text=>ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==='+JSON.stringify(text)+').click()');
+const input=(id,value)=>ev('var n=document.getElementById('+JSON.stringify(id)+');Object.getOwnPropertyDescriptor(n.tagName==="SELECT"?HTMLSelectElement.prototype:HTMLInputElement.prototype,"value").set.call(n,'+JSON.stringify(value)+');n.dispatchEvent(new Event(n.tagName==="SELECT"?"change":"input",{bubbles:true}));');
+const home=async()=>{await c.send('Page.navigate',{url:url+'/?tool=dashboard'});await wait('!!document.getElementById("tops-loop-title")','member loop Home');};
+await home();
+const selection=await ev('(()=>{const g={version:1,pathway:"change",targetRole:"SYNTHETIC_TARGET",currentRole:"",goal:""},a=topsEmptyAction();const gap={target:"SYNTHETIC_TARGET",rows:[{next:"SYNTHETIC_MEMBER_NEXT"}]};return {matching:topsMemberMove(g,a,gap,"guard"),mismatch:topsMemberMove(g,a,{...gap,target:"OLD_TARGET"},"guard")};})()');
+assert.equal(selection.matching.title,'SYNTHETIC_MEMBER_NEXT');assert.notEqual(selection.mismatch.title,'SYNTHETIC_MEMBER_NEXT');
+for(const [profile,pathway] of [['active','transition'],['separated','change'],['retired','change'],['guard','change'],['guard','skills'],['spouse','change']]){
+ await ev('localStorage.clear();localStorage.setItem("tops_onboarded","1");localStorage.setItem("tops_user_status",'+JSON.stringify(profile)+');');await home();
+ assert.equal(await ev('document.getElementById("tops-loop-direction").open'),false);
+ await ev('document.querySelector("#tops-loop-direction summary").click()');
+ await input('tops-loop-path',pathway);
+ await input('tops-loop-target','SYNTHETIC_LOOP_ROLE');await input('tops-loop-goal','SYNTHETIC_LOOP_GOAL');
+ await click('Save my direction');await wait('document.activeElement.id==="tops-loop-title"','direction returns focus');
+ assert.equal(await ev('localStorage.getItem("tops_sep_date")'),null);
+ await home();
+ assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("SYNTHETIC_LOOP_ROLE")'));
+ if(profile==='guard')assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("alongside service")'));
+ if(['separated','retired'].includes(profile))assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("no separation date is needed")'));
+ await click('Choose this next step');await wait('!!document.getElementById("tops-action-text")','step editor');
+ assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
+ await input('tops-action-text','SYNTHETIC_LOOP_STEP for '+profile);await input('tops-action-date','2026-10-20');await click('Save career step');
+ await home();assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("SYNTHETIC_LOOP_STEP")'));
+ if(process.env.TOPS_LOOP_SCREENSHOT_DIR){
+  fs.mkdirSync(process.env.TOPS_LOOP_SCREENSHOT_DIR,{recursive:true});
+  await c.send('Emulation.setDeviceMetricsOverride',{width:375,height:900,deviceScaleFactor:1,mobile:true});
+  await ev('window.scrollTo(0,0);new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+  const shot=await c.send('Page.captureScreenshot',{format:'png'});
+  fs.writeFileSync(path.join(process.env.TOPS_LOOP_SCREENSHOT_DIR,profile+'.png'),Buffer.from(shot.data,'base64'));
+ }
+ await click(profile==='active'?'Open readiness check':'Open my career worksheet');
+ await wait('document.activeElement.id==='+JSON.stringify(profile==='active'?'tops-plan-readiness':'career-gap-heading'),'loop tool destination focus');
+ await click('Home');await wait('!!document.getElementById("tops-loop-title")','return to loop');
+ const unchanged=await ev('localStorage.getItem("tops_career_action_v1")');
+ await ev('document.querySelector("#tops-loop-checkin summary").click()');
+ for(const blocker of ['direction','skills','time','person']){
+  await input('tops-loop-blocker',blocker);
+  assert.ok(await ev('Array.from(document.querySelectorAll("[role=region]")).some(n=>n.getAttribute("aria-label")==="Alternative next step")'));
+  assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Review this as my next step").disabled'),true);
+  assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),unchanged);
+  if(blocker==='time' && profile==='guard' && process.env.TOPS_LOOP_SCREENSHOT_DIR){
+   await ev('document.getElementById("tops-loop-checkin").scrollIntoView({block:"start"});new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+   const shot=await c.send('Page.captureScreenshot',{format:'png'});
+   fs.writeFileSync(path.join(process.env.TOPS_LOOP_SCREENSHOT_DIR,'guard-time-checkin.png'),Buffer.from(shot.data,'base64'));
+  }
+ }
+ await input('tops-loop-blocker','skills');await click('Browse training options');
+ await wait('document.getElementById("tops-resource-topic")?.value==="directory"','training opens directory, not documents');
+ await click('Home');await wait('!!document.getElementById("tops-loop-title")','Home after training');
+ await click('Update this step');await click('Mark done');
+ assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).done'),false);
+ await click('Save career step');await home();
+ assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("You marked this step done")'));
+ // Changing direction preserves the earlier step and demands an explicit review.
+ await ev('document.querySelector("#tops-loop-direction summary").click()');await input('tops-loop-target','SYNTHETIC_CHANGED_ROLE');await click('Save my direction');
+ assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("Your direction changed")'));
+ await click('Review earlier step');assert.ok(await ev('document.getElementById("tops-career-action").textContent.includes("SYNTHETIC_LOOP_ROLE")'));
+ assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).context.targetRole'),'SYNTHETIC_LOOP_ROLE');
+ for(const width of [320,375]){await c.send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:true});assert.ok(await ev('document.documentElement.scrollWidth<=window.innerWidth'));}
+ console.log('MEMBER LOOP PROFILE PASS',profile,pathway);
+}
+// Recover an action whose guide was not saved, without silently adopting it.
+await ev('localStorage.removeItem("tops_personal_guide_v1")');await home();await click('Review saved direction');
+assert.equal(await ev('document.getElementById("tops-loop-target").value'),'SYNTHETIC_LOOP_ROLE');
+assert.equal(await ev('localStorage.getItem("tops_personal_guide_v1")'),null);
+await click('Use for this visit');assert.equal(await ev('localStorage.getItem("tops_personal_guide_v1")'),null);
+// A denied save neither changes the current direction nor claims success.
+await ev('document.querySelector("#tops-loop-direction summary").click();window.__oldSet=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw Error("blocked")};');
+await input('tops-loop-target','SYNTHETIC_DENIED');await click('Save my direction');
+assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("could not be saved")'));
+await ev('Storage.prototype.setItem=window.__oldSet');
+assert.equal(await ev('localStorage.getItem("tops_personal_guide_v1")'),null);
+await ev('document.querySelector("#tops-loop-checkin summary").click()');await input('tops-loop-blocker','time');
+const beforeAlternative=await ev('localStorage.getItem("tops_career_action_v1")');
+await ev('document.querySelector("#tops-loop-checkin input[type=checkbox]").click()');
+await click('Review this as my next step');
+assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),beforeAlternative);
+assert.ok(await ev('document.getElementById("tops-action-text").value.includes("one small part")'));
+await click('Save career step');
+assert.notEqual(await ev('localStorage.getItem("tops_career_action_v1")'),beforeAlternative);
+// No loop member text is sent, and no AI endpoint is requested.
+assert.equal(requests.filter(r=>r.includes('SYNTHETIC_')||r.includes('/.netlify/functions/')).length,0);
+assert.deepEqual(errors,[]);
+console.log('MEMBER LOOP PASS: five profiles; explicit direction save; no date requirement; choose/edit/save/reload; completion/reflection; goal drift review; orphan-step recovery; save denial; 320/375; zero model calls/member-text requests/errors');
+}finally{if(chrome)await h.stopChrome(chrome);await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e.stack);process.exitCode=1;});
