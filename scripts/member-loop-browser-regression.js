@@ -15,6 +15,21 @@ await ev('localStorage.clear()');await c.send('Page.navigate',{url:url+'/'});awa
 assert.equal(await ev('document.querySelector(".onboard-cta-primary").textContent'),'FIND MY STARTING POINT');
 await click('PERSONALIZE MY VIEW (OPTIONAL)');await wait('document.body.textContent.includes("STEP 1 OF 4")','optional setup still reachable');
 assert.equal(await ev('localStorage.getItem("tops_user_status")'),null);
+for(const status of ['ACTIVE DUTY','ALREADY SEPARATED','RETIRED','MILITARY SPOUSE']){
+ await ev('localStorage.clear()');await c.send('Page.navigate',{url:url+'/'});await wait('!!document.querySelector(".onboard-cta-primary")','optional setup welcome');
+ await click('PERSONALIZE MY VIEW (OPTIONAL)');
+ await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent.includes('+JSON.stringify(status)+')).click()');
+ assert.equal(await ev('document.querySelectorAll("button[aria-pressed=true]").length'),1);
+ await click('CONTINUE \u2192');await click('ARMY');await click('CONTINUE \u2192');
+ await wait('!!document.getElementById("tops-onboard-date")','optional date');
+ await input('tops-onboard-date','2027-06-01');await input('tops-onboard-date','');
+ await click('CONTINUE WITHOUT A DATE');
+ await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent.includes("JUST GETTING STARTED")).click()');
+ await click('LAUNCH TRANSITION OPS \u2192');await wait('!!document.getElementById("tops-loop-title")','optional setup reaches Home');
+ assert.equal(await ev('localStorage.getItem("tops_sep_date")'),null);
+ assert.equal(await ev('localStorage.getItem("etsDate")'),null);
+}
+await ev('localStorage.clear()');
 await c.send('Page.navigate',{url:url+'/'});await wait('!!document.querySelector(".onboard-cta-primary")','welcome again');
 await click('FIND MY STARTING POINT');await wait('document.activeElement.id==="tops-loop-title"','welcome routes and focuses starting points');
 assert.equal(await ev('document.querySelectorAll("#tops-member-starts button").length'),3);

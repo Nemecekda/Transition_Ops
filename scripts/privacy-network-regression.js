@@ -596,7 +596,7 @@ async function stopChrome(chrome) {
     ]);
     if (chrome.child.exitCode === null) chrome.child.kill("SIGKILL");
   }
-  if (chrome.profile) fs.rmSync(chrome.profile, { recursive: true, force: true });
+  if (chrome.profile) fs.rmSync(chrome.profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 }
 
 async function evaluate(client, expression, awaitPromise) {
