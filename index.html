@@ -6576,10 +6576,20 @@ function MemberPlanningLoop(props) {
   var C = props.colors, g = props.guideState.draft, a = props.actionState.draft;
   var [editing, setEditing] = useState(false), [direction, setDirection] = useState(g), [message, setMessage] = useState("");
   var [blocker, setBlocker] = useState(""), [replaceStep, setReplaceStep] = useState(false);
+  var [share, setShare] = useState({});
+  useEffect(function() { setShare({}); }, [g, a, props.profile, blocker]);
   useEffect(function() { setDirection(g); }, [g]);
   useEffect(function() { setBlocker(""); setReplaceStep(false); }, [g]);
   var move = topsMemberMove(g, a, props.gap, props.profile);
   var alternative = topsMemberAdjustment(blocker, g, props.profile);
+  var helpFacts = [
+    ["direction", "Direction", TOPS_GUIDE_PATHS[g.pathway]],
+    ["target", "Role or field", g.targetRole], ["goal", "Goal", g.goal],
+    ["step", "Current step", topsActionMatches(a, g) && a.text ? a.text + (a.done ? " (marked done)" : " (unfinished)") : ""],
+    ["service", "Service path", { active: "Active duty", separated: "Veteran", retired: "Retired", guard: "Guard or Reserve", spouse: "Military spouse" }[props.profile]],
+    ["blocker", "What I need help with", { direction: "Choosing a direction", skills: "Skills or experience", time: "Limited time", person: "Finding a person who can help" }[blocker]]
+  ].filter(function(row) { return !!row[2]; });
+  var helpDraft = "Help me choose one practical next action. Ask a clarifying question if needed. Treat my details as unverified; do not infer benefits eligibility.\n" + helpFacts.filter(function(row) { return share[row[0]]; }).map(function(row) { return row[1] + ": " + row[2]; }).join("\n");
   var button = { minHeight: 44, minWidth: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgElevated, color: C.textPrimary, font: "inherit", cursor: "pointer" };
   var field = { display: "block", width: "100%", boxSizing: "border-box", minHeight: 44, padding: 10, margin: "6px 0 12px", border: "1px solid " + C.border, borderRadius: 6, background: C.bg, color: C.textPrimary, font: "inherit", fontSize: 16 };
   function editDirection(key, value) { setDirection(Object.assign({}, direction, { [key]: value })); }
@@ -6626,6 +6636,12 @@ function MemberPlanningLoop(props) {
             props.setActionState({ draft: { version: 1, text: alternative.title, date: "", done: false, context: topsValidateGuide(g) }, status: "Alternative step added for review, not saved. Edit it to fit your situation, then choose Save career step." });
             setEditing(true); setBlocker(""); setReplaceStep(false);
           } }, "Review this as my next step")))),
+    props.onDraft && React.createElement("details", { id: "tops-loop-help", style: { marginTop: 12 } },
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Get help choosing my next step"),
+      React.createElement("p", null, props.hasDraft ? "Your earlier draft is still available. Resume it to edit, send, or discard it before starting a new question." : "Choose any details to include. Nothing is selected automatically. You can edit the draft before sending it to Navigator."),
+      !props.hasDraft && helpFacts.map(function(row) { return React.createElement("label", { key: row[0], style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10, lineHeight: 1.6 } }, React.createElement("input", { type: "checkbox", checked: !!share[row[0]], onChange: function(e) { setShare(Object.assign({}, share, { [row[0]]: e.target.checked })); } }), row[1] + ": " + row[2]); }),
+      !props.hasDraft && React.createElement("p", { style: { whiteSpace: "pre-wrap", lineHeight: 1.6 }, "aria-label": "Question preview" }, helpDraft),
+      React.createElement("button", { type: "button", style: button, onClick: function() { props.onDraft(helpDraft); } }, props.hasDraft ? "Resume my Navigator draft" : "Open draft in Navigator")),
     React.createElement("details", { id: "tops-loop-direction", style: { marginTop: 12 } },
       React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, g.pathway ? "Review or change my direction" : "Choose my direction"),
       React.createElement("label", { htmlFor: "tops-loop-path" }, "My focus"),
@@ -6875,25 +6891,33 @@ function App() {
   const [navMsgs, setNavMsgs] = useState([]);
   const [navInput, setNavInput] = useState("");
   const [navBusy, setNavBusy] = useState(false);
+  const [planQuestion, setPlanQuestion] = useState(null);
+  const [planQuestionOpen, setPlanQuestionOpen] = useState(false);
   const [guideState, setGuideState] = useState(topsLoadGuide);
   const [actionState, setActionState] = useState(topsLoadAction);
-  const sendNavigator = function(preset, guideFields) {
+  const sendNavigator = function(preset, guideFields, planOnly) {
     var q = (preset || navInput).trim();
     if (!q || navBusy) return;
     try {
       var today = new Date().toISOString().slice(0,10);
       var o = JSON.parse(window.__safeGet("tops_nav_pilot") || "{}");
       if (o.d !== today) o = { d: today, n: 0 };
-      if (o.n >= 20) { setNavMsgs(function(m){ return m.concat([{ r: "b", t: "Beta daily limit reached (20) \u2014 resets tomorrow. For anything urgent, FIND YOUR VSO gets you a free human today. [RESOURCES]" }]); }); return; }
+      if (o.n >= 20) { deliver("Beta daily limit reached (20) \u2014 resets tomorrow. For anything urgent, FIND YOUR VSO gets you a free human today. [RESOURCES]"); return; }
       o.n++; window.__safeSet("tops_nav_pilot", JSON.stringify(o));
     } catch (e) {}
-    setNavInput("");
-    var next = (guideFields ? [] : navMsgs).concat([{ r: "u", t: q }]);
-    setNavMsgs(next); setNavBusy(true);
+    if (!planOnly) setNavInput("");
+    var next = (guideFields || planOnly ? [] : navMsgs).concat([{ r: "u", t: q }]);
+    function deliver(text) {
+      if (planOnly) setPlanQuestion(function(current) { return current && Object.assign({}, current, { reply: text }); });
+      else setNavMsgs(function(m) { return m.concat([{ r: "b", t: text }]); });
+    }
+    if (planOnly) setPlanQuestion(function(current) { return Object.assign({}, current, { reply: "" }); });
+    else setNavMsgs(next);
+    setNavBusy(true);
     var ctx = "";
     try {
       var sd = window.__safeGet("tops_sep_date");
-      if (sd && !guideFields) {
+      if (sd && !guideFields && !planOnly) {
         var dd = Math.round((new Date(sd + "T00:00:00") - new Date()) / 86400000);
         ctx = "Separation date: " + sd + " (" + (dd >= 0 ? "T-" + dd + " days out" : Math.abs(dd) + " days AFTER separation") + ").";
         var st = window.__safeGet("tops_status"); if (st) ctx += " Status: " + st + ".";
@@ -6901,12 +6925,11 @@ function App() {
     } catch (e) {}
     fetch("/.netlify/functions/navigator", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ context: ctx, guideContext: guideFields || undefined, daysOut: (function(){ if (guideFields) return null; try { var sd2 = window.__safeGet("tops_sep_date"); if (sd2) return Math.round((new Date(sd2 + "T00:00:00") - new Date()) / 86400000); } catch(e){} return null; })(), messages: next.map(function(m){ return { role: m.r === "u" ? "user" : "assistant", content: m.t }; }) })
+      body: JSON.stringify({ context: ctx, guideContext: guideFields || undefined, daysOut: (function(){ if (guideFields || planOnly) return null; try { var sd2 = window.__safeGet("tops_sep_date"); if (sd2) return Math.round((new Date(sd2 + "T00:00:00") - new Date()) / 86400000); } catch(e){} return null; })(), messages: next.map(function(m){ return { role: m.r === "u" ? "user" : "assistant", content: m.t }; }) })
     }).then(function(r){ return r.json(); }).then(function(data){
       setNavBusy(false);
-      if (data && data.reply) setNavMsgs(function(m){ return m.concat([{ r: "b", t: data.reply }]); });
-      else setNavMsgs(function(m){ return m.concat([{ r: "b", t: (data && data.error) || "Brief interruption \u2014 try again." }]); });
-    }).catch(function(){ setNavBusy(false); setNavMsgs(function(m){ return m.concat([{ r: "b", t: "Connection hiccup \u2014 try again in a moment." }]); }); });
+      deliver(data && data.reply ? data.reply : (data && data.error) || "Brief interruption \u2014 try again.");
+    }).catch(function(){ setNavBusy(false); deliver("Connection hiccup \u2014 try again in a moment."); });
   };
   useEffect(function() {
     try {
@@ -6936,7 +6959,7 @@ function App() {
       if (b) return React.createElement("strong", { key: i, style: { color: C.goldBright } }, b[1]);
       var m = p.match(/^\[([A-Z0-9 \/]+)\]$/);
       if (m && MAP[m[1].trim()]) {
-        return React.createElement("span", { key: i, onClick: function(){ setActiveTab(MAP[m[1].trim()]); window.scrollTo(0,0); }, style: { color: C.goldBright, fontFamily: "'Courier Prime', monospace", fontSize: 12, cursor: "pointer", borderBottom: "1px dotted " + C.gold } }, "[" + m[1] + " \u2197]");
+        return React.createElement("button", { key: i, type: "button", onClick: function(){ continuationFocus.current = MAP[m[1].trim()] === "dashboard" ? "tops-loop-title" : "tops-page-title"; setContinuationRevision(function(value) { return value + 1; }); setActiveTab(MAP[m[1].trim()]); window.scrollTo(0,0); }, style: { color: C.goldBright, background: "transparent", border: "1px solid " + C.border, borderRadius: 6, padding: "8px 10px", minHeight: 44, minWidth: 44, fontFamily: "'Courier Prime', monospace", fontSize: 12, cursor: "pointer" } }, "[" + m[1] + " \u2197]");
       }
       return p;
     });
@@ -7924,7 +7947,10 @@ function App() {
     window.scrollTo(0, 0);
   }
   function renderMemberLoop() {
-    return React.createElement(MemberPlanningLoop, { colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, onRoute: function(route) {
+    return React.createElement(MemberPlanningLoop, { colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, hasDraft: !!planQuestion, onDraft: navUnlocked ? function(text) {
+      if (!planQuestion) setPlanQuestion({ text: text, reply: "" });
+      setPlanQuestionOpen(true); continuationFocus.current = "tops-plan-question"; continuationReturn.current = "tops-loop-title"; setActiveTab("navigator");
+    } : null, onRoute: function(route) {
       if (route === "training" || route === "support") { setSubTab("directory"); setResourceFilter({ category: route === "training" ? "certs" : guideState.draft.pathway === "transition" ? "ALL" : "employment", cost: "ALL", eligibility: "ALL" }); continuationFocus.current = "tops-page-title"; continuationReturn.current = "tops-loop-title"; setActiveTab("resources"); return; }
       if (route === "readiness") { openPlanRoute("readiness", "tops-plan-readiness", "tops-loop-title"); return; }
       if (route !== "guide") { setPathwayMode("planner"); setPathwayStep(1); }
@@ -7932,6 +7958,21 @@ function App() {
       focusCareerWorksheet(route === "guide" ? "tops-guide-heading" : "career-gap-heading");
       setActiveTab("pathway");
     } });
+  }
+  function renderPlanQuestion() {
+    var button = { minHeight: 44, minWidth: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgElevated, color: C.textPrimary, font: "inherit", cursor: "pointer" };
+    return React.createElement("section", { "aria-labelledby": "tops-plan-question-title", style: { ...S.card, padding: 16, overflowWrap: "anywhere" } },
+      React.createElement("h3", { id: "tops-plan-question-title", style: { color: C.textPrimary, marginTop: 0 } }, "Help with my next move"),
+      React.createElement("p", { id: "tops-plan-question-notice", style: { lineHeight: 1.6 } }, "Send this question sends the text below through Netlify to OpenAI. The app excludes other saved plan details and your existing chat from this request. OpenAI is called with store:false; this does not promise zero provider retention. Leave out sensitive information. This draft and answer last only while this page stays open."),
+      React.createElement("label", { htmlFor: "tops-plan-question" }, "Review and edit my question"),
+      React.createElement("textarea", { id: "tops-plan-question", "aria-describedby": "tops-plan-question-notice", rows: 8, maxLength: 1500, value: planQuestion.text, readOnly: navBusy, onChange: function(e) { setPlanQuestion(Object.assign({}, planQuestion, { text: e.target.value, reply: "" })); }, style: { width: "100%", boxSizing: "border-box", minHeight: 140, padding: 12, margin: "8px 0", background: C.bg, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", fontSize: 16 } }),
+      React.createElement("button", { type: "button", style: button, disabled: navBusy || !planQuestion.text.trim(), onClick: function() { sendNavigator(planQuestion.text, null, true); } }, "Send this question"),
+      React.createElement("div", { role: "status", "aria-live": "polite", style: { whiteSpace: "pre-wrap", lineHeight: 1.6, marginTop: 12 } }, navBusy ? "Navigator is working. Your saved next step stays unchanged." : planQuestion.reply ? renderNavText(planQuestion.reply) : "Draft ready. Choose Send this question to request an answer."),
+      React.createElement("p", { style: { lineHeight: 1.6 } }, "Use the answer to decide what to do next. It does not verify eligibility or update your plan. Return to Your next move to edit and save your step."),
+      React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
+        React.createElement("button", { type: "button", style: button, onClick: function() { continuationFocus.current = "tops-loop-title"; setActiveTab("dashboard"); } }, "Return to my next move"),
+        React.createElement("button", { type: "button", style: button, onClick: function() { setPlanQuestionOpen(false); continuationFocus.current = "tops-page-title"; setContinuationRevision(function(value) { return value + 1; }); } }, "Return to existing Navigator chat"),
+        React.createElement("button", { type: "button", style: button, disabled: navBusy, onClick: function() { setPlanQuestion(null); setPlanQuestionOpen(false); continuationFocus.current = "tops-loop-title"; setActiveTab("dashboard"); } }, "Discard this draft and answer")));
   }
   function renderHomeTools() {
     return React.createElement("section", { "aria-labelledby": "tops-home-tools-title", style: { marginBottom: 16 } },
@@ -8506,7 +8547,8 @@ function App() {
   activeTab !== "dashboard" && React.createElement("div", { id: "tops-page-orientation", style: { display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 16 } },
     React.createElement("h2", { id: "tops-page-title", tabIndex: -1, style: { fontSize: 22, margin: 0, color: C.textPrimary } }, (TOPS_TOOL_CHOICES.find(function(tool) { return tool.id === activeTab; }) || { title: "Tools" }).title),
     React.createElement("button", { type: "button", onClick: function() { setShowMoreMenu(true); }, style: { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary, font: "inherit", cursor: "pointer" } }, "All tools")),
-   activeTab === "navigator" && /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "70vh" } },
+   activeTab === "navigator" && planQuestionOpen && planQuestion && renderPlanQuestion(),
+   activeTab === "navigator" && !(planQuestionOpen && planQuestion) && /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "70vh" } },
     React.createElement("div", { style: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 6 } },
       TopsCompass(44),
       React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 17, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "AI TRANSITION NAVIGATOR"),
@@ -8547,7 +8589,7 @@ function App() {
     if (!updated) { setGuideState(Object.assign({}, guideState, { status: "The worksheet changed or this target could not be used. Review the current target and try again." })); return; }
     setGapState({ draft: updated, status: topsGuideHasWorksheetNotes(gapState.draft) ? "Target updated in this page. Existing notes and counselor preparation are unchanged and may refer to another role. Review them before choosing Save on this browser; your saved worksheet has not changed." : "Target added to this worksheet. Save on this browser if you want to return to it. Your saved worksheet has not changed." });
     setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-target"); continuationReturn.current = "tops-guide-action-career"; setActiveTab("pathway");
-  }, onAsk: function(fields) { continuationReturn.current = "tops-guide-heading"; setActiveTab("navigator"); sendNavigator("Help me choose one practical next step using the guide details I selected.", fields); }, onRoute: function(route, invoker) {
+  }, onAsk: function(fields) { setPlanQuestionOpen(false); continuationReturn.current = "tops-guide-heading"; setActiveTab("navigator"); sendNavigator("Help me choose one practical next step using the guide details I selected.", fields); }, onRoute: function(route, invoker) {
     if (route === "career") { setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-heading"); continuationReturn.current = invoker; setActiveTab("pathway"); }
     else if (route === "certs" || route === "employment") { setSubTab("directory"); setResourceFilter({ category: route, cost: "ALL", eligibility: "ALL" }); continuationFocus.current = "tops-main-content"; continuationReturn.current = invoker; setActiveTab("resources"); }
     else if (route === "records") { continuationFocus.current = "tops-upload-heading"; continuationReturn.current = invoker; setActiveTab("dd214"); }
