@@ -102,6 +102,28 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
  await c.send("Input.dispatchKeyEvent",{type:"keyDown",key:"Escape",code:"Escape",windowsVirtualKeyCode:27});
  await wait('!document.querySelector("[role=dialog]")','escape closes tools');
  await click("Clear search");assert.equal(await ev('document.activeElement.id'),"tops-home-search");
+ assert.equal(await ev('document.getElementById("tops-continue-title").textContent'),"Start your transition checklist");
+ await click("Find benefits, services & support");
+ await wait('document.getElementById("tops-resource-topic")?.value==="directory"','Home opens all resources');
+ assert.equal(await ev('document.getElementById("tops-resource-topic").options.length'),10);
+ for(const topic of ["vsos","tap","mindset","leadership","spouse","perks","skillbridge","healthcare","documents","directory"]){
+  await input("tops-resource-topic",topic);
+  assert.equal(await ev('document.getElementById("tops-resource-topic").value'),topic);
+  for(const width of [320,375]){
+   await c.send("Emulation.setDeviceMetricsOverride",{width,height:900,deviceScaleFactor:1,mobile:true});
+   assert.ok(await ev('document.documentElement.scrollWidth<=window.innerWidth'),'resource topic reflow: '+topic);
+  }
+ }
+ if(process.env.TOPS_HOME_SCREENSHOT_DIR){
+  await ev('window.scrollTo(0,0);new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+  const resourceShot=await c.send("Page.captureScreenshot",{format:"png"});
+  fs.writeFileSync(path.join(process.env.TOPS_HOME_SCREENSHOT_DIR,"resources-375.png"),Buffer.from(resourceShot.data,"base64"));
+ }
+ await click("Home");await wait('!!document.getElementById("tops-continue-documents")','Home document shortcut');
+ await ev('document.getElementById("tops-continue-documents").click()');
+ await wait('document.activeElement.id==="tops-plan-documents"','document shortcut focus');
+ assert.equal(await ev('document.getElementById("tops-resource-topic").value'),"documents");
+ await click("Home");await wait('!!document.getElementById("tops-home-search")','Home after resources');
  for(const width of [320,375,1280]){
   await c.send("Emulation.setDeviceMetricsOverride",{width,height:900,deviceScaleFactor:1,mobile:width<600});
   assert.ok(await ev('document.documentElement.scrollWidth<=window.innerWidth'));
