@@ -6547,6 +6547,17 @@ function PersonalGuide(props) {
 // PERSONAL_GUIDE_END
 
 // MEMBER_LOOP_START
+function topsMemberLocalDay(now) {
+  var date = now || new Date();
+  return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
+}
+function topsMemberTiming(guide, action, today) {
+  var a = topsValidateAction(action), day = today || topsMemberLocalDay();
+  if (!a || !a.text || a.done || !a.date || !topsActionMatches(a, guide) || topsFollowDate(day) !== day) return null;
+  if (a.date < day) return { kind: "past", title: "Your target date has passed", detail: "You planned this step for " + a.date + ". Review what happened, adjust the date, or mark the step done if you completed it." };
+  if (a.date === day) return { kind: "today", title: "You planned this step for today", detail: "Take the next small action, or choose a more realistic date if your plans changed." };
+  return { kind: "upcoming", title: "Your planned date: " + a.date, detail: "Keep this date if it still works for you, or adjust it as your plans change." };
+}
 function topsMemberAdjustment(blocker, guide, profile) {
   var g = topsValidateGuide(guide);
   if (!g || !g.pathway) return null;
@@ -6577,10 +6588,17 @@ function MemberPlanningLoop(props) {
   var [editing, setEditing] = useState(false), [direction, setDirection] = useState(g), [message, setMessage] = useState("");
   var [blocker, setBlocker] = useState(""), [replaceStep, setReplaceStep] = useState(false);
   var [share, setShare] = useState({});
+  var [today, setToday] = useState(topsMemberLocalDay);
+  useEffect(function() {
+    function refreshDay() { setToday(topsMemberLocalDay()); }
+    window.addEventListener("focus", refreshDay); document.addEventListener("visibilitychange", refreshDay);
+    return function() { window.removeEventListener("focus", refreshDay); document.removeEventListener("visibilitychange", refreshDay); };
+  }, []);
   useEffect(function() { setShare({}); }, [g, a, props.profile, blocker]);
   useEffect(function() { setDirection(g); }, [g]);
   useEffect(function() { setBlocker(""); setReplaceStep(false); }, [g]);
   var move = topsMemberMove(g, a, props.gap, props.profile);
+  var timing = topsMemberTiming(g, a, today);
   var alternative = topsMemberAdjustment(blocker, g, props.profile);
   var helpFacts = [
     ["direction", "Direction", TOPS_GUIDE_PATHS[g.pathway]],
@@ -6612,7 +6630,10 @@ function MemberPlanningLoop(props) {
     move.kind === "reflect" && React.createElement("p", { style: { lineHeight: 1.6 } }, "You marked this step done: " + a.text + ". Review what you learned before choosing another step. Choosing a new step replaces this one in the editor; save to keep that change. Completion does not verify an outcome or eligibility."),
     React.createElement("h3", { style: { fontSize: 18, margin: "10px 0", color: C.textPrimary } }, move.title),
     React.createElement("p", { style: { lineHeight: 1.6 } }, move.why),
-    move.date && React.createElement("p", null, "Your target date: " + move.date + ". Update it if your plans changed."),
+    timing && React.createElement("div", { id: "tops-loop-timing", style: { lineHeight: 1.6, margin: "12px 0" } },
+      React.createElement("p", null, React.createElement("strong", null, timing.title), " - " + timing.detail),
+      React.createElement("p", { style: { fontSize: 14 } }, "This is your own planning date, not a benefits deadline. It does not send a notification."),
+      React.createElement("button", { type: "button", style: button, onClick: function() { setEditing(true); requestAnimationFrame(function() { var date = document.getElementById("tops-action-date"); if (date) date.focus(); }); } }, "Review my target date")),
     React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
       move.kind === "recover" && React.createElement("button", { type: "button", style: button, onClick: function() { setDirection(a.context); document.getElementById("tops-loop-direction").open = true; } }, "Review saved direction"),
       ["continue", "review"].includes(move.kind) && React.createElement("button", { type: "button", style: button, onClick: function() { setEditing(!editing); } }, editing ? "Close step editor" : move.kind === "review" ? "Review earlier step" : "Update this step"),

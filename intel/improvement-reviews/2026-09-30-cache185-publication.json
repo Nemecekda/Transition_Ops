@@ -1,0 +1,17 @@
+{
+  "status": "published",
+  "url": "https://transitionops.org",
+  "commit": "250e55c9b08d93936c75724f169dc446f52ec7e8",
+  "cache": "transition-ops-v185",
+  "deploy_id": "6abd0cf6cae6232047e80df2",
+  "published_at": "2026-09-30T13:22:52.578Z",
+  "prior_deploy": "6abd0b2464b4bda977a290d2",
+  "checks": [
+    "Required local suites passed on frozen candidate",
+    "Candidate and live index/worker byte identical",
+    "Hosted Home rendered",
+    "62 runtime records path/size/SHA1 exact with collision-free case normalization",
+    "One control-plane record matches resolved CLI config; no config in dist"
+  ],
+  "limits": "Manual AT matrix not performed. Answer flow tested with synthetic stubbed AI responses; no paid live model tests or field retention evidence. GitHub synchronization remains pending."
+}

@@ -13,6 +13,11 @@ const home=async()=>{await c.send('Page.navigate',{url:url+'/?tool=dashboard'});
 await home();
 const selection=await ev('(()=>{const g={version:1,pathway:"change",targetRole:"SYNTHETIC_TARGET",currentRole:"",goal:""},a=topsEmptyAction();const gap={target:"SYNTHETIC_TARGET",rows:[{next:"SYNTHETIC_MEMBER_NEXT"}]};return {matching:topsMemberMove(g,a,gap,"guard"),mismatch:topsMemberMove(g,a,{...gap,target:"OLD_TARGET"},"guard")};})()');
 assert.equal(selection.matching.title,'SYNTHETIC_MEMBER_NEXT');assert.notEqual(selection.mismatch.title,'SYNTHETIC_MEMBER_NEXT');
+const timingCases=await ev('(()=>{const g={version:1,pathway:"change",targetRole:"ROLE",currentRole:"",goal:""},a={version:1,text:"STEP",date:"2026-09-30",done:false,context:g};return {today:topsMemberTiming(g,a,"2026-09-30"),past:topsMemberTiming(g,a,"2026-10-01"),future:topsMemberTiming(g,a,"2026-09-29"),done:topsMemberTiming(g,{...a,done:true},"2026-10-01"),stale:topsMemberTiming({...g,targetRole:"NEW"},a,"2026-10-01"),missing:topsMemberTiming(g,{...a,date:""},"2026-10-01"),bad:topsMemberTiming(g,{...a,date:"2026-02-30"},"2026-10-01")};})()');
+assert.equal(timingCases.today.kind,'today');assert.equal(timingCases.past.kind,'past');assert.equal(timingCases.future.kind,'upcoming');for(const key of ['done','stale','missing','bad'])assert.equal(timingCases[key],null);
+await c.send('Emulation.setTimezoneOverride',{timezoneId:'Pacific/Honolulu'});assert.equal(await ev('topsMemberLocalDay(new Date("2026-09-30T00:30:00Z"))'),'2026-09-29');
+await c.send('Emulation.setTimezoneOverride',{timezoneId:'Europe/Berlin'});assert.equal(await ev('topsMemberLocalDay(new Date("2026-09-30T00:30:00Z"))'),'2026-09-30');
+await c.send('Emulation.setTimezoneOverride',{timezoneId:'America/Chicago'});
 for(const [profile,pathway] of [['active','transition'],['separated','change'],['retired','change'],['guard','change'],['guard','skills'],['spouse','change']]){
  await ev('localStorage.clear();localStorage.setItem("tops_onboarded","1");localStorage.setItem("tops_user_status",'+JSON.stringify(profile)+');');await home();
  assert.equal(await ev('document.getElementById("tops-loop-direction").open'),false);
@@ -29,6 +34,12 @@ for(const [profile,pathway] of [['active','transition'],['separated','change'],[
  assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
  await input('tops-action-text','SYNTHETIC_LOOP_STEP for '+profile);await input('tops-action-date','2026-10-20');await click('Save career step');
  await home();assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("SYNTHETIC_LOOP_STEP")'));
+ assert.ok(await ev('document.getElementById("tops-loop-timing").textContent.includes("not a benefits deadline")'));
+ const beforeDate=await ev('localStorage.getItem("tops_career_action_v1")');
+ await click('Review my target date');await wait('document.activeElement.id==="tops-action-date"','target-date focus');
+ await input('tops-action-date',await ev('topsMemberLocalDay()'));assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),beforeDate);
+ await click('Save career step');await home();assert.ok(await ev('document.getElementById("tops-loop-timing").textContent.includes("planned this step for today")'));
+ await click('Review my target date');await input('tops-action-date','2000-01-01');await click('Save career step');await home();assert.ok(await ev('document.getElementById("tops-loop-timing").textContent.includes("target date has passed")'));
  if(process.env.TOPS_LOOP_SCREENSHOT_DIR){
   fs.mkdirSync(process.env.TOPS_LOOP_SCREENSHOT_DIR,{recursive:true});
   await c.send('Emulation.setDeviceMetricsOverride',{width:375,height:900,deviceScaleFactor:1,mobile:true});
@@ -59,6 +70,7 @@ for(const [profile,pathway] of [['active','transition'],['separated','change'],[
  assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).done'),false);
  await click('Save career step');await home();
  assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("You marked this step done")'));
+ assert.equal(await ev('document.getElementById("tops-loop-timing")'),null);
  // Changing direction preserves the earlier step and demands an explicit review.
  await ev('document.querySelector("#tops-loop-direction summary").click()');await input('tops-loop-target','SYNTHETIC_CHANGED_ROLE');await click('Save my direction');
  assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("Your direction changed")'));
