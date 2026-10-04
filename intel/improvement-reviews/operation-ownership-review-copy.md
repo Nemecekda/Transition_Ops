@@ -1,6 +1,6 @@
 # Operation Ownership: review copy
 
-Draft for Dean and Dan's review. Not published or sent. App location: Career > Business ownership. Home search also recognizes Operation Ownership, Milwaukee, Wisconsin and business ownership.
+Dan's approval of this copy and contact details was reported by Dean in this task on October 4, 2026 ("hes good with it"). Not published or sent by this assistant. App location: Career > Business ownership. Home search also recognizes Operation Ownership, Milwaukee, Wisconsin and business ownership.
 
 ## Operation Ownership
 
@@ -27,6 +27,6 @@ Description and contact details provided by Dan Carey. Contact him to confirm cu
 
 ## Review points before publication
 
-Confirm the initiative description and that both contact channels should appear publicly. Clarify participation requirements, any costs and whether there is an official initiative website. The draft makes no claim of guaranteed opportunities, financing, program acceptance or outcomes.
+Copy and contact-channel approval is recorded above. Participation requirements, any costs and an official initiative website remain unspecified; the section asks visitors to confirm these with Dan. It makes no claim of guaranteed opportunities, financing, program acceptance or outcomes.
 
 The supplied presentation remains source material rather than a downloadable public attachment. Its candidate profile, market projections, internal committee activity and tentative event dates are not reproduced. The email thread and signature are not published.

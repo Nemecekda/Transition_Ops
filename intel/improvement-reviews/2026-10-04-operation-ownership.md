@@ -23,4 +23,6 @@ Dedicated browser fixture passed in professional and tactical themes at 320, 375
 
 Five required regression suites and member-loop suite passed, all process exits 0. Structural inventory 138 records (including intended new ownership fixture) passed. Encoding, whitespace and pre-commit checks passed. Deterministic public build: 64 files. Local cache193 ->194. Full app/worker diff and new fixture reviewed. Evidence: scratchpad/ownership-20261004/.
 
-Node 24.18.1, installed Chrome, synthetic local sessions, external requests blocked. Accessibility LOCAL AUTOMATION PASS; manual AT and hosted acceptance remain pending. Local review only; no push, merge, deploy, paid runner, schedule or budget change. Dean/Dan content review and publication remain outstanding. Review sheet: operation-ownership-review-copy.md.
+Node 24.18.1, installed Chrome, synthetic local sessions, external requests blocked. Accessibility LOCAL AUTOMATION PASS; manual AT and hosted acceptance remain pending. Local review only; no push, merge, deploy, paid runner, schedule or budget change. Review sheet: operation-ownership-review-copy.md.
+
+Approval update, October 4: Dean reported "hes good with it" in response to the staged section and review copy. Dan's approval of the copy and supplied contact details is therefore recorded as reported by Dean. This does not independently verify program terms or outcomes. Publication has not occurred; release checks remain separate.
