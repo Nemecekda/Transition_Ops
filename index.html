@@ -7175,6 +7175,24 @@ function App() {
     );
   }
   const [showNotifPanel, setShowNotifPanel] = useState(false);
+  // Keep jump destinations below the responsive sticky header.
+  useEffect(function() {
+    var header = document.querySelector(".tops-app-header");
+    if (!header) return;
+    var root = document.documentElement, previous = root.style.scrollPaddingTop;
+    function updateScrollInset() {
+      root.style.scrollPaddingTop = Math.ceil(header.getBoundingClientRect().height + 12) + "px";
+    }
+    updateScrollInset();
+    var observer = typeof ResizeObserver === "function" ? new ResizeObserver(updateScrollInset) : null;
+    if (observer) observer.observe(header);
+    window.addEventListener("resize", updateScrollInset);
+    return function() {
+      if (observer) observer.disconnect();
+      window.removeEventListener("resize", updateScrollInset);
+      root.style.scrollPaddingTop = previous;
+    };
+  }, [showOnboarding]);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const primaryNavFocus = useRef(false);
   const toolsDialogRef = useRef(null);
