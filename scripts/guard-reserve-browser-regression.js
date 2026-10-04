@@ -67,6 +67,30 @@ for(const theme of ['professional','tactical'])for(const width of [320,375]){
  assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Add starter questions to my notes").getBoundingClientRect().height>=44'),true);
  if(process.env.TOPS_CONVERSATION_SCREENSHOT_DIR && width===375){fs.mkdirSync(process.env.TOPS_CONVERSATION_SCREENSHOT_DIR,{recursive:true});const shot=await c.send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(process.env.TOPS_CONVERSATION_SCREENSHOT_DIR,theme+'.png'),Buffer.from(shot.data,'base64'));}
 }
-assert.equal(errors.length,0,JSON.stringify(errors));assert.equal(requests.some(r=>r.includes('SYNTHETIC existing question')||r.includes('/.netlify/functions/')),false);
+const followupText='SYNTHETIC follow-up: compare one project coordinator requirement';
+await ev('var w=topsEmptyGap();w.target="SYNTHETIC_ROLE";w.prep.questions="SYNTHETIC discussion questions";w.prep.status="Not contacted";localStorage.setItem("tops_career_gap_v1",JSON.stringify(w));localStorage.setItem("tops_career_action_v1",JSON.stringify({version:1,text:"SYNTHETIC prepare conversation",date:"",done:false,context:'+JSON.stringify(guide)+'}));');
+await home();await click('Resume my conversation notes');await wait('document.activeElement.id==="career-prep-questions"','resume questions focus');
+await input('career-prep-status','Waiting for a response');await click('Save on this browser');await click('Back to Home');
+await wait('!!document.getElementById("guard-conversation-resume")','follow-up on Home');await click('Update my conversation');await wait('document.activeElement.id==="career-prep-status"','contact status focus');
+await input('career-prep-status','Response received');await input('career-prep-followup',followupText);await click('Save on this browser');await click('Back to Home');
+await wait('!!document.getElementById("guard-conversation-resume")','response received Home');await click('Review what changed');await wait('document.activeElement.id==="career-prep-followup"','follow-up focus');
+await click('Back to Home');await wait('!!document.getElementById("tops-loop-title")','return to next move');
+assert.equal(await ev('document.getElementById("tops-loop-title").closest("section").querySelector("h3").textContent'),'SYNTHETIC prepare conversation');
+await click('Mark step complete');const completedRaw=await ev('localStorage.getItem("tops_career_action_v1")');
+await input('tops-loop-reflection','ready');
+assert.equal(await ev('document.getElementById("tops-loop-title").closest("section").querySelector("h3").textContent'),followupText);
+await click('Choose this next step');await wait('document.activeElement.id==="tops-action-heading"','follow-up editor focus');
+assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),completedRaw);
+await click('Save career step');await home();assert.equal(JSON.parse(await ev('localStorage.getItem("tops_career_action_v1")')).text,followupText);
+const followupCases=await ev('(()=>{var g='+JSON.stringify(guide)+',w=topsLoadGap().draft,a=topsEmptyAction();return {matching:topsMatchingConversationStep(g,a,w),mismatch:topsMatchingConversationStep({...g,targetRole:"OTHER"},a,w),waiting:topsMatchingConversationStep(g,a,{...w,prep:{...w.prep,status:"Waiting for a response"}}),done:topsMatchingConversationStep(g,{version:1,text:w.prep.followup,date:"",done:true,context:g},w),transition:topsMatchingConversationStep({...g,pathway:"transition"},a,w),invalid:topsMatchingConversationStep(g,a,{...w,extra:true})};})()');
+assert.equal(followupCases.matching,followupText);for(const key of ['mismatch','waiting','done','transition','invalid'])assert.equal(followupCases[key],'');
+for(const theme of ['professional','tactical'])for(const width of [320,375]){
+ await ev('localStorage.setItem("tops_theme",'+JSON.stringify(theme)+')');await c.send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:true});await home();
+ await ev('document.getElementById("guard-conversation-resume").scrollIntoView({block:"center"})');
+ assert.equal(await ev('document.documentElement.scrollWidth<=innerWidth'),true);
+ if(process.env.TOPS_FOLLOWUP_SCREENSHOT_DIR && width===375){fs.mkdirSync(process.env.TOPS_FOLLOWUP_SCREENSHOT_DIR,{recursive:true});const shot=await c.send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(process.env.TOPS_FOLLOWUP_SCREENSHOT_DIR,theme+'.png'),Buffer.from(shot.data,'base64'));}
+}
+assert.equal(errors.length,0,JSON.stringify(errors));assert.equal(requests.some(r=>r.includes('SYNTHETIC existing question')||r.includes('SYNTHETIC follow-up')||r.includes('/.netlify/functions/')),false);
+console.log('GUARD FOLLOW-UP PASS: prepare/wait/respond routing and focus; unfinished-step preservation; response-to-reflection-to-reviewed-save loop; reload; target/status/completed/invalid guards; phone themes; zero external transfer');
 console.log('GUARD CONVERSATION PASS: two situations; direct route and heading focus; preserve existing notes; explicit append/save/reload; duplicate and capacity guards; summary; both themes at 320/375; no model or synthetic-text request');
 }catch(e){if(chrome)console.error(await h.evaluate(chrome.client,'({url:location.href,text:document.body.innerText.slice(0,1500)})',true));console.error(JSON.stringify({requests,errors}));throw e;}finally{if(chrome)await h.stopChrome(chrome);await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e.stack);process.exitCode=1;});
