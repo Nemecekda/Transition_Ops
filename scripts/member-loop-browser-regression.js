@@ -195,4 +195,4 @@ assert.equal(await ev('document.getElementById("tops-loop-minutes").value'),'');
 assert.equal(requests.filter(r=>r.includes('SYNTHETIC_')||r.includes('/.netlify/functions/')).length,0);
 assert.deepEqual(errors,[]);
 console.log('MEMBER LOOP PASS: seven visitor/path scenarios; all three visible starts without storage; explicit direction save; no date requirement; choose/edit/save/reload; completion/reflection; goal drift review; orphan-step recovery; save denial; 320/375; zero model calls/member-text requests/errors');
-}finally{if(chrome)await h.stopChrome(chrome);await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e.stack);process.exitCode=1;});
+}finally{if(chrome)await h.stopChrome(chrome);await new Promise(r=>{server.close(r);server.closeAllConnections();});}})().catch(e=>{console.error(e.stack);process.exitCode=1;});
