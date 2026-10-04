@@ -33,6 +33,25 @@ const home=async()=>{await c.send('Page.navigate',{url:url+'/?tool=dashboard'});
 const openConversation=async moment=>{await click('Plan around my service commitments');await input('tops-loop-service-moment',moment);await click('Prepare this conversation');await wait('document.activeElement.id==="career-service-prep-heading"','conversation heading focus');};
 const guide={version:1,pathway:'change',targetRole:'SYNTHETIC_ROLE',currentRole:'',goal:''};
 await ev('localStorage.setItem("tops_personal_guide_v1",'+JSON.stringify(JSON.stringify(guide))+');');
+await home();await openConversation('away');
+assert.equal(await ev('document.getElementById("career-gap-target").value'),guide.targetRole);
+assert.equal(await ev('localStorage.getItem("tops_career_gap_v1")'),null);
+assert.ok(await ev('document.body.textContent.includes("chosen career target was added")'));
+await home();await click('All tools');await wait(`!!document.querySelector('[role=dialog][aria-label="More tools"]')`,'all tools');
+const toolText=await ev('document.querySelector("[role=dialog]").textContent');
+for(const label of ['Career','VA MATH CALCULATOR','VA PAY ESTIMATOR','REMINDERS & ALERTS','TAX INTEL','VET HUB','RESOURCES'])assert.ok(toolText.includes(label),label+' remains accessible');
+await ev(`document.querySelector('[aria-label="Close More menu"]').click()`);
+assert.equal(await ev('document.querySelectorAll(".dash-card").length'),1);
+assert.ok(await ev('document.querySelector(".dash-card").textContent.includes("Open transition timeline")'));
+for(const mode of ['existing-target','existing-notes']){
+ await ev('var w=topsEmptyGap();'+(mode==='existing-target'?'w.target="SYNTHETIC_OLD_ROLE";':'w.prep.questions="SYNTHETIC retained question";')+'localStorage.setItem("tops_career_gap_v1",JSON.stringify(w));');
+ await home();const before=await ev('localStorage.getItem("tops_career_gap_v1")');await openConversation('away');
+ assert.equal(await ev('document.getElementById("career-gap-target").value'),mode==='existing-target'?'SYNTHETIC_OLD_ROLE':'');
+ assert.equal(await ev('localStorage.getItem("tops_career_gap_v1")'),before);
+ await click('Clear worksheet');
+}
+assert.equal(await ev('topsStartEmptyWorksheet(topsEmptyGap(),{version:1,pathway:"change",targetRole:"",currentRole:"",goal:""})'),null);
+console.log('GUARD SIMPLIFICATION PASS: empty worksheet inherits chosen target without saving; existing target/notes preserved; duplicate cards absent; all tool destinations retained');
 for(const moment of ['away','return']){
  await home();await openConversation(moment);
  assert.equal(await ev('document.getElementById("career-prep-details").open'),true);

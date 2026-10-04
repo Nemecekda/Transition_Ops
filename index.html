@@ -6452,6 +6452,11 @@ function topsGuideWorksheetTarget(gap, target, expectedTarget) {
   if (!normalized || typeof target !== "string" || !target.trim() || target.length > 120 || /[\u0000-\u001f\u007f]/.test(target) || normalized.target !== expectedTarget) return null;
   return Object.assign({}, normalized, { target: target.trim() });
 }
+function topsStartEmptyWorksheet(gap, guide) {
+  var worksheet = topsValidateGap(gap), direction = topsValidateGuide(guide);
+  if (!worksheet || !direction || !direction.pathway || worksheet.target.trim() || topsGuideHasWorksheetNotes(worksheet)) return null;
+  return topsGuideWorksheetTarget(worksheet, direction.targetRole, worksheet.target);
+}
 function topsGuideActions(draft, gap, follow, dismissed) {
   var value = topsValidateGuide(draft);
   if (!value || !value.pathway) return [];
@@ -8175,6 +8180,12 @@ function App() {
       if (!planQuestion) setPlanQuestion({ text: text, reply: "", answered: false, guide: topsValidateGuide(guideState.draft), profile: userStatus });
       setPlanQuestionOpen(true); continuationFocus.current = "tops-plan-question"; continuationReturn.current = "tops-loop-title"; setActiveTab("navigator");
     } : null, onRoute: function(route, moment) {
+      if (route === "career" || route === "conversation") {
+        setGapState(function(previous) {
+          var started = topsStartEmptyWorksheet(previous.draft, guideState.draft);
+          return started ? { draft: started, status: "Your chosen career target was added to this empty worksheet for review. Choose Save on this browser to keep it." } : previous;
+        });
+      }
       setServiceConversation(route === "conversation" && userStatus === "guard" && topsServiceConversation(moment) ? moment : "");
       if (route === "conversation") { setPrepareOpportunity(false); setGuardOfficeOffer(null); }
       if (route === "training" || route === "support") { setSubTab("directory"); setResourceFilter({ category: route === "training" ? "certs" : guideState.draft.pathway === "transition" ? "ALL" : "employment", cost: "ALL", eligibility: "ALL" }); continuationFocus.current = "tops-page-title"; continuationReturn.current = "tops-loop-title"; setActiveTab("resources"); return; }
@@ -8974,51 +8985,7 @@ function App() {
         React.createElement(GuardCareerSupport, { followup: React.createElement("div", null, SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)).filter(function(r) { return followProgress[r.id] && !dismissedReminders[r.id]; }).map(function(r) { return React.createElement("div", { key: r.id, style: { marginBottom: 14, padding: 12, border: "1px solid " + C.border, borderRadius: 8 } }, React.createElement("strong", null, r.title), React.createElement("p", null, topsFollowLabel(followProgress[r.id])), React.createElement("button", { id: "tops-home-follow-" + r.id, type: "button", style: { minHeight: 44, padding: "10px 14px", background: C.bg, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 6 }, onClick: function() { openPlanRoute("reminders", "tops-reminder-" + r.id, "tops-home-follow-" + r.id); } }, "Continue step")); })), colors: C, prep: gapState.draft.prep, openConversation: function(field) { setServiceConversation(""); setPrepareOpportunity(false); setGuardOfficeOffer(null); setPathwayMode("planner"); setPathwayStep(1); continuationReturn.current = "guard-conversation-resume"; focusCareerWorksheet("career-prep-" + field); setActiveTab("pathway"); }, target: gapState.draft.target, opportunity: gapState.draft.prep.opportunity, next: gapState.draft.prep.followup.trim() ? gapState.draft.prep.followup : (gapState.draft.rows.find(function(row) { return row.next.trim(); }) || {}).next || "", openPlan: function(office, prepare) { setPrepareOpportunity(!!prepare); setGuardOfficeOffer(office); setPathwayMode("planner"); setPathwayStep(1); setActiveTab("pathway"); window.scrollTo(0, 0); } }),
         renderPolicyNotice(),
 
-        // v72: same one-tap tool row the standard dashboard gets
-        React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 12 } },
-          [{id:"vamath",icon:"calc",label:"VA MATH"},{id:"vapay",icon:"dollar",label:"VA PAY"},{id:"reminders",icon:"bell",label:"REMINDERS"},{id:"taxes",icon:"percent",label:"TAX"}].map(function(q) {
-            return React.createElement("button", { key: q.id, onClick: function() { setActiveTab(q.id); }, style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 6, padding: "13px 4px", background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, cursor: "pointer", color: C.textSecondary } },
-              TIcon(q.icon, 21),
-              React.createElement("span", { style: { fontSize: 10, color: C.gold, letterSpacing: 1.5, fontFamily: "'Oswald', sans-serif" } }, q.label)
-            );
-          })
-        ),
-
         renderHomeNavigator(),
-        // Primary action cards
-        React.createElement("div", { className: "dash-card", style: { borderColor: C.greenBright, borderWidth: 2, margin: "0 0 10px", cursor: "pointer" }, onClick: function() { setActiveTab("pathway"); } },
-          React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12 } },
-            React.createElement("span", { style: { fontSize: 28 } }, "\uD83C\uDFAF"),
-            React.createElement("div", { style: { flex: 1 } },
-              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 15, color: C.greenBright, letterSpacing: 1 } }, "CAREER PATHWAY PLANNER"),
-              React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, marginTop: 2, lineHeight: 1.5 } }, "Map your MOS/AFSC/rating to civilian careers. See salary ranges, required certs, and step-by-step plans.")
-            ),
-            React.createElement("span", { style: { fontSize: 18, color: C.greenBright } }, "\u2192")
-          )
-        ),
-
-        React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 } },
-          React.createElement("div", { className: "dash-card", style: { margin: 0, cursor: "pointer" }, onClick: function() { setActiveTab("vamath"); } },
-            React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "VA MATH"),
-            React.createElement("div", { style: { fontSize: 20, marginBottom: 4 } }, "\uD83E\uDDEE"),
-            React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.4 } }, "Estimate combined disability rating")
-          ),
-          React.createElement("div", { className: "dash-card", style: { margin: 0, cursor: "pointer" }, onClick: function() { setActiveTab("vapay"); } },
-            React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "VA PAY"),
-            React.createElement("div", { style: { fontSize: 20, marginBottom: 4 } }, "\uD83D\uDCB5"),
-            React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.4 } }, "Estimate monthly disability compensation")
-          ),
-          React.createElement("div", { className: "dash-card", style: { margin: 0, cursor: "pointer" }, onClick: function() { setActiveTab("vethub"); } },
-            React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "VET HUB"),
-            React.createElement("div", { style: { fontSize: 20, marginBottom: 4 } }, "\uD83C\uDF96\uFE0F"),
-            React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.4 } }, "Employers, free training, benefits check")
-          ),
-          React.createElement("div", { className: "dash-card", style: { margin: 0, cursor: "pointer" }, onClick: function() { setActiveTab("resources"); setSubTab("tap"); } },
-            React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "FREE TRAINING"),
-            React.createElement("div", { style: { fontSize: 20, marginBottom: 4 } }, "\uD83D\uDCDC"),
-            React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.4 } }, "Google, Microsoft, Salesforce, O2O certs")
-          )
-        ),
 
         React.createElement("details", { style: { marginBottom: 14 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.goldBright, cursor: "pointer", fontWeight: 700 } }, "More Guard and Reserve guidance"),
         // Guard-specific intel card
