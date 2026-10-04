@@ -6461,7 +6461,7 @@ function CareerAction(props) {
   function update(next) { props.setState({ draft: next, status: topsValidateAction(next) ? "Unsaved changes. Choose Save career step to keep this step on this browser." : "Check your step: use plain text within 240 characters and a valid target date from 2000 through 2099, or leave the date blank. Your edits are not saved." }); }
   function edit(key, value) { var next = Object.assign({}, a, { [key]: value }); if (key === "text") { if (!value.trim()) next = topsEmptyAction(); else { next.context = a.context || topsValidateGuide(props.guide); next.done = false; } } update(next); }
   return React.createElement("div", { id: "tops-career-action", style: { borderTop: "1px solid " + C.border, padding: "12px 0" } },
-    React.createElement("h3", { style: { fontSize: 18, margin: "0 0 8px" } }, stale ? "Step from an earlier goal" : "My next career step"),
+    React.createElement("h3", { id: "tops-action-heading", tabIndex: -1, style: { fontSize: 18, margin: "0 0 8px" } }, stale ? "Step from an earlier goal" : "My next career step"),
     stale && React.createElement("div", null,
       React.createElement("p", { style: { lineHeight: 1.6, overflowWrap: "anywhere" } }, "Your guide details changed. This step still belongs to: " + (a.context.targetRole || a.context.currentRole || TOPS_GUIDE_PATHS[a.context.pathway]) + (a.context.goal ? " - " + a.context.goal : "") + ". Review it before using it for your current goal."),
       React.createElement("dl", { style: { overflowWrap: "anywhere" } }, [["Earlier pathway", TOPS_GUIDE_PATHS[a.context.pathway]], ["Earlier role or experience", a.context.currentRole], ["Earlier target", a.context.targetRole], ["Earlier goal", a.context.goal]].map(function(row) { return React.createElement("div", { key: row[0] }, React.createElement("dt", { style: { fontWeight: 700 } }, row[0]), React.createElement("dd", { style: { margin: "4px 0 10px" } }, row[1] || "Not entered")); })),
@@ -6595,6 +6595,13 @@ function MemberPlanningLoop(props) {
   var C = props.colors, g = props.guideState.draft, a = props.actionState.draft;
   var [editing, setEditing] = useState(false), [direction, setDirection] = useState(g), [message, setMessage] = useState("");
   var [blocker, setBlocker] = useState(""), [replaceStep, setReplaceStep] = useState(false);
+  function openStepEditor() {
+    setEditing(true);
+    requestAnimationFrame(function() {
+      var heading = document.getElementById("tops-action-heading");
+      if (heading) { heading.focus(); heading.scrollIntoView({ block: "center" }); }
+    });
+  }
   var [share, setShare] = useState({});
   var [today, setToday] = useState(topsMemberLocalDay);
   useEffect(function() {
@@ -6630,7 +6637,7 @@ function MemberPlanningLoop(props) {
   }
   function chooseStep() {
     props.setActionState({ draft: { version: 1, text: move.title.slice(0, 240), date: "", done: false, context: topsValidateGuide(g) }, status: "Suggested step added for review. Edit it to fit your situation, then choose Save career step to keep it." });
-    setEditing(true);
+    openStepEditor();
   }
   function isSavedStep() {
     if (window.__IS_IFRAME || !a.text || !topsActionMatches(a, g)) return false;
@@ -6671,7 +6678,7 @@ function MemberPlanningLoop(props) {
       React.createElement("button", { type: "button", style: button, onClick: function() { setEditing(true); requestAnimationFrame(function() { var date = document.getElementById("tops-action-date"); if (date) date.focus(); }); } }, "Review my target date")),
     React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
       move.kind === "recover" && React.createElement("button", { type: "button", style: button, onClick: function() { setDirection(a.context); document.getElementById("tops-loop-direction").open = true; } }, "Review saved direction"),
-      ["continue", "review"].includes(move.kind) && React.createElement("button", { type: "button", style: button, onClick: function() { setEditing(!editing); } }, editing ? "Close step editor" : move.kind === "review" ? "Review earlier step" : "Update this step"),
+      ["continue", "review"].includes(move.kind) && React.createElement("button", { type: "button", style: button, "aria-expanded": editing, onClick: function() { if (editing) setEditing(false); else openStepEditor(); } }, editing ? "Close step editor" : move.kind === "review" ? "Review earlier step" : "Update this step"),
       ["suggest", "reflect"].includes(move.kind) && React.createElement("button", { type: "button", style: button, onClick: chooseStep }, "Choose this next step"),
       move.route && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "career" ? "Open my career worksheet" : "Open readiness check"),
       move.kind === "continue" && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(g.pathway === "transition" ? "readiness" : "career"); } }, g.pathway === "transition" ? "Open readiness check" : "Open my career worksheet")),
@@ -6690,7 +6697,7 @@ function MemberPlanningLoop(props) {
           React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(alternative.route); } }, alternative.route === "training" ? "Browse training options" : alternative.route === "support" ? "Browse support options" : alternative.route === "career" ? "Open career worksheet" : "Open readiness check"),
           React.createElement("button", { type: "button", style: button, disabled: !!a.text && !replaceStep, onClick: function() {
             props.setActionState({ draft: { version: 1, text: alternative.title, date: "", done: false, context: topsValidateGuide(g) }, status: "Alternative step added for review, not saved. Edit it to fit your situation, then choose Save career step." });
-            setEditing(true); setBlocker(""); setReplaceStep(false);
+            openStepEditor(); setBlocker(""); setReplaceStep(false);
           } }, "Review this as my next step")))),
     props.onDraft && React.createElement("details", { id: "tops-loop-help", style: { marginTop: 12 } },
       React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Get help choosing my next step"),

@@ -71,6 +71,8 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
  if(profile==='guard')assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("alongside service")'));
  if(['separated','retired'].includes(profile))assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("no separation date is needed")'));
  await click('Choose this next step');await wait('!!document.getElementById("tops-action-text")','step editor');
+ await wait('document.activeElement.id==="tops-action-heading"','suggested step focuses editor heading');
+ assert.equal(await ev('document.getElementById("tops-action-heading").getBoundingClientRect().top>=document.querySelector(".tops-app-header").getBoundingClientRect().bottom'),true);
  assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
  await input('tops-action-text','SYNTHETIC_LOOP_STEP for '+profile);await input('tops-action-date','2026-10-20');await click('Save career step');
  await home();assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("SYNTHETIC_LOOP_STEP")'));
@@ -95,7 +97,9 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
  assert.equal(await ev('document.getElementById("tops-loop-timing")'),null);
  await click('Reopen completed step');await home();
  assert.deepEqual(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))'),savedStep);
- await click('Update this step');await input('tops-action-text','UNSAVED_COMPLETION_DRAFT');
+ await click('Review my target date');await wait('document.activeElement.id==="tops-action-date"','date shortcut keeps field focus');
+ await click('Close step editor');
+ await click('Update this step');await wait('document.activeElement.id==="tops-action-heading"','update focuses editor heading');await input('tops-action-text','UNSAVED_COMPLETION_DRAFT');
  assert.equal(await ev('document.getElementById("tops-loop-completion")'),null);
  await click('Close step editor');assert.equal(await ev('document.getElementById("tops-loop-completion")'),null);
  assert.deepEqual(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))'),savedStep);
@@ -159,6 +163,7 @@ await ev('document.querySelector("#tops-loop-checkin summary").click()');await i
 const beforeAlternative=await ev('localStorage.getItem("tops_career_action_v1")');
 await ev('document.querySelector("#tops-loop-checkin input[type=checkbox]").click()');
 await click('Review this as my next step');
+await wait('document.activeElement.id==="tops-action-heading"','alternative focuses editor even when already open');
 assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),beforeAlternative);
 assert.ok(await ev('document.getElementById("tops-action-text").value.includes("one small part")'));
 await click('Save career step');
