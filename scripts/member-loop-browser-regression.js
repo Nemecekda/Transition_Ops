@@ -95,6 +95,22 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
  assert.deepEqual(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))'),{...savedStep,done:true});
  await home();assert.ok(await ev('!!document.getElementById("tops-loop-completion")'));
  assert.equal(await ev('document.getElementById("tops-loop-timing")'),null);
+ const completedCopy=await ev('localStorage.getItem("tops_career_action_v1")');
+ assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Choose this next step").disabled'),true);
+ for(const outcome of ['ready','gap','rethink','help']){
+  await input('tops-loop-reflection',outcome);
+  const reflectionTitle=await ev('document.getElementById("tops-loop-title").closest("section").querySelector("h3").textContent');
+  const expected=outcome==='help'?'adviser':outcome==='rethink'?(pathway==='transition'?'priorities':'two possible roles'):outcome==='gap'?(pathway==='transition'?'transition gap':'missing skill'):pathway==='transition'?'unfinished transition task':pathway==='skills'?'small project':'two questions';
+  assert.ok(reflectionTitle.includes(expected),profile+' '+pathway+' '+outcome);
+  assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Choose this next step").disabled'),false);
+  assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),completedCopy);
+ }
+ await input('tops-loop-reflection','ready');
+ await click('Choose this next step');await wait('document.activeElement.id==="tops-action-heading"','reflected next step opens for review');
+ assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),completedCopy);
+ assert.equal(await ev('document.getElementById("tops-loop-reflection")'),null);
+ await home();
+ assert.equal(await ev('document.getElementById("tops-loop-reflection").value'),'');
  await click('Reopen completed step');await home();
  assert.deepEqual(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))'),savedStep);
  await click('Review my target date');await wait('document.activeElement.id==="tops-action-date"','date shortcut keeps field focus');
@@ -191,6 +207,12 @@ await click('Save career step');await home();
 assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("10-minute session:")'));
 await ev('document.querySelector("#tops-loop-checkin summary").click()');await input('tops-loop-blocker','time');
 assert.equal(await ev('document.getElementById("tops-loop-minutes").value'),'');
+await click('Mark step complete');await input('tops-loop-reflection','ready');
+await click('Choose this next step');
+const nextAfterReflection=await ev('document.getElementById("tops-action-text").value');
+await click('Save career step');await home();
+assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes('+JSON.stringify(nextAfterReflection)+')'));
+assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).done'),false);
 // No loop member text is sent, and no AI endpoint is requested.
 assert.equal(requests.filter(r=>r.includes('SYNTHETIC_')||r.includes('/.netlify/functions/')).length,0);
 assert.deepEqual(errors,[]);

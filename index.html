@@ -6590,6 +6590,15 @@ function topsMemberAdjustment(blocker, guide, profile, minutes) {
   };
   return choices[blocker] || null;
 }
+function topsMemberReflection(outcome, guide, profile) {
+  var g = topsValidateGuide(guide);
+  if (!g || !g.pathway) return null;
+  if (outcome === "help") return topsMemberAdjustment("person", g, profile);
+  if (outcome === "rethink") return g.pathway === "transition" ? { title: "Review your transition priorities before choosing another task", why: "You want to reconsider the next move. Review what matters now before changing your plan.", route: "readiness" } : topsMemberAdjustment("direction", g, profile);
+  if (outcome === "gap") return g.pathway === "transition" ? { title: "Write one question about the transition gap you found", why: "You found a gap. Identify what is still unclear and who can help before treating it as resolved.", route: "support" } : { title: "Name one missing skill or experience example to work on", why: "You found a gap. Use your worksheet to make it specific before choosing training or another action.", route: "career" };
+  if (outcome !== "ready") return null;
+  return g.pathway === "transition" ? { title: "Review readiness and choose your next unfinished transition task", why: "You said you are ready to move forward. Check what still needs attention; completing one step does not complete the whole plan.", route: "readiness" } : g.pathway === "skills" ? { title: "Choose one small project to practice the skill you are building", why: "You said you are ready to move forward. Use a small example to test what you can do and identify what still needs practice.", route: "career" } : { title: "Prepare two questions for someone who does the work you want to explore", why: "You said you are ready to move forward. Test your understanding of the role before committing to the next career decision.", route: "support" };
+}
 function topsMemberMove(guide, action, gap, profile) {
   var g = topsValidateGuide(guide), a = topsValidateAction(action);
   if (!g || !g.pathway) return a && a.text ? { kind: "recover", title: "A saved step is waiting", why: "Your step includes an earlier direction, but no current direction is selected. Review it before continuing." } : { kind: "choose", title: "What are you working toward?", why: "Choose a direction so your next move starts with your needs." };
@@ -6608,6 +6617,7 @@ function MemberPlanningLoop(props) {
   var [editing, setEditing] = useState(false), [direction, setDirection] = useState(g), [message, setMessage] = useState("");
   var [blocker, setBlocker] = useState(""), [replaceStep, setReplaceStep] = useState(false);
   var [sessionMinutes, setSessionMinutes] = useState("");
+  var [reflection, setReflection] = useState("");
   function openStepEditor() {
     setEditing(true);
     requestAnimationFrame(function() {
@@ -6624,8 +6634,11 @@ function MemberPlanningLoop(props) {
   }, []);
   useEffect(function() { setShare({}); }, [g, a, props.profile, blocker]);
   useEffect(function() { setDirection(g); }, [g]);
+  useEffect(function() { setReflection(""); }, [g, a]);
   useEffect(function() { setBlocker(""); setReplaceStep(false); setSessionMinutes(""); }, [g]);
   var move = topsMemberMove(g, a, props.gap, props.profile);
+  var reflectedMove = move.kind === "reflect" ? topsMemberReflection(reflection, g, props.profile) : null;
+  if (reflectedMove) move = Object.assign({}, move, reflectedMove);
   var timing = topsMemberTiming(g, a, today);
   var alternative = topsMemberAdjustment(blocker, g, props.profile, sessionMinutes);
   var helpFacts = [
@@ -6672,7 +6685,12 @@ function MemberPlanningLoop(props) {
     React.createElement("h2", { id: "tops-loop-title", tabIndex: -1, style: { color: C.textPrimary, fontSize: 22, margin: "0 0 10px" } }, "Your next move"),
     g.pathway && React.createElement("p", { style: { margin: "0 0 10px", lineHeight: 1.6 } }, React.createElement("strong", null, "Your direction: "), TOPS_GUIDE_PATHS[g.pathway], g.targetRole ? " - " + g.targetRole : "", g.goal ? ". Your goal: " + g.goal : ""),
     move.kind === "reflect" && React.createElement("p", { style: { lineHeight: 1.6 } }, "You marked this step done: " + a.text + ". Review what you learned before choosing another step. Choosing a new step replaces this one in the editor; save to keep that change. Completion does not verify an outcome or eligibility."),
-    React.createElement("h3", { style: { fontSize: 18, margin: "10px 0", color: C.textPrimary } }, move.title),
+    move.kind === "reflect" && React.createElement("div", null,
+      React.createElement("label", { htmlFor: "tops-loop-reflection" }, "What did you learn from this step?"),
+      React.createElement("select", { id: "tops-loop-reflection", value: reflection, style: field, "aria-describedby": "tops-loop-reflection-help", onChange: function(event) { setReflection(event.target.value); } },
+        [["", "Choose what fits your situation"], ["ready", "I am ready to move forward"], ["gap", "I found a gap to work on"], ["rethink", "I want to reconsider my direction"], ["help", "I need help from a person"]].map(function(option) { return React.createElement("option", { key: option[0], value: option[0] }, option[1]); })),
+      React.createElement("p", { id: "tops-loop-reflection-help", style: { fontSize: 14, lineHeight: 1.6 } }, "Your answer shapes a suggestion for this visit. Your completed step stays saved until you choose and save a replacement.")),
+    React.createElement("h3", { "aria-live": "polite", style: { fontSize: 18, margin: "10px 0", color: C.textPrimary } }, move.title),
     React.createElement("p", { style: { lineHeight: 1.6 } }, move.why),
     ["continue", "reflect"].includes(move.kind) && !editing && isSavedStep() && React.createElement("div", { id: "tops-loop-completion", style: { margin: "12px 0" } },
       React.createElement("button", { type: "button", style: button, onClick: function() { saveCompletion(!a.done); } }, a.done ? "Reopen completed step" : "Mark step complete"),
@@ -6692,8 +6710,8 @@ function MemberPlanningLoop(props) {
     React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
       move.kind === "recover" && React.createElement("button", { type: "button", style: button, onClick: function() { setDirection(a.context); document.getElementById("tops-loop-direction").open = true; } }, "Review saved direction"),
       ["continue", "review"].includes(move.kind) && React.createElement("button", { type: "button", style: button, "aria-expanded": editing, onClick: function() { if (editing) setEditing(false); else openStepEditor(); } }, editing ? "Close step editor" : move.kind === "review" ? "Review earlier step" : "Update this step"),
-      ["suggest", "reflect"].includes(move.kind) && React.createElement("button", { type: "button", style: button, onClick: chooseStep }, "Choose this next step"),
-      move.route && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "career" ? "Open my career worksheet" : "Open readiness check"),
+      ["suggest", "reflect"].includes(move.kind) && React.createElement("button", { type: "button", style: button, disabled: move.kind === "reflect" && !reflectedMove, onClick: chooseStep }, "Choose this next step"),
+      move.route && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "career" ? "Open my career worksheet" : move.route === "training" ? "Browse training options" : move.route === "support" ? "Browse support options" : "Open readiness check"),
       move.kind === "continue" && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(g.pathway === "transition" ? "readiness" : "career"); } }, g.pathway === "transition" ? "Open readiness check" : "Open my career worksheet")),
     editing && g.pathway && React.createElement(CareerAction, { colors: C, state: props.actionState, setState: props.setActionState, guide: g }),
     g.pathway && React.createElement("details", { id: "tops-loop-checkin", style: { marginTop: 12 } },

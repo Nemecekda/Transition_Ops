@@ -6,7 +6,7 @@ Prepared October 4, 2026 for Dean. Audience: leadership evaluating the platform.
 
 "A member should leave with a useful next action, then return without rebuilding the plan. I will show a Guard member growing a civilian career while continuing to serve."
 
-Use a separate browser profile with synthetic information. Do not clear the normal browser's saved plan. Confirm the candidate build before rehearsal: this iteration is cache192 in the local preview, not a claim about production. Keep screenshots available as a fallback.
+Use a separate browser profile with synthetic information. Do not clear the normal browser's saved plan. Confirm the candidate build before rehearsal: this iteration is cache193 in the local preview, not a claim about production. Keep screenshots available as a fallback.
 
 ## Six-minute walkthrough
 
@@ -14,7 +14,7 @@ Use a separate browser profile with synthetic information. Do not clear the norm
 2. **Set a specific direction.** Review or change my direction: role "Project coordinator"; goal "Compare my experience with one civilian role." Save my direction. Explain that the selected details guide suggestions, not benefit eligibility.
 3. **Choose a next action.** Choose this next step. Edit it to "Compare one project coordinator posting with two examples from my experience." Save career step. This demonstrates member control over the recommendation.
 4. **Introduce a realistic constraint.** Open Stuck or need a different approach? Select I have limited time, then 10 minutes. Show the smaller posting-search action and the explanation referencing the member's target and ongoing service. Switch to 30 minutes to show the different scope. These are suggested work sessions, not completion-time estimates.
-5. **Accept and return.** Choose 10 minutes, explicitly allow replacement, then Review this as my next step. Save career step. Reload Home and show the saved action. The temporary time selector resets; the explicitly saved step remains. Mark it complete, then reopen it to demonstrate a reversible progress update.
+5. **Accept, return and adapt again.** Choose 10 minutes, explicitly allow replacement, then Review this as my next step. Save career step. Reload Home and show the saved action. The temporary time selector resets; the explicitly saved step remains. Mark it complete. Under What did you learn from this step?, choose I am ready to move forward, then I found a gap to work on. Show how the next suggestion changes. The completed step remains saved until a replacement is reviewed and saved. Reopen completed step if you want to demonstrate a correction instead.
 6. **Show the handoff to help.** Open Get help choosing my next step. Select only synthetic facts to include and open the draft in Navigator. Review the draft without sending. Explain that the work-session suggestions shown earlier use local planning rules; Navigator is a separate AI-assisted conversation when a member chooses to send. Do not describe the local rules as a model independently researching the member or acting in the background.
 
 ## What leadership can evaluate
