@@ -5922,8 +5922,20 @@ function topsClearGap() {
   if (window.__IS_IFRAME) return true;
   try { localStorage.removeItem(TOPS_GAP_KEY); return localStorage.getItem(TOPS_GAP_KEY) === null; } catch (e) { return false; }
 }
+function topsServiceConversation(moment) {
+  if (!["away", "return"].includes(moment)) return null;
+  return ({
+    away: { title: "Prepare for time away", questions: "Which responsibilities need a handoff before my time away?\nWhat communication arrangements should we clarify?\nWhat is one career-development step I can return to afterward?" },
+    return: { title: "Prepare for returning to civilian work", questions: "What priorities or processes have changed while I was away?\nWhich examples from my experience would be useful to discuss?\nWhat is one realistic next step for my civilian career?" }
+  })[moment] || null;
+}
 function CareerGapWorksheet(props) {
   var [showSummary, setShowSummary] = useState(false);
+  var conversation = props.serviceConversation && topsServiceConversation(props.serviceConversation);
+  var questions = props.state.draft.prep.questions;
+  var proposedQuestions = conversation ? (questions.trim() ? questions + "\n\n" : "") + conversation.questions : "";
+  var questionsAdded = !!conversation && questions.includes(conversation.questions);
+  var questionsFit = proposedQuestions.length <= TOPS_PREP_LIMITS.questions;
   useEffect(function() { var heading = document.getElementById(showSummary ? "career-prep-summary-heading" : "career-gap-heading"); if (heading) heading.focus(); }, [showSummary]);
   useEffect(function() { if (props.prepareOpportunity) { var disclosure = document.getElementById("career-prep-details"); if (disclosure) disclosure.open = true; var input = document.getElementById("career-prep-opportunity"); if (input) input.focus(); } }, []);
   var C = props.colors;
@@ -5946,8 +5958,8 @@ function CareerGapWorksheet(props) {
     props.state.draft.rows.forEach(function(row, i) { [["have", "What I have"], ["requirement", "What the role requires"], ["next", "What I need to do next"], ["source", "Source or evidence"]].forEach(function(field) { add(TOPS_GAP_ROWS[i] + " - " + field[1], row[field[0]]); }); });
     [["opportunity", "Employer and role or training opportunity"], ["source", "Job posting or training source"], ["questions", "Questions to discuss"], ["office", "Office"], ["reference", "Public office contact reference"], ["followup", "My next step"], ["status", "Contact status (reported by you)"]].forEach(function(field) { add(field[1], props.state.draft.prep[field[0]]); });
     return React.createElement("section", { "aria-labelledby": "career-prep-summary-heading", style: { padding: 14, border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textBody } },
-      React.createElement("h3", { id: "career-prep-summary-heading", tabIndex: -1, style: { color: C.textPrimary, marginBottom: 12 } }, "Counselor preparation summary"),
-      React.createElement("p", { style: { lineHeight: 1.6, marginBottom: 14 } }, "Prepared by you for discussion with a counselor. This summary does not verify qualifications, official completion or receipt by an office."),
+      React.createElement("h3", { id: "career-prep-summary-heading", tabIndex: -1, style: { color: C.textPrimary, marginBottom: 12 } }, "Conversation preparation summary"),
+      React.createElement("p", { style: { lineHeight: 1.6, marginBottom: 14 } }, "Prepared by you for discussion with a supervisor, adviser or counselor. This summary does not verify qualifications, official completion or receipt by anyone."),
       React.createElement("button", { type: "button", style: buttonStyle, onClick: function() { setShowSummary(false); } }, "Back to edit worksheet"),
       sections.length ? React.createElement("dl", { style: { marginTop: 18 } }, sections) : React.createElement("p", { style: { lineHeight: 1.6, marginTop: 18 } }, "No notes entered yet. Return to the worksheet to add an occupation, gaps or questions."),
       React.createElement("p", { role: "status", "aria-live": "polite", style: { lineHeight: 1.6, marginTop: 14 } }, props.state.status));
@@ -5955,7 +5967,7 @@ function CareerGapWorksheet(props) {
   return React.createElement("section", { "aria-labelledby": "career-gap-heading", style: { padding: 14, marginBottom: 16, border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textBody } },
     props.backHome && React.createElement("button", { type: "button", style: buttonStyle, onClick: props.backHome }, "Back to Home"),
     React.createElement("h3", { id: "career-gap-heading", tabIndex: -1, style: { color: C.textPrimary, margin: "0 0 10px" } }, "Your career gap analysis"),
-    React.createElement("button", { type: "button", style: buttonStyle, onClick: function() { setShowSummary(true); } }, "Review counselor summary"),
+    React.createElement("button", { type: "button", style: buttonStyle, onClick: function() { setShowSummary(true); } }, "Review conversation summary"),
     props.officeOffer && React.createElement("aside", { "aria-label": "Selected public office", style: { padding: 12, marginTop: 12, border: "1px solid " + C.border, borderRadius: 6 } },
       React.createElement("p", { style: { lineHeight: 1.6 } }, props.officeOffer.name),
       React.createElement("p", { style: { overflowWrap: "anywhere", lineHeight: 1.6 } }, props.officeOffer.url),
@@ -5967,7 +5979,13 @@ function CareerGapWorksheet(props) {
     React.createElement("label", { htmlFor: "career-gap-target", style: { display: "block", marginBottom: 6 } }, "Target civilian occupation"),
     React.createElement("input", { id: "career-gap-target", type: "text", maxLength: 160, autoComplete: "off", "aria-describedby": "career-gap-help", value: props.state.draft.target, onChange: function(e) { edit(null, "target", e.target.value); }, style: fieldStyle }),
     React.createElement("details", { id: "career-prep-details", style: { marginTop: 14, marginBottom: 14 } },
-      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.goldBright, cursor: "pointer", fontWeight: 700 } }, "Prepare for a counselor meeting"),
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.goldBright, cursor: "pointer", fontWeight: 700 } }, "Prepare for a conversation"),
+      conversation && React.createElement("section", { "aria-labelledby": "career-service-prep-heading", style: { padding: 12, border: "1px solid " + C.border, borderRadius: 8, marginBottom: 12 } },
+        React.createElement("h4", { id: "career-service-prep-heading", tabIndex: -1, style: { color: C.textPrimary, fontSize: 18, margin: "0 0 10px" } }, conversation.title),
+        React.createElement("p", { style: { lineHeight: 1.6 } }, "Use these questions as a starting point for a supervisor or adviser. Edit them to fit your situation. Leave out orders, unit schedules and sensitive details."),
+        React.createElement("ul", { style: { paddingLeft: 22, lineHeight: 1.6 } }, conversation.questions.split("\n").map(function(question) { return React.createElement("li", { key: question }, question); })),
+        React.createElement("p", { id: "career-service-prep-help", style: { lineHeight: 1.6 } }, questionsAdded ? "These starter questions are already in your notes. Edit them below." : !questionsFit ? "These questions will not fit alongside your current notes. Edit your notes below to make room; nothing has been removed." : "Adding these questions keeps your existing notes. Review and edit the combined notes, then choose Save on this browser to keep them."),
+        React.createElement("button", { type: "button", style: buttonStyle, disabled: questionsAdded || !questionsFit, "aria-describedby": "career-service-prep-help", onClick: function() { if (questionsAdded || !questionsFit) return; editPrep("questions", proposedQuestions); requestAnimationFrame(function() { var field = document.getElementById("career-prep-questions"); if (field) { field.focus(); field.scrollIntoView({ block: "center" }); } }); } }, "Add starter questions to my notes")),
       React.createElement("p", { style: { lineHeight: 1.6, marginBottom: 12 } }, "Optional: add the opportunity, questions and public office reference you want to discuss. Do not enter personal counselor details, medical records or personal identifiers."),
       [["opportunity", "Employer and role or training opportunity"], ["source", "Job posting or training source"], ["questions", "Questions to discuss"], ["reference", "Public office contact reference"], ["followup", "My next step"]].map(function(field) { var id = "career-prep-" + field[0]; return React.createElement("div", { key: field[0], style: { marginBottom: 12 } }, React.createElement("label", { htmlFor: id, style: { display: "block", marginBottom: 6 } }, field[1]), React.createElement("textarea", { id: id, rows: field[0] === "questions" ? 3 : 2, maxLength: TOPS_PREP_LIMITS[field[0]], autoComplete: "off", value: props.state.draft.prep[field[0]], onChange: function(e) { editPrep(field[0], e.target.value); }, style: Object.assign({}, fieldStyle, { resize: "vertical" }) })); }),
       [["office", "Office", TOPS_PREP_OFFICES], ["status", "Contact status (reported by you)", TOPS_PREP_STATUSES]].map(function(field) { var id = "career-prep-" + field[0]; return React.createElement("div", { key: field[0], style: { marginBottom: 12 } }, React.createElement("label", { htmlFor: id, style: { display: "block", marginBottom: 6 } }, field[1]), React.createElement("select", { id: id, value: props.state.draft.prep[field[0]], onChange: function(e) { editPrep(field[0], e.target.value); }, style: fieldStyle }, field[2].map(function(option) { return React.createElement("option", { key: option, value: option }, option || "Not entered"); }))); })),
@@ -6766,6 +6784,7 @@ function MemberPlanningLoop(props) {
       alternative && React.createElement("div", { role: "region", "aria-label": "Alternative next step", "aria-live": "polite" },
         React.createElement("h3", { style: { color: C.textPrimary, fontSize: 18 } }, alternative.title),
         React.createElement("p", { style: { lineHeight: 1.6 } }, alternative.why),
+        blocker === "service" && props.profile === "guard" && topsServiceConversation(serviceMoment) && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute("conversation", serviceMoment); } }, "Prepare this conversation"),
         a.text && React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10, lineHeight: 1.6 } }, React.createElement("input", { type: "checkbox", checked: replaceStep, onChange: function(event) { setReplaceStep(event.target.checked); } }), "Replace my current step in the editor. My saved copy changes only when I save."),
         React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
           React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(alternative.route); } }, alternative.route === "training" ? "Browse training options" : alternative.route === "support" ? "Browse support options" : alternative.route === "career" ? "Open career worksheet" : "Open readiness check"),
@@ -7151,6 +7170,8 @@ function App() {
   const [mosCode, setMosCode] = useState("");
   const [gapState, setGapState] = useState(topsLoadGap);
   const [guardOfficeOffer, setGuardOfficeOffer] = useState(null);
+  const [serviceConversation, setServiceConversation] = useState("");
+  useEffect(function() { if (userStatus !== "guard" || activeTab !== "pathway") setServiceConversation(""); }, [userStatus, activeTab]);
   const [prepareOpportunity, setPrepareOpportunity] = useState(false);
   const [pathwayStep, setPathwayStep] = useState(0);
   const [pathwayType, setPathwayType] = useState("");
@@ -8130,12 +8151,14 @@ function App() {
     return React.createElement(MemberPlanningLoop, { colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, hasDraft: !!planQuestion, onDraft: navUnlocked ? function(text) {
       if (!planQuestion) setPlanQuestion({ text: text, reply: "", answered: false, guide: topsValidateGuide(guideState.draft), profile: userStatus });
       setPlanQuestionOpen(true); continuationFocus.current = "tops-plan-question"; continuationReturn.current = "tops-loop-title"; setActiveTab("navigator");
-    } : null, onRoute: function(route) {
+    } : null, onRoute: function(route, moment) {
+      setServiceConversation(route === "conversation" && userStatus === "guard" && topsServiceConversation(moment) ? moment : "");
+      if (route === "conversation") { setPrepareOpportunity(false); setGuardOfficeOffer(null); }
       if (route === "training" || route === "support") { setSubTab("directory"); setResourceFilter({ category: route === "training" ? "certs" : guideState.draft.pathway === "transition" ? "ALL" : "employment", cost: "ALL", eligibility: "ALL" }); continuationFocus.current = "tops-page-title"; continuationReturn.current = "tops-loop-title"; setActiveTab("resources"); return; }
       if (route === "readiness") { openPlanRoute("readiness", "tops-plan-readiness", "tops-loop-title"); return; }
       if (route !== "guide") { setPathwayMode("planner"); setPathwayStep(1); }
       continuationReturn.current = "tops-loop-title";
-      focusCareerWorksheet(route === "guide" ? "tops-guide-heading" : "career-gap-heading");
+      focusCareerWorksheet(route === "guide" ? "tops-guide-heading" : route === "conversation" ? "career-service-prep-heading" : "career-gap-heading");
       setActiveTab("pathway");
     } });
   }
@@ -11148,7 +11171,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     }
   }, "NEXT: IDENTIFY GAPS \u2192")), pathwayStep === 1 && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
-  }, "STEP 2: GAP ANALYSIS"), React.createElement(CareerGapWorksheet, { colors: C, state: gapState, setState: setGapState, officeOffer: guardOfficeOffer, prepareOpportunity: prepareOpportunity, backHome: userStatus === "guard" ? function() { setActiveTab("dashboard"); window.scrollTo(0, 0); } : null, clearOfficeOffer: function() { setGuardOfficeOffer(null); } }), React.createElement("details", { style: { marginBottom: 14 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.textPrimary, cursor: "pointer" } }, "More guidance"), /*#__PURE__*/React.createElement("div", {
+  }, "STEP 2: GAP ANALYSIS"), React.createElement(CareerGapWorksheet, { colors: C, state: gapState, setState: setGapState, officeOffer: guardOfficeOffer, serviceConversation: userStatus === "guard" ? serviceConversation : "", prepareOpportunity: prepareOpportunity, backHome: userStatus === "guard" ? function() { setActiveTab("dashboard"); window.scrollTo(0, 0); } : null, clearOfficeOffer: function() { setGuardOfficeOffer(null); } }), React.createElement("details", { style: { marginBottom: 14 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.textPrimary, cursor: "pointer" } }, "More guidance"), /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
       padding: 14
