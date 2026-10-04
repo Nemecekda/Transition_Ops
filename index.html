@@ -6566,10 +6566,22 @@ function topsMemberTiming(guide, action, today) {
   if (a.date === day) return { kind: "today", title: "You planned this step for today", detail: "Take the next small action, or choose a more realistic date if your plans changed." };
   return { kind: "upcoming", title: "Your planned date: " + a.date, detail: "Keep this date if it still works for you, or adjust it as your plans change." };
 }
-function topsMemberAdjustment(blocker, guide, profile) {
+function topsMemberAdjustment(blocker, guide, profile, minutes) {
   var g = topsValidateGuide(guide);
   if (!g || !g.pathway) return null;
   var target = g.targetRole.trim(), guard = profile === "guard";
+  if (blocker === "time" && ["10", "30", "60"].includes(minutes)) {
+    var sessions = {
+      transition: { "10": "Write down one transition question you need answered", "30": "Review your readiness answers and choose one gap to address", "60": "Work through one transition checklist and note remaining questions" },
+      skills: { "10": "Identify one skill required in a current job posting", "30": "Compare one training option with a skill required for your target role", "60": "Compare two training options for cost, schedule and requirements" },
+      change: { "10": "Find one current job posting to explore", "30": "Match two examples from your experience to one job posting", "60": "Compare a job posting with your experience and list the gaps" }
+    };
+    return {
+      title: minutes + "-minute session: " + sessions[g.pathway][minutes],
+      why: "You chose " + minutes + " minutes" + (target ? " to work toward " + target : " for this step") + ". " + (guard ? "Fit this session around your civilian responsibilities and service commitments. " : "") + "This is a suggested work session, not a promise to finish. Stop when your time is up and note what remains.",
+      route: g.pathway === "transition" ? "readiness" : g.pathway === "skills" && minutes !== "10" ? "training" : "career"
+    };
+  }
   var choices = {
     direction: { title: "Compare two possible roles using current job postings", why: "You said the direction is unclear. Compare the work and requirements before committing to a role or training program.", route: "career" },
     skills: { title: "Compare requirements, cost and schedule for one training option" + (target ? " for " + target : ""), why: "You identified a skills or experience gap. Check whether the option addresses that gap and fits your circumstances; program access and funding need their own eligibility checks.", route: "training" },
@@ -6595,6 +6607,7 @@ function MemberPlanningLoop(props) {
   var C = props.colors, g = props.guideState.draft, a = props.actionState.draft;
   var [editing, setEditing] = useState(false), [direction, setDirection] = useState(g), [message, setMessage] = useState("");
   var [blocker, setBlocker] = useState(""), [replaceStep, setReplaceStep] = useState(false);
+  var [sessionMinutes, setSessionMinutes] = useState("");
   function openStepEditor() {
     setEditing(true);
     requestAnimationFrame(function() {
@@ -6611,10 +6624,10 @@ function MemberPlanningLoop(props) {
   }, []);
   useEffect(function() { setShare({}); }, [g, a, props.profile, blocker]);
   useEffect(function() { setDirection(g); }, [g]);
-  useEffect(function() { setBlocker(""); setReplaceStep(false); }, [g]);
+  useEffect(function() { setBlocker(""); setReplaceStep(false); setSessionMinutes(""); }, [g]);
   var move = topsMemberMove(g, a, props.gap, props.profile);
   var timing = topsMemberTiming(g, a, today);
-  var alternative = topsMemberAdjustment(blocker, g, props.profile);
+  var alternative = topsMemberAdjustment(blocker, g, props.profile, sessionMinutes);
   var helpFacts = [
     ["direction", "Direction", TOPS_GUIDE_PATHS[g.pathway]],
     ["target", "Role or field", g.targetRole], ["goal", "Goal", g.goal],
@@ -6686,10 +6699,14 @@ function MemberPlanningLoop(props) {
     g.pathway && React.createElement("details", { id: "tops-loop-checkin", style: { marginTop: 12 } },
       React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Stuck or need a different approach?"),
       React.createElement("label", { htmlFor: "tops-loop-blocker" }, "What is getting in the way?"),
-      React.createElement("select", { id: "tops-loop-blocker", value: blocker, style: field, onChange: function(event) { setBlocker(event.target.value); setReplaceStep(false); } },
+      React.createElement("select", { id: "tops-loop-blocker", value: blocker, style: field, onChange: function(event) { setBlocker(event.target.value); setReplaceStep(false); setSessionMinutes(""); } },
         [["", "Choose what you need"], ["direction", "I am not sure which direction fits"], ["skills", "I need skills or experience"], ["time", "I have limited time"], ["person", "I need help from a person"]].map(function(option) { return React.createElement("option", { key: option[0], value: option[0] }, option[1]); })),
+      blocker === "time" && React.createElement("div", null,
+        React.createElement("label", { htmlFor: "tops-loop-minutes" }, "Time I can set aside for this step"),
+        React.createElement("select", { id: "tops-loop-minutes", value: sessionMinutes, style: field, onChange: function(event) { setSessionMinutes(event.target.value); setReplaceStep(false); } },
+          [["", "Choose a work session (optional)"], ["10", "10 minutes"], ["30", "30 minutes"], ["60", "60 minutes"]].map(function(option) { return React.createElement("option", { key: option[0], value: option[0] }, option[1]); }))),
       React.createElement("p", { style: { fontSize: 14, lineHeight: 1.6 } }, "This check-in applies to this visit. Your saved step stays unchanged until you choose a replacement and save it."),
-      alternative && React.createElement("div", { role: "region", "aria-label": "Alternative next step" },
+      alternative && React.createElement("div", { role: "region", "aria-label": "Alternative next step", "aria-live": "polite" },
         React.createElement("h3", { style: { color: C.textPrimary, fontSize: 18 } }, alternative.title),
         React.createElement("p", { style: { lineHeight: 1.6 } }, alternative.why),
         a.text && React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10, lineHeight: 1.6 } }, React.createElement("input", { type: "checkbox", checked: replaceStep, onChange: function(event) { setReplaceStep(event.target.checked); } }), "Replace my current step in the editor. My saved copy changes only when I save."),

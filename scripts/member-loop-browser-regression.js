@@ -126,6 +126,20 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
   assert.ok(await ev('Array.from(document.querySelectorAll("[role=region]")).some(n=>n.getAttribute("aria-label")==="Alternative next step")'));
   assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Review this as my next step").disabled'),true);
   assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),unchanged);
+  if(blocker==='time'){
+   for(const minutes of ['10','30','60']){
+    await input('tops-loop-minutes',minutes);
+    assert.ok(await ev('document.querySelector("#tops-loop-checkin [role=region] h3").textContent.startsWith('+JSON.stringify(minutes+'-minute session: ')+')'));
+    const detail=await ev('document.querySelector("#tops-loop-checkin [role=region]").textContent');
+    assert.ok(detail.includes('not a promise to finish'));
+    if(profile==='guard')assert.ok(detail.includes('service commitments'));
+    assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),unchanged);
+    assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Review this as my next step").disabled'),true);
+    await ev('document.querySelector("#tops-loop-checkin input[type=checkbox]").click()');
+   }
+   await input('tops-loop-minutes','');
+   assert.ok(await ev('document.querySelector("#tops-loop-checkin [role=region] h3").textContent.includes("one small part")'));
+  }
   if(blocker==='time' && profile==='guard' && process.env.TOPS_LOOP_SCREENSHOT_DIR){
    await ev('document.getElementById("tops-loop-checkin").scrollIntoView({block:"start"});new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
    const shot=await c.send('Page.captureScreenshot',{format:'png'});
@@ -168,6 +182,15 @@ assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),beforeAlt
 assert.ok(await ev('document.getElementById("tops-action-text").value.includes("one small part")'));
 await click('Save career step');
 assert.notEqual(await ev('localStorage.getItem("tops_career_action_v1")'),beforeAlternative);
+await ev('document.getElementById("tops-loop-direction").open=true');await click('Save my direction');
+await input('tops-loop-blocker','time');await input('tops-loop-minutes','10');
+await ev('document.querySelector("#tops-loop-checkin input[type=checkbox]").click()');
+await click('Review this as my next step');
+assert.ok(await ev('document.getElementById("tops-action-text").value.startsWith("10-minute session:")'));
+await click('Save career step');await home();
+assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("10-minute session:")'));
+await ev('document.querySelector("#tops-loop-checkin summary").click()');await input('tops-loop-blocker','time');
+assert.equal(await ev('document.getElementById("tops-loop-minutes").value'),'');
 // No loop member text is sent, and no AI endpoint is requested.
 assert.equal(requests.filter(r=>r.includes('SYNTHETIC_')||r.includes('/.netlify/functions/')).length,0);
 assert.deepEqual(errors,[]);
