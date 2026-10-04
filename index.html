@@ -6330,7 +6330,7 @@ const TOPS_SERVICE_PROFILES = [["active", "Active duty"], ["guard", "Guard / Res
 // Shared destinations keep Home, search and page orientation consistent.
 const TOPS_TOOL_CHOICES = [
   { id: "timeline", title: "My Plan", description: "Review your timeline and unfinished tasks", keywords: "next step checklist transition date" },
-  { id: "pathway", title: "Career", description: "Explore roles, build your plan or work on a resume", keywords: "career guide job skills resume worksheet" },
+  { id: "pathway", title: "Career", description: "Explore roles, business ownership, your plan or resume", keywords: "career guide job skills resume worksheet business ownership entrepreneur operation ownership milwaukee wisconsin succession Dan Carey" },
   { id: "vamath", title: "VA rating calculator", description: "Estimate a combined disability rating", keywords: "va math disability percentage calculator" },
   { id: "vapay", title: "VA pay estimator", description: "Explore compensation estimates", keywords: "va pay money benefits compensation" },
   { id: "resources", title: "Resources and support", description: "Find services, training and document guidance", keywords: "help vso support training skillbridge documents" },
@@ -6484,6 +6484,26 @@ function CareerAction(props) {
       React.createElement("button", { type: "button", style: button, onClick: function() { if (topsClearAction()) props.setState({ draft: topsEmptyAction(), status: "Career step cleared from this page" + (window.__IS_IFRAME ? "." : " and this browser.") }); else props.setState(Object.assign({}, props.state, { status: "Saved career step could not be cleared. Your step is unchanged; try again." })); } }, "Confirm clear career step")));
 }
 // CAREER_ACTION_END
+function BusinessOwnership(props) {
+  var C = props.colors;
+  var contactStyle = { display: "inline-flex", alignItems: "center", minHeight: 44, minWidth: 44, boxSizing: "border-box", padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgElevated, textDecoration: "underline", overflowWrap: "anywhere" };
+  return React.createElement("details", { id: "tops-business-ownership", style: { marginBottom: 14, padding: "0 16px", border: "1px solid " + C.border, borderRadius: 12, background: C.bgCard, color: C.textBody } },
+    React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", color: C.textPrimary } }, "Explore business ownership"),
+    React.createElement("section", { "aria-labelledby": "tops-ownership-heading", style: { paddingBottom: 16, lineHeight: 1.6, overflowWrap: "anywhere" } },
+      React.createElement("h2", { id: "tops-ownership-heading", tabIndex: -1, style: { color: C.textPrimary, fontSize: 24, margin: "0 0 8px" } }, "Operation Ownership"),
+      React.createElement("p", { style: { color: C.textSecondary, marginTop: 0 } }, "Veteran business ownership in Greater Milwaukee"),
+      React.createElement("p", null, "Operation Ownership describes itself as a long-term economic development and veteran leadership initiative connecting veterans with business ownership opportunities as existing owners plan for succession. Led by a group of veteran business owners, the initiative aims to support veterans and the local economy by helping connect prospective veteran owners with businesses seeking a future successor."),
+      React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))", gap: 12 } },
+        React.createElement("div", null, React.createElement("h3", { style: { color: C.textPrimary, fontSize: 18 } }, "Veteran exploring ownership"), React.createElement("p", null, "Interested in running a business? Ask how to explore ownership opportunities and what the first conversation involves.")),
+        React.createElement("div", null, React.createElement("h3", { style: { color: C.textPrimary, fontSize: 18 } }, "Owner planning succession"), React.createElement("p", null, "Looking for a future successor? Ask how to introduce your business and discuss whether a veteran ownership connection could fit."))),
+      React.createElement("h3", { style: { color: C.textPrimary, fontSize: 18 } }, "Start a conversation with Dan Carey"),
+      React.createElement("p", null, "Ask about current activities, participation requirements, any costs, and how introductions work. Confirm what information is needed before sharing business or financial records."),
+      React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
+        React.createElement("a", { href: "mailto:dcarey@rbpchemical.net?subject=Operation%20Ownership%20inquiry", style: contactStyle }, "Email Dan Carey"),
+        React.createElement("a", { href: "tel:+14148390077", style: contactStyle }, "Call 414-839-0077")),
+      React.createElement("p", { style: { fontSize: 14, color: C.textSecondary } }, "dcarey@rbpchemical.net"),
+      React.createElement("p", { style: { fontSize: 14, color: C.textSecondary } }, "Description and contact details provided by Dan Carey. Contact him to confirm current opportunities and participation details.")));
+}
 function PersonalGuide(props) {
   var C = props.colors, state = props.state, draft = state.draft;
   var [selected, setSelected] = useState({});
@@ -8719,7 +8739,7 @@ function App() {
   navUnlocked && activeTab !== "navigator" && activeTab !== "dashboard" && /*#__PURE__*/React.createElement("div", { className: "tops-ask-launcher", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
   activeTab !== "dashboard" && continuationReturn.current && continuationReturn.current.indexOf("tops-guide-") === 0 && React.createElement("button", { type: "button", style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" }, onClick: function() { continuationFocus.current = continuationReturn.current; continuationReturn.current = null; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("pathway"); } }, "Back to career guide"),
   activeTab === "pathway" && React.createElement("nav", { "aria-label": "Career shortcuts", style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 } },
-    [["Career guide", "tops-guide-heading"], ["Career plan", "career-gap-heading"], ["Resume drafter", "tops-resume-drafter-panel"]].map(function(item) {
+    [["Career guide", "tops-guide-heading"], ["Career plan", "career-gap-heading"], ["Resume drafter", "tops-resume-drafter-panel"], ["Business ownership", "tops-ownership-heading"]].map(function(item) {
       return React.createElement("button", { key: item[1], type: "button", onClick: function() {
         continuationReturn.current = null;
         if (item[1] === "career-gap-heading") { setPathwayMode("planner"); setPathwayStep(1); }
@@ -8727,6 +8747,7 @@ function App() {
         focusCareerWorksheet(item[1]);
       }, style: { minHeight: 44, padding: "10px 14px", background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" } }, item[0]);
     })),
+  activeTab === "pathway" && React.createElement(BusinessOwnership, { colors: C }),
   activeTab === "pathway" && React.createElement("details", { id: "tops-career-guide", style: { marginBottom: 14 } },
   React.createElement("summary", { style: { minHeight: 44, padding: "12px 16px", cursor: "pointer", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary } }, "Open my career guide"),
   React.createElement(PersonalGuide, { key: guideRestoreRevision, colors: C, state: guideState, setState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, follow: followProgress, dismissed: dismissedReminders, busy: navBusy, onTarget: function(target, expectedTarget) {
