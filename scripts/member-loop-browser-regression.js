@@ -71,10 +71,55 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
  if(profile==='guard')assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("alongside service")'));
  if(['separated','retired'].includes(profile))assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("no separation date is needed")'));
  await click('Choose this next step');await wait('!!document.getElementById("tops-action-text")','step editor');
+ await wait('document.activeElement.id==="tops-action-heading"','suggested step focuses editor heading');
+ assert.equal(await ev('document.getElementById("tops-action-heading").getBoundingClientRect().top>=document.querySelector(".tops-app-header").getBoundingClientRect().bottom'),true);
  assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
  await input('tops-action-text','SYNTHETIC_LOOP_STEP for '+profile);await input('tops-action-date','2026-10-20');await click('Save career step');
  await home();assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("SYNTHETIC_LOOP_STEP")'));
  assert.ok(await ev('document.getElementById("tops-loop-timing").textContent.includes("not a benefits deadline")'));
+ const savedStep=await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))');
+ if(profile===''){
+  await ev('window.__completionSet=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw Error("blocked")};');
+  await click('Mark step complete');
+  assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("Completion was not saved")'));
+  assert.deepEqual(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))'),savedStep);
+  await ev('Storage.prototype.setItem=window.__completionSet');
+  await ev('localStorage.setItem("tops_career_action_v1",JSON.stringify({...JSON.parse(localStorage.getItem("tops_career_action_v1")),text:"ANOTHER_TAB_STEP"}))');
+  await click('Mark step complete');
+  assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).text'),'ANOTHER_TAB_STEP');
+  assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("Your saved step changed")'));
+  await ev('localStorage.setItem("tops_career_action_v1",'+JSON.stringify(JSON.stringify(savedStep))+')');
+  await home();
+ }
+ await click('Mark step complete');await wait('document.activeElement.id==="tops-loop-title"','completion focus');
+ assert.deepEqual(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))'),{...savedStep,done:true});
+ await home();assert.ok(await ev('!!document.getElementById("tops-loop-completion")'));
+ assert.equal(await ev('document.getElementById("tops-loop-timing")'),null);
+ const completedCopy=await ev('localStorage.getItem("tops_career_action_v1")');
+ assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Choose this next step").disabled'),true);
+ for(const outcome of ['ready','gap','rethink','help']){
+  await input('tops-loop-reflection',outcome);
+  const reflectionTitle=await ev('document.getElementById("tops-loop-title").closest("section").querySelector("h3").textContent');
+  const expected=outcome==='help'?'adviser':outcome==='rethink'?(pathway==='transition'?'priorities':'two possible roles'):outcome==='gap'?(pathway==='transition'?'transition gap':'missing skill'):pathway==='transition'?'unfinished transition task':pathway==='skills'?'small project':'two questions';
+  assert.ok(reflectionTitle.includes(expected),profile+' '+pathway+' '+outcome);
+  assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Choose this next step").disabled'),false);
+  assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),completedCopy);
+ }
+ await input('tops-loop-reflection','ready');
+ await click('Choose this next step');await wait('document.activeElement.id==="tops-action-heading"','reflected next step opens for review');
+ assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),completedCopy);
+ assert.equal(await ev('document.getElementById("tops-loop-reflection")'),null);
+ await home();
+ assert.equal(await ev('document.getElementById("tops-loop-reflection").value'),'');
+ await click('Reopen completed step');await home();
+ assert.deepEqual(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))'),savedStep);
+ await click('Review my target date');await wait('document.activeElement.id==="tops-action-date"','date shortcut keeps field focus');
+ await click('Close step editor');
+ await click('Update this step');await wait('document.activeElement.id==="tops-action-heading"','update focuses editor heading');await input('tops-action-text','UNSAVED_COMPLETION_DRAFT');
+ assert.equal(await ev('document.getElementById("tops-loop-completion")'),null);
+ await click('Close step editor');assert.equal(await ev('document.getElementById("tops-loop-completion")'),null);
+ assert.deepEqual(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))'),savedStep);
+ await home();
  const beforeDate=await ev('localStorage.getItem("tops_career_action_v1")');
  await click('Review my target date');await wait('document.activeElement.id==="tops-action-date"','target-date focus');
  await input('tops-action-date',await ev('topsMemberLocalDay()'));assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),beforeDate);
@@ -97,6 +142,20 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
   assert.ok(await ev('Array.from(document.querySelectorAll("[role=region]")).some(n=>n.getAttribute("aria-label")==="Alternative next step")'));
   assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Review this as my next step").disabled'),true);
   assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),unchanged);
+  if(blocker==='time'){
+   for(const minutes of ['10','30','60']){
+    await input('tops-loop-minutes',minutes);
+    assert.ok(await ev('document.querySelector("#tops-loop-checkin [role=region] h3").textContent.startsWith('+JSON.stringify(minutes+'-minute session: ')+')'));
+    const detail=await ev('document.querySelector("#tops-loop-checkin [role=region]").textContent');
+    assert.ok(detail.includes('not a promise to finish'));
+    if(profile==='guard')assert.ok(detail.includes('service commitments'));
+    assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),unchanged);
+    assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Review this as my next step").disabled'),true);
+    await ev('document.querySelector("#tops-loop-checkin input[type=checkbox]").click()');
+   }
+   await input('tops-loop-minutes','');
+   assert.ok(await ev('document.querySelector("#tops-loop-checkin [role=region] h3").textContent.includes("one small part")'));
+  }
   if(blocker==='time' && profile==='guard' && process.env.TOPS_LOOP_SCREENSHOT_DIR){
    await ev('document.getElementById("tops-loop-checkin").scrollIntoView({block:"start"});new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
    const shot=await c.send('Page.captureScreenshot',{format:'png'});
@@ -134,12 +193,28 @@ await ev('document.querySelector("#tops-loop-checkin summary").click()');await i
 const beforeAlternative=await ev('localStorage.getItem("tops_career_action_v1")');
 await ev('document.querySelector("#tops-loop-checkin input[type=checkbox]").click()');
 await click('Review this as my next step');
+await wait('document.activeElement.id==="tops-action-heading"','alternative focuses editor even when already open');
 assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),beforeAlternative);
 assert.ok(await ev('document.getElementById("tops-action-text").value.includes("one small part")'));
 await click('Save career step');
 assert.notEqual(await ev('localStorage.getItem("tops_career_action_v1")'),beforeAlternative);
+await ev('document.getElementById("tops-loop-direction").open=true');await click('Save my direction');
+await input('tops-loop-blocker','time');await input('tops-loop-minutes','10');
+await ev('document.querySelector("#tops-loop-checkin input[type=checkbox]").click()');
+await click('Review this as my next step');
+assert.ok(await ev('document.getElementById("tops-action-text").value.startsWith("10-minute session:")'));
+await click('Save career step');await home();
+assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("10-minute session:")'));
+await ev('document.querySelector("#tops-loop-checkin summary").click()');await input('tops-loop-blocker','time');
+assert.equal(await ev('document.getElementById("tops-loop-minutes").value'),'');
+await click('Mark step complete');await input('tops-loop-reflection','ready');
+await click('Choose this next step');
+const nextAfterReflection=await ev('document.getElementById("tops-action-text").value');
+await click('Save career step');await home();
+assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes('+JSON.stringify(nextAfterReflection)+')'));
+assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).done'),false);
 // No loop member text is sent, and no AI endpoint is requested.
 assert.equal(requests.filter(r=>r.includes('SYNTHETIC_')||r.includes('/.netlify/functions/')).length,0);
 assert.deepEqual(errors,[]);
 console.log('MEMBER LOOP PASS: seven visitor/path scenarios; all three visible starts without storage; explicit direction save; no date requirement; choose/edit/save/reload; completion/reflection; goal drift review; orphan-step recovery; save denial; 320/375; zero model calls/member-text requests/errors');
-}finally{if(chrome)await h.stopChrome(chrome);await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e.stack);process.exitCode=1;});
+}finally{if(chrome)await h.stopChrome(chrome);await new Promise(r=>{server.close(r);server.closeAllConnections();});}})().catch(e=>{console.error(e.stack);process.exitCode=1;});

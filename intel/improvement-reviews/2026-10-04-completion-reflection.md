@@ -1,0 +1,15 @@
+# October 4: use reflection to choose the next step
+
+EDIT MODE. Started at 1b96309 on codex/member-planning-loop, tracked tree clean; existing untracked work preserved. Fresh origin/main is 863519c, merge base b499cdb, with no upstream code difference from b499cdb. Earlier local completion, navigation, editor and time-session improvements are retained.
+
+After a current-goal step is marked complete, Home now asks what the member learned: ready to move forward, found a gap, reconsidering direction, or needs a person's help. Local planning rules adapt the next suggestion to that answer and the transition, skills or career-change direction. A gap leads to clarification before training selection; completion is never treated as verified eligibility or a verified outcome.
+
+Choosing a next step after completion requires a reflection choice. Existing tool access and reopening remain available. Suggestions open in the editor, with focus and explicit save. The completed saved step stays intact through selection and review; saving a replacement deliberately overwrites the single saved step. No history is added. Reflection is temporary and resets when the action or direction changes and on reload. No new storage key, AI call, telemetry, integration, policy claim or external action.
+
+OBSERVED local synthetic behavior. Member-return disposition LOCAL SYNTHETIC TEST. Hypothesis: a member gets a more useful next action by reviewing the result of the prior one rather than repeatedly receiving generic advice. Member outcomes and retention remain UNMEASURED. The recurring job is adjusting and resuming a member-owned plan; there is no penalty for not returning.
+
+Expanded member-loop checks cover all four outcomes across seven visitor/path scenarios, direction-specific titles, selection without storage changes, review without overwriting the completed step, reflection reset, reopening, and saving/reloading a new unfinished action. Required five regression gates passed; the separate member-Navigator suite also passed with stubbed responses. No live model calls. Structural inventory 137 records passed; whitespace, added-line encoding and pre-commit checks passed. PUBLIC BUILD PASS: 64 files -> dist. Local cache192 ->193.
+
+Conditions: Node 24.18.1, installed Chrome, local synthetic fixtures with external requests blocked; no performance metric claimed. Dedicated 375px Guard screenshot inspected without horizontal overflow. Evidence: scratchpad/reflection-loop-20261004/. Accessibility disposition LOCAL AUTOMATION PASS, with manual AT and hosted acceptance pending. No push, merge or deployment. Demo walkthrough updated for the reflection step and cache193 candidate.
+
+Reviewed all application, test and demo diffs. Presence checks matched one reflection helper, one state declaration, one selector, one selection gate, and new/old cache counts 1/0. The single saved-step model still means a saved replacement is not an append-only history; the UI explains that replacement before saving.

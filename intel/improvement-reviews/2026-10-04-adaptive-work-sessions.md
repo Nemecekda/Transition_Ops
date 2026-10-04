@@ -1,0 +1,21 @@
+# October 4: adapt a next step to available time
+
+EDIT MODE. Starting HEAD 6450ca6 on codex/member-planning-loop; tracked tree clean, existing untracked work preserved. Fresh origin/main 863519c still contains only the PR109 merge beyond merge base b499cdb, with no upstream implementation difference from that base. Local completion/reopen, navigation spacing and editor handoff are preserved.
+
+Dean requested continued agentic improvement for a Wisconsin National Guard demo, then specified leadership evaluating the platform as the audience. This authorizes the member-experience iteration; it does not establish an endorsement, meeting time or production acceptance.
+
+Home's limited-time check-in now offers optional 10-, 30- and 60-minute work sessions. Nine suggested actions vary by career-change, skills or transition direction. The explanation uses the member's selected target and acknowledges ongoing service for the shared Guard/Reserve profile. Times represent time set aside, not predicted completion times. Changes are announced through the existing alternative region with polite live updates.
+
+Member control is unchanged: choosing time does not write storage or replace an action. Every changed time selection clears the replacement acknowledgement. Reviewing the suggestion opens the editor; only an explicit save updates the existing action key. The time selector is temporary and resets on direction/blocker changes and reload. A saved step retains the chosen session in its text and its existing goal context. No new key, telemetry, account, integration, network request, paid model invocation, J1/S2 operation or eligibility rule.
+
+OBSERVED synthetic behavior; member-return disposition LOCAL SYNTHETIC TEST. Hypothesis: a member can reduce an oversized action to a manageable session and return to accurate saved progress. Recurring job: adjust and resume a chosen career or transition action. No penalty for not returning. Utility in the Guard audience and retention remain UNMEASURED. Privacy scope is the observed check-in and existing explicit-save flow, not an app-wide no-data claim.
+
+Validation: seven member scenarios exercise all three time choices, Guard explanation, no save on selection, renewed replacement acknowledgement, optional blank fallback, saved-step reload and temporary-selector reset. An initial test-expression quoting error was repaired. A reload fixture initially omitted saving its visit-only direction; the fixture now explicitly saves it, preserving the distinction between visit-only and saved directions. Prior behavior assertions remain intact.
+
+Required five regression suites, expanded member-loop suite and separate member-Navigator suite passed. Navigator responses were stubbed; no live model calls. Structural parsing passed 137 records. Whitespace, added-line encoding and pre-commit checks passed; deterministic public build passed with 64 files. Local cache191 ->192. Reviewed all application and regression diff hunks; presence counts matched (one time selector, one time-session state, one helper signature and one polite alternative region; new/old cache counts 1/0).
+
+Conditions: Node 24.18.1, installed Chrome, local synthetic sessions with external requests blocked; no throttling or field measurements. Dedicated 375px Guard screenshot inspected with no horizontal overflow. Evidence: scratchpad/adaptive-sessions-20261004/. Accessibility verdict LOCAL AUTOMATION PASS; manual AT and hosted release pending. No publication, merge or push.
+
+Leadership rehearsal: wisconsin-guard-leadership-demo.md. Six minutes: member direction, chosen step, limited-time adjustment, explicit save, reload, reversible completion, optional Navigator draft. Distinguish local planning rules from AI assistance. Meeting scheduling and outreach were not performed.
+
+Teardown follow-up: the final member-loop run completed every assertion but remained open while closing its local server. That run was interrupted after PASS output, not counted as a successful process exit. The fixture now explicitly closes remaining test-server connections after stopping Chrome. The full member-loop suite then passed and exited 0. No application code changed in this follow-up; syntax, whitespace and pre-commit checks passed. Final teardown log is preserved with the other evidence.

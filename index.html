@@ -6330,7 +6330,7 @@ const TOPS_SERVICE_PROFILES = [["active", "Active duty"], ["guard", "Guard / Res
 // Shared destinations keep Home, search and page orientation consistent.
 const TOPS_TOOL_CHOICES = [
   { id: "timeline", title: "My Plan", description: "Review your timeline and unfinished tasks", keywords: "next step checklist transition date" },
-  { id: "pathway", title: "Career", description: "Explore roles, build your plan or work on a resume", keywords: "career guide job skills resume worksheet" },
+  { id: "pathway", title: "Career", description: "Explore roles, business ownership, your plan or resume", keywords: "career guide job skills resume worksheet business ownership entrepreneur operation ownership milwaukee wisconsin succession Dan Carey" },
   { id: "vamath", title: "VA rating calculator", description: "Estimate a combined disability rating", keywords: "va math disability percentage calculator" },
   { id: "vapay", title: "VA pay estimator", description: "Explore compensation estimates", keywords: "va pay money benefits compensation" },
   { id: "resources", title: "Resources and support", description: "Find services, training and document guidance", keywords: "help vso support training skillbridge documents" },
@@ -6461,7 +6461,7 @@ function CareerAction(props) {
   function update(next) { props.setState({ draft: next, status: topsValidateAction(next) ? "Unsaved changes. Choose Save career step to keep this step on this browser." : "Check your step: use plain text within 240 characters and a valid target date from 2000 through 2099, or leave the date blank. Your edits are not saved." }); }
   function edit(key, value) { var next = Object.assign({}, a, { [key]: value }); if (key === "text") { if (!value.trim()) next = topsEmptyAction(); else { next.context = a.context || topsValidateGuide(props.guide); next.done = false; } } update(next); }
   return React.createElement("div", { id: "tops-career-action", style: { borderTop: "1px solid " + C.border, padding: "12px 0" } },
-    React.createElement("h3", { style: { fontSize: 18, margin: "0 0 8px" } }, stale ? "Step from an earlier goal" : "My next career step"),
+    React.createElement("h3", { id: "tops-action-heading", tabIndex: -1, style: { fontSize: 18, margin: "0 0 8px" } }, stale ? "Step from an earlier goal" : "My next career step"),
     stale && React.createElement("div", null,
       React.createElement("p", { style: { lineHeight: 1.6, overflowWrap: "anywhere" } }, "Your guide details changed. This step still belongs to: " + (a.context.targetRole || a.context.currentRole || TOPS_GUIDE_PATHS[a.context.pathway]) + (a.context.goal ? " - " + a.context.goal : "") + ". Review it before using it for your current goal."),
       React.createElement("dl", { style: { overflowWrap: "anywhere" } }, [["Earlier pathway", TOPS_GUIDE_PATHS[a.context.pathway]], ["Earlier role or experience", a.context.currentRole], ["Earlier target", a.context.targetRole], ["Earlier goal", a.context.goal]].map(function(row) { return React.createElement("div", { key: row[0] }, React.createElement("dt", { style: { fontWeight: 700 } }, row[0]), React.createElement("dd", { style: { margin: "4px 0 10px" } }, row[1] || "Not entered")); })),
@@ -6484,6 +6484,26 @@ function CareerAction(props) {
       React.createElement("button", { type: "button", style: button, onClick: function() { if (topsClearAction()) props.setState({ draft: topsEmptyAction(), status: "Career step cleared from this page" + (window.__IS_IFRAME ? "." : " and this browser.") }); else props.setState(Object.assign({}, props.state, { status: "Saved career step could not be cleared. Your step is unchanged; try again." })); } }, "Confirm clear career step")));
 }
 // CAREER_ACTION_END
+function BusinessOwnership(props) {
+  var C = props.colors;
+  var contactStyle = { display: "inline-flex", alignItems: "center", minHeight: 44, minWidth: 44, boxSizing: "border-box", padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgElevated, textDecoration: "underline", overflowWrap: "anywhere" };
+  return React.createElement("details", { id: "tops-business-ownership", style: { marginBottom: 14, padding: "0 16px", border: "1px solid " + C.border, borderRadius: 12, background: C.bgCard, color: C.textBody } },
+    React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", color: C.textPrimary } }, "Explore business ownership"),
+    React.createElement("section", { "aria-labelledby": "tops-ownership-heading", style: { paddingBottom: 16, lineHeight: 1.6, overflowWrap: "anywhere" } },
+      React.createElement("h2", { id: "tops-ownership-heading", tabIndex: -1, style: { color: C.textPrimary, fontSize: 24, margin: "0 0 8px" } }, "Operation Ownership"),
+      React.createElement("p", { style: { color: C.textSecondary, marginTop: 0 } }, "Veteran business ownership in Greater Milwaukee"),
+      React.createElement("p", null, "Operation Ownership describes itself as a long-term economic development and veteran leadership initiative connecting veterans with business ownership opportunities as existing owners plan for succession. Led by a group of veteran business owners, the initiative aims to support veterans and the local economy by helping connect prospective veteran owners with businesses seeking a future successor."),
+      React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))", gap: 12 } },
+        React.createElement("div", null, React.createElement("h3", { style: { color: C.textPrimary, fontSize: 18 } }, "Veteran exploring ownership"), React.createElement("p", null, "Interested in running a business? Ask how to explore ownership opportunities and what the first conversation involves.")),
+        React.createElement("div", null, React.createElement("h3", { style: { color: C.textPrimary, fontSize: 18 } }, "Owner planning succession"), React.createElement("p", null, "Looking for a future successor? Ask how to introduce your business and discuss whether a veteran ownership connection could fit."))),
+      React.createElement("h3", { style: { color: C.textPrimary, fontSize: 18 } }, "Start a conversation with Dan Carey"),
+      React.createElement("p", null, "Ask about current activities, participation requirements, any costs, and how introductions work. Confirm what information is needed before sharing business or financial records."),
+      React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
+        React.createElement("a", { href: "mailto:dcarey@rbpchemical.net?subject=Operation%20Ownership%20inquiry", style: contactStyle }, "Email Dan Carey"),
+        React.createElement("a", { href: "tel:+14148390077", style: contactStyle }, "Call 414-839-0077")),
+      React.createElement("p", { style: { fontSize: 14, color: C.textSecondary } }, "dcarey@rbpchemical.net"),
+      React.createElement("p", { style: { fontSize: 14, color: C.textSecondary } }, "Description and contact details provided by Dan Carey. Contact him to confirm current opportunities and participation details.")));
+}
 function PersonalGuide(props) {
   var C = props.colors, state = props.state, draft = state.draft;
   var [selected, setSelected] = useState({});
@@ -6566,10 +6586,22 @@ function topsMemberTiming(guide, action, today) {
   if (a.date === day) return { kind: "today", title: "You planned this step for today", detail: "Take the next small action, or choose a more realistic date if your plans changed." };
   return { kind: "upcoming", title: "Your planned date: " + a.date, detail: "Keep this date if it still works for you, or adjust it as your plans change." };
 }
-function topsMemberAdjustment(blocker, guide, profile) {
+function topsMemberAdjustment(blocker, guide, profile, minutes) {
   var g = topsValidateGuide(guide);
   if (!g || !g.pathway) return null;
   var target = g.targetRole.trim(), guard = profile === "guard";
+  if (blocker === "time" && ["10", "30", "60"].includes(minutes)) {
+    var sessions = {
+      transition: { "10": "Write down one transition question you need answered", "30": "Review your readiness answers and choose one gap to address", "60": "Work through one transition checklist and note remaining questions" },
+      skills: { "10": "Identify one skill required in a current job posting", "30": "Compare one training option with a skill required for your target role", "60": "Compare two training options for cost, schedule and requirements" },
+      change: { "10": "Find one current job posting to explore", "30": "Match two examples from your experience to one job posting", "60": "Compare a job posting with your experience and list the gaps" }
+    };
+    return {
+      title: minutes + "-minute session: " + sessions[g.pathway][minutes],
+      why: "You chose " + minutes + " minutes" + (target ? " to work toward " + target : " for this step") + ". " + (guard ? "Fit this session around your civilian responsibilities and service commitments. " : "") + "This is a suggested work session, not a promise to finish. Stop when your time is up and note what remains.",
+      route: g.pathway === "transition" ? "readiness" : g.pathway === "skills" && minutes !== "10" ? "training" : "career"
+    };
+  }
   var choices = {
     direction: { title: "Compare two possible roles using current job postings", why: "You said the direction is unclear. Compare the work and requirements before committing to a role or training program.", route: "career" },
     skills: { title: "Compare requirements, cost and schedule for one training option" + (target ? " for " + target : ""), why: "You identified a skills or experience gap. Check whether the option addresses that gap and fits your circumstances; program access and funding need their own eligibility checks.", route: "training" },
@@ -6577,6 +6609,15 @@ function topsMemberAdjustment(blocker, guide, profile) {
     person: { title: "Write one question for an adviser and identify who can help", why: "You asked for a person's help. Prepare the question and compare support options before sharing personal details.", route: "support" }
   };
   return choices[blocker] || null;
+}
+function topsMemberReflection(outcome, guide, profile) {
+  var g = topsValidateGuide(guide);
+  if (!g || !g.pathway) return null;
+  if (outcome === "help") return topsMemberAdjustment("person", g, profile);
+  if (outcome === "rethink") return g.pathway === "transition" ? { title: "Review your transition priorities before choosing another task", why: "You want to reconsider the next move. Review what matters now before changing your plan.", route: "readiness" } : topsMemberAdjustment("direction", g, profile);
+  if (outcome === "gap") return g.pathway === "transition" ? { title: "Write one question about the transition gap you found", why: "You found a gap. Identify what is still unclear and who can help before treating it as resolved.", route: "support" } : { title: "Name one missing skill or experience example to work on", why: "You found a gap. Use your worksheet to make it specific before choosing training or another action.", route: "career" };
+  if (outcome !== "ready") return null;
+  return g.pathway === "transition" ? { title: "Review readiness and choose your next unfinished transition task", why: "You said you are ready to move forward. Check what still needs attention; completing one step does not complete the whole plan.", route: "readiness" } : g.pathway === "skills" ? { title: "Choose one small project to practice the skill you are building", why: "You said you are ready to move forward. Use a small example to test what you can do and identify what still needs practice.", route: "career" } : { title: "Prepare two questions for someone who does the work you want to explore", why: "You said you are ready to move forward. Test your understanding of the role before committing to the next career decision.", route: "support" };
 }
 function topsMemberMove(guide, action, gap, profile) {
   var g = topsValidateGuide(guide), a = topsValidateAction(action);
@@ -6595,6 +6636,15 @@ function MemberPlanningLoop(props) {
   var C = props.colors, g = props.guideState.draft, a = props.actionState.draft;
   var [editing, setEditing] = useState(false), [direction, setDirection] = useState(g), [message, setMessage] = useState("");
   var [blocker, setBlocker] = useState(""), [replaceStep, setReplaceStep] = useState(false);
+  var [sessionMinutes, setSessionMinutes] = useState("");
+  var [reflection, setReflection] = useState("");
+  function openStepEditor() {
+    setEditing(true);
+    requestAnimationFrame(function() {
+      var heading = document.getElementById("tops-action-heading");
+      if (heading) { heading.focus(); heading.scrollIntoView({ block: "center" }); }
+    });
+  }
   var [share, setShare] = useState({});
   var [today, setToday] = useState(topsMemberLocalDay);
   useEffect(function() {
@@ -6604,10 +6654,13 @@ function MemberPlanningLoop(props) {
   }, []);
   useEffect(function() { setShare({}); }, [g, a, props.profile, blocker]);
   useEffect(function() { setDirection(g); }, [g]);
-  useEffect(function() { setBlocker(""); setReplaceStep(false); }, [g]);
+  useEffect(function() { setReflection(""); }, [g, a]);
+  useEffect(function() { setBlocker(""); setReplaceStep(false); setSessionMinutes(""); }, [g]);
   var move = topsMemberMove(g, a, props.gap, props.profile);
+  var reflectedMove = move.kind === "reflect" ? topsMemberReflection(reflection, g, props.profile) : null;
+  if (reflectedMove) move = Object.assign({}, move, reflectedMove);
   var timing = topsMemberTiming(g, a, today);
-  var alternative = topsMemberAdjustment(blocker, g, props.profile);
+  var alternative = topsMemberAdjustment(blocker, g, props.profile, sessionMinutes);
   var helpFacts = [
     ["direction", "Direction", TOPS_GUIDE_PATHS[g.pathway]],
     ["target", "Role or field", g.targetRole], ["goal", "Goal", g.goal],
@@ -6630,14 +6683,38 @@ function MemberPlanningLoop(props) {
   }
   function chooseStep() {
     props.setActionState({ draft: { version: 1, text: move.title.slice(0, 240), date: "", done: false, context: topsValidateGuide(g) }, status: "Suggested step added for review. Edit it to fit your situation, then choose Save career step to keep it." });
-    setEditing(true);
+    openStepEditor();
+  }
+  function isSavedStep() {
+    if (window.__IS_IFRAME || !a.text || !topsActionMatches(a, g)) return false;
+    try {
+      var saved = topsValidateAction(JSON.parse(localStorage.getItem(TOPS_ACTION_KEY)));
+      return !!saved && JSON.stringify(saved) === JSON.stringify(topsValidateAction(a));
+    } catch (error) { return false; }
+  }
+  function saveCompletion(done) {
+    if (!isSavedStep()) { setMessage("Your saved step changed or could not be read. Review your step before saving a completion change."); return; }
+    var next = Object.assign({}, a, { done: done });
+    if (!topsSaveAction(next)) { setMessage("Completion was not saved. Your step on this page is unchanged. Try again or use the step editor."); return; }
+    props.setActionState({ draft: next, status: done ? "Step marked complete on this browser." : "Step reopened on this browser." });
+    setMessage(done ? "Step marked complete and saved on this browser. You can reopen it below." : "Step reopened and saved on this browser.");
+    setEditing(false);
+    requestAnimationFrame(function() { var heading = document.getElementById("tops-loop-title"); if (heading) heading.focus(); });
   }
   return React.createElement("section", { "aria-labelledby": "tops-loop-title", style: { padding: 16, marginBottom: 16, background: C.bgCard, border: "1px solid " + C.gold, borderRadius: 12, color: C.textBody, overflowWrap: "anywhere" } },
     React.createElement("h2", { id: "tops-loop-title", tabIndex: -1, style: { color: C.textPrimary, fontSize: 22, margin: "0 0 10px" } }, "Your next move"),
     g.pathway && React.createElement("p", { style: { margin: "0 0 10px", lineHeight: 1.6 } }, React.createElement("strong", null, "Your direction: "), TOPS_GUIDE_PATHS[g.pathway], g.targetRole ? " - " + g.targetRole : "", g.goal ? ". Your goal: " + g.goal : ""),
     move.kind === "reflect" && React.createElement("p", { style: { lineHeight: 1.6 } }, "You marked this step done: " + a.text + ". Review what you learned before choosing another step. Choosing a new step replaces this one in the editor; save to keep that change. Completion does not verify an outcome or eligibility."),
-    React.createElement("h3", { style: { fontSize: 18, margin: "10px 0", color: C.textPrimary } }, move.title),
+    move.kind === "reflect" && React.createElement("div", null,
+      React.createElement("label", { htmlFor: "tops-loop-reflection" }, "What did you learn from this step?"),
+      React.createElement("select", { id: "tops-loop-reflection", value: reflection, style: field, "aria-describedby": "tops-loop-reflection-help", onChange: function(event) { setReflection(event.target.value); } },
+        [["", "Choose what fits your situation"], ["ready", "I am ready to move forward"], ["gap", "I found a gap to work on"], ["rethink", "I want to reconsider my direction"], ["help", "I need help from a person"]].map(function(option) { return React.createElement("option", { key: option[0], value: option[0] }, option[1]); })),
+      React.createElement("p", { id: "tops-loop-reflection-help", style: { fontSize: 14, lineHeight: 1.6 } }, "Your answer shapes a suggestion for this visit. Your completed step stays saved until you choose and save a replacement.")),
+    React.createElement("h3", { "aria-live": "polite", style: { fontSize: 18, margin: "10px 0", color: C.textPrimary } }, move.title),
     React.createElement("p", { style: { lineHeight: 1.6 } }, move.why),
+    ["continue", "reflect"].includes(move.kind) && !editing && isSavedStep() && React.createElement("div", { id: "tops-loop-completion", style: { margin: "12px 0" } },
+      React.createElement("button", { type: "button", style: button, onClick: function() { saveCompletion(!a.done); } }, a.done ? "Reopen completed step" : "Mark step complete"),
+      React.createElement("p", { style: { fontSize: 14, lineHeight: 1.6, margin: "6px 0" } }, "Saves your progress on this browser immediately. You can change it back; your step and target date are kept.")),
     move.kind === "choose" && React.createElement("div", { id: "tops-member-starts", role: "group", "aria-label": "Choose a starting point" },
       React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))", gap: 10 } },
         topsMemberStarts(props.profile).map(function(item) { return React.createElement("button", { key: item.pathway, type: "button", "aria-label": item.title, "aria-describedby": "tops-start-" + item.pathway, style: Object.assign({}, button, { textAlign: "left", padding: 16, lineHeight: 1.5 }), onClick: function() {
@@ -6652,18 +6729,22 @@ function MemberPlanningLoop(props) {
       React.createElement("button", { type: "button", style: button, onClick: function() { setEditing(true); requestAnimationFrame(function() { var date = document.getElementById("tops-action-date"); if (date) date.focus(); }); } }, "Review my target date")),
     React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
       move.kind === "recover" && React.createElement("button", { type: "button", style: button, onClick: function() { setDirection(a.context); document.getElementById("tops-loop-direction").open = true; } }, "Review saved direction"),
-      ["continue", "review"].includes(move.kind) && React.createElement("button", { type: "button", style: button, onClick: function() { setEditing(!editing); } }, editing ? "Close step editor" : move.kind === "review" ? "Review earlier step" : "Update this step"),
-      ["suggest", "reflect"].includes(move.kind) && React.createElement("button", { type: "button", style: button, onClick: chooseStep }, "Choose this next step"),
-      move.route && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "career" ? "Open my career worksheet" : "Open readiness check"),
+      ["continue", "review"].includes(move.kind) && React.createElement("button", { type: "button", style: button, "aria-expanded": editing, onClick: function() { if (editing) setEditing(false); else openStepEditor(); } }, editing ? "Close step editor" : move.kind === "review" ? "Review earlier step" : "Update this step"),
+      ["suggest", "reflect"].includes(move.kind) && React.createElement("button", { type: "button", style: button, disabled: move.kind === "reflect" && !reflectedMove, onClick: chooseStep }, "Choose this next step"),
+      move.route && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "career" ? "Open my career worksheet" : move.route === "training" ? "Browse training options" : move.route === "support" ? "Browse support options" : "Open readiness check"),
       move.kind === "continue" && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(g.pathway === "transition" ? "readiness" : "career"); } }, g.pathway === "transition" ? "Open readiness check" : "Open my career worksheet")),
     editing && g.pathway && React.createElement(CareerAction, { colors: C, state: props.actionState, setState: props.setActionState, guide: g }),
     g.pathway && React.createElement("details", { id: "tops-loop-checkin", style: { marginTop: 12 } },
       React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Stuck or need a different approach?"),
       React.createElement("label", { htmlFor: "tops-loop-blocker" }, "What is getting in the way?"),
-      React.createElement("select", { id: "tops-loop-blocker", value: blocker, style: field, onChange: function(event) { setBlocker(event.target.value); setReplaceStep(false); } },
+      React.createElement("select", { id: "tops-loop-blocker", value: blocker, style: field, onChange: function(event) { setBlocker(event.target.value); setReplaceStep(false); setSessionMinutes(""); } },
         [["", "Choose what you need"], ["direction", "I am not sure which direction fits"], ["skills", "I need skills or experience"], ["time", "I have limited time"], ["person", "I need help from a person"]].map(function(option) { return React.createElement("option", { key: option[0], value: option[0] }, option[1]); })),
+      blocker === "time" && React.createElement("div", null,
+        React.createElement("label", { htmlFor: "tops-loop-minutes" }, "Time I can set aside for this step"),
+        React.createElement("select", { id: "tops-loop-minutes", value: sessionMinutes, style: field, onChange: function(event) { setSessionMinutes(event.target.value); setReplaceStep(false); } },
+          [["", "Choose a work session (optional)"], ["10", "10 minutes"], ["30", "30 minutes"], ["60", "60 minutes"]].map(function(option) { return React.createElement("option", { key: option[0], value: option[0] }, option[1]); }))),
       React.createElement("p", { style: { fontSize: 14, lineHeight: 1.6 } }, "This check-in applies to this visit. Your saved step stays unchanged until you choose a replacement and save it."),
-      alternative && React.createElement("div", { role: "region", "aria-label": "Alternative next step" },
+      alternative && React.createElement("div", { role: "region", "aria-label": "Alternative next step", "aria-live": "polite" },
         React.createElement("h3", { style: { color: C.textPrimary, fontSize: 18 } }, alternative.title),
         React.createElement("p", { style: { lineHeight: 1.6 } }, alternative.why),
         a.text && React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10, lineHeight: 1.6 } }, React.createElement("input", { type: "checkbox", checked: replaceStep, onChange: function(event) { setReplaceStep(event.target.checked); } }), "Replace my current step in the editor. My saved copy changes only when I save."),
@@ -6671,7 +6752,7 @@ function MemberPlanningLoop(props) {
           React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(alternative.route); } }, alternative.route === "training" ? "Browse training options" : alternative.route === "support" ? "Browse support options" : alternative.route === "career" ? "Open career worksheet" : "Open readiness check"),
           React.createElement("button", { type: "button", style: button, disabled: !!a.text && !replaceStep, onClick: function() {
             props.setActionState({ draft: { version: 1, text: alternative.title, date: "", done: false, context: topsValidateGuide(g) }, status: "Alternative step added for review, not saved. Edit it to fit your situation, then choose Save career step." });
-            setEditing(true); setBlocker(""); setReplaceStep(false);
+            openStepEditor(); setBlocker(""); setReplaceStep(false);
           } }, "Review this as my next step")))),
     props.onDraft && React.createElement("details", { id: "tops-loop-help", style: { marginTop: 12 } },
       React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Get help choosing my next step"),
@@ -7156,6 +7237,24 @@ function App() {
     );
   }
   const [showNotifPanel, setShowNotifPanel] = useState(false);
+  // Keep jump destinations below the responsive sticky header.
+  useEffect(function() {
+    var header = document.querySelector(".tops-app-header");
+    if (!header) return;
+    var root = document.documentElement, previous = root.style.scrollPaddingTop;
+    function updateScrollInset() {
+      root.style.scrollPaddingTop = Math.ceil(header.getBoundingClientRect().height + 12) + "px";
+    }
+    updateScrollInset();
+    var observer = typeof ResizeObserver === "function" ? new ResizeObserver(updateScrollInset) : null;
+    if (observer) observer.observe(header);
+    window.addEventListener("resize", updateScrollInset);
+    return function() {
+      if (observer) observer.disconnect();
+      window.removeEventListener("resize", updateScrollInset);
+      root.style.scrollPaddingTop = previous;
+    };
+  }, [showOnboarding]);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const primaryNavFocus = useRef(false);
   const toolsDialogRef = useRef(null);
@@ -8640,7 +8739,7 @@ function App() {
   navUnlocked && activeTab !== "navigator" && activeTab !== "dashboard" && /*#__PURE__*/React.createElement("div", { className: "tops-ask-launcher", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
   activeTab !== "dashboard" && continuationReturn.current && continuationReturn.current.indexOf("tops-guide-") === 0 && React.createElement("button", { type: "button", style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" }, onClick: function() { continuationFocus.current = continuationReturn.current; continuationReturn.current = null; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("pathway"); } }, "Back to career guide"),
   activeTab === "pathway" && React.createElement("nav", { "aria-label": "Career shortcuts", style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 } },
-    [["Career guide", "tops-guide-heading"], ["Career plan", "career-gap-heading"], ["Resume drafter", "tops-resume-drafter-panel"]].map(function(item) {
+    [["Career guide", "tops-guide-heading"], ["Career plan", "career-gap-heading"], ["Resume drafter", "tops-resume-drafter-panel"], ["Business ownership", "tops-ownership-heading"]].map(function(item) {
       return React.createElement("button", { key: item[1], type: "button", onClick: function() {
         continuationReturn.current = null;
         if (item[1] === "career-gap-heading") { setPathwayMode("planner"); setPathwayStep(1); }
@@ -8648,6 +8747,7 @@ function App() {
         focusCareerWorksheet(item[1]);
       }, style: { minHeight: 44, padding: "10px 14px", background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" } }, item[0]);
     })),
+  activeTab === "pathway" && React.createElement(BusinessOwnership, { colors: C }),
   activeTab === "pathway" && React.createElement("details", { id: "tops-career-guide", style: { marginBottom: 14 } },
   React.createElement("summary", { style: { minHeight: 44, padding: "12px 16px", cursor: "pointer", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary } }, "Open my career guide"),
   React.createElement(PersonalGuide, { key: guideRestoreRevision, colors: C, state: guideState, setState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, follow: followProgress, dismissed: dismissedReminders, busy: navBusy, onTarget: function(target, expectedTarget) {
