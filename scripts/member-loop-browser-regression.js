@@ -75,6 +75,31 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
  await input('tops-action-text','SYNTHETIC_LOOP_STEP for '+profile);await input('tops-action-date','2026-10-20');await click('Save career step');
  await home();assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("SYNTHETIC_LOOP_STEP")'));
  assert.ok(await ev('document.getElementById("tops-loop-timing").textContent.includes("not a benefits deadline")'));
+ const savedStep=await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))');
+ if(profile===''){
+  await ev('window.__completionSet=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw Error("blocked")};');
+  await click('Mark step complete');
+  assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("Completion was not saved")'));
+  assert.deepEqual(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))'),savedStep);
+  await ev('Storage.prototype.setItem=window.__completionSet');
+  await ev('localStorage.setItem("tops_career_action_v1",JSON.stringify({...JSON.parse(localStorage.getItem("tops_career_action_v1")),text:"ANOTHER_TAB_STEP"}))');
+  await click('Mark step complete');
+  assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).text'),'ANOTHER_TAB_STEP');
+  assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("Your saved step changed")'));
+  await ev('localStorage.setItem("tops_career_action_v1",'+JSON.stringify(JSON.stringify(savedStep))+')');
+  await home();
+ }
+ await click('Mark step complete');await wait('document.activeElement.id==="tops-loop-title"','completion focus');
+ assert.deepEqual(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))'),{...savedStep,done:true});
+ await home();assert.ok(await ev('!!document.getElementById("tops-loop-completion")'));
+ assert.equal(await ev('document.getElementById("tops-loop-timing")'),null);
+ await click('Reopen completed step');await home();
+ assert.deepEqual(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))'),savedStep);
+ await click('Update this step');await input('tops-action-text','UNSAVED_COMPLETION_DRAFT');
+ assert.equal(await ev('document.getElementById("tops-loop-completion")'),null);
+ await click('Close step editor');assert.equal(await ev('document.getElementById("tops-loop-completion")'),null);
+ assert.deepEqual(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))'),savedStep);
+ await home();
  const beforeDate=await ev('localStorage.getItem("tops_career_action_v1")');
  await click('Review my target date');await wait('document.activeElement.id==="tops-action-date"','target-date focus');
  await input('tops-action-date',await ev('topsMemberLocalDay()'));assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),beforeDate);
