@@ -39,10 +39,10 @@ await ev('document.getElementById("career-gap-0-have").focus()');await c.send("I
 await c.send("Page.reload");await ready();assert.equal(await ev('document.getElementById("career-gap-0-have").value'),sentinels[1]);assert.equal(await ev('document.querySelectorAll("img").length'),0);
 await ev('document.getElementById("career-gap-target").focus()');await c.send("Input.insertText",{text:"UNSAVED"});await c.send("Page.reload");await ready();assert.equal(await ev('document.getElementById("career-gap-target").value.includes("UNSAVED")'),false);
 // Optional fields remain local and appear in a deterministic summary.
-await ev('Array.from(document.querySelectorAll("summary")).find(s=>s.textContent==="Prepare for a counselor meeting").click()');
+await ev('Array.from(document.querySelectorAll("summary")).find(s=>s.textContent==="Prepare for a conversation").click()');
 await ev('document.getElementById("career-prep-opportunity").focus()');await c.send("Input.insertText",{text:"SYNTHETIC_LATEST_GAP_PROGRAM"});
 await ev('document.getElementById("career-prep-questions").focus()');await c.send("Input.insertText",{text:"SYNTHETIC_LATEST_GAP_QUESTION"});
-await click("Review counselor summary");
+await click("Review conversation summary");
 await helpers.waitForExpression(c,'document.activeElement.id === "career-prep-summary-heading"',"summary heading focus",3000);
 assert.ok(await ev('document.querySelector("section").textContent.includes("SYNTHETIC_LATEST_GAP_QUESTION")'));
 assert.equal(await ev('Array.from(document.querySelectorAll("dt")).some(n=>n.textContent==="Public office contact reference")'),false);
