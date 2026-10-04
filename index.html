@@ -6586,10 +6586,19 @@ function topsMemberTiming(guide, action, today) {
   if (a.date === day) return { kind: "today", title: "You planned this step for today", detail: "Take the next small action, or choose a more realistic date if your plans changed." };
   return { kind: "upcoming", title: "Your planned date: " + a.date, detail: "Keep this date if it still works for you, or adjust it as your plans change." };
 }
-function topsMemberAdjustment(blocker, guide, profile, minutes) {
+function topsMemberAdjustment(blocker, guide, profile, minutes, serviceMoment) {
   var g = topsValidateGuide(guide);
   if (!g || !g.pathway) return null;
   var target = g.targetRole.trim(), guard = profile === "guard";
+  if (blocker === "service") {
+    if (!guard) return null;
+    var serviceSteps = {
+      balance: { title: "Choose a realistic career work session around your civilian work and service commitments", why: "Start with a time you can protect. Pick one part of your career goal that fits, and use your own target date to return to it.", route: "career" },
+      away: { title: "Prepare questions about a work handoff before time away for service", why: "List what you need to clarify about responsibilities, communication and your next career step. Keep orders, unit schedules and other sensitive details out of this app. Confirm employment questions with an appropriate adviser.", route: "career" },
+      return: { title: "Prepare a return-to-work conversation about priorities and your next career step", why: "Identify what has changed, one skill or experience to discuss, and one question for your supervisor or adviser. This helps prepare a conversation; it does not determine employment rights or benefits.", route: "career" }
+    };
+    return serviceSteps[serviceMoment] || null;
+  }
   if (blocker === "time" && ["10", "30", "60"].includes(minutes)) {
     var sessions = {
       transition: { "10": "Write down one transition question you need answered", "30": "Review your readiness answers and choose one gap to address", "60": "Work through one transition checklist and note remaining questions" },
@@ -6637,6 +6646,7 @@ function MemberPlanningLoop(props) {
   var [editing, setEditing] = useState(false), [direction, setDirection] = useState(g), [message, setMessage] = useState("");
   var [blocker, setBlocker] = useState(""), [replaceStep, setReplaceStep] = useState(false);
   var [sessionMinutes, setSessionMinutes] = useState("");
+  var [serviceMoment, setServiceMoment] = useState("");
   var [reflection, setReflection] = useState("");
   function openStepEditor() {
     setEditing(true);
@@ -6655,18 +6665,18 @@ function MemberPlanningLoop(props) {
   useEffect(function() { setShare({}); }, [g, a, props.profile, blocker]);
   useEffect(function() { setDirection(g); }, [g]);
   useEffect(function() { setReflection(""); }, [g, a]);
-  useEffect(function() { setBlocker(""); setReplaceStep(false); setSessionMinutes(""); }, [g]);
+  useEffect(function() { setBlocker(""); setReplaceStep(false); setSessionMinutes(""); setServiceMoment(""); }, [g, props.profile]);
   var move = topsMemberMove(g, a, props.gap, props.profile);
   var reflectedMove = move.kind === "reflect" ? topsMemberReflection(reflection, g, props.profile) : null;
   if (reflectedMove) move = Object.assign({}, move, reflectedMove);
   var timing = topsMemberTiming(g, a, today);
-  var alternative = topsMemberAdjustment(blocker, g, props.profile, sessionMinutes);
+  var alternative = topsMemberAdjustment(blocker, g, props.profile, sessionMinutes, serviceMoment);
   var helpFacts = [
     ["direction", "Direction", TOPS_GUIDE_PATHS[g.pathway]],
     ["target", "Role or field", g.targetRole], ["goal", "Goal", g.goal],
     ["step", "Current step", topsActionMatches(a, g) && a.text ? a.text + (a.done ? " (marked done)" : " (unfinished)") : ""],
     ["service", "Service path", { active: "Active duty", separated: "Veteran", retired: "Retired", guard: "Guard or Reserve", spouse: "Military spouse" }[props.profile]],
-    ["blocker", "What I need help with", { direction: "Choosing a direction", skills: "Skills or experience", time: "Limited time", person: "Finding a person who can help" }[blocker]]
+    ["blocker", "What I need help with", { direction: "Choosing a direction", skills: "Skills or experience", time: "Limited time", person: "Finding a person who can help", service: "Balancing civilian work and ongoing service" }[blocker]]
   ].filter(function(row) { return !!row[2]; });
   var helpDraft = "Help me choose one practical next action. Ask a clarifying question if needed. Treat my details as unverified; do not infer benefits eligibility.\n" + helpFacts.filter(function(row) { return share[row[0]]; }).map(function(row) { return row[1] + ": " + row[2]; }).join("\n");
   var button = { minHeight: 44, minWidth: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgElevated, color: C.textPrimary, font: "inherit", cursor: "pointer" };
@@ -6733,12 +6743,21 @@ function MemberPlanningLoop(props) {
       ["suggest", "reflect"].includes(move.kind) && React.createElement("button", { type: "button", style: button, disabled: move.kind === "reflect" && !reflectedMove, onClick: chooseStep }, "Choose this next step"),
       move.route && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "career" ? "Open my career worksheet" : move.route === "training" ? "Browse training options" : move.route === "support" ? "Browse support options" : "Open readiness check"),
       move.kind === "continue" && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(g.pathway === "transition" ? "readiness" : "career"); } }, g.pathway === "transition" ? "Open readiness check" : "Open my career worksheet")),
+    props.profile === "guard" && g.pathway && React.createElement("button", { type: "button", style: Object.assign({}, button, { marginTop: 12 }), onClick: function() {
+      setBlocker("service"); setServiceMoment(""); setReplaceStep(false);
+      requestAnimationFrame(function() { var details = document.getElementById("tops-loop-checkin"), field = document.getElementById("tops-loop-service-moment"); if (details) details.open = true; if (field) { field.focus(); field.scrollIntoView({ block: "center" }); } });
+    } }, "Plan around my service commitments"),
     editing && g.pathway && React.createElement(CareerAction, { colors: C, state: props.actionState, setState: props.setActionState, guide: g }),
     g.pathway && React.createElement("details", { id: "tops-loop-checkin", style: { marginTop: 12 } },
       React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Stuck or need a different approach?"),
       React.createElement("label", { htmlFor: "tops-loop-blocker" }, "What is getting in the way?"),
-      React.createElement("select", { id: "tops-loop-blocker", value: blocker, style: field, onChange: function(event) { setBlocker(event.target.value); setReplaceStep(false); setSessionMinutes(""); } },
-        [["", "Choose what you need"], ["direction", "I am not sure which direction fits"], ["skills", "I need skills or experience"], ["time", "I have limited time"], ["person", "I need help from a person"]].map(function(option) { return React.createElement("option", { key: option[0], value: option[0] }, option[1]); })),
+      React.createElement("select", { id: "tops-loop-blocker", value: blocker, style: field, onChange: function(event) { setBlocker(event.target.value); setReplaceStep(false); setSessionMinutes(""); setServiceMoment(""); } },
+        [["", "Choose what you need"], ["direction", "I am not sure which direction fits"], ["skills", "I need skills or experience"], ["time", "I have limited time"], ["person", "I need help from a person"]].concat(props.profile === "guard" ? [["service", "Service commitments"]] : []).map(function(option) { return React.createElement("option", { key: option[0], value: option[0] }, option[1]); })),
+      blocker === "service" && props.profile === "guard" && React.createElement("div", null,
+        React.createElement("label", { htmlFor: "tops-loop-service-moment" }, "What are you working around?"),
+        React.createElement("select", { id: "tops-loop-service-moment", value: serviceMoment, style: field, "aria-describedby": "tops-loop-service-help", onChange: function(event) { setServiceMoment(event.target.value); setReplaceStep(false); } },
+          [["", "Choose your situation"], ["balance", "Work, drill and training"], ["away", "Time away for service"], ["return", "Returning to civilian work"]].map(function(option) { return React.createElement("option", { key: option[0], value: option[0] }, option[1]); })),
+        React.createElement("p", { id: "tops-loop-service-help", style: { fontSize: 14, lineHeight: 1.6 } }, "No separation date or orders needed. Choose a situation to get a suggested step, then edit it for your circumstances.")),
       blocker === "time" && React.createElement("div", null,
         React.createElement("label", { htmlFor: "tops-loop-minutes" }, "Time I can set aside for this step"),
         React.createElement("select", { id: "tops-loop-minutes", value: sessionMinutes, style: field, onChange: function(event) { setSessionMinutes(event.target.value); setReplaceStep(false); } },

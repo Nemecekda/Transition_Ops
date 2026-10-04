@@ -41,6 +41,47 @@ assert.equal(timingCases.today.kind,'today');assert.equal(timingCases.past.kind,
 await c.send('Emulation.setTimezoneOverride',{timezoneId:'Pacific/Honolulu'});assert.equal(await ev('topsMemberLocalDay(new Date("2026-09-30T00:30:00Z"))'),'2026-09-29');
 await c.send('Emulation.setTimezoneOverride',{timezoneId:'Europe/Berlin'});assert.equal(await ev('topsMemberLocalDay(new Date("2026-09-30T00:30:00Z"))'),'2026-09-30');
 await c.send('Emulation.setTimezoneOverride',{timezoneId:'America/Chicago'});
+// Guard/Reserve service changes shape suggestions without overwriting the saved step.
+const serviceGuide={version:1,pathway:'change',targetRole:'SYNTHETIC_ROLE',currentRole:'',goal:''};
+const serviceAction={version:1,text:'SYNTHETIC_EXISTING_STEP',date:'2027-01-15',done:false,context:serviceGuide};
+await ev('localStorage.clear();localStorage.setItem("tops_onboarded","1");localStorage.setItem("tops_user_status","guard");localStorage.setItem("tops_personal_guide_v1",'+JSON.stringify(JSON.stringify(serviceGuide))+');localStorage.setItem("tops_career_action_v1",'+JSON.stringify(JSON.stringify(serviceAction))+');');
+await home();await click('Plan around my service commitments');
+await wait('document.activeElement.id==="tops-loop-service-moment"','service check-in focused');
+assert.equal(await ev('document.getElementById("tops-loop-checkin").open'),true);
+assert.equal(await ev(`!!document.querySelector('[aria-label="Alternative next step"]')`),false);
+for(const [moment,phrase] of [['balance','realistic career work session'],['away','work handoff'],['return','return-to-work conversation']]){
+ await input('tops-loop-service-moment',moment);
+ assert.ok((await ev(`document.querySelector('[aria-label="Alternative next step"]').textContent`)).includes(phrase));
+ assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Review this as my next step").disabled'),true);
+ assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),JSON.stringify(serviceAction));
+}
+await ev(`document.querySelector('[aria-label="Alternative next step"] input[type=checkbox]').click()`);
+await input('tops-loop-service-moment','away');
+assert.equal(await ev(`document.querySelector('[aria-label="Alternative next step"] input[type=checkbox]').checked`),false);
+await ev(`document.querySelector('[aria-label="Alternative next step"] input[type=checkbox]').click()`);
+await click('Review this as my next step');await wait('document.activeElement.id==="tops-action-heading"','service step editor');
+assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),JSON.stringify(serviceAction));
+await click('Save career step');
+assert.ok(JSON.parse(await ev('localStorage.getItem("tops_career_action_v1")')).text.includes('work handoff'));
+await home();assert.ok((await ev('document.getElementById("tops-loop-title").parentElement.textContent')).includes('work handoff'));
+assert.equal(await ev('document.getElementById("tops-loop-blocker").value'),'');
+assert.equal(await ev('topsMemberAdjustment("service",'+JSON.stringify(serviceGuide)+',"active","","away")'),null);
+await ev('localStorage.setItem("tops_user_status","separated")');await home();
+assert.equal(await ev('Array.from(document.querySelectorAll("button")).some(n=>n.textContent==="Plan around my service commitments")'),false);
+assert.equal(await ev('!!document.querySelector("#tops-loop-blocker option[value=service]")'),false);
+console.log('PASS Guard/Reserve service situations, replacement consent reset, explicit save, reload, focus and profile isolation');
+await ev('localStorage.setItem("tops_user_status","guard")');
+for(const theme of ['professional','tactical'])for(const width of [320,375,900]){
+ await ev('localStorage.setItem("tops_theme",'+JSON.stringify(theme)+')');
+ await c.send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<500});
+ await home();await click('Plan around my service commitments');await input('tops-loop-service-moment','return');
+ assert.equal(await ev('document.documentElement.scrollWidth<=innerWidth'),true);
+ assert.equal(await ev('document.getElementById("tops-loop-service-moment").getBoundingClientRect().height>=44'),true);
+ assert.equal(await ev('document.querySelectorAll("label[for=tops-loop-service-moment]").length'),1);
+ if(process.env.TOPS_SERVICE_SCREENSHOT_DIR && width===375){fs.mkdirSync(process.env.TOPS_SERVICE_SCREENSHOT_DIR,{recursive:true});const shot=await c.send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(process.env.TOPS_SERVICE_SCREENSHOT_DIR,theme+'.png'),Buffer.from(shot.data,'base64'));}
+ console.log('PASS service check-in reflow and select target '+theme+' '+width);
+}
+await c.send('Emulation.clearDeviceMetricsOverride');
 for(const [profile,pathway] of [['','change'],['active','transition'],['separated','change'],['retired','change'],['guard','change'],['guard','skills'],['spouse','change']]){
  await ev('localStorage.clear();localStorage.setItem("tops_onboarded","1");localStorage.setItem("tops_user_status",'+JSON.stringify(profile)+');');await home();
  const starts=await ev('topsMemberStarts('+JSON.stringify(profile)+')');

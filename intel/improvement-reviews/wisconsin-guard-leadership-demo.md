@@ -6,7 +6,7 @@ Prepared October 4, 2026 for Dean. Audience: leadership evaluating the platform.
 
 "A member should leave with a useful next action, then return without rebuilding the plan. I will show a Guard member growing a civilian career while continuing to serve."
 
-Use a separate browser profile with synthetic information. Do not clear the normal browser's saved plan. Confirm the candidate build before rehearsal: this iteration is cache193 in the local preview, not a claim about production. Keep screenshots available as a fallback.
+Use a separate browser profile with synthetic information. Do not clear the normal browser's saved plan. PR116/cache194 was published October 4 at 13:02 UTC (commit 015cc39); its HTML and active worker matched the tested candidate. The additional service-commitment check-in is cache195 in the local preview, not yet published. Confirm the build before rehearsal. Keep screenshots available as a fallback.
 
 ## Six-minute walkthrough
 
@@ -16,6 +16,10 @@ Use a separate browser profile with synthetic information. Do not clear the norm
 4. **Introduce a realistic constraint.** Open Stuck or need a different approach? Select I have limited time, then 10 minutes. Show the smaller posting-search action and the explanation referencing the member's target and ongoing service. Switch to 30 minutes to show the different scope. These are suggested work sessions, not completion-time estimates.
 5. **Accept, return and adapt again.** Choose 10 minutes, explicitly allow replacement, then Review this as my next step. Save career step. Reload Home and show the saved action. The temporary time selector resets; the explicitly saved step remains. Mark it complete. Under What did you learn from this step?, choose I am ready to move forward, then I found a gap to work on. Show how the next suggestion changes. The completed step remains saved until a replacement is reviewed and saved. Reopen completed step if you want to demonstrate a correction instead.
 6. **Show the handoff to help.** Open Get help choosing my next step. Select only synthetic facts to include and open the draft in Navigator. Review the draft without sending. Explain that the work-session suggestions shown earlier use local planning rules; Navigator is a separate AI-assisted conversation when a member chooses to send. Do not describe the local rules as a model independently researching the member or acting in the background.
+
+## Optional Guard/Reserve situation branch (local cache195)
+
+After setting a direction, choose **Plan around my service commitments**. Compare balancing civilian work/drill/training, preparing for time away, and returning to civilian work. Show the different suggested actions. Select returning to civilian work, explicitly allow replacement, and review the suggestion in the step editor. Edit it to "Prepare two questions about current priorities for my supervisor." Save, reload, and show that the saved step survives while the temporary situation selection resets. No orders, service dates, unit details or real member information are needed. This is a planning aid, not a determination of employment rights or benefits.
 
 ## What leadership can evaluate
 
