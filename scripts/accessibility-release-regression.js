@@ -357,6 +357,9 @@ async function stopChrome(chrome) {
     ]);
     if (chrome.child.exitCode === null) chrome.child.kill("SIGKILL");
   }
+  // Chrome's crash reporter can inherit stderr after the test browser exits.
+  // Release our pipe so that helper cannot keep this completed runner alive.
+  if (chrome.child && chrome.child.stderr) chrome.child.stderr.destroy();
   if (chrome.profile) fs.rmSync(chrome.profile, { recursive: true, force: true });
 }
 

@@ -11,6 +11,7 @@ const palette = {};
 const themeStart = source.indexOf("const THEMES = {");
 vm.runInNewContext(source.slice(themeStart, source.indexOf("\n};", themeStart) + 3) + "\nthis.themes = THEMES;", palette);
 const selection = source.match(/var urgentReminders = [^\n]+;/)[0];
+const timing = source.slice(source.indexOf("var RUNG_DAY_TRIGGERS ="), source.indexOf("var __rungFiredThisOpen ="));
 const renderStart = source.indexOf("      (urgentReminders.length > 0 || extraFollowups.length > 0) && React.createElement(\"section\", { className: \"tops-home-actions\"");
 assert.ok(renderStart > 0);
 const renderEnd = source.indexOf("      // ═══ v49 INSTRUMENT", renderStart);
@@ -23,14 +24,16 @@ const reminders = [
   { id: "fourth", mo: 7, pri: "MEDIUM", title: "Fourth action" },
   { id: "expired", mo: 1, pri: "CRITICAL", title: "Outside relevance window" }
 ];
-function run(months, dismissed, data = reminders) {
+function run(months, dismissed, data = reminders, days = months === null ? null : Math.round(months * 30.44)) {
   const calls = [];
   const sandbox = {
+    separationDate: months === null ? "" : "synthetic",
+    daysToETSDate: () => days, moToETS: () => months,
     extraFollowups: [], followProgress: {}, topsFollowLabel: () => "", etsMonths: months, dismissedReminders: dismissed, SMART_REMINDERS: data, C: palette.themes.tactical,
     React: { createElement: (type, props, ...children) => ({ type, props: props || {}, children: children.flat(Infinity) }) },
     openPlanRoute: (...args) => calls.push(args)
   };
-  vm.runInNewContext(selection + '\nthis.tree = React.createElement("div", null,\n' + render + 'null);', sandbox);
+  vm.runInNewContext(timing + selection + '\nthis.tree = React.createElement("div", null,\n' + render + 'null);', sandbox);
   function all(node) { return !node || typeof node !== "object" ? [] : [node, ...node.children.flatMap(all)]; }
   return { calls, nodes: all(sandbox.tree) };
 }
@@ -58,6 +61,36 @@ vm.runInNewContext(source.slice(realStart, realEnd) + "\nthis.reminders = SMART_
 const t140 = run(140 / 30.44, {}, real.reminders);
 t140.nodes.find(n => n.type === "button").props.onClick();
 assert.ok(/bdd/.test(t140.calls[0][1]), "T-140 prioritizes the existing BDD critical reminder");
+for (const [id, cases] of [
+  ["r-6-bdd2", [[181, false], [180, true], [140, true], [90, true], [89, false], [30, false]]],
+  ["r-p5-dental", [[-149, false], [-150, true], [-164, true], [-165, false], [-180, false]]],
+  ["r-1-fedvip", [[32, false], [31, true], [17, true], [16, false]]],
+  ["r-p1-fedvip", [[-29, false], [-30, true], [-44, true], [-45, false]]],
+  ["r-0-ets", [[1, false], [0, true], [-1, false], [-14, false]]]
+]) {
+  const record = real.reminders.find(r => r.id === id);
+  for (const [days, expected] of cases) {
+    const result = run(Math.round(days / 30.44), {}, [record], days);
+    assert.equal(result.nodes.some(n => n.type === "button"), expected, id + " days=" + days);
+    const context = { SMART_REMINDERS: [record], separationDate: "synthetic",
+      etsMonths: Math.round(days / 30.44), daysToETSDate: () => days,
+      moToETS: () => Math.round(days / 30.44), dismissedReminders: {},
+      reminderTimedOnly: false, r: { id: "another-task" } };
+    const banner = source.match(/var urgentR = [^\n]+;/)[0];
+    const next = source.match(/var nextReminder = [^\n]+;/)[0];
+    vm.runInNewContext(timing + banner + next + '\nthis.due = dueRungs(separationDate, {});', context);
+    assert.equal(!!context.nextReminder, expected, "Next action " + id + " days=" + days);
+    assert.equal(context.urgentR.length > 0, expected && record.pri === "CRITICAL", "Banner " + id + " days=" + days);
+    assert.equal(context.due.length > 0, expected, "Timed list " + id + " days=" + days);
+    const note = context.reminderTimingContext(record, "synthetic");
+    assert.equal(note === "", expected, "Timing context " + id + " days=" + days);
+    if (!expected) {
+      assert.match(note, /not a current alert or an eligibility decision/);
+      assert.match(note, days > (id === "r-6-bdd2" ? 180 : context.rungTriggerDay(record)) ? /scheduled for later/ : /scheduled period has passed/);
+    }
+  }
+}
+assert.equal(run(0, {}, real.reminders, NaN).nodes.filter(n => n.type === "button").length, 0);
 assert.equal(run(null, {}).nodes.filter(n => n.type === "button").length, 0);
 const dismissed = run(5, { first: true });
 dismissed.nodes.find(n => n.type === "button").props.onClick();
