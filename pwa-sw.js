@@ -1,4 +1,4 @@
-const CACHE_NAME = "transition-ops-v198";
+const CACHE_NAME = "transition-ops-v219";
 const CACHE_PREFIX = "transition-ops-v";
 const NETWORK_TIMEOUT_MS = 3500;
 
@@ -11,6 +11,16 @@ const ASSETS = [
   "/va-math/",
   "/bdd-timeline/",
   "/vendor/react.production.min.js",
+  "/art/journey/briefcase.webp",
+  "/art/journey/calculator.webp",
+  "/art/journey/calendar.webp",
+  "/art/journey/compass.webp",
+  "/art/journey/compass-base.webp",
+  "/art/journey/compass-needle.webp",
+  "/art/journey/documents.webp",
+  "/art/journey/ets-bezel.webp",
+  "/art/journey/journey-wide.webp",
+  "/art/journey/toolcase.webp",
   "/vendor/react-dom.production.min.js"
 ];
 
@@ -23,6 +33,16 @@ const REVIEWED_LOCAL_PATHS = new Set([
   "/va-math/",
   "/bdd-timeline/",
   "/vendor/react.production.min.js",
+  "/art/journey/briefcase.webp",
+  "/art/journey/calculator.webp",
+  "/art/journey/calendar.webp",
+  "/art/journey/compass.webp",
+  "/art/journey/compass-base.webp",
+  "/art/journey/compass-needle.webp",
+  "/art/journey/documents.webp",
+  "/art/journey/ets-bezel.webp",
+  "/art/journey/journey-wide.webp",
+  "/art/journey/toolcase.webp",
   "/vendor/react-dom.production.min.js"
 ]);
 

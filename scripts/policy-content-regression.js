@@ -13,6 +13,10 @@ const vaMathGuide = read("va-math/index.html");
 const navigator = read("netlify/functions/navigator.mjs");
 const verificationLog = read("intel/verification-log.md");
 
+assert.ok(index.includes('value:pcsMoveType==="retirement"?"3 YRS":"180 DAYS"'), "PCS summary distinguishes the general separation deadline");
+assert.ok(!index.includes('value:pcsMoveType==="retirement"?"3 YRS":"1 YR"'), "PCS summary must not give separatees a one-year move deadline");
+assert.ok(index.includes('Most separations; verify your orders') && index.includes('Official final-move guidance'), "PCS deadline retains qualification and official source");
+
 let checks = 0;
 function check(condition, message) {
   checks += 1;

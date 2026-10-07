@@ -18,12 +18,13 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
  const home=async()=>{await c.send("Page.navigate",{url:url+"/?tool=timeline"});await wait('!!document.getElementById("tops-plan-backup")','backup loaded');};
  await home();await ev('localStorage.clear();localStorage.setItem("tops_onboarded","1");localStorage.setItem("tops_user_status","separated");localStorage.setItem("unrelated_guide_sentinel","retain");');await home();
 
+ await ev('var comparison=topsEmptyComparison();comparison.options[0]={role:"SYNTHETIC comparison role",reason:"Check training"};localStorage.setItem("tops_career_comparison_v1",JSON.stringify(comparison));');await home();
  await ev('document.getElementById("tops-plan-backup").open=true;window.__blob=null;window.__createURL=URL.createObjectURL;URL.createObjectURL=function(b){window.__blob=b;return window.__createURL(b)};window.__anchorClick=HTMLAnchorElement.prototype.click;HTMLAnchorElement.prototype.click=function(){window.__filename=this.download};');
  await click("Download my plan");assert.equal(JSON.parse(await ev("window.__blob.text()")).sections.guide.pathway,"", "blank guide still exports existing progress");
  await input("tops-guide-pathway","skills");await input("tops-guide-goal","SYNTHETIC_BACKUP_NOTE");
  await click("Download my plan");const raw=await ev('window.__blob.text()'),backup=JSON.parse(raw);
  assert.equal(backup.sections.guide.goal,"SYNTHETIC_BACKUP_NOTE");assert.equal(await ev('localStorage.getItem("tops_personal_guide_v1")'),null);assert.match(await ev('window.__filename'),/^transition-ops-plan-\d{4}-\d{2}-\d{2}\.json$/);
- assert.equal(Object.keys(backup.sections).length,7);assert.equal(backup.version,2);assert.ok(!raw.includes("unrelated_guide_sentinel"));
+ assert.equal(Object.keys(backup.sections).length,8);assert.equal(backup.version,3);assert.ok(!raw.includes("unrelated_guide_sentinel"));assert.equal(backup.sections.careerComparison.options[0].role,'SYNTHETIC comparison role');
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'tops-backup-')),file=path.join(dir,'synthetic-plan.json'),bad=path.join(dir,'invalid.txt');fs.writeFileSync(file,raw);fs.writeFileSync(bad,'{invalid');
  console.log("SYNTHETIC FIXTURE",file);
  const upload=async p=>{const doc=await c.send('DOM.getDocument');const {nodeId}=await c.send('DOM.querySelector',{nodeId:doc.root.nodeId,selector:'#tops-backup-file'});await c.send('DOM.setFileInputFiles',{nodeId,files:[p]});};
@@ -40,6 +41,6 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
  await ev('window.__fileText=File.prototype.text;File.prototype.text=function(){return new Promise(resolve=>window.__lateRead=()=>resolve('+JSON.stringify(raw)+'))}');await upload(file);await wait('!!window.__lateRead','pending read');await click('Cancel reading');await ev('window.__lateRead();File.prototype.text=window.__fileText');await new Promise(r=>setTimeout(r,80));assert.equal(await ev('!!document.getElementById("tops-backup-review")'),false);
  await upload(file);await wait('!!document.getElementById("tops-backup-review")','mobile preview');for(const width of [320,375]){await c.send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:true});assert.ok(await ev('document.documentElement.scrollWidth<=window.innerWidth'));}
  assert.equal(requests.filter(r=>r.includes('SYNTHETIC_BACKUP_NOTE')).length,0);assert.equal(errors.length,0);
- console.log('BACKUP BROWSER PASS: actual download Blob bytes/file-upload roundtrip; current unsaved guide; seven canonical sections; cancel/invalid/reselect; stale open/saved state rejection; canceled async read; explicit restore/reload; 320/375 reflow; preview focus; no backup network payload or JS errors');
+ console.log('BACKUP BROWSER PASS: actual download Blob bytes/file-upload roundtrip; current unsaved guide; eight canonical sections; cancel/invalid/reselect; stale open/saved state rejection; canceled async read; explicit restore/reload; 320/375 reflow; preview focus; no backup network payload or JS errors');
  } finally {if(chrome)await h.stopChrome(chrome);await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e.stack);process.exitCode=1;});

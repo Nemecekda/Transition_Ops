@@ -22,6 +22,16 @@ const EXPECTED_PRECACHE_ASSETS = Object.freeze([
   "/va-math/",
   "/bdd-timeline/",
   "/vendor/react.production.min.js",
+  "/art/journey/briefcase.webp",
+  "/art/journey/calculator.webp",
+  "/art/journey/calendar.webp",
+  "/art/journey/compass.webp",
+  "/art/journey/compass-base.webp",
+  "/art/journey/compass-needle.webp",
+  "/art/journey/documents.webp",
+  "/art/journey/ets-bezel.webp",
+  "/art/journey/journey-wide.webp",
+  "/art/journey/toolcase.webp",
   "/vendor/react-dom.production.min.js"
 ]);
 const EXPECTED_NAVIGATION_CACHE_KEYS = Object.freeze([
@@ -38,8 +48,18 @@ const EXPECTED_PUBLIC_FILES = Object.freeze([
   "OneSignalSDKWorker.js",
   "_headers",
   "_redirects",
+  "art/journey/briefcase.webp",
+  "art/journey/calculator.webp",
+  "art/journey/calendar.webp",
+  "art/journey/compass-base.webp",
+  "art/journey/compass-needle.webp",
+  "art/journey/compass.webp",
+  "art/journey/documents.webp",
+  "art/journey/ets-bezel.webp",
   "art/journey/journey-motion-desktop.mp4",
   "art/journey/journey-motion-mobile.mp4",
+  "art/journey/journey-wide.webp",
+  "art/journey/toolcase.webp",
   "bdd-timeline/index.html",
   "erg-employer-brief.html",
   "erg-handoff.html",
@@ -467,7 +487,7 @@ function runPublicBuildChecks(publicBuilder) {
     stdio: ["ignore", "pipe", "pipe"]
   });
   check(
-    output.trim() === "PUBLIC BUILD PASS: 64 files -> dist",
+    output.trim() === "PUBLIC BUILD PASS: 74 files -> dist",
     "public build command produces the exact validated dist inventory"
   );
   const inventory = publicBuilder.assertOutputExact(publicBuilder.DIST, EXPECTED_PUBLIC_FILES);

@@ -1,0 +1,28 @@
+"use strict";
+const fs = require("node:fs"), assert = require("node:assert/strict"), vm = require("node:vm");
+const source = fs.readFileSync(require("node:path").join(__dirname, "../index.html"), "utf8");
+const start = source.indexOf("function topsGapStarter("), end = source.indexOf("function CareerGapStarter(", start);
+const context = { TOPS_GAP_ROWS: ["Skills", "Education and training", "Credentials"] };
+vm.createContext(context); vm.runInContext(source.slice(start, end), context);
+const resume = "Experience\nCoordinated maintenance schedules for two teams.\nEducation\nBachelor of Science in logistics.\nCredentials\nCertificate in equipment safety.";
+const posting = "Requirements\nCoordinate project schedules and stakeholder updates.\nEducation\nBachelor degree or equivalent experience preferred.\nCredentials\nPMP certification preferred, not required.";
+const draft = context.topsGapStarter(resume, posting);
+assert.equal(draft.rows[0].have, "Coordinated maintenance schedules for two teams.");
+assert.equal(draft.rows[1].have, "Bachelor of Science in logistics.");
+assert.equal(draft.rows[2].requirement, "PMP certification preferred, not required.");
+assert.ok(!draft.rows[2].have.includes("PMP"));
+for (const row of draft.rows) { assert.ok(!row.have || resume.includes(row.have)); assert.ok(!row.requirement || posting.includes(row.requirement)); assert.ok(row.next.length <= 600); }
+const missing = context.topsGapStarter("Experience\nCoordinated project schedules.", posting);
+assert.equal(missing.rows[2].have, ""); assert.match(missing.rows[2].next, /does not mean you lack it/);
+const contacts = context.topsGapStarter("someone@example.test\nSSN 123-45-6789\nPhone 414-555-0199\n" + resume, posting);
+assert.equal(contacts.omitted, 3); assert.ok(!JSON.stringify(contacts.rows).includes("example.test"));
+assert.equal(context.topsGapStarter("short", posting), null);
+const alone = context.topsGapStarter(resume, "");
+assert.ok(alone.rows.every(row => !row.requirement));
+assert.match(alone.rows[0].next, /Find one current job posting/);
+assert.ok(draft.rows[2].next.includes("PMP certification preferred, not required."));
+assert.equal(context.topsGapStarter(resume, "short"), null);
+assert.equal(context.topsGapStarter("x".repeat(20001), posting), null);
+const overflow = context.topsGapStarter("x".repeat(601) + "\n" + resume, posting);
+assert.ok(overflow.omitted > 0); assert.ok(overflow.rows.every(row => row.have.length <= 600));
+console.log("CAREER STARTER PASS: exact source excerpts, preferred qualifier preserved, no posting-to-member claims, missing evidence distinction, contact omission and input bounds.");
