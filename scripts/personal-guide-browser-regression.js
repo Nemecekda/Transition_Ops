@@ -85,7 +85,7 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
  // Cross-app task navigation must preserve data and move focus to usable destinations.
  await click("Career plan");await wait('document.activeElement.id==="career-gap-heading"','career shortcut focus');
  await click("Resume drafter");await wait('document.activeElement.id==="tops-resume-drafter-panel"','resume shortcut focus');
- await click("Career guide");await wait('document.activeElement.id==="tops-guide-heading"','guide shortcut focus');
+ await click("Start here");await wait('document.activeElement.id==="tops-career-start-heading"','new career start shortcut focus');
  assert.equal(nav.length,1);
  await click("Home");await wait('!!document.getElementById("tops-home-search")','search ready');
  assert.equal(await ev('document.getElementById("tops-home-date").open'),false);

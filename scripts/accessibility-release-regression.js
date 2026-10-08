@@ -695,6 +695,15 @@ async function runNavigatorSurfaceChecks(client, scenarioName) {
 }
 
 async function runResumeSurfaceChecks(client, scenarioName) {
+  const libraryFocused = await evaluate(client, String.raw`(() => {
+    const summary = Array.from(document.querySelectorAll("summary")).find(n => n.textContent === "Browse career tools and detailed planners");
+    if (!summary) return false;
+    summary.focus();
+    return document.activeElement === summary && !summary.parentElement.open;
+  })()`, false);
+  check(libraryFocused, scenarioName + " career tool library starts collapsed and keyboard focusable");
+  await dispatchKey(client, "Enter", 0);
+  await waitForExpression(client, String.raw`Array.from(document.querySelectorAll("summary")).some(n => n.textContent === "Browse career tools and detailed planners" && n.parentElement.open)`, scenarioName + " career tool library Enter activation", 3000);
   const focused = await evaluate(client, String.raw`(() => {
     const button = document.querySelector('button[aria-controls="tops-resume-drafter-panel"]');
     if (!button) return { ok: false };
