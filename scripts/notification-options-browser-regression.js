@@ -1,0 +1,43 @@
+"use strict";
+// Synthetic intent handoffs only. Nonlocal and function requests are blocked.
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http'),os=require('node:os'),{spawn}=require('node:child_process');
+const root=path.resolve(__dirname,'..'),utility=fs.readFileSync(path.join(__dirname,'privacy-network-regression.js'),'utf8');
+const h=new Function('fs','path','os','spawn',utility.slice(utility.indexOf('function findChrome()'),utility.indexOf('const PROBE_SCRIPT ='))+'\nreturn {findChrome,launchChrome,stopChrome,evaluate,waitForExpression};')(fs,path,os,spawn);
+const server=http.createServer((req,res)=>{const p=path.join(root,req.url.split('?')[0]==='/'?'index.html':req.url.split('?')[0]);if(!fs.existsSync(p)||!fs.statSync(p).isFile()){res.writeHead(404);return res.end();}res.setHeader('Content-Type',p.endsWith('.js')?'text/javascript':p.endsWith('.html')?'text/html':'application/octet-stream');res.end(fs.readFileSync(p));});
+(async()=>{let chrome;const requests=[],errors=[];try{
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));const url='http://127.0.0.1:'+server.address().port;chrome=await h.launchChrome(h.findChrome(),12);const c=chrome.client;
+ await c.send('Page.enable');await c.send('Runtime.enable');c.on('Runtime.exceptionThrown',e=>errors.push(e.exceptionDetails.text));await c.send('Fetch.enable',{patterns:[{urlPattern:'*'}]});c.on('Fetch.requestPaused',async e=>{requests.push(e.request.url);const local=e.request.url.startsWith(url)&&!e.request.url.includes('/.netlify/');try{await c.send(local?'Fetch.continueRequest':'Fetch.failRequest',local?{requestId:e.requestId}:{requestId:e.requestId,errorReason:'BlockedByClient'});}catch{}});
+ const ev=x=>h.evaluate(c,x,true),wait=x=>h.waitForExpression(c,x,x,12000);
+ const click=text=>ev('(()=>{const n=Array.from(document.querySelectorAll("button")).find(n=>n.textContent==='+JSON.stringify(text)+');if(!n)throw Error("Missing button");n.click();})()');
+
+ await c.send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
+ await c.send('Page.navigate',{url:url+'/?tool=dashboard'});await wait('!!document.getElementById("tops-loop-title")');
+ await ev('window.syntheticDownloads=0;window.syntheticPermissions=0;Notification.requestPermission=async()=>{window.syntheticPermissions++;return "denied"};HTMLAnchorElement.prototype.click=function(){window.syntheticDownloads++};');
+ await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Notification options").focus()');
+ await click('Notification options');await wait('!!document.getElementById("tops-notification-options-title")');
+ assert.match(await ev('document.querySelector("[aria-labelledby=tops-notification-options-title]").innerText'),/Push alerts are not available yet/);
+ assert.equal(await ev('document.activeElement.textContent'),'Add deadlines to my calendar');
+ await c.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',modifiers:8});
+ assert.equal(await ev('document.activeElement.textContent'),'Close');
+ await c.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape'});
+ await wait('!document.getElementById("tops-notification-options-title")');assert.equal(await ev('document.activeElement.textContent'),'Notification options');
+ await click('Notification options');await click('Add deadlines to my calendar');await wait('document.activeElement.id==="tops-calendar-date-needed"');
+ assert.match(await ev('document.activeElement.innerText'),/Add your transition date/);
+ assert.equal(await ev('window.syntheticDownloads'),0);
+ await ev('(()=>{const n=document.querySelector("#tops-calendar-date-needed input");Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value").set.call(n,"2027-06-15");n.dispatchEvent(new Event("focusout",{bubbles:true}));})()');
+ await wait('Array.from(document.querySelectorAll("button")).some(n=>n.textContent==="Review calendar deadlines")');
+ await click('Review calendar deadlines');await wait('document.activeElement.id==="tops-deadline-calendar-export"');
+ assert.equal(await ev('window.syntheticDownloads'),0);
+ assert.equal(await ev('document.documentElement.scrollWidth<=innerWidth'),true);
+ assert.equal(await ev('!!(window.OneSignal||window.OneSignalDeferred||window.__TOPS_ONESIGNAL_INSTANCE)'),false);
+ assert.equal(await ev('window.syntheticPermissions'),0);
+ await ev('Object.defineProperty(navigator,"userAgent",{configurable:true,value:"iPhone"});Object.defineProperty(navigator,"standalone",{configurable:true,value:false});');
+ await click('Notification options');await wait('!!document.getElementById("tops-notification-options-title")');
+ assert.match(await ev('document.querySelector("[aria-labelledby=tops-notification-options-title]").innerText'),/Installing now does not turn on alerts/);
+ await click('Close');await ev('Object.defineProperty(navigator,"standalone",{configurable:true,value:true});');
+ await click('Notification options');await wait('!!document.getElementById("tops-notification-options-title")');
+ assert.doesNotMatch(await ev('document.querySelector("[aria-labelledby=tops-notification-options-title]").innerText'),/Installing now/);await click('Close');
+ assert.equal(await ev('downloadDeadlineICS("2026-02-30")'),false);assert.equal(await ev('window.syntheticDownloads'),0);
+ assert.equal(requests.filter(x=>/onesignal/i.test(x)).length,0);assert.deepEqual(errors,[]);
+ console.log('NOTIFICATION OPTIONS PASS: honest unavailable state, keyboard trap/Escape/return focus, missing-date recovery, exact calendar export focus, no automatic download or OneSignal request, mobile reflow.');
+}finally{if(chrome)await h.stopChrome(chrome);await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e);process.exitCode=1;});
