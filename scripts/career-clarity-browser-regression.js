@@ -1,0 +1,43 @@
+// Synthetic local journey tests. All nonlocal and function requests are blocked.
+const fs=require('fs'),path=require('path'),os=require('os'),http=require('http'),{spawn}=require('child_process'),assert=require('assert/strict');
+const root=process.cwd(),u=fs.readFileSync('scripts/privacy-network-regression.js','utf8');
+const h=new Function('fs','path','os','spawn',u.slice(u.indexOf('function findChrome()'),u.indexOf('const PROBE_SCRIPT ='))+'\nreturn {findChrome,launchChrome,stopChrome,evaluate,waitForExpression};')(fs,path,os,spawn);
+const server=http.createServer((req,res)=>{const p=path.join(root,req.url.split('?')[0]==='/'?'index.html':req.url.split('?')[0]);if(!fs.existsSync(p)||!fs.statSync(p).isFile()){res.writeHead(404);return res.end();}res.setHeader('Content-Type',/\.m?js$/.test(p)?'text/javascript':p.endsWith('.html')?'text/html':'application/octet-stream');res.end(fs.readFileSync(p));});
+(async()=>{let chrome;try{
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));const url='http://127.0.0.1:'+server.address().port;chrome=await h.launchChrome(h.findChrome(),12);const c=chrome.client,ev=x=>h.evaluate(c,x,true),wait=x=>h.waitForExpression(c,x,x,12000),errors=[],outside=[];
+ await c.send('Page.enable');await c.send('Runtime.enable');c.on('Runtime.exceptionThrown',e=>errors.push(e.exceptionDetails.text));await c.send('Fetch.enable',{patterns:[{urlPattern:'*'}]});c.on('Fetch.requestPaused',async e=>{const local=e.request.url.startsWith(url)&&!e.request.url.includes('/.netlify/');if(!local)outside.push(e.request.url);try{await c.send(local?'Fetch.continueRequest':'Fetch.failRequest',local?{requestId:e.requestId}:{requestId:e.requestId,errorReason:'BlockedByClient'});}catch{}});
+ const click=t=>ev('(()=>{const n=Array.from(document.querySelectorAll("button")).find(n=>n.textContent==='+JSON.stringify(t)+');if(!n)throw Error("Missing button: "+'+JSON.stringify(t)+');n.click();})()');
+ const input=(id,v)=>ev('(()=>{const n=document.getElementById('+JSON.stringify(id)+');Object.getOwnPropertyDescriptor(n.tagName==="TEXTAREA"?HTMLTextAreaElement.prototype:HTMLInputElement.prototype,"value").set.call(n,'+JSON.stringify(v)+');n.dispatchEvent(new Event("input",{bubbles:true}));})()');
+ const nav=async()=>{await c.send('Page.navigate',{url:url+'/?tool=pathway'});await wait('!!document.getElementById("tops-career-start-heading")');};
+ await nav();await ev('localStorage.clear();localStorage.setItem("tops_onboarded","1");localStorage.setItem("tops_user_status","guard");');await nav();
+ const start=async name=>{await ev('if(document.getElementById("tops-career-goals"))document.getElementById("tops-career-goals").open=true;Array.from(document.querySelectorAll("button")).find(n=>n.textContent.startsWith('+JSON.stringify(name)+')).click()');};
+ const check=id=>ev('document.getElementById('+JSON.stringify(id)+').click()');
+ assert.equal(await ev('document.getElementById("tops-career-start-heading").textContent'),'What do you want to do next?');
+ assert.ok(await ev('document.body.textContent.includes("Choose a goal. Add a resume or a few notes. Review one next step.")'));assert.equal(await ev('Array.from(document.querySelectorAll("#tops-career-goals button")).filter(n=>n.checkVisibility()).length'),3);
+ // Scoped visual contract: alternative goals, responsive grid and retained utility access.
+ for(const theme of ['professional','tactical']){
+  if(await ev('document.documentElement.dataset.topsTheme')!==theme)await ev('Array.from(document.querySelectorAll("button")).find(n=>(n.getAttribute("aria-label")||"").startsWith("Switch to")).click()');
+  for(const width of [320,375,1024]){
+   await c.send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
+   assert.ok(await ev('document.documentElement.scrollWidth<=innerWidth+1'));
+   const rects=await ev('Array.from(document.querySelectorAll(".tops-career-goal")).map(n=>({x:n.offsetLeft,y:n.offsetTop,h:n.getBoundingClientRect().height,text:n.textContent}))');
+   assert.equal(rects.length,3);assert.ok(rects.every(r=>r.h>=44));
+   assert.equal(rects[0].y===rects[1].y,width>760,'Desktop alternatives share a row; mobile stacks');
+   assert.ok(!await ev('!!document.querySelector(".tops-ask-launcher")'));
+   assert.ok(await ev('document.querySelector("#tops-suicide-support>summary").checkVisibility()'));
+   await ev('document.getElementById("tops-suicide-support").open=true');
+   assert.ok(await ev('Array.from(document.querySelectorAll("#tops-suicide-support a")).find(n=>n.getAttribute("href")==="tel:988").checkVisibility()'));
+   assert.ok(await ev('document.documentElement.scrollWidth<=innerWidth+1'));
+   await ev('document.getElementById("tops-suicide-support").open=false');
+  }
+ }
+ await start('Compare my experience with a job');assert.equal(await ev('document.getElementById("tops-career-progress").textContent'),'1 of 2: Add experience');assert.ok(await ev('document.querySelector("label[for=career-starter-posting]").textContent.includes("required")'));assert.ok(!await ev('Array.from(document.querySelectorAll("button")).some(n=>n.textContent==="Continue without a resume")'));
+ await input('tops-journey-role','SYNTHETIC Analyst');await input('career-starter-resume','Experience\nSYNTHETIC inventory reporting.');await input('career-starter-posting','Requirements\nSYNTHETIC inventory analysis.');await click('Home');await wait('!!document.getElementById("tops-loop-title")');await click('Career');await wait('!!document.getElementById("tops-career-continue-draft")');assert.equal(await ev('document.getElementById("tops-career-continue-draft").textContent'),'Continue my career draft');assert.ok(await ev('document.body.textContent.includes("Not saved.")'));assert.equal(await ev('document.getElementById("tops-career-goals").open'),false);assert.equal(await ev('Array.from(document.querySelectorAll("#tops-career-goals button")).filter(n=>n.checkVisibility()).length'),0);
+ const toggle=()=>ev('document.querySelector("#tops-career-goals > summary").focus()');await toggle();await c.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',unmodifiedText:'\r',windowsVirtualKeyCode:13});await c.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await wait('document.getElementById("tops-career-goals").open');assert.equal(await ev('Array.from(document.querySelectorAll("#tops-career-goals button")).filter(n=>n.checkVisibility()).length'),3);
+ for(const width of [320,375,1024]){await c.send('Emulation.setDeviceMetricsOverride',{width,height:812,deviceScaleFactor:1,mobile:true});assert.ok(await ev('document.documentElement.scrollWidth<=innerWidth+1'));assert.ok(await ev('document.getElementById("tops-career-continue-draft").getBoundingClientRect().height>=44'));}
+ await click('Continue my career draft');assert.ok(await ev('document.getElementById("career-starter-resume").value.includes("SYNTHETIC inventory")'));await click('Compare my experience with this job');assert.equal(await ev('document.getElementById("tops-career-progress").textContent'),'2 of 2: Review your next step');assert.ok(await ev('document.body.textContent.includes("return to it later from Career")'));
+ assert.ok(await ev('(()=>{const save=Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Save my career work");return getComputedStyle(save).backgroundColor!==getComputedStyle(document.getElementById("tops-career-ai-open")).backgroundColor})()'));
+ await click('Back to career choices');await start('Plan my next career move at work');assert.ok(await ev('Array.from(document.querySelectorAll("button")).some(n=>n.textContent==="Continue without a resume")'));assert.ok(await ev('document.getElementById("career-starter-resume").value.includes("SYNTHETIC inventory")'));await click('Continue without a resume');assert.ok(await ev('document.getElementById("tops-growth-prompt").textContent.includes("Guard or Reserve commitments")'));
+ assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);assert.deepEqual(errors,[]);assert.ok(!outside.some(s=>s.includes('/.netlify/')||s.includes('SYNTHETIC')));
+ console.log('CAREER CLARITY PASS: visible fresh goals, explicit two-step instructions, posting-only requirement, primary named return with not-saved lifetime, other goals collapsed and keyboard-accessible, source retained on goal change, optional no-resume path, secondary AI, 320/375/1024 reflow/targets; no storage/provider calls.');
+ }finally{if(chrome){await h.stopChrome(chrome);chrome.child.stderr?.destroy();}await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e.stack);process.exitCode=1});
