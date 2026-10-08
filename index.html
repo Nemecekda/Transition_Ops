@@ -2698,6 +2698,16 @@ const VSO_DIRECTORY = [{
   category: "MENTAL HEALTH & CRISIS",
   desc: "Immediate support for veterans in crisis or needing mental health assistance.",
   orgs: [{
+    name: "HOPELINE - Center for Suicide Awareness",
+    url: "https://www.centerforsuicideawareness.org/hopeline",
+    desc: "Text HOPELINE to 741741 in the U.S. for 24/7 emotional support. You do not have to be in crisis. Standard messaging rates may apply. Emergency services may be involved when needed for immediate safety.",
+    icon: "\uD83D\uDCAC"
+  }, {
+    name: "Safe Helpline",
+    url: "https://safehelpline.org/about",
+    desc: "24/7 sexual assault support for the military community, including Guard and Reserve members. Call 877-995-5247. Learn about support, reporting options and local responders without entering incident details in this app.",
+    icon: "\uD83D\uDEE1\uFE0F"
+  }, {
     name: "Veterans Crisis Line",
     url: "https://www.veteranscrisisline.net",
     desc: "Dial 988, press 1. Text 838255. Chat online. Available 24/7/365.",
@@ -6015,11 +6025,11 @@ function topsGapStarter(resume, posting) {
   }) };
 }
 function CareerGapStarter(props) {
-  var [resume, setResume] = useState(""), [posting, setPosting] = useState(""), [preview, setPreview] = useState(null), [message, setMessage] = useState(""), [busy, setBusy] = useState(false);
+  var [resume, setResume] = useState(props.initialResume || ""), [posting, setPosting] = useState(props.initialPosting || ""), [preview, setPreview] = useState(null), [message, setMessage] = useState(""), [busy, setBusy] = useState(false);
   var generation = useRef(0), controller = useRef(null), fileInput = useRef(null), baseline = useRef("");
   useEffect(function() { return function() { generation.current++; if (controller.current) controller.current.abort(); }; }, []);
   function cancel() { generation.current++; if (controller.current) controller.current.abort(); controller.current = null; setBusy(false); }
-  function clear() { cancel(); setResume(""); setPosting(""); setPreview(null); if (fileInput.current) fileInput.current.value = ""; setMessage("Source text and draft cleared. Your worksheet and saved notes are unchanged."); }
+  function clear() { cancel(); setResume(""); setPosting(""); if (props.onSourceChange) props.onSourceChange({ resume: "", posting: "" }); setPreview(null); if (fileInput.current) fileInput.current.value = ""; setMessage("Source text and draft cleared. Your worksheet and saved notes are unchanged."); }
   async function readFile(e) {
     var file = e.target.files && e.target.files[0]; e.target.value = ""; if (!file) return;
     cancel(); setPreview(null); var token = generation.current; controller.current = new AbortController(); setBusy(true); setMessage("Reading on this device...");
@@ -6030,11 +6040,11 @@ function CareerGapStarter(props) {
       else { var reader = await import("./vendor/dd214-reader.mjs"); if (token !== generation.current) return; var result = await reader.readCareerDocument(file, { signal: controller.current.signal }); text = result.pages.map(function(page) { return page.text; }).join("\n"); warnings = result.warnings || []; }
       if (token !== generation.current) return;
       if (!text || text.trim().length < 20 || text.length > 20000 || /\u0000|\uFFFD/.test(text)) throw Error("We could not read a usable text excerpt. Paste up to 20,000 characters from your resume instead.");
-      setResume(text); setMessage("Resume text ready. Check the extracted text, then add a job posting." + (warnings.length ? " Some document text could not be read reliably." : ""));
+      setResume(text); if (props.onSourceChange) props.onSourceChange({ resume: text, posting: posting }); setMessage("Resume text ready. Check the extracted text. Add a job posting if you have one, or draft from your experience alone." + (warnings.length ? " Some document text could not be read reliably." : ""));
     } catch (error) { if (token === generation.current) setMessage(error.message && !/^[A-Z_]+$/.test(error.message) ? error.message : "This file could not be read. Try an unlocked PDF of up to four pages, or paste resume text."); }
     finally { if (token === generation.current) { setBusy(false); controller.current = null; } }
   }
-  function build() { var draft = topsGapStarter(resume, posting); if (!draft) { setMessage("Add at least 20 characters from your resume. A job posting is optional; if included, use at least 20 characters. Each input can hold up to 20,000 characters."); return; } baseline.current = JSON.stringify(props.draft); setPreview(draft); setMessage("Draft ready. Review the source excerpts below. Nothing has been added or saved."); setTimeout(function() { var n = document.getElementById("career-starter-review"); if (n) n.focus(); }, 0); }
+  function build() { if (props.requirePosting && posting.trim().length < 20) { setMessage("Paste the job posting so we can compare its wording with your experience."); return; } var draft = topsGapStarter(resume, posting); if (!draft) { setMessage("Add at least 20 characters from your resume. A job posting is optional; if included, use at least 20 characters. Each input can hold up to 20,000 characters."); return; } if (props.onReviewed) { props.onReviewed(draft, { resume: resume, posting: posting }); return; } baseline.current = JSON.stringify(props.draft); setPreview(draft); setMessage("Draft ready. Review the source excerpts below. Nothing has been added or saved."); setTimeout(function() { var n = document.getElementById("career-starter-review"); if (n) n.focus(); }, 0); }
   function apply() {
     if (!preview) return;
     if (JSON.stringify(props.draft) !== baseline.current) { setPreview(null); setMessage("Your worksheet changed. Build the draft again so we can preserve those edits."); return; }
@@ -6045,24 +6055,26 @@ function CareerGapStarter(props) {
       return { draft: Object.assign({}, previous.draft, { rows: rows }), status: "Draft excerpts added to empty fields. Existing notes were kept. Review before saving on this browser." };
     });
     setPreview(null); setMessage("Draft applied to empty fields only. Review the worksheet below, then save if you want to keep it.");
+    if (props.onApplied) props.onApplied();
+    else requestAnimationFrame(function() { var summary = document.getElementById("career-gap-overview-heading"); if (summary) { summary.focus(); summary.scrollIntoView({ block: "center" }); } });
   }
   var field = props.field, button = props.button;
   return React.createElement("section", { "aria-labelledby": "career-starter-heading", style: { margin: "16px 0", padding: 14, border: "1px solid " + props.colors.border, borderRadius: 8 } },
-    React.createElement("h4", { id: "career-starter-heading" }, "Start from my resume"),
-    React.createElement("p", null, "Start with your experience. Add a job posting if you have one. We will organize your notes and suggest a next step. Review the excerpts before using them; this draft does not decide whether you qualify."),
-    React.createElement("p", { id: "career-starter-help" }, "File reading and this draft run on your device. These inputs are not sent for AI analysis or saved automatically. Remove contact details and sensitive information before applying excerpts. PDF or text, up to 5 MB; PDFs up to four pages. For Word files, copy and paste the text. Scanned PDFs can take up to three minutes and may contain reading errors."),
+    React.createElement(props.onApplied || props.onReviewed ? "h3" : "h4", { id: "career-starter-heading" }, props.onReviewed ? "Bring what you already have" : "Start from my resume"),
+    React.createElement("p", null, props.onReviewed ? "Add a resume or a few sentences about your work. We will organize a draft for you to review." : "Start with your experience. Add a job posting if you have one. We will organize your notes and suggest a next step. Review the excerpts before using them; this draft does not decide whether you qualify."),
+    props.onReviewed ? React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0" } }, "File types and privacy"), React.createElement("p", { id: "career-starter-help" }, "Reading the file and creating this first draft happen on your device. Optional AI help on the next step sends only excerpts you review and choose to submit. Nothing is saved automatically. Remove contact details and sensitive information before applying excerpts. PDF or text, up to 5 MB; PDFs up to four pages. For Word files, copy and paste the text. Scanned PDFs can take up to three minutes and may contain reading errors.")) : React.createElement("p", { id: "career-starter-help" }, "File reading and this draft run on your device. These inputs are not sent for AI analysis or saved automatically. Remove contact details and sensitive information before applying excerpts. PDF or text, up to 5 MB; PDFs up to four pages. For Word files, copy and paste the text. Scanned PDFs can take up to three minutes and may contain reading errors."),
     React.createElement("label", { htmlFor: "career-starter-file" }, "Choose a resume file (optional)"),
     React.createElement("input", { id: "career-starter-file", ref: fileInput, type: "file", accept: ".pdf,.txt", onChange: readFile, style: field, "aria-describedby": "career-starter-help" }),
-    [["resume", "Resume or experience text", resume, setResume], ["posting", "Job posting text (optional)", posting, setPosting]].map(function(item) { return React.createElement("div", { key: item[0], style: { marginTop: 12 } }, React.createElement("label", { htmlFor: "career-starter-" + item[0] }, item[1]), React.createElement("textarea", { id: "career-starter-" + item[0], rows: 4, maxLength: 20000, value: item[2], disabled: busy, style: field, onChange: function(e) { item[3](e.target.value); setPreview(null); setMessage(""); } })); }),
+    [["resume", "Resume or experience text", resume, setResume], ["posting", "Job posting text (optional)", posting, setPosting]].map(function(item) { return React.createElement(props.onReviewed && item[0] === "posting" && !props.requirePosting ? "details" : "div", { key: item[0], style: { marginTop: 12 } }, props.onReviewed && item[0] === "posting" && !props.requirePosting && React.createElement("summary", { style: { minHeight: 44, padding: "10px 0" } }, "Add a job posting (optional)"), React.createElement("label", { htmlFor: "career-starter-" + item[0] }, props.requirePosting && item[0] === "posting" ? "Job posting text" : item[1]), React.createElement("textarea", { id: "career-starter-" + item[0], rows: 4, maxLength: 20000, value: item[2], disabled: busy, style: field, onChange: function(e) { item[3](e.target.value); if (props.onSourceChange) props.onSourceChange({ resume: item[0] === "resume" ? e.target.value : resume, posting: item[0] === "posting" ? e.target.value : posting }); setPreview(null); setMessage(""); } })); }),
     React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 } },
-      React.createElement("button", { type: "button", style: button, disabled: busy, onClick: build }, "Draft my comparison"),
+      React.createElement("button", { type: "button", style: button, disabled: busy, onClick: build }, props.onReviewed ? (props.requirePosting ? "Compare my experience with this job" : "Help me find my next move") : "Draft my comparison"),
       busy && React.createElement("button", { type: "button", style: button, onClick: function() { cancel(); setMessage("Reading canceled. Your worksheet is unchanged."); } }, "Cancel reading"),
       React.createElement("button", { type: "button", style: button, onClick: clear }, "Clear source text")),
-    preview && React.createElement("div", null, React.createElement("h4", { id: "career-starter-review", tabIndex: -1 }, "Review your starting draft"),
+    preview && React.createElement("div", null, React.createElement(props.onApplied ? "h3" : "h4", { id: "career-starter-review", tabIndex: -1 }, "Review your starting draft"),
       !posting.trim() && React.createElement("p", { role: "status" }, "Your experience is organized below. Next, find one posting for a role you want to explore. Add it above when ready; we will not invent job requirements."),
       React.createElement("p", null, "Categories are approximate. Missing text is not a missing qualification. Only empty worksheet fields will be filled; your existing notes stay in place."),
       preview.omitted > 0 && React.createElement("p", null, "Some lines were omitted because of contact details, length or format. Check the original sources for anything important."),
-      preview.rows.map(function(row, i) { return React.createElement("article", { key: i }, React.createElement("h5", null, TOPS_GAP_ROWS[i]), React.createElement("p", { style: { whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, "From your resume: " + (row.have || "No excerpt identified.")), React.createElement("p", { style: { whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, "From the posting: " + (row.requirement || "No excerpt identified.")), React.createElement("p", null, "Suggested next step: " + row.next)); }),
+      preview.rows.map(function(row, i) { return React.createElement("article", { key: i }, React.createElement(props.onApplied ? "h4" : "h5", null, TOPS_GAP_ROWS[i]), React.createElement("p", { style: { whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, "From your resume: " + (row.have || "No excerpt identified.")), React.createElement("p", { style: { whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, "From the posting: " + (row.requirement || "No excerpt identified.")), React.createElement("p", null, "Suggested next step: " + row.next)); }),
       React.createElement("button", { type: "button", style: button, onClick: apply }, "Use draft in empty fields")),
     React.createElement("p", { role: "status", "aria-live": "polite", "aria-atomic": "true" }, message));
 }
@@ -6087,6 +6099,15 @@ function CareerGapWorksheet(props) {
   }
   function editPrep(key, value) {
     props.setState(function(previous) { return { draft: Object.assign({}, previous.draft, { prep: Object.assign({}, previous.draft.prep, { [key]: value }) }), status: window.__IS_IFRAME ? "Unsaved changes. Embedded view keeps this worksheet in this open page only." : "Unsaved changes. Choose Save on this browser to replace your saved worksheet." }; });
+  }
+  function saveWorksheet(returnHome) {
+    var ok = topsSaveGap(props.state.draft);
+    props.setState(function(previous) { return Object.assign({}, previous, { status: ok ? "Saved on this browser. Later edits need another save." : "Not saved. Browser storage is unavailable; keep this page open." }); });
+    if (ok && returnHome && props.backHome) props.backHome();
+  }
+  function reviewRow(i) {
+    var input = document.getElementById("career-gap-" + i + "-next");
+    if (input) { var details = input.closest("details"); if (details) details.open = true; input.focus(); input.scrollIntoView({ block: "center" }); }
   }
   if (showSummary) {
     var sections = [];
@@ -6120,6 +6141,15 @@ function CareerGapWorksheet(props) {
     React.createElement("label", { htmlFor: "career-gap-target", style: { display: "block", marginBottom: 6 } }, "Target civilian occupation"),
     React.createElement("input", { id: "career-gap-target", type: "text", maxLength: 160, autoComplete: "off", "aria-describedby": "career-gap-help", value: props.state.draft.target, onChange: function(e) { edit(null, "target", e.target.value); }, style: fieldStyle }),
     React.createElement(CareerGapStarter, { draft: props.state.draft, setState: props.setState, colors: C, field: fieldStyle, button: buttonStyle }),
+    props.state.draft.rows.some(function(row) { return row.have.trim() || row.requirement.trim() || row.next.trim(); }) && React.createElement("section", { "aria-labelledby": "career-gap-overview-heading", style: { margin: "16px 0", padding: 14, border: "1px solid " + C.border, borderRadius: 8 } },
+      React.createElement("h4", { id: "career-gap-overview-heading", tabIndex: -1 }, "Your comparison at a glance"),
+      React.createElement("p", null, "Review these notes, then save when ready. Missing information does not mean you lack a qualification."),
+      props.state.draft.rows.map(function(row, i) { return (row.have.trim() || row.requirement.trim() || row.next.trim()) && React.createElement("article", { key: i, style: { marginBottom: 16, overflowWrap: "anywhere" } },
+        React.createElement("h5", null, TOPS_GAP_ROWS[i]),
+        React.createElement("dl", null, [["Your experience", row.have || "No experience entered yet."], ["Role requirements", row.requirement || "No requirements entered yet."], ["Next step to review", row.next || "Choose one question or action to explore."]].map(function(item) { return React.createElement("div", { key: item[0], style: { marginBottom: 10 } }, React.createElement("dt", { style: { fontWeight: 700 } }, item[0]), React.createElement("dd", { style: { margin: "4px 0", whiteSpace: "pre-wrap", lineHeight: 1.6 } }, item[1])); })),
+        React.createElement("button", { type: "button", style: buttonStyle, onClick: function() { reviewRow(i); } }, "Edit " + TOPS_GAP_ROWS[i].toLowerCase())); }),
+      props.backHome && React.createElement("button", { type: "button", style: buttonStyle, disabled: window.__IS_IFRAME, onClick: function() { saveWorksheet(true); } }, "Save worksheet and return Home"),
+      React.createElement("p", null, props.state.status)),
     React.createElement("details", { id: "career-prep-details", style: { marginTop: 14, marginBottom: 14 } },
       React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.goldBright, cursor: "pointer", fontWeight: 700 } }, "Prepare for a conversation"),
       conversation && React.createElement("section", { "aria-labelledby": "career-service-prep-heading", style: { padding: 12, border: "1px solid " + C.border, borderRadius: 8, marginBottom: 12 } },
@@ -6141,7 +6171,7 @@ function CareerGapWorksheet(props) {
       }))); }),
     React.createElement("p", { style: { lineHeight: 1.6 } }, "Saving keeps this worksheet on this browser, including on shared devices. It is separate from your Resume Drafter and does not verify qualifications or official TAP completion."),
     React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 10 } },
-      React.createElement("button", { type: "button", disabled: window.__IS_IFRAME, style: buttonStyle, onClick: function() { var ok = topsSaveGap(props.state.draft); props.setState(function(p) { return Object.assign({}, p, { status: ok ? "Saved on this browser. Later edits need another save." : "Not saved. Browser storage is unavailable; keep this page open." }); }); } }, "Save on this browser"),
+      React.createElement("button", { type: "button", disabled: window.__IS_IFRAME, style: buttonStyle, onClick: function() { saveWorksheet(false); } }, "Save on this browser"),
       React.createElement("button", { type: "button", style: buttonStyle, onClick: function() { var ok = topsClearGap(); props.setState({ draft: topsEmptyGap(), status: ok ? (window.__IS_IFRAME ? "Worksheet cleared from this page." : "Worksheet cleared from this page and this browser.") : "Cleared from this page, but the saved copy could not be removed. Browser storage is unavailable." }); } }, "Clear worksheet")),
     React.createElement("p", null, React.createElement("a", { href: "https://www.tapevents.mil/Assets/ResourceContent/TAP/Gap_Analysis_fillable.pdf", target: "_blank", rel: "noopener noreferrer", style: { color: C.goldBright } }, "Official TAP gap analysis worksheet (PDF)")),
     React.createElement("p", { role: "status", "aria-live": "polite", "aria-atomic": "true", style: { color: C.textPrimary, lineHeight: 1.6, marginBottom: 0 } }, props.state.status));
@@ -6662,6 +6692,455 @@ function CareerAction(props) {
       React.createElement("button", { type: "button", style: button, onClick: function() { if (topsClearAction()) props.setState({ draft: topsEmptyAction(), status: "Career step cleared from this page" + (window.__IS_IFRAME ? "." : " and this browser.") }); else props.setState(Object.assign({}, props.state, { status: "Saved career step could not be cleared. Your step is unchanged; try again." })); } }, "Confirm clear career step")));
 }
 // CAREER_ACTION_END
+// Guided career entry reuses the existing plan keys; no account or AI call.
+const TOPS_CAREER_DIRECTIONS = [
+  { id: "advance", path: "skills", title: "Advance where I work", why: "Build on your current civilian role instead of starting over.", step: "Choose one responsibility I want to grow into and ask my supervisor what evidence would demonstrate readiness." },
+  { id: "training", path: "skills", title: "Use skills from recent training", why: "Connect a service or civilian learning experience to work you want to do.", step: "Choose one example from my recent training and discuss where I could use it in civilian work." },
+  { id: "change", path: "change", title: "Explore a different career", why: "Explore work that interests you, whether you are serving or already a veteran.", step: "Find one current job posting for a role that interests me and compare one requirement with my experience." },
+  { id: "leave", path: "transition", title: "Prepare to leave service", why: "Review your next chapter, including work, benefits and people who can help.", step: "Review my transition readiness and choose one unfinished task to discuss with a transition adviser." }
+];
+function topsSaveCareerSession(guide, action, gap) {
+  var values = [topsValidateGuide(guide), topsValidateAction(action), topsValidateGap(gap)];
+  if (window.__IS_IFRAME || values.some(function(v) { return !v; }) || !topsActionMatches(action, guide)) return { ok: false, reason: "invalid" };
+  var keys = [TOPS_GUIDE_KEY, TOPS_ACTION_KEY, TOPS_GAP_KEY], before;
+  try { before = keys.map(function(key) { return localStorage.getItem(key); }); } catch (e) { return { ok: false, reason: "read" }; }
+  try {
+    values.forEach(function(value, i) { var raw = JSON.stringify(value); localStorage.setItem(keys[i], raw); if (localStorage.getItem(keys[i]) !== raw) throw Error("write"); });
+    return { ok: true };
+  } catch (e) {
+    keys.forEach(function(key, i) { try { if (before[i] === null) localStorage.removeItem(key); else localStorage.setItem(key, before[i]); } catch (ignored) {} });
+    var restored = false;
+    try { restored = keys.every(function(key, i) { return localStorage.getItem(key) === before[i]; }); } catch (ignored) {}
+    return { ok: false, reason: restored ? "restored" : "partial" };
+  }
+}
+function SuicideSupport(props) {
+  var C = props.colors;
+  var link = { display: "inline-flex", alignItems: "center", minHeight: 44, minWidth: 44, boxSizing: "border-box", padding: "10px 14px", margin: "4px 8px 4px 0", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgElevated, overflowWrap: "anywhere" };
+  return React.createElement("details", { id: "tops-suicide-support", style: { marginBottom: 16, border: "1px solid " + C.border, borderRadius: 10, background: C.bgCard, color: C.textBody, padding: "0 16px", overflowWrap: "anywhere" } },
+    React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", color: C.textPrimary, fontWeight: 700 } }, "Suicide prevention & support"),
+    React.createElement("h2", { style: { color: C.textPrimary } }, "You don't have to handle this alone"),
+    React.createElement("p", null, "Get support for yourself or someone you care about. You do not need to complete a profile or explain your situation in this app."),
+    React.createElement("h3", null, "Talk with someone now"),
+    React.createElement("p", null, "Veterans Crisis Line is available 24/7 for veterans, service members, Guard and Reserve members, and those who support them. VA enrollment is not required."),
+    React.createElement("div", null,
+      React.createElement("a", { href: "tel:988", style: Object.assign({}, link, { fontWeight: 700, borderColor: C.gold }) }, "Call 988, then press 1"),
+      React.createElement("a", { href: "sms:838255", style: link }, "Text 838255"),
+      React.createElement("a", { href: "https://www.veteranscrisisline.net/", target: "_blank", rel: "noopener noreferrer", style: link }, "Chat online or find overseas numbers")),
+    React.createElement("p", null, "Call and text numbers above are U.S. routes. For immediate physical danger, call 911 in the U.S. or your local emergency number."),
+    React.createElement("h3", null, "Having a hard day? You can reach out before a crisis"),
+    React.createElement("p", null, "HOPELINE offers 24/7 emotional support in the U.S. Text the word HOPELINE to 741741. Standard messaging rates may apply."),
+    React.createElement("a", { href: "sms:741741", style: link }, "Open text to 741741; type HOPELINE"),
+    React.createElement("a", { href: "https://www.centerforsuicideawareness.org/hopeline", target: "_blank", rel: "noopener noreferrer", style: link }, "About HOPELINE and privacy"),
+    React.createElement("details", null,
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", fontWeight: 700 } }, "Worried about someone else?"),
+      React.createElement("p", null, "You can contact the Veterans Crisis Line about someone you are concerned about. NIMH recommends these steps:"),
+      React.createElement("ol", { style: { paddingLeft: 24, lineHeight: 1.7 } },
+        React.createElement("li", null, "Ask directly whether they are thinking about suicide."),
+        React.createElement("li", null, "Listen without judgment and be present."),
+        React.createElement("li", null, "Help reduce access to dangerous items or places when you can do so safely."),
+        React.createElement("li", null, "Help them connect with a crisis responder, trusted person or mental health professional."),
+        React.createElement("li", null, "Check back and stay connected.")),
+      React.createElement("a", { href: "https://www.nimh.nih.gov/health/publications/5-action-steps-to-help-someone-having-thoughts-of-suicide", target: "_blank", rel: "noopener noreferrer", style: link }, "NIMH: how to help someone")),
+    React.createElement("p", { style: { fontSize: 14 } }, "These services are operated outside Transition OPS. Opening a link does not attach your plan or resume. Their privacy rules apply; emergency intervention may occur when needed for immediate safety. This app does not monitor emergencies."));
+}
+function HumanSupportChoices(props) {
+  var C = props.colors, link = { display: "inline-flex", alignItems: "center", minHeight: 44, padding: "8px 12px", margin: "4px 8px 4px 0", color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 6, overflowWrap: "anywhere" };
+  return React.createElement("details", { id: props.id, style: { margin: "14px 0", color: C.textBody } },
+    React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", fontWeight: 700 } }, "Talk with a person"),
+    React.createElement("h2", null, "Choose a person or service"),
+    React.createElement("p", null, "Choose the kind of help you need. These links open another service; nothing in your plan is sent with them."),
+    React.createElement("h3", null, "Career or community connection"),
+    React.createElement("p", null, "Ask a trusted peer, supervisor or adviser to walk through your next step with you. You decide which notes to share."),
+    React.createElement("a", { href: "https://www.careeronestop.org/LocalHelp/AmericanJobCenters/find-american-job-centers.aspx", target: "_blank", rel: "noopener noreferrer", style: link }, "Find an American Job Center"),
+    React.createElement("h3", null, "Support after sexual assault"),
+    React.createElement("p", null, "Safe Helpline provides 24/7 support for the military community, including Guard and Reserve members. Ask about support and reporting options; you do not need to describe the incident in this app."),
+    React.createElement("a", { href: "tel:+18779955247", style: link }, "Call Safe Helpline: 877-995-5247"),
+    React.createElement("a", { href: "https://safehelpline.org/about", target: "_blank", rel: "noopener noreferrer", style: link }, "Safe Helpline and local responders"));
+}
+function topsCareerActionKit(choice, target, gap, profile) {
+  var role = String(target || "").trim();
+  var prompts = {
+    advance: "I'd like to grow in my current job. What is one responsibility I could take on, and what would show I am ready?",
+    training: "I recently completed training and want to put it to use at work. Could we identify one task where I can demonstrate what I learned?",
+    change: "I'm exploring " + (role ? 'the role or field "' + role + '"' : "a different career") + ". What does a typical day involve, and which requirement should I investigate first?",
+    leave: "I'm preparing to leave service. Could we review one unfinished transition task and agree on who can help me complete it?"
+  };
+  var outcomes = {
+    advance: "You and your supervisor have identified one responsibility and what readiness would look like.",
+    training: "You have chosen one real example from training and one task where you could use it.",
+    change: "You have one current posting and one requirement to compare with your experience.",
+    leave: "You know the next unfinished task, who can help and when to follow up."
+  };
+  return { opener: prompts[choice.id] || "What is one practical step I can take toward my next career goal?", outcome: outcomes[choice.id] || "You have agreed on one next step.", service: profile === "guard" ? "I also serve in the Guard or Reserve. Can we plan this around my service commitments?" : "" };
+}
+function topsJobSearchLinks(role, area) {
+  role = String(role || ""); area = String(area || "");
+  if (role.length > 120 || area.length > 80 || /[\u0000-\u001f\u007f]/.test(role + area)) return null;
+  role = role.trim(); area = area.trim();
+  if (!role || !area) return null;
+  return {
+    linkedin: "https://www.linkedin.com/jobs/search/?" + new URLSearchParams({ keywords: role, location: area }).toString(),
+    federal: "https://www.usajobs.gov/Search/Results?" + new URLSearchParams({ k: role, l: area }).toString()
+  };
+}
+function CareerJobSearch(props) {
+  var C = props.colors, state = props.state, links = topsJobSearchLinks(state.keyword, state.state);
+  var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 12, font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 8, margin: "6px 0 16px" };
+  var link = { display: "block", minHeight: 44, boxSizing: "border-box", padding: "12px 16px", marginBottom: 10, color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, textDecoration: "underline" };
+  function change(key, value) { props.setState(function(previous) { var next = Object.assign({}, previous); next[key] = value; return next; }); }
+  return React.createElement("section", { "aria-labelledby": "tops-job-search-heading" },
+    React.createElement("h3", { id: "tops-job-search-heading" }, "Find openings for your next move"),
+    React.createElement("p", null, "Start with your career goal, then choose where you want to work. You can change either before opening a search."),
+    React.createElement("label", { htmlFor: "tops-job-role" }, "Role or keywords"),
+    React.createElement("input", { id: "tops-job-role", value: state.keyword, maxLength: 120, placeholder: "For example, logistics coordinator", onChange: function(e) { change("keyword", e.target.value); }, style: field }),
+    React.createElement("label", { htmlFor: "tops-job-area" }, "City and state, or ZIP code"),
+    React.createElement("input", { id: "tops-job-area", value: state.state, maxLength: 80, placeholder: "For example, Milwaukee, WI", onChange: function(e) { change("state", e.target.value); }, style: field }),
+    React.createElement("p", { id: "tops-job-sharing" }, "Opening a search sends only the role and area shown here to that job site, not your resume or saved plan. Each site opens in a new tab and has its own privacy practices."),
+    links ? React.createElement("div", null,
+      React.createElement("p", { role: "status" }, "Search for " + state.keyword.trim() + " in " + state.state.trim()),
+      React.createElement("a", { href: links.linkedin, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing", style: link }, "Search LinkedIn jobs (new tab)"),
+      React.createElement("a", { href: links.federal, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing", style: link }, "Search federal jobs on USAJOBS (new tab)")) : React.createElement("p", { role: "status" }, "Add a role and area to prepare your searches."),
+    React.createElement("p", null, "Looking for remote or hybrid work? Set that filter on the job site. Check each posting's duties, requirements and work location before deciding whether it fits."),
+    React.createElement("a", { href: "https://www.careeronestop.org/Veterans/JobSearch/FindOpenings/state-job-banks.aspx", target: "_blank", rel: "noopener noreferrer", style: link }, "Browse official state job banks (new tab)"),
+    React.createElement("p", { style: { color: C.textSecondary } }, "These are external searches, not verified matches. Listings are not loaded into Transition OPS. Your search edits stay in this visit and do not replace your saved career goal."));
+}
+function CareerIdeas(props) {
+  var C = props.colors, [query, setQuery] = useState("");
+  var ideas = query.trim() ? CAREER_TARGETS.filter(function(career) { return (career.label + " " + career.category).toLowerCase().includes(query.trim().toLowerCase()); }) : [];
+  return React.createElement("details", { id: "tops-career-ideas", style: { margin: "16px 0", padding: "0 14px", border: "1px solid " + C.border, borderRadius: 8 } },
+    React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", fontWeight: 700 } }, "Not sure which role? Explore career ideas"),
+    React.createElement("p", null, "Start with work that interests you. Your next career does not have to match your military specialty or your last job."),
+    React.createElement("label", { htmlFor: "tops-career-interest" }, "Search example roles or fields"),
+    React.createElement("input", { id: "tops-career-interest", value: query, maxLength: 120, placeholder: "Try technology, healthcare or project", onChange: function(e) { setQuery(e.target.value); }, style: { width: "100%", boxSizing: "border-box", padding: 12, minHeight: 44, font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 8 } }),
+    !query.trim() && React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 } }, ["Technology", "Human Resources", "Healthcare", "Operations", "Skilled Trades", "Business"].map(function(field) { return React.createElement("button", { key: field, type: "button", onClick: function() { setQuery(field); requestAnimationFrame(function() { var input = document.getElementById("tops-career-interest"); if (input) input.focus(); }); }, style: { minHeight: 44, padding: "10px 14px", font: "inherit", color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8 } }, field); })),
+    React.createElement("p", { role: "status" }, !query.trim() ? "Choose a field or search above. No military category is required." : ideas.length ? "Choose an example to use in your next step. This does not save or replace your plan." : "No example found. You can enter any role under Make this step fit me after choosing a direction."),
+    React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 } }, ideas.map(function(career) { return React.createElement("button", { key: career.id, type: "button", onClick: function() { props.choose(career.label); }, style: { minHeight: 44, maxWidth: "100%", overflowWrap: "anywhere", padding: "10px 14px", font: "inherit", textAlign: "left", color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8 } }, career.label); })),
+    React.createElement("p", null, "These are selected examples, not a skills assessment or a complete list of careers. You decide what to explore."));
+}
+function topsSuggestedCareerStep(choice, role) {
+  role = String(role || "").trim();
+  if (choice.id === "change" && role) return "Explore " + role + " jobs. Pick one to review.";
+  return choice.step;
+}
+function topsCareerEvidenceIdeas(rows) {
+  var lines = rows.map(function(row) { return row.have; }).join("\n").split("\n");
+  var rules = [[/\b(recruit|recruiting|recruitment|human resources|onboarding|payroll)\b/i, "Human Resources"], [/\b(logistics|inventory|supply|operations)\b/i, "Operations"], [/\b(software|network|cyber|data|computer|IT support)\b/i, "Technology"], [/\b(patient|nursing|healthcare|clinical)\b/i, "Healthcare"], [/\b(electrical|welding|maintenance|mechanic)\b/i, "Skilled Trades"], [/\b(project|budget|management)\b/i, "Business / Management"]];
+  var results = [];
+  rules.forEach(function(rule) { var excerpt = lines.find(function(line) { return rule[0].test(line); }); if (!excerpt) return; CAREER_TARGETS.filter(function(career) { return career.category === rule[1]; }).slice(0, 2).forEach(function(career) { results.push({ role: career.label, excerpt: excerpt }); }); });
+  return results.slice(0, 3);
+}
+// Career AI reuses the existing bounded Navigator analysis. Posting text is never evidence.
+function CareerExperienceAssistant(props) {
+  var [exportNote, setExportNote] = useState(null);
+  var C = props.colors, field = props.field, button = props.button;
+  var initial = props.rows.map(function(row) { return row.have; }).join("\n").split(/\r?\n/).map(function(text) { return text.trim(); }).filter(Boolean);
+  var eligible = initial.filter(function(text) { return text.length <= 400; });
+  var [open, setOpen] = useState(false), [entries, setEntries] = useState(eligible.slice(0, 6)), [consent, setConsent] = useState(false), [busy, setBusy] = useState(false), [analysis, setAnalysis] = useState(null), [at, setAt] = useState(0), [editing, setEditing] = useState(false), [wording, setWording] = useState(""), [example, setExample] = useState(""), [message, setMessage] = useState("");
+  var job = useRef(null), generation = useRef(0), busyRef = useRef(false), consumed = useRef(false);
+  useEffect(function() { consumed.current = false; }, [at]);
+  var omitted = initial.length - Math.min(eligible.length, 6);
+  function cancel() { generation.current++; if (job.current) job.current.abort(); job.current = null; busyRef.current = false; setBusy(false); }
+  useEffect(function() { return function() { generation.current++; if (job.current) job.current.abort(); }; }, []);
+  useEffect(function() { if (open) { var heading = document.getElementById("tops-career-ai-heading"); if (heading) heading.focus(); } }, [open, analysis, at]);
+  function close() { cancel(); setOpen(false); setAnalysis(null); setConsent(false); setExportNote(null); setMessage(""); props.onActive(false); requestAnimationFrame(function() { var trigger = document.getElementById("tops-career-ai-open"); if (trigger) trigger.focus(); }); }
+  function reset() { cancel(); setAnalysis(null); setConsent(false); setEditing(false); setExportNote(null); setMessage(""); }
+  async function send() {
+    if (busyRef.current || !consent) return;
+    var evidence = topsCareerEvidence(entries.filter(function(text) { return text.trim(); }).map(function(text) { return { text: text, page: 1, method: "text", selected: true }; }), props.target);
+    if (!evidence) { setMessage("Use up to six short experience excerpts and a plain career goal. Remove personal, medical or discharge details, or continue without AI."); return; }
+    var counter; try { var day = new Date().toISOString().slice(0, 10); counter = JSON.parse(window.__safeGet("tops_nav_pilot") || "{}"); if (counter.d !== day) counter = { d: day, n: 0 }; if (counter.n >= 20) { setMessage("Today's Navigator request limit has been reached. Continue with your source notes without AI."); return; } counter.n++; window.__safeSet("tops_nav_pilot", JSON.stringify(counter)); } catch (e) {}
+    cancel(); setExportNote(null); var token = generation.current, controller = new AbortController(); job.current = controller; busyRef.current = true; setBusy(true); setMessage("Finding possible transferable experience...");
+    var timeout = setTimeout(function() { controller.abort(); }, 35000);
+    try {
+      var response = await fetch("/.netlify/functions/navigator", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ careerEvidence: evidence }), signal: controller.signal });
+      var data = await response.json(); if (token !== generation.current) return;
+      var checked = response.ok && topsCheckedCareerAnalysis(data.careerAnalysis, evidence);
+      if (!checked) { setConsent(false); setMessage("AI help is unavailable or its response could not be checked. Your experience is still here. Continue without AI, or review and try again."); return; }
+      setAnalysis({ result: checked, evidence: evidence }); setAt(0); setEditing(false); consumed.current = false; setMessage(data.dryRun ? "Preview response. No model call was made." : "These are possibilities, not verified skills. You decide what represents your work.");
+    } catch (e) { if (token === generation.current) { setConsent(false); setMessage("AI help stopped or is unavailable. Your experience is still here. Continue without AI, or review and try again."); } }
+    finally { clearTimeout(timeout); if (token === generation.current) { job.current = null; busyRef.current = false; setBusy(false); } }
+  }
+  function next() { setAt(at + 1); setEditing(false); setWording(""); setExample(""); setExportNote(null); }
+  var candidate = analysis && analysis.result.candidates[at];
+  return React.createElement("section", { style: { margin: "12px 0" }, "aria-label": "Optional AI experience help" },
+    !open ? React.createElement("button", { id: "tops-career-ai-open", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { setOpen(true); props.onActive(true); } }, "Help me describe my experience with AI") : React.createElement("div", null,
+      React.createElement("h3", { id: "tops-career-ai-heading", tabIndex: -1 }, !analysis ? "Review what AI will read" : candidate ? "Does this sound like your work?" : "Your experience review is complete"),
+      !analysis && React.createElement("div", null,
+        React.createElement("p", null, "We filled in short excerpts from your experience. Correct or remove anything you do not want to send."),
+        omitted > 0 && React.createElement("p", null, omitted + " source lines were left out because of length or the six-excerpt limit. Check that the most useful experience is included."),
+        (entries.length ? entries : [""]).map(function(text, i) { return React.createElement("div", { key: i }, React.createElement("label", { htmlFor: "tops-career-ai-source-" + i }, "Experience excerpt " + (i + 1)), React.createElement("textarea", { id: "tops-career-ai-source-" + i, rows: 2, maxLength: 400, value: text, disabled: busy, style: field, onChange: function(e) { var value = e.target.value; setEntries(function(previous) { var updated = previous.slice(); updated[i] = value; return updated; }); setConsent(false); } })); }),
+        React.createElement("p", null, "Career goal sent with these excerpts: " + (props.target || "Exploring possibilities")),
+        React.createElement("p", { id: "tops-career-ai-notice" }, "Send to AI sends these excerpts and your career goal through Transition OPS and Netlify to OpenAI. It does not send the full file or job posting. Remove names, contact details and other sensitive information; automatic checks can miss them. Provider retention may apply. No suggestion is saved automatically."),
+        React.createElement("label", { style: { display: "flex", gap: 10, minHeight: 44, alignItems: "center" } }, React.createElement("input", { id: "tops-career-ai-consent", type: "checkbox", checked: consent, disabled: busy, "aria-describedby": "tops-career-ai-notice", onChange: function(e) { setConsent(e.target.checked); }, style: { width: 24, height: 24 } }), "I reviewed this text and agree to send it for AI help."),
+        React.createElement("button", { type: "button", disabled: !consent || busy, style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: send }, busy ? "Working..." : "Send to AI")),
+      candidate && React.createElement("div", null,
+        React.createElement("p", null, "Possibility " + (at + 1) + " of " + analysis.result.candidates.length), React.createElement("p", { style: { fontSize: 20, fontWeight: 700 } }, candidate.skill), React.createElement("p", null, candidate.question),
+        React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0" } }, "Why was this suggested?"), analysis.evidence.excerpts.filter(function(row) { return candidate.evidenceIds.includes(row.id); }).map(function(row) { return React.createElement("p", { key: row.id, style: { overflowWrap: "anywhere" } }, "Your reviewed excerpt " + row.id + ": " + row.text); })),
+        !editing && React.createElement("div", null, React.createElement("button", { type: "button", style: button, onClick: function() { setExportNote(null); setWording(candidate.skill); var quote = analysis.evidence.excerpts.find(function(row) { return candidate.evidenceIds.includes(row.id); }).text; setExample(quote.length <= 180 ? quote : ""); setEditing(true); setMessage(""); } }, "Yes, or let me adjust it"), React.createElement("button", { type: "button", style: button, onClick: next }, "Not my experience")),
+        editing && React.createElement("div", null,
+          React.createElement("label", { htmlFor: "tops-career-ai-wording" }, "How I would describe it"), React.createElement("input", { id: "tops-career-ai-wording", value: wording, maxLength: 180, style: field, onChange: function(e) { setWording(e.target.value); setExportNote(null); } }),
+          React.createElement("label", { htmlFor: "tops-career-ai-example" }, "An example I can support"), React.createElement("textarea", { id: "tops-career-ai-example", value: example, rows: 2, maxLength: 180, style: field, onChange: function(e) { setExample(e.target.value); setExportNote(null); } }),
+          React.createElement("p", null, "Check the example describes something you actually did. Edit it if needed. This adds a reviewed draft note, not a verified qualification."),
+          React.createElement("button", { type: "button", style: button, onClick: function() { if (consumed.current) return; var reviewed = topsReviewedExperience(candidate, analysis.evidence, "yes", wording, example); if (!reviewed) { setMessage("Add wording and one example you can support, without sensitive details."); return; } if (!props.onAccept(reviewed, candidate.aspect)) { setExportNote(reviewed); setMessage("This note will not fit alongside your existing notes, or your draft changed. Nothing was replaced. You can download this reviewed wording separately, then return to your draft."); return; } consumed.current = true; next(); setMessage("Reviewed note added to this draft. Choose Save my career work later to keep it on this browser."); } }, "This represents my work - add to draft"), React.createElement("button", { type: "button", style: button, onClick: next }, "Skip this suggestion"),
+          exportNote && React.createElement("button", { type: "button", style: button, onClick: function() { var text = "My reviewed career wording\n" + exportNote.wording + "\n\nMy supporting example\n" + exportNote.example + "\n\nMember-reviewed draft notes, not verified qualifications. Not added to the career worksheet. Review before sharing."; var url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" })), link = document.createElement("a"); link.href = url; link.download = "my-reviewed-career-wording.txt"; link.click(); setTimeout(function() { URL.revokeObjectURL(url); }, 1000); setMessage("Reviewed wording downloaded separately. Your existing career notes are unchanged."); } }, "Download reviewed wording"))),
+      analysis && !candidate && React.createElement("p", null, analysis.result.candidates.length ? "Continue with the experience you chose to keep. You can still edit your source notes." : "No usable suggestions were found. You can continue with your source notes."),
+      React.createElement("p", { id: "tops-career-ai-status", role: "status", "aria-live": "polite" }, message),
+      busy && React.createElement("button", { type: "button", style: button, onClick: function() { cancel(); setConsent(false); setMessage("Stopped waiting for AI. A submitted request may already have been processed. No suggestion was added."); } }, "Cancel AI help"),
+      React.createElement("button", { type: "button", style: button, onClick: close }, analysis ? "Continue to my next step" : "Continue without AI"),
+      analysis && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0" } }, "Change the text sent to AI"), React.createElement("button", { type: "button", style: button, onClick: reset }, "Review excerpts again"))));
+}
+const TOPS_CAREER_LEARNING = [
+  { id: "o2o-hr", name: "O2O: HR certification preparation", url: "https://ivmf.syracuse.edu/programs/career-training/learning-pathways/", topic: "human resources knowledge", roles: [], categories: ["Human Resources"], skills: [{ label: "aPHR, PHR or SPHR", pattern: /\b(?:aPHR|PHR|SPHR)\b/i }], what: "Training pathways for aPHR, PHR and SPHR. Training completion does not award the professional certification.", access: "Free training for eligible participants. Exam funding has additional conditions. Application required. Check O2O admission and the credential issuer's requirements." },
+  { id: "o2o-project", name: "O2O: Project management certification preparation", url: "https://ivmf.syracuse.edu/programs/career-training/learning-pathways/", topic: "project management skills", roles: ["project_mgr"], categories: [], skills: [{ label: "CAPM or PMP", pattern: /\b(?:CAPM|PMP)\b/i }], what: "CAPM and PMP preparation pathways. Check the credential's experience and exam requirements before choosing a pathway.", access: "Free training for eligible participants. Exam funding has additional conditions. Application required. Check O2O admission and the credential issuer's requirements." },
+  { id: "microsoft-powerbi", name: "Microsoft Learn: Power BI", url: "https://learn.microsoft.com/en-us/training/powerplatform/power-bi", topic: "data reporting and analysis", roles: ["data_analyst"], categories: [], skills: [{ label: "Power BI", pattern: /\bPower\s+BI\b/i }], what: "Self-paced Power BI learning paths; training completion is not a professional certification.", access: "Free self-paced training. Check certification exam pricing separately. Open to anyone; no military status requirement." },
+  { id: "salesforce-trailhead", name: "Salesforce Trailhead", url: "https://trailhead.salesforce.com/", topic: "Salesforce tools used in sales and CRM work", roles: ["b2b_sales", "med_device_sales"], categories: [], skills: [{ label: "Salesforce", pattern: /\bSalesforce\b/i }], what: "Hands-on Salesforce learning and badges; certification preparation is separate from earning a certification.", access: "Free self-paced training. Check certification exam terms separately. Public learning platform; check account requirements for hands-on activities." },
+  { id: "aws-restart", name: "AWS re/Start: Cloud career training", url: "https://aws.amazon.com/training/restart/", topic: "cloud computing skills", roles: ["cloud_engineer"], categories: [], skills: [{ label: "AWS", pattern: /\bAWS\b|\bAmazon Web Services\b/i }], what: "Instructor-led cloud training and certification preparation. No technology background is required to apply.", access: "Free to accepted learners. Generally age 18 or older and unemployed or underemployed; the local partner sets eligibility, schedule and availability." }
+];
+function topsCareerLearningOptions(role, rows) {
+  var normalize = function(value) { return value.trim().toLowerCase().replace(/\s+/g, " "); };
+  var target = CAREER_TARGETS.find(function(item) { return normalize(item.label) === normalize(role) || normalize(item.id) === normalize(role); });
+  var posting = rows.map(function(row) { return row.requirement || ""; }).join("\n");
+  return TOPS_CAREER_LEARNING.map(function(resource) {
+    var skill = resource.skills.find(function(item) { return item.pattern.test(posting); });
+    var exact = target && resource.roles.includes(target.id), category = target && resource.categories.includes(target.category);
+    if (!skill && !exact && !category) return null;
+    return { resource: resource, priority: skill ? 0 : exact ? 1 : 2, reason: skill ? "Your posting mentions " + skill.label + ". This is a learning option to investigate, not proof that a credential is required." : "An option to build " + resource.topic + " for " + target.label + ". Check that it supports your own goal." };
+  }).filter(Boolean).sort(function(a, b) { return a.priority - b.priority; }).slice(0, 3);
+}
+function CareerLearning(props) {
+  var [dismissed, setDismissed] = useState([]), [pending, setPending] = useState(null), [message, setMessage] = useState("");
+  var options = topsCareerLearningOptions(props.role, props.rows), C = props.colors;
+  function choose(item) { setPending({ item: item, action: props.action }); setMessage(""); }
+  function apply() {
+    if (pending.action !== props.action) { setPending(null); setMessage("Your next action changed. Choose the learning option again to review it."); return; }
+    if (props.onAdd(pending.item.resource)) { setPending(null); setMessage("Learning step added to your draft. Review it below, then choose whether to save or use it for this visit."); }
+  }
+  return React.createElement("details", { id: "tops-career-learning", style: { margin: "12px 0" } },
+    React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", fontWeight: 700 } }, "Build skills for this role"),
+    React.createElement("p", null, "Choose a skill you want to build. These options do not establish a qualification gap or replace licensing requirements."),
+    !options.length && React.createElement("p", null, "We do not have a reviewed learning match for this role yet. Explore the resource library, or add a job posting with specific skills."),
+    options.filter(function(option) { return !dismissed.includes(option.resource.id); }).map(function(option) { var resource = option.resource; return React.createElement("article", { key: resource.id, style: { padding: "12px 0", borderTop: "1px solid " + C.border, overflowWrap: "anywhere" } },
+      React.createElement("h3", { style: { margin: "6px 0" } }, resource.name), React.createElement("p", null, option.reason),
+      React.createElement("p", null, resource.what), React.createElement("p", null, "Cost and access: " + resource.access),
+      React.createElement("a", { href: resource.url, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, props.button, { display: "inline-flex", alignItems: "center", boxSizing: "border-box" }) }, "Explore learning (opens a new tab)"),
+      React.createElement("button", { type: "button", style: props.button, onClick: function() { choose(option); } }, "Add to my plan"),
+      React.createElement("button", { type: "button", style: props.button, onClick: function() { setDismissed(dismissed.concat(resource.id)); setPending(null); setMessage("Hidden for this visit. Your saved skills and plan were not changed."); requestAnimationFrame(function() { var summary = document.querySelector("#tops-career-learning > summary"); if (summary) summary.focus(); }); } }, "I already know this")); }),
+    dismissed.length > 0 && React.createElement("button", { type: "button", style: props.button, onClick: function() { setDismissed([]); setMessage(""); } }, "Show hidden options"),
+    pending && React.createElement("div", { style: { padding: 12, border: "1px solid " + C.border, borderRadius: 8 } },
+      React.createElement("p", null, "Current next action: " + (props.action || "None yet")), React.createElement("p", null, "Proposed next action: " + props.learningAction(pending.item.resource)),
+      React.createElement("p", null, "This changes only your draft. Saving remains a separate choice."),
+      React.createElement("button", { type: "button", style: props.button, onClick: apply }, "Use this as my next action"), React.createElement("button", { type: "button", style: props.button, onClick: function() { setPending(null); } }, "Keep my current action")),
+    React.createElement("p", { role: "status", "aria-live": "polite" }, message),
+    React.createElement("a", { href: "?tool=resources", target: "_blank", rel: "noopener noreferrer", style: Object.assign({}, props.button, { display: "inline-flex", alignItems: "center", boxSizing: "border-box" }) }, "Browse all learning resources (opens a new tab)"));
+}
+function CareerSpecialistSupport(props) {
+  var state = props.state, C = props.colors, [status, setStatus] = useState(""), [replace, setReplace] = useState(false), [copying, setCopying] = useState(false);
+  var excerpts = props.rows.map(function(row) { return row.have.trim(); }).filter(Boolean), context = JSON.stringify([props.role, excerpts]);
+  var stale = !!state.text && state.context !== context;
+  function update(change) { props.setState(function(previous) { return Object.assign({}, previous, change); }); }
+  useEffect(function() { update({ reviewed: false, selected: [] }); setReplace(false); }, [context]);
+  function focusDraft() { requestAnimationFrame(function() { var input = document.getElementById("tops-specialist-introduction"); if (input) { input.focus(); input.scrollIntoView({ block: "center" }); } }); }
+  function prepare() {
+    var selected = excerpts.filter(function(excerpt) { return state.selected.includes(excerpt); });
+    var text = "Hello VetJobs team,\n\nI'd like help exploring " + (props.role.trim() || "civilian career options") + ".";
+    if (selected.length) text += "\n\nExperience I'd like to discuss:\n" + selected.join("\n\n");
+    text += "\n\nI'd welcome help identifying a next step and understanding what to prepare for a career consultation. Thank you.";
+    update({ text: text, context: context, reviewed: false, prepared: true }); setReplace(false); setStatus("Introduction prepared. Edit it as needed, then review it before copying or downloading."); focusDraft();
+  }
+  function ready() { if (!state.text.trim() || !state.reviewed || stale) { setStatus("Review the current introduction and check the confirmation before copying or downloading."); return false; } return true; }
+  async function copy() {
+    if (!ready() || copying) return;
+    setCopying(true);
+    try { if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error("clipboard unavailable"); await navigator.clipboard.writeText(state.text); setStatus("Introduction copied. Choose where and whether to share it."); }
+    catch (e) { var input = document.getElementById("tops-specialist-introduction"); if (input) { input.focus(); input.select(); } setStatus("Automatic copy is unavailable. Your introduction is selected; use your device's Copy command, or download the text file."); }
+    finally { setCopying(false); }
+  }
+  function download() {
+    if (!ready()) return;
+    var url = URL.createObjectURL(new Blob([state.text], { type: "text/plain;charset=utf-8" })), link = document.createElement("a"); link.href = url; link.download = "my-career-introduction.txt"; link.click(); setTimeout(function() { URL.revokeObjectURL(url); }, 1000); setStatus("Download started. Review the file before choosing whether to share it.");
+  }
+  return React.createElement("details", { id: "tops-career-specialist", style: { margin: "12px 0" } },
+    React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", fontWeight: 700 } }, "Talk with a career specialist"),
+    React.createElement("p", null, "VetJobs offers no-cost career help for eligible military-affiliated job seekers, including transitioning members, veterans, Guard, Reserve and military spouses. VetJobs manages its own intake and eligibility."),
+    React.createElement("a", { href: "https://vetjobs.org/job-seekers/", target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, props.button, { display: "inline-flex", alignItems: "center", boxSizing: "border-box" }) }, "Visit VetJobs to get started (opens a new tab)"),
+    React.createElement("p", null, "Prepare an optional introduction to use when you choose to contact them. Nothing is sent to VetJobs by preparing this draft. Review it before copying and sharing. The introduction is not saved with your career plan."),
+    excerpts.length > 0 && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0" } }, "Choose experience to include (optional)"),
+      React.createElement("p", null, "Review each excerpt before selecting it. Selected excerpts are included the next time you prepare an introduction; your existing draft does not change automatically."),
+      excerpts.map(function(excerpt, index) { return React.createElement("div", { key: index, style: { padding: "10px 0", borderTop: "1px solid " + C.border } }, React.createElement("p", { id: "tops-introduction-excerpt-" + index, style: { whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, excerpt), React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10 } }, React.createElement("input", { type: "checkbox", "aria-describedby": "tops-introduction-excerpt-" + index, checked: state.selected.includes(excerpt), style: { width: 24, height: 24 }, onChange: function(e) { update({ selected: e.target.checked ? state.selected.concat(excerpt) : state.selected.filter(function(item) { return item !== excerpt; }), reviewed: false }); setReplace(false); setStatus("Experience selection changed. Prepare an introduction to apply this selection."); } }), "I reviewed excerpt " + (index + 1) + "; include it.")); })),
+    React.createElement("button", { id: "tops-prepare-introduction", type: "button", style: props.button, onClick: function() { if (state.text) { setReplace(true); setStatus(""); } else prepare(); } }, state.text ? "Prepare a replacement introduction" : "Prepare my introduction"),
+    replace && React.createElement("div", null, React.createElement("p", null, "Replace the introduction below using your current role and selected experience? Your edits to the introduction will be replaced."), React.createElement("button", { type: "button", style: props.button, onClick: prepare }, "Replace introduction"), React.createElement("button", { type: "button", style: props.button, onClick: function() { setReplace(false); requestAnimationFrame(function() { var button = document.getElementById("tops-prepare-introduction"); if (button) button.focus(); }); } }, "Keep my introduction")),
+    state.prepared && React.createElement("div", null,
+      stale && React.createElement("p", { role: "status" }, "Your role or experience changed. Your introduction has been kept. Review and edit it for your current goal, or prepare a replacement."),
+      React.createElement("label", { htmlFor: "tops-specialist-introduction" }, "My introduction"), React.createElement("textarea", { id: "tops-specialist-introduction", rows: 7, maxLength: 6000, style: props.field, value: state.text, onChange: function(e) { update({ text: e.target.value, reviewed: false }); setStatus(""); } }),
+      React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10 } }, React.createElement("input", { id: "tops-introduction-reviewed", type: "checkbox", checked: state.reviewed, style: { width: 24, height: 24 }, onChange: function(e) { update({ reviewed: e.target.checked, context: e.target.checked ? context : state.context }); } }), "I reviewed this introduction for my current goal and removed anything I do not want to share."),
+      React.createElement("button", { type: "button", style: props.button, disabled: copying, onClick: copy }, copying ? "Copying introduction..." : "Copy introduction"), React.createElement("button", { type: "button", style: props.button, onClick: download }, "Download introduction")),
+    React.createElement("p", { role: "status", "aria-live": "polite" }, status));
+}
+function CareerJourney(props) {
+  var [aiActive, setAiActive] = useState(false), aiBaseline = useRef(""), reviewedNotes = useRef([]);
+  var C = props.colors, [stage, setStage] = useState(0), [intent, setIntent] = useState("find"), [role, setRole] = useState(props.guideState.draft.targetRole || ""), [draft, setDraft] = useState(null), [source, setSource] = useState(null), [action, setAction] = useState(""), [status, setStatus] = useState(""), [checked, setChecked] = useState(false), [replace, setReplace] = useState(false), [saved, setSaved] = useState(false);
+  var baseline = useRef(""), disk = useRef(null), [keptMode, setKeptMode] = useState("");
+  var [introduction, setIntroduction] = useState({ text: "", context: "", reviewed: false, selected: [], prepared: false });
+  var button = { minHeight: 44, padding: "12px 16px", margin: "6px 8px 6px 0", font: "inherit", color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" };
+  var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 12, font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 8 };
+  function current() { return JSON.stringify([props.guideState.draft, props.actionState.draft, props.gapState.draft]); }
+  function stored() { return JSON.stringify([TOPS_GUIDE_KEY, TOPS_ACTION_KEY, TOPS_GAP_KEY].map(function(key) { return localStorage.getItem(key); })); }
+  function remember() { baseline.current = current(); try { disk.current = stored(); } catch (e) { disk.current = null; } }
+  function suggestion(kind, target) { return kind === "grow" ? "Discuss one growth opportunity" + (target.trim() ? " in " + target.trim() : " in my current work") + " with my supervisor or mentor." : kind === "pursue" ? "Review one requirement and prepare an example for " + (target.trim() || "this job") + "." : "Explore " + (target.trim() || "possible") + " jobs. Pick one to review."; }
+  function chooseRole(value) { if (action === suggestion(intent, role)) setAction(suggestion(intent, value)); setRole(value); setChecked(false); setSaved(false); }
+  function start(kind) { setIntent(kind); setStage(1); setStatus(""); setSaved(false); setAiActive(false); }
+  function result(value, sources) { var nextDraft = Object.assign({}, value, { rows: value.rows.map(function(row) { return Object.assign({}, row); }) }); for (var i = 0; i < reviewedNotes.current.length; i++) { var addition = reviewedNotes.current[i], row = nextDraft.rows[addition.row]; if (!row.have.includes(addition.note)) { var combined = row.have + (row.have ? "\n\n" : "") + addition.note; if (combined.length > 600) { setStatus("Your reviewed career wording is still in this visit's draft. Shorten the experience text so it fits with those notes, or return to your draft. Nothing has been replaced."); return; } row.have = combined; } } setDraft(nextDraft); if (sources) setSource(sources); setAction(suggestion(intent, role)); setChecked(false); setReplace(false); setSaved(false); remember(); setStage(2); }
+  function resume() { setIntent(props.guideState.draft.pathway === "skills" ? "grow" : props.gapState.draft.rows.some(function(row) { return row.requirement.trim(); }) ? "pursue" : "find"); setRole(props.guideState.draft.targetRole || props.gapState.draft.target); setDraft({ rows: props.gapState.draft.rows, omitted: 0 }); setAction(props.actionState.draft.text); setReplace(false); setChecked(false); setSaved(false); remember(); setStage(2); }
+  useEffect(function() { if (saved) { remember(); var ready = document.getElementById("tops-journey-ready"); if (ready) { ready.focus(); ready.scrollIntoView({ block: "center" }); } } }, [saved]);
+  useEffect(function() { var heading = document.getElementById("tops-career-start-heading"); if (heading) { heading.focus(); heading.scrollIntoView({ block: "center" }); } }, [stage]);
+  var existing = !!(props.actionState.draft.text || props.gapState.draft.target || props.gapState.draft.rows.some(function(row) { return row.have || row.requirement; }));
+  var savedExperience = props.gapState.draft.rows.map(function(row, i) { return row.have ? TOPS_GAP_ROWS[i] + "\n" + row.have : ""; }).filter(Boolean).join("\n");
+  function keep(save) {
+    if (!checked) { setStatus("Review the excerpts and check the confirmation before keeping this draft."); return; }
+    if (existing && !replace) { setStatus("Choose whether to replace the current career step and comparison. Nothing has changed."); return; }
+    if (baseline.current !== current()) { setStatus("Your plan changed in another tool. Go back and review again; nothing was replaced."); return; }
+    var guide = Object.assign({}, props.guideState.draft, { pathway: intent === "grow" ? "skills" : "change", targetRole: role.trim(), goal: intent === "grow" ? "Grow in my current career" : intent === "pursue" ? "Pursue a specific job" : "Find work that fits me" });
+    var next = { version: 1, text: action.trim(), date: "", done: false, context: guide }, gap = topsEmptyGap(); gap.target = role.trim(); if (gap.target === props.gapState.draft.target) gap.prep = Object.assign({}, props.gapState.draft.prep); gap.rows = draft.rows.map(function(row) { return Object.assign({}, row); });
+    if (!topsValidateGuide(guide) || !topsValidateAction(next) || !next.text || !topsValidateGap(gap)) { setStatus("Use a role up to 120 characters and an action up to 240 characters, and review the excerpts."); return; }
+    if (save) { try { if (disk.current === null || disk.current !== stored()) { setStatus("Saved work changed or storage is unavailable. Review again before saving."); return; } } catch (e) { setStatus("Browser storage is unavailable. You can use this draft for this visit."); return; } var outcome = topsSaveCareerSession(guide, next, gap); if (!outcome.ok) { setStatus(outcome.reason === "partial" ? "Saving was interrupted. Some saved fields may have changed; keep this page open and review your plan." : "Not saved. Your earlier saved plan was kept. Try Use for this visit."); return; } }
+    props.setGuideState({ draft: guide, ready: true, status: save ? "Saved on this browser." : "For this visit only." }); props.setActionState({ draft: next, status: save ? "Saved on this browser." : "For this visit only." }); props.setGapState({ draft: gap, status: save ? "Saved on this browser." : "For this visit only." }); setKeptMode(save ? "browser" : "visit"); setSaved(true); setStatus(save ? "Saved. You can continue this work when you return to Career." : "Ready for this visit. Your saved work was not changed.");
+  }
+  var ideas = draft ? topsCareerEvidenceIdeas(draft.rows) : [];
+  return React.createElement("section", { "aria-labelledby": "tops-career-start-heading", style: { padding: 18, marginBottom: 18, background: C.bgCard, color: C.textBody, border: "1px solid " + C.border, borderRadius: 12 } },
+    React.createElement("h2", { id: "tops-career-start-heading", tabIndex: -1, style: { color: C.textPrimary } }, stage === 0 ? "What would you like help with?" : stage === 1 ? (intent === "pursue" ? "Let's look at the job together" : intent === "grow" ? "Build on what you already do" : "Start with your experience") : intent === "pursue" ? "Your experience and this job" : intent === "grow" ? "Your next growth conversation" : "Your next career move"),
+    stage === 0 && React.createElement("div", null,
+      existing && React.createElement("div", { style: { marginBottom: 16 } }, React.createElement("p", null, "Your current work: " + (props.actionState.draft.text || props.gapState.draft.target || "Career comparison")), React.createElement("button", { type: "button", style: button, onClick: resume }, "Continue my career work")),
+      [["find", "Find work that fits me", "Explore possibilities using your experience and interests."], ["pursue", "Help me pursue a specific job", "Bring a posting. Get a draft comparison to review."], ["grow", "Grow in my current career", "Prepare a practical conversation about your next opportunity."]].map(function(item) { return React.createElement("button", { key: item[0], type: "button", style: Object.assign({}, button, { display: "block", width: "100%", textAlign: "left", marginBottom: 12 }), onClick: function() { start(item[0]); } }, React.createElement("strong", { style: { display: "block", fontSize: 18 } }, item[1]), React.createElement("span", { style: { display: "block", marginTop: 5 } }, item[2])); }),
+      props.profile === "guard" && React.createElement("p", null, "Keep serving while building your civilian career. No separation date is needed.")),
+    stage === 1 && React.createElement("div", null,
+      React.createElement("label", { htmlFor: "tops-journey-role" }, intent === "pursue" ? "Job title" : "Role or field, if you have one in mind (optional)"), React.createElement("input", { id: "tops-journey-role", maxLength: 120, value: role, style: field, onChange: function(e) { setRole(e.target.value); } }),
+      savedExperience && React.createElement("p", null, "Your previously reviewed experience is filled in below. Check that it still represents you."),
+      reviewedNotes.current.length > 0 && React.createElement("p", null, "Your reviewed career wording will stay with this draft when you continue."),
+      reviewedNotes.current.length > 0 && React.createElement("button", { type: "button", style: button, onClick: function() { var additions = reviewedNotes.current.slice(); function remove(text, rowIndex) { additions.forEach(function(addition) { if (rowIndex !== null && addition.row !== rowIndex) return; var position = text.lastIndexOf(addition.note); if (position >= 0) { var before = text.slice(0, position), after = text.slice(position + addition.note.length); if (before.endsWith("\n\n")) before = before.slice(0, -2); text = before + after; } }); return text; } setDraft(Object.assign({}, draft, { rows: draft.rows.map(function(row, i) { return Object.assign({}, row, { have: remove(row.have, i) }); }) })); setSource({ resume: remove(source ? source.resume : savedExperience, null), posting: source ? source.posting : props.gapState.draft.rows.map(function(row) { return row.requirement; }).filter(Boolean).join("\n") }); reviewedNotes.current = []; setChecked(false); setSaved(false); setStage(2); setStatus("AI-reviewed additions from this visit were removed from this draft. Original experience notes and previously saved work are unchanged until you choose to save."); } }, "Remove AI-reviewed additions from this draft"),
+      draft && React.createElement("button", { type: "button", style: button, onClick: function() { setStage(2); setStatus(""); } }, "Return to my draft"),
+      React.createElement(CareerGapStarter, { key: intent, colors: C, draft: props.gapState.draft, setState: props.setGapState, field: field, button: button, initialResume: source ? source.resume : savedExperience, initialPosting: source ? source.posting : props.gapState.draft.rows.map(function(row) { return row.requirement; }).filter(Boolean).join("\n"), requirePosting: intent === "pursue", onSourceChange: setSource, onReviewed: result }),
+      intent !== "pursue" && React.createElement("button", { type: "button", style: button, onClick: function() { result({ rows: topsEmptyGap().rows, omitted: 0 }, { resume: "", posting: "" }); } }, "Continue without a resume")),
+    stage === 2 && draft && React.createElement("div", null,
+      !saved && React.createElement("p", { style: { marginTop: 0 } }, "Draft for review. Your earlier saved work stays unchanged until you choose to save."),
+      !saved && React.createElement(CareerExperienceAssistant, { key: role, colors: C, field: field, button: button, rows: draft.rows, target: role, onActive: function(active) { setAiActive(active); if (active) aiBaseline.current = JSON.stringify(draft); }, onAccept: function(reviewed, aspect) { if (aiBaseline.current !== JSON.stringify(draft)) return false; var rowIndex = aspect === "training" ? 1 : 0, note = "My reviewed career wording: " + reviewed.wording + "\nMy supporting example: " + reviewed.example, value = draft.rows[rowIndex].have + (draft.rows[rowIndex].have ? "\n\n" : "") + note; if (value.length > 600) return false; var updated = Object.assign({}, draft, { rows: draft.rows.map(function(row, i) { return i === rowIndex ? Object.assign({}, row, { have: value }) : row; }) }); reviewedNotes.current.push({ row: rowIndex, note: note }); setDraft(updated); aiBaseline.current = JSON.stringify(updated); setChecked(false); setSaved(false); return true; } }),
+      !aiActive && React.createElement("div", null,
+      React.createElement("details", { id: "tops-journey-details", open: !saved },
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", fontWeight: 700 } }, saved ? "Review or change my details" : "Review my role and experience"),
+      React.createElement("label", { htmlFor: "tops-journey-role" }, "Role or field to explore"), React.createElement("input", { id: "tops-journey-role", maxLength: 120, value: role, style: field, onChange: function(e) { chooseRole(e.target.value); } }),
+      intent === "find" && !saved && React.createElement("div", null,
+        ideas.length > 0 && React.createElement("div", null, React.createElement("h3", null, "Ideas to investigate"), React.createElement("p", null, "These examples share a topic with your notes. They are not a qualification assessment or a ranking of your best careers."), ideas.map(function(idea) { return React.createElement("div", { key: idea.role, style: { marginBottom: 12 } }, React.createElement("button", { type: "button", style: button, onClick: function() { chooseRole(idea.role); } }, idea.role), React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0" } }, "Why this example?"), React.createElement("p", { style: { whiteSpace: "pre-wrap" } }, idea.excerpt))); })),
+        React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0" } }, "Explore other career ideas"), React.createElement(CareerIdeas, { colors: C, choose: chooseRole }))),
+      React.createElement("h3", null, intent === "pursue" ? "Draft comparison" : "Experience to build on"),
+      React.createElement("p", null, "Review the source excerpts. Missing text means we did not find an excerpt, not that you lack a skill. Categories can be wrong."),
+      draft.omitted > 0 && React.createElement("p", null, "Some source lines were omitted. Check the original for anything important."),
+      draft.rows.some(function(row) { return row.have || row.requirement; }) ? draft.rows.map(function(row, i) { if (!row.have && !row.requirement) return null; return React.createElement("details", { key: i, open: intent === "pursue", style: { marginBottom: 12 } }, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", fontWeight: 700 } }, TOPS_GAP_ROWS[i]), React.createElement("p", { style: { whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, "Your experience: " + (row.have || "No excerpt found.")), row.requirement && React.createElement("p", { style: { whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, "Posting asks: " + row.requirement), React.createElement("p", null, row.requirement ? "Check whether your example demonstrates this requirement. Confirm any unclear requirement with the employer." : "Use one specific example when you discuss your next role.")); }) : React.createElement("p", null, "No experience notes yet. You can explore first and add them later."),
+      intent === "grow" && React.createElement("p", { id: "tops-growth-prompt" }, "Try asking: What would readiness for " + (role.trim() || "my next opportunity") + " look like, and what is one responsibility I could practice?" + (props.profile === "guard" ? " Discuss how the next step can fit around your Guard or Reserve commitments." : "")),
+      ),
+      React.createElement(CareerLearning, { key: JSON.stringify([role, draft.rows.map(function(row) { return row.requirement; })]), colors: C, button: button, role: role, rows: draft.rows, action: action, learningAction: function(resource) { return "Explore " + resource.name + ". Check access and choose one learning activity."; }, onAdd: function(resource) { if (baseline.current !== current()) { setStatus("Your plan changed in another tool. Review your career work again before changing this step."); return false; } setAction("Explore " + resource.name + ". Check access and choose one learning activity."); setSaved(false); setChecked(false); setReplace(false); setStatus(""); return true; } }),
+      React.createElement(CareerSpecialistSupport, { colors: C, button: button, field: field, role: role, rows: draft.rows, state: introduction, setState: setIntroduction }),
+      React.createElement("h3", null, saved ? "Your next step" : "Review your next step"),
+      React.createElement("p", { id: "tops-start-action-preview" }, action),
+      !saved && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0" } }, "Edit my next action"), React.createElement("label", { htmlFor: "tops-journey-action" }, "My next action"), React.createElement("textarea", { id: "tops-journey-action", rows: 2, maxLength: 240, value: action, style: field, onChange: function(e) { setAction(e.target.value); } })),
+      !saved && React.createElement("div", null,
+        React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10 } }, React.createElement("input", { id: "tops-journey-reviewed", type: "checkbox", checked: checked, onChange: function(e) { setChecked(e.target.checked); }, style: { width: 24, height: 24 } }), "I reviewed these excerpts and this next step."),
+        existing && React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10 } }, React.createElement("input", { id: "tops-journey-replace", type: "checkbox", checked: replace, onChange: function(e) { setReplace(e.target.checked); }, style: { width: 24, height: 24 } }), "Replace my current career step and comparison with this draft. Conversation notes for a different role will be cleared."),
+        React.createElement("p", null, "Save reviewed excerpts on this browser, or use them only during this visit. Check for personal details before saving on a shared device."),
+        React.createElement("button", { type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), disabled: !!window.__IS_IFRAME, onClick: function() { keep(true); } }, "Save my career work"), React.createElement("button", { type: "button", style: button, onClick: function() { keep(false); } }, "Use for this visit")),
+      React.createElement("h3", { id: "tops-journey-ready", tabIndex: -1 }, saved ? "Ready to move forward" : "Tools you can use now"),
+      React.createElement("p", null, saved ? (keptMode === "browser" ? "Saved on this browser. Choose your next action below." : "Ready for this visit only. Your earlier saved work was not changed.") : intent === "grow" ? "You can edit your experience before keeping this draft." : "You can explore openings now. Saving is optional; review your excerpts before preparing a resume."),
+      intent !== "grow" && React.createElement("button", { type: "button", style: Object.assign({}, button, saved && intent === "find" ? { background: C.green, color: C.textOnFill } : {}), onClick: function() { props.openTool("jobs", role); } }, "See openings by area"),
+      intent === "pursue" && React.createElement("button", { type: "button", style: Object.assign({}, button, saved ? { background: C.green, color: C.textOnFill } : {}), onClick: function() { if (!checked) { setStatus("Review the excerpts and check the confirmation before using them in the Resume Drafter."); return; } props.openTool("resume", { role: role, experience: draft.rows.map(function(row, i) { return row.have ? TOPS_GAP_ROWS[i] + "\n" + row.have : ""; }).filter(Boolean).join("\n"), posting: draft.rows.map(function(row) { return row.requirement; }).filter(Boolean).join("\n") }); setStatus("Opened the Resume Drafter. Existing drafter work is kept; otherwise your reviewed excerpts are filled in. Review its fact sheet before creating a draft. Opening it does not send an AI request."); } }, "Prepare a tailored resume"),
+      React.createElement("button", { type: "button", style: button, onClick: function() { setStage(1); setSaved(false); } }, intent === "pursue" ? "Edit experience or posting" : "Add or edit my experience"),
+      saved && React.createElement("button", { type: "button", style: Object.assign({}, button, intent === "grow" ? { background: C.green, color: C.textOnFill } : {}), onClick: props.home }, "Continue on Home"))),
+    stage > 0 && React.createElement("button", { type: "button", style: button, onClick: function() { setStage(0); setAiActive(false); setStatus(""); } }, "Back to career choices"),
+    React.createElement("p", { role: "status", "aria-live": "polite" }, status),
+    React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0" } }, "How this works"), React.createElement("p", null, "The source comparison and career examples use local rules. Optional AI help sends only the experience excerpts and goal you review, and suggests wording for you to check. It does not verify qualifications, assess job fit or apply to jobs. Only reviewed notes and the step are saved on this browser when you choose. The Resume Drafter has its own review and submission steps.")),
+    React.createElement(HumanSupportChoices, { colors: C, id: "tops-career-human" }));
+}
+function CareerStart(props) {
+  var C = props.colors, [stage, setStage] = useState(0), [choice, setChoice] = useState(null), [target, setTarget] = useState(props.guideState.draft.targetRole), [step, setStep] = useState(""), [message, setMessage] = useState(""), [replace, setReplace] = useState(false), [peer, setPeer] = useState(false), [finished, setFinished] = useState(false);
+  var baseline = useRef(""), disk = useRef("");
+  var button = { minHeight: 44, minWidth: 44, padding: "12px 16px", margin: "6px 8px 6px 0", font: "inherit", color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" };
+  var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 12, font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 8 };
+  function current() { return JSON.stringify([props.guideState.draft, props.actionState.draft, props.gapState.draft]); }
+  function stored() { return JSON.stringify([TOPS_GUIDE_KEY, TOPS_ACTION_KEY, TOPS_GAP_KEY].map(function(key) { return localStorage.getItem(key); })); }
+  function go(n) { setStage(n); setMessage(""); }
+  useEffect(function() { var heading = document.getElementById("tops-career-start-heading"); if (heading) { heading.focus(); heading.scrollIntoView({ block: "center" }); } }, [stage]);
+  useEffect(function() { if (finished) { var next = document.getElementById("tops-career-continue"); if (next) next.focus(); } }, [finished]);
+  function review(option, selectedRole) {
+    var selected = option || choice, role = typeof selectedRole === "string" ? selectedRole : target;
+    if (!selected || role.length > 120 || /[\u0000-\u001f\u007f]/.test(role)) { setMessage("Use a short role or field without control characters, or leave it blank."); return; }
+    setTarget(role); setChoice(selected); setStep(topsSuggestedCareerStep(selected, role)); baseline.current = current();
+    try { disk.current = stored(); } catch (e) { disk.current = null; }
+    setReplace(false); go(3);
+  }
+  function apply(save) {
+    if (baseline.current !== current()) { setMessage("Your plan changed while you were reviewing. Go back and review again; nothing has been replaced."); return; }
+    if (props.actionState.draft.text && !replace) { setMessage("Keep your current step, or explicitly choose to replace it below."); return; }
+    var guide = Object.assign({}, props.guideState.draft, { pathway: choice.path, targetRole: target.trim(), goal: choice.title });
+    var action = { version: 1, text: step.trim(), date: "", done: false, context: guide };
+    var gap = props.gapState.draft;
+    if (!topsValidateGuide(guide) || !topsValidateAction(action) || !action.text) { setMessage("Enter a next step of up to 240 characters using plain text."); return; }
+    if (save) {
+      try { if (disk.current === null || disk.current !== stored()) { setMessage("Saved plan data changed or is unavailable. Go back and review again, or use this plan for this visit."); return; } } catch (e) { setMessage("Browser storage is unavailable. You can use this plan for this visit."); return; }
+      var result = topsSaveCareerSession(guide, action, gap);
+      if (!result.ok) { setMessage(result.reason === "partial" ? "Saving was interrupted and some saved fields may have changed. Keep this page open and review your plan before leaving." : "Not saved. Your earlier saved plan was kept. You can use this plan for this visit."); return; }
+    }
+    props.setGuideState({ draft: guide, ready: true, status: save ? "Direction saved on this browser." : "Direction changed for this visit only." });
+    props.setActionState({ draft: action, status: save ? "Career step saved on this browser." : "Career step changed for this visit only." });
+    props.setGapState(Object.assign({}, props.gapState, { status: save ? "Worksheet saved on this browser." : props.gapState.status }));
+    setFinished(true); setMessage(save ? "Saved on this browser. Your next step is ready on Home." : "Ready for this visit. Nothing was saved by this action.");
+  }
+  function takeaway() {
+    var kit = topsCareerActionKit(choice, target, props.gapState.draft, props.profile);
+    var text = "My next career step\nDirection: " + choice.title + "\nRole or field: " + (target.trim() || "Still exploring") + "\nNext action: " + step + "\nConversation starter: " + kit.opener + (kit.service ? "\nOptional service context: " + kit.service : "") + "\nProgress check: " + kit.outcome + "\nFollow-up: Agree on when to check back.\n\nMember-created planning notes, not verified qualifications. No resume or contact details included automatically.";
+    var url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" })), a = document.createElement("a"); a.href = url; a.download = "my-career-next-step.txt"; a.click(); setTimeout(function() { URL.revokeObjectURL(url); }, 1000); setMessage("Takeaway downloaded. Review its contents before choosing whether to share it.");
+  }
+  return React.createElement("section", { "aria-labelledby": "tops-career-start-heading", style: { padding: 18, marginBottom: 18, background: C.bgCard, color: C.textBody, border: "1px solid " + C.gold, borderRadius: 12, overflowWrap: "anywhere" } },
+    React.createElement("h2", { id: "tops-career-start-heading", tabIndex: -1, style: { color: C.textPrimary } }, stage === 3 ? "Your next career step" : "What would help your career right now?"),
+    props.profile === "guard" && React.createElement("p", null, "Your civilian career can grow while you keep serving. A separation date or job change is not required."),
+    props.actionState.draft.text && stage === 0 && React.createElement("div", null, React.createElement("p", null, "Your current step: " + props.actionState.draft.text), React.createElement("button", { type: "button", style: button, onClick: props.home }, "Continue my current step on Home")),
+    !finished && React.createElement(CareerIdeas, { key: target, colors: C, choose: function(role) { review(TOPS_CAREER_DIRECTIONS.find(function(option) { return option.id === "change"; }), role); requestAnimationFrame(function() { var heading = document.getElementById("tops-career-start-heading"); if (heading) { heading.focus(); heading.scrollIntoView({ block: "center" }); } }); } }),
+    stage !== 3 && React.createElement("div", null,
+      React.createElement("p", { style: { marginTop: 0 } }, "Choose what you need. We will suggest one step you can take today."),
+      React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 260px), 1fr))", gap: 12 } }, TOPS_CAREER_DIRECTIONS.map(function(option) { return React.createElement("button", { key: option.id, type: "button", style: Object.assign({}, button, { margin: 0, padding: 18, width: "100%", textAlign: "left" }), onClick: function() { review(option); } }, React.createElement("strong", { style: { display: "block", fontSize: 18 } }, option.title), React.createElement("span", { style: { display: "block", marginTop: 6 } }, option.why)); })),
+      React.createElement("details", { style: { marginTop: 14 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", fontWeight: 700 } }, "Have a resume? Start with your experience"), React.createElement(CareerGapStarter, { draft: props.gapState.draft, setState: props.setGapState, colors: C, field: field, button: button, onApplied: function() { go(1); } }))),
+    stage === 3 && React.createElement("div", null,
+      React.createElement("p", null, "Direction: " + choice.title + (target.trim() ? " - " + target.trim() : "")),
+      React.createElement("p", null, "Suggested for your goal. Adjust it to fit your situation."),
+      props.gapState.draft.rows.some(function(row) { return row.have.trim(); }) && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Experience I can draw on"), React.createElement("p", null, "These are your existing notes or reviewed resume excerpts, not verified qualifications."), props.gapState.draft.rows.filter(function(row) { return row.have.trim(); }).map(function(row, i) { return React.createElement("p", { key: i, style: { whiteSpace: "pre-wrap" } }, row.have); })),
+      React.createElement("p", { id: "tops-start-action-preview", style: { margin: "8px 0", fontSize: 16, lineHeight: 1.5, color: C.textPrimary } }, step),
+      choice.id === "change" && React.createElement("button", { type: "button", style: button, onClick: function() { props.openTool("jobs", target); } }, "Browse job boards for this step"),
+      React.createElement("div", { style: { margin: "14px 0", lineHeight: 1.6 } },
+        React.createElement("h3", null, "A way to get started"),
+        React.createElement("p", { id: "tops-career-opener" }, topsCareerActionKit(choice, target, props.gapState.draft, props.profile).opener),
+        props.profile === "guard" && React.createElement("p", null, "If helpful, add: " + topsCareerActionKit(choice, target, props.gapState.draft, props.profile).service),
+        React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "How will I know I made progress?"), React.createElement("p", null, topsCareerActionKit(choice, target, props.gapState.draft, props.profile).outcome))),
+      !finished && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Make this step fit me"),
+        React.createElement("label", { htmlFor: "tops-start-target" }, "Role or field (optional)"), React.createElement("input", { id: "tops-start-target", value: target, maxLength: 120, style: field, onChange: function(e) { var role = e.target.value; if (step === topsSuggestedCareerStep(choice, target)) setStep(topsSuggestedCareerStep(choice, role)); setTarget(role); } }),
+        React.createElement("label", { htmlFor: "tops-start-step" }, "My next action"), React.createElement("textarea", { id: "tops-start-step", rows: 3, maxLength: 240, value: step, style: field, onChange: function(e) { setStep(e.target.value); } })),
+      props.gapState.draft.target && props.gapState.draft.target !== target.trim() && React.createElement("p", null, "Your earlier worksheet for " + props.gapState.draft.target + " stays attached to that role. It has not been reassigned."),
+      !finished && props.actionState.draft.text && React.createElement("div", null, React.createElement("p", null, "Current step: " + props.actionState.draft.text), React.createElement("label", { style: { display: "flex", alignItems: "center", gap: 10, minHeight: 44 } }, React.createElement("input", { type: "checkbox", checked: replace, onChange: function(e) { setReplace(e.target.checked); }, style: { width: 44, height: 44, minWidth: 44, flexShrink: 0 } }), "Replace my current career step with this one"), React.createElement("button", { type: "button", style: button, onClick: props.home }, "Keep my current step")),
+      !finished && React.createElement("p", null, "Save your step and experience notes on this browser. On a shared device, choose Use for this visit."),
+      !finished && React.createElement("button", { type: "button", style: Object.assign({}, button, { background: C.goldBright, color: C.isLight ? "#FFFFFF" : "#0E120B", fontWeight: 700 }), disabled: !!window.__IS_IFRAME, onClick: function() { apply(true); } }, "Save my next step"),
+      !finished && React.createElement("button", { type: "button", style: button, onClick: function() { apply(false); } }, "Use for this visit"),
+      finished && React.createElement("button", { id: "tops-career-continue", type: "button", style: button, onClick: props.home }, "Continue on Home"),
+      finished && React.createElement("button", { type: "button", style: button, onClick: function() { props.openTool(choice.id === "leave" ? "readiness" : "worksheet"); } }, choice.id === "leave" ? "Open my transition checklist" : "Compare my experience with a role"),
+      React.createElement("button", { type: "button", style: button, onClick: takeaway }, "Download my takeaway")),
+    stage === 3 && !finished && React.createElement("button", { type: "button", style: button, onClick: function() { go(0); } }, "Choose a different goal"),
+    React.createElement("p", { role: "status", "aria-live": "polite", "aria-atomic": "true" }, message),
+    React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Walking through this with someone?"),
+      React.createElement("p", null, "Let the member choose the direction and keep control of their device. Listen first, choose one manageable step together, then agree on a follow-up. This walkthrough does not send notes to a peer, nonprofit or employer."),
+      React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10 } }, React.createElement("input", { type: "checkbox", checked: peer, onChange: function(e) { setPeer(e.target.checked); }, style: { width: 44, height: 44, minWidth: 44, flexShrink: 0 } }), "Show a peer conversation prompt")),
+    peer && React.createElement("p", null, ["Ask: What would make this conversation useful for you today?", "Ask: Do you want to grow where you are, use new training, change work, or prepare to leave service?", "Ask: What kind of work interests you, and what needs to fit around your life or service?", "Ask: What would help you take this step, and when should we check back?"][stage]),
+    React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "How this guide uses your information"), React.createElement("p", null, "This walkthrough organizes resume text in your browser and suggests a step from the direction you choose. Review the draft; it does not verify qualifications or connect to LinkedIn or an employer. Saving is optional. The separate AI Resume Drafter and Ask the Navigator send submitted text for AI processing as explained in their notices. This walkthrough does not contact anyone for you.")),
+
+    React.createElement(HumanSupportChoices, { colors: C, id: "tops-career-human" }));
+}
+function CareerToolLibrary(props) {
+  return React.createElement("details", { open: props.expanded, style: { marginBottom: 16 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", color: props.colors.textPrimary, fontWeight: 700 } }, "Browse career tools and detailed planners"), props.children);
+}
 function BusinessOwnership(props) {
   var C = props.colors;
   var contactStyle = { display: "inline-flex", alignItems: "center", minHeight: 44, minWidth: 44, boxSizing: "border-box", padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgElevated, textDecoration: "underline", overflowWrap: "anywhere" };
@@ -9008,7 +9487,7 @@ function App() {
       TopsCompass(44),
       React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 17, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "AI TRANSITION NAVIGATOR"),
       React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 1.5, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), background: C.goldBright, borderRadius: 4, padding: "2px 7px" } }, "BETA")),
-    React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.45, marginBottom: 6 } }, "Answers only from Transition OPS verified content. Educational information \u2014 not benefits counseling, not affiliated with VA or DoD. Beta: spot something off? Tap FEEDBACK IS A GIFT. In crisis: Veterans Crisis Line 988, press 1."),
+    React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, lineHeight: 1.45, marginBottom: 6 } }, "AI answers use Transition OPS reference content and may contain mistakes. Check important details with the linked official source. Educational information \u2014 not benefits counseling, not affiliated with VA or DoD. Beta: spot something off? Tap FEEDBACK IS A GIFT. In crisis: Veterans Crisis Line 988, press 1."),
     React.createElement("div", { style: { fontSize: 10.5, color: C.textSecondary, lineHeight: 1.45, marginBottom: 10, padding: "8px 10px", background: C.bg, border: "1px solid " + C.border, borderRadius: 7 } }, React.createElement("strong", { style: { color: C.goldBright } }, "AI USE NOTICE: "), "Sending a question sends your current question, this chat history, and any saved separation date or service status through Netlify to OpenAI to generate an answer. OpenAI is called with store:false, but this is not a promise of zero provider retention. Do not enter Social Security numbers, medical records, or other sensitive information. The Navigator is optional; the rest of Transition Ops remains available without it."),
     React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 } },
       navMsgs.length === 0 && React.createElement("div", { style: { ...S.card, padding: 12, borderLeft: "3px solid " + C.gold, fontSize: 13, lineHeight: 1.55, color: C.textSecondary } }, (function(){ try { var sd = window.__safeGet("tops_sep_date"); if (sd) { var dd = Math.round((new Date(sd + "T00:00:00") - new Date()) / 86400000); return "Navigator online \u2014 your timeline is loaded (" + (dd >= 0 ? "T-" + dd + " days to separation" : Math.abs(dd) + " days post-separation") + "). Ask me anything, or add context \u2014 component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook."; } } catch(e) {} return "Navigator online. Tell me where you are in your transition \u2014 time remaining, component, family, claim status \u2014 and I\u2019ll sequence your next moves from this app\u2019s verified playbook. Anything beyond my data, I\u2019ll route you to a human."; })()),
@@ -9028,10 +9507,14 @@ function App() {
       React.createElement("button", { type: "button", disabled: navBusy || !navInput.trim(), onClick: function(){ sendNavigator(); }, "aria-label": "Send Navigator question", style: { minHeight: 44, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), border: "none", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: navBusy || !navInput.trim() ? "default" : "pointer", opacity: navBusy || !navInput.trim() ? 0.5 : 1 } }, "SEND"))),
   navUnlocked && activeTab !== "navigator" && activeTab !== "dashboard" && /*#__PURE__*/React.createElement("div", { className: "tops-ask-launcher", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
   activeTab !== "dashboard" && continuationReturn.current && continuationReturn.current.indexOf("tops-guide-") === 0 && React.createElement("button", { type: "button", style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" }, onClick: function() { continuationFocus.current = continuationReturn.current; continuationReturn.current = null; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("pathway"); } }, "Back to career guide"),
+  React.createElement(SuicideSupport, { colors: C }),
+  (activeTab === "dashboard" || activeTab === "resources") && React.createElement(HumanSupportChoices, { colors: C, id: "tops-page-human" }),
+  activeTab === "pathway" && pathwayMode === "journey" && !journeyTarget && !careerExperienceContext && React.createElement(CareerJourney, { key: guideRestoreRevision, colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gapState: gapState, setGapState: setGapState, openTool: function(tool, role) { if (tool === "jobs") { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, keyword: role || previous.keyword || guideState.draft.targetRole || "" }); }); focusCareerWorksheet("tops-live-jobs-panel"); } else if (tool === "resume") { setAiR(function(previous) { var occupied = previous.loading || ["role", "years", "target", "skills", "certs", "exp", "posting", "facts", "out"].some(function(key) { return !!previous[key]; }); return Object.assign({}, previous, occupied ? { open: true } : { open: true, target: role.role, exp: role.experience, posting: role.posting }); }); focusCareerWorksheet("tops-resume-drafter-panel"); } else if (tool === "readiness") { openPlanRoute("readiness", "tops-plan-readiness", "tops-career-start-heading"); } else { setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-heading"); } }, home: function() { continuationFocus.current = "tops-loop-title"; setActiveTab("dashboard"); } }),
   activeTab === "pathway" && React.createElement("nav", { "aria-label": "Career shortcuts", style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 } },
-    [["Career guide", "tops-guide-heading"], ["Career plan", "career-gap-heading"], ["Resume drafter", "tops-resume-drafter-panel"], ["Business ownership", "tops-ownership-heading"]].map(function(item) {
+    [["Start here", "tops-career-start-heading"], ["Career plan", "career-gap-heading"], ["Resume drafter", "tops-resume-drafter-panel"], ["Business ownership", "tops-ownership-heading"]].map(function(item) {
       return React.createElement("button", { key: item[1], type: "button", onClick: function() {
         continuationReturn.current = null;
+        if (item[1] === "tops-career-start-heading") { setPathwayMode("journey"); setJourneyTarget(""); setCareerExperienceContext(null); }
         if (item[1] === "career-gap-heading") { setPathwayMode("planner"); setPathwayStep(1); }
         if (item[1] === "tops-resume-drafter-panel") setAiR(function(previous) { return Object.assign({}, previous, { open: true }); });
         focusCareerWorksheet(item[1]);
@@ -9039,7 +9522,7 @@ function App() {
     })),
   activeTab === "pathway" && React.createElement(BusinessOwnership, { colors: C }),
   activeTab === "pathway" && React.createElement("details", { id: "tops-career-guide", style: { marginBottom: 14 } },
-  React.createElement("summary", { style: { minHeight: 44, padding: "12px 16px", cursor: "pointer", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary } }, "Open my career guide"),
+  React.createElement("summary", { style: { minHeight: 44, padding: "12px 16px", cursor: "pointer", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary } }, "Edit saved career details"),
   React.createElement(PersonalGuide, { key: guideRestoreRevision, colors: C, state: guideState, setState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, follow: followProgress, dismissed: dismissedReminders, busy: navBusy, onTarget: function(target, expectedTarget) {
     var updated = topsGuideWorksheetTarget(gapState.draft, target, expectedTarget);
     if (!updated) { setGuideState(Object.assign({}, guideState, { status: "The worksheet changed or this target could not be used. Review the current target and try again." })); return; }
@@ -10277,7 +10760,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         fontFamily: "'Source Sans 3', sans-serif"
       }
     }, t.text)), TOPS_TAP_PREP[t.id] && React.createElement("p", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.6, margin: "6px 12px 16px" } }, TOPS_TAP_PREP[t.id]), t.id === "t12b" && React.createElement("button", { type: "button", onClick: function() { setPathwayMode("planner"); setPathwayStep(1); setActiveTab("pathway"); }, style: { minHeight: 44, margin: "0 12px 16px", padding: "10px 14px", background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.gold, borderRadius: 5, font: "inherit", cursor: "pointer" } }, "Open career gap worksheet"))));
-  })(), activeTab === "pathway" && /*#__PURE__*/React.createElement("div", null, careerExperienceContext && React.createElement("section", { "aria-labelledby": "tops-career-context", style: { ...S.card, marginBottom: 14 } }, React.createElement("h3", { id: "tops-career-context" }, careerExperienceContext.tentative ? "Possibility to explore" : "Experience to compare"), React.createElement("p", null, (careerExperienceContext.tentative ? "Experience you selected: " : "Your description: ") + careerExperienceContext.wording), careerExperienceContext.example && React.createElement("p", null, "Your example: " + careerExperienceContext.example), careerExperienceContext.tentative && React.createElement("p", null, careerExperienceContext.partial ? "You selected only part of this possibility. Treat it as a starting point for research, not a confirmed qualification." : "This is a tentative starting point based on your selection, not a confirmed qualification."), careerExperienceContext.target && React.createElement("p", null, "Your target: " + careerExperienceContext.target), React.createElement("p", null, "Use this experience to compare the pathways below. This is your description, not a verified qualification or job match. It stays in this page session; it is not saved to your worksheet or backup."), React.createElement("button", { type: "button", onClick: function() { setCareerExperienceContext(null); }, style: { minHeight: 44, padding: "10px 14px", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 6, font: "inherit" } }, "Clear experience context")), /*#__PURE__*/React.createElement("div", { style: { ...S.card, borderLeft: "3px solid " + C.greenBright, marginBottom: 14 } },
+  })(), activeTab === "pathway" && /*#__PURE__*/React.createElement(CareerToolLibrary, { colors: C, expanded: pathwayMode === "planner" || !!journeyTarget || !!careerExperienceContext || aiR.open || jobsQ.open }, careerExperienceContext && React.createElement("section", { "aria-labelledby": "tops-career-context", style: { ...S.card, marginBottom: 14 } }, React.createElement("h3", { id: "tops-career-context" }, careerExperienceContext.tentative ? "Possibility to explore" : "Experience to compare"), React.createElement("p", null, (careerExperienceContext.tentative ? "Experience you selected: " : "Your description: ") + careerExperienceContext.wording), careerExperienceContext.example && React.createElement("p", null, "Your example: " + careerExperienceContext.example), careerExperienceContext.tentative && React.createElement("p", null, careerExperienceContext.partial ? "You selected only part of this possibility. Treat it as a starting point for research, not a confirmed qualification." : "This is a tentative starting point based on your selection, not a confirmed qualification."), careerExperienceContext.target && React.createElement("p", null, "Your target: " + careerExperienceContext.target), React.createElement("p", null, "Use this experience to compare the pathways below. This is your description, not a verified qualification or job match. It stays in this page session; it is not saved to your worksheet or backup."), React.createElement("button", { type: "button", onClick: function() { setCareerExperienceContext(null); }, style: { minHeight: 44, padding: "10px 14px", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 6, font: "inherit" } }, "Clear experience context")), /*#__PURE__*/React.createElement("div", { style: { ...S.card, borderLeft: "3px solid " + C.greenBright, marginBottom: 14 } },
     React.createElement("button", { type: "button", "aria-expanded": aiR.open, "aria-controls": "tops-resume-drafter-panel", onClick: function() { setAiR(function(p){ return Object.assign({}, p, { open: !p.open }); }); if (window.__trackEvent) window.__trackEvent("ai_resume_opened", {}); }, style: { display: "flex", width: "100%", minHeight: 44, padding: 0, background: "transparent", border: "none", justifyContent: "space-between", alignItems: "center", textAlign: "left", color: "inherit", cursor: "pointer" } },
       React.createElement("span", { style: { display: "block", minWidth: 0 } },
         React.createElement("span", { style: { display: "block", fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.greenBright, fontWeight: 700 } }, "\u2728 AI RESUME DRAFTER \u2014 FREE"),
@@ -10473,23 +10956,15 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.55 } }, "A DOL Employment Navigator will review this with you 1-on-1, free \u2014 then connect you to 70+ partner orgs for mentoring, hiring events, and placement. Virtual option works from anywhere, spouses included. \u2192"))),
       React.createElement("div", { style: { marginTop: 14, paddingTop: 12, borderTop: "1px solid " + C.border } }, React.createElement("a", { href: "https://www.missionready.jobs/start", target: "_blank", rel: "noopener noreferrer", onClick: function() { if (window.__trackEvent) window.__trackEvent("missionready_start_tapped", {}); }, style: { display: "block", padding: "11px 13px", background: C.bg, border: "1px solid " + C.border, borderRadius: 8, textDecoration: "none" } }, React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "ANOTHER WAY TO DO THIS: REELWORX MISSIONREADY \u2192", React.createElement("span", { style: { marginLeft: 7, fontSize: 9, padding: "2px 5px", background: C.bg, color: C.inactive, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, fontWeight: 400, border: "1px solid " + C.border, verticalAlign: "middle", whiteSpace: "nowrap" } }, "PARTNER")), React.createElement("div", { style: { fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.55 } }, "Build a guided profile in about five minutes instead of writing a resume. It prints to a clean ATS-ready resume and works as a single link on any application. Nothing is public and no contact details move until you approve it. Free for you, always."))),
       React.createElement("div", { style: { marginTop: 10, fontSize: 10, color: C.inactive, lineHeight: 1.5 } }, "Your text is used to build your fact sheet and draft."))), /*#__PURE__*/React.createElement("div", { style: { ...S.card, borderLeft: "3px solid " + C.gold, marginBottom: 14 } },
-    React.createElement("button", { type: "button", "aria-expanded": jobsQ.open, "aria-controls": "tops-live-jobs-panel", onClick: function() { setJobsQ(function(p){ return Object.assign({}, p, { open: !p.open }); }); if (window.__trackEvent) window.__trackEvent("jobs_search_opened", {}); }, style: { display: "flex", width: "100%", minHeight: 44, padding: 0, background: "transparent", border: "none", justifyContent: "space-between", alignItems: "center", textAlign: "left", color: "inherit", cursor: "pointer" } },
+    React.createElement("button", { type: "button", "aria-expanded": jobsQ.open, "aria-controls": "tops-live-jobs-panel", onClick: function() { setJobsQ(function(p){ return Object.assign({}, p, { open: !p.open, keyword: p.keyword || guideState.draft.targetRole || "" }); }); }, style: { display: "flex", width: "100%", minHeight: 44, padding: 0, background: "transparent", border: "none", justifyContent: "space-between", alignItems: "center", textAlign: "left", color: "inherit", cursor: "pointer" } },
       React.createElement("span", { style: { display: "block", minWidth: 0 } },
-        React.createElement("span", { style: { display: "block", fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.goldBright, fontWeight: 700 } }, "\uD83C\uDFAF LIVE JOBS IN YOUR TARGET STATE"),
-        React.createElement("span", { style: { display: "block", fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, "Real openings, pulled live from the Dept. of Labor \u2014 search any state before you even move.")),
+        React.createElement("span", { style: { display: "block", fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.goldBright, fontWeight: 700 } }, JOBS_LIVE ? "Search job openings" : "Find jobs by role and area"),
+        React.createElement("span", { style: { display: "block", fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, JOBS_LIVE ? "Search CareerOneStop job listings by keyword and location." : "Prepare searches for LinkedIn and USAJOBS. Live job search and automatic job matching are not enabled in this app.")),
       React.createElement("span", { "aria-hidden": "true", style: { color: C.goldBright, fontSize: 16, transform: jobsQ.open ? "rotate(90deg)" : "none" } }, "\u203A")),
     !jobsQ.open && React.createElement("div", { id: "tops-live-jobs-panel", hidden: true }),
-    jobsQ.open && !JOBS_LIVE && React.createElement("div", { id: "tops-live-jobs-panel", style: { marginTop: 12 } },
-      React.createElement("div", { style: { background: C.bg, border: "1px solid " + C.gold, borderRadius: 8, padding: "13px 15px", marginBottom: 8 } },
-        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1, color: C.goldBright, fontWeight: 700, marginBottom: 4 } }, "\u23F3 FINAL APPROVAL IN PROGRESS"),
-        React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.6 } }, "The live job feed is built and our data access request is in the U.S. Department of Labor's approval queue (submitted 21 JUL 2026). The moment it's granted, real openings in all 50 states appear right here \u2014 watch What's New.")),
-      React.createElement("a", { href: "https://www.careeronestop.org/Veterans/JobSearch/FindOpenings/state-job-banks.aspx", target: "_blank", rel: "noopener noreferrer", style: { display: "block", padding: "11px 13px", background: C.bg, border: "1px solid " + C.border, borderRadius: 6, textDecoration: "none" } },
-        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.textPrimary, fontWeight: 600 } }, "Meanwhile: your state's official job bank \u2192"),
-        React.createElement("div", { style: { fontSize: 10.5, color: C.inactive, marginTop: 2 } }, "DOL's directory of all 50 state job banks \u2014 post your resume, set alerts")),
-      React.createElement("div", { style: { marginTop: 10, paddingTop: 8, borderTop: "1px solid " + C.border, display: "flex", alignItems: "center", gap: 8 } },
-        React.createElement("a", { href: "https://www.careeronestop.org/", target: "_blank", rel: "noopener noreferrer", style: { flexShrink: 0 } }, React.createElement("img", { src: "https://www.careeronestop.org/tridionmultimedia/tcm24-26158_CareerOneStopLogo-linktous.gif", alt: "CareerOneStop logo", style: { height: 24, display: "block" }, onError: function(e){ e.target.style.display = "none"; } })),
-        React.createElement("div", { style: { fontSize: 10, color: C.inactive, lineHeight: 1.4 } }, "Job data by CareerOneStop, sponsored by the U.S. Department of Labor."))),
-    jobsQ.open && JOBS_LIVE && React.createElement("div", { id: "tops-live-jobs-panel", style: { marginTop: 12 } },
+    jobsQ.open && !JOBS_LIVE && React.createElement("div", { id: "tops-live-jobs-panel", tabIndex: -1, style: { marginTop: 12 } },
+      React.createElement(CareerJobSearch, { colors: C, state: jobsQ, setState: setJobsQ })),
+    jobsQ.open && JOBS_LIVE && React.createElement("div", { id: "tops-live-jobs-panel", tabIndex: -1, style: { marginTop: 12 } },
       React.createElement("input", { placeholder: "Job keyword (e.g. logistics manager, electrician)", defaultValue: jobsQ.keyword, onBlur: function(e){ var v=e.target.value; setJobsQ(function(p){ return Object.assign({}, p, { keyword: v }); }); }, style: { ...S.input, marginBottom: 8 } }),
       React.createElement("input", { placeholder: "State (e.g. Wisconsin or WI) or ZIP", defaultValue: jobsQ.state, onBlur: function(e){ var v=e.target.value; setJobsQ(function(p){ return Object.assign({}, p, { state: v }); }); }, style: { ...S.input, marginBottom: 10 } }),
       React.createElement("button", { disabled: jobsQ.loading, onClick: function() {
@@ -10518,54 +10993,12 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       React.createElement("div", { style: { marginTop: 10, paddingTop: 8, borderTop: "1px solid " + C.border, display: "flex", alignItems: "center", gap: 8 } },
         React.createElement("a", { href: "https://www.careeronestop.org/", target: "_blank", rel: "noopener noreferrer", style: { flexShrink: 0 } }, React.createElement("img", { src: "https://www.careeronestop.org/tridionmultimedia/tcm24-26158_CareerOneStopLogo-linktous.gif", alt: "CareerOneStop logo", style: { height: 24, display: "block" }, onError: function(e){ e.target.style.display = "none"; } })),
         React.createElement("div", { style: { fontSize: 10, color: C.inactive, lineHeight: 1.4 } }, "Job data by CareerOneStop, sponsored by the U.S. Department of Labor. External listings open on the source site.")))), /*#__PURE__*/React.createElement("div", {
-    style: S.card
-  }, /*#__PURE__*/React.createElement("div", {
-    style: S.cardTitle
-  }, "CAREER PATHWAY PLANNER"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      ...S.bodyText,
-      lineHeight: 1.7
-    }
-  }, "Your military training gave you more than you think. Choose your target. See the journey. Execute the plan.")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 4,
-      marginBottom: 14,
-      marginTop: 8
-    }
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => setPathwayMode("journey"),
-    style: {
-      flex: 1,
-      minHeight: 44,
-      padding: "10px 8px",
-      background: pathwayMode === "journey" ? C.green : C.bgCard,
-      border: "1px solid " + (pathwayMode === "journey" ? C.greenBright : C.border),
-      borderRadius: 4,
-      color: pathwayMode === "journey" ? C.textOnFill : C.inactive,
-      fontFamily: "'Oswald', sans-serif",
-      fontSize: 12,
-      letterSpacing: 2,
-      cursor: "pointer"
-    }
-  }, "\uD83C\uDFAF MISSION PLANNER"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setPathwayMode("planner"),
-    style: {
-      flex: 1,
-      minHeight: 44,
-      padding: "10px 8px",
-      background: pathwayMode === "planner" ? C.green : C.bgCard,
-      border: "1px solid " + (pathwayMode === "planner" ? C.greenBright : C.border),
-      borderRadius: 4,
-      color: pathwayMode === "planner" ? C.textOnFill : C.inactive,
-      fontFamily: "'Oswald', sans-serif",
-      fontSize: 12,
-      letterSpacing: 2,
-      cursor: "pointer"
-    }
-  }, "\uD83D\uDCCB STEP-BY-STEP GUIDE")), pathwayMode === "journey" && !journeyTarget && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    id: "tops-career-reference", style: { marginTop: 16 }
+  }, React.createElement("details", { open: !!journeyTarget || !!careerExperienceContext },
+    React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", fontWeight: 700 } }, "Optional: explore paths from a military background"),
+    React.createElement("p", null, "Use these reference paths if they help. You can choose a different field or continue with your own career goal. Selecting a background does not verify your skills."), pathwayMode === "journey" && !journeyTarget && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
-  }, "STEP 1: WHAT'S YOUR BACKGROUND?"), /*#__PURE__*/React.createElement("div", {
+  }, "Choose a background to explore (optional)"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexWrap: "wrap",
@@ -10598,7 +11031,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     }
   }, cat.codes)))), journeyMOS && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: S.sectionLabel
-  }, "STEP 2: WHERE DO YOU WANT TO GO?"), CAREER_TARGETS.filter(c => c.dib && (c.directMatch.includes(journeyMOS) || c.relatedMatch.includes(journeyMOS))).length > 0 && /*#__PURE__*/React.createElement("div", {
+  }, "Career ideas to investigate"), CAREER_TARGETS.filter(c => c.dib && (c.directMatch.includes(journeyMOS) || c.relatedMatch.includes(journeyMOS))).length > 0 && /*#__PURE__*/React.createElement("div", {
     style: { background: "rgba(139,184,60,0.08)", borderLeft: "3px solid " + C.greenBright, borderRadius: 8, padding: "10px 12px", marginBottom: 12, marginTop: 2 }
   }, /*#__PURE__*/React.createElement("span", {
     style: { fontSize: 9, background: "rgba(139,184,60,0.15)", color: C.greenBright, padding: "2px 6px", borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginRight: 7 }
@@ -10831,13 +11264,13 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       color: C.inactive,
       lineHeight: 1.7
     }
-  }, "Select your category above to see every career path available \u2014 from direct crosswalks to complete pivots."), /*#__PURE__*/React.createElement("div", {
+  }, "Choose a category to explore selected career paths. Your options are not limited to these examples."), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: C.inactive,
       marginTop: 8
     }
-  }, "Every path shows: timeline, difficulty, skills gap, steps, income bridge, and resources."))), pathwayMode === "journey" && journeyTarget && (() => {
+  }, "Reference paths include preparation steps and resources. Confirm current requirements for the role you choose."))), pathwayMode === "journey" && journeyTarget && (() => {
     const career = CAREER_TARGETS.find(c => c.id === journeyTarget);
     if (!career) return null;
     const mosLabel = MOS_CATEGORIES.find(m => m.id === journeyMOS);
@@ -11207,7 +11640,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         cursor: "pointer"
       }
     }, "\uD83D\uDCCB BUILD FULL ACTION PLAN \u2192")));
-  })(), pathwayMode === "planner" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  })())), pathwayMode === "planner" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 2,
