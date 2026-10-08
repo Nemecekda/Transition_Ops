@@ -32,7 +32,7 @@ for(const status of ['ACTIVE DUTY','ALREADY SEPARATED','RETIRED','MILITARY SPOUS
 await ev('localStorage.clear()');
 await c.send('Page.navigate',{url:url+'/'});await wait('!!document.querySelector(".onboard-cta-primary")','welcome again');
 await click('FIND MY STARTING POINT');await wait('document.activeElement.id==="tops-loop-title"','welcome routes and focuses starting points');
-assert.equal(await ev('document.querySelectorAll("#tops-member-starts button").length'),3);
+assert.equal(await ev('document.querySelectorAll("#tops-member-starts button").length'),4);
 for(const key of ['tops_user_status','tops_personal_guide_v1','tops_career_action_v1','tops_sep_date'])assert.equal(await ev('localStorage.getItem('+JSON.stringify(key)+')'),null);
 const selection=await ev('(()=>{const g={version:1,pathway:"change",targetRole:"SYNTHETIC_TARGET",currentRole:"",goal:""},a=topsEmptyAction();const gap={target:"SYNTHETIC_TARGET",rows:[{next:"SYNTHETIC_MEMBER_NEXT"}]};return {matching:topsMemberMove(g,a,gap,"guard"),mismatch:topsMemberMove(g,a,{...gap,target:"OLD_TARGET"},"guard")};})()');
 assert.equal(selection.matching.title,'SYNTHETIC_MEMBER_NEXT');assert.notEqual(selection.mismatch.title,'SYNTHETIC_MEMBER_NEXT');
@@ -86,16 +86,16 @@ for(const theme of ['professional','tactical'])for(const width of [320,375,900])
 await c.send('Emulation.clearDeviceMetricsOverride');
 for(const [profile,pathway] of [['','change'],['active','transition'],['separated','change'],['retired','change'],['guard','change'],['guard','skills'],['spouse','change']]){
  await ev('localStorage.clear();localStorage.setItem("tops_onboarded","1");localStorage.setItem("tops_user_status",'+JSON.stringify(profile)+');');await home();
- const starts=await ev('topsMemberStarts('+JSON.stringify(profile)+')');
- assert.equal(starts[0].pathway,profile==='active'?'transition':'change');
+ const starts=await ev('topsMemberStarts()');
+ assert.deepEqual(starts.map(item=>item.id),['work','explore','grow','leave']);
  for(const start of starts){
-  assert.equal(await ev('document.querySelectorAll("#tops-member-starts button").length'),3);
+  assert.equal(await ev('document.querySelectorAll("#tops-member-starts button").length'),4);
   await ev('document.querySelector('+JSON.stringify('#tops-member-starts button[aria-label="'+start.title+'"]')+').click()');
   await wait('document.activeElement.id==="tops-loop-title"','starting point focus');
   assert.equal(await ev('localStorage.getItem("tops_personal_guide_v1")'),null);
   assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
   assert.equal(await ev('localStorage.getItem("tops_sep_date")'),null);
-  assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("Choose this next step")'));
+  assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("Review this as my next step")'));
   assert.ok(await ev('document.getElementById("tops-home-tools-title").closest("section").textContent.includes("All tools")'));
   await home();
  }
@@ -175,8 +175,8 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
   const shot=await c.send('Page.captureScreenshot',{format:'png'});
   fs.writeFileSync(path.join(process.env.TOPS_LOOP_SCREENSHOT_DIR,profile+'.png'),Buffer.from(shot.data,'base64'));
  }
- await click(profile==='active'?'Open readiness check':'Open my career worksheet');
- await wait('document.activeElement.id==='+JSON.stringify(profile==='active'?'tops-plan-readiness':'career-gap-heading'),'loop tool destination focus');
+ await click(profile==='active'?'Open readiness check':'Continue my career work');
+ await wait('document.activeElement.id==='+JSON.stringify(profile==='active'?'tops-plan-readiness':'tops-career-start-heading'),'loop tool destination focus');
  await click('Home');await wait('!!document.getElementById("tops-loop-title")','return to loop');
  const unchanged=await ev('localStorage.getItem("tops_career_action_v1")');
  await ev('document.querySelector("#tops-loop-checkin summary").click()');
@@ -259,5 +259,5 @@ assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))
 // No loop member text is sent, and no AI endpoint is requested.
 assert.equal(requests.filter(r=>r.includes('SYNTHETIC_')||r.includes('/.netlify/functions/')).length,0);
 assert.deepEqual(errors,[]);
-console.log('MEMBER LOOP PASS: seven visitor/path scenarios; all three visible starts without storage; explicit direction save; no date requirement; choose/edit/save/reload; completion/reflection; goal drift review; orphan-step recovery; save denial; 320/375; zero model calls/member-text requests/errors');
+console.log('MEMBER LOOP PASS: seven visitor/path scenarios; all four visible priorities without storage; explicit direction save; no date requirement; choose/edit/save/reload; completion/reflection; goal drift review; orphan-step recovery; save denial; 320/375; zero model calls/member-text requests/errors');
 }finally{if(chrome)await h.stopChrome(chrome);await new Promise(r=>{server.close(r);server.closeAllConnections();});}})().catch(e=>{console.error(e.stack);process.exitCode=1;});
