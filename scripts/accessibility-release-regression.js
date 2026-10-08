@@ -865,12 +865,15 @@ async function privacyGeometry(client) {
       const nav = document.querySelector(".bottom-nav");
       if (!target || !nav) return { clear: false, reason: "Privacy or primary navigation missing" };
       const r = target.getBoundingClientRect(), n = nav.getBoundingClientRect();
+      const navStyle = getComputedStyle(nav);
+      const overlay = ["fixed", "sticky"].includes(navStyle.position) && navStyle.bottom !== "auto";
+      const clearBottom = overlay ? n.top : innerHeight;
       const zoom = Number(getComputedStyle(document.documentElement).zoom) || 1;
       const points = [[r.left+3,r.top+3],[r.right-3,r.top+3],[r.left+3,r.bottom-3],[r.right-3,r.bottom-3],[(r.left+r.right)/2,(r.top+r.bottom)/2]];
       const hits = points.every(([x,y]) => { const hit=document.elementFromPoint(x,y); return hit === target || target.contains(hit); });
       const atEnd = Math.abs(document.scrollingElement.scrollHeight - innerHeight - scrollY) <= 2;
-      return { clear: atEnd && r.top >= 0 && r.bottom <= n.top - 5*zoom && r.left >= 0 && r.right <= innerWidth && r.width >= 44*zoom-1 && r.height >= 44*zoom-1 && hits,
-        atEnd, hits, scrollY, scrollHeight:document.scrollingElement.scrollHeight, clientHeight:document.scrollingElement.clientHeight, innerHeight, targetTop:r.top, targetBottom:r.bottom, navTop:n.top, navHeight:n.height,
+      return { clear: atEnd && r.top >= 0 && r.bottom <= clearBottom - 5*zoom && r.left >= 0 && r.right <= innerWidth && r.width >= 44*zoom-1 && r.height >= 44*zoom-1 && hits,
+        atEnd, hits, scrollY, scrollHeight:document.scrollingElement.scrollHeight, clientHeight:document.scrollingElement.clientHeight, innerHeight, targetTop:r.top, targetBottom:r.bottom, navTop:n.top, navHeight:n.height, navOverlay:overlay,
         width:r.width, height:r.height, gap:n.top-r.bottom, x:(r.left+r.right)/2, y:(r.top+r.bottom)/2 };
     })()`, false);
     if (geometry.atEnd || attempt === 4) return geometry;
@@ -916,7 +919,7 @@ async function runPrivacyClearanceMatrix(client, origin) {
     if (scenario.largeText) await evaluate(client, "document.querySelectorAll('.bottom-nav .nav-label').forEach(el => el.style.fontSize = '20px'); true", false);
     await delay(150);
     await runPrivacyPointerChecks(client, scenario.name);
-    if (scenario.name === "desktop reported viewport") {
+    if (scenario.name === "mobile safe-area 34") {
       const saved = await evaluate(client, String.raw`(() => { const t=Array.from(document.querySelectorAll('[role=button]')).find(el=>el.textContent.trim()==="Privacy"); const saved=t.parentElement.style.paddingBottom; t.parentElement.style.paddingBottom="26px"; return saved; })()`, false);
       const old = await privacyGeometry(client);
       check(!old.clear && old.targetBottom > old.navTop, "Privacy regression rejects the original 26px footer defect", JSON.stringify(old));

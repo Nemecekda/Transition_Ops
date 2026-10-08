@@ -93,8 +93,8 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
   await input("tops-home-search",pair[0]);
   await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent.startsWith('+JSON.stringify("TOOL"+pair[1])+')).click()');
   await wait('document.getElementById("tops-page-title")?.textContent==='+JSON.stringify(pair[1]),'search destination');
-  assert.equal(await ev('Array.from(document.querySelectorAll("button")).some(n=>n.getAttribute("aria-label")==="Go to home screen")'),true);
-  await ev('Array.from(document.querySelectorAll("button")).find(n=>n.getAttribute("aria-label")==="Go to home screen").click()');
+  assert.equal(await ev('Array.from(document.querySelectorAll("button")).some(n=>n.closest(".bottom-nav") && n.textContent==="Home")'),true);
+  await ev('Array.from(document.querySelectorAll("button")).find(n=>n.closest(".bottom-nav") && n.textContent==="Home").click()');
   await wait('!!document.getElementById("tops-home-search")','return Home');
  }
  await input("tops-home-search","zzzz-no-match");await click("Browse all tools");

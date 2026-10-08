@@ -16,7 +16,13 @@ const capturePrefix=process.env.TOPS_VISUAL_PREFIX||'/private/tmp/tops-home-visu
 await home();await ev('localStorage.clear();localStorage.setItem("tops_onboarded","1")');
 for(const theme of ['professional','tactical'])for(const width of [320,375,1024]){
  await ev('localStorage.setItem("tops_theme",'+JSON.stringify(theme)+')');await c.send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<500});await home();
+ assert.equal(await ev('document.querySelectorAll(".bottom-nav").length'),1);
+ assert.equal(await ev('getComputedStyle(document.querySelector(".bottom-nav")).position'),width<=760?'fixed':'relative');
+ assert.ok(await ev('!!(document.querySelector(".bottom-nav").compareDocumentPosition(document.querySelector("main")) & Node.DOCUMENT_POSITION_FOLLOWING)'));
+ assert.equal(await ev('Array.from(document.querySelectorAll("button")).filter(n=>n.textContent==="All tools").length'),1);
  assert.equal(await ev('document.querySelectorAll("#tops-home-search").length'),1);
+ assert.ok(await ev('(()=>{const n=document.getElementById("tops-home-search"),p=getComputedStyle(n,"::placeholder"),bg=getComputedStyle(n).backgroundColor;const l=c=>{const v=c.match(/[\\d.]+/g).slice(0,3).map(Number).map(x=>{x/=255;return x<=.04045?x/12.92:Math.pow((x+.055)/1.055,2.4)});return .2126*v[0]+.7152*v[1]+.0722*v[2]};const a=l(p.color),b=l(bg);return Number(p.opacity)===1&&(Math.max(a,b)+.05)/(Math.min(a,b)+.05)>=4.5})()'),'Search placeholder has readable contrast');
+
  assert.equal(await ev('document.querySelectorAll("#tops-suicide-support").length'),1);
  assert.equal(await ev('document.querySelectorAll("#tops-priority-choices").length'),1);
  assert.equal(await ev('document.getElementById("tops-loop-title").getBoundingClientRect().top<document.getElementById("tops-home-search").getBoundingClientRect().top'),true);
