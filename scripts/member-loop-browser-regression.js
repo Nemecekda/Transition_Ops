@@ -96,7 +96,7 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
   assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
   assert.equal(await ev('localStorage.getItem("tops_sep_date")'),null);
   assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("Review this as my next step")'));
-  assert.ok(await ev('document.getElementById("tops-home-tools-title").closest("section").textContent.includes("All tools")'));
+  assert.ok(await ev('Array.from(document.querySelectorAll("#tops-page-orientation button")).some(n=>n.textContent==="All tools"&&n.getClientRects().length>0&&n.getBoundingClientRect().height>=44)'));
   await home();
  }
  if(profile==='guard'&&process.env.TOPS_LOOP_SCREENSHOT_DIR){
@@ -175,7 +175,7 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
   const shot=await c.send('Page.captureScreenshot',{format:'png'});
   fs.writeFileSync(path.join(process.env.TOPS_LOOP_SCREENSHOT_DIR,profile+'.png'),Buffer.from(shot.data,'base64'));
  }
- await click(profile==='active'?'Open readiness check':'Continue my career work');
+ await click(profile==='active'?'Open transition checklist':'Continue my career work');
  await wait('document.activeElement.id==='+JSON.stringify(profile==='active'?'tops-plan-readiness':'tops-career-start-heading'),'loop tool destination focus');
  await click('Home');await wait('!!document.getElementById("tops-loop-title")','return to loop');
  const unchanged=await ev('localStorage.getItem("tops_career_action_v1")');

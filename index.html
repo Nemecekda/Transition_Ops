@@ -736,6 +736,10 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 .tops-product-shell .tops-next-move-main{padding:32px 36px;background:var(--product-forest);color:#F8F8EF;border:0!important;border-radius:20px 20px 0 0}
 .tops-product-shell .tops-next-move-main>h2,.tops-product-shell .tops-next-move-heading{color:#F8F8EF!important}
 .tops-product-shell .tops-next-move-heading{font-size:clamp(28px,4vw,42px);max-width:30ch}
+.tops-product-shell .tops-next-move-continue .tops-next-move-main{padding:26px 30px}
+.tops-product-shell .tops-next-move-continue .tops-next-move-heading{font-size:clamp(26px,3vw,32px);line-height:1.22;max-width:42ch}
+.tops-next-move-continue .tops-next-move-context{max-width:72ch}
+@media(max-width:760px){.tops-product-shell .tops-next-move-continue .tops-next-move-main{padding:22px 20px}.tops-product-shell .tops-next-move-continue .tops-next-move-heading{font-size:26px}}
 .tops-product-shell .tops-next-move-main>h2{font-size:11px!important;letter-spacing:.15em!important;opacity:.85}
 .tops-product-shell .tops-next-move-actions>button:not(.tops-move-primary){color:inherit!important}
 .tops-product-shell .tops-next-move-actions>.tops-move-primary{background:#F8F8EF!important;color:#233627!important;border-color:#F8F8EF!important;box-shadow:0 2px 8px #0001}
@@ -839,7 +843,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 <li><strong style="color:#F5F0E1">Guard/Reserve Dedicated Dashboard</strong> — Separate flows for drilling Reservists and gray-area retirees</li>
 <li><strong style="color:#F5F0E1">DD214 Verification Guide</strong> — Line-by-line checklist so you don't leave errors on your separation document</li>
 <li><strong style="color:#F5F0E1">Career Pathway Mapper</strong> — Translate your MOS/AFSC to civilian roles with realistic bridge assessments</li>
-<li><strong style="color:#F5F0E1">Transition Readiness Score</strong> — Self-assessment that identifies gaps in your transition plan</li>
+<li><strong style="color:#F5F0E1">Transition Checklist</strong> — Review and confirm items in your transition plan</li>
 </ul>
 <h2 style="font-family:'Oswald',sans-serif;font-size:15px;color:#DAA520;letter-spacing:2px;margin-top:24px;margin-bottom:10px;border-bottom:1px solid #222A19;padding-bottom:6px">BUILT BY A VETERAN</h2>
 <p style="font-size:14px;line-height:1.65;color:#d4cbb3">Founded by Dean Nemecek — Army veteran, Senior HR professional (SPHR, SHRM-SCP), and founder of Veteran Bridge Solutions. Developed on personal time to fill the gap that leaves too many service members flat-footed at separation. Currently in distribution to Wisconsin National Guard transition staff, local MFRCs, and CVSO networks.</p>
@@ -6570,6 +6574,8 @@ function GuardCareerSupport(props) {
   var [area, setArea] = useState("national");
   var C = props.colors;
   var opportunity = props.opportunity || "", next = props.next || "";
+  var chosenAction = topsValidateAction(props.chosenAction);
+  var hasChosenAction = !!(chosenAction && chosenAction.text.trim());
   var hasPlan = !!(props.target.trim() || opportunity.trim() || next.trim());
   var conversation = topsConversationResume(props.prep);
   var action = { minHeight: 44, padding: "11px 14px", background: C.bg, border: "1px solid " + C.gold, borderRadius: 6, color: C.textPrimary, font: "inherit", cursor: "pointer" };
@@ -6585,9 +6591,10 @@ function GuardCareerSupport(props) {
     props.followup,
     props.target.trim() && React.createElement("p", { style: { overflowWrap: "anywhere", lineHeight: 1.6 } }, React.createElement("strong", null, "Your target: "), props.target),
     opportunity.trim() && React.createElement("p", { style: { overflowWrap: "anywhere", lineHeight: 1.6 } }, React.createElement("strong", null, "Your opportunity: "), opportunity),
-    next.trim() && React.createElement("p", { style: { overflowWrap: "anywhere", whiteSpace: "pre-wrap", lineHeight: 1.6 } }, React.createElement("strong", null, "Your next step: "), next),
-    React.createElement("button", { type: "button", style: action, onClick: function() { props.openPlan(null, hasPlan); } }, hasPlan ? "Continue my career plan" : "Work on my career plan"),
-    React.createElement("p", { style: { fontSize: 13, lineHeight: 1.6 } }, "Compare your experience with a role's requirements and choose your next action."),
+    !hasChosenAction && next.trim() && React.createElement("p", { style: { overflowWrap: "anywhere", whiteSpace: "pre-wrap", lineHeight: 1.6 } }, React.createElement("strong", null, "Your next step: "), next),
+    hasChosenAction && React.createElement("p", { style: { lineHeight: 1.6 } }, "Your next move above keeps your chosen step and progress together. Your career notes and support options are here when you need them."),
+    React.createElement("button", { type: "button", style: action, onClick: function() { props.openPlan(null, hasPlan); } }, hasChosenAction ? "Review career notes" : hasPlan ? "Continue my career plan" : "Work on my career plan"),
+    !hasChosenAction && React.createElement("p", { style: { fontSize: 13, lineHeight: 1.6 } }, "Compare your experience with a role's requirements and choose your next action."),
     conversation && React.createElement("section", { "aria-labelledby": "guard-conversation-resume", style: { margin: "14px 0", padding: 12, border: "1px solid " + C.border, borderRadius: 8 } },
       React.createElement("h3", { id: "guard-conversation-resume", style: { color: C.textPrimary, fontSize: 18, margin: "0 0 8px" } }, "Your conversation follow-up"),
       React.createElement("p", { style: { lineHeight: 1.6 } }, "Contact status (reported by you): " + (props.prep.status || "Not recorded")),
@@ -6697,7 +6704,7 @@ const TOPS_TOOL_CHOICES = [
   { id: "reminders", title: "Reminders and follow-ups", description: "Review deadlines and steps you are working on", keywords: "next action deadline reminder followup" },
   { id: "dd214", title: "DD214 and service records", description: "Review your record and experience", keywords: "dd214 dd 214 service record military experience" },
   { id: "taxes", title: "State tax information", description: "Explore state guidance for planning", keywords: "tax state residency retired pay" },
-  { id: "readiness", title: "Readiness check", description: "Review gaps in your transition plan", keywords: "readiness assessment score" },
+  { id: "readiness", title: "Transition checklist", description: "Review confirmed items and what needs attention", keywords: "readiness assessment score checklist" },
   { id: "finalpcs", title: "Final move", description: "Open the final PCS planning tools", keywords: "final pcs move moving relocation" },
   { id: "vethub", title: "Veteran hub", description: "Explore veteran career and benefit resources", keywords: "veteran employers benefits training" },
   { id: "critical", title: "Critical windows", description: "Review time-sensitive transition guidance", keywords: "critical windows deadlines" },
@@ -7159,7 +7166,7 @@ function CareerJourney(props) {
   function needsFreshReview() { if (!draft) return false; if (baseline.current !== current()) return true; try { return disk.current !== null && disk.current !== stored(); } catch (e) { return true; } }
 
   var introduction = props.introduction, setIntroduction = props.setIntroduction, [showIntroduction, setShowIntroduction] = useState(props.entry === "specialist");
-  useEffect(function() { if (props.entry === "grow" && !initial) start("grow"); if (props.entry && props.consumeEntry) props.consumeEntry(); }, []);
+  useEffect(function() { if (props.entry === "resume") { if (initial) continueVisit(); else if (existing) { if (props.gapState.draft.target.trim() && props.guideState.draft.targetRole.trim() && props.gapState.draft.target.trim() !== props.guideState.draft.targetRole.trim()) setStatus("Your saved comparison and current career goal name different roles. Review your current career plan before continuing; nothing has been changed."); else resume(); } } else if (["find", "grow", "pursue"].includes(props.entry) && !initial) start(props.entry); if (props.entry && props.consumeEntry) props.consumeEntry(); }, []);
   var button = { minHeight: 44, padding: "12px 16px", margin: "6px 8px 6px 0", font: "inherit", color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" };
   var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 12, font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 8 };
   function current() { return JSON.stringify([props.guideState.draft, props.actionState.draft, props.gapState.draft]); }
@@ -7251,7 +7258,7 @@ function CareerJourney(props) {
       React.createElement("h3", { id: "tops-journey-ready", tabIndex: -1 }, saved ? "Ready to move forward" : "Tools you can use now"),
       React.createElement("p", null, saved ? (keptMode === "browser" ? "Saved on this browser. Choose your next action below." : "Ready for this visit only. Your earlier saved work was not changed.") : learningNext ? "Your learning step is ready to explore. Saving is optional." : intent === "grow" ? "You can edit your experience before keeping this draft." : "You can explore openings now. Saving is optional; review your excerpts before preparing a resume."),
       learningNext && React.createElement("a", { id: "tops-learning-next", href: learningNext.url, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, button, { display: "inline-flex", alignItems: "center", boxSizing: "border-box", maxWidth: "100%", overflowWrap: "anywhere" }, saved ? { background: C.green, color: C.textOnFill } : {}) }, "Open " + learningNext.name + " (opens a new tab)"),
-      intent !== "grow" && React.createElement("button", { type: "button", style: Object.assign({}, button, !learningNext && saved && intent === "find" ? { background: C.green, color: C.textOnFill } : {}), onClick: function() { props.openTool("jobs", role); } }, "See openings by area"),
+      intent !== "grow" && React.createElement("button", { type: "button", style: Object.assign({}, button, !learningNext && saved && intent === "find" ? { background: C.green, color: C.textOnFill } : {}), onClick: function() { props.openTool("jobs", role); } }, "Search jobs by area"),
       intent === "pursue" && React.createElement("button", { type: "button", style: Object.assign({}, button, !learningNext && saved ? { background: C.green, color: C.textOnFill } : {}), onClick: function() { if (!checked) { setStatus("Review the excerpts and check the confirmation before using them in the Resume Drafter."); return; } props.openTool("resume", { role: role, experience: draft.rows.map(function(row, i) { return row.have ? TOPS_GAP_ROWS[i] + "\n" + row.have : ""; }).filter(Boolean).join("\n"), posting: draft.rows.map(function(row) { return row.requirement; }).filter(Boolean).join("\n") }); setStatus("Opened the Resume Drafter. Existing drafter work is kept; otherwise your reviewed excerpts are filled in. Review its fact sheet before creating a draft. Opening it does not send an AI request."); } }, "Prepare a tailored resume"),
       saved && React.createElement("button", { type: "button", style: Object.assign({}, button, !learningNext && intent === "grow" ? { background: C.green, color: C.textOnFill } : {}), onClick: props.home }, "Continue on Home"))),
     stage === 2 && draft && React.createElement("button", { type: "button", className: "tops-career-back", style: button, onClick: function() { setStage(1); setSaved(false); } }, intent === "pursue" ? "Edit experience or posting" : "Add or edit my experience"),
@@ -7442,12 +7449,12 @@ function topsMemberPriorityMove(priority, guide) {
   if (!item) return null;
   var g = topsValidateGuide(guide) || topsEmptyGuide(), target = g.targetRole.trim();
   var rows = {
-    work: { title: "Find a current " + (target ? target + " " : "") + "posting and choose one requirement to compare with my experience", route: "jobs", label: "See openings by area" },
-    explore: { title: "Explore " + (target || "possible roles") + " using my experience", route: "career-start", label: "Explore career options" },
+    work: { title: "Find a current " + (target ? target + " " : "") + "posting and choose one requirement to compare with my experience", route: "jobs", label: "Search jobs by area" },
+    explore: { title: "Explore " + (target || "possible roles") + " using my experience", route: "career-explore", label: "Explore career options" },
     grow: { title: "Prepare one question about growing " + (target ? "in " + target : "in my current career") + " for a supervisor or mentor", route: "growth", label: "Prepare a growth conversation" },
-    leave: { title: "Review my transition readiness and choose one gap to address", route: "readiness", label: "Check my transition readiness" }
+    leave: { title: "Review my transition checklist and choose one item to work on", route: "readiness", label: "Review my transition checklist" }
   };
-  return Object.assign({ kind: "priority", heading: { work: "Find a job to pursue", explore: "Explore career options", grow: "Prepare a growth conversation", leave: "Check your transition readiness" }[priority], why: "You chose: " + item.title + "." + (target ? " Your current role goal is " + target + "." : " You can start without a profile or a date."), pathway: item.pathway }, rows[priority]);
+  return Object.assign({ kind: "priority", heading: { work: "Find a job to pursue", explore: "Explore career options", grow: "Prepare a growth conversation", leave: "Review your transition checklist" }[priority], why: "You chose: " + item.title + "." + (target ? " Your current role goal is " + target + "." : " You can start without a profile or a date."), pathway: item.pathway }, rows[priority]);
 }
 function topsMemberPriorityContinuation(action, guide) {
   if (!topsActionMatches(action, guide) || action.done) return null;
@@ -7673,7 +7680,7 @@ function MemberPlanningLoop(props) {
         blocker === "service" && props.profile === "guard" && topsServiceConversation(serviceMoment) && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute("conversation", serviceMoment); } }, "Prepare this conversation"),
         a.text && React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10, lineHeight: 1.6 } }, React.createElement("input", { type: "checkbox", checked: replaceStep, onChange: function(event) { setReplaceStep(event.target.checked); } }), "Replace my current step in the editor. My saved copy changes only when I save."),
         React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
-          React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(alternative.route); } }, alternative.route === "training" ? "Browse training options" : alternative.route === "support" ? "Browse support options" : alternative.route === "specialist" ? "Talk with a career specialist" : alternative.route === "career-start" ? "Explore career options" : "Open readiness check"),
+          React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(alternative.route); } }, alternative.route === "training" ? "Browse training options" : alternative.route === "support" ? "Browse support options" : alternative.route === "specialist" ? "Talk with a career specialist" : alternative.route === "career-start" ? "Explore career options" : "Open transition checklist"),
           React.createElement("button", { type: "button", style: button, disabled: !!a.text && !replaceStep, onClick: function() {
             if (workingGuide.pathway && workingGuide.pathway !== g.pathway) props.setGuideState({ draft: workingGuide, ready: true, status: "Direction prepared for this visit. Review before saving." });
             props.setActionState({ draft: { version: 1, text: alternative.title, date: "", done: false, context: topsValidateGuide(workingGuide) }, status: "Alternative step added for review, not saved. Edit it to fit your situation, then choose Save career step." });
@@ -7701,10 +7708,13 @@ function MemberPlanningLoop(props) {
       setMessage("Review this possible direction below. Your current direction and saved step have not changed.");
       requestAnimationFrame(function() { var details = document.getElementById("tops-loop-direction"); if (details) { details.open = true; var input = details.querySelector("input"); if (input) { input.focus(); input.scrollIntoView({ block: "center" }); } } });
     } });
-  return React.createElement("section", { "aria-labelledby": "tops-loop-title", className: "tops-next-move", style: { marginBottom: 24, background: C.bg, border: "1px solid " + C.border, borderRadius: 14, color: C.textBody, overflowWrap: "anywhere", boxShadow: C.isLight ? "0 6px 24px rgba(14,18,11,0.05)" : "0 6px 24px rgba(0,0,0,0.16)" } },
+  var contextUI = g.pathway && React.createElement("p", { className: "tops-next-move-context", style: { margin: "12px 0", lineHeight: 1.5, fontSize: 14 } }, React.createElement("strong", null, "Your direction: "), TOPS_GUIDE_PATHS[g.pathway], g.targetRole ? " - " + g.targetRole : "", g.goal ? ". Your goal: " + g.goal : "");
+  var completionUI = ["continue", "reflect"].includes(move.kind) && !editing && isSavedStep() && React.createElement("div", { id: "tops-loop-completion", style: { margin: "12px 0" } },
+      React.createElement("button", { type: "button", style: button, onClick: function() { saveCompletion(!a.done); } }, a.done ? "Reopen completed step" : "Mark step complete"),
+      React.createElement("p", { style: { fontSize: 14, lineHeight: 1.6, margin: "6px 0" } }, "Saves your progress on this browser immediately. You can change it back; your step and target date are kept."));
+  return React.createElement("section", { "aria-labelledby": "tops-loop-title", className: "tops-next-move" + (move.kind === "continue" ? " tops-next-move-continue" : ""), style: { marginBottom: 24, background: C.bg, border: "1px solid " + C.border, borderRadius: 14, color: C.textBody, overflowWrap: "anywhere", boxShadow: C.isLight ? "0 6px 24px rgba(14,18,11,0.05)" : "0 6px 24px rgba(0,0,0,0.16)" } },
     React.createElement("div", { className: "tops-next-move-main" + (move.kind === "start" ? " tops-next-move-first" : ""), style: { borderLeft: "3px solid " + C.green } },
     React.createElement("h2", { id: "tops-loop-title", tabIndex: -1, style: { color: C.textSecondary, fontSize: 13, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase", margin: "0 0 14px" } }, "Your next move"),
-    g.pathway && React.createElement("p", { style: { margin: "0 0 10px", lineHeight: 1.6 } }, React.createElement("strong", null, "Your direction: "), TOPS_GUIDE_PATHS[g.pathway], g.targetRole ? " - " + g.targetRole : "", g.goal ? ". Your goal: " + g.goal : ""),
     move.kind === "reflect" && React.createElement("p", { style: { lineHeight: 1.6 } }, "You marked this step done: " + a.text + ". Review what you learned before choosing another step. Choosing a new step replaces this one in the editor; save to keep that change. Completion does not verify an outcome or eligibility."),
     move.kind === "reflect" && React.createElement("div", null,
       React.createElement("label", { htmlFor: "tops-loop-reflection" }, "What did you learn from this step?"),
@@ -7712,26 +7722,26 @@ function MemberPlanningLoop(props) {
         [["", "Choose what fits your situation"], ["ready", "I am ready to move forward"], ["gap", "I found a gap to work on"], ["rethink", "I want to reconsider my direction"], ["help", "I need help from a person"]].map(function(option) { return React.createElement("option", { key: option[0], value: option[0] }, option[1]); })),
       React.createElement("p", { id: "tops-loop-reflection-help", style: { fontSize: 14, lineHeight: 1.6 } }, "Your answer shapes a suggestion for this visit. Your completed step stays saved until you choose and save a replacement.")),
     React.createElement("h3", { "aria-live": "polite", className: "tops-next-move-heading", style: { margin: "0 0 12px", color: C.textPrimary } }, move.heading || move.title),
-    React.createElement("p", { style: { lineHeight: 1.6, margin: "0 0 20px", maxWidth: "68ch" } }, move.why),
-    ["continue", "reflect"].includes(move.kind) && !editing && isSavedStep() && React.createElement("div", { id: "tops-loop-completion", style: { margin: "12px 0" } },
-      React.createElement("button", { type: "button", style: button, onClick: function() { saveCompletion(!a.done); } }, a.done ? "Reopen completed step" : "Mark step complete"),
-      React.createElement("p", { style: { fontSize: 14, lineHeight: 1.6, margin: "6px 0" } }, "Saves your progress on this browser immediately. You can change it back; your step and target date are kept.")),
+    move.kind !== "continue" && contextUI,
+    move.kind !== "continue" && React.createElement("p", { style: { lineHeight: 1.6, margin: "0 0 20px", maxWidth: "68ch" } }, move.why),
     move.kind === "choose" && priorityUI,
     props.priority && move.kind !== "priority" && React.createElement("p", { style: { fontSize: 14, lineHeight: 1.6 } }, "Priority: " + TOPS_MEMBER_PRIORITIES.find(function(item) { return item.id === props.priority; }).title + ". Your existing work stays first. Review it before choosing a replacement."),
-    timing && React.createElement("div", { id: "tops-loop-timing", style: { lineHeight: 1.6, margin: "12px 0" } },
-      React.createElement("p", null, React.createElement("strong", null, timing.title), " - " + timing.detail),
-      React.createElement("p", { style: { fontSize: 14 } }, "This is your own planning date, not a benefits deadline. It does not send a notification."),
-      React.createElement("button", { type: "button", style: button, onClick: function() { setEditing(true); requestAnimationFrame(function() { var date = document.getElementById("tops-action-date"); if (date) date.focus(); }); } }, "Review my target date")),
     React.createElement("div", { className: "tops-next-move-actions", style: { display: "flex", flexWrap: "wrap", gap: 8 } },
       move.kind === "priority" && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(move.route); } }, move.label),
       move.kind === "priority" && React.createElement("button", { type: "button", style: button, onClick: chooseStep }, "Review this as my next step"),
       currentPriority && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(currentPriority.route); } }, currentPriority.label),
       currentLearning && React.createElement("a", { className: "tops-move-primary", href: currentLearning.url, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, button, { display: "inline-flex", alignItems: "center", background: C.green, color: C.textOnFill }) }, "Open " + currentLearning.name + " (opens a new tab)"),
+      move.kind === "continue" && !currentPriority && !currentLearning && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(g.pathway === "transition" ? "readiness" : "career-resume"); } }, g.pathway === "transition" ? "Open transition checklist" : "Continue my career work"),
       move.kind === "recover" && React.createElement("button", { type: "button", style: button, onClick: function() { setDirection(a.context); document.getElementById("tops-loop-direction").open = true; } }, "Review saved direction"),
       ["continue", "review"].includes(move.kind) && React.createElement("button", { type: "button", style: button, "aria-expanded": editing, onClick: function() { if (editing) setEditing(false); else openStepEditor(); } }, editing ? "Close step editor" : move.kind === "review" ? "Review earlier step" : "Update this step"),
       ["suggest", "reflect"].includes(move.kind) && React.createElement("button", { type: "button", style: button, disabled: move.kind === "reflect" && !reflectedMove, onClick: chooseStep }, "Choose this next step"),
-      move.route && move.kind !== "priority" && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "career" ? "Open my career worksheet" : move.route === "training" ? "Browse training options" : move.route === "support" ? "Browse support options" : "Open readiness check"),
-      move.kind === "continue" && !currentPriority && !currentLearning && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(g.pathway === "transition" ? "readiness" : "career-start"); } }, g.pathway === "transition" ? "Open readiness check" : "Continue my career work")),
+      move.route && move.kind !== "priority" && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "career" ? "Open my career worksheet" : move.route === "training" ? "Browse training options" : move.route === "support" ? "Browse support options" : "Open transition checklist")),
+    move.kind === "continue" && contextUI,
+    timing && React.createElement("div", { id: "tops-loop-timing", style: { lineHeight: 1.6, margin: "12px 0" } },
+      React.createElement("p", null, React.createElement("strong", null, timing.title), " - " + timing.detail),
+      React.createElement("p", { style: { fontSize: 14 } }, "This is your own planning date, not a benefits deadline. It does not send a notification."),
+      React.createElement("button", { type: "button", style: button, onClick: function() { setEditing(true); requestAnimationFrame(function() { var date = document.getElementById("tops-action-date"); if (date) date.focus(); }); } }, "Review my target date")),
+    completionUI,
     props.profile === "guard" && g.pathway && React.createElement("button", { type: "button", style: Object.assign({}, button, { marginTop: 12 }), onClick: function() {
       setBlocker("service"); setServiceMoment(""); setReplaceStep(false);
       requestAnimationFrame(function() { var details = document.getElementById("tops-loop-checkin"), field = document.getElementById("tops-loop-service-moment"); if (details) details.open = true; if (field) { field.focus(); field.scrollIntoView({ block: "center" }); } });
@@ -9106,9 +9116,9 @@ function App() {
       if (!planQuestion) setPlanQuestion({ text: text, reply: "", answered: false, guide: topsValidateGuide(guideState.draft), profile: userStatus });
       setPlanQuestionOpen(true); continuationFocus.current = "tops-plan-question"; continuationReturn.current = "tops-loop-title"; setActiveTab("navigator");
     } : null, onRoute: function(route, moment) {
-      if (["career-start", "growth", "specialist", "jobs"].includes(route)) {
+      if (["career-start", "career-resume", "career-explore", "growth", "specialist", "jobs"].includes(route)) {
         setJourneyTarget(""); setCareerExperienceContext(null); setPathwayMode("journey");
-        setCareerEntry(route === "growth" ? "grow" : route === "specialist" ? "specialist" : "");
+        setCareerEntry(route === "career-resume" ? "resume" : route === "career-explore" ? "find" : route === "growth" ? "grow" : route === "specialist" ? "specialist" : "");
         continuationReturn.current = "tops-loop-title";
         if (route === "jobs") { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, keyword: guideState.draft.targetRole || previous.keyword || "" }); }); focusCareerWorksheet("tops-live-jobs-panel"); }
         else continuationFocus.current = route === "specialist" ? (introduction.prepared ? "tops-specialist-introduction" : "tops-prepare-introduction") : "tops-career-start-heading";
@@ -9256,7 +9266,7 @@ function App() {
             icon: "🎯",
             route: "pathway",
             label: "CAREER PATHWAYS",
-            desc: "Translate your MOS to civilian roles"
+            desc: "Explore roles using your military or civilian experience"
           }, {
             icon: "🏢",
             route: "resources",
@@ -9309,9 +9319,9 @@ function App() {
             className: "onboard-divider"
           }), /*#__PURE__*/React.createElement("p", {
             className: "onboard-description"
-          }, "Deadlines, VA math, pay estimates, SkillBridge intel, and state tax answers \u2014 one free toolkit for your whole transition."), /*#__PURE__*/React.createElement("div", {
+          }, "Find work, plan your transition, or grow your civilian career while you serve. Start with what you need today."), /*#__PURE__*/React.createElement("div", {
             className: "onboard-micro-copy"
-          }, "Leaving service, changing careers, or supporting a family member? Start with what you need today.", /*#__PURE__*/React.createElement("br", null), "You can personalize your view whenever you are ready."), /*#__PURE__*/React.createElement("button", {
+          }, "For transitioning service members, Guard and Reserve members, veterans and military families.", /*#__PURE__*/React.createElement("br", null), "No resume or separation date needed to start."), /*#__PURE__*/React.createElement("button", {
             onClick: function () {
               window.__safeSet("tops_onboarded", "1");
               continuationFocus.current = "tops-loop-title";
@@ -9937,7 +9947,7 @@ function App() {
             )
           );
         })()),
-        React.createElement(GuardCareerSupport, { followup: React.createElement("div", null, SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)).filter(function(r) { return followProgress[r.id] && !dismissedReminders[r.id]; }).map(function(r) { return React.createElement("div", { key: r.id, style: { marginBottom: 14, padding: 12, border: "1px solid " + C.border, borderRadius: 8 } }, React.createElement("strong", null, r.title), React.createElement("p", null, topsFollowLabel(followProgress[r.id])), React.createElement("button", { id: "tops-home-follow-" + r.id, type: "button", style: { minHeight: 44, padding: "10px 14px", background: C.bg, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 6 }, onClick: function() { openPlanRoute("reminders", "tops-reminder-" + r.id, "tops-home-follow-" + r.id); } }, "Continue step")); })), colors: C, prep: gapState.draft.prep, openConversation: function(field) { setServiceConversation(""); setPrepareOpportunity(false); setGuardOfficeOffer(null); setPathwayMode("planner"); setPathwayStep(1); continuationReturn.current = "guard-conversation-resume"; focusCareerWorksheet("career-prep-" + field); setActiveTab("pathway"); }, target: gapState.draft.target, opportunity: gapState.draft.prep.opportunity, next: gapState.draft.prep.followup.trim() ? gapState.draft.prep.followup : (gapState.draft.rows.find(function(row) { return row.next.trim(); }) || {}).next || "", openPlan: function(office, prepare) { setPrepareOpportunity(!!prepare); setGuardOfficeOffer(office); setPathwayMode("planner"); setPathwayStep(1); setActiveTab("pathway"); window.scrollTo(0, 0); } }),
+        React.createElement(GuardCareerSupport, { followup: React.createElement("div", null, SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)).filter(function(r) { return followProgress[r.id] && !dismissedReminders[r.id]; }).map(function(r) { return React.createElement("div", { key: r.id, style: { marginBottom: 14, padding: 12, border: "1px solid " + C.border, borderRadius: 8 } }, React.createElement("strong", null, r.title), React.createElement("p", null, topsFollowLabel(followProgress[r.id])), React.createElement("button", { id: "tops-home-follow-" + r.id, type: "button", style: { minHeight: 44, padding: "10px 14px", background: C.bg, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 6 }, onClick: function() { openPlanRoute("reminders", "tops-reminder-" + r.id, "tops-home-follow-" + r.id); } }, "Continue step")); })), colors: C, chosenAction: actionState.draft, prep: gapState.draft.prep, openConversation: function(field) { setServiceConversation(""); setPrepareOpportunity(false); setGuardOfficeOffer(null); setPathwayMode("planner"); setPathwayStep(1); continuationReturn.current = "guard-conversation-resume"; focusCareerWorksheet("career-prep-" + field); setActiveTab("pathway"); }, target: gapState.draft.target, opportunity: gapState.draft.prep.opportunity, next: gapState.draft.prep.followup.trim() ? gapState.draft.prep.followup : (gapState.draft.rows.find(function(row) { return row.next.trim(); }) || {}).next || "", openPlan: function(office, prepare) { setPrepareOpportunity(!!prepare); setGuardOfficeOffer(office); setPathwayMode("planner"); setPathwayStep(1); setActiveTab("pathway"); window.scrollTo(0, 0); } }),
         React.createElement("details", { className: "tops-policy-disclosure" }, React.createElement("summary", null, "Policy updates and sources"), renderPolicyNotice()),
 
 
@@ -10148,8 +10158,8 @@ function App() {
 
     // ═══════════ STANDARD DASHBOARD (Active Duty, Separated, Retired, Spouse) ═══════════
     var etsMonths = moToETS(separationDate);
-    var rScore = calcReadiness(readinessAnswers);
-    var rInfo = getScoreLabel(rScore);
+    var readinessTotal = READINESS_CATS.reduce(function(total, category) { return total + category.qs.length; }, 0);
+    var readinessConfirmed = READINESS_CATS.reduce(function(total, category) { return total + category.qs.filter(function(q) { return readinessAnswers[q.id] === true; }).length; }, 0);
     var totalTasks = 0, doneTasks = 0;
     milestones.forEach(function(m) { m.tasks.forEach(function(t) { totalTasks++; if (t.done) doneTasks++; }); });
     var tlPct = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
@@ -10241,8 +10251,8 @@ function App() {
               React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: C.textPrimary } }, doneTasks, React.createElement("span", { style: { color: C.inactive } }, "/" + totalTasks)),
               React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.inactive, marginTop: 3 } }, "TASKS")),
             React.createElement("button", { id: "tops-home-readiness", type: "button", style: { textAlign: "center", cursor: "pointer", background: "transparent", border: 0, padding: 0, minWidth: 44, minHeight: 44 }, onClick: function() { openPlanRoute("readiness", "tops-plan-readiness", "tops-home-readiness"); } },
-              React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: topsThemeInk(C, rInfo.c) } }, rScore),
-              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.inactive, marginTop: 3 } }, "READINESS"))
+              React.createElement("div", { style: { fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 500, color: C.textPrimary } }, readinessConfirmed + "/" + readinessTotal),
+              React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.inactive, marginTop: 3 } }, "CONFIRMED"))
           )
         );
       })()),
@@ -10662,7 +10672,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
 
   activeTab === "timeline" && !selectedMilestone && /*#__PURE__*/React.createElement("div", { id: "tops-plan-timeline", role: "region", "aria-label": "Timeline", tabIndex: -1 },
   React.createElement("nav", { "aria-label": "My Plan tools", style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 } },
-    [{ id: "reminders", label: "Reminders & follow-ups", target: "tops-plan-reminders" }, { id: "resources", label: "Documents", target: "tops-plan-documents" }, { id: "readiness", label: "Readiness", target: "tops-plan-readiness" }].map(function(tool) {
+    [{ id: "reminders", label: "Reminders & follow-ups", target: "tops-plan-reminders" }, { id: "resources", label: "Documents", target: "tops-plan-documents" }, { id: "readiness", label: "Transition checklist", target: "tops-plan-readiness" }].map(function(tool) {
       return React.createElement("button", { key: tool.id, id: "tops-plan-shortcut-" + tool.id, type: "button", style: { minHeight: 44, minWidth: 44, flex: "1 1 150px", padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgElevated, color: C.textPrimary, font: "inherit", fontSize: 14, fontWeight: 600, cursor: "pointer", textAlign: "left" }, onClick: function() { openPlanRoute(tool.id, tool.target, "tops-plan-shortcut-" + tool.id); } }, tool.label);
     })
   ), /*#__PURE__*/React.createElement("div", {
@@ -17411,75 +17421,47 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
 
   // ═══════════ READINESS SCORE TAB ═══════════
   activeTab === "readiness" && /*#__PURE__*/React.createElement("div", null, (function() {
-    var rScore = calcReadiness(readinessAnswers);
-    var rInfo = getScoreLabel(rScore);
     var totalQ = READINESS_CATS.reduce(function(s, c) { return s + c.qs.length; }, 0);
-    var doneQ = Object.values(readinessAnswers).filter(function(v) { return v; }).length;
+    var doneQ = READINESS_CATS.reduce(function(s, c) { return s + c.qs.filter(function(q) { return readinessAnswers[q.id] === true; }).length; }, 0);
+    var nextCat = READINESS_CATS.find(function(cat) { return cat.qs.some(function(q) { return readinessAnswers[q.id] !== true; }); });
 
     return React.createElement("div", null,
-      React.createElement("div", { style: { textAlign: "center", paddingTop: 10 } },
-        React.createElement("div", { id: "tops-plan-readiness", tabIndex: -1, role: "heading", "aria-level": 2, style: { fontSize: 10, color: C.gold, letterSpacing: 3, fontFamily: "'Oswald', sans-serif", marginBottom: 16 } }, "TRANSITION READINESS SCORE"),
-        React.createElement("div", { style: { position: "relative", width: 180, height: 180, margin: "0 auto 16px" } },
-          React.createElement("svg", { width: 180, height: 180, viewBox: "0 0 180 180", style: { transform: "rotate(-90deg)" } },
-            React.createElement("circle", { cx: 90, cy: 90, r: 80, fill: "none", stroke: C.border, strokeWidth: 10 }),
-            React.createElement("circle", { cx: 90, cy: 90, r: 80, fill: "none", stroke: rInfo.c, strokeWidth: 10, strokeDasharray: (rScore / 100) * 502.65 + " 502.65", strokeLinecap: "round", style: { transition: "stroke-dasharray 0.8s ease" } })
-          ),
-          React.createElement("div", { style: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" } },
-            React.createElement("div", { style: { fontSize: 48, fontWeight: 700, color: topsThemeInk(C, rInfo.c), fontFamily: "'Oswald', sans-serif", lineHeight: 1 } }, rScore),
-            React.createElement("div", { style: { fontSize: 12, color: C.gold } }, "/ 100")
-          )
-        ),
-        React.createElement("div", { style: { display: "inline-block", padding: "6px 16px", background: rInfo.c, color: "#fff", fontSize: 13, fontWeight: 700, letterSpacing: 2, borderRadius: 4, fontFamily: "'Oswald', sans-serif" } }, rInfo.l),
-        React.createElement("div", { style: { fontSize: 12, color: C.inactive, marginTop: 10 } }, doneQ + " of " + totalQ + " readiness indicators confirmed")
+      React.createElement("section", { "aria-labelledby": "tops-plan-readiness", style: { padding: 24, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 14, marginBottom: 20 } },
+        React.createElement("h2", { id: "tops-plan-readiness", tabIndex: -1, style: { fontSize: 26, color: C.textPrimary, margin: "0 0 12px" } }, "Review your transition checklist"),
+        React.createElement("p", { style: { color: C.textBody, lineHeight: 1.6 } }, "Confirm the items that describe your situation. An unchecked item is not confirmed here; it does not mean you are unprepared or ineligible."),
+        React.createElement("p", { role: "status", "aria-atomic": "true", style: { fontWeight: 600, color: C.textPrimary } }, doneQ === 0 ? "No items confirmed yet. Start with one category." : doneQ + " of " + totalQ + " items confirmed."),
+        React.createElement("p", { style: { color: C.textBody, lineHeight: 1.6 } }, nextCat ? (totalQ - doneQ) + " items remain unconfirmed. Review what applies to you, and leave anything uncertain unchecked." : "Every item is marked confirmed. Revisit these answers when your situation changes. This checklist does not verify eligibility or guarantee an outcome."),
+        nextCat && React.createElement("button", { type: "button", style: { minHeight: 44, padding: "12px 18px", borderRadius: 8, border: "1px solid " + C.border, background: C.bgElevated, color: C.textPrimary, font: "inherit", fontWeight: 600 }, onClick: function() { setReadinessCatOpen(nextCat.id); requestAnimationFrame(function() { var heading = document.getElementById("tops-readiness-category-" + nextCat.id); if (heading) heading.focus(); }); } }, "Review " + nextCat.name)
       ),
       READINESS_CATS.map(function(cat) {
-        var cs = calcCatScore(cat.id, readinessAnswers);
-        var ci = getScoreLabel(cs);
         var isOpen = readinessCatOpen === cat.id;
-        var done = cat.qs.filter(function(q) { return readinessAnswers[q.id]; }).length;
+        var done = cat.qs.filter(function(q) { return readinessAnswers[q.id] === true; }).length;
         return React.createElement("div", { key: cat.id },
-          React.createElement("div", { role: "button", "aria-expanded": isOpen, tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { margin: "8px 0", padding: 14, background: isOpen ? "rgba(74,93,35,0.1)" : C.bgCard, border: "1px solid " + (isOpen ? cat.color : C.border), borderRadius: 8, cursor: "pointer" }, onClick: function() { setReadinessCatOpen(isOpen ? null : cat.id); } },
+          React.createElement("button", { id: "tops-readiness-category-" + cat.id, type: "button", "aria-expanded": isOpen, "aria-controls": "tops-readiness-items-" + cat.id, style: { width: "100%", textAlign: "left", font: "inherit", minHeight: 44, margin: "8px 0", padding: 14, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" }, onClick: function() { setReadinessCatOpen(isOpen ? null : cat.id); } },
             React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } },
               React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
                 React.createElement("span", { style: { fontSize: 20 } }, cat.icon),
                 React.createElement("div", null,
                   React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: C.textPrimary, letterSpacing: 1, fontFamily: "'Oswald', sans-serif" } }, cat.name),
-                  React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 2 } }, done + "/" + cat.qs.length + " confirmed")
+                  React.createElement("div", { style: { fontSize: 13, color: C.textBody, marginTop: 4 } }, done + " of " + cat.qs.length + " confirmed")
                 )
               ),
-              React.createElement("div", { style: { fontSize: 22, fontWeight: 700, color: topsThemeInk(C, ci.c), fontFamily: "'Oswald', sans-serif" } }, cs + "%")
-            ),
-            React.createElement("div", { style: { marginTop: 8, height: 6, borderRadius: 4, background: C.border, overflow: "hidden" } },
-              React.createElement("div", { style: { height: "100%", width: cs + "%", background: cat.color, borderRadius: 4, transition: "width 0.6s ease" } })
+              React.createElement("span", { "aria-hidden": "true", style: { color: C.textPrimary } }, isOpen ? "−" : "+")
             )
           ),
-          isOpen && React.createElement("div", { style: { padding: "4px 0 12px" } },
+          React.createElement("div", { id: "tops-readiness-items-" + cat.id, hidden: !isOpen, style: { padding: "4px 0 12px" } },
             cat.qs.map(function(q) {
-              return React.createElement("div", { key: q.id, role: "checkbox", "aria-checked": !!readinessAnswers[q.id], tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 4px", borderBottom: "1px solid " + C.border, cursor: "pointer" }, onClick: function() { setReadinessAnswers(function(p) { var n = Object.assign({}, p); n[q.id] = !p[q.id]; return n; }); } },
+              return React.createElement("div", { key: q.id, role: "checkbox", "aria-checked": readinessAnswers[q.id] === true, tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { display: "flex", minHeight: 44, boxSizing: "border-box", gap: 12, alignItems: "flex-start", padding: "12px 4px", borderBottom: "1px solid " + C.border, cursor: "pointer" }, onClick: function() { setReadinessAnswers(function(p) { var n = Object.assign({}, p); n[q.id] = !p[q.id]; return n; }); } },
                 React.createElement("div", { style: { width: 22, height: 22, minWidth: 22, borderRadius: 4, border: readinessAnswers[q.id] ? "2px solid " + C.green : "2px solid " + C.border, background: readinessAnswers[q.id] ? C.green : "transparent", display: "flex", alignItems: "center", justifyContent: "center", color: C.textOnFill, fontSize: 14, fontWeight: 700 } }, readinessAnswers[q.id] ? "\u2713" : ""),
                 React.createElement("div", { style: { flex: 1 } },
-                  React.createElement("div", { style: { fontSize: 13, color: readinessAnswers[q.id] ? C.greenBright : C.textBody, lineHeight: 1.4, textDecoration: readinessAnswers[q.id] ? "line-through" : "none", opacity: readinessAnswers[q.id] ? 0.7 : 1 } }, q.t),
-                  q.w >= 3 && React.createElement("div", { style: { fontSize: 9, color: C.gold, marginTop: 3, letterSpacing: 1, fontFamily: "'Oswald', sans-serif" } }, "HIGH IMPACT")
+                  React.createElement("div", { style: { fontSize: 15, color: C.textBody, lineHeight: 1.5 } }, q.t)
                 )
               );
             })
           )
         );
       }),
-      React.createElement("div", { style: { padding: "20px 0 10px" } },
-        rScore < 50 && React.createElement("div", { style: { padding: 14, background: "rgba(192,57,43,0.12)", border: "1px solid " + C.danger, borderRadius: 8, fontSize: 13, color: C.textBody, lineHeight: 1.5 } },
-          React.createElement("strong", { style: { color: C.danger, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, "COMMANDER'S ASSESSMENT:"), React.createElement("br"), React.createElement("br"),
-          "Your readiness posture has significant gaps. Focus on HIGH IMPACT items first \u2014 those carry the most weight. Move with purpose."
-        ),
-        rScore >= 50 && rScore < 80 && React.createElement("div", { style: { padding: 14, background: "rgba(139,125,60,0.1)", border: "1px solid rgba(139,125,60,0.2)", borderRadius: 8, fontSize: 13, color: C.gold, lineHeight: 1.5 } },
-          React.createElement("strong", { style: { color: C.goldBright, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, "PROGRESS CHECK:"), React.createElement("br"), React.createElement("br"),
-          "Tracking, but gaps remain. Any category below 70% is a risk area. Each unchecked item = real money, benefits, or opportunities on the line."
-        ),
-        rScore >= 80 && React.createElement("div", { style: { padding: 14, background: "rgba(74,93,35,0.15)", border: "1px solid rgba(74,93,35,0.3)", borderRadius: 8, fontSize: 13, color: C.greenBright, lineHeight: 1.5 } },
-          React.createElement("strong", { style: { color: (C.isLight ? C.greenBright : "#a8cf6a"), fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, "STRONG POSTURE:"), React.createElement("br"), React.createElement("br"),
-          "Well-prepared. The difference between 80% and 100% saves thousands or months of frustration. You didn't half-step in uniform \u2014 don't start now."
-        )
-      )
+      React.createElement("p", { style: { padding: "12px 0", color: C.textBody, lineHeight: 1.6 } }, "Use this as your own planning checklist, not a readiness rating. Confirm deadlines and eligibility with the appropriate office before acting.")
     );
   })()),
 
@@ -18044,7 +18026,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     showMoreMenu !== "benefits" && TOPS_TOOL_CHOICES.filter(function(tool) { return tool.id === "timeline" || tool.id === "pathway"; }).map(function(tool) {
       return React.createElement("button", { key: tool.id, type: "button", className: "tops-more-tool", onClick: function() { openExperienceTool(tool.id); } }, tool.title);
     }),
-    [{id:"reminders",icon:"bell",label:"REMINDERS & ALERTS",desc:"Deadline reminders timed to your separation date"},{id:"critical",icon:"alert",label:"CRITICAL WINDOWS",desc:"Time-bound windows where missing the date costs money or benefits"},{id:"readiness",icon:"gauge",label:"READINESS SCORE",desc:"Self-assessment across transition categories"},{id:"vamath",icon:"calc",label:"VA MATH CALCULATOR",desc:"Estimate a combined rating using 38 CFR 4.25 Table I"},{id:"vapay",icon:"dollar",label:"VA PAY ESTIMATOR",desc:"Calculate your monthly disability compensation"},{id:"finalpcs",icon:"box",label:"FINAL PCS ENTITLEMENTS",desc:"Weight allowances, MALT, move timelines by grade"},{id:"vethub",icon:"medal",label:"VET HUB",desc:"Career score, benefits, employers, entrepreneurship"},{id:"resources",icon:"link",label:"RESOURCES",desc:"VSOs, SkillBridge, healthcare, document vault"},{id:"taxes",icon:"percent",label:"TAX INTEL",desc:"State tax on retired pay, MSRRA, residency"},{id:"dd214",icon:"doc",label:"DD214 GUIDE",desc:"Verification checklist, service record review"}].filter(function(m) { return showMoreMenu !== "benefits" || ["critical","vamath","vapay","resources","taxes"].indexOf(m.id) !== -1; }).map(function(m) {
+    [{id:"reminders",icon:"bell",label:"REMINDERS & ALERTS",desc:"Deadline reminders timed to your separation date"},{id:"critical",icon:"alert",label:"CRITICAL WINDOWS",desc:"Time-bound windows where missing the date costs money or benefits"},{id:"readiness",icon:"gauge",label:"TRANSITION CHECKLIST",desc:"Review and confirm your transition tasks"},{id:"vamath",icon:"calc",label:"VA MATH CALCULATOR",desc:"Estimate a combined rating using 38 CFR 4.25 Table I"},{id:"vapay",icon:"dollar",label:"VA PAY ESTIMATOR",desc:"Calculate your monthly disability compensation"},{id:"finalpcs",icon:"box",label:"FINAL PCS ENTITLEMENTS",desc:"Weight allowances, MALT, move timelines by grade"},{id:"vethub",icon:"medal",label:"VET HUB",desc:"Career score, benefits, employers, entrepreneurship"},{id:"resources",icon:"link",label:"RESOURCES",desc:"VSOs, SkillBridge, healthcare, document vault"},{id:"taxes",icon:"percent",label:"TAX INTEL",desc:"State tax on retired pay, MSRRA, residency"},{id:"dd214",icon:"doc",label:"DD214 GUIDE",desc:"Verification checklist, service record review"}].filter(function(m) { return showMoreMenu !== "benefits" || ["critical","vamath","vapay","resources","taxes"].indexOf(m.id) !== -1; }).map(function(m) {
       return React.createElement("button", { key: m.id, className: "tops-more-tool", onClick: function() { primaryNavFocus.current = true; setActiveTab(m.id); setShowMoreMenu(false); }, style: undefined },
         React.createElement("span", { style: { color: C.gold, flexShrink: 0 } }, TopsToolArt(m.id, m.icon, 54)),
         React.createElement("div", { style: { flex: 1 } },

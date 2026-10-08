@@ -13,7 +13,9 @@ const home=async()=>{await c.send('Page.navigate',{url:url+'/?tool=dashboard'});
 
 const priority=label=>ev('document.getElementById("tops-priority-choices").open=true;document.querySelector('+JSON.stringify('#tops-member-starts button[aria-label="'+label+'"]')+').click()');
 await home();await ev('localStorage.clear();localStorage.setItem("tops_onboarded","1")');await home();
-for(const [label,action,destination] of [['Find work soon','See openings by area','tops-live-jobs-panel'],['Explore a different career','Explore career options','tops-career-start-heading'],['Grow in my current career','Prepare a growth conversation','career-starter-resume'],['Prepare to leave service','Check my transition readiness','tops-plan-readiness']]){
+for(const [label,action,destination] of [['Find work soon','Search jobs by area','tops-live-jobs-panel'],['Explore a different career','Explore career options','career-starter-resume'],['Grow in my current career','Prepare a growth conversation','career-starter-resume'],['Prepare to leave service','Review my transition checklist','tops-plan-readiness']]){
+ // Independent fresh-entry cases; protected conflicting drafts are covered by career-intent-browser-regression.
+ await home();
  await priority(label); await wait('document.activeElement.id==="tops-loop-title"','priority focus');
  for(const key of ['tops_personal_guide_v1','tops_career_action_v1','tops_sep_date'])assert.equal(await ev('localStorage.getItem('+JSON.stringify(key)+')'),null);
  assert.equal(await ev('!!document.getElementById("tops-loop-completion")'),false);
@@ -44,7 +46,7 @@ await ev('localStorage.removeItem("tops_career_action_v1");localStorage.setItem(
 await priority('Grow in my current career');assert.equal(await ev('JSON.parse(localStorage.getItem("tops_personal_guide_v1")).pathway'),'transition');
 await click('Review this as my next step');await wait('!!document.getElementById("tops-action-text")','growth context review');await click('Save career step');assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).context.pathway'),'skills');assert.equal(await ev('JSON.parse(localStorage.getItem("tops_personal_guide_v1")).pathway'),'transition');
 await home();assert.ok((await ev('document.getElementById("tops-loop-title").closest("section").textContent')).includes('Your direction changed'));assert.equal(await ev('!!document.getElementById("tops-loop-completion")'),false);
-for(const [label,pathway,action,destination] of [['Find work soon','change','See openings by area','tops-live-jobs-panel'],['Grow in my current career','skills','Prepare a growth conversation','career-starter-resume']]){
+for(const [label,pathway,action,destination] of [['Find work soon','change','Search jobs by area','tops-live-jobs-panel'],['Grow in my current career','skills','Prepare a growth conversation','career-starter-resume']]){
  const g={...transitionGuide,pathway};await ev('localStorage.removeItem("tops_career_action_v1");localStorage.setItem("tops_personal_guide_v1",'+JSON.stringify(JSON.stringify(g))+')');await home();await priority(label);await click('Review this as my next step');await wait('!!document.getElementById("tops-action-text")','generated action review');await click('Save career step');await home();await click(action);await wait('!!document.getElementById('+JSON.stringify(destination)+')','saved generated action destination');await click('Home');await wait('!!document.getElementById("tops-loop-title")','return after generated action');
  assert.equal(await ev('Array.from(document.getElementById("tops-loop-title").closest("section").querySelectorAll("button")).some(n=>n.textContent==="Continue my career work")'),false);
  assert.equal(await ev('topsMemberPriorityContinuation({...JSON.parse(localStorage.getItem("tops_career_action_v1")),text:"Custom action"},JSON.parse(localStorage.getItem("tops_personal_guide_v1")))'),null);

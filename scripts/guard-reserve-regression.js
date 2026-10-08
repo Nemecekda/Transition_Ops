@@ -13,6 +13,23 @@ function view(target=""){return nodes(api.render({colors:{},target,openPlan:v=>o
 let prepared=false;let employer=nodes(api.render({colors:{},target:"",opportunity:"SYNTHETIC training program",next:"Ask education office about prerequisites",openPlan:(office,prepare)=>{opened=office;prepared=prepare;}}));
 assert.ok(employer.some(n=>n.children.includes("SYNTHETIC training program")));assert.ok(employer.some(n=>n.children.includes("Ask education office about prerequisites")));assert.ok(employer.some(n=>n.children.includes("Continue my career plan")));
 employer.find(n=>n.children.includes("Plan my next career move")).props.onClick();assert.equal(opened,null);assert.equal(prepared,true);assert.equal(writes,0);
+// Home's chosen action takes precedence over a different older worksheet step.
+// The worksheet remains accessible without overwriting either record.
+for(const done of [false,true]){
+  const chosenAction={version:1,text:"SYNTHETIC discuss a growth opportunity with my supervisor",date:"",done,context:{version:1,pathway:"skills",currentRole:"",targetRole:"Operations supervisor",goal:"Grow in my current career"}};
+  const untouched=JSON.stringify(chosenAction);
+  const chosen=nodes(api.render({colors:{},chosenAction,target:"SYNTHETIC former target",opportunity:"",next:"SYNTHETIC older job search step",openPlan:(office,prepare)=>{opened=office;prepared=prepare;}}));
+  assert.ok(!chosen.some(n=>n.children.includes("SYNTHETIC older job search step")),"lower card must not present a competing next action");
+  assert.ok(!chosen.some(n=>n.children.includes("Your next step: ")));
+  chosen.find(n=>n.children.includes("Review career notes")).props.onClick();
+  assert.equal(opened,null);assert.equal(prepared,true);
+  assert.equal(JSON.stringify(chosenAction),untouched);assert.equal(writes,0);
+}
+for(const chosenAction of [null,{version:1,text:""},{version:99,text:"SYNTHETIC invalid"}]){
+  const fallback=nodes(api.render({colors:{},chosenAction,target:"",opportunity:"",next:"SYNTHETIC existing worksheet step",openPlan(){}}));
+  assert.ok(fallback.some(n=>n.children.includes("SYNTHETIC existing worksheet step")),"missing or invalid action preserves the existing worksheet continuation");
+}
+assert.match(source,/React\.createElement\(GuardCareerSupport, \{[^\n]+chosenAction: actionState\.draft/);
 assert.ok(!view().some(n=>n.children.includes("Your next step: ")),"empty plan must not invent a next action");
 const selection=source.match(/next: (gapState\.draft\.prep\.followup[^\n]+?), openPlan:/)[1];
 for(const [followup,rows,expected] of [["Ask office",["Apply","Train",""],"Ask office"],["  ",["","Train","Apply"],"Train"],["",["","",""],""]]){assert.equal(vm.runInNewContext(selection,{gapState:{draft:{prep:{followup},rows:rows.map(next=>({next}))}}}),expected);}
@@ -34,10 +51,12 @@ for(const saved of ["army","air_force","navy","marines","coast_guard","space_for
 assert.equal(vm.runInNewContext('('+branchInit+')()',{window:{__safeGet(){throw Error("denied");}}}).branch,"");
 const planning=source.slice(source.indexOf('// Planning to separate callout'),source.indexOf('// Share + VBS',source.indexOf('// Planning to separate callout')));assert.doesNotMatch(planning,/setUserStatus|__safeSet|setMilestones|setDismissed/);assert.match(planning,/setActiveTab\("timeline"\)/);
 const open=source.match(/React.createElement\(GuardCareerSupport, \{ [^\n]*colors: C,[^\n]*target: gapState.draft.target,[^\n]+openPlan: function\(office, prepare\) \{ ([^}]+) \}/)[1];const route={};vm.runInNewContext(open,{setPrepareOpportunity:v=>route.prepare=v,setGuardOfficeOffer:v=>route.offer=v,setPathwayMode:v=>route.mode=v,setPathwayStep:v=>route.step=v,setActiveTab:v=>route.tab=v,office:null,prepare:false,window:{scrollTo(){}}});assert.deepEqual(route,{prepare:false,offer:null,mode:"planner",step:1,tab:"pathway"});
-const base=cp.execFileSync("git",["show","a247c2e:index.html"],{cwd:root,encoding:"utf8",maxBuffer:4e6});
+// Published cache243 includes later approved dental and policy corrections.
+// Keep those exact published regions unchanged during this journey update.
+const base=cp.execFileSync("git",["show","b9b11a26e73fb30de69e5524a438de700b2ccf6d:index.html"],{cwd:root,encoding:"utf8",maxBuffer:4e6});
 function region(s,a,b){const start=s.indexOf(a);assert.ok(start>=0);return s.slice(start,s.indexOf(b,start));}
 for(const [a,b] of [["const SMART_REMINDERS =","const CRITICAL_WINDOWS ="],["const CRITICAL_WINDOWS =","const TOPS_BLENDER_ART ="],["const TRANSITION_MILESTONES =","const NOTIFICATIONS ="],["const [aiR, setAiR]","const [jobsQ"]])assert.equal(region(source,a,b),region(base,a,b));
-assert.equal(region(source,'// Guard-specific intel card','// Quick links for more tools').replace(/\n        \),\n        $/,'\n        '),region(base,'// Guard-specific intel card','// Quick links for more tools'));
+assert.equal(region(source,'// Guard-specific intel card','// Quick links for more tools'),region(base,'// Guard-specific intel card','// Quick links for more tools'));
 // Scan the worksheet and Guard support surfaces exercised here. The execution
 // bundle also contains independently tested upload and Navigator components.
 const localSurfaces=source.slice(source.indexOf("const TOPS_GAP_KEY ="),source.indexOf("// DD214_UPLOAD_START"))+source.slice(source.indexOf("function topsConversationResume"),source.indexOf("// Follow-through stores"));
