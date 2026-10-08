@@ -717,6 +717,107 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 .tops-career-orientation>h2{font-size:16px!important;letter-spacing:.04em}
 @media(max-width:760px){.tops-career-goal-grid{grid-template-columns:1fr}.tops-career-workspace{padding:24px 20px}#root .tops-career-workspace .tops-career-goal{padding:18px!important;gap:6px}.tops-career-workspace .tops-career-resume{padding:20px}.tops-career-workspace #tops-career-continue-draft{width:100%;margin-right:0!important}}
 @media(forced-colors:active){.tops-career-workspace{box-shadow:none!important}.tops-career-goal,.tops-career-resume{border:1px solid CanvasText!important}}
+
+/* Product shell: one responsive navigation system, shared Home/Career hierarchy. */
+.tops-product-shell .tops-app-header{position:relative!important;padding:20px 32px!important;border:0!important;background:transparent!important}
+.tops-product-shell .tops-header-content{align-items:center!important}
+.tops-product-shell .tops-header-content>div:first-child>div{font-size:10px!important;letter-spacing:2px!important}
+.tops-product-shell .tops-header-content h1{font-size:23px!important;letter-spacing:1px!important}
+.tops-product-shell .bottom-nav{flex-wrap:wrap;position:relative;bottom:auto;max-width:none;width:auto;left:auto;right:auto;margin:0 32px 12px;border:0;border-bottom:1px solid var(--t-border);background:transparent;padding:0;gap:8px;z-index:90}
+.tops-product-shell .bottom-nav button{min-width:max-content;flex:0 1 auto;flex-direction:row;gap:9px;padding:12px 18px;min-height:48px;border-bottom:3px solid transparent;border-radius:8px 8px 0 0;transition:none}
+.tops-product-shell .bottom-nav button[aria-current=page]{background:var(--product-surface);border-bottom-color:var(--product-forest)}
+.tops-product-shell .bottom-nav button .nav-label{font:600 14px/1.4 system-ui,sans-serif;letter-spacing:0}
+.tops-product-shell .content-area{padding:16px 32px 64px!important}
+.tops-product-shell #tops-page-orientation{margin-bottom:16px!important}
+.tops-product-shell #tops-page-title{font:700 28px/1.2 system-ui,sans-serif!important;letter-spacing:-.035em}
+.tops-product-shell .tops-home-support-row,.tops-product-shell .tops-career-support{margin-bottom:24px}
+.tops-product-shell .tops-home-support-row>details{background:transparent!important;border:0!important;border-bottom:1px solid var(--t-border)!important;padding:0!important;border-radius:0!important}
+.tops-product-shell .tops-next-move{border:0!important;border-radius:20px!important;overflow:hidden;box-shadow:0 8px 28px #15251b0c!important}
+.tops-product-shell .tops-next-move-main{padding:32px 36px;background:var(--product-forest);color:#F8F8EF;border:0!important;border-radius:20px 20px 0 0}
+.tops-product-shell .tops-next-move-main>h2,.tops-product-shell .tops-next-move-heading{color:#F8F8EF!important}
+.tops-product-shell .tops-next-move-heading{font-size:clamp(28px,4vw,42px);max-width:30ch}
+.tops-product-shell .tops-next-move-main>h2{font-size:11px!important;letter-spacing:.15em!important;opacity:.85}
+.tops-product-shell .tops-next-move-actions>button:not(.tops-move-primary){color:inherit!important}
+.tops-product-shell .tops-next-move-actions>.tops-move-primary{background:#F8F8EF!important;color:#233627!important;border-color:#F8F8EF!important;box-shadow:0 2px 8px #0001}
+.tops-product-shell .tops-loop-utilities{padding:12px 36px;background:var(--product-surface)}
+.tops-product-shell .tops-loop-meta{background:var(--product-surface);padding-left:36px;padding-right:36px}
+.tops-product-shell .tops-priority-grid{gap:12px}
+.tops-product-shell .tops-priority-grid button{background:var(--product-surface)!important;min-height:58px!important;border-radius:10px!important}
+.tops-product-shell .tops-home-toolkit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:28px;align-items:start;padding:28px 0;border-bottom:1px solid var(--t-border);margin-bottom:20px}
+.tops-product-shell .tops-home-search label,.tops-product-shell #tops-home-tools-title{font-size:17px!important;letter-spacing:-.015em}
+.tops-product-shell .tops-home-search input{background:var(--product-surface)!important}
+.tops-product-shell .tops-quick-tools>div:last-child>button{background:var(--product-surface)!important;border-color:transparent!important;padding:18px!important}
+.tops-product-shell .tops-policy-disclosure{border-top:1px solid var(--t-border);margin:24px 0}
+.tops-product-shell .tops-policy-disclosure>summary{min-height:44px;padding:14px 0;cursor:pointer;font-size:14px;font-weight:600}
+.tops-product-shell .tops-career-workspace{background:transparent!important;box-shadow:none!important;padding:8px 0 28px;border-radius:0!important}
+.tops-product-shell .tops-career-workspace #tops-career-start-heading{font-size:clamp(30px,4.5vw,46px);max-width:25ch}
+.tops-product-shell .tops-career-goal-grid{gap:16px;margin:24px 0}
+#root .tops-product-shell .tops-career-goal{background:var(--product-surface)!important;border-color:transparent!important;border-radius:16px!important;padding:24px!important;gap:10px;box-shadow:0 3px 14px #15251b08}
+.tops-product-shell .tops-career-goal strong{font-size:21px!important;letter-spacing:-.025em}
+.tops-product-shell .tops-career-goal:after{content:"\2192";font-size:24px;color:var(--product-ink);margin-top:auto;padding-top:8px}
+.tops-product-shell .tops-career-resume{background:var(--product-surface);border-radius:14px;border:1px solid var(--t-border)}
+@media(max-width:760px){.tops-product-shell .tops-app-header{padding:16px 20px!important}.tops-product-shell .tops-header-content h1{font-size:20px!important}.tops-product-shell .bottom-nav{position:fixed;bottom:0;left:0;right:0;margin:0;max-width:none;border-top:1px solid var(--t-border);border-bottom:0;background:var(--t-nav-bg);gap:0;padding:0 6px env(safe-area-inset-bottom,0);z-index:200}.tops-product-shell .bottom-nav button{flex:1;flex-direction:column;gap:3px;padding:9px 2px 7px;border-bottom:0;border-top:3px solid transparent;border-radius:0;min-width:0}.tops-product-shell .bottom-nav button[aria-current=page]{border-top-color:var(--product-forest);border-bottom:0}.tops-product-shell .bottom-nav button .nav-label{font-size:11px}.tops-product-shell .content-area{padding:12px 20px 112px!important}.tops-product-shell #tops-page-title{font-size:24px!important}.tops-product-shell .tops-next-move-main{padding:26px 24px}.tops-product-shell .tops-loop-utilities{padding:10px 24px}.tops-product-shell .tops-loop-meta{padding-left:24px;padding-right:24px}.tops-product-shell .tops-home-toolkit{grid-template-columns:1fr;gap:12px;padding:22px 0}.tops-product-shell .tops-career-goal-grid{gap:10px}#root .tops-product-shell .tops-career-goal{padding:20px!important}.tops-product-shell .tops-career-goal:after{position:absolute;right:20px;top:18px;padding:0}.tops-product-shell .tops-career-goal strong{padding-right:28px;font-size:19px!important}.tops-product-shell .tops-career-workspace #tops-career-start-heading{font-size:32px}}
+@media(forced-colors:active){.tops-product-shell .tops-next-move-main,.tops-product-shell .tops-next-move-main>h2,.tops-product-shell .tops-next-move-heading{background:Canvas;color:CanvasText!important}.tops-product-shell .bottom-nav button[aria-current=page]{border-color:Highlight}.tops-product-shell .tops-next-move-actions>.tops-move-primary{background:ButtonFace!important;color:ButtonText!important;border-color:ButtonText!important}}
+
+/* Cohesion: restrained controls and reading rhythm in the reviewed Home/Career surfaces. */
+.tops-product-shell .tops-home-toolkit{display:block;padding-top:24px}
+.tops-product-shell .tops-home-search{margin-bottom:24px!important}
+.tops-product-shell .tops-quick-tools>div:last-child{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))!important;gap:12px!important}
+.tops-product-shell #tops-home-date>summary{border:0!important;border-top:1px solid var(--t-border)!important;border-radius:0!important;padding:14px 0!important;font-size:14px;font-weight:550}
+
+.tops-product-shell .tops-header-content>div:last-child button{font:600 12px/1.4 system-ui,sans-serif!important;letter-spacing:0!important;background:var(--product-surface)!important;color:var(--product-ink)!important;border:1px solid var(--t-border)!important;border-radius:10px!important}
+.tops-product-shell #tops-page-orientation button{font:550 13px/1.4 system-ui,sans-serif!important;border-radius:10px!important;background:transparent!important}
+.tops-product-shell .tops-quick-tools>div:last-child>button{display:flex;justify-content:space-between;align-items:center;gap:16px;border:1px solid var(--t-border)!important;box-shadow:0 2px 8px #15251b05;line-height:1.45!important}
+.tops-product-shell .tops-quick-tools>div:last-child>button>span:last-child{width:7px;height:7px;flex:0 0 7px;border-right:1.5px solid var(--product-muted);border-top:1.5px solid var(--product-muted);transform:rotate(45deg);margin-right:3px}
+.tops-product-shell .tops-quick-tools>div:last-child>button:hover{border-color:var(--product-ink)!important}
+.tops-product-shell .tops-home-search input{box-shadow:0 2px 8px #15251b05}
+.tops-product-shell .tops-home-search input::placeholder{color:var(--product-muted);opacity:1}
+.tops-product-shell .tops-loop-utilities>details>summary{font-weight:550;font-size:13px;padding:14px 0!important}
+.tops-product-shell .tops-loop-utilities>details[open]{border-bottom:1px solid var(--t-border)}
+.tops-product-shell .tops-career-workspace #tops-career-progress{display:inline-flex;align-items:center;min-height:30px;background:var(--product-surface);border:1px solid var(--t-border);border-radius:20px;padding:5px 12px;font-size:12px!important;letter-spacing:.015em;margin:0 0 18px}
+.tops-product-shell .tops-career-workspace>details,.tops-product-shell .tops-career-review>div>details{border-top:1px solid var(--t-border);margin:18px 0 0}
+.tops-product-shell .tops-career-workspace>details>summary,.tops-product-shell .tops-career-review>div>details>summary{padding:14px 0!important;font-weight:550;cursor:pointer;min-height:44px}
+.tops-product-shell .tops-career-workspace label{font-size:14px;line-height:1.5;letter-spacing:0}
+.tops-product-shell .tops-career-workspace input:not([type=checkbox]),.tops-product-shell .tops-career-workspace textarea,.tops-product-shell .tops-career-workspace select{background:var(--product-surface)!important;border:1px solid var(--t-border)!important;border-radius:12px!important;padding:14px!important;font:400 16px/1.6 system-ui,sans-serif!important;box-shadow:0 1px 3px #15251b04}
+.tops-product-shell .tops-career-workspace input[type=file]{padding:8px!important;font-size:14px!important}
+.tops-product-shell .tops-career-workspace input[type=file]::file-selector-button{min-height:44px;padding:10px 14px;margin-right:12px;border:0;border-radius:8px;background:var(--t-bg-card);color:var(--product-ink);font:600 14px/1.4 system-ui,sans-serif;cursor:pointer}
+.tops-product-shell .tops-career-workspace input[type=checkbox]{accent-color:var(--career-accent);flex-shrink:0}
+.tops-product-shell .tops-career-intake section[aria-labelledby="career-starter-heading"]{border-top:1px solid var(--t-border)!important;padding-top:22px!important;margin-top:28px!important}
+.tops-product-shell .tops-career-intake #career-starter-heading{font-size:21px;letter-spacing:-.025em;margin:0 0 8px}
+.tops-product-shell .tops-career-intake #career-starter-heading+p{font-size:15px;margin-bottom:12px}
+.tops-product-shell .tops-career-decision{margin:28px 0;padding:24px 28px;background:var(--product-surface);border:1px solid var(--t-border);border-radius:16px}
+.tops-product-shell .tops-career-decision>h3{margin:0 0 12px;font-size:22px}
+.tops-product-shell .tops-career-decision #tops-start-action-preview{padding:0;margin:0 0 20px;border:0;background:transparent;border-radius:0;font-size:20px;font-weight:550;line-height:1.5;letter-spacing:-.015em}
+.tops-product-shell .tops-career-decision p{font-size:14px;line-height:1.65}
+.tops-product-shell .tops-career-workspace button{box-sizing:border-box;font-size:14px!important;font-weight:550}
+.tops-product-shell .tops-career-workspace .tops-career-goal{font-size:16px!important}
+.tops-product-shell .tops-career-workspace #tops-journey-ready{border-top:1px solid var(--t-border);padding-top:22px;margin-top:28px}
+@media(max-width:760px){.tops-product-shell .tops-career-decision{padding:22px 20px}.tops-product-shell .tops-career-decision #tops-start-action-preview{font-size:18px}.tops-product-shell .tops-quick-tools>div:last-child>button{gap:10px;padding:15px!important}.tops-product-shell #tops-page-orientation{gap:10px!important}}
+@media(forced-colors:active){.tops-product-shell .tops-career-decision{background:Canvas;border-color:CanvasText}.tops-product-shell .tops-career-workspace input,.tops-product-shell .tops-career-workspace textarea{box-shadow:none!important}}
+/* Quiet navigation and removal actions stay separate from saving work. */
+.tops-product-shell .tops-career-workspace .tops-career-back,.tops-product-shell .tops-career-workspace #tops-career-clear-visit{background:transparent!important;border-color:transparent!important;text-decoration:underline;text-underline-offset:4px;padding-left:0!important;padding-right:12px!important;font-size:13px!important}
+.tops-product-shell .tops-career-workspace #tops-career-ai-open{background:transparent!important}
+.tops-product-shell .tops-home-support-row>details>summary{font-size:13px;line-height:1.5;font-weight:550}
+
+/* Final release polish: native disclosure controls and clear choice affordances. */
+.tops-product-shell :is(.tops-home-support-row,.tops-career-workspace) details>summary,
+.tops-product-shell section[aria-labelledby="service-profile-heading"]>details>summary,
+.tops-product-shell #tops-home-date>summary{display:flex;align-items:center;justify-content:space-between;gap:16px;list-style:none;box-sizing:border-box;font:550 14px/1.5 system-ui,sans-serif;min-height:44px}
+.tops-product-shell :is(.tops-home-support-row,.tops-career-workspace) details>summary::-webkit-details-marker,
+.tops-product-shell section[aria-labelledby="service-profile-heading"]>details>summary::-webkit-details-marker,
+.tops-product-shell #tops-home-date>summary::-webkit-details-marker{display:none}
+.tops-product-shell :is(.tops-home-support-row,.tops-career-workspace) details>summary::after,
+.tops-product-shell section[aria-labelledby="service-profile-heading"]>details>summary::after,
+.tops-product-shell #tops-home-date>summary::after{content:"";width:7px;height:7px;flex:0 0 7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);margin-right:4px}
+.tops-product-shell :is(.tops-home-support-row,.tops-career-workspace) details[open]>summary::after,
+.tops-product-shell section[aria-labelledby="service-profile-heading"]>details[open]>summary::after,
+.tops-product-shell #tops-home-date[open]>summary::after{transform:rotate(45deg)}
+.tops-product-shell section[aria-labelledby="service-profile-heading"]>details>summary{padding:14px 0!important}
+.tops-product-shell .tops-career-decision>details>summary{font-weight:500}
+.tops-product-shell :is(.tops-career-goal,.tops-quick-tools button):hover{box-shadow:0 3px 14px #15251b16!important}
+.tops-product-shell :is(.tops-career-goal,.tops-quick-tools button):active{box-shadow:inset 0 0 0 1px var(--product-ink)!important}
+.tops-product-shell .tops-career-workspace .tops-career-back{margin-top:14px!important;margin-bottom:10px!important}
+@media(forced-colors:active){.tops-product-shell :is(.tops-career-goal,.tops-quick-tools button):hover{outline:1px solid Highlight}.tops-product-shell :is(.tops-career-goal,.tops-quick-tools button):active{outline:2px solid Highlight}}
 </style>
 </head>
 <body>
@@ -6633,7 +6734,7 @@ function ServiceProfileEditor(props) {
       React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap" } },
         React.createElement("button", { type: "button", onClick: save, style: controlStyle }, sessionOnly ? "Apply for this session" : "Save"),
         React.createElement("button", { type: "button", onClick: cancel, style: controlStyle }, "Cancel"))),
-    React.createElement("h2", { id: "service-profile-heading", ref: headingRef, tabIndex: -1, className: "sr-only" }, "Home"),
+    React.createElement("h2", { id: "service-profile-heading", ref: headingRef, tabIndex: -1, className: "sr-only" }, "Service profile"),
     React.createElement("div", { id: "service-profile-result", role: "status", "aria-live": "polite", style: { color: C.textSecondary, fontSize: 13 } }, message));
 }
 
@@ -7095,7 +7196,7 @@ function CareerJourney(props) {
   var ideas = draft ? topsCareerEvidenceIdeas(draft.rows) : [];
   var learningNext = draft ? topsCareerLearningNext(action, role, draft.rows) : null;
   var introductionRole = props.guideState.draft.targetRole || props.gapState.draft.target || introduction.role || "";
-  return React.createElement("section", { "aria-labelledby": "tops-career-start-heading", className: "tops-career-workspace", style: { "--career-soft": C.bgCard, "--career-border": C.border, "--career-accent": C.green, "--career-secondary": C.textSecondary, background: C.bg, color: C.textBody, borderRadius: 16, boxShadow: C.isLight ? "0 4px 24px rgba(14,18,11,.055)" : "0 4px 24px rgba(0,0,0,.16)" } },
+  return React.createElement("section", { "aria-labelledby": "tops-career-start-heading", className: "tops-career-workspace" + (stage === 1 ? " tops-career-intake" : stage === 2 ? " tops-career-review" : ""), style: { "--career-soft": C.bgCard, "--career-border": C.border, "--career-accent": C.green, "--career-secondary": C.textSecondary, background: C.bg, color: C.textBody, borderRadius: 16, boxShadow: C.isLight ? "0 4px 24px rgba(14,18,11,.055)" : "0 4px 24px rgba(0,0,0,.16)" } },
     stage > 0 && !saved && React.createElement("p", { id: "tops-career-progress", style: { marginBottom: 6, fontSize: 14, color: C.textSecondary } }, stage === 1 ? "1 of 2: Add experience" : "2 of 2: Review your next step"),
     React.createElement("h2", { id: "tops-career-start-heading", tabIndex: -1, style: { color: C.textPrimary } }, stage === 0 ? (props.visitDraft ? "Continue where you left off" : "What do you want to do next?") : stage === 1 ? (intent === "pursue" ? "Let's look at the job together" : intent === "grow" ? "Build on what you already do" : "Start with your experience") : intent === "pursue" ? "Your experience and this job" : intent === "grow" ? "Your next growth conversation" : "Your next career move"),
     stage === 0 && React.createElement("div", null,
@@ -7108,7 +7209,7 @@ function CareerJourney(props) {
       React.createElement(props.visitDraft ? "details" : "div", { id: "tops-career-goals" },
         props.visitDraft && React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Change what I want help with"),
         props.visitDraft && React.createElement("p", null, "Your experience and posting text stay available when you change goals."),
-        React.createElement("div", { className: "tops-career-goal-grid" }, [["find", "Explore careers using my experience", "Use a resume or a few notes to find career ideas to investigate."], ["pursue", "Compare my experience with a job", "Paste a job posting and review it beside your experience."], ["grow", "Plan my next career move at work", "Use your experience to prepare a conversation with a supervisor or mentor."]].map(function(item) { return React.createElement("button", { key: item[0], type: "button", className: "tops-career-goal", style: button, onClick: function() { start(item[0]); } }, React.createElement("strong", null, item[1]), React.createElement("span", null, item[2])); }))),
+        React.createElement("div", { className: "tops-career-goal-grid" }, [["find", "Explore career options", "Use a resume or a few notes to find career ideas to investigate."], ["pursue", "Compare a job with my experience", "Paste a job posting and review it beside your experience."], ["grow", "Grow in my current career", "Use your experience to prepare a conversation with a supervisor or mentor."]].map(function(item) { return React.createElement("button", { key: item[0], type: "button", className: "tops-career-goal", style: button, onClick: function() { start(item[0]); } }, React.createElement("strong", null, item[1]), React.createElement("span", null, item[2])); }))),
       props.profile === "guard" && React.createElement("p", null, "Keep serving while building your civilian career. No separation date is needed.")),
     stage === 1 && React.createElement("div", null,
       React.createElement("p", null, intent === "pursue" ? "Add your resume or a few notes, then paste the job posting below. The posting is needed for this comparison." : "Add a resume or a few notes about your work. You can also continue without a resume."),
@@ -7138,6 +7239,7 @@ function CareerJourney(props) {
       ),
       React.createElement(CareerLearning, { key: JSON.stringify([role, draft.rows.map(function(row) { return row.requirement; })]), colors: C, button: button, role: role, rows: draft.rows, action: action, learningAction: topsCareerLearningAction, onAdd: function(resource) { if (baseline.current !== current()) { setStatus("Your plan changed in another tool. Review your career work again before changing this step."); return false; } setAction(topsCareerLearningAction(resource)); setSaved(false); setChecked(false); setReplace(false); setStatus(""); return true; } }),
       React.createElement(CareerSpecialistSupport, { colors: C, button: button, field: field, role: role, rows: draft.rows, state: introduction, setState: setIntroduction }),
+      React.createElement("section", { className: "tops-career-decision", "aria-label": "Your next action" },
       React.createElement("h3", null, saved ? "Your next step" : "Review your next step"),
       React.createElement("p", { id: "tops-start-action-preview" }, action),
       !saved && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0" } }, "Edit my next action"), React.createElement("label", { htmlFor: "tops-journey-action" }, "My next action"), React.createElement("textarea", { id: "tops-journey-action", rows: 2, maxLength: 240, value: action, style: field, onChange: function(e) { setAction(e.target.value); } })),
@@ -7145,22 +7247,22 @@ function CareerJourney(props) {
         React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10 } }, React.createElement("input", { id: "tops-journey-reviewed", type: "checkbox", checked: checked, onChange: function(e) { setChecked(e.target.checked); }, style: { width: 24, height: 24 } }), "I reviewed these excerpts and this next step."),
         existing && React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10 } }, React.createElement("input", { id: "tops-journey-replace", type: "checkbox", checked: replace, onChange: function(e) { setReplace(e.target.checked); }, style: { width: 24, height: 24 } }), "Replace my current career step and comparison with this draft. Conversation notes for a different role will be cleared."),
         React.createElement("p", null, "Save reviewed excerpts on this browser, or use them only during this visit. Check for personal details before saving on a shared device."),
-        React.createElement("button", { type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), disabled: !!window.__IS_IFRAME, onClick: function() { keep(true); } }, "Save my career work"), React.createElement("button", { type: "button", style: button, onClick: function() { keep(false); } }, "Use for this visit")),
+        React.createElement("button", { type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), disabled: !!window.__IS_IFRAME, onClick: function() { keep(true); } }, "Save my career work"), React.createElement("button", { type: "button", style: button, onClick: function() { keep(false); } }, "Use for this visit"))),
       React.createElement("h3", { id: "tops-journey-ready", tabIndex: -1 }, saved ? "Ready to move forward" : "Tools you can use now"),
       React.createElement("p", null, saved ? (keptMode === "browser" ? "Saved on this browser. Choose your next action below." : "Ready for this visit only. Your earlier saved work was not changed.") : learningNext ? "Your learning step is ready to explore. Saving is optional." : intent === "grow" ? "You can edit your experience before keeping this draft." : "You can explore openings now. Saving is optional; review your excerpts before preparing a resume."),
       learningNext && React.createElement("a", { id: "tops-learning-next", href: learningNext.url, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, button, { display: "inline-flex", alignItems: "center", boxSizing: "border-box", maxWidth: "100%", overflowWrap: "anywhere" }, saved ? { background: C.green, color: C.textOnFill } : {}) }, "Open " + learningNext.name + " (opens a new tab)"),
       intent !== "grow" && React.createElement("button", { type: "button", style: Object.assign({}, button, !learningNext && saved && intent === "find" ? { background: C.green, color: C.textOnFill } : {}), onClick: function() { props.openTool("jobs", role); } }, "See openings by area"),
       intent === "pursue" && React.createElement("button", { type: "button", style: Object.assign({}, button, !learningNext && saved ? { background: C.green, color: C.textOnFill } : {}), onClick: function() { if (!checked) { setStatus("Review the excerpts and check the confirmation before using them in the Resume Drafter."); return; } props.openTool("resume", { role: role, experience: draft.rows.map(function(row, i) { return row.have ? TOPS_GAP_ROWS[i] + "\n" + row.have : ""; }).filter(Boolean).join("\n"), posting: draft.rows.map(function(row) { return row.requirement; }).filter(Boolean).join("\n") }); setStatus("Opened the Resume Drafter. Existing drafter work is kept; otherwise your reviewed excerpts are filled in. Review its fact sheet before creating a draft. Opening it does not send an AI request."); } }, "Prepare a tailored resume"),
-      React.createElement("button", { type: "button", style: button, onClick: function() { setStage(1); setSaved(false); } }, intent === "pursue" ? "Edit experience or posting" : "Add or edit my experience"),
       saved && React.createElement("button", { type: "button", style: Object.assign({}, button, !learningNext && intent === "grow" ? { background: C.green, color: C.textOnFill } : {}), onClick: props.home }, "Continue on Home"))),
-    stage > 0 && React.createElement("button", { type: "button", style: button, onClick: function() { setStage(0); setAiActive(false); setStatus(""); } }, "Back to career choices"),
+    stage === 2 && draft && React.createElement("button", { type: "button", className: "tops-career-back", style: button, onClick: function() { setStage(1); setSaved(false); } }, intent === "pursue" ? "Edit experience or posting" : "Add or edit my experience"),
+    stage > 0 && React.createElement("button", { type: "button", className: "tops-career-back", style: button, onClick: function() { setStage(0); setAiActive(false); setStatus(""); } }, "Back to career choices"),
     (props.visitDraft || (stage > 0 && !saved)) && React.createElement("div", null,
       stage > 0 && React.createElement("p", null, "This unfinished draft stays while you move between tools in this tab. Refreshing or closing the tab clears it. It is not included in plan backups."),
       !clearPending && React.createElement("button", { id: "tops-career-clear-visit", type: "button", style: button, onClick: function() { setClearPending(true); } }, "Discard unfinished draft"),
       clearPending && React.createElement("div", null, React.createElement("p", null, "Clear the unfinished draft, including its experience and posting text? Your career plan and introduction stay unchanged."), React.createElement("button", { type: "button", style: button, onClick: clearVisit }, "Discard draft"), React.createElement("button", { type: "button", style: button, onClick: function() { setClearPending(false); requestAnimationFrame(function() { var clear = document.getElementById("tops-career-clear-visit"); if (clear) clear.focus(); }); } }, "Keep draft"))),
     React.createElement("p", { role: "status", "aria-live": "polite" }, status),
     React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0" } }, "How this works"), React.createElement("p", null, "The source comparison and career examples use local rules. Optional AI help sends only the experience excerpts and goal you review, and suggests wording for you to check. It does not verify qualifications, assess job fit or apply to jobs. Only reviewed notes and the step are saved on this browser when you choose. The Resume Drafter has its own review and submission steps.")),
-    React.createElement(HumanSupportChoices, { colors: C, id: "tops-career-human" }));
+    null);
 }
 function CareerStart(props) {
   var C = props.colors, [stage, setStage] = useState(0), [choice, setChoice] = useState(null), [target, setTarget] = useState(props.guideState.draft.targetRole), [step, setStep] = useState(""), [message, setMessage] = useState(""), [replace, setReplace] = useState(false), [peer, setPeer] = useState(false), [finished, setFinished] = useState(false);
@@ -7240,7 +7342,7 @@ function CareerStart(props) {
     peer && React.createElement("p", null, ["Ask: What would make this conversation useful for you today?", "Ask: Do you want to grow where you are, use new training, change work, or prepare to leave service?", "Ask: What kind of work interests you, and what needs to fit around your life or service?", "Ask: What would help you take this step, and when should we check back?"][stage]),
     React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "How this guide uses your information"), React.createElement("p", null, "This walkthrough organizes resume text in your browser and suggests a step from the direction you choose. Review the draft; it does not verify qualifications or connect to LinkedIn or an employer. Saving is optional. The separate AI Resume Drafter and Ask the Navigator send submitted text for AI processing as explained in their notices. This walkthrough does not contact anyone for you.")),
 
-    React.createElement(HumanSupportChoices, { colors: C, id: "tops-career-human" }));
+    null);
 }
 function CareerToolLibrary(props) {
   return React.createElement("details", { open: props.expanded, style: { marginBottom: 16 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer", color: props.colors.textPrimary, fontWeight: 700 } }, "Browse career tools and detailed planners"), props.children);
@@ -7600,7 +7702,7 @@ function MemberPlanningLoop(props) {
       requestAnimationFrame(function() { var details = document.getElementById("tops-loop-direction"); if (details) { details.open = true; var input = details.querySelector("input"); if (input) { input.focus(); input.scrollIntoView({ block: "center" }); } } });
     } });
   return React.createElement("section", { "aria-labelledby": "tops-loop-title", className: "tops-next-move", style: { marginBottom: 24, background: C.bg, border: "1px solid " + C.border, borderRadius: 14, color: C.textBody, overflowWrap: "anywhere", boxShadow: C.isLight ? "0 6px 24px rgba(14,18,11,0.05)" : "0 6px 24px rgba(0,0,0,0.16)" } },
-    React.createElement("div", { className: "tops-next-move-main", style: { borderLeft: "3px solid " + C.green } },
+    React.createElement("div", { className: "tops-next-move-main" + (move.kind === "start" ? " tops-next-move-first" : ""), style: { borderLeft: "3px solid " + C.green } },
     React.createElement("h2", { id: "tops-loop-title", tabIndex: -1, style: { color: C.textSecondary, fontSize: 13, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase", margin: "0 0 14px" } }, "Your next move"),
     g.pathway && React.createElement("p", { style: { margin: "0 0 10px", lineHeight: 1.6 } }, React.createElement("strong", null, "Your direction: "), TOPS_GUIDE_PATHS[g.pathway], g.targetRole ? " - " + g.targetRole : "", g.goal ? ". Your goal: " + g.goal : ""),
     move.kind === "reflect" && React.createElement("p", { style: { lineHeight: 1.6 } }, "You marked this step done: " + a.text + ". Review what you learned before choosing another step. Choosing a new step replaces this one in the editor; save to keep that change. Completion does not verify an outcome or eligibility."),
@@ -8593,10 +8695,9 @@ function App() {
     var nav = document.querySelector(".bottom-nav");
     if (!nav) return;
     var measure = function () {
-      if (nav.offsetHeight > 0) {
-        setCaptureNavH(nav.offsetHeight);
-        document.documentElement.style.setProperty("--tops-nav-height", nav.offsetHeight + "px");
-      }
+      var height = getComputedStyle(nav).position === "fixed" ? nav.offsetHeight : 0;
+      setCaptureNavH(height);
+      document.documentElement.style.setProperty("--tops-nav-height", height + "px");
     };
     measure();
     var observer = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : null;
@@ -8623,8 +8724,9 @@ function App() {
         }
         var header = document.querySelector(".tops-app-header");
         var nav = document.querySelector(".bottom-nav");
-        var top = header ? Math.max(0, header.getBoundingClientRect().bottom) + 8 : 8;
-        var bottom = nav ? nav.getBoundingClientRect().top - 12 : window.innerHeight - 12;
+        function overlays(node) { return node && ["fixed", "sticky"].includes(getComputedStyle(node).position); }
+        var top = overlays(header) ? Math.max(0, header.getBoundingClientRect().bottom) + 8 : 8;
+        var bottom = overlays(nav) && getComputedStyle(nav).bottom !== "auto" ? nav.getBoundingClientRect().top - 12 : window.innerHeight - 12;
         var rect = target.getBoundingClientRect();
         if (rect.top < top) window.scrollBy(0, rect.top - top);
         else if (rect.bottom > bottom) window.scrollBy(0, Math.min(rect.bottom - bottom, rect.top - top));
@@ -9125,18 +9227,11 @@ function App() {
   function renderHomeTools() {
     return React.createElement("section", { "aria-labelledby": "tops-home-tools-title", className: "tops-quick-tools", style: { marginBottom: 16 } },
       React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" } },
-        React.createElement("h2", { id: "tops-home-tools-title", style: { fontSize: 20, color: C.textPrimary, margin: "0 0 8px" } }, "What would you like to do?"),
-        React.createElement("button", { type: "button", onClick: function() { setShowMoreMenu(true); }, style: { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary, font: "inherit", cursor: "pointer" } }, "All tools")),
+        React.createElement("h2", { id: "tops-home-tools-title", style: { fontSize: 20, color: C.textPrimary, margin: "0 0 8px" } }, "Tools for your next step")),
       React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 } },
         [["timeline", "View my transition checklist"], ["pathway", "Explore careers"], ["vamath", "Calculate a VA rating"], ["resources", "Find benefits, services & support"]].map(function(item) {
-          return React.createElement("button", { key: item[0], type: "button", onClick: function() { openExperienceTool(item[0]); }, style: { minHeight: 60, padding: "14px 12px", textAlign: "left", border: "1px solid " + C.border, borderRadius: 10, background: C.bgCard, color: C.textPrimary, font: "inherit", fontSize: 15, lineHeight: 1.4, cursor: "pointer" } }, item[1]);
+          return React.createElement("button", { key: item[0], type: "button", onClick: function() { openExperienceTool(item[0]); }, style: { minHeight: 60, padding: "14px 12px", textAlign: "left", border: "1px solid " + C.border, borderRadius: 10, background: C.bgCard, color: C.textPrimary, font: "inherit", fontSize: 15, lineHeight: 1.4, cursor: "pointer" } }, React.createElement("span", null, item[1]), React.createElement("span", { "aria-hidden": true }));
         })));
-  }
-  function renderHomeNavigator() {
-    return navUnlocked && /*#__PURE__*/React.createElement("div", { className: "tops-navigator-card", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { ...S.card, padding: 14, borderColor: C.gold, cursor: "pointer", marginBottom: 12 } },
-    TopsCompass(72),
-    React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: C.goldBright, letterSpacing: 1, marginBottom: 4 } }, "\u2726 ASK THE NAVIGATOR"),
-    React.createElement("div", { style: { fontSize: 12, color: C.textSecondary, lineHeight: 1.5 } }, "Not sure what to do next? Tell it your situation \u2014 it sequences your moves from this app\u2019s verified content and routes you to humans."));
   }
 
   const docsObtained = documents.filter(d => d.obtained).length;
@@ -9435,12 +9530,14 @@ function App() {
   ); }
 
   return /*#__PURE__*/React.createElement("div", {
+    className: "tops-product-shell",
     style: {
-      fontFamily: "'Source Sans 3', system-ui, -apple-system, sans-serif",
+      "--product-surface": C.isLight ? "#FFFEFA" : C.bgCard, "--product-forest": "#293F2F", "--product-ink": C.textPrimary, "--product-muted": C.textSecondary,
+      fontFamily: "system-ui, -apple-system, sans-serif",
       background: C.bg,
       color: C.textBody,
       minHeight: "100vh",
-      maxWidth: 900,
+      maxWidth: 1100,
       margin: "0 auto",
       position: "relative"
     }
@@ -9454,7 +9551,7 @@ function App() {
       top: 0,
       zIndex: 100
     }
-  }, TopsHeaderArt(), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
     className: "tops-header-content",
     style: {
       display: "flex",
@@ -9506,22 +9603,7 @@ function App() {
       fontSize: 10,
       letterSpacing: 1
     }
-  }, theme === "tactical" ? "\u263D" : "\u2600", " ", theme === "tactical" ? "Light" : "Dark"), activeTab !== "dashboard" && /*#__PURE__*/React.createElement("button", {
-    onClick: () => { setActiveTab("dashboard"); window.scrollTo(0, 0); },
-    "aria-label": "Go to home screen",
-    style: {
-      background: theme === "tactical" ? C.bgElevated : "#ECECEA",
-      border: "1px solid transparent",
-      borderRadius: 8,
-      padding: "8px 14px",
-      minHeight: 44,
-      cursor: "pointer",
-      color: C.textPrimary,
-      fontFamily: "'Oswald', sans-serif",
-      fontSize: 13,
-      letterSpacing: 1
-    }
-  }, "HOME"), userStatus !== "guard" && /*#__PURE__*/React.createElement("button", {
+  }, theme === "tactical" ? "\u263D" : "\u2600", " ", theme === "tactical" ? "Light" : "Dark"), userStatus !== "guard" && /*#__PURE__*/React.createElement("button", {
     onClick: () => setShowNotifPanel(!showNotifPanel),
     style: {
       background: theme === "tactical" ? C.bgElevated : "#ECECEA",
@@ -9686,6 +9768,21 @@ function App() {
     }
   }, "All updates acknowledged."))),
 
+  // ═══════════ BOTTOM NAVIGATION BAR ═══════════
+  /*#__PURE__*/React.createElement("div", { className: "bottom-nav", role: "navigation", "aria-label": "Primary" },
+    [{id:"dashboard",icon:"home",label:"Home"},{id:"timeline",icon:"calendar",label:"My Plan"},{id:"pathway",icon:"target",label:"Career"},{id:"benefits",icon:"medal",label:"Benefits"},{id:"more",icon:"grid",label:"More"}].map(function(n) {
+      var isActive = showMoreMenu ? n.id === (showMoreMenu === "benefits" ? "benefits" : "more") : n.id === "more" ? ["finalpcs","navigator"].indexOf(activeTab) !== -1 : n.id === "benefits" ? ["critical","vamath","vapay","resources","taxes"].indexOf(activeTab) !== -1 : n.id === "timeline" ? ["timeline","reminders","readiness","dd214"].indexOf(activeTab) !== -1 : n.id === "pathway" ? ["pathway","vethub"].indexOf(activeTab) !== -1 : activeTab === n.id;
+      return React.createElement("button", { key: n.id, type: "button", "aria-current": isActive && !showMoreMenu ? "page" : undefined, "aria-expanded": n.id === "more" || n.id === "benefits" ? (n.id === "more" ? showMoreMenu === true : showMoreMenu === "benefits") : undefined, onClick: function() {
+        if (n.id === "more") { setShowMoreMenu(showMoreMenu === true ? false : true); }
+        else if (n.id === "benefits") { setShowMoreMenu(showMoreMenu === "benefits" ? false : "benefits"); }
+        else { primaryNavFocus.current = true; setActiveTab(n.id); setSelectedMilestone(null); setShowMoreMenu(false); }
+      } },
+        React.createElement("span", { className: "nav-icon", style: { color: isActive ? C.goldBright : C.inactive, transition: "color 0.2s" } }, TIcon(n.icon, 22)),
+        React.createElement("span", { className: "nav-label", style: { color: isActive ? C.textPrimary : C.inactive, transition: "color 0.2s" } }, n.label)
+      );
+    })
+  ),
+
   /*#__PURE__*/React.createElement(activeTab === "reminders" && focusedReminderId ? "div" : "main", {
     id: "tops-main-content", tabIndex: -1,
     className: "content-area",
@@ -9695,10 +9792,10 @@ function App() {
   },
 
   // ═══════════ DASHBOARD TAB ═══════════
-  activeTab !== "dashboard" && React.createElement("div", { id: "tops-page-orientation", className: activeTab === "pathway" ? "tops-career-orientation" : undefined, style: { display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 16 } },
-    React.createElement("h2", { id: "tops-page-title", tabIndex: -1, style: { fontSize: 22, margin: 0, color: C.textPrimary } }, (TOPS_TOOL_CHOICES.find(function(tool) { return tool.id === activeTab; }) || { title: "Tools" }).title),
+  React.createElement("div", { id: "tops-page-orientation", className: activeTab === "pathway" ? "tops-career-orientation" : undefined, style: { display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 16 } },
+    React.createElement("h2", { id: "tops-page-title", tabIndex: -1, style: { fontSize: 22, margin: 0, color: C.textPrimary } }, activeTab === "dashboard" ? "Home" : (TOPS_TOOL_CHOICES.find(function(tool) { return tool.id === activeTab; }) || { title: "Tools" }).title),
     React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
-      activeTab === "pathway" && navUnlocked && React.createElement("button", { type: "button", onClick: function() { setActiveTab("navigator"); window.scrollTo(0,0); }, style: { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: "transparent", color: C.textPrimary, font: "inherit", cursor: "pointer" } }, "Ask Navigator"),
+      activeTab !== "navigator" && navUnlocked && React.createElement("button", { type: "button", onClick: function() { setActiveTab("navigator"); window.scrollTo(0,0); }, style: { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: "transparent", color: C.textPrimary, font: "inherit", cursor: "pointer" } }, "Ask Navigator"),
       React.createElement("button", { type: "button", onClick: function() { setShowMoreMenu(true); }, style: { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary, font: "inherit", cursor: "pointer" } }, "All tools"))),
    activeTab === "navigator" && planQuestionOpen && planQuestion && renderPlanQuestion(),
    activeTab === "navigator" && !(planQuestionOpen && planQuestion) && /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", minHeight: "70vh" } },
@@ -9724,10 +9821,9 @@ function App() {
     React.createElement("div", { style: { display: "flex", gap: 8 } },
       React.createElement("input", { value: navInput, onChange: function(e){ setNavInput(e.target.value); }, onKeyDown: function(e){ if (e.key === "Enter") sendNavigator(); }, "aria-label": "Ask the Transition Navigator", placeholder: "Ask about your transition\u2026", style: { flex: 1, minWidth: 0, minHeight: 44, background: C.isLight ? C.bg : "#1A2114", border: "1px solid " + (C.isLight ? C.border : "#4A5A35"), borderRadius: 8, color: C.isLight ? C.textPrimary : "#F2EFE4", caretColor: C.isLight ? C.textPrimary : "#E8C547", fontWeight: 600, padding: 12, fontSize: 16, fontFamily: "inherit", WebkitTextFillColor: C.isLight ? C.textPrimary : "#F2EFE4", opacity: 1 } }),
       React.createElement("button", { type: "button", disabled: navBusy || !navInput.trim(), onClick: function(){ sendNavigator(); }, "aria-label": "Send Navigator question", style: { minHeight: 44, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), border: "none", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: navBusy || !navInput.trim() ? "default" : "pointer", opacity: navBusy || !navInput.trim() ? 0.5 : 1 } }, "SEND"))),
-  navUnlocked && activeTab !== "navigator" && activeTab !== "dashboard" && activeTab !== "pathway" && /*#__PURE__*/React.createElement("div", { className: "tops-ask-launcher", onClick: function(){ setActiveTab("navigator"); window.scrollTo(0,0); }, role: "button", tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { position: "fixed", left: 14, bottom: 76, zIndex: 60, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), borderRadius: 22, padding: "10px 16px", minHeight: 44, display: "flex", alignItems: "center", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 12, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,.45)" } }, "\u2726 ASK"),
   activeTab !== "dashboard" && continuationReturn.current && continuationReturn.current.indexOf("tops-guide-") === 0 && React.createElement("button", { type: "button", style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" }, onClick: function() { continuationFocus.current = continuationReturn.current; continuationReturn.current = null; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("pathway"); } }, "Back to career guide"),
-  React.createElement("div", { className: activeTab === "dashboard" ? "tops-home-support-row" : activeTab === "pathway" ? "tops-career-support" : undefined }, React.createElement(SuicideSupport, { colors: C }),
-  (activeTab === "dashboard" || activeTab === "resources") && React.createElement(HumanSupportChoices, { colors: C, id: "tops-page-human" })),
+  React.createElement("div", { className: activeTab === "dashboard" ? "tops-home-support-row" : activeTab === "pathway" ? "tops-home-support-row tops-career-support" : undefined }, React.createElement(SuicideSupport, { colors: C }),
+  (activeTab === "dashboard" || activeTab === "resources" || activeTab === "pathway") && React.createElement(HumanSupportChoices, { colors: C, id: activeTab === "pathway" ? "tops-career-human" : "tops-page-human" })),
   activeTab === "pathway" && pathwayMode === "journey" && !journeyTarget && !careerExperienceContext && React.createElement(CareerJourney, { key: guideRestoreRevision, entry: careerEntry, consumeEntry: function() { setCareerEntry(""); }, introduction: introduction, setIntroduction: setIntroduction, visitDraft: careerVisitDraft, setVisitDraft: setCareerVisitDraft, diskGuard: careerDiskGuard.current, colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gapState: gapState, setGapState: setGapState, openTool: function(tool, role) { if (tool === "jobs") { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, keyword: role || previous.keyword || guideState.draft.targetRole || "" }); }); focusCareerWorksheet("tops-live-jobs-panel"); } else if (tool === "resume") { setAiR(function(previous) { var occupied = previous.loading || ["role", "years", "target", "skills", "certs", "exp", "posting", "facts", "out"].some(function(key) { return !!previous[key]; }); return Object.assign({}, previous, occupied ? { open: true } : { open: true, target: role.role, exp: role.experience, posting: role.posting }); }); focusCareerWorksheet("tops-resume-drafter-panel"); } else if (tool === "readiness") { openPlanRoute("readiness", "tops-plan-readiness", "tops-career-start-heading"); } else { setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-heading"); } }, home: function() { continuationFocus.current = "tops-loop-title"; setActiveTab("dashboard"); } }),
   activeTab === "pathway" && React.createElement("nav", { "aria-label": "Career shortcuts", style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 } },
     [["Start here", "tops-career-start-heading"], ["Career plan", "career-gap-heading"], ["Resume drafter", "tops-resume-drafter-panel"], ["Business ownership", "tops-ownership-heading"]].map(function(item) {
@@ -9816,9 +9912,8 @@ function App() {
     if (userStatus === "guard") {
       return React.createElement("div", null,
         renderMemberLoop(),
-        renderHomeSearch(),
+        React.createElement("section", { className: "tops-home-toolkit", "aria-label": "Tools and progress" }, renderHomeSearch(), renderHomeTools()),
         React.createElement(ServiceProfileEditor, { colors: C, value: userStatus, onSave: function(value) { serviceProfileEdit.current = true; setUserStatus(value); } }),
-        renderHomeTools(),
         separationDate && React.createElement("details", { id: "tops-home-date", style: { marginBottom: 14 } },
         React.createElement("summary", { style: { minHeight: 44, padding: "12px 14px", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, cursor: "pointer" } }, "View my transition countdown"), (function() {
           var daysOut = daysToETSDate(separationDate);
@@ -9843,9 +9938,8 @@ function App() {
           );
         })()),
         React.createElement(GuardCareerSupport, { followup: React.createElement("div", null, SMART_REMINDERS.concat(generateCriticalWindowReminders(userStatus)).filter(function(r) { return followProgress[r.id] && !dismissedReminders[r.id]; }).map(function(r) { return React.createElement("div", { key: r.id, style: { marginBottom: 14, padding: 12, border: "1px solid " + C.border, borderRadius: 8 } }, React.createElement("strong", null, r.title), React.createElement("p", null, topsFollowLabel(followProgress[r.id])), React.createElement("button", { id: "tops-home-follow-" + r.id, type: "button", style: { minHeight: 44, padding: "10px 14px", background: C.bg, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 6 }, onClick: function() { openPlanRoute("reminders", "tops-reminder-" + r.id, "tops-home-follow-" + r.id); } }, "Continue step")); })), colors: C, prep: gapState.draft.prep, openConversation: function(field) { setServiceConversation(""); setPrepareOpportunity(false); setGuardOfficeOffer(null); setPathwayMode("planner"); setPathwayStep(1); continuationReturn.current = "guard-conversation-resume"; focusCareerWorksheet("career-prep-" + field); setActiveTab("pathway"); }, target: gapState.draft.target, opportunity: gapState.draft.prep.opportunity, next: gapState.draft.prep.followup.trim() ? gapState.draft.prep.followup : (gapState.draft.rows.find(function(row) { return row.next.trim(); }) || {}).next || "", openPlan: function(office, prepare) { setPrepareOpportunity(!!prepare); setGuardOfficeOffer(office); setPathwayMode("planner"); setPathwayStep(1); setActiveTab("pathway"); window.scrollTo(0, 0); } }),
-        renderPolicyNotice(),
+        React.createElement("details", { className: "tops-policy-disclosure" }, React.createElement("summary", null, "Policy updates and sources"), renderPolicyNotice()),
 
-        renderHomeNavigator(),
 
         React.createElement("details", { style: { marginBottom: 14 } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.goldBright, cursor: "pointer", fontWeight: 700 } }, "More Guard and Reserve guidance"),
         // Guard-specific intel card
@@ -10103,9 +10197,8 @@ function App() {
       // ═══ v49 INSTRUMENT: timeline ring + ETS countdown fused ═══
       renderMemberLoop(),
       renderCareerConversationResume(),
-      renderHomeSearch(),
+      React.createElement("section", { className: "tops-home-toolkit", "aria-label": "Tools and progress" }, renderHomeSearch(), renderHomeTools()),
       React.createElement(ServiceProfileEditor, { colors: C, value: userStatus, onSave: function(value) { serviceProfileEdit.current = true; setUserStatus(value); } }),
-      renderHomeTools(),
       React.createElement("details", { id: "tops-home-date", style: { marginBottom: 14 } },
       React.createElement("summary", { style: { minHeight: 44, padding: "12px 14px", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, cursor: "pointer" } }, separationDate ? "View or edit my transition date" : "Add a transition date (optional)"),
       (function() {
@@ -10164,8 +10257,7 @@ function App() {
         )
       ),
 
-      renderHomeNavigator(),
-      renderPolicyNotice(),
+      React.createElement("details", { className: "tops-policy-disclosure" }, React.createElement("summary", null, "Policy updates and sources"), renderPolicyNotice()),
 
       // ═══ v72 SITREP DELTA — what changed since your last check-in ═══
       sitrepDelta && React.createElement("div", { onClick: function() { setPolicyPanelOpen(true); }, style: { background: C.bgElevated, border: "1px solid " + C.border, borderLeft: "3px solid " + C.goldBright, borderRadius: 12, padding: "12px 15px", marginBottom: 12, cursor: "pointer" } },
@@ -17965,21 +18057,6 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     showMoreMenu !== "benefits" && navUnlocked && React.createElement("button", { className: "tops-more-tool", type: "button", onClick: function() { primaryNavFocus.current = true; setActiveTab("navigator"); setShowMoreMenu(false); } }, "Navigator"),
     showMoreMenu !== "benefits" && React.createElement("button", { className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); window.requestAnimationFrame(handleInstallBannerClick); } }, "Install Transition OPS"),
     React.createElement("button", { onClick: function() { setShowMoreMenu(false); }, style: { marginTop: 10, padding: "14px 0", background: "none", border: "1px solid " + C.border, borderRadius: 12, color: C.inactive, fontSize: 12, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer", width: "100%", textAlign: "center" } }, "CLOSE")
-  ),
-
-  // ═══════════ BOTTOM NAVIGATION BAR ═══════════
-  /*#__PURE__*/React.createElement("div", { className: "bottom-nav", role: "navigation", "aria-label": "Primary" },
-    [{id:"dashboard",icon:"home",label:"Home"},{id:"timeline",icon:"calendar",label:"My Plan"},{id:"pathway",icon:"target",label:"Career"},{id:"benefits",icon:"medal",label:"Benefits"},{id:"more",icon:"grid",label:"More"}].map(function(n) {
-      var isActive = showMoreMenu ? n.id === (showMoreMenu === "benefits" ? "benefits" : "more") : n.id === "more" ? ["finalpcs","navigator"].indexOf(activeTab) !== -1 : n.id === "benefits" ? ["critical","vamath","vapay","resources","taxes"].indexOf(activeTab) !== -1 : n.id === "timeline" ? ["timeline","reminders","readiness","dd214"].indexOf(activeTab) !== -1 : n.id === "pathway" ? ["pathway","vethub"].indexOf(activeTab) !== -1 : activeTab === n.id;
-      return React.createElement("button", { key: n.id, type: "button", "aria-current": isActive && !showMoreMenu ? "page" : undefined, "aria-expanded": n.id === "more" || n.id === "benefits" ? (n.id === "more" ? showMoreMenu === true : showMoreMenu === "benefits") : undefined, onClick: function() {
-        if (n.id === "more") { setShowMoreMenu(showMoreMenu === true ? false : true); }
-        else if (n.id === "benefits") { setShowMoreMenu(showMoreMenu === "benefits" ? false : "benefits"); }
-        else { primaryNavFocus.current = true; setActiveTab(n.id); setSelectedMilestone(null); setShowMoreMenu(false); }
-      } },
-        React.createElement("span", { className: "nav-icon", style: { color: isActive ? C.goldBright : C.inactive, transition: "color 0.2s" } }, TIcon(n.icon, 22)),
-        React.createElement("span", { className: "nav-label", style: { color: isActive ? C.textPrimary : C.inactive, transition: "color 0.2s" } }, n.label)
-      );
-    })
   ),
 
   !window.__IS_IFRAME && TOPS_PUSH_ENABLED && showPushConsent && /*#__PURE__*/React.createElement(PushConsentModal, {
