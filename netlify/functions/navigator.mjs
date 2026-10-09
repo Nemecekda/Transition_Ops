@@ -89,10 +89,10 @@ DOES: builds an adaptive one- or two-page civilian resume OR a federal (USAJOBS)
 DOES NOT: apply to jobs, guarantee interviews, or verify the user's claims.
 NEEDS INPUT: target role, years of service, skills, certifications, experience; optionally a pasted posting.
 
-JOB SEARCH LINKS — [CAREER]
+JOB SEARCH — [CAREER]
 The main career journey includes optional interest-based example-role exploration without a military-category requirement. Selecting an example fills the next-step role for review; it does not save or replace a plan. The older military-background paths are optional reference material, not a second mandatory onboarding flow. Career plan and Resume shortcuts remain available.
-DOES: prepares external LinkedIn and USAJOBS searches using an editable career goal and a member-entered city/state or ZIP. Search links open those sites in a new tab and send only the displayed role and area, not the resume or saved plan. State job banks remain available. Remote/hybrid filters must be selected on the destination site.
-DOES NOT: retrieve listings into this app, connect a LinkedIn account, automatically match or verify qualifications, or apply to jobs. Do not claim that data access is pending approval: its approval status is unverified. In-app listings remain disabled.
+DOES: prepares external LinkedIn and USAJOBS searches using an editable career goal and a member-entered city/state or ZIP. When the federal-search connection is available, an explicit search can also show up to ten public federal announcements inside the app. That request sends the entered role and area through Transition OPS to USAJOBS; it does not include resume text, saved plan details or service profile. The screen shows source-provided pay, closing dates, who-may-apply wording and qualification excerpts when available, with retrieval time and an official announcement link. These are search results, not personal qualification matches. External search links and state job banks remain available if the connection is unavailable. Remote/hybrid filters remain on the destination search sites.
+DOES NOT: connect a LinkedIn or USAJOBS member account, retrieve applications or private account data, verify personal eligibility, infer a job match, or apply on the member's behalf. Do not claim the federal-search connection is active without the screen showing it is available. Only public announcements are queried; additional Status/All access is not enabled. Applications follow the official announcement instructions.
 
 GUARD/RESERVE — [GUARD/RESERVE]
 DOES: RC-specific dashboard — points statement reading, gray-area retirement, RC status types, 20-year letter and RC-SBP window.

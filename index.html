@@ -3206,7 +3206,7 @@ const DOCUMENT_VAULT = [{
   name: "SGLI/VGLI Documentation",
   critical: false,
   obtained: false,
-  notes: "SGLI to VGLI conversion within 240 days of separation."
+  notes: "The usual VGLI application window is 1 year and 120 days. Eligible applicants do not need evidence of good health when applying within 240 days; the usual path requires it afterward. Confirm eligibility, your qualifying service event and exact dates with OSGLI, especially for Guard/Reserve service or an SGLI Disability Extension."
 }, {
   id: "d9",
   name: "VA Certificate of Eligibility (COE)",
@@ -5157,7 +5157,7 @@ function AboutModal(props) {
     style: bodyText
   }, "Transition OPS uses Google Analytics to measure site visits. Google uses cookies and receives page-view information, browser and device details, and network request metadata."), /*#__PURE__*/React.createElement("div", {
     style: sectionLabel
-  }, "PUSH ALERTS"), /*#__PURE__*/React.createElement("p", {
+  }, "FEDERAL JOB SEARCH"), /*#__PURE__*/React.createElement("p", { style: bodyText }, "When connected, searching federal openings sends your entered role and area through our Netlify-hosted service to USAJOBS. That search request does not include your resume, saved plan or service profile. The hosting service and USAJOBS may process operational request records. Opening an official announcement takes you to USAJOBS, where its privacy terms apply."), /*#__PURE__*/React.createElement("div", { style: sectionLabel }, "PUSH ALERTS"), /*#__PURE__*/React.createElement("p", {
     style: bodyText
   }, "Push alerts are currently disabled. Earlier browsers may still use an older push setup that could have contacted OneSignal before the current choice was available. Privacy and deletion questions: ", /*#__PURE__*/React.createElement("strong", {
     style: { color: C.goldBright }
@@ -7039,9 +7039,43 @@ function topsJobSearchLinks(role, area) {
 }
 function CareerJobSearch(props) {
   var C = props.colors, state = props.state, links = topsJobSearchLinks(state.keyword, state.state);
+  var [available, setAvailable] = useState(null), [searching, setSearching] = useState(false), [result, setResult] = useState(null), [searchMessage, setSearchMessage] = useState("");
+  var generation = useRef(0), request = useRef(null), currentQuery = useRef("");
+  var query = JSON.stringify([state.keyword, state.state]); currentQuery.current = query;
+  useEffect(function() {
+    var controller = new AbortController(), active = true;
+    fetch("/.netlify/functions/federal-jobs?config=1", { cache: "no-store", credentials: "omit", signal: controller.signal }).then(function(response) { if (!response.ok) throw Error("unavailable"); return response.json(); }).then(function(config) { if (active) setAvailable(config.available === true && config.provider === "USAJOBS"); }).catch(function() { if (active) setAvailable(false); });
+    return function() { active = false; controller.abort(); generation.current++; if (request.current) request.current.abort(); };
+  }, []);
+  useEffect(function() { generation.current++; if (request.current) request.current.abort(); setSearching(false); setResult(null); setSearchMessage(""); }, [query]);
+  function closingCalendarDate(value) {
+    var match = /^(\d{4})-(\d{2})-(\d{2})(?:T.*)?$/.exec(value || "");
+    if (!match) return value;
+    var year = Number(match[1]), month = Number(match[2]), day = Number(match[3]);
+    if (year < 1900 || year > 9999 || month < 1 || month > 12 || day < 1 || day > new Date(Date.UTC(year, month, 0)).getUTCDate() || (value.length > 10 && !Number.isFinite(Date.parse(value)))) return value;
+    return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][month - 1] + " " + day + ", " + year;
+  }
+  function cancelSearch() { generation.current++; if (request.current) request.current.abort(); setSearching(false); setResult(null); setSearchMessage("Search canceled. Your role and area were kept."); requestAnimationFrame(function() { var n = document.getElementById("tops-federal-search"); if (n) n.focus(); }); }
+  async function searchFederal() {
+    if (!links || available !== true) return;
+    var token = ++generation.current, submitted = query, controller = new AbortController(); if (request.current) request.current.abort(); request.current = controller;
+    setSearching(true); setResult(null); setSearchMessage("");
+    try {
+      var response = await fetch("/.netlify/functions/federal-jobs", { method: "POST", credentials: "omit", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ keyword: state.keyword.trim(), location: state.state.trim() }), signal: controller.signal });
+      if (!response.ok) throw Error(response.status === 503 ? "Federal job search is not connected here. Use the official search link below." : response.status === 429 ? "USAJOBS is busy. Try again later or use its official search link." : response.status === 504 ? "USAJOBS did not respond in time. Try again or open the official search." : "Federal jobs could not be loaded. Your search is unchanged; the official search links still work.");
+      var data = await response.json(), fields = ["id", "title", "agency", "location", "salary", "closingDate", "whoMayApply", "qualifications", "url"];
+      if (!data || data.source !== "USAJOBS" || data.scope !== "public" || typeof data.retrievedAt !== "string" || !Number.isFinite(Date.parse(data.retrievedAt)) || !Array.isArray(data.jobs) || data.jobs.length > 10 || !data.jobs.every(function(job) { return job && fields.every(function(k) { return typeof job[k] === "string" && job[k].length <= 16000; }); })) throw Error("Federal job results could not be verified. Use the official search link instead.");
+      var jobs = data.jobs.filter(function(job) { try { var u = new URL(job.url); return u.protocol === "https:" && u.hostname === "www.usajobs.gov" && !u.username && !u.password && !u.port && /^\/(?:job\/\d+|GetJob\/ViewDetails\/\d+)\/?$/i.test(u.pathname) && !u.search && !u.hash; } catch (_) { return false; } });
+      if (token !== generation.current || currentQuery.current !== submitted) return;
+      setResult({ jobs: jobs, query: submitted, retrievedAt: data.retrievedAt, role: state.keyword.trim(), area: state.state.trim() });
+      setSearchMessage(jobs.length ? jobs.length + " public federal openings loaded. Check each official announcement." : data.jobs.length ? "No safely linked results could be displayed. Use the official search link." : "No public federal openings could be shown for this search. Try another role or area, or search USAJOBS directly.");
+      requestAnimationFrame(function() { if (token !== generation.current) return; var heading = document.getElementById("tops-federal-results"); if (heading) heading.focus(); });
+    } catch (e) { if (token === generation.current && !controller.signal.aborted) setSearchMessage(/^(Federal|USAJOBS)/.test(e.message || "") ? e.message : "Federal jobs could not be loaded. Your search is unchanged; use the official search links or try again."); }
+    finally { if (token === generation.current) setSearching(false); }
+  }
   var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 12, font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 8, margin: "6px 0 16px" };
   var link = { display: "block", minHeight: 44, boxSizing: "border-box", padding: "12px 16px", marginBottom: 10, color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, textDecoration: "underline" };
-  function change(key, value) { props.setState(function(previous) { var next = Object.assign({}, previous); next[key] = value; return next; }); }
+  function change(key, value) { generation.current++; if (request.current) request.current.abort(); setResult(null); setSearching(false); setSearchMessage(""); props.setState(function(previous) { var next = Object.assign({}, previous); next[key] = value; return next; }); }
   return React.createElement("section", { "aria-labelledby": "tops-job-search-heading" },
     React.createElement("h3", { id: "tops-job-search-heading" }, "Find openings for your next move"),
     props.onReturn && React.createElement("button", { id: "tops-job-return", type: "button", onClick: props.onReturn, style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, font: "inherit", color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8 } }, "Back to Career"),
@@ -7051,6 +7085,21 @@ function CareerJobSearch(props) {
     React.createElement("input", { id: "tops-job-role", value: state.keyword, maxLength: 120, placeholder: "For example, logistics coordinator", onChange: function(e) { change("keyword", e.target.value); }, style: field }),
     React.createElement("label", { htmlFor: "tops-job-area" }, "City and state, or ZIP code"),
     React.createElement("input", { id: "tops-job-area", value: state.state, maxLength: 80, placeholder: "For example, Milwaukee, WI", onChange: function(e) { change("state", e.target.value); }, style: field }),
+    React.createElement("div", { style: { marginBottom: 18, lineHeight: 1.5 } },
+      React.createElement("p", { id: "tops-federal-sharing" }, "Search federal jobs sends the role and area above through Transition OPS to USAJOBS. It does not send your resume, profile or saved plan."),
+      React.createElement("button", { id: "tops-federal-search", type: "button", disabled: available !== true || !links || searching, "aria-describedby": "tops-federal-sharing tops-federal-status", onClick: searchFederal, style: { minHeight: 44, padding: "12px 16px", font: "inherit", color: C.bg, background: C.accent, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" } }, searching ? "Searching federal jobs…" : "Search federal jobs"),
+      searching && React.createElement("button", { type: "button", onClick: cancelSearch, style: { minHeight: 44, marginLeft: 8, padding: "12px 16px", font: "inherit", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8 } }, "Cancel search"),
+      React.createElement("p", { id: "tops-federal-status", role: "status" }, searching ? "Searching public federal openings…" : available === null ? "Checking federal search availability…" : available === false ? "Federal job search is not connected here. You can still open the official searches below." : searchMessage || "Search public federal openings when you are ready."),
+      result && result.query === query && React.createElement("section", { "aria-labelledby": "tops-federal-results", style: { marginTop: 16, overflowWrap: "anywhere" } },
+        React.createElement("h4", { id: "tops-federal-results", tabIndex: -1 }, "Federal openings: ", result.role, " · ", result.area),
+        React.createElement("p", null, "Source: USAJOBS · Retrieved ", new Date(result.retrievedAt).toLocaleString(), ". Listings may change. Transition OPS is not a federal agency and is not endorsed by USAJOBS. Eligibility is not assessed here; check the official announcement and closing instructions."),
+        result.jobs.map(function(job, i) { return React.createElement("article", { key: job.id + "-" + i, style: { padding: 16, border: "1px solid " + C.border, borderRadius: 8, marginBottom: 12, background: C.bgCard } },
+          React.createElement("h5", { style: { margin: "0 0 8px", fontSize: 18, lineHeight: 1.4 } }, job.title || "Federal opening"),
+          React.createElement("p", null, job.agency || "Agency not supplied", " · ", job.location || "Location not supplied"),
+          React.createElement("p", null, "Pay: ", job.salary || "Not supplied. Check announcement."),
+          React.createElement("p", null, "Closing date as listed: ", closingCalendarDate(job.closingDate) || "Not supplied. Check announcement."),
+          (job.whoMayApply || job.qualifications) && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, cursor: "pointer" } }, "Official eligibility and qualification excerpts"), job.whoMayApply && React.createElement("p", { style: { whiteSpace: "pre-wrap" } }, "Who may apply: ", job.whoMayApply), job.qualifications && React.createElement("p", { style: { whiteSpace: "pre-wrap" } }, job.qualifications)),
+          React.createElement("a", { href: job.url, target: "_blank", rel: "noopener noreferrer", style: Object.assign({}, link, { marginTop: 8, marginBottom: 0 }) }, "Read the official announcement (new tab)")); }))),
     React.createElement("p", { id: "tops-job-sharing" }, "Opening a search sends only the role and area shown here to that job site, not your resume or saved plan. Each site opens in a new tab and has its own privacy practices."),
     links ? React.createElement("div", null,
       React.createElement("p", { role: "status" }, "Search for " + state.keyword.trim() + " in " + state.state.trim()),
@@ -7058,7 +7107,7 @@ function CareerJobSearch(props) {
       React.createElement("a", { href: links.federal, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing", style: link }, "Search federal jobs on USAJOBS (new tab)")) : React.createElement("p", { role: "status" }, "Add a role and area to prepare your searches."),
     React.createElement("p", null, "Looking for remote or hybrid work? Set that filter on the job site. Check each posting's duties, requirements and work location before deciding whether it fits."),
     React.createElement("a", { href: "https://www.careeronestop.org/Veterans/JobSearch/FindOpenings/state-job-banks.aspx", target: "_blank", rel: "noopener noreferrer", style: link }, "Browse official state job banks (new tab)"),
-    React.createElement("p", { style: { color: C.textSecondary } }, "These are external searches, not verified matches. Listings are not loaded into Transition OPS. Your search edits stay in this visit and do not replace your saved career goal."));
+    React.createElement("p", { style: { color: C.textSecondary } }, "Federal results are public USAJOBS listings, not verified matches. LinkedIn and state job banks open separately. Search edits and results stay in this visit and do not replace your saved career goal."));
 }
 function CareerIdeas(props) {
   var C = props.colors, [query, setQuery] = useState("");
@@ -8241,6 +8290,11 @@ function PlanBackup(props) {
 }
 // PLAN_BACKUP_END
 
+const TOPS_TOOL_ROUTES = ["dashboard","vamath","vapay","pathway","resources","taxes","timeline","critical","reminders","readiness","vethub","dd214","finalpcs","navigator"];
+function topsCurrentToolURL(href, tool) {
+  if (TOPS_TOOL_ROUTES.indexOf(tool) === -1) return null;
+  try { var url = new URL(href); if (url.searchParams.get("tool") === tool) return href; url.searchParams.set("tool", tool); return url.href; } catch (error) { return null; }
+}
 function App() {
   const [theme, setTheme] = useState(() => {
     try {
@@ -8327,7 +8381,7 @@ function App() {
   };
   const [activeTab, setActiveTab] = useState(function() {
     try {
-      var validTabs = ["dashboard","vamath","vapay","pathway","resources","taxes","timeline","critical","reminders","readiness","vethub","dd214","finalpcs","navigator"];
+      var validTabs = TOPS_TOOL_ROUTES;
       var t = new URLSearchParams(window.location.search).get("tool");
       if (t && validTabs.indexOf(t) !== -1) return t;
     } catch (e) {}
@@ -8437,7 +8491,7 @@ function App() {
   // Onboarding state
   const [showOnboarding, setShowOnboarding] = useState(function() {
     try {
-      var validTabs = ["dashboard","vamath","vapay","pathway","resources","taxes","timeline","critical","reminders","readiness","vethub","dd214","finalpcs","navigator"];
+      var validTabs = TOPS_TOOL_ROUTES;
       var t = new URLSearchParams(window.location.search).get("tool");
       if (t && validTabs.indexOf(t) !== -1) return false;
       return !window.__safeGet("tops_onboarded");
@@ -8679,6 +8733,11 @@ function App() {
   const __histSkipSync = useRef(false);
   const __histSuppress = useRef(0);
   const __closeTop = useRef(null);
+  const __syncToolURL = useRef(null);
+  __syncToolURL.current = function() {
+    if (showOnboarding) return;
+    try { var next = topsCurrentToolURL(window.location.href, activeTab); if (next && next !== window.location.href) history.replaceState(history.state, "", next); } catch (error) {}
+  };
   __closeTop.current = function() {
     if (showOnboarding) { if (onboardStep > 1) setOnboardStep(onboardStep - 1); else if (onboardStep === 1 && exploredOnly) setShowOnboarding(false); else if (onboardStep === 1) setOnboardStep(0); return; }
     if (showMoreMenu) { setShowMoreMenu(false); return; }
@@ -8711,12 +8770,14 @@ function App() {
       __histSkipSync.current = false;
     }
     __histDepth.current = depth;
+    if (__histSuppress.current === 0) __syncToolURL.current();
   }, [showOnboarding, onboardStep, activeTab, selectedMilestone, journeyTarget, pathwayMode, showMoreMenu, feedbackOpen, aboutOpen, whatsNewOpen, policyPanelOpen, showNotifPanel]);
   useEffect(function() {
     var onPop = function() {
-      if (__histSuppress.current > 0) { __histSuppress.current -= 1; return; }
+      if (__histSuppress.current > 0) { __histSuppress.current -= 1; if (__histSuppress.current === 0) __syncToolURL.current(); return; }
       __histSkipSync.current = true;
       if (__closeTop.current) __closeTop.current();
+      __syncToolURL.current();
     };
     window.addEventListener("popstate", onPop);
     return function() { window.removeEventListener("popstate", onPop); };
@@ -11665,7 +11726,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     React.createElement("button", { type: "button", "aria-expanded": jobsQ.open, "aria-controls": "tops-live-jobs-panel", onClick: function() { setJobsQ(function(p){ return Object.assign({}, p, { open: !p.open, keyword: p.keyword || guideState.draft.targetRole || "" }); }); }, style: { display: "flex", width: "100%", minHeight: 44, padding: 0, background: "transparent", border: "none", justifyContent: "space-between", alignItems: "center", textAlign: "left", color: "inherit", cursor: "pointer" } },
       React.createElement("span", { style: { display: "block", minWidth: 0 } },
         React.createElement("span", { style: { display: "block", fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.goldBright, fontWeight: 700 } }, JOBS_LIVE ? "Search job openings" : "Find jobs by role and area"),
-        React.createElement("span", { style: { display: "block", fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, JOBS_LIVE ? "Search CareerOneStop job listings by keyword and location." : "Prepare searches for LinkedIn and USAJOBS. Live job search and automatic job matching are not enabled in this app.")),
+        React.createElement("span", { style: { display: "block", fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, JOBS_LIVE ? "Search CareerOneStop job listings by keyword and location." : "Search public federal openings when connected, or open LinkedIn and USAJOBS searches. No automatic job matching.")),
       React.createElement("span", { "aria-hidden": "true", style: { color: C.goldBright, fontSize: 16, transform: jobsQ.open ? "rotate(90deg)" : "none" } }, "\u203A")),
     !jobsQ.open && React.createElement("div", { id: "tops-live-jobs-panel", hidden: true }),
     jobsQ.open && !JOBS_LIVE && React.createElement("div", { id: "tops-live-jobs-panel", tabIndex: -1, style: { marginTop: 12 } },
@@ -16796,8 +16857,8 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       ...S.sectionLabel,
       marginTop: 16
     }
-  }, "SUPPORTING DOCUMENTS"), documents.filter(d => !d.critical).map(d => /*#__PURE__*/React.createElement("button", {
-    key: d.id,
+  }, "SUPPORTING DOCUMENTS"), documents.filter(d => !d.critical).map(d => /*#__PURE__*/React.createElement("div", { key: d.id }, React.createElement("button", {
+    id: "tops-document-" + d.id,
     onClick: () => toggleDoc(d.id),
     style: {
       display: "flex",
@@ -16839,13 +16900,13 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     }
   }, d.name), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 9,
+      fontSize: d.id === "d8" ? 13 : 9,
       color: C.inactive,
       marginTop: 2,
       lineHeight: 1.4,
       fontFamily: "'Source Sans 3', sans-serif"
     }
-  }, d.notes)))))), activeTab === "taxes" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, d.notes))), d.id === "d8" && React.createElement("a", { id: "tops-vgli-document-source", href: "https://www.va.gov/life-insurance/options-eligibility/vgli/", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, maxWidth: "100%", boxSizing: "border-box", padding: "8px 12px", marginBottom: 8, color: C.greenBright, fontSize: 14, textDecoration: "underline", lineHeight: 1.5 } }, "VA VGLI eligibility and application guidance (opens a new tab)"))))), activeTab === "taxes" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: S.card
   }, /*#__PURE__*/React.createElement("div", {
     style: S.cardTitle
