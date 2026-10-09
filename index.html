@@ -6269,6 +6269,18 @@ function topsGapStarter(resume, posting) {
     return { have: have.rows[i], requirement: need.rows[i], next: next, source: posting.trim() ? "Member-provided resume and job posting excerpts; review wording and category." : "Member-provided resume excerpt; no job requirements supplied yet." };
   }) };
 }
+function topsRequirementSuggestion(text) {
+  if (typeof text !== "string" || text.trim().length < 20) return null;
+  if (text.length <= 580) return { text: text, label: "Announcement excerpt to review" };
+  // Only a single explicit experience route followed by an education alternative.
+  // Retain every character in that route; ambiguous references stay manual.
+  if ((text.match(/Specialized Experience:/gi) || []).length !== 1 || (text.match(/\sOR Education:/g) || []).length !== 1) return null;
+  var start = text.search(/Specialized Experience:\s/i), boundary = text.indexOf(" OR Education:");
+  if (start < 0 || boundary <= start || /["\x27]|\bdefinition\b/i.test(text.slice(0, start))) return null;
+  var passage = text.slice(start, boundary);
+  if (passage.length > 580 || !/\bone year\b/i.test(passage) || !/[.;]$/.test(passage) || /\b(?:either|above|following|below|equivalent combination|or equivalent)\b/i.test(passage) || /\b(?:in addition|selective placement|license|licensure)\b/i.test(text) || /\bOR\b/.test(passage) || (text.match(/GS[- ]?\d+/gi) || []).length > 1) return null;
+  return { text: passage, label: "Experience excerpt to review" };
+}
 function CareerGapStarter(props) {
   var [resume, setResume] = useState(props.initialResume || ""), [posting, setPosting] = useState(props.initialPosting || ""), [preview, setPreview] = useState(null), [message, setMessage] = useState(""), [busy, setBusy] = useState(false);
   var generation = useRef(0), controller = useRef(null), fileInput = useRef(null), baseline = useRef("");
@@ -6290,6 +6302,15 @@ function CareerGapStarter(props) {
     finally { if (token === generation.current) { setBusy(false); controller.current = null; } }
   }
   function build() { if (props.importedPosting && posting.split(/\r?\n/).some(function(line) { return line.trim().length > 580; })) { setMessage("This qualification excerpt is longer than the comparison can retain. Select one complete requirement in the posting field and choose Use selected requirement. Include its conditions. Your experience and saved plan are unchanged."); return; } if (props.requirePosting && posting.trim().length < 20) { setMessage("Paste the job posting so we can compare its wording with your experience."); return; } var draft = topsGapStarter(resume, posting); if (!draft) { setMessage("Add at least 20 characters from your resume. A job posting is optional; if included, use at least 20 characters. Each input can hold up to 20,000 characters."); return; } if (props.onReviewed) { props.onReviewed(draft, { resume: resume, posting: posting }); return; } baseline.current = JSON.stringify(props.draft); setPreview(draft); setMessage("Draft ready. Review the source excerpts below. Nothing has been added or saved."); setTimeout(function() { var n = document.getElementById("career-starter-review"); if (n) n.focus(); }, 0); }
+  var suggestedRequirement = props.importedPosting && posting.length > 580 && posting === props.importedPosting ? topsRequirementSuggestion(posting) : null;
+  function useSuggestedRequirement() {
+    var suggestion = posting === props.importedPosting && topsRequirementSuggestion(posting);
+    if (!suggestion) return;
+    cancel(); setPosting(suggestion.text); setPreview(null);
+    if (props.onSourceChange) props.onSourceChange({ resume: resume, posting: suggestion.text });
+    setMessage("Excerpt ready to review. Check its conditions and the full announcement before comparing.");
+    requestAnimationFrame(function() { var node = document.getElementById("career-starter-posting"); if (node) node.focus(); });
+  }
   function useSelectedRequirement() {
     var input = document.getElementById("career-starter-posting"), excerpt = input ? posting.slice(input.selectionStart, input.selectionEnd) : "";
     if (excerpt.trim().length < 20 || excerpt.length > 580 || !props.importedPosting || !props.importedPosting.includes(excerpt)) { setMessage("Select 20 to 580 characters from this announcement excerpt. Include the whole requirement and its conditions; nothing was changed."); return; }
@@ -6316,7 +6337,12 @@ function CareerGapStarter(props) {
     React.createElement("label", { htmlFor: "career-starter-file" }, "Choose a resume file (optional)"),
     React.createElement("input", { id: "career-starter-file", ref: fileInput, type: "file", accept: ".pdf,.txt", onChange: readFile, style: field, "aria-describedby": "career-starter-help" }),
     [["resume", "Resume or experience text", resume, setResume], ["posting", "Job posting text (optional)", posting, setPosting]].map(function(item) { return React.createElement(props.onReviewed && item[0] === "posting" && !props.requirePosting ? "details" : "div", { key: item[0], style: { marginTop: 12 } }, props.onReviewed && item[0] === "posting" && !props.requirePosting && React.createElement("summary", { style: { minHeight: 44, padding: "10px 0" } }, "Add a job posting (optional)"), React.createElement("label", { htmlFor: "career-starter-" + item[0] }, props.requirePosting && item[0] === "posting" ? "Job posting text (required for this comparison)" : item[1]), React.createElement("textarea", { id: "career-starter-" + item[0], rows: 4, maxLength: 20000, value: item[2], disabled: busy, style: field, onChange: function(e) { item[3](e.target.value); if (props.onSourceChange) props.onSourceChange({ resume: item[0] === "resume" ? e.target.value : resume, posting: item[0] === "posting" ? e.target.value : posting }); setPreview(null); setMessage(""); } })); }),
-    props.importedPosting && posting.split(/\r?\n/).some(function(line) { return line.trim().length > 580; }) && React.createElement("div", null, React.createElement("p", null, "For a long announcement, select one complete requirement in the posting field. Include its conditions; you can review the full excerpt in the job source details."), React.createElement("button", { id: "tops-use-selected-requirement", type: "button", disabled: busy, style: button, onClick: useSelectedRequirement }, "Use selected requirement")),
+    suggestedRequirement && React.createElement("section", { "aria-labelledby": "tops-requirement-suggestion", style: { marginTop: 16, padding: 14, border: "1px solid " + props.colors.border, borderRadius: 8, lineHeight: 1.5 } },
+      React.createElement("h4", { id: "tops-requirement-suggestion", style: { margin: "0 0 10px" } }, suggestedRequirement.label),
+      React.createElement("p", { style: { whiteSpace: "pre-wrap" } }, suggestedRequirement.text),
+      React.createElement("p", null, "Check the conditions before using this excerpt. Other routes and additional conditions may appear in the full announcement."),
+      React.createElement("button", { id: "tops-use-suggested-requirement", type: "button", disabled: busy, style: button, onClick: useSuggestedRequirement }, "Use this excerpt")),
+    props.importedPosting && posting.split(/\r?\n/).some(function(line) { return line.trim().length > 580; }) && React.createElement("div", null, React.createElement("p", null, suggestedRequirement ? "Or select a different complete requirement in the posting field, including its conditions." : "For a long announcement, select one complete requirement in the posting field. Include its conditions; you can review the full excerpt in the job source details."), React.createElement("button", { id: "tops-use-selected-requirement", type: "button", disabled: busy, style: button, onClick: useSelectedRequirement }, "Use selected requirement")),
     React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 } },
       React.createElement("button", { type: "button", style: props.onReviewed ? Object.assign({}, button, { background: props.colors.green, color: props.colors.textOnFill }) : button, disabled: busy, onClick: build }, props.onReviewed ? (props.requirePosting ? "Compare my experience with this job" : "Help me find my next move") : "Draft my comparison"),
       busy && React.createElement("button", { type: "button", style: button, onClick: function() { cancel(); setMessage("Reading canceled. Your worksheet is unchanged."); } }, "Cancel reading"),
@@ -7058,9 +7084,16 @@ function topsReadableJobPay(value) {
   function separate(number) { return number.replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
   return (match[1] || "") + separate(match[2]) + (match[3] || "") + (match[4] ? match[4] + (match[5] || "") + separate(match[6]) + (match[7] || "") : "") + (match[8] || "");
 }
+function topsJobTitleContains(title, query) {
+  function words(value) { return (String(value || "").normalize("NFKC").toLowerCase().match(/[\p{L}\p{N}]+/gu) || []); }
+  var tokens = words(query).filter(function(word) { return !["a", "an", "and", "the", "of", "for", "in", "to"].includes(word); }), titleWords = words(title);
+  return tokens.length > 0 && tokens.every(function(word) { return titleWords.includes(word); });
+}
+function topsJobExplicitRemote(location) { return typeof location === "string" && ["remote job", "anywhere in the u.s. (remote job)"].includes(location.trim().toLowerCase()); }
 function CareerJobSearch(props) {
   var C = props.colors, state = props.state, links = topsJobSearchLinks(state.keyword, state.state);
   var [available, setAvailable] = useState(null), [searching, setSearching] = useState(false), [result, setResult] = useState(null), [searchMessage, setSearchMessage] = useState("");
+  var [locationFilter, setLocationFilter] = useState("all");
   var generation = useRef(0), request = useRef(null), currentQuery = useRef("");
   var query = JSON.stringify([state.keyword, state.state]); currentQuery.current = query;
   useEffect(function() {
@@ -7068,7 +7101,7 @@ function CareerJobSearch(props) {
     fetch("/.netlify/functions/federal-jobs?config=1", { cache: "no-store", credentials: "omit", signal: controller.signal }).then(function(response) { if (!response.ok) throw Error("unavailable"); return response.json(); }).then(function(config) { if (active) setAvailable(config.available === true && config.provider === "USAJOBS"); }).catch(function() { if (active) setAvailable(false); });
     return function() { active = false; controller.abort(); generation.current++; if (request.current) request.current.abort(); };
   }, []);
-  useEffect(function() { generation.current++; if (request.current) request.current.abort(); setSearching(false); setResult(null); setSearchMessage(""); }, [query]);
+  useEffect(function() { generation.current++; if (request.current) request.current.abort(); setSearching(false); setResult(null); setSearchMessage(""); setLocationFilter("all"); }, [query]);
   function compareFederalJob(job) {
     if (!props.onCompare || !result || result.query !== currentQuery.current || searching) { setSearchMessage("This search changed. Search again before choosing a job."); return; }
     var selected = topsFederalComparison(Object.assign({}, job, { retrievedAt: result.retrievedAt }));
@@ -7086,7 +7119,7 @@ function CareerJobSearch(props) {
   async function searchFederal() {
     if (!links || available !== true) return;
     var token = ++generation.current, submitted = query, controller = new AbortController(); if (request.current) request.current.abort(); request.current = controller;
-    setSearching(true); setResult(null); setSearchMessage("");
+    setSearching(true); setResult(null); setSearchMessage(""); setLocationFilter("all");
     try {
       var response = await fetch("/.netlify/functions/federal-jobs", { method: "POST", credentials: "omit", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ keyword: state.keyword.trim(), location: state.state.trim() }), signal: controller.signal });
       if (!response.ok) throw Error(response.status === 503 ? "Federal job search is not connected here. Use the official search link below." : response.status === 429 ? "USAJOBS is busy. Try again later or use its official search link." : response.status === 504 ? "USAJOBS did not respond in time. Try again or open the official search." : "Federal jobs could not be loaded. Your search is unchanged; the official search links still work.");
@@ -7103,6 +7136,17 @@ function CareerJobSearch(props) {
   var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 12, font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 8, margin: "6px 0 16px" };
   var link = { display: "block", minHeight: 44, boxSizing: "border-box", padding: "12px 16px", marginBottom: 10, color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, textDecoration: "underline" };
   function change(key, value) { generation.current++; if (request.current) request.current.abort(); setResult(null); setSearching(false); setSearchMessage(""); props.setState(function(previous) { var next = Object.assign({}, previous); next[key] = value; return next; }); }
+  function renderJob(job, i) { return React.createElement("article", { key: job.id + "-" + i, style: { display: "grid", gap: 12, padding: 20, border: "1px solid " + C.border, borderRadius: 10, marginBottom: 16, background: C.bgCard } },
+          React.createElement("h5", { style: { margin: "0 0 8px", fontSize: 18, lineHeight: 1.4 } }, job.title || "Federal opening"),
+          React.createElement("div", null, React.createElement("p", { style: { margin: 0, fontWeight: 600 } }, job.agency || "Agency not supplied"), React.createElement("p", { style: { margin: "4px 0 0", color: C.textSecondary } }, job.location || "Location not supplied")),
+          React.createElement("div", { style: { display: "grid", gap: 6 } }, React.createElement("p", { style: { margin: 0 } }, React.createElement("strong", null, "Pay: "), topsReadableJobPay(job.salary) || "Not supplied. Check announcement."),
+            React.createElement("p", { style: { margin: 0 } }, React.createElement("strong", null, "Closing date as listed: "), closingCalendarDate(job.closingDate) || "Not supplied. Check announcement.")),
+          (job.whoMayApply || job.qualifications) && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, cursor: "pointer" } }, "Official eligibility and qualification excerpts"), job.whoMayApply && React.createElement("p", { style: { whiteSpace: "pre-wrap" } }, "Who may apply: ", job.whoMayApply), job.qualifications && React.createElement("p", { style: { whiteSpace: "pre-wrap" } }, job.qualifications)),
+          props.onCompare && React.createElement("button", { type: "button", onClick: function() { compareFederalJob(job); }, style: { minHeight: 44, padding: "12px 16px", font: "inherit", color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8 } }, "Compare this job"),
+          React.createElement("a", { href: job.url, target: "_blank", rel: "noopener noreferrer", style: Object.assign({}, link, { marginTop: 8, marginBottom: 0 }) }, "Read the official announcement (new tab)")); }
+  var shownJobs = result ? result.jobs.filter(function(job) { return locationFilter === "all" || topsJobExplicitRemote(job.location); }) : [];
+  var titleMatches = shownJobs.filter(function(job) { return topsJobTitleContains(job.title, result.role); });
+  var broaderJobs = shownJobs.filter(function(job) { return !topsJobTitleContains(job.title, result.role); });
   return React.createElement("section", { "aria-labelledby": "tops-job-search-heading", style: { lineHeight: 1.55 } },
     React.createElement("h3", { id: "tops-job-search-heading" }, "Find openings for your next move"),
     props.onReturn && React.createElement("button", { id: "tops-job-return", type: "button", onClick: props.onReturn, style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, font: "inherit", color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8 } }, "Back to Career"),
@@ -7121,14 +7165,13 @@ function CareerJobSearch(props) {
       result && result.query === query && React.createElement("section", { "aria-labelledby": "tops-federal-results", style: { marginTop: 16, overflowWrap: "anywhere" } },
         React.createElement("h4", { id: "tops-federal-results", tabIndex: -1 }, "Federal openings: ", result.role, " · ", result.area),
         React.createElement("p", null, "Source: USAJOBS · Retrieved ", new Date(result.retrievedAt).toLocaleString(), ". Listings may change. Transition OPS is not a federal agency and is not endorsed by USAJOBS. Eligibility is not assessed here; check the official announcement and closing instructions."),
-        result.jobs.map(function(job, i) { return React.createElement("article", { key: job.id + "-" + i, style: { display: "grid", gap: 12, padding: 20, border: "1px solid " + C.border, borderRadius: 10, marginBottom: 16, background: C.bgCard } },
-          React.createElement("h5", { style: { margin: "0 0 8px", fontSize: 18, lineHeight: 1.4 } }, job.title || "Federal opening"),
-          React.createElement("div", null, React.createElement("p", { style: { margin: 0, fontWeight: 600 } }, job.agency || "Agency not supplied"), React.createElement("p", { style: { margin: "4px 0 0", color: C.textSecondary } }, job.location || "Location not supplied")),
-          React.createElement("div", { style: { display: "grid", gap: 6 } }, React.createElement("p", { style: { margin: 0 } }, React.createElement("strong", null, "Pay: "), topsReadableJobPay(job.salary) || "Not supplied. Check announcement."),
-            React.createElement("p", { style: { margin: 0 } }, React.createElement("strong", null, "Closing date as listed: "), closingCalendarDate(job.closingDate) || "Not supplied. Check announcement.")),
-          (job.whoMayApply || job.qualifications) && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, cursor: "pointer" } }, "Official eligibility and qualification excerpts"), job.whoMayApply && React.createElement("p", { style: { whiteSpace: "pre-wrap" } }, "Who may apply: ", job.whoMayApply), job.qualifications && React.createElement("p", { style: { whiteSpace: "pre-wrap" } }, job.qualifications)),
-          props.onCompare && React.createElement("button", { type: "button", onClick: function() { compareFederalJob(job); }, style: { minHeight: 44, padding: "12px 16px", font: "inherit", color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8 } }, "Compare this job"),
-          React.createElement("a", { href: job.url, target: "_blank", rel: "noopener noreferrer", style: Object.assign({}, link, { marginTop: 8, marginBottom: 0 }) }, "Read the official announcement (new tab)")); }))),
+        React.createElement("label", { htmlFor: "tops-job-location-filter" }, "Show within these results"),
+        React.createElement("select", { id: "tops-job-location-filter", value: locationFilter, onChange: function(e) { setLocationFilter(e.target.value); }, style: field }, React.createElement("option", { value: "all" }, "All returned locations"), React.createElement("option", { value: "remote" }, "Explicitly listed remote")),
+        React.createElement("p", { role: "status" }, shownJobs.length + " of " + result.jobs.length + " returned openings shown. Title groups ignore common connecting words. Remote includes only listings explicitly marked remote; check official work-location terms."),
+        !shownJobs.length && locationFilter === "remote" && React.createElement("button", { type: "button", style: link, onClick: function() { setLocationFilter("all"); requestAnimationFrame(function() { var n = document.getElementById("tops-job-location-filter"); if (n) n.focus(); }); } }, "Show all returned locations"),
+        titleMatches.length > 0 ? React.createElement("div", null,
+          React.createElement("h5", null, "Titles containing your role keywords (" + titleMatches.length + ")"), titleMatches.map(renderJob),
+          broaderJobs.length > 0 && React.createElement("details", { id: "tops-broader-job-titles" }, React.createElement("summary", { style: { minHeight: 44, cursor: "pointer" } }, "Other returned titles (" + broaderJobs.length + ")"), broaderJobs.map(renderJob))) : React.createElement("div", null, shownJobs.length > 0 && React.createElement("p", null, "No returned title contains your role keywords. These are the other titles USAJOBS returned; this is not an assessment of fit."), broaderJobs.map(renderJob)))),
     props.onCompare && React.createElement("div", null, React.createElement("button", { id: "tops-job-compare", type: "button", onClick: function() { props.onCompare(); }, style: { minHeight: 44, padding: "10px 14px", font: "inherit", color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8 } }, "Compare a job posting"), React.createElement("p", null, "Paste a posting you found; your experience stays here.")),
     React.createElement("p", { id: "tops-job-sharing" }, "Opening a search sends only the role and area shown here to that job site, not your resume or saved plan. Each site opens in a new tab and has its own privacy practices."),
     links ? React.createElement("div", null,
