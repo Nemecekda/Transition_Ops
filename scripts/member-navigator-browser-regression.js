@@ -48,8 +48,8 @@ await click('Review this step before saving');await wait('document.activeElement
 assert.equal(calls.length,beforeReview);assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
 assert.equal(await ev('document.getElementById("tops-action-text").value'),'SYNTHETIC_CHOSEN_STEP');
 await ev('window.__saveSet=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw Error("blocked")};');
-await click('Save career step');assert.ok(await ev('document.getElementById("tops-action-status").textContent.includes("could not be saved")'));await ev('Storage.prototype.setItem=window.__saveSet');
-await click('Save career step');assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).text'),'SYNTHETIC_CHOSEN_STEP');
+await click('Save step');assert.ok(await ev('document.getElementById("tops-action-status").textContent.includes("could not be saved")'));await ev('Storage.prototype.setItem=window.__saveSet');
+await click('Save step');assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).text'),'SYNTHETIC_CHOSEN_STEP');
 await click('Send this question');await wait('!!document.getElementById("tops-answer-action-text")','new answer review');
 await input('#tops-answer-action-text','SYNTHETIC_REPLACEMENT');
 assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Review this step before saving").disabled'),true);

@@ -17,7 +17,7 @@ const server=http.createServer((req,res)=>{const p=path.join(root,req.url.split(
  const save=async()=>{if(!await ev('!!document.getElementById("tops-journey-review-panel")'))await review();await reveal('tops-journey-save');await ev('document.getElementById("tops-journey-save").click()');};
  const replacement=async()=>{await review();assert.equal(await ev('document.getElementById("tops-journey-save").textContent'),'Replace current step');};
  const resumeReview=async()=>{await click('Prepare a tailored resume');await wait('!!document.getElementById("tops-journey-resume-confirm")');await click('Use these excerpts in my resume');};
- const start=async name=>{await ev('if(document.getElementById("tops-career-goals"))document.getElementById("tops-career-goals").open=true;Array.from(document.querySelectorAll("button")).find(n=>n.textContent.startsWith('+JSON.stringify(name)+')).click()');};
+ const start=async name=>{if(await ev('!!document.getElementById("tops-introduction-back")'))await click('Back to Career');await ev('if(document.getElementById("tops-career-goals"))document.getElementById("tops-career-goals").open=true;Array.from(document.querySelectorAll("button")).find(n=>n.textContent.startsWith('+JSON.stringify(name)+')).click()');};
  const check=id=>ev('document.getElementById('+JSON.stringify(id)+').click()');
  const intro=()=>ev('document.getElementById("tops-specialist-introduction").value');
  const hasContinue=()=>ev('Array.from(document.querySelectorAll("button")).some(n=>n.textContent==="Continue my introduction")');

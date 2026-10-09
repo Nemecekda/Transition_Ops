@@ -14,7 +14,7 @@ const render = source.slice(start, end);
 assert.doesNotMatch(render, /calcReadiness|calcCatScore|getScoreLabel|CRITICAL|HIGH IMPACT|significant gaps|saves thousands/);
 function run(answers = {}, open = null) {
   const context = {
-    C: {}, readinessAnswers: { ...answers }, readinessCatOpen: open,
+    READINESS_TOOLS: {}, openReadinessTool: () => {}, C: {}, readinessAnswers: { ...answers }, readinessCatOpen: open,
     React: { createElement: (type, props, ...children) => ({ type, props: props || {}, children: children.flat(Infinity) }) },
     setReadinessAnswers: change => { context.readinessAnswers = change(context.readinessAnswers); },
     setReadinessCatOpen: id => { context.readinessCatOpen = id; },
