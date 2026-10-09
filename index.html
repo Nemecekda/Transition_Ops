@@ -3996,6 +3996,15 @@ const READINESS_CATS = [
   ]}
 ];
 
+const READINESS_TOOLS = {
+  a2: { action: "Review my DD214 worksheet against my service records.", tab: "dd214", target: "tops-dd214-fields", label: "Review DD214 fields" },
+  a3: { action: "Review how to request my military service records.", tab: "dd214", target: "tops-service-record-request", label: "How to request service records" },
+  a6: { action: "Review which medical and dental records I still need.", tab: "resources", subTab: "documents", target: "tops-plan-documents", label: "Open document checklist" },
+  w2: { action: "Review healthcare options for my transition.", tab: "resources", subTab: "healthcare", target: "tops-healthcare-transition", label: "Review healthcare options" },
+  h5: { action: "Review my final move planning options.", tab: "finalpcs", target: "tops-page-title", label: "Open final move planner" },
+  f5: { action: "Review state tax information for military retired pay.", tab: "taxes", target: "tops-page-title", label: "Review state tax information" }
+};
+
 // ═══════════════════════════════════════════════════════════════
 // VA DISABILITY PAY ESTIMATOR — 2026 OFFICIAL RATES (2.8% COLA)
 // Effective December 1, 2025 — Source: VA.gov
@@ -4263,6 +4272,16 @@ function topsDeadlineICS(sepDate, now) {
     lines.push("END:VEVENT");
   });
   lines.push("END:VCALENDAR");
+  return lines.map(topsCalendarFold).join("\r\n") + "\r\n";
+}
+function topsPersonalStepICS(text, date, uid, now) {
+  if (typeof text !== "string" || !text.trim() || text.length > 240 || !date || topsFollowDate(date) !== date || typeof uid !== "string" || !/^[a-f0-9]{32}$/.test(uid)) return null;
+  var instant = now || new Date();
+  if (!Number.isFinite(instant.getTime())) return null;
+  var stamp = instant.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+  var lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Transition Ops//Personal Step//EN", "CALSCALE:GREGORIAN", "BEGIN:VEVENT", "UID:" + uid + "@transitionops.org", "DTSTAMP:" + stamp, "DTSTART;VALUE=DATE:" + date.replace(/-/g, ""), "SUMMARY:" + topsCalendarText(text), "DESCRIPTION:" + topsCalendarText("Your personal planning step. Return to your plan: https://transitionops.org/?tool=dashboard")];
+  ["-P7D", "-P1D"].forEach(function(trigger) { lines.push("BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + topsCalendarText("Personal step reminder"), "TRIGGER:" + trigger, "END:VALARM"); });
+  lines.push("END:VEVENT", "END:VCALENDAR");
   return lines.map(topsCalendarFold).join("\r\n") + "\r\n";
 }
 function downloadDeadlineICS(sepDate, trackEvent) {
@@ -6881,11 +6900,16 @@ function topsValidateAction(value) {
   var context = topsValidateGuide(value.context);
   return context && context.pathway ? { version: 1, text: value.text, date: value.date, done: value.done, context: context } : null;
 }
+function topsReadinessAction(action, guide) {
+  var valid = topsValidateAction(action);
+  if (!valid || valid.done || !topsActionMatches(valid, guide)) return null;
+  return Object.keys(READINESS_TOOLS).find(function(id) { return READINESS_TOOLS[id].action === valid.text; }) || null;
+}
 function topsActionMatches(action, guide) { var context = action && topsValidateGuide(action.context), g = topsValidateGuide(guide); return !!action && typeof action.text === "string" && !!action.text.trim() && !!context && !!g && JSON.stringify(context) === JSON.stringify(g); }
 function topsLoadAction() {
   var empty = { draft: topsEmptyAction(), status: "Write one step you can take. Save it on this browser when you are ready." };
   if (window.__IS_IFRAME) return Object.assign({}, empty, { status: "Embedded view: your step stays in this open page only." });
-  try { var raw = localStorage.getItem(TOPS_ACTION_KEY); if (raw === null) return empty; var value = raw.length <= 6000 ? topsValidateAction(JSON.parse(raw)) : null; return value ? { draft: value, status: "Loaded your saved career step from this browser." } : Object.assign({}, empty, { status: "Saved career step could not be read. Your saved copy is unchanged until you save or clear it." }); } catch (e) { return Object.assign({}, empty, { status: "Career step storage could not be read. You can work in this open page." }); }
+  try { var raw = localStorage.getItem(TOPS_ACTION_KEY); if (raw === null) return empty; var value = raw.length <= 6000 ? topsValidateAction(JSON.parse(raw)) : null; return value ? { draft: value, status: "Loaded your saved step from this browser." } : Object.assign({}, empty, { status: "Saved step could not be read. Your saved copy is unchanged until you save or clear it." }); } catch (e) { return Object.assign({}, empty, { status: "Step storage could not be read. You can work in this open page." }); }
 }
 function topsSaveAction(value) { var a = topsValidateAction(value); if (!a || window.__IS_IFRAME) return false; try { var raw = JSON.stringify(a); window.__safeSet(TOPS_ACTION_KEY, raw); return localStorage.getItem(TOPS_ACTION_KEY) === raw; } catch (e) { return false; } }
 function topsClearAction() { if (window.__IS_IFRAME) return true; try { localStorage.removeItem(TOPS_ACTION_KEY); return localStorage.getItem(TOPS_ACTION_KEY) === null; } catch (e) { return false; } }
@@ -6895,10 +6919,10 @@ function CareerAction(props) {
   useEffect(function() { if (focusEditor.current && !stale) { focusEditor.current = false; var input = document.getElementById("tops-action-text"); if (input) input.focus(); } }, [a, stale]);
   var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 10, font: "inherit", color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 6 };
   var button = { minHeight: 44, minWidth: 44, margin: "8px 8px 0 0", padding: "10px 14px", font: "inherit", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 6, cursor: "pointer" };
-  function update(next) { props.setState({ draft: next, status: topsValidateAction(next) ? "Unsaved changes. Choose Save career step to keep this step on this browser." : "Check your step: use plain text within 240 characters and a valid target date from 2000 through 2099, or leave the date blank. Your edits are not saved." }); }
+  function update(next) { props.setState({ draft: next, status: topsValidateAction(next) ? "Unsaved changes. Choose Save step to keep this step on this browser." : "Check your step: use plain text within 240 characters and a valid target date from 2000 through 2099, or leave the date blank. Your edits are not saved." }); }
   function edit(key, value) { var next = Object.assign({}, a, { [key]: value }); if (key === "text") { if (!value.trim()) next = topsEmptyAction(); else { next.context = a.context || topsValidateGuide(props.guide); next.done = false; } } update(next); }
   return React.createElement("div", { id: "tops-career-action", style: { borderTop: "1px solid " + C.border, padding: "12px 0" } },
-    React.createElement("h3", { id: "tops-action-heading", tabIndex: -1, style: { fontSize: 18, margin: "0 0 8px" } }, stale ? "Step from an earlier goal" : "My next career step"),
+    React.createElement("h3", { id: "tops-action-heading", tabIndex: -1, style: { fontSize: 18, margin: "0 0 8px" } }, stale ? "Step from an earlier goal" : "My next step"),
     stale && React.createElement("div", null,
       React.createElement("p", { style: { lineHeight: 1.6, overflowWrap: "anywhere" } }, "Your guide details changed. This step still belongs to: " + (a.context.targetRole || a.context.currentRole || TOPS_GUIDE_PATHS[a.context.pathway]) + (a.context.goal ? " - " + a.context.goal : "") + ". Review it before using it for your current goal."),
       React.createElement("dl", { style: { overflowWrap: "anywhere" } }, [["Earlier pathway", TOPS_GUIDE_PATHS[a.context.pathway]], ["Earlier role or experience", a.context.currentRole], ["Earlier target", a.context.targetRole], ["Earlier goal", a.context.goal]].map(function(row) { return React.createElement("div", { key: row[0] }, React.createElement("dt", { style: { fontWeight: 700 } }, row[0]), React.createElement("dd", { style: { margin: "4px 0 10px" } }, row[1] || "Not entered")); })),
@@ -6912,13 +6936,13 @@ function CareerAction(props) {
       React.createElement("input", { id: "tops-action-text", value: a.text, maxLength: 240, autoComplete: "off", style: field, "aria-describedby": "tops-action-help", onChange: function(e) { edit("text", e.target.value); } }),
       React.createElement("label", { htmlFor: "tops-action-date", style: { display: "block", marginTop: 12 } }, "Target date (optional)"),
       React.createElement("input", { id: "tops-action-date", type: "date", min: "2000-01-01", max: "2099-12-31", value: a.date, disabled: !a.text.trim(), "aria-describedby": "tops-action-status", "aria-invalid": !!a.date && topsFollowDate(a.date) !== a.date, style: field, onChange: function(e) { edit("date", e.target.value); } }),
-      React.createElement("p", { id: "tops-action-help", style: { lineHeight: 1.6 } }, "Keep this focused on a work or training step. Leave out sensitive information. The date is your planning target; it does not send a notification. Editing a completed step's text marks it not done."),
+      React.createElement("p", { id: "tops-action-help", style: { lineHeight: 1.6 } }, "Leave out sensitive information. This is your own planning target, not a benefits deadline. It does not send a notification. Editing a completed step's text marks it not done."),
       a.text.trim() && React.createElement("button", { type: "button", style: button, onClick: function() { update(Object.assign({}, a, { done: !a.done })); } }, a.done ? "Reopen step" : "Mark done"),
-      React.createElement("button", { type: "button", disabled: !!window.__IS_IFRAME || !topsValidateAction(a), style: button, onClick: function() { props.setState(Object.assign({}, props.state, { status: topsSaveAction(a) ? "Career step saved on this browser. Later edits and done or reopen changes need another save." : "Career step could not be saved. Keep this page open or download your plan." })); } }, "Save career step")),
+      React.createElement("button", { type: "button", disabled: !!window.__IS_IFRAME || !topsValidateAction(a), style: button, onClick: function() { props.setState(Object.assign({}, props.state, { status: topsSaveAction(a) ? "Step saved on this browser. Later edits and done or reopen changes need another save." : "Step could not be saved. Keep this page open or download your plan." })); } }, "Save step")),
     React.createElement("p", { id: "tops-action-status", role: "status", "aria-live": "polite", style: { lineHeight: 1.6 } }, props.state.status),
-    React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Clear career step"),
-      React.createElement("p", null, "Remove this career step from this page and this browser? Your guide, worksheet and other progress stay unchanged."),
-      React.createElement("button", { type: "button", style: button, onClick: function() { if (topsClearAction()) props.setState({ draft: topsEmptyAction(), status: "Career step cleared from this page" + (window.__IS_IFRAME ? "." : " and this browser.") }); else props.setState(Object.assign({}, props.state, { status: "Saved career step could not be cleared. Your step is unchanged; try again." })); } }, "Confirm clear career step")));
+    React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Clear step"),
+      React.createElement("p", null, "Remove this step from this page and this browser? Your guide, worksheet and other progress stay unchanged."),
+      React.createElement("button", { type: "button", style: button, onClick: function() { if (topsClearAction()) props.setState({ draft: topsEmptyAction(), status: "Step cleared from this page" + (window.__IS_IFRAME ? "." : " and this browser.") }); else props.setState(Object.assign({}, props.state, { status: "Saved step could not be cleared. Your step is unchanged; try again." })); } }, "Confirm clear step")));
 }
 // CAREER_ACTION_END
 // Guided career entry reuses the existing plan keys; no account or AI call.
@@ -7199,7 +7223,7 @@ function CareerSpecialistSupport(props) {
   function update(change) { props.setState(function(previous) { return Object.assign({}, previous, change); }); }
   React.useLayoutEffect(function() { if (!(props.retainReviewedContext && state.reviewed && state.context === context)) update({ reviewed: false, selected: [] }); if (props.consumeReviewedContext) props.consumeReviewedContext(); setReplace(false); }, [context]);
   function focusDraft() { requestAnimationFrame(function() { var input = document.getElementById("tops-specialist-introduction"); if (input) { input.focus(); input.scrollIntoView({ block: "center" }); } }); }
-  useEffect(function() { if (props.resume) { var panel = document.getElementById("tops-career-specialist"); if (panel) panel.open = true; requestAnimationFrame(function() { var control = document.getElementById(state.prepared ? "tops-specialist-introduction" : "tops-prepare-introduction"); if (control) { control.focus(); control.scrollIntoView({ block: "center" }); } }); } }, [props.resume]);
+  useEffect(function() { if (props.resume) { var panel = document.getElementById("tops-career-specialist"); if (panel) panel.open = true; var frame = requestAnimationFrame(function() { var target = props.resumeFocus || (state.prepared ? "tops-specialist-introduction" : "tops-prepare-introduction"); if (target === "tops-prepare-introduction" && document.getElementById("tops-specialist-introduction")) target = "tops-specialist-introduction"; var control = document.getElementById(target); if (control) { for (var parent = control.parentElement; parent; parent = parent.parentElement) if (parent.tagName === "DETAILS") parent.open = true; control.focus(); control.scrollIntoView({ block: "center" }); } }); return function() { cancelAnimationFrame(frame); }; } }, [props.resume]);
   function prepare() {
     var selected = excerpts.filter(function(excerpt) { return state.selected.includes(excerpt); });
     var text = "Hello VetJobs team,\n\nI'd like help exploring " + (props.role.trim() || "civilian career options") + ".";
@@ -7220,10 +7244,8 @@ function CareerSpecialistSupport(props) {
     if (!ready()) return;
     var url = URL.createObjectURL(new Blob([state.text], { type: "text/plain;charset=utf-8" })), link = document.createElement("a"); link.href = url; link.download = "my-career-introduction.txt"; link.click(); setTimeout(function() { URL.revokeObjectURL(url); }, 1000); setStatus("Download started. Review the file before choosing whether to share it.");
   }
-  return React.createElement("details", { id: "tops-career-specialist", style: { margin: "12px 0" } },
-    React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", fontWeight: 700 } }, "Career support and networking"),
-    React.createElement("h3", null, "Make a useful connection"),
-    React.createElement("p", null, "Choose one person and one small ask. Use a message you can review and send yourself."),
+  var setupUI = React.createElement(state.prepared ? "details" : "div", { id: "tops-message-setup" },
+    state.prepared && React.createElement("summary", { style: { minHeight: 44, padding: "12px 0" } }, "Change message setup"),
     React.createElement("label", { htmlFor: "tops-network-purpose" }, "What would help?"),
     React.createElement("select", { id: "tops-network-purpose", value: purpose, style: props.field, onChange: function(e) { update({ purpose: e.target.value, reviewed: false }); } }, [["specialist", "Get help from a career specialist"], ["learn", "Learn what a role is really like"], ["introduction", "Ask who I should talk to"], ["followup", "Follow up on earlier outreach"]].map(function(item) { return React.createElement("option", { key: item[0], value: item[0] }, item[1]); })),
     networking && React.createElement("div", null,
@@ -7231,20 +7253,22 @@ function CareerSpecialistSupport(props) {
       React.createElement("select", { id: "tops-network-audience", value: audience, style: props.field, onChange: function(e) { update({ audience: e.target.value, reviewed: false }); } }, React.createElement("option", { value: "new" }, "Someone in the field I have not met"), React.createElement("option", { value: "known" }, "A former colleague, unit peer or someone I know")),
       React.createElement("p", { id: "tops-network-who" }, audience === "known" ? "Think of a former colleague or unit peer who knows your work. Ask for their perspective or who else to speak with." : "Look for someone doing " + (props.role.trim() || "the work you want to explore") + ". A career specialist can also help you identify a useful next conversation."),
       React.createElement("p", null, purpose === "followup" ? "Check your earlier message first. Keep the follow-up brief, give them room to decline, and choose another contact if you do not hear back." : "Ask to learn, not for a job guarantee. Prepare one question about the work and one example from your experience.")),
-    React.createElement("details", { open: !networking }, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0" } }, "Career specialist option: VetJobs"),
-    React.createElement("p", null, "VetJobs offers no-cost career help for eligible military-affiliated job seekers, including transitioning members, veterans, Guard, Reserve and military spouses. VetJobs manages its own intake and eligibility."),
-    React.createElement("a", { href: "https://vetjobs.org/job-seekers/", target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, props.button, { display: "inline-flex", alignItems: "center", boxSizing: "border-box" }) }, "Visit VetJobs to get started (opens a new tab)")),
-    React.createElement("p", null, "Preparing this introduction sends no message to anyone. Review it before copying and sharing. Your introduction stays available as you move between tools in this tab. Refreshing or closing the tab clears it; it is not saved with your career plan."),
     excerpts.length > 0 && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0" } }, "Choose experience to include (optional)"),
       React.createElement("p", null, "Review each excerpt before selecting it. Selected excerpts are included the next time you prepare an introduction; your existing draft does not change automatically."),
       excerpts.map(function(excerpt, index) { return React.createElement("div", { key: index, style: { padding: "10px 0", borderTop: "1px solid " + C.border } }, React.createElement("p", { id: "tops-introduction-excerpt-" + index, style: { whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, excerpt), React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10 } }, React.createElement("input", { type: "checkbox", "aria-describedby": "tops-introduction-excerpt-" + index, checked: state.selected.includes(excerpt), style: { width: 24, height: 24 }, onChange: function(e) { update({ selected: e.target.checked ? state.selected.concat(excerpt) : state.selected.filter(function(item) { return item !== excerpt; }), reviewed: false }); setReplace(false); setStatus("Experience selection changed. Prepare an introduction to apply this selection."); } }), "I reviewed excerpt " + (index + 1) + "; include it.")); })),
-    React.createElement("button", { id: "tops-prepare-introduction", type: "button", style: props.button, onClick: function() { if (state.text) { setReplace(true); setStatus(""); } else prepare(); } }, state.text ? "Prepare a replacement introduction" : "Prepare my introduction"),
-    replace && React.createElement("div", null, React.createElement("p", null, "Replace the introduction below using your current role and selected experience? Your edits to the introduction will be replaced."), React.createElement("button", { type: "button", style: props.button, onClick: prepare }, "Replace introduction"), React.createElement("button", { type: "button", style: props.button, onClick: function() { setReplace(false); requestAnimationFrame(function() { var button = document.getElementById("tops-prepare-introduction"); if (button) button.focus(); }); } }, "Keep my introduction")),
+    React.createElement("button", { id: "tops-prepare-introduction", type: "button", style: state.prepared ? props.button : Object.assign({}, props.button, { background: C.green, color: C.textOnFill }), onClick: function() { if (state.text) { setReplace(true); setStatus(""); } else prepare(); } }, state.text ? "Prepare a replacement introduction" : "Prepare my introduction"),
+    replace && React.createElement("div", null, React.createElement("p", null, "Replace this introduction using your current role and selected experience? Your edits to the introduction will be replaced."), React.createElement("button", { type: "button", style: props.button, onClick: prepare }, "Replace introduction"), React.createElement("button", { type: "button", style: props.button, onClick: function() { setReplace(false); requestAnimationFrame(function() { var button = document.getElementById("tops-prepare-introduction"); if (button) button.focus(); }); } }, "Keep my introduction")));
+  return React.createElement("details", { id: "tops-career-specialist", style: { margin: "12px 0" } },
+    React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", fontWeight: 700 } }, "Career support and networking"),
+    React.createElement("h3", null, state.prepared ? "Review your message" : "Prepare a message"),
+    !state.prepared && React.createElement("p", null, "Choose one person and one small ask. Use a message you can review and send yourself."),
+    React.createElement("p", null, "Preparing this introduction sends no message to anyone. Review it before copying and sharing. Your introduction stays available as you move between tools in this tab. Refreshing or closing the tab clears it; it is not saved with your career plan."),
+    !state.prepared && setupUI,
     state.prepared && React.createElement("div", null,
       stale && React.createElement("p", { role: "status" }, "Your role or experience changed, or you chose a different message purpose or audience. Your introduction has been kept." + (state.role && props.role.trim() && state.role !== props.role ? " It was prepared for " + state.role + "; your current role is " + props.role + "." : "") + " Review and edit it for your current goal, or prepare a replacement."),
       React.createElement("label", { htmlFor: "tops-specialist-introduction" }, "My introduction"), React.createElement("textarea", { id: "tops-specialist-introduction", rows: 7, maxLength: 6000, style: props.field, value: state.text, onChange: function(e) { update({ text: e.target.value, reviewed: false }); setStatus(""); } }),
       React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10 } }, React.createElement("input", { id: "tops-introduction-reviewed", type: "checkbox", checked: state.reviewed, style: { width: 24, height: 24 }, onChange: function(e) { update({ reviewed: e.target.checked, context: e.target.checked ? context : state.context, role: e.target.checked ? props.role : state.role }); } }), "I reviewed this introduction for my current goal and removed anything I do not want to share."),
-      React.createElement("button", { type: "button", style: props.button, disabled: copying, onClick: copy }, copying ? "Copying introduction..." : "Copy introduction"), React.createElement("button", { type: "button", style: props.button, onClick: download }, "Download introduction"),
+      React.createElement("button", { type: "button", style: Object.assign({}, props.button, { background: C.green, color: C.textOnFill }), disabled: copying, onClick: copy }, copying ? "Copying introduction..." : "Copy introduction"), React.createElement("button", { type: "button", style: props.button, onClick: download }, "Download introduction"),
       networking && props.onPlan && React.createElement("div", { style: { marginTop: 16, borderTop: "1px solid " + C.border, paddingTop: 12 } },
         React.createElement("h4", null, "Make time for the next step"),
         React.createElement("p", null, "Send the message yourself. After a conversation, note one thing you learned and decide whether to follow up."),
@@ -7252,6 +7276,10 @@ function CareerSpecialistSupport(props) {
         React.createElement("input", { id: "tops-network-date", type: "date", min: "2000-01-01", max: "2099-12-31", value: state.followDate || "", style: props.field, onBlur: function(e) { update({ followDate: e.target.value }); }, onChange: function(e) { update({ followDate: e.target.value }); } }),
         React.createElement("p", null, "This is your planning target, not an automatic message or notification. Names and contact details are not needed in your saved step."),
         React.createElement("button", { type: "button", style: props.button, onClick: function() { if (!ready()) return; if (state.followDate && topsFollowDate(state.followDate) !== state.followDate) { setStatus("Choose a valid planning date, or leave it blank."); return; } if (props.onPlan(topsNetworkingAction(purpose, props.role), state.followDate || "", props.role)) setStatus("Review your next step before choosing whether to keep it. Nothing was sent."); else setStatus("Review or clear the other unfinished changes in your career draft before adding this step. Your message is unchanged."); } }, "Review a networking next step"))),
+    state.prepared && setupUI,
+    React.createElement("details", { open: !networking }, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0" } }, "Career specialist option: VetJobs"),
+    React.createElement("p", null, "VetJobs offers no-cost career help for eligible military-affiliated job seekers, including transitioning members, veterans, Guard, Reserve and military spouses. VetJobs manages its own intake and eligibility."),
+    React.createElement("a", { href: "https://vetjobs.org/job-seekers/", target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, props.button, { display: "inline-flex", alignItems: "center", boxSizing: "border-box" }) }, "Visit VetJobs to get started (opens a new tab)")),
     state.prepared && React.createElement("button", { type: "button", style: props.button, onClick: function() { setClearPending(true); } }, "Clear introduction"),
     clearPending && React.createElement("div", null, React.createElement("p", null, "Clear this introduction from this visit? Your career plan and any copies or downloads stay unchanged."), React.createElement("button", { type: "button", style: props.button, onClick: function() { props.setState(topsEmptyIntroduction()); setClearPending(false); setReplace(false); setStatus("Introduction cleared from this visit."); if (props.onCleared) props.onCleared(); else requestAnimationFrame(function() { var button = document.getElementById("tops-prepare-introduction"); if (button) button.focus(); }); } }, "Confirm clear introduction"), React.createElement("button", { type: "button", style: props.button, onClick: function() { setClearPending(false); focusDraft(); } }, "Keep introduction")),
     React.createElement("p", { role: "status", "aria-live": "polite" }, status));
@@ -7308,8 +7336,8 @@ function CareerJourney(props) {
   function clearVisit() { props.setVisitDraft(null); reviewedNotes.current = []; baseline.current = ""; disk.current = props.diskGuard.disk; setResumePending(false); setPendingNetworking(null); setComparisonCheckpoint(null); setReviewPanel(null); setDraft(null); setSource(null); setAction(""); setRole(props.guideState.draft.targetRole || ""); setStage(0); setChecked(false); setReplace(false); setSaved(false); setStatus(""); setAiActive(false); setClearPending(false); setStatus("This visit's unfinished career draft was cleared. Your career plan and introduction are unchanged."); requestAnimationFrame(function() { var heading = document.getElementById("tops-career-start-heading"); if (heading) heading.focus(); }); }
   function needsFreshReview() { if (!draft) return false; if (baseline.current !== current()) return true; try { return disk.current !== null && disk.current !== stored(); } catch (e) { return true; } }
 
-  var introduction = props.introduction, setIntroduction = props.setIntroduction, [showIntroduction, setShowIntroduction] = useState(props.entry === "specialist");
-  useEffect(function() { if (props.entry === "resume") { if (initial) continueVisit(); else if (existing) { if (props.gapState.draft.target.trim() && props.guideState.draft.targetRole.trim() && props.gapState.draft.target.trim() !== props.guideState.draft.targetRole.trim()) setStatus("Your saved comparison and current career goal name different roles. Review your current career plan before continuing; nothing has been changed."); else resume(); } } else if (["find", "grow", "pursue"].includes(props.entry) && !initial) start(props.entry); if (props.entry && props.consumeEntry) props.consumeEntry(); }, []);
+  var introduction = props.introduction, setIntroduction = props.setIntroduction, [showIntroduction, setShowIntroduction] = useState(props.entry === "specialist" || props.entry === "network-learn");
+  useEffect(function() { if (props.entry === "network-learn" || props.entry === "specialist") { var entryPurpose = props.entry === "network-learn" ? "learn" : "specialist"; if (!introduction.text.trim()) setIntroduction(function(previous) { return Object.assign({}, previous, { purpose: entryPurpose, reviewed: false }); }); else if ((introduction.purpose || "specialist") !== entryPurpose) setStatus("Your existing message is for a different purpose. It is unchanged. Choose what you want help with, then review the message before replacing or sharing it."); } else if (props.entry === "resume") { if (initial) continueVisit(); else if (existing) { if (props.gapState.draft.target.trim() && props.guideState.draft.targetRole.trim() && props.gapState.draft.target.trim() !== props.guideState.draft.targetRole.trim()) setStatus("Your saved comparison and current career goal name different roles. Review your current career plan before continuing; nothing has been changed."); else resume(); } } else if (["find", "grow", "pursue"].includes(props.entry) && !initial) start(props.entry); if (props.entry && props.consumeEntry) props.consumeEntry(); }, []);
   var button = { minHeight: 44, padding: "12px 16px", margin: "6px 8px 6px 0", font: "inherit", color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" };
   var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 12, font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 8 };
   function current() { return JSON.stringify([props.guideState.draft, props.actionState.draft, props.gapState.draft]); }
@@ -7417,18 +7445,19 @@ function CareerJourney(props) {
         React.createElement(CareerIdeas, { colors: C, choose: chooseRoleAndFocus, inline: showRoleChoices && !ideas.length, compact: choosingDirection && !ideas.length, allowCustom: true }));
   }
   var currentCareerAction = props.actionState.draft;
-  var networkingNext = saved && !currentCareerAction.done && topsActionMatches(currentCareerAction, props.guideState.draft) && role.trim() === props.guideState.draft.targetRole && role.trim() === props.gapState.draft.target && action === currentCareerAction.text && actionDate === currentCareerAction.date ? topsCareerNetworkingNext(action, role, props.gapState.draft.prep) : null;
+  var networkingNext = saved && !currentCareerAction.done && topsActionMatches(currentCareerAction, props.guideState.draft) && role.trim() === props.guideState.draft.targetRole && role.trim() === props.gapState.draft.target && action === currentCareerAction.text && actionDate === currentCareerAction.date ? topsCareerHelpStep(currentCareerAction, props.guideState.draft) ? "specialist" : topsCareerNetworkingNext(action, role, props.gapState.draft.prep) : null;
   function continueNetworking() {
     if (!networkingNext) return;
     var hasText = !!introduction.text.trim(), conflictingPurpose = hasText && (introduction.purpose || "specialist") !== networkingNext;
     if (!hasText) setIntroduction(function(previous) { return Object.assign({}, previous, { purpose: networkingNext, reviewed: false }); });
     setStatus(conflictingPurpose ? "Your existing message is for a different purpose. It is unchanged. Choose what you want help with, then review the message before replacing or sharing it." : "Review your message before choosing whether to share it. Nothing has been sent.");
-    requestAnimationFrame(function() { var more = document.getElementById("tops-career-more"), panel = document.getElementById("tops-career-specialist"); if (more) more.open = true; if (panel) panel.open = true; var control = document.getElementById(conflictingPurpose ? "tops-network-purpose" : hasText ? "tops-specialist-introduction" : "tops-prepare-introduction"); if (control) { control.focus(); control.scrollIntoView({ block: "center" }); } });
+    requestAnimationFrame(function() { var more = document.getElementById("tops-career-more"), panel = document.getElementById("tops-career-specialist"); if (more) more.open = true; if (panel) panel.open = true; var target = conflictingPurpose ? "tops-network-purpose" : hasText || document.getElementById("tops-specialist-introduction") ? "tops-specialist-introduction" : "tops-prepare-introduction"; var control = document.getElementById(target); if (control) { for (var ancestor = control.parentElement; ancestor; ancestor = ancestor.parentElement) if (ancestor.tagName === "DETAILS") ancestor.open = true; control.focus(); control.scrollIntoView({ block: "center" }); } });
   }
   var promoteResume = !!draft && !saved && intent === "pursue" && draft.rows.some(function(row) { return !!row.have.trim(); }) && draft.rows.some(function(row) { return !!row.requirement.trim(); }) && action === suggestion(intent, role) && !actionDate && !pendingNetworking && !pendingCheckin && !checkin.takeaway && !checkin.next && !checkin.date && !aiActive && !needsFreshReview();
+  var completedCareerStep = saved && !!draft && currentCareerAction.done && topsActionMatches(currentCareerAction, props.guideState.draft) && role.trim() === props.guideState.draft.targetRole && role.trim() === props.gapState.draft.target && action === currentCareerAction.text && actionDate === currentCareerAction.date && baseline.current === current() && topsCareerDiskSnapshot() === JSON.stringify([props.guideState.draft, props.actionState.draft, props.gapState.draft].map(function(value) { return JSON.stringify(value); })) && !pendingNetworking && !pendingCheckin && !checkin.takeaway && !checkin.next && !checkin.date && !aiActive && !comparisonCheckpoint && !reviewPanel;
   function resumeToolButton(primary) { return React.createElement("button", { id: "tops-journey-resume-open", type: "button", style: Object.assign({}, button, primary ? { background: C.green, color: C.textOnFill } : {}), onClick: function() { openReview("resume", "tops-journey-resume-open"); } }, "Prepare a tailored resume"); }
   function careerTools(primary) { return React.createElement("div", null,
-      primary && !learningNext && networkingNext && React.createElement("button", { id: "tops-networking-next", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: continueNetworking }, introduction.text.trim() ? "Review my message" : networkingNext === "followup" ? "Prepare my follow-up" : networkingNext === "introduction" ? "Prepare my introduction" : "Prepare my conversation"),
+      primary && !learningNext && networkingNext && React.createElement("button", { id: "tops-networking-next", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: continueNetworking }, introduction.text.trim() ? "Review my message" : networkingNext === "specialist" ? "Prepare for career help" : networkingNext === "followup" ? "Prepare my follow-up" : networkingNext === "introduction" ? "Prepare my introduction" : "Prepare my conversation"),
       (primary === !!learningNext) && learningNext && React.createElement("a", { id: "tops-learning-next", href: learningNext.url, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, button, { display: "inline-flex", alignItems: "center", boxSizing: "border-box", maxWidth: "100%", overflowWrap: "anywhere" }, saved ? { background: C.green, color: C.textOnFill } : {}) }, "Open " + learningNext.name + " (opens a new tab)"),
       (primary === (!learningNext && !networkingNext && intent === "find")) && intent !== "grow" && React.createElement("button", { type: "button", style: Object.assign({}, button, !learningNext && !networkingNext && saved && intent === "find" ? { background: C.green, color: C.textOnFill } : {}), onClick: function() { props.openTool("jobs", role); } }, "Search jobs by area"),
       !promoteResume && (primary === (!learningNext && !networkingNext && intent === "pursue")) && intent === "pursue" && resumeToolButton(!learningNext && !networkingNext && saved),
@@ -7436,19 +7465,21 @@ function CareerJourney(props) {
   return React.createElement("section", { "aria-labelledby": "tops-career-start-heading", className: "tops-career-workspace" + (stage === 1 ? " tops-career-intake" : stage === 2 ? " tops-career-review" : ""), style: { "--career-soft": C.bgCard, "--career-border": C.border, "--career-accent": C.green, "--career-secondary": C.textSecondary, background: C.bg, color: C.textBody, borderRadius: 16, boxShadow: C.isLight ? "0 4px 24px rgba(14,18,11,.055)" : "0 4px 24px rgba(0,0,0,.16)" } },
     pendingNetworking && !(stage === 2 && reviewPanel) && React.createElement("button", { id: "tops-networking-cancel", type: "button", style: button, onClick: cancelNetworking }, "Keep my previous step"),
     stage > 0 && !saved && React.createElement("p", { id: "tops-career-progress", style: { marginBottom: 6, fontSize: 14, color: C.textSecondary } }, stage === 1 ? "1 of 2: Add experience" : choosingDirection ? "2 of 2: Choose a direction" : "2 of 2: Review your next step"),
-    React.createElement("h2", { id: "tops-career-start-heading", tabIndex: -1, style: { color: C.textPrimary } }, stage === 0 ? (props.visitDraft ? "Continue where you left off" : "What do you want to do next?") : stage === 1 ? (intent === "pursue" ? "Let's look at the job together" : intent === "grow" ? "Build on what you already do" : "Start with your experience") : choosingDirection ? "Choose a direction to explore" : intent === "pursue" ? "Your experience and this job" : intent === "grow" ? "Your next growth conversation" : "Your next career move"),
+    React.createElement("h2", { id: "tops-career-start-heading", tabIndex: -1, style: { color: C.textPrimary } }, stage === 0 ? (showIntroduction ? introduction.prepared ? "Your message" : (introduction.purpose || "specialist") === "specialist" ? "Prepare for career help" : "Prepare a career conversation" : props.visitDraft ? "Continue where you left off" : "What do you want to do next?") : stage === 1 ? (intent === "pursue" ? "Let's look at the job together" : intent === "grow" ? "Build on what you already do" : "Start with your experience") : choosingDirection ? "Choose a direction to explore" : intent === "pursue" ? "Your experience and this job" : intent === "grow" ? "Your next growth conversation" : "Your next career move"),
     stage === 0 && React.createElement("div", null,
-      !props.visitDraft && React.createElement("p", null, "Choose a goal. Add a resume or a few notes. Review one next step."),
-      props.visitDraft && React.createElement("div", { className: "tops-career-resume" }, React.createElement("h3", null, props.visitDraft.role || "Your unfinished career task"), React.createElement("p", null, props.visitDraft.stage === 1 ? "Return to your experience and job-posting text, then build your next step." : "Return to your comparison and next step, then review what you want to keep."), React.createElement("button", { id: "tops-career-continue-draft", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: continueVisit }, "Continue my career draft"), React.createElement("p", { style: { fontSize: 14 } }, "Not saved. This draft stays while you use this tab; refreshing or closing the tab clears it.")),
-      introduction.prepared && React.createElement("button", { type: "button", style: button, onClick: function() { setShowIntroduction(true); requestAnimationFrame(function() { var panel = document.getElementById("tops-career-specialist"), input = document.getElementById("tops-specialist-introduction"); if (panel) { var ancestor = panel.parentElement; while (ancestor) { if (ancestor.tagName === "DETAILS") ancestor.open = true; ancestor = ancestor.parentElement; } panel.open = true; } if (input) input.focus(); }); } }, "Continue my introduction"),
-      showIntroduction && React.createElement(CareerSpecialistSupport, { colors: C, button: button, field: field, role: introductionRole, rows: props.gapState.draft.target === introductionRole ? props.gapState.draft.rows : [], state: introduction, setState: setIntroduction, action: action || props.actionState.draft.text, onPlan: planNetworking, resume: true, onCleared: function() { setShowIntroduction(false); setStatus("Introduction cleared from this visit."); requestAnimationFrame(function() { var heading = document.getElementById("tops-career-start-heading"); if (heading) heading.focus(); }); } }),
-      existing && React.createElement("div", { style: { marginBottom: 16 } }, React.createElement("p", null, "Your current work: " + (props.actionState.draft.text || props.gapState.draft.target || "Career comparison")), React.createElement("button", { type: "button", style: button, onClick: resume }, "Open my current career plan")),
-      resumePending && React.createElement("div", null, React.createElement("p", null, "Replace this unfinished draft with your current career work? Your career plan and introduction stay unchanged."), React.createElement("button", { type: "button", style: button, onClick: function() { resume(true); } }, "Open current work instead"), React.createElement("button", { type: "button", style: button, onClick: function() { setResumePending(false); continueVisit(); } }, "Keep unfinished draft")),
-      React.createElement(props.visitDraft ? "details" : "div", { id: "tops-career-goals" },
+      !showIntroduction && !props.visitDraft && React.createElement("p", null, "Choose a goal. Add a resume or a few notes. Review one next step."),
+      !showIntroduction && props.visitDraft && React.createElement("div", { className: "tops-career-resume" }, React.createElement("h3", null, props.visitDraft.role || "Your unfinished career task"), React.createElement("p", null, props.visitDraft.stage === 1 ? "Return to your experience and job-posting text, then build your next step." : "Return to your comparison and next step, then review what you want to keep."), React.createElement("button", { id: "tops-career-continue-draft", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: continueVisit }, "Continue my career draft"), React.createElement("p", { style: { fontSize: 14 } }, "Not saved. This draft stays while you use this tab; refreshing or closing the tab clears it.")),
+      !showIntroduction && introduction.prepared && React.createElement("button", { id: "tops-career-continue-introduction", type: "button", style: button, onClick: function() { setShowIntroduction(true); requestAnimationFrame(function() { var panel = document.getElementById("tops-career-specialist"), input = document.getElementById("tops-specialist-introduction"); if (panel) { var ancestor = panel.parentElement; while (ancestor) { if (ancestor.tagName === "DETAILS") ancestor.open = true; ancestor = ancestor.parentElement; } panel.open = true; } if (input) input.focus(); }); } }, "Continue my introduction"),
+      showIntroduction && React.createElement("p", null, introductionRole ? "Career focus: " + introductionRole : "You can ask for help choosing a career direction."),
+      showIntroduction && React.createElement("button", { id: "tops-introduction-back", type: "button", style: button, onClick: function() { if (props.onIntroductionBack) props.onIntroductionBack(); setShowIntroduction(false); requestAnimationFrame(function() { var target = document.getElementById("tops-career-continue-introduction") || document.getElementById("tops-career-start-heading"); if (target) { target.focus(); target.scrollIntoView({ block: "center" }); } }); } }, "Back to Career"),
+      showIntroduction && React.createElement(CareerSpecialistSupport, { colors: C, button: button, field: field, role: introductionRole, rows: props.gapState.draft.target === introductionRole ? props.gapState.draft.rows : [], state: introduction, setState: setIntroduction, action: action || props.actionState.draft.text, onPlan: planNetworking, resume: true, resumeFocus: ["network-learn", "specialist"].includes(props.entry) && introduction.text.trim() && (introduction.purpose || "specialist") !== (props.entry === "network-learn" ? "learn" : "specialist") ? "tops-network-purpose" : undefined, onCleared: function() { setShowIntroduction(false); setStatus("Introduction cleared from this visit."); requestAnimationFrame(function() { var heading = document.getElementById("tops-career-start-heading"); if (heading) heading.focus(); }); } }),
+      !showIntroduction && existing && React.createElement("div", { style: { marginBottom: 16 } }, React.createElement("p", null, "Your current work: " + (props.actionState.draft.text || props.gapState.draft.target || "Career comparison")), React.createElement("button", { type: "button", style: button, onClick: resume }, "Open my current career plan")),
+      !showIntroduction && resumePending && React.createElement("div", null, React.createElement("p", null, "Replace this unfinished draft with your current career work? Your career plan and introduction stay unchanged."), React.createElement("button", { type: "button", style: button, onClick: function() { resume(true); } }, "Open current work instead"), React.createElement("button", { type: "button", style: button, onClick: function() { setResumePending(false); continueVisit(); } }, "Keep unfinished draft")),
+      !showIntroduction && React.createElement(props.visitDraft ? "details" : "div", { id: "tops-career-goals" },
         props.visitDraft && React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Change what I want help with"),
         props.visitDraft && React.createElement("p", null, "Your experience and posting text stay available when you change goals."),
         React.createElement("div", { className: "tops-career-goal-grid" }, [["find", "Explore career options", "Use a resume or a few notes to find career ideas to investigate."], ["pursue", "Compare a job with my experience", "Paste a job posting and review it beside your experience."], ["grow", "Grow in my current career", "Use your experience to prepare a conversation with a supervisor or mentor."]].map(function(item) { return React.createElement("button", { key: item[0], type: "button", className: "tops-career-goal", style: button, onClick: function() { start(item[0]); } }, React.createElement("strong", null, item[1]), React.createElement("span", null, item[2])); }))),
-      props.profile === "guard" && React.createElement("p", null, "Keep serving while building your civilian career. No separation date is needed.")),
+      !showIntroduction && props.profile === "guard" && React.createElement("p", null, "Keep serving while building your civilian career. No separation date is needed.")),
     stage === 1 && React.createElement("div", null,
       React.createElement("p", null, intent === "pursue" ? "Add your resume or a few notes, then paste the job posting below. The posting is needed for this comparison." : "Add a resume or a few notes about your work. You can also continue without a resume."),
       React.createElement("label", { htmlFor: "tops-journey-role" }, intent === "pursue" ? "Job title" : "Role or field, if you have one in mind (optional)"), React.createElement("input", { id: "tops-journey-role", maxLength: 120, value: role, style: field, onChange: function(e) { setRole(e.target.value); } }),
@@ -7464,16 +7495,17 @@ function CareerJourney(props) {
       !saved && needsFreshReview() && React.createElement("div", { role: "status" }, React.createElement("p", null, "Your career plan changed since this draft was prepared. Your draft is intact. Review it against your current plan before replacing anything. If saved work changed elsewhere, saving stays blocked; you can use this draft for this visit."), React.createElement("p", null, "Current plan: " + (props.guideState.draft.targetRole || props.guideState.draft.goal || "No career goal chosen") + (props.actionState.draft.text ? ". Next step: " + props.actionState.draft.text : "")), React.createElement("button", { type: "button", style: button, onClick: function() { baseline.current = current(); setChecked(false); setReplace(false); setReviewPanel(null); setStatus("Review this comparison and your current step, then confirm what to use. This does not replace newer saved work."); } }, "Review against my current plan")),
       showRoleChoices && roleChoices(),
       choosingDirection && React.createElement("button", { id: "tops-career-skip-direction", type: "button", style: button, onClick: function() { openReview("save", "tops-career-skip-direction"); } }, "Continue without choosing a role"),
-      React.createElement("section", { id: "tops-career-action-card", hidden: !!reviewPanel || choosingDirection, className: "tops-career-decision", "aria-label": "Your next action" },
-      React.createElement("h3", { id: saved ? "tops-journey-ready" : "tops-career-action-heading", tabIndex: -1 }, "Your next step"),
+      React.createElement("section", { id: "tops-career-action-card", hidden: !!reviewPanel || choosingDirection, className: "tops-career-decision", "aria-label": completedCareerStep ? "Completed career step" : "Your next action" },
+      React.createElement("h3", { id: saved ? "tops-journey-ready" : "tops-career-action-heading", tabIndex: -1 }, completedCareerStep ? "Step completed" : "Your next step"),
       role && React.createElement("p", { style: { fontSize: 14, margin: "0 0 8px" } }, role),
       React.createElement("p", { id: "tops-start-action-preview" }, action),
       actionDate && React.createElement("p", { id: "tops-journey-action-date" }, "Planning target: " + actionDate + ". This does not send a notification."),
       saved && React.createElement("p", { style: { fontSize: 14 } }, keptMode === "browser" ? "Saved on this browser." : "For this visit only. Your earlier saved work was not changed."),
-      saved && careerTools(true),
+      completedCareerStep && React.createElement("button", { id: "tops-career-next-after-completion", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.home("tops-loop-reflection"); } }, "Choose my next step"),
+      saved && !completedCareerStep && careerTools(true),
       promoteResume && resumeToolButton(true),
       !saved && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0" } }, "Edit my next action"), React.createElement("label", { htmlFor: "tops-journey-action", style: { display: "block" } }, "My next action"), React.createElement("textarea", { id: "tops-journey-action", rows: 2, maxLength: 240, value: action, style: field, onChange: function(e) { setAction(e.target.value); setChecked(false); } }), React.createElement("label", { htmlFor: "tops-journey-date" }, "Planning target (optional)"), React.createElement("input", { id: "tops-journey-date", type: "date", min: "2000-01-01", max: "2099-12-31", value: actionDate, style: field, onBlur: function(e) { setActionDate(e.target.value); setChecked(false); }, onChange: function(e) { setActionDate(e.target.value); setChecked(false); } })),
-      saved && React.createElement("button", { type: "button", style: button, onClick: function() { setSaved(false); setStatus(""); setReviewPanel(null); requestAnimationFrame(function() { var field = document.getElementById("tops-journey-action"); if (field) { field.closest("details").open = true; field.focus(); } }); } }, "Change my next step"),
+      saved && React.createElement("button", { type: "button", style: button, onClick: function() { setSaved(false); setStatus(""); setReviewPanel(null); requestAnimationFrame(function() { var field = document.getElementById("tops-journey-action"); if (field) { field.closest("details").open = true; field.focus(); } }); } }, completedCareerStep ? "Edit this step" : "Change my next step"),
       !saved && React.createElement("button", { id: "tops-journey-review-open", type: "button", style: Object.assign({}, button, promoteResume ? {} : { background: C.green, color: C.textOnFill }), onClick: function() { openReview("save", "tops-journey-review-open"); } }, "Review and save")),
       reviewPanel && React.createElement("section", { id: "tops-journey-review-panel", className: "tops-career-decision", "aria-labelledby": "tops-journey-reviewed" },
         React.createElement("h3", { id: "tops-journey-reviewed", tabIndex: -1 }, reviewPanel.mode === "resume" ? "Check what goes into your resume" : "Check what you want to keep"),
@@ -7496,7 +7528,7 @@ function CareerJourney(props) {
         pendingNetworking && React.createElement("button", { id: "tops-networking-cancel", type: "button", style: button, onClick: cancelNetworking }, "Keep my previous step"),
         React.createElement("button", { id: "tops-journey-review-cancel", type: "button", style: button, onClick: function() { var returnId = reviewPanel.returnId; setReviewPanel(null); requestAnimationFrame(function() { var control = returnId && document.getElementById(returnId); if (!control || !control.getClientRects().length || control.closest("[hidden]")) control = document.getElementById("tops-career-skip-direction") || document.getElementById("tops-journey-review-open") || document.getElementById("tops-journey-ready"); if (control) { for (var ancestor = control.parentElement; ancestor; ancestor = ancestor.parentElement) if (ancestor.tagName === "DETAILS") ancestor.open = true; control.focus(); } }); } }, "Keep editing")),
       React.createElement("details", { id: "tops-career-more" }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", fontWeight: 700 } }, "More ways to move forward"),
-      !saved && careerTools(true), careerTools(false),
+      (!saved || completedCareerStep) && careerTools(true), careerTools(false),
       !saved && React.createElement(CareerExperienceAssistant, { key: role, colors: C, field: field, button: button, rows: draft.rows, target: role, onActive: function(active) { setAiActive(active); if (active) aiBaseline.current = JSON.stringify(draft); }, onAccept: function(reviewed, aspect) { if (aiBaseline.current !== JSON.stringify(draft)) return false; var rowIndex = aspect === "training" ? 1 : 0, note = "My reviewed career wording: " + reviewed.wording + "\nMy supporting example: " + reviewed.example, value = draft.rows[rowIndex].have + (draft.rows[rowIndex].have ? "\n\n" : "") + note; if (value.length > 600) return false; var updated = Object.assign({}, draft, { rows: draft.rows.map(function(row, i) { return i === rowIndex ? Object.assign({}, row, { have: value }) : row; }) }); reviewedNotes.current.push({ row: rowIndex, note: note }); setDraft(updated); aiBaseline.current = JSON.stringify(updated); setChecked(false); setSaved(false); setStatus(""); return true; } }),
       !aiActive && React.createElement("div", null,
       React.createElement("details", { id: "tops-journey-details" },
@@ -7747,6 +7779,7 @@ function topsMemberAdjustment(blocker, guide, profile, minutes, serviceMoment) {
       route: g.pathway === "transition" ? "readiness" : g.pathway === "skills" && minutes !== "10" ? "training" : "career"
     };
   }
+  if (blocker === "person" && g.pathway !== "transition") return { title: "Prepare an introduction for career help", why: "You asked for help. Prepare a short introduction you can review before choosing whether to share it with a career specialist.", route: "specialist" };
   var choices = {
     direction: { title: "Compare two possible roles using current job postings", why: "You said the direction is unclear. Compare the work and requirements before committing to a role or training program.", route: "career" },
     skills: { title: "Compare requirements, cost and schedule for one training option" + (target ? " for " + target : ""), why: "You identified a skills or experience gap. Check whether the option addresses that gap and fits your circumstances; program access and funding need their own eligibility checks.", route: "training" },
@@ -7755,6 +7788,11 @@ function topsMemberAdjustment(blocker, guide, profile, minutes, serviceMoment) {
   };
   return choices[blocker] || null;
 }
+function topsCareerHelpStep(action, guide) {
+  var a = topsValidateAction(action), g = topsValidateGuide(guide);
+  if (!a || !g || !g.pathway || g.pathway === "transition" || a.done || !topsActionMatches(a, g)) return false;
+  return a.text === topsMemberAdjustment("person", g).title;
+}
 function topsMemberReflection(outcome, guide, profile) {
   var g = topsValidateGuide(guide);
   if (!g || !g.pathway) return null;
@@ -7762,7 +7800,7 @@ function topsMemberReflection(outcome, guide, profile) {
   if (outcome === "rethink") return g.pathway === "transition" ? { title: "Review your transition priorities before choosing another task", why: "You want to reconsider the next move. Review what matters now before changing your plan.", route: "readiness" } : topsMemberAdjustment("direction", g, profile);
   if (outcome === "gap") return g.pathway === "transition" ? { title: "Write one question about the transition gap you found", why: "You found a gap. Identify what is still unclear and who can help before treating it as resolved.", route: "support" } : { title: "Name one missing skill or experience example to work on", why: "You found a gap. Use your worksheet to make it specific before choosing training or another action.", route: "career" };
   if (outcome !== "ready") return null;
-  return g.pathway === "transition" ? { title: "Review readiness and choose your next unfinished transition task", why: "You said you are ready to move forward. Check what still needs attention; completing one step does not complete the whole plan.", route: "readiness" } : g.pathway === "skills" ? { title: "Choose one small project to practice the skill you are building", why: "You said you are ready to move forward. Use a small example to test what you can do and identify what still needs practice.", route: "career" } : { title: "Prepare two questions for someone who does the work you want to explore", why: "You said you are ready to move forward. Test your understanding of the role before committing to the next career decision.", route: "support" };
+  return g.pathway === "transition" ? { title: "Review readiness and choose your next unfinished transition task", why: "You said you are ready to move forward. Check what still needs attention; completing one step does not complete the whole plan.", route: "readiness" } : g.pathway === "skills" ? { title: "Choose one small project to practice the skill you are building", why: "You said you are ready to move forward. Use a small example to test what you can do and identify what still needs practice.", route: "career" } : g.targetRole.trim() ? { title: topsNetworkingAction("learn", g.targetRole), why: "You said you are ready to move forward. Prepare a conversation to learn about this role before choosing another career step.", route: "network-learn" } : { title: "Choose a career direction to explore", why: "Choose a role or field before preparing a conversation about it.", route: "career-explore" };
 }
 function topsMatchingConversationStep(guide, action, gap) {
   var g = topsValidateGuide(guide), a = topsValidateAction(action), worksheet = topsValidateGap(gap);
@@ -7827,6 +7865,7 @@ function MemberPlanningLoop(props) {
   var [sessionMinutes, setSessionMinutes] = useState("");
   var [serviceMoment, setServiceMoment] = useState("");
   var [reflection, setReflection] = useState("");
+  var [calendarPreview, setCalendarPreview] = useState(null), [calendarMessage, setCalendarMessage] = useState("");
   function openStepEditor() {
     setEditing(true);
     requestAnimationFrame(function() {
@@ -7860,6 +7899,9 @@ function MemberPlanningLoop(props) {
   if (alternative && alternative.route === "support" && workingGuide.pathway !== "transition") alternative = Object.assign({}, alternative, { route: "specialist" });
   var currentLearning = move.kind === "continue" ? topsCareerLearningNext(a.text, g.targetRole, props.gap.target === g.targetRole ? props.gap.rows : []) : null;
   var currentPriority = move.kind === "continue" ? topsMemberPriorityContinuation(a, g) : null;
+  var currentCareerHelp = move.kind === "continue" && topsCareerHelpStep(a, g);
+  var currentReadiness = move.kind === "continue" ? topsReadinessAction(a, g) : null;
+  if (currentReadiness) { try { if (localStorage.getItem(TOPS_GUIDE_KEY) !== JSON.stringify(g) || localStorage.getItem(TOPS_ACTION_KEY) !== JSON.stringify(a)) currentReadiness = null; } catch (error) { currentReadiness = null; } }
   var helpFacts = [
     ["direction", "Direction", TOPS_GUIDE_PATHS[g.pathway]],
     ["target", "Role or field", g.targetRole], ["goal", "Goal", g.goal],
@@ -7882,7 +7924,7 @@ function MemberPlanningLoop(props) {
   }
   function chooseStep() {
     if (workingGuide.pathway && workingGuide.pathway !== g.pathway) props.setGuideState({ draft: workingGuide, ready: true, status: "Direction prepared for this visit. Review before saving." });
-    props.setActionState({ draft: { version: 1, text: move.title.slice(0, 240), date: "", done: false, context: topsValidateGuide(workingGuide) }, status: "Suggested step added for review. Edit it to fit your situation, then choose Save career step to keep it." });
+    props.setActionState({ draft: { version: 1, text: move.title.slice(0, 240), date: "", done: false, context: topsValidateGuide(workingGuide) }, status: "Suggested step added for review. Edit it to fit your situation, then choose Save step to keep it." });
     openStepEditor();
   }
   function isSavedStep() {
@@ -7891,6 +7933,35 @@ function MemberPlanningLoop(props) {
       var saved = topsValidateAction(JSON.parse(localStorage.getItem(TOPS_ACTION_KEY)));
       return !!saved && JSON.stringify(saved) === JSON.stringify(topsValidateAction(a));
     } catch (error) { return false; }
+  }
+  function personalCalendarSignature() {
+    try { return JSON.stringify([g, a, localStorage.getItem(TOPS_GUIDE_KEY), localStorage.getItem(TOPS_ACTION_KEY)]); } catch (error) { return null; }
+  }
+  function canExportPersonalStep() {
+    var action = topsValidateAction(a), guide = topsValidateGuide(g);
+    if (window.__IS_IFRAME || !action || !guide || !guide.pathway || action.done || !topsActionMatches(action, guide) || !action.date || topsFollowDate(action.date) !== action.date || action.date <= topsMemberLocalDay()) return false;
+    try { return localStorage.getItem(TOPS_GUIDE_KEY) === JSON.stringify(guide) && localStorage.getItem(TOPS_ACTION_KEY) === JSON.stringify(action); } catch (error) { return false; }
+  }
+  function reviewPersonalCalendar() {
+    if (!canExportPersonalStep()) { setCalendarMessage("Save your current step with a future target date before adding it to your calendar."); return; }
+    var signature = personalCalendarSignature();
+    if (!signature) { setCalendarMessage("Your saved plan could not be read. Try again before creating a calendar file."); return; }
+    setCalendarPreview({ text: a.text, date: a.date, signature: signature }); setCalendarMessage("");
+    requestAnimationFrame(function() { var heading = document.getElementById("tops-personal-calendar-heading"); if (heading) { heading.focus(); heading.scrollIntoView({ block: "center" }); } });
+  }
+  function downloadPersonalCalendar() {
+    var signature = personalCalendarSignature();
+    if (!calendarPreview || !calendarPreview.signature || !signature || !canExportPersonalStep() || calendarPreview.signature !== signature) { setCalendarMessage("Your step or saved plan changed. Cancel this preview and review the current step before downloading."); return; }
+    var url = "", link = null;
+    try {
+      var bytes = new Uint8Array(16); window.crypto.getRandomValues(bytes);
+      var uid = Array.from(bytes).map(function(value) { return value.toString(16).padStart(2, "0"); }).join("");
+      var content = topsPersonalStepICS(calendarPreview.text, calendarPreview.date, uid);
+      if (!content) throw new Error("invalid_calendar");
+      url = URL.createObjectURL(new Blob([content], { type: "text/calendar;charset=utf-8" })); link = document.createElement("a"); link.href = url; link.download = "transition-ops-my-step.ics"; document.body.appendChild(link); link.click(); link.remove();
+      var downloadedUrl = url; setTimeout(function() { URL.revokeObjectURL(downloadedUrl); }, 4000); url = "";
+      setCalendarMessage("Download started. Import the file, then check your calendar's alert settings.");
+    } catch (error) { if (link) link.remove(); if (url) URL.revokeObjectURL(url); setCalendarMessage("The calendar file could not be created. Your saved step is unchanged. Try again."); }
   }
   function saveCompletion(done) {
     if (!isSavedStep()) { setMessage("Your saved step changed or could not be read. Review your step before saving a completion change."); return; }
@@ -7931,10 +8002,10 @@ function MemberPlanningLoop(props) {
         blocker === "service" && props.profile === "guard" && topsServiceConversation(serviceMoment) && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute("conversation", serviceMoment); } }, "Prepare this conversation"),
         a.text && React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10, lineHeight: 1.6 } }, React.createElement("input", { type: "checkbox", checked: replaceStep, onChange: function(event) { setReplaceStep(event.target.checked); } }), "Replace my current step in the editor. My saved copy changes only when I save."),
         React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
-          React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(alternative.route); } }, alternative.route === "training" ? "Browse training options" : alternative.route === "support" ? "Browse support options" : alternative.route === "specialist" ? "Talk with a career specialist" : alternative.route === "career-start" ? "Explore career options" : "Open transition checklist"),
+          React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(alternative.route); } }, alternative.route === "training" ? "Browse training options" : alternative.route === "support" ? "Browse support options" : alternative.route === "specialist" ? "Prepare for career help" : alternative.route === "career-start" ? "Explore career options" : "Open transition checklist"),
           React.createElement("button", { type: "button", style: button, disabled: !!a.text && !replaceStep, onClick: function() {
             if (workingGuide.pathway && workingGuide.pathway !== g.pathway) props.setGuideState({ draft: workingGuide, ready: true, status: "Direction prepared for this visit. Review before saving." });
-            props.setActionState({ draft: { version: 1, text: alternative.title, date: "", done: false, context: topsValidateGuide(workingGuide) }, status: "Alternative step added for review, not saved. Edit it to fit your situation, then choose Save career step." });
+            props.setActionState({ draft: { version: 1, text: alternative.title, date: "", done: false, context: topsValidateGuide(workingGuide) }, status: "Alternative step added for review, not saved. Edit it to fit your situation, then choose Save step." });
             openStepEditor(); setBlocker(""); setReplaceStep(false);
           } }, "Review this as my next step"))));
   var helpUI = props.onDraft && React.createElement("details", { id: "tops-loop-help", style: { marginTop: 12 } },
@@ -7980,18 +8051,30 @@ function MemberPlanningLoop(props) {
     React.createElement("div", { className: "tops-next-move-actions", style: { display: "flex", flexWrap: "wrap", gap: 8 } },
       move.kind === "priority" && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(move.route); } }, move.label),
       move.kind === "priority" && React.createElement("button", { type: "button", style: button, onClick: chooseStep }, "Review this as my next step"),
+      currentReadiness && React.createElement("button", { id: "tops-loop-readiness-step", className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute("readiness-item", currentReadiness); } }, READINESS_TOOLS[currentReadiness].label),
       currentPriority && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(currentPriority.route); } }, currentPriority.label),
       currentLearning && React.createElement("a", { className: "tops-move-primary", href: currentLearning.url, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, button, { display: "inline-flex", alignItems: "center", background: C.green, color: C.textOnFill }) }, "Open " + currentLearning.name + " (opens a new tab)"),
-      move.kind === "continue" && !currentPriority && !currentLearning && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(g.pathway === "transition" ? "readiness" : "career-resume"); } }, g.pathway === "transition" ? "Open transition checklist" : "Continue my career work"),
+      currentCareerHelp && React.createElement("button", { id: "tops-loop-career-help", type: "button", className: "tops-move-primary", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute("specialist"); } }, "Prepare for career help"),
+      move.kind === "continue" && !currentPriority && !currentLearning && !currentCareerHelp && !currentReadiness && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(g.pathway === "transition" ? "readiness" : "career-resume"); } }, g.pathway === "transition" ? "Open transition checklist" : "Continue my career work"),
       move.kind === "recover" && React.createElement("button", { type: "button", style: button, onClick: function() { setDirection(a.context); document.getElementById("tops-loop-direction").open = true; } }, "Review saved direction"),
       ["continue", "review"].includes(move.kind) && React.createElement("button", { type: "button", style: button, "aria-expanded": editing, onClick: function() { if (editing) setEditing(false); else openStepEditor(); } }, editing ? "Close step editor" : move.kind === "review" ? "Review earlier step" : "Update this step"),
       ["suggest", "reflect"].includes(move.kind) && React.createElement("button", { type: "button", style: button, disabled: move.kind === "reflect" && !reflectedMove, onClick: chooseStep }, "Choose this next step"),
-      move.route && move.kind !== "priority" && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "career" ? "Open my career worksheet" : move.route === "training" ? "Browse training options" : move.route === "support" ? "Browse support options" : "Open transition checklist")),
+      move.route && move.kind !== "priority" && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "specialist" ? "Prepare for career help" : move.route === "network-learn" ? "Prepare a conversation" : move.route === "career-explore" ? "Explore career options" : move.route === "career" ? "Open my career worksheet" : move.route === "training" ? "Browse training options" : move.route === "support" ? "Browse support options" : "Open transition checklist")),
     move.kind === "continue" && contextUI,
     timing && React.createElement("div", { id: "tops-loop-timing", style: { lineHeight: 1.6, margin: "12px 0" } },
       React.createElement("p", null, React.createElement("strong", null, timing.title), " - " + timing.detail),
       React.createElement("p", { style: { fontSize: 14 } }, "This is your own planning date, not a benefits deadline. It does not send a notification."),
+      canExportPersonalStep() && React.createElement("button", { id: "tops-personal-calendar-open", type: "button", style: button, onClick: reviewPersonalCalendar }, "Add this step to my calendar"),
       React.createElement("button", { type: "button", style: button, onClick: function() { setEditing(true); requestAnimationFrame(function() { var date = document.getElementById("tops-action-date"); if (date) date.focus(); }); } }, "Review my target date")),
+    calendarPreview && React.createElement("section", { "aria-labelledby": "tops-personal-calendar-heading", style: { display: "grid", gap: 12, lineHeight: 1.5, padding: 16, border: "1px solid " + C.border, borderRadius: 8 } },
+      React.createElement("h4", { id: "tops-personal-calendar-heading", tabIndex: -1, style: { margin: 0 } }, "Review your calendar step"),
+      React.createElement("p", { style: { margin: 0, whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, calendarPreview.text), React.createElement("p", { style: { margin: 0 } }, "All-day planning date: " + calendarPreview.date),
+      React.createElement("p", { style: { margin: 0 } }, "The file requests reminders 7 days and 1 day before this date. Check alert times after importing; alerts already in the past may not appear. Alerts depend on your calendar's import and notification settings."),
+      React.createElement("p", { style: { margin: 0 } }, "Your calendar provider may sync this step and date. This is a snapshot: editing or completing the step here does not update your calendar. Import once to avoid duplicate entries."),
+      (!calendarPreview.signature || !canExportPersonalStep() || calendarPreview.signature !== personalCalendarSignature()) && React.createElement("p", { role: "status", style: { margin: 0 } }, "Your step or saved plan changed. Cancel this preview and review the current step before downloading."),
+      React.createElement("button", { id: "tops-personal-calendar-download", type: "button", style: Object.assign({}, button, { width: "100%", maxWidth: 360, minHeight: 44, margin: 0, justifySelf: "start" }), disabled: !calendarPreview.signature || !canExportPersonalStep() || calendarPreview.signature !== personalCalendarSignature(), onClick: downloadPersonalCalendar }, "Download calendar file"),
+      React.createElement("button", { type: "button", style: Object.assign({}, button, { width: "100%", maxWidth: 360, minHeight: 44, margin: 0, justifySelf: "start" }), onClick: function() { setCalendarPreview(null); setCalendarMessage(""); requestAnimationFrame(function() { var target = document.getElementById("tops-personal-calendar-open") || document.getElementById("tops-loop-title"); if (target) target.focus(); }); } }, "Cancel calendar preview")),
+    React.createElement("p", { role: "status", "aria-live": "polite" }, calendarMessage),
     completionUI,
     props.profile === "guard" && g.pathway && React.createElement("button", { type: "button", style: Object.assign({}, button, { marginTop: 12 }), onClick: function() {
       setBlocker("service"); setServiceMoment(""); setReplaceStep(false);
@@ -8023,7 +8106,7 @@ function NavigatorNextStep(props) {
         action.text && React.createElement("div", null, React.createElement("p", null, "Step currently in your editor: " + action.text), React.createElement("label", { style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10 } }, React.createElement("input", { id: "tops-answer-replace", type: "checkbox", checked: replace, onChange: function(e) { setReplace(e.target.checked); } }), "Replace this step in the editor. My saved copy changes only when I save.")),
         React.createElement("button", { type: "button", style: button, disabled: !text.trim() || !candidate || (!!action.text && !replace), onClick: function() {
           if (!sameDirection || !candidate || !candidate.text || (action.text && !replace)) return;
-          props.setState({ draft: candidate, status: "Your chosen step is ready to review, not saved. Add a target date if useful, then choose Save career step." }); setEditing(true);
+          props.setState({ draft: candidate, status: "Your chosen step is ready to review, not saved. Add a target date if useful, then choose Save step." }); setEditing(true);
           requestAnimationFrame(function() { var input = document.getElementById("tops-action-text"); if (input) input.focus(); });
         } }, "Review this step before saving")),
       editing && React.createElement(CareerAction, { colors: C, guide: guide, state: props.state, setState: props.setState })));
@@ -8752,7 +8835,8 @@ function App() {
     if (!id) return;
     var frame = requestAnimationFrame(function() {
       if (continuationFocus.current && continuationFocus.current !== id) return;
-      var target = document.getElementById(id) || (activeTab === "dashboard" && (document.getElementById("tops-home-actions-title") || document.getElementById("tops-home-timeline")));
+      var currentId = id === "tops-prepare-introduction" && document.getElementById("tops-specialist-introduction") ? "tops-specialist-introduction" : id;
+      var target = document.getElementById(currentId) || (activeTab === "dashboard" && (document.getElementById("tops-home-actions-title") || document.getElementById("tops-home-timeline")));
       if (!target) return;
       for (var parent = target.parentElement; parent; parent = parent.parentElement) { if (parent.tagName === "DETAILS") parent.open = true; }
       continuationFocus.current = null;
@@ -8766,6 +8850,88 @@ function App() {
   // Readiness Score state
   const [readinessAnswers, setReadinessAnswers] = useState(function() { try { var v = window.__safeGet("tops_readiness"); return v ? JSON.parse(v) : {}; } catch(e) { return {}; } });
   const [readinessCatOpen, setReadinessCatOpen] = useState(null);
+  const [readinessReturn, setReadinessReturn] = useState(null);
+  const readinessToolFocus = useRef(null);
+  const [readinessProposal, setReadinessProposal] = useState(null);
+  const [readinessProposalDate, setReadinessProposalDate] = useState("");
+  const [readinessProposalStatus, setReadinessProposalStatus] = useState("");
+  function readinessPlanSnapshot() {
+    try { return JSON.stringify([guideState.draft, actionState.draft, gapState.draft, [TOPS_GUIDE_KEY, TOPS_ACTION_KEY, TOPS_GAP_KEY].map(function(key) { return localStorage.getItem(key); })]); } catch (error) { return null; }
+  }
+  function proposeReadinessStep() {
+    var signature = readinessPlanSnapshot();
+    if (!signature) { setReadinessProposalStatus("Your saved plan could not be read. Try again before choosing a step."); return; }
+    var guide = topsValidateGuide(guideState.draft);
+    try {
+      var rawGuide = localStorage.getItem(TOPS_GUIDE_KEY), rawAction = localStorage.getItem(TOPS_ACTION_KEY);
+      if (!guide || !topsValidateAction(actionState.draft) || (rawGuide === null ? JSON.stringify(guide) !== JSON.stringify(topsEmptyGuide()) : rawGuide !== JSON.stringify(guide)) || (rawAction !== null && rawAction !== JSON.stringify(actionState.draft)) || (rawAction === null && actionState.draft.text)) { setReadinessProposalStatus("Review and save your current plan first. This choice will not replace unreadable saved work or unsaved edits."); return; }
+    } catch (error) { setReadinessProposalStatus("Your saved plan could not be read. You can still use this tool and return to your checklist."); return; }
+    if (!guide.pathway) guide = Object.assign({}, guide, { pathway: "transition" });
+    setReadinessProposal({ signature: signature, guide: guide, text: READINESS_TOOLS[readinessReturn.item].action, previous: Object.assign({}, actionState.draft) }); setReadinessProposalDate(""); setReadinessProposalStatus("");
+    requestAnimationFrame(function() { var heading = document.getElementById("tops-readiness-proposal-heading"); if (heading) heading.focus(); });
+  }
+  function saveReadinessStep() {
+    if (!readinessProposal || !readinessProposal.signature || readinessPlanSnapshot() !== readinessProposal.signature) { setReadinessProposalStatus("Your plan changed. Cancel this preview and review it again before replacing a step."); return; }
+    var action = topsValidateAction({ version: 1, text: readinessProposal.text, date: readinessProposalDate, done: false, context: readinessProposal.guide });
+    if (!action || window.__IS_IFRAME) { setReadinessProposalStatus("Use a valid optional target date. Embedded views cannot save a step."); return; }
+    var keys = [TOPS_GUIDE_KEY, TOPS_ACTION_KEY], before;
+    try { before = keys.map(function(key) { return localStorage.getItem(key); }); } catch (error) { setReadinessProposalStatus("Your saved plan could not be read. Nothing was changed."); return; }
+    try { [readinessProposal.guide, action].forEach(function(value, i) { var raw = JSON.stringify(value); if (before[i] !== raw) localStorage.setItem(keys[i], raw); if (localStorage.getItem(keys[i]) !== raw) throw Error("write"); }); }
+    catch (error) {
+      keys.forEach(function(key, i) { try { if (before[i] === null) localStorage.removeItem(key); else localStorage.setItem(key, before[i]); } catch (ignored) {} });
+      var restored = false; try { restored = keys.every(function(key, i) { return localStorage.getItem(key) === before[i]; }); } catch (ignored) {}
+      setReadinessProposalStatus(restored ? "The step was not saved. Your earlier saved plan was restored. Try again." : "The save could not be completed or fully restored. Keep this page open and review your saved plan before trying again."); return;
+    }
+    setGuideState({ draft: readinessProposal.guide, ready: true, status: "Saved on this browser." }); setActionState({ draft: action, status: "Your next step was saved on this browser." }); setReadinessProposal(null); setReadinessProposalStatus("Saved. Find this step on Home. Your checklist answers were not changed."); requestAnimationFrame(function() { var target = document.getElementById("tops-readiness-view-home"); if (target) target.focus(); });
+  }
+
+  function openReadinessTool(item, category) {
+    setReadinessProposal(null); setReadinessProposalStatus("");
+    var tool = READINESS_TOOLS[item]; if (!tool) return;
+    continuationFocus.current = null;
+    readinessToolFocus.current = tool.target;
+    setReadinessReturn({ item: item, category: category, tab: tool.tab, subTab: tool.subTab || null });
+    if (tool.subTab) setSubTab(tool.subTab);
+    setActiveTab(tool.tab);
+  }
+  function renderReadinessReturn(item) {
+    var isCurrent = readinessReturn && topsReadinessAction(actionState.draft, guideState.draft) === readinessReturn.item;
+    var button = { minHeight: 44, padding: "10px 16px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary, font: "inherit", cursor: "pointer" };
+    return readinessReturn && (!item || readinessReturn.item === item) && activeTab === readinessReturn.tab && (!readinessReturn.subTab || subTab === readinessReturn.subTab) && React.createElement("section", { style: { marginBottom: 16, display: "grid", gap: 12, lineHeight: 1.5 } },
+      React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } }, React.createElement("button", { id: "tops-readiness-return", type: "button", onClick: returnToReadiness, style: button }, "Back to transition checklist"), !readinessProposal && !isCurrent && React.createElement("button", { id: "tops-readiness-propose", type: "button", onClick: proposeReadinessStep, style: button }, "Make this my next step")),
+      isCurrent && React.createElement("div", null, React.createElement("p", null, "This is your current next step."), React.createElement("button", { id: "tops-readiness-view-home", type: "button", style: button, onClick: function() { continuationFocus.current = "tops-loop-title"; setActiveTab("dashboard"); } }, "View my next step on Home")),
+      readinessProposal && React.createElement("div", { style: { padding: 16, border: "1px solid " + C.border, borderRadius: 8 } },
+        React.createElement("h3", { id: "tops-readiness-proposal-heading", tabIndex: -1 }, "Review your next step"),
+        React.createElement("p", null, "Direction to save: " + TOPS_GUIDE_PATHS[readinessProposal.guide.pathway] + (readinessProposal.guide.targetRole ? " — " + readinessProposal.guide.targetRole : "")),
+        readinessProposal.previous.text && React.createElement("p", { style: { overflowWrap: "anywhere" } }, "Current step: " + readinessProposal.previous.text + (readinessProposal.previous.date ? " Target: " + readinessProposal.previous.date : "")),
+        React.createElement("p", null, "New step: " + readinessProposal.text),
+        React.createElement("label", { htmlFor: "tops-readiness-proposal-date" }, "My target date (optional)"), React.createElement("input", { id: "tops-readiness-proposal-date", type: "date", "aria-describedby": "tops-readiness-date-help tops-readiness-proposal-status", "aria-invalid": !!readinessProposalDate && topsFollowDate(readinessProposalDate) !== readinessProposalDate, min: "2000-01-01", max: "2099-12-31", value: readinessProposalDate, onChange: function(event) { setReadinessProposalDate(event.target.value); }, onBlur: function(event) { setReadinessProposalDate(event.target.value); }, style: { display: "block", boxSizing: "border-box", minHeight: 44, maxWidth: "100%", margin: "8px 0 12px", padding: 8, font: "inherit", color: C.textPrimary, background: C.bg, border: "1px solid " + C.border } }),
+        React.createElement("p", { id: "tops-readiness-date-help" }, "Your planning date, not a benefits deadline. No notification is sent."),
+        React.createElement("p", null, "This saves one planning step on this browser. It does not confirm the checklist item or determine eligibility."),
+        React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } }, React.createElement("button", { id: "tops-readiness-proposal-save", type: "button", style: button, onClick: saveReadinessStep }, readinessProposal.previous.text ? "Replace my current step" : "Save as my next step"), React.createElement("button", { type: "button", style: button, onClick: function() { setReadinessProposal(null); setReadinessProposalStatus(""); requestAnimationFrame(function() { var target = document.getElementById("tops-readiness-propose"); if (target) target.focus(); }); } }, "Keep my current plan"))),
+      React.createElement("p", { id: "tops-readiness-proposal-status", role: "status", style: { margin: 0 } }, readinessProposalStatus));
+  }
+  function returnToReadiness() {
+    if (!readinessReturn) return;
+    readinessToolFocus.current = "tops-readiness-tool-" + readinessReturn.item;
+    setReadinessCatOpen(readinessReturn.category); setReadinessReturn(null); setReadinessProposal(null); setReadinessProposalStatus(""); setActiveTab("readiness");
+  }
+  useEffect(function() {
+    if (readinessReturn && (activeTab !== readinessReturn.tab || (readinessReturn.subTab && subTab !== readinessReturn.subTab))) {
+      setReadinessReturn(null); setReadinessProposal(null); setReadinessProposalStatus(""); readinessToolFocus.current = null; return;
+    }
+    var id = readinessToolFocus.current;
+    if (!id || (!readinessReturn && activeTab !== "readiness")) { readinessToolFocus.current = null; return; }
+    var frame = requestAnimationFrame(function() {
+      if (readinessToolFocus.current !== id) return;
+      var target = document.getElementById(id); if (!target) return;
+      for (var parent = target.parentElement; parent; parent = parent.parentElement) if (parent.tagName === "DETAILS") parent.open = true;
+      readinessToolFocus.current = null; target.focus(); target.scrollIntoView({ block: "center" });
+    });
+    return function() { cancelAnimationFrame(frame); };
+  }, [activeTab, subTab, readinessReturn, readinessCatOpen]);
+  useEffect(function() { setReadinessReturn(null); setReadinessProposal(null); setReadinessProposalStatus(""); readinessToolFocus.current = null; }, [guideRestoreRevision]);
+
   // VA Pay Estimator state
   const [vaRating, setVaRating] = useState(0);
   const [vaSpouse, setVaSpouse] = useState(false);
@@ -9384,12 +9550,13 @@ function App() {
       if (!planQuestion) setPlanQuestion({ text: text, reply: "", answered: false, guide: topsValidateGuide(guideState.draft), profile: userStatus });
       setPlanQuestionOpen(true); continuationFocus.current = "tops-plan-question"; continuationReturn.current = "tops-loop-title"; setActiveTab("navigator");
     } : null, onRoute: function(route, moment) {
-      if (["career-start", "career-resume", "career-explore", "growth", "specialist", "jobs"].includes(route)) {
+      if (route === "readiness-item" && READINESS_TOOLS[moment]) { var category = READINESS_CATS.find(function(cat) { return cat.qs.some(function(q) { return q.id === moment; }); }); if (category) openReadinessTool(moment, category.id); return; }
+      if (["career-start", "career-resume", "career-explore", "growth", "specialist", "network-learn", "jobs"].includes(route)) {
         setJourneyTarget(""); setCareerExperienceContext(null); setPathwayMode("journey");
-        setCareerEntry(route === "career-resume" ? "resume" : route === "career-explore" ? "find" : route === "growth" ? "grow" : route === "specialist" ? "specialist" : "");
+        setCareerEntry(route === "career-resume" ? "resume" : route === "career-explore" ? "find" : route === "growth" ? "grow" : route === "specialist" ? "specialist" : route === "network-learn" ? "network-learn" : "");
         continuationReturn.current = "tops-loop-title";
         if (route === "jobs") { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, keyword: guideState.draft.targetRole || previous.keyword || "" }); }); focusCareerWorksheet("tops-live-jobs-panel"); }
-        else continuationFocus.current = route === "specialist" ? (introduction.prepared ? "tops-specialist-introduction" : "tops-prepare-introduction") : "tops-career-start-heading";
+        else continuationFocus.current = route === "network-learn" ? (introduction.text.trim() && (introduction.purpose || "specialist") !== "learn" ? "tops-network-purpose" : introduction.text.trim() ? "tops-specialist-introduction" : "tops-prepare-introduction") : route === "specialist" ? (introduction.text.trim() && (introduction.purpose || "specialist") !== "specialist" ? "tops-network-purpose" : introduction.text.trim() ? "tops-specialist-introduction" : "tops-prepare-introduction") : "tops-career-start-heading";
         setActiveTab("pathway"); return;
       }
       if (route === "career" || route === "conversation") {
@@ -9417,7 +9584,7 @@ function App() {
       React.createElement("textarea", { id: "tops-plan-question", "aria-describedby": "tops-plan-question-notice", rows: 8, maxLength: 1500, value: planQuestion.text, readOnly: navBusy, onChange: function(e) { setPlanQuestion(Object.assign({}, planQuestion, { text: e.target.value, reply: "", answered: false })); }, style: { width: "100%", boxSizing: "border-box", minHeight: 140, padding: 12, margin: "8px 0", background: C.bg, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", fontSize: 16 } }),
       React.createElement("button", { type: "button", style: button, disabled: navBusy || !planQuestion.text.trim(), onClick: function() { sendNavigator(planQuestion.text, null, true); } }, "Send this question"),
       React.createElement("div", { role: "status", "aria-live": "polite", style: { whiteSpace: "pre-wrap", lineHeight: 1.6, marginTop: 12 } }, navBusy ? "Navigator is working. Your saved next step stays unchanged." : planQuestion.reply ? renderNavText(planQuestion.reply) : "Draft ready. Choose Send this question to request an answer."),
-      React.createElement("p", { style: { lineHeight: 1.6 } }, "Use the answer to decide what to do next. Your saved plan changes only when you choose Save career step."),
+      React.createElement("p", { style: { lineHeight: 1.6 } }, "Use the answer to decide what to do next. Your saved plan changes only when you choose Save step."),
       planQuestion.answered && !navBusy && React.createElement(NavigatorNextStep, { colors: C, questionGuide: planQuestion.guide, questionProfile: planQuestion.profile, profile: userStatus, guide: guideState.draft, state: actionState, setState: setActionState }),
       React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
         React.createElement("button", { type: "button", style: button, onClick: function() { continuationFocus.current = "tops-loop-title"; setActiveTab("dashboard"); } }, "Return to my next move"),
@@ -9508,7 +9675,7 @@ function App() {
       React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" } },
         React.createElement("h2", { id: "tops-home-tools-title", style: { fontSize: 20, color: C.textPrimary, margin: "0 0 8px" } }, "Tools for your next step")),
       React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 } },
-        [["timeline", "View my transition checklist"], ["pathway", "Explore careers"], ["vamath", "Calculate a VA rating"], ["resources", "Find benefits, services & support"]].map(function(item) {
+        [["timeline", "View my transition timeline"], ["pathway", "Explore careers"], ["vamath", "Calculate a VA rating"], ["resources", "Find benefits, services & support"]].map(function(item) {
           return React.createElement("button", { key: item[0], type: "button", onClick: function() { openExperienceTool(item[0]); }, style: { minHeight: 60, padding: "14px 12px", textAlign: "left", border: "1px solid " + C.border, borderRadius: 10, background: C.bgCard, color: C.textPrimary, font: "inherit", fontSize: 15, lineHeight: 1.4, cursor: "pointer" } }, React.createElement("span", null, item[1]), React.createElement("span", { "aria-hidden": true }));
         })));
   }
@@ -10100,10 +10267,11 @@ function App() {
     React.createElement("div", { style: { display: "flex", gap: 8 } },
       React.createElement("input", { value: navInput, onChange: function(e){ setNavInput(e.target.value); }, onKeyDown: function(e){ if (e.key === "Enter") sendNavigator(); }, "aria-label": "Ask the Transition Navigator", placeholder: "Ask about your transition\u2026", style: { flex: 1, minWidth: 0, minHeight: 44, background: C.isLight ? C.bg : "#1A2114", border: "1px solid " + (C.isLight ? C.border : "#4A5A35"), borderRadius: 8, color: C.isLight ? C.textPrimary : "#F2EFE4", caretColor: C.isLight ? C.textPrimary : "#E8C547", fontWeight: 600, padding: 12, fontSize: 16, fontFamily: "inherit", WebkitTextFillColor: C.isLight ? C.textPrimary : "#F2EFE4", opacity: 1 } }),
       React.createElement("button", { type: "button", disabled: navBusy || !navInput.trim(), onClick: function(){ sendNavigator(); }, "aria-label": "Send Navigator question", style: { minHeight: 44, background: C.goldBright, color: C.isLight ? "#FFFFFF" : (C.isLight ? C.bg : "#0E120B"), border: "none", borderRadius: 8, padding: "12px 18px", fontFamily: "'Oswald', sans-serif", fontWeight: 700, letterSpacing: 1, fontSize: 13, cursor: navBusy || !navInput.trim() ? "default" : "pointer", opacity: navBusy || !navInput.trim() ? 0.5 : 1 } }, "SEND"))),
+  activeTab !== "dd214" && activeTab !== "resources" && renderReadinessReturn(),
   activeTab !== "dashboard" && continuationReturn.current && continuationReturn.current.indexOf("tops-guide-") === 0 && React.createElement("button", { type: "button", style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" }, onClick: function() { continuationFocus.current = continuationReturn.current; continuationReturn.current = null; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("pathway"); } }, "Back to career guide"),
   React.createElement("div", { className: activeTab === "dashboard" ? "tops-home-support-row" : activeTab === "pathway" ? "tops-home-support-row tops-career-support" : undefined }, React.createElement(SuicideSupport, { colors: C }),
   (activeTab === "dashboard" || activeTab === "resources" || activeTab === "pathway") && React.createElement(HumanSupportChoices, { colors: C, id: activeTab === "pathway" ? "tops-career-human" : "tops-page-human" })),
-  activeTab === "pathway" && pathwayMode === "journey" && !journeyTarget && !careerExperienceContext && React.createElement(CareerJourney, { key: guideRestoreRevision, entry: careerEntry, consumeEntry: function() { setCareerEntry(""); }, compareRequest: careerCompareRequest, consumeCompare: function() { setCareerCompareRequest(0); }, introduction: introduction, setIntroduction: setIntroduction, visitDraft: careerVisitDraft, setVisitDraft: setCareerVisitDraft, diskGuard: careerDiskGuard.current, colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gapState: gapState, setGapState: setGapState, openTool: function(tool, role) { if (tool === "jobs") { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, keyword: role || previous.keyword || guideState.draft.targetRole || "" }); }); focusCareerWorksheet("tops-live-jobs-panel"); } else if (tool === "resume") { setAiR(function(previous) { var occupied = previous.loading || ["role", "years", "target", "skills", "certs", "exp", "posting", "facts", "out"].some(function(key) { return !!previous[key]; }); return Object.assign({}, previous, occupied ? { open: true, handoff: "kept" } : { open: true, handoff: "added", target: role.role, exp: role.experience, posting: role.posting }); }); focusCareerWorksheet("tops-resume-drafter-panel"); } else if (tool === "readiness") { openPlanRoute("readiness", "tops-plan-readiness", "tops-career-start-heading"); } else { setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-heading"); } }, home: function() { continuationFocus.current = "tops-loop-title"; setActiveTab("dashboard"); } }),
+  activeTab === "pathway" && pathwayMode === "journey" && !journeyTarget && !careerExperienceContext && React.createElement(CareerJourney, { key: guideRestoreRevision, entry: careerEntry, onIntroductionBack: function() { continuationFocus.current = null; }, consumeEntry: function() { setCareerEntry(""); }, compareRequest: careerCompareRequest, consumeCompare: function() { setCareerCompareRequest(0); }, introduction: introduction, setIntroduction: setIntroduction, visitDraft: careerVisitDraft, setVisitDraft: setCareerVisitDraft, diskGuard: careerDiskGuard.current, colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gapState: gapState, setGapState: setGapState, openTool: function(tool, role) { if (tool === "jobs") { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, keyword: role || previous.keyword || guideState.draft.targetRole || "" }); }); focusCareerWorksheet("tops-live-jobs-panel"); } else if (tool === "resume") { setAiR(function(previous) { var occupied = previous.loading || ["role", "years", "target", "skills", "certs", "exp", "posting", "facts", "out"].some(function(key) { return !!previous[key]; }); return Object.assign({}, previous, occupied ? { open: true, handoff: "kept" } : { open: true, handoff: "added", target: role.role, exp: role.experience, posting: role.posting }); }); focusCareerWorksheet("tops-resume-drafter-panel"); } else if (tool === "readiness") { openPlanRoute("readiness", "tops-plan-readiness", "tops-career-start-heading"); } else { setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-heading"); } }, home: function(focus) { continuationFocus.current = focus === "tops-loop-reflection" ? focus : "tops-loop-title"; setActiveTab("dashboard"); } }),
   activeTab === "pathway" && React.createElement("nav", { "aria-label": "Career shortcuts", style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 } },
     [["Start here", "tops-career-start-heading"], ["Career plan", "career-gap-heading"], ["Resume drafter", "tops-resume-drafter-panel"], ["Business ownership", "tops-ownership-heading"]].map(function(item) {
       return React.createElement("button", { key: item[1], type: "button", onClick: function() {
@@ -16474,8 +16642,8 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       ...S.card,
       padding: 14
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: S.cardTitle
+  }, renderReadinessReturn("w2"), /*#__PURE__*/React.createElement("div", {
+    id: "tops-healthcare-transition", tabIndex: -1, role: "heading", "aria-level": 2, style: S.cardTitle
   }, "HEALTHCARE TRANSITION"), /*#__PURE__*/React.createElement("div", {
     style: S.bodyText
   }, "No automatic bridge from TRICARE to VA. Plan ahead.")), HEALTHCARE_TIMELINE.map((h, i) => /*#__PURE__*/React.createElement("div", {
@@ -16536,7 +16704,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       ...S.card,
       padding: 14
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, renderReadinessReturn("a6"), /*#__PURE__*/React.createElement("div", {
     id: "tops-plan-documents", tabIndex: -1, role: "heading", "aria-level": 2,
     style: S.cardTitle
   }, "DOCUMENT VAULT"), /*#__PURE__*/React.createElement("div", {
@@ -17102,12 +17270,12 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
   }, "DD214 & SERVICE RECORD"), /*#__PURE__*/React.createElement("div", {
     style: S.bodyText
   }, "Your DD214 is the single most important document you'll carry as a veteran. Verify every line."),
-    React.createElement("div", { style: { ...S.bodyText, marginTop: 10 } }, "The ", React.createElement("a", { href: "https://www.whitehouse.gov/presidential-actions/2026/09/accelerating-access-to-veterans-benefits-and-employment-opportunities/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "September 8 order"), " directs agencies to improve records sharing; it does not confirm that your records have transferred. For your own copy, use ", React.createElement("a", { href: "https://www.va.gov/records/get-military-service-records/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "VA's service-record request instructions"), ". Continue filing your claim while that request is pending."),
+    renderReadinessReturn("a3"), React.createElement("div", { id: "tops-service-record-request", tabIndex: -1, style: { ...S.bodyText, marginTop: 10 } }, "The ", React.createElement("a", { href: "https://www.whitehouse.gov/presidential-actions/2026/09/accelerating-access-to-veterans-benefits-and-employment-opportunities/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "September 8 order"), " directs agencies to improve records sharing; it does not confirm that your records have transferred. For your own copy, use ", React.createElement("a", { href: "https://www.va.gov/records/get-military-service-records/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "VA's service-record request instructions"), ". Continue filing your claim while that request is pending."),
     React.createElement("div", { style: { ...S.bodyText, marginTop: 10 } }, "Using BDD? Follow ", React.createElement("a", { href: "https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "VA's BDD instructions"), " to confirm eligibility and file 180-90 days before leaving qualifying full-time active duty, submit Separation Health Assessment Part A, and remain available for exams during the next 45 days. VA obtains service treatment records for online claims; include copies when filing by another method.")), /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 14, borderColor: C.gold, marginTop: 12 } },
     React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 2, color: C.gold, marginBottom: 6 } }, "RESERVE SOLDIERS: WHERE YOUR DD214 ACTUALLY COMES FROM"),
     React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.8 } },
-      "Readiness Division Retirement Services Offices do not process, generate, or issue DD214s. Sending your DD214 request there buries their inbox and costs you days waiting on a redirect. Your DD214 is issued at your separation point when you come off active duty orders. For copies or corrections after the fact, go through HRC Soldier Records or milConnect.")), /*#__PURE__*/React.createElement("div", {
-    style: S.sectionLabel
+      "Readiness Division Retirement Services Offices do not process, generate, or issue DD214s. Sending your DD214 request there buries their inbox and costs you days waiting on a redirect. Your DD214 is issued at your separation point when you come off active duty orders. For copies or corrections after the fact, go through HRC Soldier Records or milConnect.")), renderReadinessReturn("a2"), /*#__PURE__*/React.createElement("div", {
+    id: "tops-dd214-fields", tabIndex: -1, role: "heading", "aria-level": 2, style: S.sectionLabel
   }, "FIELDS TO REVIEW"), React.createElement("p", { style: S.bodyText }, "Field numbers vary by DD214 edition. Use the field names on your copy and review them against your service records. ", React.createElement("a", { href: "https://www.dol.gov/node/178814", target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "underline" } }, "DOL form-edition comparison")), [{
     label: "Grade, rate, or rank",
     note: "Check the recorded grade, rate, or rank."
@@ -17702,7 +17870,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     return React.createElement("div", null,
       React.createElement("section", { "aria-labelledby": "tops-plan-readiness", style: { padding: 24, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 14, marginBottom: 20 } },
         React.createElement("h2", { id: "tops-plan-readiness", tabIndex: -1, style: { fontSize: 26, color: C.textPrimary, margin: "0 0 12px" } }, "Review your transition checklist"),
-        React.createElement("p", { style: { color: C.textBody, lineHeight: 1.6 } }, "Confirm the items that describe your situation. An unchecked item is not confirmed here; it does not mean you are unprepared or ineligible."),
+        React.createElement("p", { style: { color: C.textBody, lineHeight: 1.6 } }, "Confirm the items that describe your situation. Open a tool below if you need help. An unchecked item is not confirmed here; it does not mean you are unprepared or ineligible."),
         React.createElement("p", { role: "status", "aria-atomic": "true", style: { fontWeight: 600, color: C.textPrimary } }, doneQ === 0 ? "No items confirmed yet. Start with one category." : doneQ + " of " + totalQ + " items confirmed."),
         React.createElement("p", { style: { color: C.textBody, lineHeight: 1.6 } }, nextCat ? (totalQ - doneQ) + " items remain unconfirmed. Review what applies to you, and leave anything uncertain unchecked." : "Every item is marked confirmed. Revisit these answers when your situation changes. This checklist does not verify eligibility or guarantee an outcome."),
         nextCat && React.createElement("button", { type: "button", style: { minHeight: 44, padding: "12px 18px", borderRadius: 8, border: "1px solid " + C.border, background: C.bgElevated, color: C.textPrimary, font: "inherit", fontWeight: 600 }, onClick: function() { setReadinessCatOpen(nextCat.id); requestAnimationFrame(function() { var heading = document.getElementById("tops-readiness-category-" + nextCat.id); if (heading) heading.focus(); }); } }, "Review " + nextCat.name)
@@ -17725,12 +17893,12 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           ),
           React.createElement("div", { id: "tops-readiness-items-" + cat.id, hidden: !isOpen, style: { padding: "4px 0 12px" } },
             cat.qs.map(function(q) {
-              return React.createElement("div", { key: q.id, role: "checkbox", "aria-checked": readinessAnswers[q.id] === true, tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { display: "flex", minHeight: 44, boxSizing: "border-box", gap: 12, alignItems: "flex-start", padding: "12px 4px", borderBottom: "1px solid " + C.border, cursor: "pointer" }, onClick: function() { setReadinessAnswers(function(p) { var n = Object.assign({}, p); n[q.id] = !p[q.id]; return n; }); } },
+              return React.createElement("div", { key: q.id, style: { paddingBottom: READINESS_TOOLS[q.id] ? 12 : 0, borderBottom: "1px solid " + C.border } }, React.createElement("div", { role: "checkbox", "aria-checked": readinessAnswers[q.id] === true, tabIndex: 0, onKeyDown: topsKeyboardActivate, style: { display: "flex", minHeight: 44, boxSizing: "border-box", gap: 12, alignItems: "flex-start", padding: "12px 4px", cursor: "pointer" }, onClick: function() { setReadinessAnswers(function(p) { var n = Object.assign({}, p); n[q.id] = !p[q.id]; return n; }); } },
                 React.createElement("div", { style: { width: 22, height: 22, minWidth: 22, borderRadius: 4, border: readinessAnswers[q.id] ? "2px solid " + C.green : "2px solid " + C.border, background: readinessAnswers[q.id] ? C.green : "transparent", display: "flex", alignItems: "center", justifyContent: "center", color: C.textOnFill, fontSize: 14, fontWeight: 700 } }, readinessAnswers[q.id] ? "\u2713" : ""),
                 React.createElement("div", { style: { flex: 1 } },
                   React.createElement("div", { style: { fontSize: 15, color: C.textBody, lineHeight: 1.5 } }, q.t)
                 )
-              );
+              ), READINESS_TOOLS[q.id] && React.createElement("button", { id: "tops-readiness-tool-" + q.id, type: "button", onClick: function() { openReadinessTool(q.id, cat.id); }, style: { minHeight: 44, maxWidth: "calc(100% - 38px)", marginLeft: 38, marginTop: 8, padding: "10px 14px", font: "inherit", textAlign: "left", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" } }, READINESS_TOOLS[q.id].label));
             })
           )
         );

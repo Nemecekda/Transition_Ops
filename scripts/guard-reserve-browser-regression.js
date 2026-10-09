@@ -100,7 +100,7 @@ await input('tops-loop-reflection','ready');
 assert.equal(await ev('document.getElementById("tops-loop-title").closest("section").querySelector("h3").textContent'),followupText);
 await click('Choose this next step');await wait('document.activeElement.id==="tops-action-heading"','follow-up editor focus');
 assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),completedRaw);
-await click('Save career step');await home();assert.equal(JSON.parse(await ev('localStorage.getItem("tops_career_action_v1")')).text,followupText);
+await click('Save step');await home();assert.equal(JSON.parse(await ev('localStorage.getItem("tops_career_action_v1")')).text,followupText);
 const followupCases=await ev('(()=>{var g='+JSON.stringify(guide)+',w=topsLoadGap().draft,a=topsEmptyAction();return {matching:topsMatchingConversationStep(g,a,w),mismatch:topsMatchingConversationStep({...g,targetRole:"OTHER"},a,w),waiting:topsMatchingConversationStep(g,a,{...w,prep:{...w.prep,status:"Waiting for a response"}}),done:topsMatchingConversationStep(g,{version:1,text:w.prep.followup,date:"",done:true,context:g},w),transition:topsMatchingConversationStep({...g,pathway:"transition"},a,w),invalid:topsMatchingConversationStep(g,a,{...w,extra:true})};})()');
 assert.equal(followupCases.matching,followupText);for(const key of ['mismatch','waiting','done','transition','invalid'])assert.equal(followupCases[key],'');
 for(const theme of ['professional','tactical'])for(const width of [320,375]){

@@ -63,7 +63,7 @@ assert.equal(await ev(`document.querySelector('[aria-label="Alternative next ste
 await ev(`document.querySelector('[aria-label="Alternative next step"] input[type=checkbox]').click()`);
 await click('Review this as my next step');await wait('document.activeElement.id==="tops-action-heading"','service step editor');
 assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),JSON.stringify(serviceAction));
-await click('Save career step');
+await click('Save step');
 assert.ok(JSON.parse(await ev('localStorage.getItem("tops_career_action_v1")')).text.includes('work handoff'));
 await home();assert.ok((await ev('document.getElementById("tops-loop-title").parentElement.textContent')).includes('work handoff'));
 assert.equal(await ev('document.getElementById("tops-loop-blocker").value'),'');
@@ -117,7 +117,7 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
  await wait('document.activeElement.id==="tops-action-heading"','suggested step focuses editor heading');
  assert.equal(await ev('document.getElementById("tops-action-heading").getBoundingClientRect().top>=document.querySelector(".tops-app-header").getBoundingClientRect().bottom'),true);
  assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
- await input('tops-action-text','SYNTHETIC_LOOP_STEP for '+profile);await input('tops-action-date','2026-10-20');await click('Save career step');
+ await input('tops-action-text','SYNTHETIC_LOOP_STEP for '+profile);await input('tops-action-date','2026-10-20');await click('Save step');
  await home();assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("SYNTHETIC_LOOP_STEP")'));
  assert.ok(await ev('document.getElementById("tops-loop-timing").textContent.includes("not a benefits deadline")'));
  const savedStep=await ev('JSON.parse(localStorage.getItem("tops_career_action_v1"))');
@@ -143,7 +143,7 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
  for(const outcome of ['ready','gap','rethink','help']){
   await input('tops-loop-reflection',outcome);
   const reflectionTitle=await ev('document.getElementById("tops-loop-title").closest("section").querySelector("h3").textContent');
-  const expected=outcome==='help'?'adviser':outcome==='rethink'?(pathway==='transition'?'priorities':'two possible roles'):outcome==='gap'?(pathway==='transition'?'transition gap':'missing skill'):pathway==='transition'?'unfinished transition task':pathway==='skills'?'small project':'two questions';
+  const expected=outcome==='help'?(pathway==='transition'?'adviser':'Prepare an introduction for career help'):outcome==='rethink'?(pathway==='transition'?'priorities':'two possible roles'):outcome==='gap'?(pathway==='transition'?'transition gap':'missing skill'):pathway==='transition'?'unfinished transition task':pathway==='skills'?'small project':'Invite one person to a short career conversation about SYNTHETIC_LOOP_ROLE';
   assert.ok(reflectionTitle.includes(expected),profile+' '+pathway+' '+outcome);
   assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Choose this next step").disabled'),false);
   assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),completedCopy);
@@ -166,8 +166,8 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
  const beforeDate=await ev('localStorage.getItem("tops_career_action_v1")');
  await click('Review my target date');await wait('document.activeElement.id==="tops-action-date"','target-date focus');
  await input('tops-action-date',await ev('topsMemberLocalDay()'));assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),beforeDate);
- await click('Save career step');await home();assert.ok(await ev('document.getElementById("tops-loop-timing").textContent.includes("planned this step for today")'));
- await click('Review my target date');await input('tops-action-date','2000-01-01');await click('Save career step');await home();assert.ok(await ev('document.getElementById("tops-loop-timing").textContent.includes("target date has passed")'));
+ await click('Save step');await home();assert.ok(await ev('document.getElementById("tops-loop-timing").textContent.includes("planned this step for today")'));
+ await click('Review my target date');await input('tops-action-date','2000-01-01');await click('Save step');await home();assert.ok(await ev('document.getElementById("tops-loop-timing").textContent.includes("target date has passed")'));
  if(process.env.TOPS_LOOP_SCREENSHOT_DIR){
   fs.mkdirSync(process.env.TOPS_LOOP_SCREENSHOT_DIR,{recursive:true});
   await c.send('Emulation.setDeviceMetricsOverride',{width:375,height:900,deviceScaleFactor:1,mobile:true});
@@ -210,7 +210,7 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
  await click('Home');await wait('!!document.getElementById("tops-loop-title")','Home after training');
  await click('Update this step');await click('Mark done');
  assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).done'),false);
- await click('Save career step');await home();
+ await click('Save step');await home();
  assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("You marked this step done")'));
  assert.equal(await ev('document.getElementById("tops-loop-timing")'),null);
  // Changing direction preserves the earlier step and demands an explicit review.
@@ -239,21 +239,21 @@ await click('Review this as my next step');
 await wait('document.activeElement.id==="tops-action-heading"','alternative focuses editor even when already open');
 assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),beforeAlternative);
 assert.ok(await ev('document.getElementById("tops-action-text").value.includes("one small part")'));
-await click('Save career step');
+await click('Save step');
 assert.notEqual(await ev('localStorage.getItem("tops_career_action_v1")'),beforeAlternative);
 await ev('document.getElementById("tops-loop-direction").open=true');await click('Save my direction');
 await input('tops-loop-blocker','time');await input('tops-loop-minutes','10');
 await ev('document.querySelector("#tops-loop-checkin input[type=checkbox]").click()');
 await click('Review this as my next step');
 assert.ok(await ev('document.getElementById("tops-action-text").value.startsWith("10-minute session:")'));
-await click('Save career step');await home();
+await click('Save step');await home();
 assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("10-minute session:")'));
 await ev('document.querySelector("#tops-loop-checkin summary").click()');await input('tops-loop-blocker','time');
 assert.equal(await ev('document.getElementById("tops-loop-minutes").value'),'');
 await click('Mark step complete');await input('tops-loop-reflection','ready');
 await click('Choose this next step');
 const nextAfterReflection=await ev('document.getElementById("tops-action-text").value');
-await click('Save career step');await home();
+await click('Save step');await home();
 assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes('+JSON.stringify(nextAfterReflection)+')'));
 assert.equal(await ev('JSON.parse(localStorage.getItem("tops_career_action_v1")).done'),false);
 // No loop member text is sent, and no AI endpoint is requested.
