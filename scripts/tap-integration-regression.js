@@ -6,7 +6,7 @@ const vm = require("node:vm");
 const cp = require("node:child_process");
 const root = path.resolve(__dirname, "..");
 const source = fs.readFileSync(path.join(root, "index.html"), "utf8");
-const code = source.slice(source.indexOf('const TOPS_GAP_KEY ='), source.indexOf('\nfunction App() {'));
+const code = source.slice(source.indexOf('const TOPS_GAP_KEY ='), source.indexOf('\nfunction topsCareerSensitive('));
 const storage = new Map([["unrelated", "retain"]]);
 let denied = false, focused = null, touches = 0;
 const localStorage = {
@@ -25,7 +25,7 @@ function field(id,value) {const n=view().find(n=>n.props.id===id); assert.ok(n,i
 function click(label) {const n=view().find(n=>n.type==="button" && n.children.includes(label));assert.ok(n,label);n.props.onClick();}
 assert.equal(view().filter(n=>n.type==="textarea").length,17);
 assert.equal(focused,"career-gap-heading");
-assert.deepEqual(view().filter(n=>n.type==="details").map(n=>n.props.open),[undefined,true,false,false]);
+assert.deepEqual(view().filter(n=>n.type==="details").map(n=>n.props.open),[undefined,undefined,undefined,undefined]);
 const labels = view().filter(n=>n.type==="label").map(n=>n.props.htmlFor);
 for (const n of view().filter(n=>["input","textarea","select"].includes(n.type))) assert.ok(labels.includes(n.props.id));
 const sentinel = '<img src=x onerror="fetch(\"SYNTHETIC_GAP_SENTINEL\")">';
@@ -49,7 +49,11 @@ denied=false;ctx.window.__IS_IFRAME=true;const before=touches;assert.equal(api.s
 // Preserve all source task content, eligibility, IDs and restored flags.
 const baseline=cp.execFileSync("git",["show","11eae368852ca736ec961c1d0074944037c1002a:index.html"],{cwd:root,encoding:"utf8",maxBuffer:4*1024*1024});
 function block(s,start,end) {const a=s.indexOf(start);assert.ok(a>=0);return s.slice(a,s.indexOf(end,a));}
-assert.equal(block(source,"const TRANSITION_MILESTONES =", "const NOTIFICATIONS ="),block(baseline,"const TRANSITION_MILESTONES =","const NOTIFICATIONS ="));
+const originalTasks = block(baseline,"const TRANSITION_MILESTONES =","const NOTIFICATIONS =");
+const oldGapText = "Complete Gap Analysis \u2014 compare your skills to target job requirements (Pathway \u2192 Step 2)";
+const newGapText = "Compare your experience with a job posting and note questions to discuss";
+assert.equal(originalTasks.split(oldGapText).length - 1, 1, "only the reviewed t12b wording changes");
+assert.equal(block(source,"const TRANSITION_MILESTONES =", "const NOTIFICATIONS ="),originalTasks.replace(oldGapText,newGapText));
 assert.equal(block(source,"function topsRestoreMilestones()", "function topsRestoreDocuments()"),block(baseline,"function topsRestoreMilestones()", "function topsRestoreDocuments()"));
 assert.ok(source.includes('const [gapState, setGapState] = useState(topsLoadGap)'));
 assert.doesNotMatch(code,/fetch\(|sendBeacon\(|__trackEvent\(|console\.|dangerouslySetInnerHTML|\.innerHTML|navigator\.clipboard/);
@@ -57,6 +61,6 @@ assert.doesNotMatch(source,/Federal format: longer|federal resumes are 4-6 pages
 const route = source.match(/t.id === "t12b" && React.createElement\("button", \{ type: "button", onClick: function\(\) \{ ([^}]+) \}/);
 assert.ok(route, "Timeline worksheet route exists separately from task completion");
 const nav = {};
-vm.runInNewContext(route[1], {setPathwayMode(v) {nav.mode=v;},setPathwayStep(v) {nav.step=v;},setActiveTab(v) {nav.tab=v;}});
-assert.deepEqual(nav,{mode:"planner",step:1,tab:"pathway"});
-console.log("TAP INTEGRATION PASS: bounded schema; labeled fields; initial disclosures; entry focus; unsaved/saved reload; edit/clear isolation; malformed/denied/embed storage; markup plaintext; zero worksheet network/log/analytics calls; exact Timeline task/progress preservation; federal copy sweep");
+vm.runInNewContext(route[1], {activateCareerScreen(v) {nav.screen=v;},setPathwayMode(v) {nav.mode=v;},setJourneyTarget(v) {nav.target=v;},setCareerExperienceContext(v) {nav.context=v;},setCareerCompareRequest(v) {nav.compare=v;},setActiveTab(v) {nav.tab=v;}});
+assert.deepEqual(nav,{screen:"workspace",mode:"journey",target:null,context:null,compare:1,tab:"pathway"});
+console.log("TAP INTEGRATION PASS: bounded schema; labeled fields; initial disclosures; entry focus; unsaved/saved reload; edit/clear isolation; malformed/denied/embed storage; markup plaintext; zero worksheet network/log/analytics calls; Timeline task/progress preservation except reviewed t12b wording and comparison route; federal copy sweep");
