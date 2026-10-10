@@ -6819,7 +6819,7 @@ function ReminderProgress(props) {
 const TOPS_SERVICE_PROFILES = [["active", "Active duty"], ["guard", "Guard / Reserve"], ["separated", "Already separated"], ["retired", "Retired"], ["spouse", "Military spouse"]];
 // Shared destinations keep Home, search and page orientation consistent.
 const TOPS_TOOL_CHOICES = [
-  { id: "timeline", title: "My Plan", description: "Review your timeline and unfinished tasks", keywords: "next step checklist transition date" },
+  { id: "timeline", title: "My Plan", description: "Continue your next step or review your separation timeline", keywords: "next step checklist transition date" },
   { id: "pathway", title: "Career", description: "Explore roles, business ownership, your plan or resume", keywords: "career guide job skills resume worksheet business ownership entrepreneur operation ownership milwaukee wisconsin succession Dan Carey" },
   { id: "vamath", title: "VA rating calculator", description: "Estimate a combined disability rating", keywords: "va math disability percentage calculator" },
   { id: "vapay", title: "VA pay estimator", description: "Explore compensation estimates", keywords: "va pay money benefits compensation" },
@@ -8359,7 +8359,7 @@ function MemberPlanningLoop(props) {
       React.createElement("p", { style: { fontSize: 14, lineHeight: 1.6, margin: "6px 0" } }, "Saves your progress on this browser immediately. You can change it back; your step and target date are kept."));
   return React.createElement("section", { "aria-labelledby": "tops-loop-title", className: "tops-next-move" + (move.kind === "continue" ? " tops-next-move-continue" : ""), style: { marginBottom: 24, background: C.bg, border: "1px solid " + C.border, borderRadius: 14, color: C.textBody, overflowWrap: "anywhere", boxShadow: C.isLight ? "0 6px 24px rgba(14,18,11,0.05)" : "0 6px 24px rgba(0,0,0,0.16)" } },
     React.createElement("div", { className: "tops-next-move-main" + (move.kind === "start" ? " tops-next-move-first" : ""), style: { borderLeft: "3px solid " + C.green } },
-    React.createElement("h2", { id: "tops-loop-title", tabIndex: -1, style: { color: C.textSecondary, fontSize: 13, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase", margin: "0 0 14px" } }, "Your next move"),
+    React.createElement("h2", { id: "tops-loop-title", tabIndex: -1, style: { color: C.textSecondary, fontSize: 13, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase", margin: "0 0 14px" } }, props.planHub ? "Your next step" : "Your next move"),
     move.kind === "reflect" && React.createElement("p", { style: { lineHeight: 1.6 } }, "You marked this step done: " + a.text + ". Review what you learned before choosing another step. Choosing a new step replaces this one in the editor; save to keep that change. Completion does not verify an outcome or eligibility."),
     move.kind === "reflect" && React.createElement("div", null,
       React.createElement("label", { htmlFor: "tops-loop-reflection" }, "What did you learn from this step?"),
@@ -8379,16 +8379,19 @@ function MemberPlanningLoop(props) {
       currentLearning && React.createElement("a", { className: "tops-move-primary", href: currentLearning.url, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, button, { display: "inline-flex", alignItems: "center", background: C.green, color: C.textOnFill }) }, "Open " + currentLearning.name + " (opens a new tab)"),
       currentCareerHelp && React.createElement("button", { id: "tops-loop-career-help", type: "button", className: "tops-move-primary", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute("specialist"); } }, "Prepare for career help"),
       move.kind === "continue" && !currentPriority && !currentLearning && !currentCareerHelp && !currentReadiness && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(g.pathway === "transition" ? "readiness" : "career-resume"); } }, g.pathway === "transition" ? "Open transition checklist" : "Continue my career work"),
-      move.kind === "recover" && React.createElement("button", { type: "button", style: button, onClick: function() { setDirection(a.context); document.getElementById("tops-loop-direction").open = true; } }, "Review saved direction"),
+      move.kind === "recover" && React.createElement("button", { type: "button", style: button, onClick: function() { setDirection(a.context); var details = document.getElementById("tops-loop-direction"); for (var node = details; node; node = node.parentElement) { if (node.tagName === "DETAILS") node.open = true; } } }, "Review saved direction"),
       ["continue", "review"].includes(move.kind) && React.createElement("button", { type: "button", style: button, "aria-expanded": editing, onClick: function() { if (editing) setEditing(false); else openStepEditor(); } }, editing ? "Close step editor" : move.kind === "review" ? "Review earlier step" : "Update this step"),
       ["suggest", "reflect"].includes(move.kind) && React.createElement("button", { type: "button", style: button, disabled: move.kind === "reflect" && !reflectedMove, onClick: chooseStep }, "Choose this next step"),
       move.route && move.kind !== "priority" && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "specialist" ? "Prepare for career help" : move.route === "network-learn" ? "Prepare a conversation" : move.route === "career-explore" ? "Explore career options" : move.route === "career" ? "Open my career worksheet" : move.route === "training" ? "Browse training options" : move.route === "support" ? "Browse support options" : "Open transition checklist")),
     move.kind === "continue" && contextUI,
     timing && React.createElement("div", { id: "tops-loop-timing", style: { lineHeight: 1.6, margin: "12px 0" } },
-      React.createElement("p", null, React.createElement("strong", null, timing.title), " - " + timing.detail),
+      React.createElement("p", null, React.createElement("strong", null, props.planHub ? "Your target: " + a.date : timing.title), props.planHub ? "" : " - " + timing.detail),
+      props.planHub && React.createElement("p", { style: { fontSize: 14 } }, "Your own target, not a benefits deadline. No app notification is scheduled."),
+      React.createElement(props.planHub ? "details" : "div", null,
+      props.planHub && React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", cursor: "pointer" } }, "Date and calendar options"),
       React.createElement("p", { style: { fontSize: 14 } }, "This is your own planning date, not a benefits deadline. It does not send a notification."),
       canExportPersonalStep() && React.createElement("button", { id: "tops-personal-calendar-open", type: "button", style: button, onClick: reviewPersonalCalendar }, "Add this step to my calendar"),
-      React.createElement("button", { type: "button", style: button, onClick: function() { setEditing(true); requestAnimationFrame(function() { var date = document.getElementById("tops-action-date"); if (date) date.focus(); }); } }, "Review my target date")),
+      React.createElement("button", { type: "button", style: button, onClick: function() { setEditing(true); requestAnimationFrame(function() { var date = document.getElementById("tops-action-date"); if (date) date.focus(); }); } }, "Review my target date"))),
     calendarPreview && React.createElement("section", { "aria-labelledby": "tops-personal-calendar-heading", style: { display: "grid", gap: 12, lineHeight: 1.5, padding: 16, border: "1px solid " + C.border, borderRadius: 8 } },
       React.createElement("h4", { id: "tops-personal-calendar-heading", tabIndex: -1, style: { margin: 0 } }, "Review your calendar step"),
       React.createElement("p", { style: { margin: 0, whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, calendarPreview.text), React.createElement("p", { style: { margin: 0 } }, "All-day planning date: " + calendarPreview.date),
@@ -8401,11 +8404,11 @@ function MemberPlanningLoop(props) {
     completionUI,
     props.profile === "guard" && g.pathway && React.createElement("button", { type: "button", style: Object.assign({}, button, { marginTop: 12 }), onClick: function() {
       setBlocker("service"); setServiceMoment(""); setReplaceStep(false);
-      requestAnimationFrame(function() { var details = document.getElementById("tops-loop-checkin"), field = document.getElementById("tops-loop-service-moment"); if (details) details.open = true; if (field) { field.focus(); field.scrollIntoView({ block: "center" }); } });
+      requestAnimationFrame(function() { var details = document.getElementById("tops-loop-checkin"), field = document.getElementById("tops-loop-service-moment"); if (details) { details.open = true; for (var parent = details.parentElement; parent; parent = parent.parentElement) { if (parent.tagName === "DETAILS") parent.open = true; } } if (field) { field.focus(); field.scrollIntoView({ block: "center" }); } });
     } }, "Plan around my service commitments"),
     editing && g.pathway && React.createElement(CareerAction, { colors: C, state: props.actionState, setState: props.setActionState, guide: g }),
     ),
-    React.createElement("div", { className: "tops-loop-utilities", style: { borderTop: "1px solid " + C.border } }, move.kind !== "choose" && priorityUI, checkinUI, helpUI, directionUI, comparisonUI),
+    React.createElement(props.planHub ? "details" : "div", { id: props.planHub ? "tops-plan-options" : undefined, className: "tops-loop-utilities", style: { borderTop: "1px solid " + C.border } }, props.planHub && React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Review direction or get help with this step"), move.kind !== "choose" && priorityUI, checkinUI, helpUI, directionUI, comparisonUI),
     React.createElement("p", { className: "tops-loop-meta", role: "status", "aria-live": "polite", style: { fontSize: 13, lineHeight: 1.5, margin: 0, color: C.textSecondary } }, message || (props.guideState.status === "Use this guide without saving, or choose Save guide details to keep them on this browser." ? "" : props.guideState.status)));
 }
 // MEMBER_LOOP_END
@@ -8809,6 +8812,7 @@ function App() {
   const restorePlanEffects = useRef({ tasks: false, documents: false });
   const [guideRestoreRevision, setGuideRestoreRevision] = useState(0);
   const [selectedMilestone, setSelectedMilestone] = useState(null);
+  const [planView, setPlanView] = useState(function() { try { return history.state && history.state.planView === "hub" ? "hub" : new URLSearchParams(location.search).get("tool") === "timeline" ? "timeline" : "hub"; } catch (error) { return "hub"; } });
   const [separationDate, setSeparationDate] = useState("");
   const [separationDateFocused, setSeparationDateFocused] = useState(false);
   const [policyIntelOpen, setPolicyIntelOpen] = useState(false);
@@ -9025,6 +9029,8 @@ function App() {
   const __closeTop = useRef(null);
   const __syncToolURL = useRef(null);
   const __careerHistory = useRef(null);
+  const __planHistory = useRef(null);
+  __planHistory.current = { active: activeTab === "timeline", view: planView, milestone: selectedMilestone, overlay: showMoreMenu || feedbackOpen || aboutOpen || whatsNewOpen || policyPanelOpen || showNotifPanel, restore: function(view) { setSelectedMilestone(null); setPlanView(view); continuationFocus.current = view === "hub" ? "tops-loop-title" : "tops-plan-timeline"; } };
   __careerHistory.current = { screen: careerScreen, stage: careerStage, active: activeTab === "pathway", restore: function(screen, stage) { activateCareerScreen(screen); if ([0,1,2].includes(stage)) { setCareerStage(stage); setCareerStageRequest({ stage: stage, nonce: Date.now() }); } } };
   __syncToolURL.current = function() {
     if (showOnboarding) return;
@@ -9038,7 +9044,8 @@ function App() {
     if (whatsNewOpen) { setWhatsNewOpen(false); return; }
     if (policyPanelOpen) { setPolicyPanelOpen(false); return; }
     if (showNotifPanel) { setShowNotifPanel(false); return; }
-    if (activeTab === "timeline" && selectedMilestone) { setSelectedMilestone(null); return; }
+    if (activeTab === "timeline" && selectedMilestone) { setSelectedMilestone(null); setPlanView("timeline"); continuationFocus.current = "tops-plan-timeline"; return; }
+    if (activeTab === "timeline" && planView === "timeline") { setPlanView("hub"); continuationFocus.current = "tops-plan-open-timeline"; return; }
     if (activeTab === "pathway" && pathwayMode === "journey" && journeyTarget) { setJourneyTarget(""); return; }
     if (activeTab === "pathway" && careerScreen !== "workspace") { returnToCareerWorkspace(); return; }
     if (activeTab !== "dashboard") { setActiveTab("dashboard"); return; }
@@ -9051,6 +9058,7 @@ function App() {
       depth = 0;
       if (activeTab !== "dashboard") depth += 1;
       if (activeTab === "pathway") depth += careerStage;
+      if (activeTab === "timeline" && planView === "timeline") depth += 1;
       if (activeTab === "pathway" && careerScreen !== "workspace") depth += 1;
       if ((activeTab === "timeline" && selectedMilestone) || (activeTab === "pathway" && pathwayMode === "journey" && journeyTarget)) depth += 1;
       if (showMoreMenu || feedbackOpen || aboutOpen || whatsNewOpen || policyPanelOpen || showNotifPanel) depth += 1;
@@ -9058,7 +9066,7 @@ function App() {
     if (__histSuppress.current > 0) return;
     var prev = __histDepth.current;
     if (depth > prev) {
-      for (var i = prev; i < depth; i++) { try { history.pushState(Object.assign({ tops: i + 1 }, activeTab === "pathway" ? { careerView: careerScreen, careerStage: careerStage } : {}), ""); } catch (e) {} }
+      for (var i = prev; i < depth; i++) { try { history.pushState(Object.assign({ tops: i + 1 }, activeTab === "pathway" ? { careerView: careerScreen, careerStage: careerStage } : activeTab === "timeline" ? { planView: planView } : {}), ""); } catch (e) {} }
     } else if (depth < prev) {
       if (__histSkipSync.current) { __histSkipSync.current = false; }
       else { __histSuppress.current += 1; try { history.go(-(prev - depth)); return; } catch (e) { __histSuppress.current -= 1; } } // Reconcile after the one popstate, not while traversal is pending.
@@ -9066,12 +9074,14 @@ function App() {
       __histSkipSync.current = false;
     }
     __histDepth.current = depth;
-    if (__histSuppress.current === 0) { try { var state = Object.assign({}, history.state); if (activeTab === "pathway") { state.careerView = careerScreen; state.careerStage = careerStage; } else { delete state.careerView; delete state.careerStage; } history.replaceState(state, ""); } catch (e) {} __syncToolURL.current(); }
-  }, [showOnboarding, onboardStep, activeTab, selectedMilestone, journeyTarget, pathwayMode, careerScreen, careerStage, showMoreMenu, feedbackOpen, aboutOpen, whatsNewOpen, policyPanelOpen, showNotifPanel, __histRevision]);
+    if (__histSuppress.current === 0) { try { var state = Object.assign({}, history.state); if (activeTab === "pathway") { state.careerView = careerScreen; state.careerStage = careerStage; } else { delete state.careerView; delete state.careerStage; } if (activeTab === "timeline") state.planView = planView; else delete state.planView; history.replaceState(state, ""); } catch (e) {} __syncToolURL.current(); }
+  }, [showOnboarding, onboardStep, activeTab, planView, selectedMilestone, journeyTarget, pathwayMode, careerScreen, careerStage, showMoreMenu, feedbackOpen, aboutOpen, whatsNewOpen, policyPanelOpen, showNotifPanel, __histRevision]);
   useEffect(function() {
     var onPop = function() {
       if (__histSuppress.current > 0) { __histSuppress.current -= 1; __histDepth.current = (history.state && history.state.tops) || 0; if (__histSuppress.current === 0) __setHistRevision(function(value) { return value + 1; }); return; }
       __histSkipSync.current = true;
+      var plan = __planHistory.current, planTarget = history.state && history.state.planView;
+      if (plan && plan.active && !plan.overlay && ["hub", "timeline"].includes(planTarget) && (planTarget !== plan.view || plan.milestone)) { plan.restore(planTarget); __histDepth.current = (history.state && history.state.tops) || 0; __syncToolURL.current(); return; }
       var view = history.state && history.state.careerView, career = __careerHistory.current;
       if (career && career.active && ["workspace", "jobs", "my-jobs", "resume", "tools"].includes(view) && (view !== career.screen || history.state.careerStage !== career.stage)) { career.restore(view, history.state.careerStage); __histDepth.current = (history.state && history.state.tops) || 0; __syncToolURL.current(); return; }
       if (__closeTop.current) __closeTop.current();
@@ -9165,7 +9175,7 @@ function App() {
   function openPlanRoute(tab, target, invoker, milestoneId) {
     continuationFocus.current = target;
     continuationReturn.current = invoker;
-    if (tab === "timeline") setSelectedMilestone(milestoneId || null);
+    if (tab === "timeline") { setPlanView("timeline"); setSelectedMilestone(milestoneId || null); setContinuationRevision(function(value) { return value + 1; }); }
     if (tab === "resources") setSubTab("documents");
     if (tab === "reminders") {
       setReminderTimedOnly(false);
@@ -9203,10 +9213,10 @@ function App() {
       continuationFocus.current = null;
       if (activeTab === "dashboard") continuationReturn.current = null;
       target.focus();
-      target.scrollIntoView({ block: currentId === "tops-my-jobs-heading" ? "start" : "center" });
+      target.scrollIntoView({ block: ["tops-my-jobs-heading", "tops-plan-timeline", "tops-loop-title"].includes(currentId) ? "start" : "center" });
     });
     return function() { cancelAnimationFrame(frame); };
-  }, [activeTab, selectedMilestone, subTab, reminderExpanded, focusedReminderId, dismissedReminders, reminderTimedOnly, continuationRevision]);
+  }, [activeTab, planView, selectedMilestone, subTab, reminderExpanded, focusedReminderId, dismissedReminders, reminderTimedOnly, continuationRevision]);
   useEffect(function() { if (activeTab !== "reminders") { setFocusedReminderId(null); setReminderTimedOnly(false); } }, [activeTab]);
   // Readiness Score state
   const [readinessAnswers, setReadinessAnswers] = useState(function() { try { var v = window.__safeGet("tops_readiness"); return v ? JSON.parse(v) : {}; } catch(e) { return {}; } });
@@ -9900,14 +9910,23 @@ function App() {
   const totalProgress = getTotalProgress();
   function openExperienceTool(id) {
     primaryNavFocus.current = true;
+    if (id === "timeline") { setPlanView("hub"); continuationFocus.current = "tops-loop-title"; setContinuationRevision(function(value) { return value + 1; }); }
     setSelectedMilestone(null);
     setShowMoreMenu(false);
     if (id === "resources") { setSubTab("directory"); setResourceFilter({ category: "ALL", cost: "ALL", eligibility: "ALL" }); }
     setActiveTab(id);
     window.scrollTo(0, 0);
   }
-  function renderMemberLoop() {
-    return React.createElement(MemberPlanningLoop, { priority: memberPriority, setPriority: setMemberPriority, colors: C, comparisonState: comparisonState, setComparisonState: setComparisonState, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, hasDraft: !!planQuestion, onDraft: navUnlocked ? function(text) {
+  function renderPlanChoices(timelineFirst) {
+    var choices = [{ id: "career", title: "Career and service plan", detail: "Explore roles, continue career work, or plan around service commitments." }, { id: "timeline", title: "Separation timeline", detail: "Review your separation date, milestones and tasks." }];
+    if (timelineFirst) choices.reverse();
+    return choices.map(function(choice) { return React.createElement("button", { key: choice.id, id: "tops-plan-open-" + choice.id, type: "button", style: { minHeight: 44, padding: "14px 16px", textAlign: "left", lineHeight: 1.5, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgElevated, font: "inherit", cursor: "pointer" }, onClick: function() {
+      if (choice.id === "timeline") openPlanRoute("timeline", "tops-plan-timeline", "tops-plan-open-timeline");
+      else { activateCareerScreen("workspace"); setPathwayMode("journey"); setJourneyTarget(""); setCareerExperienceContext(null); continuationFocus.current = "tops-career-start-heading"; continuationReturn.current = "tops-plan-open-career"; setActiveTab("pathway"); }
+    } }, React.createElement("strong", { style: { display: "block" } }, choice.title), React.createElement("span", { style: { display: "block", fontSize: 14, color: C.textSecondary } }, choice.detail)); });
+  }
+  function renderMemberLoop(planHub) {
+    return React.createElement(MemberPlanningLoop, { planHub: !!planHub, priority: memberPriority, setPriority: setMemberPriority, colors: C, comparisonState: comparisonState, setComparisonState: setComparisonState, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, hasDraft: !!planQuestion, onDraft: navUnlocked ? function(text) {
       if (!planQuestion) setPlanQuestion({ text: text, reply: "", answered: false, guide: topsValidateGuide(guideState.draft), profile: userStatus });
       setPlanQuestionOpen(true); continuationFocus.current = "tops-plan-question"; continuationReturn.current = "tops-loop-title"; setActiveTab("navigator");
     } : null, onRoute: function(route, moment) {
@@ -10037,7 +10056,7 @@ function App() {
         React.createElement("h2", { id: "tops-home-tools-title", style: { fontSize: 20, color: C.textPrimary, margin: "0 0 8px" } }, "Tools for your next step")),
       React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 } },
         [["timeline", "View my transition timeline"], ["pathway", "Explore careers"], ["vamath", "Calculate a VA rating"], ["resources", "Find benefits, services & support"]].map(function(item) {
-          return React.createElement("button", { key: item[0], type: "button", onClick: function() { openExperienceTool(item[0]); }, style: { minHeight: 60, padding: "14px 12px", textAlign: "left", border: "1px solid " + C.border, borderRadius: 10, background: C.bgCard, color: C.textPrimary, font: "inherit", fontSize: 15, lineHeight: 1.4, cursor: "pointer" } }, React.createElement("span", null, item[1]), React.createElement("span", { "aria-hidden": true }));
+          return React.createElement("button", { key: item[0], type: "button", onClick: function() { if (item[0] === "timeline") openPlanRoute("timeline", "tops-plan-timeline", "tops-home-tools-title"); else openExperienceTool(item[0]); }, style: { minHeight: 60, padding: "14px 12px", textAlign: "left", border: "1px solid " + C.border, borderRadius: 10, background: C.bgCard, color: C.textPrimary, font: "inherit", fontSize: 15, lineHeight: 1.4, cursor: "pointer" } }, React.createElement("span", null, item[1]), React.createElement("span", { "aria-hidden": true }));
         })));
   }
 
@@ -10582,7 +10601,7 @@ function App() {
       return React.createElement("button", { key: n.id, type: "button", "aria-current": isActive && !showMoreMenu ? "page" : undefined, "aria-expanded": n.id === "more" || n.id === "benefits" ? (n.id === "more" ? showMoreMenu === true : showMoreMenu === "benefits") : undefined, onClick: function() {
         if (n.id === "more") { setShowMoreMenu(showMoreMenu === true ? false : true); }
         else if (n.id === "benefits") { setShowMoreMenu(showMoreMenu === "benefits" ? false : "benefits"); }
-        else { primaryNavFocus.current = true; setActiveTab(n.id); setSelectedMilestone(null); setShowMoreMenu(false); }
+        else { primaryNavFocus.current = true; if (n.id === "timeline") { setPlanView("hub"); continuationFocus.current = "tops-loop-title"; setContinuationRevision(function(value) { return value + 1; }); } setActiveTab(n.id); setSelectedMilestone(null); setShowMoreMenu(false); }
       } },
         React.createElement("span", { className: "nav-icon", style: { color: isActive ? C.goldBright : C.inactive, transition: "color 0.2s" } }, TIcon(n.icon, 22)),
         React.createElement("span", { className: "nav-label", style: { color: isActive ? C.textPrimary : C.inactive, transition: "color 0.2s" } }, n.label)
@@ -10669,6 +10688,12 @@ function App() {
     else if (route === "followups") openPlanRoute("reminders", "tops-plan-reminders", invoker);
     else { continuationFocus.current = route === "money" ? "tops-guide-money" : "tops-main-content"; continuationReturn.current = invoker; setActiveTab(route === "money" ? "vapay" : "navigator"); }
   } })),
+  activeTab === "timeline" && planView === "hub" && !selectedMilestone && React.createElement("section", { id: "tops-plan-hub", "aria-label": "My Plan" },
+    (guideState.draft.pathway || actionState.draft.text || memberPriority) ? renderMemberLoop(true) : React.createElement("div", null, React.createElement("h2", { id: "tops-loop-title", tabIndex: -1, style: { fontSize: 22, margin: "0 0 8px" } }, "What would you like to plan?"), React.createElement("p", { style: { lineHeight: 1.5, margin: "0 0 16px" } }, "Choose a place to start. You can use either without changing your saved plan.")),
+    React.createElement("nav", { "aria-label": "Plan destinations", style: { display: "grid", gap: 10, marginBottom: 16 } },
+      (memberPriority ? memberPriority === "leave" : guideState.draft.pathway === "transition" ? true : false) ? renderPlanChoices(true) : renderPlanChoices(false))),
+  activeTab === "timeline" && planView === "hub" && !selectedMilestone && React.createElement("nav", { "aria-label": "My Plan tools", style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 } },
+    [{ id: "reminders", label: "Reminders & follow-ups", target: "tops-plan-reminders" }, { id: "resources", label: "Documents", target: "tops-plan-documents" }, { id: "readiness", label: "Transition checklist", target: "tops-plan-readiness" }].map(function(tool) { return React.createElement("button", { key: tool.id, id: "tops-plan-shortcut-" + tool.id, type: "button", style: { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgElevated, color: C.textPrimary, font: "inherit", cursor: "pointer" }, onClick: function() { openPlanRoute(tool.id, tool.target, "tops-plan-shortcut-" + tool.id); } }, tool.label); })),
   activeTab === "timeline" && !selectedMilestone && React.createElement(PlanBackup, { colors: C, value: { memberJobs: myJobs.value, guide: guideState.draft, careerComparison: comparisonState.draft, careerAction: actionState.draft, careerWorksheet: gapState.draft, taskProgress: milestones, documentProgress: documents, followupProgress: followProgress, completedReminders: dismissedReminders }, onRestore: function(result) {
     restorePlanEffects.current = { tasks: true, documents: true };
     setMyJobCandidate(null); setMyJobRequest(null); setMyJobsOpen(false);
@@ -11480,7 +11505,9 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     );
   })()),
 
-  activeTab === "timeline" && !selectedMilestone && /*#__PURE__*/React.createElement("div", { id: "tops-plan-timeline", role: "region", "aria-label": "Timeline", tabIndex: -1 },
+  activeTab === "timeline" && planView === "timeline" && !selectedMilestone && /*#__PURE__*/React.createElement("div", { id: "tops-plan-timeline", role: "region", "aria-label": "Separation timeline", tabIndex: -1 },
+  React.createElement("button", { id: "tops-plan-back", type: "button", style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, background: C.bgElevated, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" }, onClick: function() { setPlanView("hub"); continuationFocus.current = "tops-plan-open-timeline"; } }, "Back to My Plan"),
+  React.createElement("h2", { style: { margin: "0 0 12px", fontSize: 22, color: C.textPrimary } }, "Separation timeline"),
   React.createElement("nav", { "aria-label": "My Plan tools", style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 } },
     [{ id: "reminders", label: "Reminders & follow-ups", target: "tops-plan-reminders" }, { id: "resources", label: "Documents", target: "tops-plan-documents" }, { id: "readiness", label: "Transition checklist", target: "tops-plan-readiness" }].map(function(tool) {
       return React.createElement("button", { key: tool.id, id: "tops-plan-shortcut-" + tool.id, type: "button", style: { minHeight: 44, minWidth: 44, flex: "1 1 150px", padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgElevated, color: C.textPrimary, font: "inherit", fontSize: 14, fontWeight: 600, cursor: "pointer", textAlign: "left" }, onClick: function() { openPlanRoute(tool.id, tool.target, "tops-plan-shortcut-" + tool.id); } }, tool.label);
