@@ -21,7 +21,7 @@ const server=http.createServer((req,res)=>{const p=path.join(root,req.url.split(
  const check=id=>ev('document.getElementById('+JSON.stringify(id)+').click()');
  const intro=()=>ev('document.getElementById("tops-specialist-introduction").value');
  const hasContinue=()=>ev('Array.from(document.querySelectorAll("button")).some(n=>n.textContent==="Continue my introduction")');
- const homeCareer=async()=>{await click('Home');await wait('!!document.getElementById("tops-loop-title")');await click('Career');await wait('!!document.getElementById("tops-career-start-heading")');};
+ const homeCareer=async()=>{await click('Home');await wait('!!document.getElementById("tops-loop-title")');await click('Career');await wait('!!document.getElementById("tops-career-start-heading")');if(await ev('!!document.getElementById("tops-career-screen-back")'))await click('Back to Career workspace');await wait('document.getElementById("tops-career-start-heading").checkVisibility()');};
  const continueIntro=async()=>{await click('Continue my introduction');await wait('document.activeElement.id==="tops-specialist-introduction"');};
  const openSupport=()=>ev('if(document.getElementById("tops-career-more")&&!document.getElementById("tops-career-more").open)document.querySelector("#tops-career-more > summary").click();document.querySelector("#tops-career-specialist > summary").click()');
  const text='SYNTHETIC VISIT INTRO: keep this exact custom wording while I explore tools.';

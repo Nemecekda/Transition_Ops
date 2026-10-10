@@ -413,6 +413,14 @@ const DOCUMENT_AUDIT = String.raw`((zoomFactor, failureLimit = 80) => {
   const styleOf = (element) => getComputedStyle(element);
   const visible = (element) => {
     if (!(element instanceof Element)) return false;
+    // Closed native details can retain descendant layout boxes in Chromium.
+    // Only its summary subtree is rendered; expanded menus remain fully audited.
+    for (let parent = element.parentElement; parent; parent = parent.parentElement) {
+      if (parent.tagName === "DETAILS" && !parent.open) {
+        const summary = parent.querySelector(":scope > summary");
+        if (!summary || !summary.contains(element)) return false;
+      }
+    }
     const style = styleOf(element);
     const rect = element.getBoundingClientRect();
     return style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity || 1) > 0 && rect.width > 0 && rect.height > 0;
@@ -695,24 +703,51 @@ async function runNavigatorSurfaceChecks(client, scenarioName) {
 }
 
 async function runResumeSurfaceChecks(client, scenarioName) {
-  const libraryFocused = await evaluate(client, String.raw`(() => {
-    const summary = Array.from(document.querySelectorAll("summary")).find(n => n.textContent === "Browse career tools and detailed planners");
-    if (!summary) return false;
+  const menuFocused = await evaluate(client, String.raw`(() => {
+    const summary = document.querySelector('#tops-career-menu > summary');
+    if (!summary || !summary.getClientRects().length) return false;
     summary.focus();
     return document.activeElement === summary && !summary.parentElement.open;
   })()`, false);
-  check(libraryFocused, scenarioName + " career tool library starts collapsed and keyboard focusable");
+  check(menuFocused, scenarioName + " Career menu starts collapsed and keyboard focusable");
   await dispatchKey(client, "Enter", 0);
-  await waitForExpression(client, String.raw`Array.from(document.querySelectorAll("summary")).some(n => n.textContent === "Browse career tools and detailed planners" && n.parentElement.open)`, scenarioName + " career tool library Enter activation", 3000);
+  await waitForExpression(client, 'document.getElementById("tops-career-menu").open', scenarioName + " Career menu Enter activation", 3000);
+  const menuAudit = await evaluate(client, DOCUMENT_AUDIT + "(Number(getComputedStyle(document.documentElement).zoom))", false);
+  check(menuAudit.failures.length === 0, scenarioName + " expanded Career menu preserves reflow and semantics", menuAudit.failures.join(" | "));
+  const toolsFocused = await evaluate(client, String.raw`(() => {
+    const button = document.getElementById('tops-career-other-tools');
+    if (!button || !button.getClientRects().length) return false;
+    button.focus(); return document.activeElement === button;
+  })()`, false);
+  check(toolsFocused, scenarioName + " Other Career tools is keyboard focusable");
+  await dispatchKey(client, "Enter", 0);
+  await waitForExpression(client, String.raw`Array.from(document.querySelectorAll('nav[aria-label="Career shortcuts"] button')).some(b=>b.textContent==='Resume drafter'&&b.getClientRects().length)`, scenarioName + " Other Career tools Enter activation", 3000);
+  const resumeShortcut = await evaluate(client, String.raw`(() => { const b=Array.from(document.querySelectorAll('nav[aria-label="Career shortcuts"] button')).find(b=>b.textContent==='Resume drafter'); b.focus(); return document.activeElement===b; })()`, false);
+  check(resumeShortcut, scenarioName + " Resume shortcut keyboard focusable");
+  await dispatchKey(client, "Enter", 0);
+  await waitForExpression(client, String.raw`!!document.getElementById('tops-resume-drafter-panel').getClientRects().length`, scenarioName + " Resume shortcut Enter activation", 3000);
+  await evaluate(client, "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))", true);
   const focused = await evaluate(client, String.raw`(() => {
     const button = document.querySelector('button[aria-controls="tops-resume-drafter-panel"]');
-    if (!button) return { ok: false };
+    if (!button || !button.getClientRects().length) return { ok: false };
     button.focus();
-    return { ok: true, tag: button.tagName, expanded: button.getAttribute("aria-expanded") };
+    return { ok: document.activeElement===button, tag: button.tagName, expanded: button.getAttribute("aria-expanded") };
   })()`, false);
-  check(focused.ok && focused.tag === "BUTTON" && focused.expanded === "false", scenarioName + " Resume disclosure begins as a collapsed native button");
+  check(focused.ok && focused.tag === "BUTTON" && focused.expanded === "true", scenarioName + " Resume disclosure is a keyboard-focusable native expanded button");
   await dispatchKey(client, "Enter", 0);
-  await waitForExpression(client, String.raw`(() => { const b=document.querySelector('button[aria-controls="tops-resume-drafter-panel"]'); const p=document.getElementById('tops-resume-drafter-panel'); return !!b && b.getAttribute('aria-expanded') === 'true' && !!p && !p.hidden; })()`, scenarioName + " Resume disclosure Enter activation", 3000);
+  await waitForExpression(client, String.raw`document.querySelector('button[aria-controls="tops-resume-drafter-panel"]').getAttribute('aria-expanded')==='false'`, scenarioName + " Resume disclosure Enter collapse", 3000);
+  await waitForExpression(client, String.raw`document.activeElement.id === "tops-career-start-heading" && document.activeElement.checkVisibility()`, scenarioName + " closing Resume returns visible workspace focus", 3000);
+  await evaluate(client, "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))", true);
+  await evaluate(client, "document.querySelector('#tops-career-menu > summary').focus()", false);
+  await dispatchKey(client, "Enter", 0);
+  await waitForExpression(client, "document.getElementById('tops-career-menu').open", scenarioName + " Career menu reopens after Resume closes", 3000);
+  await evaluate(client, "document.getElementById('tops-career-other-tools').focus()", false);
+  await dispatchKey(client, "Enter", 0);
+  await waitForExpression(client, String.raw`Array.from(document.querySelectorAll('nav[aria-label="Career shortcuts"] button')).some(b=>b.textContent==='Resume drafter'&&b.getClientRects().length)`, scenarioName + " tools return after Resume closes", 3000);
+  await evaluate(client, String.raw`Array.from(document.querySelectorAll('nav[aria-label="Career shortcuts"] button')).find(b=>b.textContent==='Resume drafter').focus()`, false);
+  await dispatchKey(client, "Enter", 0);
+  await waitForExpression(client, String.raw`(() => { const b=document.querySelector('button[aria-controls="tops-resume-drafter-panel"]'); const p=document.getElementById('tops-resume-drafter-panel'); return !!b && b.getAttribute('aria-expanded') === 'true' && !!p && !p.hidden; })()`, scenarioName + " Resume route keyboard reactivation", 3000);
+  await evaluate(client, "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))", true);
 
   const federalFocused = await evaluate(client, String.raw`(() => {
     const group = document.querySelector('[role="group"][aria-label="Resume format"]');
@@ -735,6 +770,13 @@ async function runResumeSurfaceChecks(client, scenarioName) {
   check(civilianFocused, scenarioName + " Resume civilian-format control is keyboard focusable");
   await dispatchKey(client, "Enter", 0);
   await waitForExpression(client, String.raw`(() => { const g=document.querySelector('[role="group"][aria-label="Resume format"]'); const b=g&&Array.from(g.querySelectorAll('button')).find(x=>/CIVILIAN/.test(x.textContent||'')); return !!b && b.getAttribute('aria-pressed') === 'true'; })()`, scenarioName + " Resume format Enter activation", 3000);
+
+  for (const id of ["tops-resume-format-options", "tops-resume-contact-options"]) {
+    const summaryFocused = await evaluate(client, `(() => { const s=document.querySelector('#${id} > summary'); if(!s || !s.getClientRects().length) return false; s.focus(); return document.activeElement===s; })()`, false);
+    check(summaryFocused, scenarioName + " " + id + " summary keyboard focusable");
+    await dispatchKey(client, "Enter", 0);
+    await waitForExpression(client, `document.getElementById('${id}').open`, scenarioName + " " + id + " Enter activation", 3000);
+  }
 
   const lengthFocused = await evaluate(client, String.raw`(() => {
     const button = Array.from(document.querySelectorAll("button")).find((item) => /Prefer two pages/i.test(item.textContent || ""));
