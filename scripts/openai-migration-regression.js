@@ -3650,7 +3650,8 @@ async function run() {
   assert.ok(auditCalls.every((call) => call.max_output_tokens === 4000) && calls.every((call) => call.store === false), "v0.8 preserves call caps and store:false");
   assert.match(uiSource, /auditTrace: Array\.isArray\(res\.d\.trace\)/);
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:auditTrace|scorecard|supportedKeywords|auditGaps)/);
-  assert.match(uiSource, /RESUME HEADER \(OPTIONAL FOR DRAFTING\)/);
+  assert.match(uiSource, /id: "tops-resume-contact-options"/);
+  assert.match(uiSource, /Name and contact details \(optional\)/);
   assert.equal((uiSource.match(/topsResumeExactHeaderFromInputs\(/g) || []).length, 2, "RDM-240 exact header capture has one definition and one activation site");
   assert.doesNotMatch(uiSource, /__safeSet\([^\n]*(?:headerName|headerLocation|headerEmail|headerPhone)/);
   assert.match(uiSource, /presetName: "ats_resume_compact"/);

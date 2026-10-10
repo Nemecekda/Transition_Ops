@@ -36,12 +36,17 @@ const navSrc = fs.readFileSync(NAV, "utf8");
 // ---------------------------------------------------------------- extraction
 // The app's real tab whitelist. A citation that lands on a tab not in this list
 // falls back to "dashboard", which is a silent wrong answer.
-const validTabsM = /var validTabs = \[([^\]]*)\]/.exec(indexSrc);
-if (!validTabsM) { console.log("FATAL: validTabs not found in index.html"); process.exit(1); }
+const validTabsM = /const TOPS_TOOL_ROUTES = \[([^\]]*)\]/.exec(indexSrc);
+if (!validTabsM) { console.log("FATAL: shared TOPS_TOOL_ROUTES not found in index.html"); process.exit(1); }
 const validTabs = validTabsM[1].split(",").map(s => s.trim().replace(/^"|"$/g, "")).filter(Boolean);
 
+const navStart = indexSrc.indexOf("const renderNavText = function(text)");
+const navEnd = indexSrc.indexOf("\n  const [aiR,", navStart);
+if (navStart < 0 || navEnd < 0) { console.log("FATAL: renderNavText boundaries not found"); process.exit(1); }
+const navTextSrc = indexSrc.slice(navStart, navEnd);
+
 // renderNavText's MAP: citation token -> tab id
-const mapM = /var MAP = \{([^}]*)\}/.exec(indexSrc);
+const mapM = /var MAP = \{([^}]*)\}/.exec(navTextSrc);
 if (!mapM) { console.log("FATAL: renderNavText MAP not found in index.html"); process.exit(1); }
 const mapPairs = [...mapM[1].matchAll(/"([^"]+)"\s*:\s*"([^"]+)"/g)].map(m => [m[1], m[2]]);
 
@@ -50,8 +55,8 @@ const mapPairs = [...mapM[1].matchAll(/"([^"]+)"\s*:\s*"([^"]+)"/g)].map(m => [m
 // (/^\*\*([^*]+)\*\*$/) that appears FIRST in the source, so the extraction must
 // anchor on the bracket form or it silently tests the wrong pattern — which it
 // did on first run, reporting all 16 tokens dead.
-const splitM = /text\.split\(\/(.+?)\/\)/.exec(indexSrc);
-const matchM = /p\.match\(\/(\^\\\[.+?)\/\)/.exec(indexSrc);
+const splitM = /text\.split\(\/(.+?)\/\)/.exec(navTextSrc);
+const matchM = /p\.match\(\/(\^\\\[.+?)\/\)/.exec(navTextSrc);
 if (!splitM || !matchM) { console.log("FATAL: could not extract split/match regexes from index.html"); process.exit(1); }
 const SPLIT = new RegExp(splitM[1]);
 const MATCH = new RegExp(matchM[1]);
