@@ -26,9 +26,20 @@ does not go to Facebook. That rule is not restated here because it is not
 this file's to own.
 
 **CVSO email criterion — the only test.** *Would a caseworker hand this to a
-member?* If the week's ships do not clear that bar, the packet says so and
-drafts no email. A packet that manufactures an email to fill a slot trains
-partners to ignore the channel.
+member?* A dated, reviewed existing-product how-to can clear that bar even
+when no new policy or app release is established. Explain who it helps, where
+to start, two or three steps, the result and material limits. Historical changes
+since the pinned baseline are not this week's releases. If no reviewed useful
+copy qualifies, give one concrete evidence gap, owner and next task; no filler.
+
+The packet leads with the recommendation and owner action. Raw SDK output,
+annotated copy, detailed comparisons, image briefs and validation errors stay
+in the run artifact. Every outward draft still needs Dean's distribution review.
+The dated `.claude/pao-task-evidence.json` input binds exact reviewed copy to
+accepted task/change observations. It expires at valid_through, no later than 14 days after observation.
+The reporting week governs release claims, not task-observation reuse. New prose remains proposed copy for editorial
+review, not an automatically cleared claim. For repeated verification IDs,
+resolve the dated topic and all subsequent amendments before citing status.
 
 ---
 
@@ -68,7 +79,7 @@ correct failure mode; filler is not.**
 
 ## IMAGE BRIEF FIELDS
 
-The packet emits one brief per draft, consumed by `tools/make-social-card.py`:
+When a card helps, the packet emits an optional brief, consumed by `tools/make-social-card.py`:
 
 ```json
 {
@@ -114,3 +125,12 @@ cites what S2 already verified, and says so when nothing covers a claim.
 Never posts, sends, publishes, schedules, or holds a credential to any
 platform. It writes a packet; Dean distributes. Same relationship to comms that
 J1 has to policy: detection and drafting, never action.
+
+## DATED TASK EVIDENCE
+
+`[src: task:<record-id>]` cites an accepted record in the task-evidence input.
+An existing_product record establishes only the observed task and its limits.
+A verified_change record must also include its current release date, conditions
+and primary_verification_refs; the PAO never creates those approvals. Exact
+reviewed_copy is the bounded handoff text, with new wording held for review.
+Source reads and syntactic checks do not establish outcomes or approval to send.

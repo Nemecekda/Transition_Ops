@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "packet_date": "2026-10-12",
+  "period_start": "2026-10-06",
+  "period_end": "2026-10-12",
+  "source_commit": "959c99e480eb3c5931069eabb5c7110f343df1b0",
+  "run_id": "38306086173",
+  "app_index_sha256": "b84ea15eb8648aba88b95263ab5d5a79c59b76e7a65c758a65704491f1756a55",
+  "repository": "Nemecekda/Transition_Ops",
+  "baseline_issue": 22,
+  "baseline": {
+    "last_resources_count": 47,
+    "last_v_entry": "V-2026-014",
+    "last_whatsnew_version": "v95",
+    "packet_date": "2026-08-14"
+  },
+  "baseline_sha256": "3eca8476b667ee05ace747e11e0371c5e5f7e686ca28a193f2f9567d4e306df5",
+  "source_paths": [
+    "out/pao-baseline.json",
+    "index.html",
+    "intel/verification-log.md",
+    ".claude/pao-context.md",
+    ".claude/skills/brand-voice/SKILL.md",
+    ".claude/pao-task-evidence.json",
+    "out/pao-run-context.json"
+  ]
+}

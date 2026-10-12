@@ -1,0 +1,19 @@
+independent malformed field substitutions: 484
+test_actual_packet_not_labeled_this_week_or_current_staged (__main__.IndependentTests) ... ok
+test_changed_app_bytes_hold_task_reuse (__main__.IndependentTests) ... ok
+test_cli_renderer_failure_fallback_no_raw_disclosure (__main__.IndependentTests) ... ok
+test_deep_json_inner_and_outer_are_contained (__main__.IndependentTests) ... ok
+test_draft_source_mismatch_never_quiet_or_send_ready (__main__.IndependentTests) ... ok
+test_future_observation_and_unbounded_expiry_withheld (__main__.IndependentTests) ... ok
+test_malformed_matrix_total_and_payload_no_leak (__main__.IndependentTests) ... ok
+test_missing_clean_copy_cannot_be_promoted_from_annotations (__main__.IndependentTests) ... ok
+test_next_run_exact_expiry_and_after_expiry (__main__.IndependentTests) ... ok
+test_no_raw_or_model_controls_in_primary_body (__main__.IndependentTests) ... ok
+test_sdk_explicit_or_malformed_errors_never_accept_valid_result (__main__.IndependentTests) ... ok
+test_verified_change_cannot_use_task_reuse_window (__main__.IndependentTests) ... ok
+test_workflow_frozen_operating_controls (__main__.IndependentTests) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.076s
+
+OK

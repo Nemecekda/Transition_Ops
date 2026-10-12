@@ -1,0 +1,12 @@
+{
+  "status": "REVIEW",
+  "errors": [
+    "historical_comparison_limited"
+  ],
+  "drafts_for_review": 1,
+  "accepted_task_ids": [
+    "career-no-resume-job-search-20261012"
+  ],
+  "packet_date": "2026-10-12",
+  "checks": "structural and citation only; no semantic approval, live verification or distribution"
+}

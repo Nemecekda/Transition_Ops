@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "tasks": [
+    {
+      "id": "career-no-resume-job-search-20261012",
+      "accepted": true,
+      "kind": "existing_product",
+      "audience": "member",
+      "observed_date": "2026-10-12",
+      "observed_at": "2026-10-12T20:51:50Z",
+      "task": "Prepare a job search without a finished resume",
+      "entry_url": "https://transitionops.org/?tool=pathway",
+      "release_identity": "Public index SHA256 b84ea15eb8648aba88b95263ab5d5a79c59b76e7a65c758a65704491f1756a55 matches main 959c99e480eb3c5931069eabb5c7110f343df1b0; public worker cache279.",
+      "steps": [
+        "Continue without a resume; choose Human Resources, then Talent Acquisition / Recruiter.",
+        "Select Review and save, then Use for this visit.",
+        "Select Search jobs by area and enter the synthetic area Madison, WI."
+      ],
+      "result": "Role and location populated LinkedIn and USAJOBS search links. No external search submitted.",
+      "limitations": "Desktop synthetic navigation only. No mobile, results, fit, application, persistent save, AI, benefit eligibility, employment or retention outcome tested.",
+      "evidence_ref": "intel/pao-usefulness-20261012/LIVE-TASK-EVIDENCE.md",
+      "reviewed_by": "Codex root observation and PAO content review, October 12, 2026; Dean distribution review pending.",
+      "reviewed_copy": "Exploring a new role without a finished resume? Open [Career in Transition OPS](https://transitionops.org/?tool=pathway) and select **Continue without a resume**. Choose a field and role, select **Review and save**, then **Use for this visit**. Open **Search jobs by area**, enter where you want to work, and use a job-site search link.\n\nThe links start a search; they do not confirm that a job is available or that you qualify. Bring one posting to your next conversation with your caseworker or career adviser. Point to one requirement you would like help comparing with your experience.",
+      "valid_through": "2026-10-26",
+      "app_index_sha256": "b84ea15eb8648aba88b95263ab5d5a79c59b76e7a65c758a65704491f1756a55"
+    }
+  ]
+}

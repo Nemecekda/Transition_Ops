@@ -1,0 +1,35 @@
+test_actual_old_packet_is_history_and_has_owner (__main__.PacketTests) ... ok
+test_bad_task_record_types_and_duplicate_id_hold (__main__.PacketTests) ... ok
+test_baseline_unchanged_and_issue22_reference (__main__.PacketTests) ... ok
+test_card_generator_existing_self_test (__main__.PacketTests) ... ok
+test_changed_app_bytes_withhold_reuse (__main__.PacketTests) ... ok
+test_clean_annotated_equality_citation_presence_identity_and_leak (__main__.PacketTests) ... ok
+test_cli_preserves_raw_and_writes_content_free_receipt (__main__.PacketTests) ... ok
+test_comparison_gap_does_not_block_checked_handout (__main__.PacketTests) ... ok
+test_context_generation_rejects_invalid_or_future_baseline (__main__.PacketTests) ... ok
+test_current_useful_handout_without_delta (__main__.PacketTests) ... ok
+test_deep_json_and_error_sdk_shapes_fail_closed (__main__.PacketTests) ... ok
+test_expired_future_or_excess_freshness_is_held (__main__.PacketTests) ... ok
+test_hostile_markdown_cannot_escape_reviewed_copy_fence (__main__.PacketTests) ... ok
+test_invalid_trusted_context_no_crash (__main__.PacketTests) ... ok
+test_legacy_fixtures_parse_without_being_current (__main__.PacketTests) ... ok
+test_malformed_nested_copy_delta_and_arrays_total (__main__.PacketTests) ... ok
+test_member_content_not_on_employer_channel (__main__.PacketTests) ... ok
+test_model_date_sha_period_and_baseline_drift (__main__.PacketTests) ... ok
+test_new_schema_empty_drafts_not_ok_from_delta (__main__.PacketTests) ... ok
+test_next_monday_reuse_is_dated_not_new_release (__main__.PacketTests) ... ok
+test_no_task_has_specific_s3_next_step (__main__.PacketTests) ... ok
+test_optional_image_and_flag_metadata_are_artifact_only (__main__.PacketTests) ... ok
+test_partial_zero_bool_excess_and_failed_input_coverage (__main__.PacketTests) ... ok
+test_prompt_amendment_orientation_and_no_filler_contract (__main__.PacketTests) ... ok
+test_raw_failed_envelope_never_enters_issue (__main__.PacketTests) ... ok
+test_renderer_crash_real_workflow_fallback_keeps_sdk_private (__main__.PacketTests) ... ok
+test_unreviewed_outcome_claim_is_withheld (__main__.PacketTests) ... ok
+test_verified_change_requires_current_release_and_primary_record (__main__.PacketTests) ... ok
+test_voice_guard_under_current_schema (__main__.PacketTests) ... ok
+test_workflow_fallback_has_no_raw_cat_and_controls_stay_pinned (__main__.PacketTests) ... ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 0.416s
+
+OK
