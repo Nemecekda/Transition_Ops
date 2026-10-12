@@ -64,7 +64,7 @@ index a39a635..4450715 100644
 +++ b/.claude/pao-context.md
 @@ -26,9 +26,20 @@ does not go to Facebook. That rule is not restated here because it is not
  this file's to own.
- 
+
  **CVSO email criterion — the only test.** *Would a caseworker hand this to a
 -member?* If the week's ships do not clear that bar, the packet says so and
 -drafts no email. A packet that manufactures an email to fill a slot trains
@@ -83,16 +83,16 @@ index a39a635..4450715 100644
 +The reporting week governs release claims, not task-observation reuse. New prose remains proposed copy for editorial
 +review, not an automatically cleared claim. For repeated verification IDs,
 +resolve the dated topic and all subsequent amendments before citing status.
- 
+
  ---
- 
+
 @@ -68,7 +79,7 @@ correct failure mode; filler is not.**
- 
+
  ## IMAGE BRIEF FIELDS
- 
+
 -The packet emits one brief per draft, consumed by `tools/make-social-card.py`:
 +When a card helps, the packet emits an optional brief, consumed by `tools/make-social-card.py`:
- 
+
  ```json
  {
 @@ -114,3 +125,12 @@ cites what S2 already verified, and says so when nothing covers a claim.
@@ -369,7 +369,7 @@ index ba4ed93..08188c6 100644
  #!/usr/bin/env python3
 -"""Render the PAO weekly packet payload into a GitHub issue body.
 +"""Render a useful review packet; raw model output stays in the run artifact.
- 
+
 -Built with J1's corrections already applied rather than retrofitted after an
 -incident:
 -
@@ -501,8 +501,8 @@ index ba4ed93..08188c6 100644
 +                and context["baseline"]["last_resources_count"] >= 0)
 +    except (KeyError, TypeError, ValueError):
 +        return False
- 
- 
+
+
  def extract_payload(envelope):
 -    if not isinstance(envelope, dict):
 -        return None, None
@@ -959,7 +959,7 @@ index ba4ed93..08188c6 100644
 +               "accepted_task_ids": list(tasks), "packet_date": packet_date,
 +               "checks": "structural and citation only; no semantic approval, live verification or distribution"}
 +    return "\n\n".join(s) + "\n", status, receipt
- 
+
 -    s.append("## Evidence\n")
 -    s.append("Run: %s" % run_id)
 -    body = raw.rstrip()
@@ -972,7 +972,7 @@ index ba4ed93..08188c6 100644
 -    else:
 -        s.append("<details>\n<summary>Raw output (unparsed)</summary>\n\n"
 -                 + f + "json\n" + body + "\n" + f + "\n\n</details>\n")
- 
+
 -    with open(out_path, "w", encoding="utf-8") as fh:
 -        fh.write("\n".join(s))
 -
@@ -997,8 +997,8 @@ index ba4ed93..08188c6 100644
 +    Path(out_path).write_text(body, encoding="utf-8")
 +    Path(status_path).write_text(status + "\n")
 +    Path(out_path).with_name("pao-validation.json").write_text(json.dumps(receipt, indent=2) + "\n")
- 
- 
+
+
  if __name__ == "__main__":
 diff --git a/.github/scripts/tests/test-pao-packet.py b/.github/scripts/tests/test-pao-packet.py
 index 220ee6b..45a8d5b 100644
@@ -1376,7 +1376,7 @@ index 220ee6b..45a8d5b 100644
 +                            capture_output=True,text=True)
 +        self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
 +
- 
+
 -HERE = os.path.dirname(os.path.abspath(__file__))
 -FIXTURES = os.path.join(HERE, "fixtures")
 -REPO = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
@@ -1556,7 +1556,7 @@ index 331ebfe..45e6fda 100644
 @@ -132,6 +132,17 @@ jobs:
            fi
            cat out/pao-baseline.json
- 
+
 +      - name: Record trusted packet context
 +        env:
 +          SOURCE_COMMIT: ${{ github.sha }}
