@@ -1,0 +1,32 @@
+[
+  {
+    "command": [
+      "ruby",
+      "-ryaml",
+      "-e",
+      "ARGV.each{|f| YAML.parse_stream(File.read(f)); puts \"YAML OK #{f} #{File.size(f)} bytes\"}",
+      ".github/workflows/pao-weekly-packet.yml"
+    ],
+    "exit_code": 0,
+    "stdout": "YAML OK .github/workflows/pao-weekly-packet.yml 15928 bytes\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/deannemecek/.local/bin/actionlint",
+      "-version"
+    ],
+    "exit_code": 0,
+    "stdout": "1.7.12\ninstalled by downloading from release page\nbuilt with go1.26.1 compiler for darwin/arm64\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/Users/deannemecek/.local/bin/actionlint",
+      ".github/workflows/pao-weekly-packet.yml"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

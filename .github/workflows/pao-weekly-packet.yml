@@ -100,7 +100,7 @@ jobs:
         run: |
           mkdir -p out
           rc=0
-          for p in index.html intel/verification-log.md .claude/pao-context.md .claude/skills/brand-voice/SKILL.md .claude/prompts/pao-weekly-packet.txt; do
+          for p in index.html intel/verification-log.md .claude/pao-context.md .claude/pao-task-evidence.json .claude/skills/brand-voice/SKILL.md .claude/prompts/pao-weekly-packet.txt; do
             if [ -f "$p" ]; then echo "ok   $p"; else echo "::error::missing input: $p"; rc=1; fi
           done
           exit $rc
@@ -131,6 +131,17 @@ jobs:
             exit 1
           fi
           cat out/pao-baseline.json
+
+      - name: Record trusted packet context
+        env:
+          SOURCE_COMMIT: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          DATE=$(date -u +%F)
+          python3 .github/scripts/pao-render-packet.py --context \
+            out/pao-baseline.json out/pao-run-context.json "$DATE" "$SOURCE_COMMIT" "$RUN_ID"
+          cp .claude/pao-task-evidence.json out/pao-task-evidence.json
+          cp intel/pao-usefulness-20261012/LIVE-TASK-EVIDENCE.md out/pao-task-observation.md
 
       - name: Draft the packet
         env:
@@ -168,23 +179,23 @@ jobs:
           # Default FAILED. If the renderer dies before writing the status file,
           # the safe reading is "we do not know this packet is trustworthy".
           echo FAILED > out/pao-status.txt
-          DATE=$(date -u +%F)
+          DATE=$(python3 -c 'import json; print(json.load(open("out/pao-run-context.json"))["packet_date"])')
           if ! python3 .github/scripts/pao-render-packet.py \
-                 out/packet-result.json out/packet.md "$DATE" "$RUN_ID" out/pao-status.txt; then
-            echo "::warning::packet renderer failed; falling back to raw dump"
+                 out/packet-result.json out/packet.md "$DATE" "$RUN_ID" out/pao-status.txt \
+                 out/pao-run-context.json out/pao-task-evidence.json; then
+            echo "::warning::packet renderer failed; raw output remains artifact-only"
             {
-              printf 'PAO PACKET RENDERER FAILED — the drafting output is below unformatted.\n'
-              printf 'Nothing here has been posted. Run: %s\n\n' "$RUN_ID"
-              printf '````json\n'
-              cat out/packet-result.json
-              printf '\n````\n'
+              printf '**Recommendation: hold distribution and repair the PAO renderer.**\n\n'
+              printf 'Owner: S3. Inspect the retained run inputs and renderer error, then produce a reviewable draft. Do not advance issue #22 or infer a quiet week.\n\n'
+              printf 'No draft is cleared. Nothing was posted or sent. Raw output stays in the evidence artifact.\n\n'
+              printf '[Run evidence](https://github.com/Nemecekda/Transition_Ops/actions/runs/%s) - check the upload status for pao-evidence-%s.\n' "$RUN_ID" "$RUN_ID"
             } > out/packet.md
           fi
           STATUS=$(tr -d '[:space:]' < out/pao-status.txt 2>/dev/null || echo FAILED)
           case "$STATUS" in
-            OK)     TITLE="PAO packet $DATE"; LABEL=ROUTINE ;;
-            QUIET)  TITLE="PAO packet $DATE — quiet week, no drafts"; LABEL=ROUTINE ;;
-            *)      TITLE="PAO PACKET FAILED — inputs unread $DATE"; LABEL=FLASH ;;
+            REVIEW) TITLE="PAO packet $DATE - draft for review"; LABEL=ROUTINE ;;
+            ACTION_REQUIRED) TITLE="PAO packet $DATE - next task needed"; LABEL=ROUTINE ;;
+            *) TITLE="PAO PACKET FAILED - evidence incomplete $DATE"; LABEL=FLASH ;;
           esac
           echo "status=$STATUS title=$TITLE label=$LABEL"
           if [ "$DRY_RUN" = "1" ]; then
@@ -217,7 +228,7 @@ jobs:
           # noise. A crash BEFORE this point leaves no marker and still gets the
           # generic reporter, which is the case it exists for.
           case "$STATUS" in
-            OK|QUIET) ;;
+            REVIEW|ACTION_REQUIRED) ;;
             *) : > out/pao-already-reported
                echo "::error::packet status $STATUS — failing the run so it cannot read as success"
                exit 1 ;;
@@ -269,10 +280,10 @@ jobs:
             echo "packet step already filed a specific FLASH; not duplicating it"
             exit 0
           fi
-          printf '1 item may need your eyes: the PAO packet failed, so this week produced no distribution drafts.\n\n' > out/failure.md
-          printf 'PAO failed. Run %s. Evidence is in the run artifacts.\n\n' "$RUN_ID" >> out/failure.md
-          printf 'NOTHING WAS POSTED OR SENT. The PAO holds no platform credential, so a\n' >> out/failure.md
-          printf 'failure here costs a packet, never a bad post.\n\n' >> out/failure.md
+          printf '**Recommendation: hold distribution until the failed PAO step is understood.**\n\n' > out/failure.md
+          printf 'Owner: S3. Inspect the failed step and any already-filed packet; repair the gap and prepare a reviewable result. Do not advance the baseline.\n\n' >> out/failure.md
+          printf '[Run details](https://github.com/Nemecekda/Transition_Ops/actions/runs/%s) - check whether pao-evidence-%s uploaded successfully.\n\n' "$RUN_ID" "$RUN_ID" >> out/failure.md
+          printf 'A draft may already exist; this failure does not establish its completeness. Nothing was posted or sent by PAO.\n\n' >> out/failure.md
           if [ -f out/pao-status.txt ]; then
             printf 'Renderer status at failure: %s\n\n' "$(tr -d '[:space:]' < out/pao-status.txt)" >> out/failure.md
           fi

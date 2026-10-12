@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://transitionops.org/",
+    "bytes": 1499185,
+    "sha256": "b84ea15eb8648aba88b95263ab5d5a79c59b76e7a65c758a65704491f1756a55",
+    "status": 200,
+    "fetchedAt": "2026-10-12T20:52:29.164749+00:00"
+  },
+  {
+    "url": "https://transitionops.org/pwa-sw.js",
+    "bytes": 4609,
+    "sha256": "6b9f3ceff6f61db06f535597d149e60d1596730ddf73ea3db82492705a906c1d",
+    "status": 200,
+    "fetchedAt": "2026-10-12T20:52:29.535198+00:00"
+  }
+]

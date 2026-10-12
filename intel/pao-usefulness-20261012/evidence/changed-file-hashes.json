@@ -1,0 +1,19 @@
+{
+  "branch": "codex/pao-useful-packets",
+  "base_commit": "959c99e480eb3c5931069eabb5c7110f343df1b0",
+  "hashes": {
+    ".github/scripts/pao-render-packet.py": "9628ac5ac15a4f9119e109eebff06a672cd4acaba0cde4392766a96c6692b7a1",
+    ".github/scripts/tests/test-pao-packet.py": "865752fa02f701a73b9b9425a00dd3c9ba83381e0f43cb47add703b1761cf19a",
+    ".github/workflows/pao-weekly-packet.yml": "f150edf6dd400909da43ca6586c39ee20cba1d73cf935960f2d36cf49fb67ab8",
+    ".claude/prompts/pao-weekly-packet.txt": "bb7e55d6d27571da164e91626106eeaaf86391ba9452de80966921016bdee38e",
+    ".claude/pao-context.md": "a4e1b44666523fd82cd5073b464c393306b367993fe253299fa5d9d7c60743ab",
+    ".claude/pao-task-evidence.json": "98784aa6873496ff936fee4a3b147f1d9e63e1b2eddeb4bf5380a49b9237f14e",
+    ".github/scripts/tests/fixtures/packet-20261012-actual.json": "7b1aab62e210a3e5c38ffd723a8ad830bd829120581a6294b870cc377033f960"
+  },
+  "paid_model_executed": false,
+  "workflow_dispatched": false,
+  "baseline_mutated": false,
+  "posted_or_sent": false,
+  "app_code_changed": false,
+  "author_tests": 30
+}
