@@ -1,0 +1,32 @@
+ERASE_PROBE [{"input":"career-starter-resume","focused":"career-starter-resume","tag":"TEXTAREA","visible":true,"open":true,"value":""},{"input":"tops-journey-role","focused":"tops-journey-role","tag":"INPUT","visible":true,"open":true,"value":""}]
+{
+  "status": "LOCAL AUTOMATION PASS",
+  "appSha": "1a15a9fff1649f74a11c3d2c38a1ea212f0329dcde140b3249bfadf7ff4b71bf",
+  "conditions": {
+    "browser": "isolated headless Chromium via CDP",
+    "viewports": [
+      375
+    ],
+    "data": "synthetic",
+    "network": "loopback only"
+  },
+  "results": [
+    {
+      "input": "career-starter-resume",
+      "focused": "career-starter-resume",
+      "tag": "TEXTAREA",
+      "visible": true,
+      "open": true,
+      "value": ""
+    },
+    {
+      "input": "tops-journey-role",
+      "focused": "tops-journey-role",
+      "tag": "INPUT",
+      "visible": true,
+      "open": true,
+      "value": ""
+    },
+    "R8 no runtime exception or attempted provider/member-payload request; external resources blocked"
+  ]
+}
