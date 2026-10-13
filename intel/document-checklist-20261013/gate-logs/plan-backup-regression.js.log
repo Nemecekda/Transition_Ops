@@ -1,0 +1,2 @@
+BACKUP HELPERS PASS: nine-section roundtrip; v1 preserves action bytes; literal injection strings; strict shape/IDs/version/type/date/size; array-pathway and null-task regressions; nine write failures rollback; incomplete rollback; read failure; embed denied; unrelated storage preserved
+COMPARISON BACKUP PASS: nonempty notes roundtrip, strict malformed-note rejection, v2 preserves existing notes, embedded save denied.

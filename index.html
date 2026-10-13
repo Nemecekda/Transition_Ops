@@ -6217,6 +6217,28 @@ function topsRestoreDocuments() {
   });
 }
 
+function DocumentChecklist(props) {
+  var C = props.colors, obtained = props.documents.filter(function(d) { return d.obtained; }).length;
+  function row(d) {
+    return React.createElement("div", { key: d.id, id: "tops-document-" + d.id, tabIndex: -1, style: { padding: "10px 14px", marginBottom: 10, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 10 } },
+      React.createElement("label", { htmlFor: "tops-document-check-" + d.id, style: { display: "flex", alignItems: "center", gap: 12, minHeight: 44, cursor: "pointer" } },
+        React.createElement("input", { id: "tops-document-check-" + d.id, type: "checkbox", checked: d.obtained, onChange: function() { props.toggle(d.id); }, "aria-labelledby": "tops-document-name-" + d.id, "aria-describedby": "tops-document-note-" + d.id, style: { flex: "0 0 24px", width: 24, height: 24, margin: 0, accentColor: C.greenBright, cursor: "pointer" } }),
+        React.createElement("span", { style: { minWidth: 0 } }, React.createElement("span", { id: "tops-document-name-" + d.id, style: { display: "block", color: C.textPrimary, fontSize: 16, lineHeight: 1.4, fontWeight: 600 } }, d.name),
+          React.createElement("span", { style: { display: "block", color: C.textSecondary, fontSize: 14, lineHeight: 1.5 } }, d.obtained ? "Obtained" : "Not yet obtained"))),
+      React.createElement("p", { id: "tops-document-note-" + d.id, style: { margin: "6px 0 0", fontSize: 14, lineHeight: 1.5, color: C.textBody } }, d.notes),
+      d.id === "d8" && React.createElement("a", { id: "tops-vgli-document-source", href: "https://www.va.gov/life-insurance/options-eligibility/vgli/", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, maxWidth: "100%", boxSizing: "border-box", padding: "8px 0", color: C.greenBright, fontSize: 14, textDecoration: "underline", lineHeight: 1.5 } }, "VA VGLI eligibility and application guidance (opens a new tab)"));
+  }
+  return React.createElement("section", { "aria-label": "Document checklist", id: "tops-document-checklist" },
+    props.readinessReturn || React.createElement("button", { id: "tops-documents-back", type: "button", onClick: props.back, style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" } }, "Back to My Plan"),
+    React.createElement("div", { style: { marginBottom: 16 } },
+      React.createElement("h3", { id: "tops-plan-documents", tabIndex: -1, style: { fontSize: 20, margin: "0 0 8px", color: C.textPrimary } }, "Your checklist"),
+      React.createElement("p", { style: { margin: "0 0 10px", fontSize: 16, lineHeight: 1.5, color: C.textBody } }, "Mark the documents you have. You do not upload documents here."),
+      React.createElement("p", { id: "tops-document-progress", style: { margin: "0 0 4px", fontSize: 16, fontWeight: 600, color: C.textPrimary } }, obtained + " of " + props.documents.length + " marked as obtained"),
+      React.createElement("p", { id: "tops-document-save-status", role: "status", "aria-live": "polite", style: { margin: "0 0 12px", fontSize: 14, lineHeight: 1.5, color: C.textSecondary } }, props.saveStatus === "saved" ? "Checkmarks saved on this browser." : props.saveStatus === "visit" ? "Checkmarks are for this visit only in this embedded view." : props.saveStatus === "unconfirmed" ? "Saving could not be confirmed. Your checkmarks are still in this tab; keep it open." : "Checking saved progress...")),
+    [true, false].map(function(critical) { return React.createElement("section", { key: String(critical), "aria-labelledby": critical ? "tops-documents-critical" : "tops-documents-supporting" },
+      React.createElement("h4", { id: critical ? "tops-documents-critical" : "tops-documents-supporting", style: { fontSize: 16, fontWeight: 600, margin: "16px 0 10px", color: C.textPrimary } }, critical ? "Critical documents" : "Supporting documents"), props.documents.filter(function(d) { return d.critical === critical; }).map(row)); }));
+}
+
 const TOPS_TAP_PREP = {
   t1: "Ask your TAP counselor which courses and Career Readiness Standards apply to your transition.",
   t2: "Prepare your Individual Transition Plan, career gap analysis and spending plan for your TAP counselor to review.",
@@ -9193,6 +9215,7 @@ function App() {
   const [dismissedNotifs, setDismissedNotifs] = useState(new Set());
   const [toast, setToast] = useState(null);
   const [documents, setDocuments] = useState(topsRestoreDocuments);
+  const [documentSaveStatus, setDocumentSaveStatus] = useState("checking");
   const [vsoFilter, setVsoFilter] = useState("ALL");
   const [resourceFilter, setResourceFilter] = useState({ category: "ALL", cost: "ALL", eligibility: "ALL" });
   const [subTab, setSubTab] = useState("vsos");
@@ -9439,7 +9462,8 @@ function App() {
       (jobsHeading || target).focus({ preventScroll: true });
       var wiDetail = currentId === "tops-wi-work-support-resources-heading" && target.closest("details");
       var searchCard = currentId.indexOf("tops-window-title-") === 0 && target.closest('[data-search-selected="true"]');
-      (searchCard || wiDetail || jobsHeading || target).scrollIntoView({ block: searchCard || wiDetail || jobsHeading || ["tops-my-jobs-heading", "tops-plan-timeline", "tops-loop-title"].includes(currentId) ? "start" : "center" });
+      var documentChecklist = currentId === "tops-plan-documents" && document.getElementById("tops-document-checklist");
+      (documentChecklist || searchCard || wiDetail || jobsHeading || target).scrollIntoView({ block: documentChecklist || searchCard || wiDetail || jobsHeading || ["tops-my-jobs-heading", "tops-plan-timeline", "tops-loop-title"].includes(currentId) ? "start" : "center" });
     });
     return function() { cancelAnimationFrame(frame); };
   }, [activeTab, planView, selectedMilestone, subTab, reminderExpanded, focusedReminderId, dismissedReminders, reminderTimedOnly, continuationRevision]);
@@ -9607,11 +9631,13 @@ function App() {
     } catch (e) {}
   }, [milestones]);
   useEffect(() => {
-    if (window.__IS_IFRAME) return;
+    if (window.__IS_IFRAME) { setDocumentSaveStatus("visit"); return; }
     if (restorePlanEffects.current.documents) { restorePlanEffects.current.documents = false; return; }
     try {
-      window.__safeSet("docProgress", JSON.stringify(documents));
-    } catch (e) {}
+      var raw = JSON.stringify(documents);
+      localStorage.setItem("docProgress", raw);
+      setDocumentSaveStatus(localStorage.getItem("docProgress") === raw ? "saved" : "unconfirmed");
+    } catch (e) { setDocumentSaveStatus("unconfirmed"); }
   }, [documents]);
   useEffect(() => {
     if (window.__IS_IFRAME) return;
@@ -10355,7 +10381,6 @@ function App() {
         })));
   }
 
-  const docsObtained = documents.filter(d => d.obtained).length;
 
   // ═══════════ FIRST-TIME ONBOARDING FLOW ═══════════
   if (showOnboarding) {
@@ -10892,7 +10917,7 @@ function App() {
   // ═══════════ BOTTOM NAVIGATION BAR ═══════════
   /*#__PURE__*/React.createElement("div", { className: "bottom-nav", role: "navigation", "aria-label": "Primary" },
     [{id:"dashboard",icon:"home",label:"Home"},{id:"timeline",icon:"calendar",label:"My Plan"},{id:"pathway",icon:"target",label:"Career"},{id:"benefits",icon:"medal",label:"Benefits"},{id:"more",icon:"grid",label:"More"}].map(function(n) {
-      var isActive = showMoreMenu ? n.id === (showMoreMenu === "benefits" ? "benefits" : "more") : n.id === "more" ? ["finalpcs","navigator"].indexOf(activeTab) !== -1 : n.id === "benefits" ? ["critical","vamath","vapay","resources","taxes"].indexOf(activeTab) !== -1 : n.id === "timeline" ? ["timeline","reminders","readiness","dd214"].indexOf(activeTab) !== -1 : n.id === "pathway" ? ["pathway","vethub"].indexOf(activeTab) !== -1 : activeTab === n.id;
+      var isActive = showMoreMenu ? n.id === (showMoreMenu === "benefits" ? "benefits" : "more") : n.id === "more" ? ["finalpcs","navigator"].indexOf(activeTab) !== -1 : n.id === "benefits" ? ["critical","vamath","vapay","resources","taxes"].indexOf(activeTab) !== -1 && !(activeTab === "resources" && subTab === "documents") : n.id === "timeline" ? ["timeline","reminders","readiness","dd214"].indexOf(activeTab) !== -1 || (activeTab === "resources" && subTab === "documents") : n.id === "pathway" ? ["pathway","vethub"].indexOf(activeTab) !== -1 : activeTab === n.id;
       return React.createElement("button", { key: n.id, type: "button", "aria-current": isActive && !showMoreMenu ? "page" : undefined, "aria-expanded": n.id === "more" || n.id === "benefits" ? (n.id === "more" ? showMoreMenu === true : showMoreMenu === "benefits") : undefined, onClick: function() {
         if (n.id === "more") { setShowMoreMenu(showMoreMenu === true ? false : true); }
         else if (n.id === "benefits") { setShowMoreMenu(showMoreMenu === "benefits" ? false : "benefits"); }
@@ -10914,7 +10939,7 @@ function App() {
 
   // ═══════════ DASHBOARD TAB ═══════════
   React.createElement("div", { id: "tops-page-orientation", className: activeTab === "pathway" ? "tops-career-orientation" : undefined, style: { display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 16 } },
-    React.createElement("h2", { id: "tops-page-title", tabIndex: -1, style: { fontSize: 22, margin: 0, color: C.textPrimary } }, activeTab === "pathway" ? { workspace: "Career", jobs: "Find jobs", "my-jobs": "My jobs", resume: "Prepare your resume", tools: "Career tools" }[careerScreen] : activeTab === "dashboard" ? "Home" : (TOPS_TOOL_CHOICES.find(function(tool) { return tool.id === activeTab; }) || { title: "Tools" }).title),
+    React.createElement("h2", { id: "tops-page-title", tabIndex: -1, style: { fontSize: 22, margin: 0, color: C.textPrimary } }, activeTab === "pathway" ? { workspace: "Career", jobs: "Find jobs", "my-jobs": "My jobs", resume: "Prepare your resume", tools: "Career tools" }[careerScreen] : activeTab === "dashboard" ? "Home" : activeTab === "resources" && subTab === "documents" ? "Document checklist" : (TOPS_TOOL_CHOICES.find(function(tool) { return tool.id === activeTab; }) || { title: "Tools" }).title),
     React.createElement(activeTab === "pathway" ? "details" : "div", { id: activeTab === "pathway" ? "tops-career-menu" : undefined, style: { display: "flex", flexWrap: "wrap", gap: 8 } },
       activeTab === "pathway" && React.createElement("summary", { style: { minHeight: 44, padding: "10px 12px", cursor: "pointer" } }, "All career tools"),
       (activeTab === "pathway" || (activeTab === "dashboard" && myJobs.value && myJobs.value.jobs.length > 0)) && React.createElement("button", { id: "tops-my-jobs-open", type: "button", onClick: function() { setActiveTab("pathway"); setMyJobsOpen(true); continuationFocus.current = "tops-my-jobs-heading"; focusCareerWorksheet("tops-my-jobs-heading"); }, style: { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary, font: "inherit" } }, "My jobs" + (myJobs.value && myJobs.value.jobs.length ? " (" + myJobs.value.jobs.length + ")" : "")),
@@ -11000,7 +11025,7 @@ function App() {
     setMemberPriority(""); setCareerEntry("");
     setGuideState({ draft: result.sections.guide, ready: !!result.sections.guide.pathway, status: "Guide details restored and saved on this browser. The visit-only introduction was cleared." });
     setGapState({ draft: result.sections.careerWorksheet, status: "Worksheet restored and saved on this browser. Review the notes for your current goal." });
-    setMilestones(result.progress.milestones); setDocuments(result.progress.documents);
+    setMilestones(result.progress.milestones); setDocuments(result.progress.documents); setDocumentSaveStatus("saved");
     setFollowProgress(result.sections.followupProgress); setDismissedReminders(result.sections.completedReminders);
     if (Object.prototype.hasOwnProperty.call(result.sections, "careerComparison")) setComparisonState({ draft: result.sections.careerComparison, status: "Comparison notes restored and saved on this browser." });
     if (Object.prototype.hasOwnProperty.call(result.sections, "careerAction")) setActionState({ draft: result.sections.careerAction, status: "Career step restored and saved on this browser." });
@@ -15204,7 +15229,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       cursor: "pointer"
     }
   }, "SHARE WITH A VETERAN"))), activeTab === "resources" && /*#__PURE__*/React.createElement("div", null,
-  React.createElement("details", { style: { marginBottom: 14 } },
+  subTab !== "documents" && React.createElement("details", { style: { marginBottom: 14 } },
   React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", color: C.textSecondary, cursor: "pointer" } }, "Resources for workplace groups"),
   /*#__PURE__*/React.createElement("a", {
     href: "/erg-handoff.html",
@@ -15244,9 +15269,9 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       lineHeight: 1.55
     }
   }, "Share a client-neutral brief with your workplace military-connected group. You choose where to send it; this handoff does not ask where you work."))),
-  React.createElement("div", { style: { marginBottom: 16 } },
+  subTab !== "documents" && React.createElement("div", { style: { marginBottom: 16 } },
     React.createElement("label", { htmlFor: "tops-resource-topic", style: { display: "block", fontSize: 16, fontWeight: 600, color: C.textPrimary, marginBottom: 8 } }, "Choose a resource topic"),
-    React.createElement("select", { id: "tops-resource-topic", value: subTab, onChange: function(event) { setSubTab(event.target.value); }, style: { width: "100%", minHeight: 48, padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary, font: "inherit", fontSize: 16 } },
+    React.createElement("select", { id: "tops-resource-topic", value: subTab, onChange: function(event) { if (event.target.value === "documents") continuationFocus.current = "tops-plan-documents"; setSubTab(event.target.value); }, style: { width: "100%", minHeight: 48, padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary, font: "inherit", fontSize: 16 } },
       [["directory", "All resources"], ["vsos", "Claims help and veteran organizations"], ["tap", "Transition assistance programs"], ["mindset", "Mindset and adjustment"], ["leadership", "Leadership and communication"], ["spouse", "Military spouse resources"], ["perks", "Veteran discounts and perks"], ["skillbridge", "SkillBridge"], ["healthcare", "Healthcare"], ["documents", "Document checklist"]].map(function(topic) { return React.createElement("option", { key: topic[0], value: topic[0] }, topic[1]); }))), subTab === "directory" && /*#__PURE__*/React.createElement("div", null, React.createElement(WisconsinWorkSupport, { colors: C, surface: "resources", support: wisconsinSupport }), /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 14 } }, /*#__PURE__*/React.createElement("div", { style: S.cardTitle }, "RESOURCE DIRECTORY"), /*#__PURE__*/React.createElement("div", { style: { ...S.bodyText, lineHeight: 1.7, marginBottom: 10 } }, "Filter by what you need. Every resource here has been verified or flagged for review. Tap any card to open the resource site."), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "CATEGORY"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 } }, ["ALL"].concat(Object.keys(RESOURCE_CATEGORIES)).map(cat => /*#__PURE__*/React.createElement("button", { key: cat, onClick: () => setResourceFilter({ ...resourceFilter, category: cat }), style: { padding: "9px 12px", background: resourceFilter.category === cat ? C.green : "transparent", border: "1px solid " + (resourceFilter.category === cat ? C.green : C.border), borderRadius: 4, color: resourceFilter.category === cat ? C.textOnFill : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, cat === "ALL" ? "ALL" : RESOURCE_CATEGORIES[cat].label))), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "COST"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 } }, [{ id: "ALL", label: "ALL" }, { id: "free", label: "FREE" }, { id: "gi_bill", label: "GI BILL" }, { id: "paid", label: "PAID" }].map(c => /*#__PURE__*/React.createElement("button", { key: c.id, onClick: () => setResourceFilter({ ...resourceFilter, cost: c.id }), style: { padding: "9px 12px", background: resourceFilter.cost === c.id ? C.gold : "transparent", border: "1px solid " + (resourceFilter.cost === c.id ? C.gold : C.border), borderRadius: 4, color: resourceFilter.cost === c.id ? C.bg : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, c.label))), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.gold, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, marginBottom: 6 } }, "ELIGIBILITY"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap" } }, [{ id: "ALL", label: "ALL" }, { id: "veteran", label: "VETERAN" }, { id: "active", label: "ACTIVE DUTY" }, { id: "spouse", label: "SPOUSE" }, { id: "guard_reserve", label: "GUARD/RESERVE" }].map(e => /*#__PURE__*/React.createElement("button", { key: e.id, onClick: () => setResourceFilter({ ...resourceFilter, eligibility: e.id }), style: { padding: "9px 12px", background: resourceFilter.eligibility === e.id ? "#1B3A4B" : "transparent", border: "1px solid " + (resourceFilter.eligibility === e.id ? "#1B3A4B" : C.border), borderRadius: 4, color: resourceFilter.eligibility === e.id ? C.textOnFill : C.inactive, fontSize: 10, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, e.label)))), (function() { var filtered = RESOURCES.filter(function(r) { if (resourceFilter.category !== "ALL" && r.category !== resourceFilter.category) return false; if (resourceFilter.cost !== "ALL" && r.cost !== resourceFilter.cost) return false; if (resourceFilter.eligibility !== "ALL" && r.eligibility.indexOf(resourceFilter.eligibility) === -1) return false; return true; }); if (filtered.length === 0) { return /*#__PURE__*/React.createElement("div", { style: { ...S.card, padding: 20, textAlign: "center" } }, /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.inactive } }, "No resources match the current filters. Try broadening your selection.")); } var grouped = {}; filtered.forEach(function(r) { if (!grouped[r.category]) grouped[r.category] = []; grouped[r.category].push(r); }); return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: C.greenBright, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginBottom: 8, marginTop: 10 } }, filtered.length + " RESOURCE" + (filtered.length !== 1 ? "S" : "") + " MATCH YOUR FILTERS"), Object.keys(grouped).map(function(catKey) { var cat = RESOURCE_CATEGORIES[catKey] || { color: C.gold, icon: "", label: catKey.toUpperCase() }; return /*#__PURE__*/React.createElement("div", { key: catKey, style: { marginBottom: 14 } }, /*#__PURE__*/React.createElement("div", { style: { ...S.sectionLabel, color: topsThemeInk(C, cat.color) } }, cat.icon + " " + cat.label), grouped[catKey].map(function(r) { return /*#__PURE__*/React.createElement("a", { key: r.id, href: r.url, target: "_blank", rel: "noopener noreferrer", style: { display: "block", padding: "12px 14px", marginBottom: 5, background: r.priority ? "linear-gradient(135deg, " + C.bgCard + ", " + C.gradStart + ")" : C.bgCard, border: "1px solid " + (r.priority ? C.gold : C.border), borderLeft: r.priority ? "3px solid " + C.gold : "1px solid " + C.border, borderRadius: 4, textDecoration: "none" } }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 } }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 14, color: r.priority ? C.goldBright : C.textPrimary, fontWeight: 600 } }, (r.priority ? "⭐ " : "") + r.name, r.relationship === "partner" && /*#__PURE__*/React.createElement("span", { style: { marginLeft: 7, fontSize: 9, padding: "2px 5px", background: C.bg, color: C.inactive, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, fontWeight: 400, border: "1px solid " + C.border, verticalAlign: "middle", whiteSpace: "nowrap" } }, "PARTNER")), /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: C.greenBright } }, "→")), /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, lineHeight: 1.5, marginBottom: 6 } }, r.description), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap" } }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: r.cost === "free" ? C.green : r.cost === "gi_bill" ? "#1B3A4B" : C.bg, color: r.cost === "free" || r.cost === "gi_bill" ? C.textOnFill : C.inactive, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, r.cost === "conditional" ? "FUNDING CONDITIONAL" : r.cost === "free" ? "FREE" : r.cost === "gi_bill" ? "GI BILL" : "PAID"), r.eligibility.map(function(elig) { return /*#__PURE__*/React.createElement("span", { key: elig, style: { fontSize: 9, padding: "2px 6px", background: C.bg, color: C.inactive, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, border: "1px solid " + C.border } }, elig.toUpperCase().replace("_", "/")); }), !r.verified && /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: "rgba(139,105,20,0.2)", color: C.gold, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1 } }, "⚠ VERIFY"))); })); })); })()),subTab === "vsos" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
@@ -17393,153 +17418,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       lineHeight: 1.8,
       fontFamily: "'Source Sans 3', sans-serif"
     }
-  }, /*#__PURE__*/React.createElement("div", null, "\u25CF", " TAMP (service-determined eligibility): 180 days of premium-free TRICARE; plan enrollment requirements apply"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " Must ACTIVELY enroll in VA healthcare"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " Combat vets: 10-year enhanced eligibility"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " CHCBP if eligible: apply within 60 days of losing regular TRICARE or TAMP"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " VA dental limited — apply within 180 days of separation for one-time care")))), subTab === "documents" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      ...S.card,
-      padding: 14
-    }
-  }, renderReadinessReturn("a6"), /*#__PURE__*/React.createElement("div", {
-    id: "tops-plan-documents", tabIndex: -1, role: "heading", "aria-level": 2,
-    style: S.cardTitle
-  }, "DOCUMENT VAULT"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      ...S.bodyText,
-      marginBottom: 8
-    }
-  }, "Track every critical document. Mark each as obtained."), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "space-between",
-      fontSize: 12,
-      color: C.textSecondary
-    }
-  }, /*#__PURE__*/React.createElement("span", null, "SECURED"), /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: docsObtained === documents.length ? C.greenBright : C.textPrimary,
-      fontWeight: 700
-    }
-  }, docsObtained, "/", documents.length)), /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: C.bg,
-      borderRadius: 4,
-      height: 6,
-      overflow: "hidden",
-      marginTop: 4
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: Math.round(docsObtained / documents.length * 100) + "%",
-      height: "100%",
-      background: docsObtained === documents.length ? C.green : C.gold,
-      transition: "width 0.3s"
-    }
-  }))), /*#__PURE__*/React.createElement("div", {
-    style: S.sectionLabel
-  }, "CRITICAL DOCUMENTS"), documents.filter(d => d.critical).map(d => /*#__PURE__*/React.createElement("button", {
-    key: d.id,
-    onClick: () => toggleDoc(d.id),
-    style: {
-      display: "flex",
-      alignItems: "flex-start",
-      gap: 10,
-      padding: "10px 12px",
-      background: d.obtained ? C.gradStart : C.bgCard,
-      border: "1px solid " + (d.obtained ? C.green : C.border),
-      borderLeft: d.obtained ? "4px solid " + C.green : "4px solid #8B0000",
-      borderRadius: 4,
-      marginBottom: 5,
-      cursor: "pointer",
-      width: "100%",
-      textAlign: "left"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 18,
-      height: 18,
-      minWidth: 18,
-      border: "2px solid " + (d.obtained ? C.green : "#8B0000"),
-      borderRadius: 4,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      background: d.obtained ? C.green : "transparent"
-    }
-  }, d.obtained && /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: C.textPrimary,
-      fontSize: 11,
-      fontWeight: 700
-    }
-  }, "\u2713")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: "'Oswald', sans-serif",
-      fontSize: 14,
-      color: d.obtained ? (C.isLight ? C.greenBright : "#6B8E23") : C.textPrimary,
-      textDecoration: d.obtained ? "line-through" : "none"
-    }
-  }, d.name), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13,
-      color: C.inactive,
-      marginTop: 2,
-      lineHeight: 1.4,
-      fontFamily: "'Source Sans 3', sans-serif"
-    }
-  }, d.notes)))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      ...S.sectionLabel,
-      marginTop: 16
-    }
-  }, "SUPPORTING DOCUMENTS"), documents.filter(d => !d.critical).map(d => /*#__PURE__*/React.createElement("div", { key: d.id }, React.createElement("button", {
-    id: "tops-document-" + d.id,
-    onClick: () => toggleDoc(d.id),
-    style: {
-      display: "flex",
-      alignItems: "flex-start",
-      gap: 10,
-      padding: "10px 12px",
-      background: d.obtained ? C.gradStart : C.bgCard,
-      border: "1px solid " + (d.obtained ? C.green : C.border),
-      borderRadius: 4,
-      marginBottom: 5,
-      cursor: "pointer",
-      width: "100%",
-      textAlign: "left"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 18,
-      height: 18,
-      minWidth: 18,
-      border: "2px solid " + (d.obtained ? C.green : C.inactive),
-      borderRadius: 4,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      background: d.obtained ? C.green : "transparent"
-    }
-  }, d.obtained && /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: C.textPrimary,
-      fontSize: 11,
-      fontWeight: 700
-    }
-  }, "\u2713")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: "'Oswald', sans-serif",
-      fontSize: 12,
-      color: d.obtained ? (C.isLight ? C.greenBright : "#6B8E23") : C.textPrimary,
-      textDecoration: d.obtained ? "line-through" : "none"
-    }
-  }, d.name), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: d.id === "d8" ? 13 : 9,
-      color: C.inactive,
-      marginTop: 2,
-      lineHeight: 1.4,
-      fontFamily: "'Source Sans 3', sans-serif"
-    }
-  }, d.notes))), d.id === "d8" && React.createElement("a", { id: "tops-vgli-document-source", href: "https://www.va.gov/life-insurance/options-eligibility/vgli/", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, maxWidth: "100%", boxSizing: "border-box", padding: "8px 12px", marginBottom: 8, color: C.greenBright, fontSize: 14, textDecoration: "underline", lineHeight: 1.5 } }, "VA VGLI eligibility and application guidance (opens a new tab)"))))), activeTab === "taxes" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", null, "\u25CF", " TAMP (service-determined eligibility): 180 days of premium-free TRICARE; plan enrollment requirements apply"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " Must ACTIVELY enroll in VA healthcare"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " Combat vets: 10-year enhanced eligibility"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " CHCBP if eligible: apply within 60 days of losing regular TRICARE or TAMP"), /*#__PURE__*/React.createElement("div", null, "\u25CF", " VA dental limited — apply within 180 days of separation for one-time care")))), subTab === "documents" && React.createElement(DocumentChecklist, { colors: C, documents: documents, toggle: toggleDoc, saveStatus: documentSaveStatus, readinessReturn: renderReadinessReturn("a6"), back: function() { setPlanView("hub"); setSelectedMilestone(null); continuationFocus.current = "tops-plan-shortcut-resources"; continuationReturn.current = null; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("timeline"); } })), activeTab === "taxes" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: S.card
   }, /*#__PURE__*/React.createElement("div", {
     style: S.cardTitle
@@ -19168,8 +19047,8 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     showMoreMenu !== "benefits" && TOPS_TOOL_CHOICES.filter(function(tool) { return tool.id === "timeline" || tool.id === "pathway"; }).map(function(tool) {
       return React.createElement("button", { key: tool.id, type: "button", className: "tops-more-tool", onClick: function() { openExperienceTool(tool.id); } }, tool.title);
     }),
-    [{id:"reminders",icon:"bell",label:"REMINDERS & ALERTS",desc:"Deadline reminders timed to your separation date"},{id:"critical",icon:"alert",label:"CRITICAL WINDOWS",desc:"Time-bound windows where missing the date costs money or benefits"},{id:"readiness",icon:"gauge",label:"TRANSITION CHECKLIST",desc:"Review and confirm your transition tasks"},{id:"vamath",icon:"calc",label:"VA MATH CALCULATOR",desc:"Estimate a combined rating using 38 CFR 4.25 Table I"},{id:"vapay",icon:"dollar",label:"VA PAY ESTIMATOR",desc:"Calculate your monthly disability compensation"},{id:"finalpcs",icon:"box",label:"FINAL PCS ENTITLEMENTS",desc:"Weight allowances, MALT, move timelines by grade"},{id:"vethub",icon:"medal",label:"VET HUB",desc:"Career score, benefits, employers, entrepreneurship"},{id:"resources",icon:"link",label:"RESOURCES",desc:"VSOs, SkillBridge, healthcare, document vault"},{id:"taxes",icon:"percent",label:"TAX INTEL",desc:"State tax on retired pay, MSRRA, residency"},{id:"dd214",icon:"doc",label:"DD214 GUIDE",desc:"Verification checklist, service record review"}].filter(function(m) { return showMoreMenu !== "benefits" || ["critical","vamath","vapay","resources","taxes"].indexOf(m.id) !== -1; }).map(function(m) {
-      return React.createElement("button", { key: m.id, className: "tops-more-tool", onClick: function() { primaryNavFocus.current = true; setActiveTab(m.id); setShowMoreMenu(false); }, style: undefined },
+    [{id:"reminders",icon:"bell",label:"REMINDERS & ALERTS",desc:"Deadline reminders timed to your separation date"},{id:"critical",icon:"alert",label:"CRITICAL WINDOWS",desc:"Time-bound windows where missing the date costs money or benefits"},{id:"readiness",icon:"gauge",label:"TRANSITION CHECKLIST",desc:"Review and confirm your transition tasks"},{id:"vamath",icon:"calc",label:"VA MATH CALCULATOR",desc:"Estimate a combined rating using 38 CFR 4.25 Table I"},{id:"vapay",icon:"dollar",label:"VA PAY ESTIMATOR",desc:"Calculate your monthly disability compensation"},{id:"finalpcs",icon:"box",label:"FINAL PCS ENTITLEMENTS",desc:"Weight allowances, MALT, move timelines by grade"},{id:"vethub",icon:"medal",label:"VET HUB",desc:"Career score, benefits, employers, entrepreneurship"},{id:"resources",icon:"link",label:"RESOURCES",desc:"VSOs, SkillBridge, healthcare, document checklist"},{id:"taxes",icon:"percent",label:"TAX INTEL",desc:"State tax on retired pay, MSRRA, residency"},{id:"dd214",icon:"doc",label:"DD214 GUIDE",desc:"Verification checklist, service record review"}].filter(function(m) { return showMoreMenu !== "benefits" || ["critical","vamath","vapay","resources","taxes"].indexOf(m.id) !== -1; }).map(function(m) {
+      return React.createElement("button", { key: m.id, className: "tops-more-tool", onClick: function() { if (m.id === "resources") { openExperienceTool("resources"); return; } primaryNavFocus.current = true; setActiveTab(m.id); setShowMoreMenu(false); }, style: undefined },
         React.createElement("span", { style: { color: C.gold, flexShrink: 0 } }, TopsToolArt(m.id, m.icon, 54)),
         React.createElement("div", { style: { flex: 1 } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 15, color: C.textPrimary, letterSpacing: 1 } }, m.label),

@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-13",
+  "reviewer": "/root/j1_diagnostic_contract",
+  "disposition": "PASS",
+  "scope": "Local document checklist presentation, persistence feedback and affected navigation; no publish authority",
+  "candidate": "6372f28cd0cd9712feffee6f38e1df135a56c2c2fa1626e75e9a43f8c5d3a808",
+  "worker": "fc8392447031ee82bd976c152cdd0bda4354c8507994a0c55ee0ae6c330354b8",
+  "cache": 287,
+  "core_runtime_snapshot": "1b54c1d0ba4fc73c8e4b08e6dad1dfe4f7cfd56a1cd63547f093f0bcc0a09de3",
+  "final_navigation_snapshot": "6372f28cd0cd9712feffee6f38e1df135a56c2c2fa1626e75e9a43f8c5d3a808",
+  "evidence": {
+    "independent-review.md": "c6308e253392687d12f8b35569bfcc15b4ce05db48da4ce6944ddac90838b039",
+    "independent-results.json": "56c7de9997d7b7d0eee16c628b60510ddfaed6f96f7960c89d993d789812b629",
+    "final-delta-results.json": "27ac1821791c096271d4c5bb4a7771dcdfa9e9cd7731899b2aa6966c7c42e76c",
+    "source-checks.json": "1325ba9f313e7b470932840bf67166c289dca86d7727f7e7ff5e4512282ecf5b",
+    "baseline-observation.json": "ab649172aec7ec1374a1f6355a819faa5539d9be07851654eb7dd7aad2a48a52",
+    "final-34e0-results.json": "ebbbbd146e08f31bee9140e43dcb6054013ee9a5a744216e0c7709a4ac535c6f"
+  },
+  "limitations": [
+    "Synthetic desktop Chrome mobile emulation, not field/real-device or assistive-technology validation",
+    "Embedded branch simulated; real host iframe not retested",
+    "Retention and uncoached member usefulness UNMEASURED",
+    "Mandatory release gates and publication not performed by independent reviewer"
+  ]
+}

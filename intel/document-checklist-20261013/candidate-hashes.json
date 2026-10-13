@@ -1,0 +1,22 @@
+{
+  "base": "657f790e01f035d478da1d65eac302e53c09783f",
+  "cache": 287,
+  "files": [
+    {
+      "path": "index.html",
+      "sha256": "6372f28cd0cd9712feffee6f38e1df135a56c2c2fa1626e75e9a43f8c5d3a808"
+    },
+    {
+      "path": "pwa-sw.js",
+      "sha256": "fc8392447031ee82bd976c152cdd0bda4354c8507994a0c55ee0ae6c330354b8"
+    },
+    {
+      "path": "scripts/document-checklist-browser-regression.js",
+      "sha256": "793bef2638f797d7ab60344428f91c2291fbcdab10254960264aed4c77c2d6d2"
+    },
+    {
+      "path": "scripts/vgli-document-browser-regression.js",
+      "sha256": "9fe934feebcec59de0b9b346b31dbad40c1df80d06b03035d04e5a9b6df71fed"
+    }
+  ]
+}

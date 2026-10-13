@@ -1,0 +1,8 @@
+EDIT 11 OLD ), activeTab === "resources" && /*#__PURE__*/React.createElement("div", null,
+  React.createElement("details", { style: { marginBottom: 14 } }, NEW ), activeTab === "resources" && /*#__PURE__*/React.createElement("div", null,
+  subTab !== "documents" && React.createElement("details", { style: { marginBottom: 14 } },
+new expected1 actual1; old expected0 actual0
+EDIT 12 OLD   React.createElement("div", { style: { marginBottom: 16 } },
+    React.createElement("label", { htmlFor: "tops-resource-topic" NEW   subTab !== "documents" && React.createElement("div", { style: { marginBottom: 16 } },
+    React.createElement("label", { htmlFor: "tops-resource-topic"
+new expected1 actual1; old expected0 actual0

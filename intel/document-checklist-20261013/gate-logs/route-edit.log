@@ -1,0 +1,2 @@
+EDIT13 OLD onClick: function() { primaryNavFocus.current = true; setActiveTab(m.id); setShowMoreMenu(false); } NEW onClick: function() { if (m.id === "resources") { openExperienceTool("resources"); return; } primaryNavFocus.current = true; setActiveTab(m.id); setShowMoreMenu(false); }
+expected new1 old0; actual new1 old0
