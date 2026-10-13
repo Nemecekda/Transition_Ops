@@ -1,0 +1,319 @@
+{
+  "base": "577812f6629dead44579b9939a8485569ae66671",
+  "edits": [
+    {
+      "edit": "shared review binding",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "review invoker parameter",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "store invoker",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "outcome context focus",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "stale draft reachability",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "focusable review heading",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "pending review status",
+      "old_before": 1,
+      "old_after_expected": 1,
+      "old_after_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "cancel invoker focus",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "generic direct editor",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "WI direct editor",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "date shortcut invoker",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "App review state",
+      "old_before": 1,
+      "old_after_expected": 1,
+      "old_after_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "shared review props",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "clear pending helper",
+      "old_before": 1,
+      "old_after_expected": 1,
+      "old_after_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "guide clear callback",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "guide clear wiring",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "action clear callback",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "guide action clear wiring",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "loop action clear wiring",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "Navigator action clear wiring",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "Navigator clear entry",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "shared clear prop",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "worksheet clear callback",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "worksheet clear wiring",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "Career discard callback",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "Career discard wiring",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "source clear callback",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "Career source clear wiring",
+      "old_before": 1,
+      "old_after_expected": 1,
+      "old_after_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "restore clear callback",
+      "old_before": 1,
+      "old_after_expected": 1,
+      "old_after_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "backup exclusion notice",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "backup restore notice",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "backup restore confirmation",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "guide clear notice",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "pending copy",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "pending visible copy",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 2,
+      "new_actual": 2
+    },
+    {
+      "edit": "My Plan stale-review reachability",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "final bounded edit 1",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "final bounded edit 2",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "final bounded edit 3",
+      "old_before": 1,
+      "old_after_expected": 0,
+      "old_after_actual": 0,
+      "new_expected": 1,
+      "new_actual": 1
+    }
+  ],
+  "index_byte_identical": true,
+  "worker_exact_283_to_284": true
+}

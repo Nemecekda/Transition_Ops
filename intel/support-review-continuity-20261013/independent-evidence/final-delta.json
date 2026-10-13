@@ -1,0 +1,10 @@
+{
+  "base_index_sha256": "da0a72f1fe9081f4d5d0b792ad59da6748b27b0549116fa37187d44c53ab8ca8",
+  "final_index_sha256": "51b3c1e8569ed44233764aca807de113253f9724a0e9f56e6c4ef4ae6cd2a81e",
+  "exact_replacements": 3,
+  "changes": [
+    "Shorter mount-return message",
+    "Clear-source callback in worksheet starter",
+    "Clear-source callback in currently unreferenced CareerStart function"
+  ]
+}

@@ -1,0 +1,6 @@
+PASS four distinct outcome drafts, no inherited date, direction review, no completion/persistence before explicit acceptance
+PASS edited documents/date survives saved reload and exact editor return; roles/goal/worksheet and backup preserved; one date editor
+PASS visit-only step is usable in this visit and saved step returns after reload
+PASS completed support updates, exact WI recognition only, stale disk rejection with draft retained
+PASS failed atomic save rolls back, 320/375 reflow and44px controls, no provider/member-data request
+SUPPORT OUTCOME: LOCAL AUTOMATION PASS. Manual AT and hosted checks remain pending.
