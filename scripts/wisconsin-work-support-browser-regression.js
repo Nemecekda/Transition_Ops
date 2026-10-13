@@ -66,7 +66,7 @@ const server = http.createServer((req, res) => {
     await wait('!!window.wiCopied'); assert.equal(await ev('window.wiCopied'),expectedQuestion);
     await ev('Object.defineProperty(navigator,"clipboard",{configurable:true,value:{writeText:async()=>{throw Error("synthetic denied")}}});document.getElementById("tops-wi-work-support-resources-copy").click()');
     await wait('document.activeElement.id === "tops-wi-work-support-resources-questions"');
-    assert.equal(await ev('document.activeElement.readOnly'),true); assert.equal(await ev('document.activeElement.value'),expectedQuestion);
+    assert.equal(await ev('document.activeElement.readOnly'),false); assert.equal(await ev('document.activeElement.value'),expectedQuestion);
     assert.equal(await disk(),before); console.log('PASS official links/conditional claims; keyboard copy uses generic text only and denied clipboard offers focused manual copy');
     for(const width of [320,375,390]) {
       await c.send('Emulation.setDeviceMetricsOverride',{width,height:844,deviceScaleFactor:1,mobile:true});

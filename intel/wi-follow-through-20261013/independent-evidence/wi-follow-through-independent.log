@@ -1,0 +1,29 @@
+{
+  "status": "LOCAL AUTOMATION PASS",
+  "appSha": "cb52b2ee4c308c7dbc8079674271a930f92b6121da32f17a9b7f4a038b7dffd7",
+  "conditions": {
+    "browser": "isolated headless Chromium via CDP",
+    "viewports": [
+      320,
+      375
+    ],
+    "data": "synthetic",
+    "network": "loopback only; external blocked",
+    "clipboard": "success/denial stubs; no real clipboard"
+  },
+  "results": [
+    "F1 fresh review visibly proposes neutral work/training support without an unrelated direction selector; native Enter/cancel focus; visit-only Home continuation/Back works and refresh does not persist",
+    "F2 explicit career details append once, preserve edited questions across both surfaces, never copy raw resume/worksheet, and clipboard denial focuses editable selected text",
+    "F3 share URL is exactly origin plus public guide route; drops role/questions/fragment, and denied copy provides selected read-only URL",
+    "F4 replacement requires explicit check; cancel preserves bytes; changed disk rejects stale review and new review cannot overwrite unseen newer saved work",
+    "F5 explicit save preserves guide and worksheet exact bytes, replaces only reviewed unfinished undated step; Home/Career reopen and full reload retain it",
+    "F6 injected save failure rolls back exact saved bytes and truthfully reports not saved",
+    "F6b unreadable saved guide/action/worksheet each block replacement and preserve exact original bytes while visit-only remains available",
+    "F7 unfinished Career draft survives cancel and visit-only WI next step without persisting or silently replacing it",
+    "F8 direct guide link focuses opened guide; shared question draft resets on reload;320/375 reflow44px targets and final-character keyboard deletion retains focus",
+    "F9 additive support guide/action/backup roundtrip succeeds, all3 prior paths remain valid, unknown/prototype values reject, generic support stays neutral",
+    "F9b neutral support blocker uses all Resources, including training, without a career-specialist or Wisconsin assumption",
+    "F11 fresh support saves/reloads without a career-direction detour; completion and full guide both lead to all support resources without assuming Wisconsin",
+    "F10 no provider/member-content request or runtime exception; external network blocked"
+  ]
+}

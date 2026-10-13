@@ -1,0 +1,11 @@
+{
+  "status": "LOCAL AUTOMATION PASS",
+  "navigatorSha": "ca9f23fdc2e13346164834e92da9b2e421c9cc64afa0cf985c5ec3b960741bcc",
+  "conditions": "Isolated Node VM; NAVIGATOR_DRY_RUN only; synthetic bodies; throwing client stub; no host env or network",
+  "cases": [
+    "support and3 prior pathways accepted in dry-run",
+    "unknown/prototype/extra fields/overlength/control characters rejected400",
+    "zero client constructions and zero provider calls",
+    "untrusted-data instruction, existing model/output cap/store behavior retained"
+  ]
+}

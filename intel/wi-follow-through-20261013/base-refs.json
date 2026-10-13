@@ -1,0 +1,11 @@
+{
+  "HEAD": "6c34c30b7fa1a63cc36102ef95f6fbbfb45dc35d",
+  "origin/main": "391b810acc9bebc04d8bcdbf11764c66944d409f",
+  "merge_base": "391b810acc9bebc04d8bcdbf11764c66944d409f",
+  "branch": "codex/wisconsin-plan-follow-through",
+  "counts_origin_main_HEAD": "0\t2",
+  "unpublished_preserved": [
+    "6c34c30b7fa1a63cc36102ef95f6fbbfb45dc35d Add verified Wisconsin work tools and training help",
+    "c4de90b3db7b869f29617fac53292f0add9d3536 Simplify Career entry and keep each task in context"
+  ]
+}

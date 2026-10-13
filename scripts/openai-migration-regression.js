@@ -706,6 +706,13 @@ async function run() {
     assert.equal(dryBody.reply, "DRY RUN — no model call was made. This reply exercises the response path only.");
     assert.equal(clientStages.length, dryStartClients, "dry-run constructs no client/store");
     assert.equal(calls.length, dryStartCalls, "dry-run makes no provider request");
+    for (const pathway of ["transition", "skills", "change", "support", "unknown-support"]) {
+      const result = await navigator.lambdaHandler(post({ messages: [{ role: "user", content: "Synthetic work support question" }], guideContext: { pathway } }));
+      assert.equal(result.statusCode, pathway === "unknown-support" ? 400 : 200, "guide pathway allowlist remains closed: " + pathway);
+    }
+    assert.equal(clientStages.length, dryStartClients, "guide dry-run constructs no client/store");
+    assert.equal(calls.length, dryStartCalls, "guide dry-run makes no provider request");
+    console.log("PASS: neutral support and three legacy guide directions accepted; unknown pathway rejected, zero clients/stores/provider calls in dry-run");
     const dryBad = await navigator.lambdaHandler({ httpMethod: "POST", body: "{" });
     assert.equal(dryBad.statusCode, 400, "dry-run retains request validation");
     delete process.env.NAVIGATOR_DRY_RUN;
