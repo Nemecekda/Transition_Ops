@@ -1,0 +1,23 @@
+{
+  "status": "LOCAL AUTOMATION PASS",
+  "appSha": "e01dfee863ee6964ad8bc1afe899cbbd6c4b0512a23973b91d5c630ddab64bf5",
+  "conditions": {
+    "browser": "isolated headless Chromium via CDP",
+    "viewports": [
+      320,
+      375
+    ],
+    "data": "synthetic",
+    "network": "loopback only"
+  },
+  "results": [
+    "R1 visible resume entry, native Enter/focus, no empty clearing, Home and Back source/role preservation",
+    "R2 no-resume role path reaches a concrete job action, returns intact, creates no saved state",
+    "R3 explicit comparison opens both required source fields without prior resume-route choice",
+    "R4 empty grow route can switch to resume-free exploration",
+    "R5 saved task/action/date resume and Back preserve exact disk bytes",
+    "R6 partial saved target retains both entry choices and prefill without automatic save",
+    "R7 320/375 CSS-pixel route/intake reflow and changed control target sizes",
+    "R8 no runtime exception or attempted provider/member-payload request; external resources blocked"
+  ]
+}

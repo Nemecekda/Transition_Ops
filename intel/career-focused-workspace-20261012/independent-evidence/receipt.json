@@ -1,0 +1,30 @@
+{
+  "reviewer": "/root/j1_diagnostic_review",
+  "createdAt": "2026-10-12T21:44:30.817559+00:00",
+  "verdict": "LOCAL AUTOMATION PASS",
+  "baseCommit": "391b810acc9bebc04d8bcdbf11764c66944d409f",
+  "branch": "codex/career-focused-workspace",
+  "implementationHashes": {
+    "index.html": "1a15a9fff1649f74a11c3d2c38a1ea212f0329dcde140b3249bfadf7ff4b71bf",
+    "pwa-sw.js": "8575c5686516b020e196345d0e9dc967e69b722472ef9c2074eff20e5eabf7e8",
+    "scripts/career-simple-entry-browser-regression.js": "0490648e58b5028ef28dd271018decec078e2cfdbac95b249aa1555ac53a9334",
+    "scripts/career-resume-handoff-browser-regression.js": "568f6dd89faa57b1e94b79c17814212a52a2543be081a131f8949299fe301ba1"
+  },
+  "reportSha256": "370b1be465223f53e8dae1406c06a1bb1ccb61d9d6fe181237e0c71a74af6d69",
+  "evidenceHashes": {
+    "career-review-author-entry.log": "5f9021a9d95296305e605629cf8d0464ce7c6e88e5db200974774c5cb342e270",
+    "career-review-clear-focus.js": "7311dbee58bcfabfa3a6658f4914dbc4fd84b26e7d63cff98e4d0c26b3bb265f",
+    "career-review-clear-focus.log": "f82526413294de7f49ddfc3728052a13878e595fe1e1be187a06577c937743a8",
+    "career-review-empty-focus.js": "e70b1cea03b2b6f27c1c002b5d21d4919a2df239210191968279bd792b2d9189",
+    "career-review-empty-focus.log": "bf3104aada66dda6539943cc932a2f4de8d2ce9d376de42821a82a66336c3628",
+    "career-review-file-import.js": "9c1012dbe8a69cbe1a817ceb6bc3df1ede994a430fccda692e72387db722a385",
+    "career-review-file-import.log": "8652751e314d29401dc00efeeea001f87a685fa1d45fa619f385670c8d294d0e",
+    "career-review-independent.js": "a5b99fce8dbfe5b5b21f699d8bb6f551c59ebe885d0b0d99f4b191d17bcd71ed",
+    "career-review-independent.log": "168b858c5f962a6176c7d92f1d2cc960590c1eba1bce40d844b3cfdd1cc9e994",
+    "career-review-resume.txt": "0594fab423d0f68c6f8b502b638c2b28a9e216b0acc8ee7a34034c22cb39b70f"
+  },
+  "openBlockingFindings": [],
+  "manualAT": "PENDING",
+  "hostedAcceptance": "PENDING",
+  "scope": "Independent bounded Career routes, saved state, keyboard focus, local file disclosure and diff review; not publication authority"
+}

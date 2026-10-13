@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-12",
+  "scope": "local candidate, not published",
+  "base": "391b810acc9bebc04d8bcdbf11764c66944d409f",
+  "branch": "codex/career-focused-workspace",
+  "cache": 280,
+  "sha256": {
+    "index.html": "1a15a9fff1649f74a11c3d2c38a1ea212f0329dcde140b3249bfadf7ff4b71bf",
+    "pwa-sw.js": "8575c5686516b020e196345d0e9dc967e69b722472ef9c2074eff20e5eabf7e8",
+    "scripts/career-simple-entry-browser-regression.js": "0490648e58b5028ef28dd271018decec078e2cfdbac95b249aa1555ac53a9334",
+    "scripts/career-resume-handoff-browser-regression.js": "568f6dd89faa57b1e94b79c17814212a52a2543be081a131f8949299fe301ba1"
+  },
+  "checks": {
+    "openai-migration": {
+      "exit_code": 0,
+      "log": "evidence/openai-migration.log"
+    },
+    "sw-privacy": {
+      "exit_code": 0,
+      "log": "evidence/sw-privacy.log"
+    },
+    "privacy-network": {
+      "exit_code": 0,
+      "log": "evidence/privacy-network.log"
+    },
+    "runtime-ai-spend": {
+      "exit_code": 0,
+      "log": "evidence/runtime-ai-spend.log"
+    },
+    "accessibility-release": {
+      "exit_code": 0,
+      "log": "evidence/accessibility-release.log"
+    },
+    "simple-entry": {
+      "exit_code": 0,
+      "log": "evidence/simple-entry.log"
+    }
+  },
+  "accessibility": "LOCAL AUTOMATION PASS; manual AT and hosted acceptance pending",
+  "network": "synthetic test browsers denied outbound connections; handler providers stubbed; no paid calls",
+  "dependencies": "Existing 3dc7 node_modules reused temporarily by local symlink; required installed package versions matched; no install or dependency change. Link removed after checks."
+}

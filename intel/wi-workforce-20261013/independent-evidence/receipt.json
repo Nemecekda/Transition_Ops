@@ -1,0 +1,22 @@
+{
+  "reviewer": "/root/j1_diagnostic_review",
+  "createdAt": "2026-10-13T20:08:14.972797+00:00",
+  "verdict": "LOCAL AUTOMATION PASS",
+  "baseCommit": "c4de90b3db7b869f29617fac53292f0add9d3536",
+  "branch": "codex/wisconsin-work-support",
+  "artifactHashes": {
+    "index.html": "970486291e4e0ea0c360439688c604fc6eafb5398a28e89889654b0ecf7f93b5",
+    "pwa-sw.js": "2d4c1b751a1a4efbf8ecdebb13bd2c79ef551d6b54d98c012a36ced930378d7b",
+    "intel/verification-log.md": "6530c38a845c4fd3a5cf5d43e58394587895fecfccfcebead24e8f6161c48818",
+    "intel/wi-workforce-20261013/S2-verification.md": "a541d8add31ccb1c3cf7b49f6de80728f7d3f1926a6d2449e1e6d7a445609b11"
+  },
+  "reportSha256": "f73577b1df959c32e1cb0e7644a3d25ed84d60bca7364f8abb3a75083d2ce29e",
+  "evidenceHashes": {
+    "wi-review-independent.js": "c0d4e7445173c87678093249407f8df0cd641a6a65bde65e505d14f1b7f6227f",
+    "wi-review-independent.log": "82e21d786fc52075e61dc26efde7056ae63355b961b0a04d259d4f96e6fbf7b4"
+  },
+  "openBlockingFindings": [],
+  "manualAT": "PENDING",
+  "hostedAcceptance": "PENDING",
+  "scope": "Conditional copy against S2 receipt; synthetic search/filter/copy/focus/mobile/Career continuity review; no publication authority"
+}

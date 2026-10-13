@@ -316,7 +316,7 @@ export const lambdaHandler = async (event) => {
   if (Object.prototype.hasOwnProperty.call(body, "guideContext")) {
     const value = body.guideContext;
     const allowed = ["pathway", "currentRole", "targetRole", "goal"];
-    if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).length === 0 || Object.keys(value).some(k => !allowed.includes(k) || typeof value[k] !== "string" || !value[k].trim() || value[k].length > 120 || /[\u0000-\u001f\u007f]/.test(value[k])) || (value.pathway && !["transition", "skills", "change"].includes(value.pathway))) {
+    if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).length === 0 || Object.keys(value).some(k => !allowed.includes(k) || typeof value[k] !== "string" || !value[k].trim() || value[k].length > 120 || /[\u0000-\u001f\u007f]/.test(value[k])) || (value.pathway && !["transition", "skills", "change", "support"].includes(value.pathway))) {
       return { statusCode: 400, headers, body: JSON.stringify({ error: "Invalid guide details" }) };
     }
     guideFields = Object.fromEntries(allowed.filter(k => Object.prototype.hasOwnProperty.call(value, k)).map(k => [k, value[k]]));

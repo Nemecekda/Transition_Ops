@@ -1,0 +1,56 @@
+{
+  "reviewer": "/root/j1_diagnostic_review",
+  "recorded_at_utc": "2026-10-13T22:15:48.019867+00:00",
+  "status": "LOCAL AUTOMATION PASS",
+  "base": "6c34c30",
+  "production_sha256": {
+    "index.html": "cb52b2ee4c308c7dbc8079674271a930f92b6121da32f17a9b7f4a038b7dffd7",
+    "pwa-sw.js": "c1955745c3a14b2f7b0dbf01827cb586e9efa19a23a67924cccb8fa94577dc36",
+    "netlify/functions/navigator.mjs": "ca9f23fdc2e13346164834e92da9b2e421c9cc64afa0cf985c5ec3b960741bcc"
+  },
+  "reviewed_files_sha256": {
+    "index.html": "cb52b2ee4c308c7dbc8079674271a930f92b6121da32f17a9b7f4a038b7dffd7",
+    "pwa-sw.js": "c1955745c3a14b2f7b0dbf01827cb586e9efa19a23a67924cccb8fa94577dc36",
+    "netlify/functions/navigator.mjs": "ca9f23fdc2e13346164834e92da9b2e421c9cc64afa0cf985c5ec3b960741bcc",
+    "scripts/openai-migration-regression.js": "66bc32055ab0f7a235a2503ac74e0aed93ff6767eca5221cf46b4a5f3f9b33b7",
+    "scripts/wisconsin-work-support-browser-regression.js": "39868f5ba069e858691506294020f15f804b7376ba05537a2a2f1ea3dd51fb1c",
+    "scripts/wisconsin-plan-browser-regression.js": "b4da4159861fce8a5a14ed95964168a639913333fbc17a92d3441cb52e573ea7"
+  },
+  "candidate_manifest_sha256": "86eb9683a3805dfcbd0d51f1337aeede8ca93d50334a1325b1776546f7dab90b",
+  "browser_results": [
+    "F1 fresh review visibly proposes neutral work/training support without an unrelated direction selector; native Enter/cancel focus; visit-only Home continuation/Back works and refresh does not persist",
+    "F2 explicit career details append once, preserve edited questions across both surfaces, never copy raw resume/worksheet, and clipboard denial focuses editable selected text",
+    "F3 share URL is exactly origin plus public guide route; drops role/questions/fragment, and denied copy provides selected read-only URL",
+    "F4 replacement requires explicit check; cancel preserves bytes; changed disk rejects stale review and new review cannot overwrite unseen newer saved work",
+    "F5 explicit save preserves guide and worksheet exact bytes, replaces only reviewed unfinished undated step; Home/Career reopen and full reload retain it",
+    "F6 injected save failure rolls back exact saved bytes and truthfully reports not saved",
+    "F6b unreadable saved guide/action/worksheet each block replacement and preserve exact original bytes while visit-only remains available",
+    "F7 unfinished Career draft survives cancel and visit-only WI next step without persisting or silently replacing it",
+    "F8 direct guide link focuses opened guide; shared question draft resets on reload;320/375 reflow44px targets and final-character keyboard deletion retains focus",
+    "F9 additive support guide/action/backup roundtrip succeeds, all3 prior paths remain valid, unknown/prototype values reject, generic support stays neutral",
+    "F9b neutral support blocker uses all Resources, including training, without a career-specialist or Wisconsin assumption",
+    "F11 fresh support saves/reloads without a career-direction detour; completion and full guide both lead to all support resources without assuming Wisconsin",
+    "F10 no provider/member-content request or runtime exception; external network blocked"
+  ],
+  "navigator_results": [
+    "support and3 prior pathways accepted in dry-run",
+    "unknown/prototype/extra fields/overlength/control characters rejected400",
+    "zero client constructions and zero provider calls",
+    "untrusted-data instruction, existing model/output cap/store behavior retained"
+  ],
+  "evidence_sha256": {
+    "wi-follow-through-navigator.js": "0f306634dd61ab0acac97304d76bc5557c3f98d4948bae3142eea2580fd55bbc",
+    "wi-follow-through-independent.js": "de266e47bac91e1739f934be6051f0ee0f635d6ef5551fd58d88240557b09483",
+    "wi-follow-through-navigator.log": "9b438b7f0c5c2e41d1d72948a13c3ad94ff7ffb9860a889e00e0735693f2a857",
+    "wi-follow-through-enum-scan.txt": "51be6a75b03669c26d959798958c2272b2fed29e5700705dfb1f15c309e3c3d6",
+    "wi-follow-through-independent.log": "b50700b78095ac4198c4459a80449019a38e969b28111c50791741973357d3f5"
+  },
+  "report_sha256": "ceea14b94247067b43ab90e8cbe45604c41002a3e0880b089971e1b33c4b657d",
+  "limits": [
+    "No manual assistive-technology claim",
+    "No hosted-release claim",
+    "No actual provider calls",
+    "No member/retention outcome evidence",
+    "Older builds may reject additive support enum; raw saved bytes retained"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "status": "LOCAL AUTOMATION PASS",
+  "appSha": "1a15a9fff1649f74a11c3d2c38a1ea212f0329dcde140b3249bfadf7ff4b71bf",
+  "conditions": {
+    "browser": "isolated headless Chromium via CDP",
+    "viewports": [
+      375
+    ],
+    "data": "synthetic",
+    "network": "loopback only"
+  },
+  "results": [
+    "Local TXT import reveals review text, retains exact content across Home/Career, no automatic save",
+    "R8 no runtime exception or attempted provider/member-payload request; external resources blocked"
+  ]
+}

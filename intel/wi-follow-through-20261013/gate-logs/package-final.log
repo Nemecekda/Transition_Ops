@@ -1,0 +1,6 @@
+26.1.0
+14.7.1
+4N PACKAGE PASS actual netlify.toml
+4N PASS navigator openai=7.8.0 blobs=10.7.13 otel=6.0.6 runtime-utils=2.3.0
+4N PASS resume openai=7.8.0 blobs=10.7.13 otel=6.0.6 runtime-utils=2.3.0
+4N PASS jobs excludes all four package paths

@@ -1,0 +1,20 @@
+{
+  "status": "LOCAL AUTOMATION PASS",
+  "appSha": "970486291e4e0ea0c360439688c604fc6eafb5398a28e89889654b0ecf7f93b5",
+  "conditions": {
+    "browser": "isolated headless Chromium via CDP",
+    "viewports": [
+      320,
+      375
+    ],
+    "data": "synthetic",
+    "network": "loopback only"
+  },
+  "results": [
+    "W1 search deep-link opens and focuses conditional assessment guide; official URLs contain no member parameters",
+    "W2 guide remains accessible while filtering Guard/Reserve; search resets stale category/cost/eligibility",
+    "W3 copy shares only generic questions, denied clipboard offers focused selectable manual text, status is truthful",
+    "W4 compact Career support can be opened by keyboard; unchanged simple entry and next job action;320/375 reflow and44px controls; saved bytes unchanged",
+    "W5 no runtime exception or attempted provider/member-payload request; external resources blocked"
+  ]
+}
