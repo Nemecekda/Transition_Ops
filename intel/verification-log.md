@@ -1849,3 +1849,10 @@ App disposition: replace the fixed-number checklist with neutral field-name prom
 Member action: review the named fields against service records, then manually select only relevant career entries for the separate career-notes worksheet flow.
 Scope: DD214 page checklist and career-record context only; neighboring BDD, executive-order and Reserve-office text was not re-verified by this entry. DoDI PDF returned 403 and was not used as evidence.
 Evidence: [source review](personal-guide-20260927/dd214-source-review.md). Implementation and release gates remain separate; no production publication implied.
+
+
+## WIOA work tools resource, October 13, 2026
+
+Added participant-facing employment resource and career timeline task. Nationwide allowable assistance, not a guaranteed award or enrollment. Local provider determines eligibility, need and funding. Prior approval before purchases; no dollar amounts or universal ownership claim. No personal data collection added.
+
+Sources reviewed: https://www.govinfo.gov/content/pkg/CFR-2025-title20-vol4/pdf/CFR-2025-title20-vol4-sec680-900.pdf (work tools allowable); https://www.dol.gov/agencies/eta/workforce-investment/adult (national AJC network); https://dwd.wisconsin.gov/wioa/policy/08/08.6.htm (Wisconsin local policy and prior approval); https://dwd.wisconsin.gov/wioa/policy/08/08.2.htm (eligibility). Local client discussion is implementation context, not proof of universal funding.
