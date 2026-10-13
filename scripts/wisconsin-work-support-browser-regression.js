@@ -50,6 +50,11 @@ const server = http.createServer((req, res) => {
       assert.equal(await ev('document.getElementById("tops-wi-work-support-resources").open'),true);
       assert.ok(await ev('document.querySelector("#tops-wi-work-support-resources > summary").getBoundingClientRect().top >= -1'));
     }
+    const nationalCard='Array.from(document.querySelectorAll("a")).find(n=>n.textContent.includes("WIOA help with tools and work gear"))';
+    assert.match(await ev(nationalCard+'.textContent'),/FUNDING CONDITIONAL/);
+    await click('FREE');assert.equal(await ev('!!('+nationalCard+')'),false,'conditional funding must not appear in FREE filter');
+    await home();await input('tops-home-search','Wisconsin');await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent.includes("Wisconsin: Help with work tools and training")).click()');await wait('document.activeElement.id === "tops-wi-work-support-resources-heading"');
+    console.log('PASS reconciled nationwide WIOA resource preserves conditional funding and is excluded from FREE filter');
     for(const label of ['GUARD/RESERVE','ACTIVE DUTY','VETERAN','SPOUSE']) { await click(label); assert.equal(await ev('document.getElementById("tops-wi-work-support-resources").checkVisibility()'),true); }
     await click('PAID'); await home(); await input('tops-home-search','WIOA'); await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent.includes("Wisconsin: Help with work tools and training")).click()');
     await wait('document.activeElement.id === "tops-wi-work-support-resources-heading"');

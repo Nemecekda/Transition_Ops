@@ -1,0 +1,17 @@
+{
+  "index.html": {
+    "sha256": "a9df4301ea8f114b97663eff2b8c390c0f6ad2cc6e2306ecec49da939fe73922",
+    "bytes": 1500333,
+    "matches_main": true
+  },
+  "pwa-sw.js": {
+    "sha256": "8575c5686516b020e196345d0e9dc967e69b722472ef9c2074eff20e5eabf7e8",
+    "bytes": 4609,
+    "matches_main": true
+  },
+  "checked_utc": "2026-10-13T22:21:59.416654+00:00",
+  "production_deploy": "6acead890f3cb296622b13e2",
+  "production_commit": "2e0dfdf34ce1dcf004554916aa41e08c43007817",
+  "production_cache": 280,
+  "candidate_cache": 282
+}

@@ -1,0 +1,101 @@
+
+> transition-ops@1.0.0 test:policy-content
+> node scripts/policy-content-regression.js
+
+PASS calcVACombined has one canonical implementation
+PASS canonical calculator source is extractable
+PASS [60,30,10] carries 60 -> 72 -> 75 and converts once to 80
+PASS calculator sorts object callers from highest to lowest
+PASS 1,110 deterministic one-, two-, and three-rating vectors match Table I parity
+PASS BDD prohibited phrase absent: C&P exams are VA-scheduled and cannot be rescheduled
+PASS BDD prohibited phrase absent: I have C&P exams being scheduled by the VA that I cannot reschedule
+PASS BDD prohibited phrase absent: BDD is time-sensitive and cannot be rescheduled
+PASS BDD prohibited phrase absent: Medical appointments for BDD claims are VA-scheduled and take priority
+PASS BDD prohibited phrase absent: Transition Center / SFL-TAP office has regulatory authority
+PASS BDD prohibited phrase absent: attendance is a statutory entitlement
+PASS BDD prohibited phrase absent: lose the ability to have a rating on Day 1
+PASS BDD prohibited phrase absent: rating effective the day after separation
+PASS BDD prohibited phrase absent: rating effective day one
+PASS BDD prohibited phrase absent: rating effective Day 1
+PASS BDD prohibited phrase absent: rating decision within weeks of separation
+PASS BDD prohibited phrase absent: decision typically 3-12 months after separation
+PASS BDD prohibited phrase absent: 3-12 month wait
+PASS BDD prohibited phrase absent: Standard post-discharge claims take 3–6 months
+PASS BDD prohibited phrase absent: Missing BDD means 6-18 months
+PASS BDD prohibited phrase absent: delay your rating by 6-12+ months
+PASS BDD prohibited phrase absent: tens of thousands in delayed compensation
+PASS BDD prohibited phrase absent: you lose the fast-track
+PASS BDD prohibited phrase absent: longer treatment history makes conditions far easier
+PASS BDD prohibited phrase absent: longer documented treatment history are easier
+PASS BDD prohibited phrase absent: easier conditions are to rate
+PASS BDD prohibited phrase absent: No record = no claim
+PASS BDD prohibited phrase absent: military accepts VA physical
+PASS BDD prohibited phrase absent: Some leaders will try to block or delay
+PASS BDD prohibited phrase absent: IG complaint is a last resort
+PASS BDD prohibited phrase absent: far harder to claim later
+PASS BDD prohibited phrase absent: under-rated or never file
+PASS BDD prohibited phrase absent: exponentially harder to claim
+PASS BDD prohibited phrase absent: significantly harder to service-connect
+PASS BDD prohibited phrase absent: future VA claims substantially harder to service-connect
+PASS SkillBridge prohibited phrase absent: most members rate 60–120 days
+PASS SkillBridge prohibited phrase absent: most rank categories cap at 60–120 days
+PASS SkillBridge prohibited phrase absent: 60–90 days for many grades
+PASS SkillBridge prohibited phrase absent: Most SkillBridge participants report job offers
+PASS SkillBridge prohibited phrase absent: Missing this window = walking out with no income
+PASS SkillBridge prohibited phrase absent: processing: 60-90 days
+PASS SkillBridge prohibited phrase absent: E1–E5 generally rate up to 120 days
+PASS SkillBridge prohibited phrase absent: SkillBridge Application Window OPENS
+PASS SkillBridge prohibited phrase absent: All services: the clock on command endorsement starts NOW
+PASS SkillBridge prohibited phrase absent: senior grades at 60–90 days must start soon
+PASS SkillBridge prohibited phrase absent: window functionally closed
+PASS SkillBridge prohibited phrase absent: blanket 180-day planning assumption is dead
+PASS SkillBridge prohibited phrase absent: Navy: confirm with your command career counselor
+PASS BDD member copy marks VBA's 30-day target as a non-guaranteed goal
+PASS Navigator marks VBA's 30-day target as a non-guaranteed goal
+PASS BDD exam-availability requirement is present
+PASS BDD exam-rescheduling route is present
+PASS BDD preparation uses evidence-of-record guidance
+PASS BDD closed-window guidance routes to the standard pre-discharge claim
+PASS BDD Guard and Reserve eligibility is qualified
+PASS SkillBridge member copy uses a sourced ceiling range
+PASS Navigator names the 60-120-day service tiers
+PASS Navigator preserves the Coast Guard exception
+PASS Navigator includes the verified Navy tiers
+PASS SkillBridge T-365 reminder is a service-rule check, not a universal opening date
+PASS SkillBridge member copy routes users to current service-specific rules
+PASS SkillBridge execution reminder compares the member's ceiling with time remaining
+PASS SkillBridge channel block is extractable
+PASS SkillBridge hardStartDay remains -180
+PASS Army publication source remains one label-only entry
+PASS Army publication source has no URL field
+PASS SkillBridge source list cites USCG ALCOAST 202/26
+PASS SkillBridge source list cites MyNavyHR directly
+PASS VA calculator avoids an official-result claim
+PASS VA calculator avoids outcome-seeking copy
+PASS VA guide avoids an official-correctness claim
+PASS VA guide does not waive the required ordering rule
+PASS VA calculator entry copy avoids formula shorthand
+PASS VA calculator action copy is framed as an estimate
+PASS VA calculator explanation avoids decimal healthy-portion shorthand
+PASS VA calculator display avoids decimal intermediate output
+PASS VA calculator avoids a universal P&T benefits claim
+PASS VA guide does not promise that the bilateral factor changes the final rounded evaluation
+PASS VA member copy states final-only conversion
+PASS VA guide states intermediate whole-number carry-forward
+PASS VA calculator display explains Table I whole-number carry-forward
+PASS VA calculator steps display whole-number Table I combinations
+PASS VA calculator final display uses the whole-number Table I value
+PASS VA calculator qualifies P&T-related benefit eligibility
+PASS VA guide qualifies the bilateral factor's effect on the final rounded evaluation
+PASS Navigator has two adaptive one-/two-page resume descriptions
+PASS Navigator has no stale one-page-only resume description
+PASS one immutable clone verification source
+PASS one immutable published verification source
+PASS verification source sections remain ordered and separate
+PASS V-2026-016 appears exactly once within its clone source
+PASS V-2026-016 published record and any amendment remain within their main source
+PASS V-2026-017 appears exactly once within its clone source
+PASS V-2026-017 published record and any amendment remain within their main source
+PASS V-2026-018 appears exactly once within its clone source
+PASS V-2026-018 published record and any amendment remain within their main source
+Policy content regression: PASS (96 assertions; 1110 parity vectors)

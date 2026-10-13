@@ -1867,3 +1867,11 @@ A3 surfaces: Career/Resources Wisconsin guide; tokens [CAREER]/[RESOURCES] exist
 A4 cost: MONEY. EXPIRES: NONE.
 
 Do not publish meeting-only dollar caps, private contacts/employer details, automatic eligibility, blanket SkillBridge funding or tool ownership guarantees. This assessment authorizes only verified bounded copy; QA and publication status are separate.
+
+## WIOA work tools resource, October 13, 2026
+
+Added participant-facing employment resource and career timeline task. Nationwide allowable assistance, not a guaranteed award or enrollment. Local provider determines eligibility, need and funding. Prior approval before purchases; no dollar amounts or universal ownership claim. No personal data collection added.
+
+Sources reviewed: https://www.govinfo.gov/content/pkg/CFR-2025-title20-vol4/pdf/CFR-2025-title20-vol4-sec680-900.pdf (work tools allowable); https://www.dol.gov/agencies/eta/workforce-investment/adult (national AJC network); https://dwd.wisconsin.gov/wioa/policy/08/08.6.htm (Wisconsin local policy and prior approval); https://dwd.wisconsin.gov/wioa/policy/08/08.2.htm (eligibility). Local client discussion is implementation context, not proof of universal funding.
+
+Release reconciliation note, October 13, 2026: retain the nationwide resource and timeline task from main `2e0dfdf`; display its funding as conditional and exclude it from the FREE cost filter. The conditional policy wording, local approval and existing population tags are unchanged. This corrects the directory label, not an eligibility or funding decision.

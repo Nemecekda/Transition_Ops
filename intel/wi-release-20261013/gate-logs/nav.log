@@ -1,0 +1,72 @@
+extracted from shipped files:
+  split regex   /(\[[A-Z0-9 \/]+\]|\*\*[^*]+\*\*)/
+  match regex   /^\[([A-Z0-9 \/]+)\]$/
+  MAP tokens    16  -> 14 distinct tabs
+  validTabs     14
+  manifest      16 tokens
+
+A. every MAP key survives BOTH the split and match regexes
+  PASS  [DASHBOARD] -> dashboard
+  PASS  [VA MATH] -> vamath
+  PASS  [VA PAY] -> vapay
+  PASS  [MONEY BASICS] -> vapay
+  PASS  [CAREER] -> pathway
+  PASS  [RESOURCES] -> resources
+  PASS  [TAX INTEL] -> taxes
+  PASS  [TIMELINE] -> timeline
+  PASS  [GUARD/RESERVE] -> timeline
+  PASS  [CRITICAL WINDOWS] -> critical
+  PASS  [REMINDERS] -> reminders
+  PASS  [READINESS] -> readiness
+  PASS  [VET HUB] -> vethub
+  PASS  [DD214] -> dd214
+  PASS  [FINAL PCS] -> finalpcs
+  PASS  [NAVIGATOR] -> navigator
+
+B. every MAP target is a real tab
+  PASS  DASHBOARD -> dashboard
+  PASS  VA MATH -> vamath
+  PASS  VA PAY -> vapay
+  PASS  MONEY BASICS -> vapay
+  PASS  CAREER -> pathway
+  PASS  RESOURCES -> resources
+  PASS  TAX INTEL -> taxes
+  PASS  TIMELINE -> timeline
+  PASS  GUARD/RESERVE -> timeline
+  PASS  CRITICAL WINDOWS -> critical
+  PASS  REMINDERS -> reminders
+  PASS  READINESS -> readiness
+  PASS  VET HUB -> vethub
+  PASS  DD214 -> dd214
+  PASS  FINAL PCS -> finalpcs
+  PASS  NAVIGATOR -> navigator
+
+C. every tab is reachable by some token (the Commander's principle)
+  PASS  dashboard
+  PASS  vamath
+  PASS  vapay
+  PASS  pathway
+  PASS  resources
+  PASS  taxes
+  PASS  timeline
+  PASS  critical
+  PASS  reminders
+  PASS  readiness
+  PASS  vethub
+  PASS  dd214
+  PASS  finalpcs
+  PASS  navigator
+
+D. MAP and MANIFEST token lists agree
+  PASS  in sync, 16 tokens both sides
+
+E. manifest carries no stale 'no live token' claims
+  PASS  none
+
+F. MAP, MANIFEST, and the function's LIVE_TOKENS all agree
+  PASS  three-way sync, 16 tokens (MAP = MANIFEST = LIVE_TOKENS)
+
+G. every bracketed CORPUS section header maps to a real tab
+  PASS  7 bracketed headers, all mapped
+
+RESULT: ALL ASSERTIONS PASS
