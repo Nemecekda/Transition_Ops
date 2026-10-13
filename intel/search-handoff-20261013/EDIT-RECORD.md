@@ -1,0 +1,7 @@
+# Discrete edit method
+
+The full source-edit script was displayed before execution. Each substitution asserted exact expected old and new occurrences, then counted the result. The initial script's app changes were applied before its unrelated cache-token assertion stopped. The finish script reconstructed all app changes from the clean base commit and required byte equality before performing the corrected exact cache bump. Original and finish scripts, per-operation old/new strings and counts are retained in gate-logs.
+
+Subsequent displayed scripts applied one counted substitution at a time: mobile return-control alignment, inset result focus ring, search-scoped All reminders cleanup, moving critical focus to its native expansion button and ending search context on manual critical filter selection. Old strings that are a substring of the new block intentionally remain once (state declaration, helper prefix and disclosure button prefix); other replaced exact spans are zero after the relevant edit. Every full diff hunk was read before staging.
+
+Test addition is a focused synthetic browser script. Its single fixture adjustment replaces Wisconsin with Hire Heroes only for the external-link test, preserving all behavioral assertions. Runtime test logs are retained. Candidate manifest binds exact app, worker and test bytes. No blanket source normalization, unstaged user changes or branch replacement was used.

@@ -8889,6 +8889,7 @@ function App() {
   });
   const [sitrepDismissed, setSitrepDismissed] = useState(function() { try { return localStorage.getItem("tops_sitrep_jul2026") === "1"; } catch (e) { return false; } });
   const [searchQ, setSearchQ] = useState("");
+  const [homeSearchSelection, setHomeSearchSelection] = useState(null);
   const [policyPanelOpen, setPolicyPanelOpen] = useState(false);
   const [dashMoreOpen, setDashMoreOpen] = useState(false);
   const [installStripX, setInstallStripX] = useState(function() { try { return window.__safeGet("tops_install_strip_x") === "1"; } catch(e) { return false; } });
@@ -9437,7 +9438,8 @@ function App() {
       var jobsHeading = activeTab === "pathway" && ["tops-live-jobs-panel", "tops-job-role"].includes(currentId) ? document.getElementById("tops-page-title") : null;
       (jobsHeading || target).focus({ preventScroll: true });
       var wiDetail = currentId === "tops-wi-work-support-resources-heading" && target.closest("details");
-      (wiDetail || jobsHeading || target).scrollIntoView({ block: wiDetail || jobsHeading || ["tops-my-jobs-heading", "tops-plan-timeline", "tops-loop-title"].includes(currentId) ? "start" : "center" });
+      var searchCard = currentId.indexOf("tops-window-title-") === 0 && target.closest('[data-search-selected="true"]');
+      (searchCard || wiDetail || jobsHeading || target).scrollIntoView({ block: searchCard || wiDetail || jobsHeading || ["tops-my-jobs-heading", "tops-plan-timeline", "tops-loop-title"].includes(currentId) ? "start" : "center" });
     });
     return function() { cancelAnimationFrame(frame); };
   }, [activeTab, planView, selectedMilestone, subTab, reminderExpanded, focusedReminderId, dismissedReminders, reminderTimedOnly, continuationRevision]);
@@ -10245,6 +10247,39 @@ function App() {
         continuationReturn.current = "tops-conversation-resume"; focusCareerWorksheet("career-prep-" + conversation.field); setActiveTab("pathway");
       } }, conversation.label));
   }
+  function returnToHomeSearch() {
+    var target = homeSearchSelection && homeSearchSelection.returnId || "tops-home-search";
+    primaryNavFocus.current = false; continuationFocus.current = target; continuationReturn.current = null;
+    setHomeSearchSelection(null); setActiveTab("dashboard"); setContinuationRevision(function(value) { return value + 1; });
+  }
+  function searchReturnControl() { return React.createElement("div", { style: { marginBottom: 12 } },
+    React.createElement("button", { id: "tops-search-back", type: "button", onClick: returnToHomeSearch, style: { minHeight: 44, padding: "10px 14px", background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" } }, "Back to search"),
+    React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5, margin: "8px 0 0", overflowWrap: "anywhere" } }, "Search: " + searchQ)); }
+  function openHomeSearchResult(hit, returnId) {
+    if (hit.act === "reminder" || hit.act === "window") {
+      var tab = hit.act === "reminder" ? "reminders" : "critical";
+      setHomeSearchSelection({ tab: tab, id: hit.id, title: hit.title, returnId: returnId });
+      primaryNavFocus.current = false; setShowMoreMenu(false);
+      if (tab === "reminders") openPlanRoute(tab, "tops-reminder-" + hit.id, returnId);
+      else { setCriticalFilter("ALL"); setExpandedWindow(hit.id); continuationReturn.current = returnId; setActiveTab(tab); }
+      return;
+    }
+    setHomeSearchSelection(null);
+    if (hit.act === "wi-work-support") openWisconsinGuide(); else openExperienceTool(hit.tab);
+  }
+  useEffect(function() {
+    if (!homeSearchSelection) return;
+    if (activeTab !== homeSearchSelection.tab) {
+      if (activeTab !== "dashboard" && continuationReturn.current === homeSearchSelection.returnId) continuationReturn.current = null;
+      setHomeSearchSelection(null); return;
+    }
+    if (activeTab === "critical") {
+      var available = !!separationDate && filterCriticalWindows(userStatus).some(function(item) { return item.id === homeSearchSelection.id; });
+      setExpandedWindow(homeSearchSelection.id);
+      continuationFocus.current = available ? "tops-window-title-" + homeSearchSelection.id : "tops-search-critical-context";
+      setContinuationRevision(function(value) { return value + 1; });
+    }
+  }, [activeTab, homeSearchSelection, separationDate, userStatus]);
   function renderHomeSearch() { return React.createElement("div", { className: "tops-home-search", style: { marginBottom: 14 } },
     React.createElement("label", { htmlFor: "tops-home-search", style: { display: "block", color: C.textPrimary, fontSize: 16, fontWeight: 600, marginBottom: 8 } }, "Find a tool or topic"),
     React.createElement("input", { id: "tops-home-search", type: "search", "aria-label": "Search Transition OPS", value: searchQ, onChange: function(e) { setSearchQ(e.target.value); }, placeholder: "Try resume, VA math, DD214 or a benefit", style: { width: "100%", boxSizing: "border-box", minHeight: 48, padding: "13px 16px", background: C.bgCard, border: "1px solid " + C.border, borderRadius: 12, color: C.textPrimary, fontSize: 16, fontFamily: "inherit" } }),
@@ -10268,11 +10303,11 @@ function App() {
       });
       SMART_REMINDERS.forEach(function(r) {
         var s = score([r.title, r.brief || "", r.why || "", r.cat || "", (r.items || []).join(" ")]);
-        if (s > 0) hits.push({ s: s, tag: "REMINDER", tagColor: C.accent, title: r.title, snip: r.brief || r.why || "", act: "tab", tab: "reminders" });
+        if (s > 0) hits.push({ s: s, tag: "REMINDER", tagColor: C.accent, title: r.title, snip: r.brief || r.why || "", act: "reminder", id: r.id });
       });
       CRITICAL_WINDOWS.forEach(function(w) {
         var s = score([(w.name || "") + " " + (w.fullName || ""), w.shortDesc || "", w.whyMatters || "", w.authority || ""]);
-        if (s > 0) hits.push({ s: s + 1, tag: "CRITICAL WINDOW", tagColor: C.danger, title: w.fullName || w.name, snip: w.shortDesc || "", act: "tab", tab: "critical" });
+        if (s > 0) hits.push({ s: s + 1, tag: "CRITICAL WINDOW", tagColor: C.danger, title: w.fullName || w.name, snip: w.shortDesc || "", act: "window", id: w.id });
       });
       var wiSupportScore = score([TOPS_WISCONSIN_WORK_SUPPORT.title, TOPS_WISCONSIN_WORK_SUPPORT.description, TOPS_WISCONSIN_WORK_SUPPORT.keywords]);
       if (wiSupportScore > 0) hits.push({ s: wiSupportScore + 4, tag: "RESOURCE", tagColor: C.textPrimary, title: TOPS_WISCONSIN_WORK_SUPPORT.title, snip: "Ask a Wisconsin Job Center about eligibility and approval before buying tools or starting training.", act: "wi-work-support" });
@@ -10299,15 +10334,14 @@ function App() {
         React.createElement("button", { type: "button", onClick: function() { setShowMoreMenu(true); }, style: { minHeight: 44, padding: "10px 14px", background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" } }, "Browse all tools"));
       return React.createElement("div", { style: { marginTop: 6, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, overflow: "hidden" } }, hits.map(function(h, i) {
         var inner = [
-          React.createElement("div", { key: "t", style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 3 } },
-            React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", background: C.bgElevated, color: h.tagColor, borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, flexShrink: 0 } }, h.tag),
-            React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.textPrimary } }, h.title)
-          ),
-          React.createElement("div", { key: "s", style: { fontSize: 13, color: C.textBody, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" } }, h.snip)
+          React.createElement("div", { key: "t", style: { fontSize: 16, fontWeight: 600, lineHeight: 1.35, color: C.textPrimary, overflowWrap: "anywhere" } }, h.title),
+          React.createElement("div", { key: "k", style: { fontSize: 12, color: C.textSecondary, margin: "4px 0", lineHeight: 1.4 } }, { TOOL: "Tool", REMINDER: "Reminder", "CRITICAL WINDOW": "Critical window", RESOURCE: "Resource", "VSO / ORG": "Organization", SKILLBRIDGE: "SkillBridge" }[h.tag], h.act === "url" ? " - Opens a new tab" : ""),
+          React.createElement("div", { key: "s", style: { fontSize: 14, color: C.textBody, lineHeight: 1.45, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" } }, h.snip)
         ];
-        var rowStyle = { display: "block", padding: "10px 14px", borderBottom: i < hits.length - 1 ? "1px solid " + C.border : "none", cursor: "pointer", textDecoration: "none" };
+        var rowStyle = { display: "block", minHeight: 44, outlineOffset: -3, padding: "12px 14px", borderBottom: i < hits.length - 1 ? "1px solid " + C.border : "none", cursor: "pointer", textDecoration: "none" };
         if (h.act === "url") return React.createElement("a", { key: i, href: h.url, target: "_blank", rel: "noopener noreferrer", style: rowStyle }, inner);
-        return React.createElement("button", { key: i, type: "button", onClick: function() { if (h.act === "wi-work-support") { openWisconsinGuide(); } else openExperienceTool(h.tab); setSearchQ(""); }, style: Object.assign({}, rowStyle, { width: "100%", minHeight: 44, textAlign: "left", background: "transparent", border: 0, borderBottom: rowStyle.borderBottom, font: "inherit" }) }, inner);
+        var resultId = "tops-home-search-result-" + (h.id || h.tab || h.act);
+        return React.createElement("button", { key: resultId, id: resultId, type: "button", onClick: function() { openHomeSearchResult(h, resultId); }, style: Object.assign({}, rowStyle, { width: "100%", minHeight: 44, textAlign: "left", background: "transparent", border: 0, borderBottom: rowStyle.borderBottom, font: "inherit" }) }, inner);
       }));
     })()
   ); }
@@ -18227,9 +18261,9 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       var nextReminder = reminderTimedOnly ? dueRungs(separationDate, dismissedReminders).filter(function(item) { return item.id !== r.id; })[0] : etsMonths === null ? null : SMART_REMINDERS.filter(function(item) { var d = item.mo - etsMonths; return d >= -1 && d <= 3 && !dismissedReminders[item.id] && item.id !== r.id && reminderHasCurrentDayContext(item, separationDate); }).sort(function(a, b) { var rank = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, ADVISORY: 3 }; return (rank[a.pri] === undefined ? 9 : rank[a.pri]) - (rank[b.pri] === undefined ? 9 : rank[b.pri]); })[0];
       var actionStyle = { minHeight: 44, minWidth: 44, padding: "10px 16px", border: "1px solid " + C.border, borderRadius: 6, background: C.bgElevated, color: C.textPrimary, fontSize: 14, cursor: "pointer" };
       return React.createElement("main", { className: "content-area", "aria-labelledby": "tops-focused-title", style: { color: C.textBody, padding: "14px 14px 120px" } },
-        React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 20 } },
-          React.createElement("button", { type: "button", style: actionStyle, onClick: function() { continuationReturn.current = reminderTimedOnly ? "tops-home-reminder-count" : continuationReturn.current || "tops-home-actions-title"; setActiveTab("dashboard"); } }, "Back to Home"),
-          React.createElement("button", { type: "button", style: actionStyle, onClick: function() { setReminderTimedOnly(false); setFocusedReminderId(null); continuationFocus.current = "tops-reminder-" + r.id; setReminderExpanded(r.id); setShowDismissed(isComplete); } }, "All reminders")
+        React.createElement("div", { style: { display: "flex", flexWrap: "wrap", alignItems: "flex-start", gap: 10, marginBottom: 20 } },
+          homeSearchSelection && homeSearchSelection.tab === "reminders" ? searchReturnControl() : React.createElement("button", { type: "button", style: actionStyle, onClick: function() { continuationReturn.current = reminderTimedOnly ? "tops-home-reminder-count" : continuationReturn.current || "tops-home-actions-title"; setActiveTab("dashboard"); } }, "Back to Home"),
+          React.createElement("button", { type: "button", style: actionStyle, onClick: function() { if (homeSearchSelection) { setHomeSearchSelection(null); continuationReturn.current = null; } setReminderTimedOnly(false); setFocusedReminderId(null); continuationFocus.current = "tops-reminder-" + r.id; setReminderExpanded(r.id); setShowDismissed(isComplete); } }, "All reminders")
         ),
         React.createElement("h2", { id: "tops-focused-title", tabIndex: -1, style: { color: C.textPrimary, fontSize: 26, lineHeight: 1.3, margin: "0 0 12px" } }, r.title),
         reminderTimingContext(r, separationDate) && React.createElement("p", { id: "tops-reminder-timing-context", style: { padding: 14, border: "1px solid " + C.border, borderRadius: 8, lineHeight: 1.6 } }, reminderTimingContext(r, separationDate)),
@@ -18335,6 +18369,11 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
   activeTab === "critical" && /*#__PURE__*/React.createElement("div", null, (function() {
     var daysOut = daysToETSDate(separationDate);
     var windows = filterCriticalWindows(userStatus);
+    var searchWindow = homeSearchSelection && homeSearchSelection.tab === "critical" ? homeSearchSelection : null;
+    var searchWindowAvailable = searchWindow && windows.some(function(item) { return item.id === searchWindow.id; });
+    var searchWindowGate = searchWindow && (!searchWindowAvailable || daysOut === null) && React.createElement("section", { style: { marginBottom: 16 } }, searchReturnControl(),
+      React.createElement("h2", { id: "tops-search-critical-context", tabIndex: -1, style: { fontSize: 22, lineHeight: 1.35, color: C.textPrimary } }, searchWindow.title),
+      React.createElement("p", { role: "status", style: { fontSize: 14, lineHeight: 1.5 } }, !searchWindowAvailable ? "This window is not shown for your selected service profile. Your profile has not changed." : "Add your separation date below to see this window's timing. Your search is kept."));
     var pushNudge = (separationDate && !window.__IS_IFRAME && pushFlowState !== "enabled") ? /*#__PURE__*/React.createElement("div", {
       style: { background: "rgba(240,196,25,0.08)", border: "1px solid " + C.border, borderLeft: "3px solid " + C.accent, borderRadius: 12, padding: "13px 15px", marginBottom: 14, display: "flex", alignItems: "center", gap: 12 }
     }, /*#__PURE__*/React.createElement("div", { style: { minWidth: 0, flex: 1 } }, /*#__PURE__*/React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, color: C.textPrimary, fontWeight: 600, letterSpacing: 0.5 } }, "DON'T MISS THESE WINDOWS"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, color: C.textBody, lineHeight: 1.5, marginTop: 3 } }, TOPS_PUSH_ENABLED ? "Get a reminder before each window closes - timed to your date. Review the data notice before choosing." : TOPS_PUSH_DISABLED_COPY)), TOPS_PUSH_ENABLED ? /*#__PURE__*/React.createElement("button", { onClick: handleEnableNotifs, disabled: pushBusy, style: { flexShrink: 0, background: C.accent, color: C.bg, border: "none", borderRadius: 8, padding: "10px 14px", fontFamily: "'Oswald', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, cursor: pushBusy ? "default" : "pointer", opacity: pushBusy ? 0.6 : 1 } }, "REMIND ME") : /*#__PURE__*/React.createElement("span", { style: { flexShrink: 0, border: "1px solid " + C.border, borderRadius: 8, padding: "9px 12px", fontFamily: "'Oswald', sans-serif", fontSize: 10, color: C.inactive, letterSpacing: 1 } }, "UPDATE IN PROGRESS")) : null;
@@ -18352,7 +18391,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       daysOut >= -240 ? "VGLI HEALTH-REVIEW WINDOW - IF ELIGIBLE" : "CONFIRM VGLI DEADLINE";
 
     if (daysOut === null) {
-      return React.createElement("div", null,
+      return React.createElement("div", null, searchWindowGate,
         React.createElement("div", {style:{...S.card, padding:18, borderColor:C.gold}},
           React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:3, color:C.gold, marginBottom:6}}, "\u258C CRITICAL WINDOWS"),
           React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:700, color:C.textPrimary, marginBottom:10}}, "SET YOUR SEPARATION DATE"),
@@ -18362,7 +18401,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       );
     }
 
-    return React.createElement("div", null, pushNudge,
+    return React.createElement("div", null, searchWindowGate, pushNudge,
       React.createElement("div", {style:{background:"linear-gradient(180deg," + C.border + " 0%, " + C.gradStart + " 100%)", border:"1px solid " + C.gold, borderRadius:8, padding:"14px 16px", marginBottom:14}},
         React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:10, letterSpacing:3, color:C.gold, marginBottom:4}}, "MISSION-CRITICAL WINDOWS"),
         React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:700, color:C.textPrimary, letterSpacing:2, marginBottom:6}}, "CRITICAL WINDOWS"),
@@ -18397,7 +18436,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       separationDate && React.createElement("p", { id: "tops-calendar-help", style: { color: C.textSecondary, fontSize: 13, lineHeight: 1.5, marginTop: 0 } }, "Includes requests for reminders 7 days and 1 day before each event. After importing, check alert times and notifications in your calendar app. Delivery depends on its settings. Your calendar provider may sync imported events. This is a snapshot; date changes here do not update your calendar."),
       React.createElement("div", {style:{display:"flex", gap:6, marginBottom:12, overflowX:"auto", WebkitOverflowScrolling:"touch"}},
         ["ALL","OPEN","CLOSING","MISSED"].map(function(f) {
-          return React.createElement("button", {key:f, onClick:function(){ setCriticalFilter(f); }, style:{padding:"10px 14px", borderRadius:4, fontSize:10, fontWeight:700, letterSpacing:1.5, color:criticalFilter === f ? C.textPrimary : C.inactive, background:criticalFilter === f ? C.border : "transparent", border:"1px solid " + (criticalFilter === f ? C.gold : C.border), fontFamily:"'Oswald',sans-serif", cursor:"pointer", whiteSpace:"nowrap"}}, f);
+          return React.createElement("button", {key:f, onClick:function(){ if (homeSearchSelection) { setHomeSearchSelection(null); continuationReturn.current = null; } setCriticalFilter(f); }, style:{padding:"10px 14px", borderRadius:4, fontSize:10, fontWeight:700, letterSpacing:1.5, color:criticalFilter === f ? C.textPrimary : C.inactive, background:criticalFilter === f ? C.border : "transparent", border:"1px solid " + (criticalFilter === f ? C.gold : C.border), fontFamily:"'Oswald',sans-serif", cursor:"pointer", whiteSpace:"nowrap"}}, f);
         })
       ),
 
@@ -18405,12 +18444,13 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       visible.map(function(w) {
         var s = getCriticalWindowStatus(w, daysOut, C);
         var isExpanded = expandedWindow === w.id;
-        return React.createElement("div", {key:w.id, style:{background:C.bgCard, border:"1px solid " + (s.state === "closing" || s.state === "closing_critical" ? s.color : C.border), borderLeft:"4px solid " + s.color, borderRadius:8, marginBottom:10, overflow:"hidden"}},
-          React.createElement("button", {"aria-expanded":isExpanded, "aria-controls":"tops-window-detail-" + w.id, onClick:function(){ setExpandedWindow(isExpanded ? null : w.id); }, style:{width:"100%", background:"transparent", border:"none", padding:"14px 16px", cursor:"pointer", textAlign:"left", color:"inherit", fontFamily:"inherit"}},
+        return React.createElement("div", {key:w.id, "data-search-selected": searchWindow && searchWindow.id === w.id ? "true" : undefined, style:{background:C.bgCard, border:"1px solid " + (s.state === "closing" || s.state === "closing_critical" ? s.color : C.border), borderLeft:"4px solid " + s.color, borderRadius:8, marginBottom:10, overflow:"hidden"}},
+          searchWindow && searchWindow.id === w.id && React.createElement("div", { style: { padding: "14px 16px 0" } }, searchReturnControl()),
+          React.createElement("button", {id:"tops-window-title-" + w.id, "aria-expanded":isExpanded, "aria-controls":"tops-window-detail-" + w.id, onClick:function(){ setExpandedWindow(isExpanded ? null : w.id); }, style:{width:"100%", background:"transparent", border:"none", padding:"14px 16px", cursor:"pointer", textAlign:"left", color:"inherit", fontFamily:"inherit"}},
             React.createElement("div", {style:{display:"flex", alignItems:"center", gap:10}},
               React.createElement("div", {style:{width:28, height:28, borderRadius:4, background:s.color, opacity:0.2, border:"1px solid " + s.color, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Oswald',sans-serif", fontSize:13, fontWeight:700, color:s.color, flexShrink:0}}, w.num),
               React.createElement("div", {style:{flex:1}},
-                React.createElement("div", {style:{fontFamily:"'Oswald',sans-serif", fontSize:14, letterSpacing:2, color:C.textPrimary, fontWeight:700}}, w.name),
+                React.createElement("span", {style:{display:"block", fontFamily:"'Oswald',sans-serif", fontSize:14, letterSpacing:2, color:C.textPrimary, fontWeight:700}}, w.name),
                 React.createElement("div", {style:{fontSize:10, color:s.color, fontFamily:"'Oswald',sans-serif", letterSpacing:1, marginTop:2}},
                   s.label,
                   w.irrevocable && s.state !== "open" && s.state !== "open_early" && s.state !== "future" ? React.createElement("span", {style:{color:C.danger, marginLeft:6}}, "\uD83D\uDD12") : null

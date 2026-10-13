@@ -1,0 +1,30 @@
+[
+  {
+    "edit": "scope All reminders exit",
+    "old": "setHomeSearchSelection(null); continuationReturn.current = null; setReminderTimedOnly(false); setFocusedReminderId(null);",
+    "new": "if (homeSearchSelection) { setHomeSearchSelection(null); continuationReturn.current = null; } setReminderTimedOnly(false); setFocusedReminderId(null);",
+    "old_after": 0,
+    "new_after": 1
+  },
+  {
+    "edit": "window button focus",
+    "old": "React.createElement(\"button\", {\"aria-expanded\":isExpanded, \"aria-controls\":\"tops-window-detail-\" + w.id,",
+    "new": "React.createElement(\"button\", {id:\"tops-window-title-\" + w.id, \"aria-expanded\":isExpanded, \"aria-controls\":\"tops-window-detail-\" + w.id,",
+    "old_after": 0,
+    "new_after": 1
+  },
+  {
+    "edit": "remove nested focus",
+    "old": "React.createElement(\"span\", {id:\"tops-window-title-\" + w.id, tabIndex:-1, style:{display:\"block\",",
+    "new": "React.createElement(\"span\", {style:{display:\"block\",",
+    "old_after": 0,
+    "new_after": 1
+  },
+  {
+    "edit": "manual critical browse exit",
+    "old": "onClick:function(){ setCriticalFilter(f); }",
+    "new": "onClick:function(){ if (homeSearchSelection) { setHomeSearchSelection(null); continuationReturn.current = null; } setCriticalFilter(f); }",
+    "old_after": 0,
+    "new_after": 1
+  }
+]

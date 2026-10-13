@@ -1,0 +1,2 @@
+Rendered reminder comparison (same build/fixture, local Chrome375x812): {"focused":{"nodes":76,"reminderCards":0,"heading":"⚠️ BDD Window OPEN — Closes at 90 Days","width":375},"directory":{"nodes":868,"reminderCards":78}}
+HOME SEARCH PASS: exact reminder/window identity; preserved date/profile/completion; query/focus return and native Back; native disclosure keyboard; manual browse exit; scoped request lifetime;375/320reflow and44px targets; external-link label; unchanged plan and no member-data/provider request.

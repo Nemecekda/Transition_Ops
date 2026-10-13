@@ -1,0 +1,19 @@
+{
+  "base": "cd5cd5b6f83bd0d1d2b40cbcf849237ca290c798",
+  "originMain": "2fbd8b4e1a87ac4b20b104290604e78c33d708b1",
+  "cache": 286,
+  "files": {
+    "index.html": {
+      "sha256": "f419f3b84c4569e17752f5ca68ec562a722d3c91b63fca05a4caafed60a0a260",
+      "bytes": 1543493
+    },
+    "pwa-sw.js": {
+      "sha256": "b7dc485d15fa3de3e8806b13152d24ad5b5dd4bdabb6ef7c9152e052c92ee0be",
+      "bytes": 4609
+    },
+    "scripts/home-search-handoff-browser-regression.js": {
+      "sha256": "4d4b50f1fb1cb3ba108243ab5d7da78e988d9bbba7f9763e7096dc3da29da80c",
+      "bytes": 12421
+    }
+  }
+}

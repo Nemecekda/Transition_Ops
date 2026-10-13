@@ -1,0 +1,4 @@
+Rendered reminder comparison (same build/fixture, local Chrome375x812): {"focused":{"nodes":76,"reminderCards":0,"heading":"⚠️ BDD Window OPEN — Closes at 90 Days","width":375},"directory":{"nodes":868,"reminderCards":78}}
+Error: runtime evidence unavailable for Array.from(document.querySelectorAll(".tops-home-search a")).some(n=>n.textContent.includes("Opens a new tab")); last=false
+    at Object.waitForExpression (eval at <anonymous> (/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/home-search-handoff-browser-regression.js:5:11), <anonymous>:183:9)
+    at async /Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/home-search-handoff-browser-regression.js:76:49

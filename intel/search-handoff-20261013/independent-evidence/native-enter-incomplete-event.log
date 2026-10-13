@@ -1,0 +1,10 @@
+PASS exact reminder selection, repeat, light/dark320/375, query/result focus return, targets/reflow and no progress writes
+PASS completed reminder inspection does not reopen or complete anything
+PASS exact reminder bypasses only stale browsing filters
+PASS no-date critical context preserves selected title, date gate and saved values
+PASS old filter reset for exact window; closed BDD retains closed/standard-claim guidance
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+'true' !== 'false'
+
+    at /private/tmp/tops-home-search-review-20261013/independent-search.cjs:43:254
