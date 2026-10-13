@@ -1,0 +1,28 @@
+{
+  "verdict": "ACCEPT_TESTED_LOCAL_SCOPE",
+  "base_commit": "f948e3bd1ebeb4876dfd3cecd07926b8a967ca9c",
+  "index_sha256": "b3dad4a2aabaa7592239fb328c324fddc5f2b1dbc410c02a49138fa573d1e086",
+  "worker_sha256": "6b337fededbe5ea3556d59ceb5ccef0963a0beec96b4122e9c1e2533c37d8b88",
+  "cache": "transition-ops-v283",
+  "scope": "Synthetic local browser state/persistence/navigation checks and final diff review; no provider, member-data or paid calls",
+  "files": {
+    "review-plan.md": "284bd5ece1b5b5e399b07eaf3eccb9daad273f4b643429a7f374463fac7656f7",
+    "independent-review.md": "73dd1beb5308b556fa47b544225e86eaee9ae706d22b581837fc05ddaccce889",
+    "independent-browser.cjs": "ee770b9fd97ee855cf1a38649b4d2cde93289ee713c7ad2b311a0f30c8fb17b3",
+    "independent-browser.log": "0b3acc5bdb0d8f9c5b19014c1defcbb1c7444a0aabfb525f0b724f15261b80e7",
+    "focus-follow-on.cjs": "7218e8efcceb154d3d9da059ebd6012da7d2307c43eb1675a8f700473d68cf4a",
+    "focus-follow-on.log": "747de6182874ad248ae0ec60883c75eba0ab4ae01ef60e45d3d7c1cd29b7cd81",
+    "mobile-focus.json": "0e335c8e3548202225c81683a94832631d26202a360bbcc7864899c92c379faa",
+    "mobile-review.png": "fbb18f35f318759e5ad4f58d2b74cd5cd1956575fced03350a80bb83c7307f3b",
+    "native-date.cjs": "07958872ae042f8f6de1a9f57c4c61c87685d5ecf1aa84c8730851d5648d5b63",
+    "native-date.log": "b51d2fcfde66052198e94ff40918bcdaf17ec02c826e534dca8530800af91116",
+    "native-date.json": "b08ecce049e9689463d3394c6520322acaca221dd59736c9e5a0b2d0a42ec551"
+  },
+  "limits": [
+    "Hosted and manual AT not tested",
+    "Native Chrome date events verified; native phone picker not tested",
+    "Root CUA fill event discrepancy has no established cause",
+    "Field usefulness and retention unmeasured"
+  ],
+  "author_regression_sha256": "2336228bd1ea09426e2346c8731d78fc2d6f7f926b1fce5ba317bbb5866eddd2"
+}

@@ -1,0 +1,33 @@
+{
+  "verdict": "ACCEPT_TESTED_LOCAL_SCOPE",
+  "base_commit": "f948e3bd1ebeb4876dfd3cecd07926b8a967ca9c",
+  "index_sha256": "5669afa452b72d6d578b474a45378ce1844419a44206483c5d5e3483aad4be9f",
+  "worker_sha256": "6b337fededbe5ea3556d59ceb5ccef0963a0beec96b4122e9c1e2533c37d8b88",
+  "cache": "transition-ops-v283",
+  "scope": "Synthetic local browser state/persistence/navigation checks and final diff review; no provider, member-data or paid calls",
+  "files": {
+    "final-display-delta.cjs": "5bff008ef52e9f7f7cad4840bdcd4419663a1f5f1b938d3ebff35bdedcd0f6e4",
+    "final-display-delta.log": "2507c7b5769ff8cf4adecfe54c00af8c3245c56a38f6b9f4ade6706ce545e887",
+    "focus-follow-on.cjs": "7218e8efcceb154d3d9da059ebd6012da7d2307c43eb1675a8f700473d68cf4a",
+    "focus-follow-on.log": "747de6182874ad248ae0ec60883c75eba0ab4ae01ef60e45d3d7c1cd29b7cd81",
+    "independent-browser.cjs": "ee770b9fd97ee855cf1a38649b4d2cde93289ee713c7ad2b311a0f30c8fb17b3",
+    "independent-browser.log": "0b3acc5bdb0d8f9c5b19014c1defcbb1c7444a0aabfb525f0b724f15261b80e7",
+    "independent-review.md": "00ab18acd5af8dae9ba157cb3d2f1e3a86e317c4855322eb462fb289296ab41d",
+    "mobile-focus.json": "0e335c8e3548202225c81683a94832631d26202a360bbcc7864899c92c379faa",
+    "mobile-review.png": "fbb18f35f318759e5ad4f58d2b74cd5cd1956575fced03350a80bb83c7307f3b",
+    "native-date.cjs": "07958872ae042f8f6de1a9f57c4c61c87685d5ecf1aa84c8730851d5648d5b63",
+    "native-date.json": "b08ecce049e9689463d3394c6520322acaca221dd59736c9e5a0b2d0a42ec551",
+    "native-date.log": "b51d2fcfde66052198e94ff40918bcdaf17ec02c826e534dca8530800af91116",
+    "receipt-initial.json": "279906ebc5f5151395cfc269620f96b7026acf799df3ebf54d87e63479e238d8",
+    "review-plan.md": "284bd5ece1b5b5e399b07eaf3eccb9daad273f4b643429a7f374463fac7656f7"
+  },
+  "limits": [
+    "Hosted and manual AT not tested",
+    "Native Chrome date events verified; native phone picker not tested",
+    "Root CUA fill event discrepancy has no established cause",
+    "Field usefulness and retention unmeasured"
+  ],
+  "author_regression_sha256": "ff8ba273a32d23e8f814e6d422fcafdafdacf0cb082b900d3e70366dab75eba8",
+  "reused_evidence_base_index_sha256": "b3dad4a2aabaa7592239fb328c324fddc5f2b1dbc410c02a49138fa573d1e086",
+  "delta": "Only move.why rendering gains !supportStep; reverse reconstruction equals prior tested hash. Narrow browser delta test passes."
+}

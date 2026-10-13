@@ -1,0 +1,3 @@
+PASS completed WI step under career focus hides unrelated explanation; exact step, outcome review, cancellation and saved bytes retained
+PASS ordinary completed career step retains its explanation and reflection controls
+NARROW FINAL DISPLAY DELTA PASS; earlier native-input and core state evidence reused for unchanged logic

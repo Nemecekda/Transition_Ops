@@ -8338,6 +8338,16 @@ function CareerDirectionComparison(props) {
     React.createElement("button", { type: "button", disabled: !!window.__IS_IFRAME, style: field, onClick: function() { var ok = topsClearComparison(); if (ok) props.setState({ draft: topsEmptyComparison(), status: "Comparison notes cleared from this page and this browser. Downloaded backups are unchanged." }); else props.setState(Object.assign({}, props.state, { status: "Comparison notes could not be cleared from browser storage. Your notes are unchanged." })); } }, "Clear comparison notes"),
     React.createElement("p", { role: "status", "aria-live": "polite" }, props.state.status));
 }
+function topsIsSupportStep(guide, action) {
+  var g = topsValidateGuide(guide), a = topsValidateAction(action);
+  return !!g && !!a && topsActionMatches(a, g) && (g.pathway === "support" || a.text === TOPS_WISCONSIN_WORK_SUPPORT.action);
+}
+const TOPS_SUPPORT_OUTCOMES = [
+  { id: "waiting", label: "Waiting for a reply", text: "Follow up with the support provider about my request and ask when I should check back.", help: "Choose your own follow-up date if useful. Waiting does not mark your current step complete." },
+  { id: "documents", label: "They asked for documents", text: "Confirm which documents the provider requested and how to share them through its official channel.", help: "Edit this to name what you need to prepare, without document contents or personal identifiers. Do not upload personal documents here." },
+  { id: "option", label: "I need another option", text: "Prepare one question for another support provider about what help may fit my situation.", help: "Name what you still need help with. A different option does not confirm eligibility or funding." },
+  { id: "ready", label: "Ready for the next step", text: "Confirm the next action agreed with the provider and any approval needed before I proceed.", help: "What did you agree to do next? Edit the step below. Readiness does not mean funding or enrollment is approved." }
+];
 function MemberPlanningLoop(props) {
   var C = props.colors, g = props.guideState.draft, a = props.actionState.draft;
   var [editing, setEditing] = useState(false), [direction, setDirection] = useState(g), [message, setMessage] = useState("");
@@ -8345,6 +8355,7 @@ function MemberPlanningLoop(props) {
   var [sessionMinutes, setSessionMinutes] = useState("");
   var [serviceMoment, setServiceMoment] = useState("");
   var [reflection, setReflection] = useState("");
+  var [supportReview, setSupportReview] = useState(null), [supportMessage, setSupportMessage] = useState("");
   var [calendarPreview, setCalendarPreview] = useState(null), [calendarMessage, setCalendarMessage] = useState("");
   function openStepEditor() {
     setEditing(true);
@@ -8352,6 +8363,20 @@ function MemberPlanningLoop(props) {
       var heading = document.getElementById("tops-action-heading");
       if (heading) { heading.focus(); heading.scrollIntoView({ block: "center" }); }
     });
+  }
+  function reviewSupport(outcome) {
+    if (!props.supportPlan || !topsIsSupportStep(g, a)) return;
+    var choice = TOPS_SUPPORT_OUTCOMES.find(function(item) { return item.id === outcome; });
+    if (!choice && outcome !== "edit") return;
+    setEditing(false); setSupportMessage("");
+    setSupportReview({ outcome: outcome, snapshot: JSON.stringify(props.supportPlan.getPlan()), current: a, guide: g, text: choice ? choice.text : a.text, date: choice ? "" : a.date });
+    requestAnimationFrame(function() { var input = document.getElementById("tops-support-text"); if (input) { input.focus(); input.scrollIntoView({ block: "center" }); } });
+  }
+  function keepSupport(save) {
+    if (!supportReview || !props.supportPlan) return;
+    var result = props.supportPlan.applyStep(supportReview.snapshot, supportReview.outcome, supportReview.text, supportReview.date, save);
+    setSupportMessage(result.message);
+    if (result.ok) { setSupportReview(null); setMessage(result.message); requestAnimationFrame(function() { var button = document.getElementById("tops-loop-support-open") || document.getElementById("tops-loop-wisconsin"); if (button) button.focus(); }); }
   }
   var [share, setShare] = useState({});
   var [today, setToday] = useState(topsMemberLocalDay);
@@ -8377,7 +8402,10 @@ function MemberPlanningLoop(props) {
   var alternative = topsMemberAdjustment(blocker, workingGuide, props.profile, sessionMinutes, serviceMoment);
   if (alternative && alternative.route === "career") alternative = Object.assign({}, alternative, { route: "career-start" });
   if (alternative && alternative.route === "support" && !["transition", "support"].includes(workingGuide.pathway)) alternative = Object.assign({}, alternative, { route: "specialist" });
+  var supportStep = topsIsSupportStep(g, a);
   var currentWisconsin = move.kind === "continue" && a.text === TOPS_WISCONSIN_WORK_SUPPORT.action;
+  var supportChoice = supportReview && TOPS_SUPPORT_OUTCOMES.find(function(item) { return item.id === supportReview.outcome; });
+  var supportCandidate = supportReview && topsValidateAction({ version: 1, text: supportReview.text.trim(), date: supportReview.date, done: false, context: Object.assign({}, supportReview.guide, { pathway: "support" }) });
   var currentLearning = move.kind === "continue" ? topsCareerLearningNext(a.text, g.targetRole, props.gap.target === g.targetRole ? props.gap.rows : []) : null;
   var currentPriority = move.kind === "continue" ? topsMemberPriorityContinuation(a, g) : null;
   var currentCareerHelp = move.kind === "continue" && topsCareerHelpStep(a, g);
@@ -8512,37 +8540,63 @@ function MemberPlanningLoop(props) {
       requestAnimationFrame(function() { var details = document.getElementById("tops-loop-direction"); if (details) { details.open = true; var input = details.querySelector("input"); if (input) { input.focus(); input.scrollIntoView({ block: "center" }); } } });
     } });
   var contextUI = g.pathway && React.createElement("p", { className: "tops-next-move-context", style: { margin: "12px 0", lineHeight: 1.5, fontSize: 14 } }, React.createElement("strong", null, "Your direction: "), TOPS_GUIDE_PATHS[g.pathway], g.targetRole ? " - " + g.targetRole : "", g.goal ? ". Your goal: " + g.goal : "");
-  var completionUI = ["continue", "reflect"].includes(move.kind) && !editing && isSavedStep() && React.createElement("div", { id: "tops-loop-completion", style: { margin: "12px 0" } },
+  var supportUI = supportStep && props.supportPlan && React.createElement("div", { id: "tops-support-follow-through", style: { marginTop: 16 } },
+      React.createElement("label", { htmlFor: "tops-support-outcome", style: { fontWeight: 700 } }, "What happened next?"),
+      React.createElement("select", { id: "tops-support-outcome", value: supportReview && supportReview.outcome !== "edit" ? supportReview.outcome : "", disabled: !!supportReview, style: field, onChange: function(event) { if (event.target.value) reviewSupport(event.target.value); } },
+        React.createElement("option", { value: "" }, "Choose an update"), TOPS_SUPPORT_OUTCOMES.map(function(item) { return React.createElement("option", { key: item.id, value: item.id }, item.label); })),
+      supportReview && React.createElement("section", { "aria-labelledby": "tops-support-review-heading", style: { borderTop: "1px solid " + C.border, paddingTop: 12 } },
+        React.createElement("h4", { id: "tops-support-review-heading", style: { margin: "0 0 8px", fontSize: 18 } }, supportChoice ? "Review your next step" : "Review this support step"),
+        React.createElement("p", { id: "tops-support-current", style: { lineHeight: 1.5 } }, "Current step: " + supportReview.current.text + (supportReview.current.done ? " (marked complete)." : " (unfinished).") + (supportReview.current.date ? " Target: " + supportReview.current.date + "." : "")),
+        React.createElement("p", { id: "tops-support-focus", style: { lineHeight: 1.5 } }, supportReview.guide.pathway === "support" ? "Focus: Get work or training support." : "Focus changes from " + TOPS_GUIDE_PATHS[supportReview.guide.pathway] + " to Get work or training support only when you keep this step. This changes future suggestions. Your role, goal and worksheet stay unchanged."),
+        React.createElement("label", { htmlFor: "tops-support-text" }, supportChoice && supportChoice.id === "ready" ? "What did you agree to do next?" : "My next action"),
+        React.createElement("textarea", { id: "tops-support-text", rows: 3, maxLength: 240, value: supportReview.text, style: field, "aria-describedby": "tops-support-help", onChange: function(event) { setSupportReview(Object.assign({}, supportReview, { text: event.target.value })); } }),
+        React.createElement("p", { id: "tops-support-help", style: { fontSize: 14, lineHeight: 1.5 } }, supportChoice ? supportChoice.help : "Use a short action without sensitive information. Keeping changes reopens a completed step."),
+        React.createElement("label", { htmlFor: "tops-support-date" }, "My target date (optional)"),
+        React.createElement("input", { id: "tops-support-date", type: "date", min: "2000-01-01", max: "2099-12-31", value: supportReview.date, style: field, "aria-describedby": "tops-support-date-help", onChange: function(event) { setSupportReview(Object.assign({}, supportReview, { date: event.target.value })); } }),
+        React.createElement("p", { id: "tops-support-date-help", style: { fontSize: 14, lineHeight: 1.5 } }, "Your planning target, not a program deadline. Saving this step does not contact the provider. Keeping this action replaces your current step with an unfinished step."),
+        React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
+          React.createElement("button", { id: "tops-support-save", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), disabled: !!window.__IS_IFRAME || !supportCandidate || !supportCandidate.text, onClick: function() { keepSupport(true); } }, "Save next step"),
+          React.createElement("button", { id: "tops-support-visit", type: "button", style: button, disabled: !supportCandidate || !supportCandidate.text, onClick: function() { keepSupport(false); } }, "Use for this visit"),
+          React.createElement("button", { id: "tops-support-cancel", type: "button", style: button, onClick: function() { setSupportReview(null); setSupportMessage("Your current step is unchanged."); requestAnimationFrame(function() { var select = document.getElementById("tops-support-outcome"); if (select) select.focus(); }); } }, "Keep current step"))),
+      React.createElement("p", { id: "tops-support-status", role: "status", "aria-live": "polite", style: { fontSize: 14, lineHeight: 1.5 } }, supportMessage),
+      React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Find support or review approval questions"),
+        React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
+          React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute("work-support"); } }, "Browse work and training support"),
+          React.createElement("button", { id: "tops-support-wisconsin-reference", type: "button", style: button, onClick: function() { props.onRoute("wi-work-support"); } }, "Wisconsin work-cost guide"))));
+  var completionUI = ["continue", "reflect"].includes(move.kind) && !editing && !supportReview && isSavedStep() && React.createElement("div", { id: "tops-loop-completion", style: { margin: "12px 0" } },
       React.createElement("button", { type: "button", style: button, onClick: function() { saveCompletion(!a.done); } }, a.done ? "Reopen completed step" : "Mark step complete"),
       React.createElement("p", { style: { fontSize: 14, lineHeight: 1.6, margin: "6px 0" } }, "Saves your progress on this browser immediately. You can change it back; your step and target date are kept."));
   return React.createElement("section", { "aria-labelledby": "tops-loop-title", className: "tops-next-move" + (move.kind === "continue" ? " tops-next-move-continue" : ""), style: { marginBottom: 24, background: C.bg, border: "1px solid " + C.border, borderRadius: 14, color: C.textBody, overflowWrap: "anywhere", boxShadow: C.isLight ? "0 6px 24px rgba(14,18,11,0.05)" : "0 6px 24px rgba(0,0,0,0.16)" } },
     React.createElement("div", { className: "tops-next-move-main" + (move.kind === "start" ? " tops-next-move-first" : ""), style: { borderLeft: "3px solid " + C.green } },
     React.createElement("h2", { id: "tops-loop-title", tabIndex: -1, style: { color: C.textSecondary, fontSize: 13, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase", margin: "0 0 14px" } }, props.planHub ? "Your next step" : "Your next move"),
     move.kind === "reflect" && React.createElement("p", { style: { lineHeight: 1.6 } }, "You marked this step done: " + a.text + ". Review what you learned before choosing another step. Choosing a new step replaces this one in the editor; save to keep that change. Completion does not verify an outcome or eligibility."),
-    move.kind === "reflect" && React.createElement("div", null,
+    move.kind === "reflect" && !supportStep && React.createElement("div", null,
       React.createElement("label", { htmlFor: "tops-loop-reflection" }, "What did you learn from this step?"),
       React.createElement("select", { id: "tops-loop-reflection", value: reflection, style: field, "aria-describedby": "tops-loop-reflection-help", onChange: function(event) { setReflection(event.target.value); } },
         [["", "Choose what fits your situation"], ["ready", "I am ready to move forward"], ["gap", "I found a gap to work on"], ["rethink", "I want to reconsider my direction"], ["help", "I need help from a person"]].map(function(option) { return React.createElement("option", { key: option[0], value: option[0] }, option[1]); })),
       React.createElement("p", { id: "tops-loop-reflection-help", style: { fontSize: 14, lineHeight: 1.6 } }, "Your answer shapes a suggestion for this visit. Your completed step stays saved until you choose and save a replacement.")),
-    React.createElement("h3", { "aria-live": "polite", className: "tops-next-move-heading", style: { margin: "0 0 12px", color: C.textPrimary } }, move.heading || move.title),
+    React.createElement("h3", { "aria-live": "polite", className: "tops-next-move-heading", style: { margin: "0 0 12px", color: C.textPrimary } }, supportStep ? a.text : move.heading || move.title),
     move.kind !== "continue" && contextUI,
-    move.kind !== "continue" && React.createElement("p", { style: { lineHeight: 1.6, margin: "0 0 20px", maxWidth: "68ch" } }, move.why),
+    move.kind !== "continue" && !supportStep && React.createElement("p", { style: { lineHeight: 1.6, margin: "0 0 20px", maxWidth: "68ch" } }, move.why),
     move.kind === "choose" && priorityUI,
     props.priority && move.kind !== "priority" && React.createElement("p", { style: { fontSize: 14, lineHeight: 1.6 } }, "Priority: " + TOPS_MEMBER_PRIORITIES.find(function(item) { return item.id === props.priority; }).title + ". Your existing work stays first. Review it before choosing a replacement."),
     React.createElement("div", { className: "tops-next-move-actions", style: { display: "flex", flexWrap: "wrap", gap: 8 } },
       move.kind === "priority" && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(move.route); } }, move.label),
       move.kind === "priority" && React.createElement("button", { type: "button", style: button, onClick: chooseStep }, "Review this as my next step"),
+      supportStep && !currentWisconsin && !supportReview && React.createElement("button", { id: "tops-loop-support-open", className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { reviewSupport("edit"); } }, "Open my support step"),
       currentWisconsin && React.createElement("button", { id: "tops-loop-wisconsin", className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute("wi-work-support"); } }, "Open Wisconsin work-cost help"),
+      currentWisconsin && !supportReview && React.createElement("button", { id: "tops-support-update-current", type: "button", style: button, onClick: function() { reviewSupport("edit"); } }, "Update this step"),
       currentReadiness && React.createElement("button", { id: "tops-loop-readiness-step", className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute("readiness-item", currentReadiness); } }, READINESS_TOOLS[currentReadiness].label),
       currentPriority && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(currentPriority.route); } }, currentPriority.label),
       currentLearning && React.createElement("a", { className: "tops-move-primary", href: currentLearning.url, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, button, { display: "inline-flex", alignItems: "center", background: C.green, color: C.textOnFill }) }, "Open " + currentLearning.name + " (opens a new tab)"),
       currentCareerHelp && React.createElement("button", { id: "tops-loop-career-help", type: "button", className: "tops-move-primary", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute("specialist"); } }, "Prepare for career help"),
-      move.kind === "continue" && !currentWisconsin && !currentPriority && !currentLearning && !currentCareerHelp && !currentReadiness && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(g.pathway === "support" ? "support" : g.pathway === "transition" ? "readiness" : "career-resume"); } }, g.pathway === "support" ? "Browse work and training support" : g.pathway === "transition" ? "Open transition checklist" : "Continue my career work"),
+      move.kind === "continue" && !supportStep && !currentWisconsin && !currentPriority && !currentLearning && !currentCareerHelp && !currentReadiness && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(g.pathway === "support" ? "support" : g.pathway === "transition" ? "readiness" : "career-resume"); } }, g.pathway === "support" ? "Browse work and training support" : g.pathway === "transition" ? "Open transition checklist" : "Continue my career work"),
       move.kind === "recover" && React.createElement("button", { type: "button", style: button, onClick: function() { setDirection(a.context); var details = document.getElementById("tops-loop-direction"); for (var node = details; node; node = node.parentElement) { if (node.tagName === "DETAILS") node.open = true; } } }, "Review saved direction"),
-      ["continue", "review"].includes(move.kind) && React.createElement("button", { type: "button", style: button, "aria-expanded": editing, onClick: function() { if (editing) setEditing(false); else openStepEditor(); } }, editing ? "Close step editor" : move.kind === "review" ? "Review earlier step" : "Update this step"),
-      ["suggest", "reflect"].includes(move.kind) && React.createElement("button", { type: "button", style: button, disabled: move.kind === "reflect" && !reflectedMove, onClick: chooseStep }, "Choose this next step"),
-      move.route && move.kind !== "priority" && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "specialist" ? "Prepare for career help" : move.route === "network-learn" ? "Prepare a conversation" : move.route === "career-explore" ? "Explore career options" : move.route === "career" ? "Open my career worksheet" : move.route === "training" ? "Browse training options" : move.route === "support" ? "Browse support options" : "Open transition checklist")),
+      ["continue", "review"].includes(move.kind) && !supportStep && React.createElement("button", { type: "button", style: button, "aria-expanded": editing, onClick: function() { if (editing) setEditing(false); else openStepEditor(); } }, editing ? "Close step editor" : move.kind === "review" ? "Review earlier step" : "Update this step"),
+      ["suggest", "reflect"].includes(move.kind) && !supportStep && React.createElement("button", { type: "button", style: button, disabled: move.kind === "reflect" && !reflectedMove, onClick: chooseStep }, "Choose this next step"),
+      move.route && move.kind !== "priority" && !supportStep && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "specialist" ? "Prepare for career help" : move.route === "network-learn" ? "Prepare a conversation" : move.route === "career-explore" ? "Explore career options" : move.route === "career" ? "Open my career worksheet" : move.route === "training" ? "Browse training options" : move.route === "support" ? "Browse support options" : "Open transition checklist")),
     move.kind === "continue" && contextUI,
+    supportUI,
     timing && React.createElement("div", { id: "tops-loop-timing", style: { lineHeight: 1.6, margin: "12px 0" } },
       React.createElement("p", null, React.createElement("strong", null, props.planHub ? "Your target: " + a.date : timing.title), props.planHub ? "" : " - " + timing.detail),
       props.planHub && React.createElement("p", { style: { fontSize: 14 } }, "Your own target, not a benefits deadline. No app notification is scheduled."),
@@ -8550,7 +8604,7 @@ function MemberPlanningLoop(props) {
       props.planHub && React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", cursor: "pointer" } }, "Date and calendar options"),
       React.createElement("p", { style: { fontSize: 14 } }, "This is your own planning date, not a benefits deadline. It does not send a notification."),
       canExportPersonalStep() && React.createElement("button", { id: "tops-personal-calendar-open", type: "button", style: button, onClick: reviewPersonalCalendar }, "Add this step to my calendar"),
-      React.createElement("button", { type: "button", style: button, onClick: function() { setEditing(true); requestAnimationFrame(function() { var date = document.getElementById("tops-action-date"); if (date) date.focus(); }); } }, "Review my target date"))),
+      React.createElement("button", { type: "button", style: button, onClick: function() { if (supportStep) { if (!supportReview) reviewSupport("edit"); requestAnimationFrame(function() { var date = document.getElementById("tops-support-date"); if (date) date.focus(); }); return; } setEditing(true); requestAnimationFrame(function() { var date = document.getElementById("tops-action-date"); if (date) date.focus(); }); } }, "Review my target date"))),
     calendarPreview && React.createElement("section", { "aria-labelledby": "tops-personal-calendar-heading", style: { display: "grid", gap: 12, lineHeight: 1.5, padding: 16, border: "1px solid " + C.border, borderRadius: 8 } },
       React.createElement("h4", { id: "tops-personal-calendar-heading", tabIndex: -1, style: { margin: 0 } }, "Review your calendar step"),
       React.createElement("p", { style: { margin: 0, whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, calendarPreview.text), React.createElement("p", { style: { margin: 0 } }, "All-day planning date: " + calendarPreview.date),
@@ -10083,12 +10137,20 @@ function App() {
   function openWisconsinGuide() {
     wiGuideRequested.current = true; openExperienceTool("resources"); continuationFocus.current = "tops-wi-work-support-resources-heading"; setContinuationRevision(function(value) { return value + 1; });
   }
-  function wisconsinPlanSnapshot() { return { guide: guideState.draft, action: actionState.draft, gap: gapState.draft, visit: careerVisitDraft, disk: topsCareerDiskSnapshot() }; }
+  function wisconsinPlanSnapshot() { return { guide: guideState.draft, action: actionState.draft, gap: gapState.draft, visit: careerVisitDraft, profile: userStatus, disk: topsCareerDiskSnapshot() }; }
   function applyWisconsinStep(snapshot, pathway, save) {
+    var current = wisconsinPlanSnapshot(), guide = Object.assign({}, current.guide, { pathway: current.guide.pathway || pathway });
+    return applyReviewedSupportStep(snapshot, guide, TOPS_WISCONSIN_WORK_SUPPORT.action, "", save);
+  }
+  function applySupportOutcome(snapshot, outcome, text, date, save) {
+    var current = wisconsinPlanSnapshot();
+    if (!topsIsSupportStep(current.guide, current.action) || !["edit", "waiting", "documents", "option", "ready"].includes(outcome)) return { ok: false, message: "This step changed. Keep your current step and open a new review." };
+    return applyReviewedSupportStep(snapshot, Object.assign({}, current.guide, { pathway: "support" }), text.trim(), date, save);
+  }
+  function applyReviewedSupportStep(snapshot, guide, text, date, save) {
     var current = wisconsinPlanSnapshot();
     if (snapshot !== JSON.stringify(current)) return { ok: false, message: "Your plan or saved work changed. Keep your current step, then open a new review. Nothing was replaced." };
-    var guide = Object.assign({}, current.guide, { pathway: current.guide.pathway || pathway });
-    var next = { version: 1, text: TOPS_WISCONSIN_WORK_SUPPORT.action, date: "", done: false, context: guide };
+    var next = { version: 1, text: text, date: date, done: false, context: guide };
     if (!topsValidateGuide(guide) || !topsValidateAction(next) || !topsValidateGap(current.gap)) return { ok: false, message: "Your current plan could not be validated. Nothing was changed; keep this tab open and review your plan." };
     if (save) {
       var known = false;
@@ -10113,11 +10175,12 @@ function App() {
     } }, React.createElement("strong", { style: { display: "block" } }, choice.title), React.createElement("span", { style: { display: "block", fontSize: 14, color: C.textSecondary } }, choice.detail)); });
   }
   function renderMemberLoop(planHub) {
-    return React.createElement(MemberPlanningLoop, { planHub: !!planHub, priority: memberPriority, setPriority: setMemberPriority, colors: C, comparisonState: comparisonState, setComparisonState: setComparisonState, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, hasDraft: !!planQuestion, onDraft: navUnlocked ? function(text) {
+    return React.createElement(MemberPlanningLoop, { planHub: !!planHub, priority: memberPriority, setPriority: setMemberPriority, colors: C, comparisonState: comparisonState, setComparisonState: setComparisonState, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, supportPlan: { getPlan: wisconsinPlanSnapshot, applyStep: applySupportOutcome }, hasDraft: !!planQuestion, onDraft: navUnlocked ? function(text) {
       if (!planQuestion) setPlanQuestion({ text: text, reply: "", answered: false, guide: topsValidateGuide(guideState.draft), profile: userStatus });
       setPlanQuestionOpen(true); continuationFocus.current = "tops-plan-question"; continuationReturn.current = "tops-loop-title"; setActiveTab("navigator");
     } : null, onRoute: function(route, moment) {
       if (route === "wi-work-support") { openWisconsinGuide(); return; }
+      if (route === "work-support") { openExperienceTool("resources"); return; }
       if (route === "readiness-item" && READINESS_TOOLS[moment]) { var category = READINESS_CATS.find(function(cat) { return cat.qs.some(function(q) { return q.id === moment; }); }); if (category) openReadinessTool(moment, category.id); return; }
       if (["career-start", "career-resume", "career-explore", "growth", "specialist", "network-learn", "jobs"].includes(route)) {
         setJourneyTarget(""); setCareerExperienceContext(null); setPathwayMode("journey");
