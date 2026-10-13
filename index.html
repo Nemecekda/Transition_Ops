@@ -169,6 +169,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px #E8C547!important}
 ::-webkit-scrollbar-track{background:var(--t-bg)}
 ::-webkit-scrollbar-thumb{background:var(--t-border);border-radius:2px}
 input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker-invert,0.7))}
+#tops-support-date::-webkit-calendar-picker-indicator{filter:none}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,0,0,0.4)}50%{box-shadow:0 0 12px 4px rgba(139,0,0,0.2)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -8343,10 +8344,10 @@ function topsIsSupportStep(guide, action) {
   return !!g && !!a && topsActionMatches(a, g) && (g.pathway === "support" || a.text === TOPS_WISCONSIN_WORK_SUPPORT.action);
 }
 const TOPS_SUPPORT_OUTCOMES = [
-  { id: "waiting", label: "Waiting for a reply", text: "Follow up with the support provider about my request and ask when I should check back.", help: "Choose your own follow-up date if useful. Waiting does not mark your current step complete." },
-  { id: "documents", label: "They asked for documents", text: "Confirm which documents the provider requested and how to share them through its official channel.", help: "Edit this to name what you need to prepare, without document contents or personal identifiers. Do not upload personal documents here." },
-  { id: "option", label: "I need another option", text: "Prepare one question for another support provider about what help may fit my situation.", help: "Name what you still need help with. A different option does not confirm eligibility or funding." },
-  { id: "ready", label: "Ready for the next step", text: "Confirm the next action agreed with the provider and any approval needed before I proceed.", help: "What did you agree to do next? Edit the step below. Readiness does not mean funding or enrollment is approved." }
+  { id: "waiting", label: "Waiting for a reply", text: "Follow up with the support provider about my request and ask when I should check back.", help: "Choose your own follow-up date if useful." },
+  { id: "documents", label: "They asked for documents", text: "Confirm which documents the provider requested and how to share them through its official channel.", help: "Name documents only. No contents, identifiers or uploads." },
+  { id: "option", label: "I need another option", text: "Prepare one question for another support provider about what help may fit my situation.", help: "Describe the help you need. Eligibility and funding still need checking." },
+  { id: "ready", label: "Ready for the next step", text: "Confirm the next action agreed with the provider and any approval needed before I proceed.", help: "Name what you agreed to do. Readiness is not approval for funding or enrollment." }
 ];
 function MemberPlanningLoop(props) {
   var C = props.colors, g = props.guideState.draft, a = props.actionState.draft;
@@ -8541,23 +8542,25 @@ function MemberPlanningLoop(props) {
       requestAnimationFrame(function() { var details = document.getElementById("tops-loop-direction"); if (details) { details.open = true; var input = details.querySelector("input"); if (input) { input.focus(); input.scrollIntoView({ block: "center" }); } } });
     } });
   var contextUI = g.pathway && React.createElement("p", { className: "tops-next-move-context", style: { margin: "12px 0", lineHeight: 1.5, fontSize: 14 } }, React.createElement("strong", null, "Your direction: "), TOPS_GUIDE_PATHS[g.pathway], g.targetRole ? " - " + g.targetRole : "", g.goal ? ". Your goal: " + g.goal : "");
-  var supportUI = (supportStep || supportReview) && props.supportPlan && React.createElement("div", { id: "tops-support-follow-through", style: { marginTop: 16 } },
-      React.createElement("label", { htmlFor: "tops-support-outcome", style: { fontWeight: 700 } }, "What happened next?"),
-      React.createElement("select", { id: "tops-support-outcome", value: supportReview && supportReview.outcome !== "edit" ? supportReview.outcome : "", disabled: !!supportReview, style: field, onChange: function(event) { if (event.target.value) reviewSupport(event.target.value); } },
+  var supportUI = (supportStep || supportReview) && props.supportPlan && React.createElement("div", { id: "tops-support-follow-through", style: { marginTop: supportReview ? 0 : 16 } },
+      !supportReview && React.createElement("label", { htmlFor: "tops-support-outcome", style: { fontWeight: 700 } }, "What happened next?"),
+      !supportReview && React.createElement("select", { id: "tops-support-outcome", value: supportReview && supportReview.outcome !== "edit" ? supportReview.outcome : "", disabled: !!supportReview, style: field, onChange: function(event) { if (event.target.value) reviewSupport(event.target.value); } },
         React.createElement("option", { value: "" }, "Choose an update"), TOPS_SUPPORT_OUTCOMES.map(function(item) { return React.createElement("option", { key: item.id, value: item.id }, item.label); })),
-      supportReview && React.createElement("section", { "aria-labelledby": "tops-support-review-heading", style: { borderTop: "1px solid " + C.border, paddingTop: 12 } },
-        React.createElement("h4", { id: "tops-support-review-heading", tabIndex: -1, style: { margin: "0 0 8px", fontSize: 18 } }, supportChoice ? "Review your next step" : "Review this support step"),
-        React.createElement("p", { id: "tops-support-unsaved", role: "status", style: { fontSize: 14, lineHeight: 1.5 } }, supportReview.snapshot === JSON.stringify(props.supportPlan.getPlan()) ? "Unfinished update. You can visit other app pages and return. Save before refreshing or closing this tab." : "Your plan or saved work changed while this review was open. Your draft is kept below. Copy anything you need, then keep the current step and start a new review."),
-        React.createElement("p", { id: "tops-support-current", style: { lineHeight: 1.5 } }, "Current step: " + supportReview.current.text + (supportReview.current.done ? " (marked complete)." : " (unfinished).") + (supportReview.current.date ? " Target: " + supportReview.current.date + "." : "")),
-        React.createElement("p", { id: "tops-support-focus", style: { lineHeight: 1.5 } }, supportReview.guide.pathway === "support" ? "Focus: Get work or training support." : "Focus changes from " + TOPS_GUIDE_PATHS[supportReview.guide.pathway] + " to Get work or training support only when you keep this step. This changes future suggestions. Your role, goal and worksheet stay unchanged."),
-        React.createElement("label", { htmlFor: "tops-support-text" }, supportChoice && supportChoice.id === "ready" ? "What did you agree to do next?" : "My next action"),
+      supportReview && React.createElement("section", { "aria-labelledby": "tops-support-review-heading" },
+        React.createElement("h3", { id: "tops-support-review-heading", tabIndex: -1, style: { margin: "0 0 8px", fontSize: 20 } }, supportChoice ? "Review your next step" : "Review this support step"),
+        React.createElement("p", { id: "tops-support-outcome-label", "data-outcome": supportReview.outcome, style: { fontSize: 14, fontWeight: 700, margin: "0 0 8px" } }, supportChoice ? supportChoice.label : "Update this step"),
+        React.createElement("p", { id: "tops-support-unsaved", role: "status", style: { fontSize: 14, lineHeight: 1.5 } }, supportReview.snapshot === JSON.stringify(props.supportPlan.getPlan()) ? "Unsaved update. Save before refreshing or closing this tab." : "Your plan or saved work changed while this review was open. Your draft is kept below. Copy anything you need, then keep the current step and start a new review."),
+        React.createElement("p", { id: "tops-support-current", style: { lineHeight: 1.5, margin: "8px 0 12px" } }, React.createElement("strong", null, supportReview.snapshot === JSON.stringify(props.supportPlan.getPlan()) ? "Current step: " : "Step when this review began: "), supportReview.current.text + (supportReview.current.done ? " (marked complete)." : " (unfinished).") + (supportReview.current.date ? " Target: " + supportReview.current.date + "." : "")),
+        React.createElement("label", { htmlFor: "tops-support-text" }, supportChoice && supportChoice.id === "ready" ? "What did you agree to do next?" : "Proposed next step"),
         React.createElement("textarea", { id: "tops-support-text", rows: 3, maxLength: 240, value: supportReview.text, style: field, "aria-describedby": "tops-support-help", onChange: function(event) { setSupportReview(Object.assign({}, supportReview, { text: event.target.value })); } }),
-        React.createElement("p", { id: "tops-support-help", style: { fontSize: 14, lineHeight: 1.5 } }, supportChoice ? supportChoice.help : "Use a short action without sensitive information. Keeping changes reopens a completed step."),
+        React.createElement("p", { id: "tops-support-help", style: { fontSize: 14, lineHeight: 1.5 } }, supportChoice ? supportChoice.help : "Use a short action. Leave out personal or sensitive details."),
         React.createElement("label", { htmlFor: "tops-support-date" }, "My target date (optional)"),
         React.createElement("input", { id: "tops-support-date", type: "date", min: "2000-01-01", max: "2099-12-31", value: supportReview.date, style: field, "aria-describedby": "tops-support-date-help", onChange: function(event) { setSupportReview(Object.assign({}, supportReview, { date: event.target.value })); } }),
-        React.createElement("p", { id: "tops-support-date-help", style: { fontSize: 14, lineHeight: 1.5 } }, "Your planning target, not a program deadline. Saving this step does not contact the provider. Keeping this action replaces your current step with an unfinished step."),
-        React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
-          React.createElement("button", { id: "tops-support-save", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), disabled: !!window.__IS_IFRAME || !supportCandidate || !supportCandidate.text, onClick: function() { keepSupport(true); } }, "Save next step"),
+        React.createElement("p", { id: "tops-support-date-help", style: { fontSize: 14, lineHeight: 1.5, margin: "0 0 8px" } }, "Your date, not a program deadline."),
+        supportReview.guide.pathway !== "support" && React.createElement("p", { id: "tops-support-focus", style: { fontSize: 14, lineHeight: 1.5, margin: "0 0 8px" } }, "Focus changes from " + TOPS_GUIDE_PATHS[supportReview.guide.pathway] + " to Get work or training support. Future suggestions use that focus. Your role, goal and worksheet stay unchanged."),
+        React.createElement("p", { id: "tops-support-acceptance-help", style: { fontSize: 14, lineHeight: 1.5, margin: "0 0 8px" } }, "Saving or using this update replaces your current step as unfinished. It does not contact the provider."),
+        React.createElement("div", { className: "tops-next-move-actions", style: { display: "flex", flexWrap: "wrap", gap: 8 } },
+          React.createElement("button", { className: "tops-move-primary", id: "tops-support-save", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), disabled: !!window.__IS_IFRAME || !supportCandidate || !supportCandidate.text, onClick: function() { keepSupport(true); } }, "Save next step"),
           React.createElement("button", { id: "tops-support-visit", type: "button", style: button, disabled: !supportCandidate || !supportCandidate.text, onClick: function() { keepSupport(false); } }, "Use for this visit"),
           React.createElement("button", { id: "tops-support-cancel", type: "button", style: button, onClick: function() { var invoker = supportReview.invoker; setSupportReview(null); setSupportMessage("Your current step is unchanged."); requestAnimationFrame(function() { var target = document.getElementById(invoker) || document.getElementById("tops-support-outcome") || document.getElementById("tops-loop-title"); if (target) target.focus(); }); } }, "Keep current step"))),
       React.createElement("p", { id: "tops-support-status", role: "status", "aria-live": "polite", style: { fontSize: 14, lineHeight: 1.5 } }, supportMessage),
@@ -8571,6 +8574,7 @@ function MemberPlanningLoop(props) {
   return React.createElement("section", { "aria-labelledby": "tops-loop-title", className: "tops-next-move" + (move.kind === "continue" ? " tops-next-move-continue" : ""), style: { marginBottom: 24, background: C.bg, border: "1px solid " + C.border, borderRadius: 14, color: C.textBody, overflowWrap: "anywhere", boxShadow: C.isLight ? "0 6px 24px rgba(14,18,11,0.05)" : "0 6px 24px rgba(0,0,0,0.16)" } },
     React.createElement("div", { className: "tops-next-move-main" + (move.kind === "start" ? " tops-next-move-first" : ""), style: { borderLeft: "3px solid " + C.green } },
     React.createElement("h2", { id: "tops-loop-title", tabIndex: -1, style: { color: C.textSecondary, fontSize: 13, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase", margin: "0 0 14px" } }, props.planHub ? "Your next step" : "Your next move"),
+    !supportReview && React.createElement(React.Fragment, null,
     move.kind === "reflect" && React.createElement("p", { style: { lineHeight: 1.6 } }, "You marked this step done: " + a.text + ". Review what you learned before choosing another step. Choosing a new step replaces this one in the editor; save to keep that change. Completion does not verify an outcome or eligibility."),
     move.kind === "reflect" && !supportStep && React.createElement("div", null,
       React.createElement("label", { htmlFor: "tops-loop-reflection" }, "What did you learn from this step?"),
@@ -8597,9 +8601,9 @@ function MemberPlanningLoop(props) {
       ["continue", "review"].includes(move.kind) && !supportStep && React.createElement("button", { type: "button", style: button, "aria-expanded": editing, onClick: function() { if (editing) setEditing(false); else openStepEditor(); } }, editing ? "Close step editor" : move.kind === "review" ? "Review earlier step" : "Update this step"),
       ["suggest", "reflect"].includes(move.kind) && !supportStep && React.createElement("button", { type: "button", style: button, disabled: move.kind === "reflect" && !reflectedMove, onClick: chooseStep }, "Choose this next step"),
       move.route && move.kind !== "priority" && !supportStep && React.createElement("button", { type: "button", style: button, onClick: function() { props.onRoute(move.route); } }, move.route === "specialist" ? "Prepare for career help" : move.route === "network-learn" ? "Prepare a conversation" : move.route === "career-explore" ? "Explore career options" : move.route === "career" ? "Open my career worksheet" : move.route === "training" ? "Browse training options" : move.route === "support" ? "Browse support options" : "Open transition checklist")),
-    move.kind === "continue" && contextUI,
+    move.kind === "continue" && contextUI),
     supportUI,
-    timing && React.createElement("div", { id: "tops-loop-timing", style: { lineHeight: 1.6, margin: "12px 0" } },
+    !supportReview && timing && React.createElement("div", { id: "tops-loop-timing", style: { lineHeight: 1.6, margin: "12px 0" } },
       React.createElement("p", null, React.createElement("strong", null, props.planHub ? "Your target: " + a.date : timing.title), props.planHub ? "" : " - " + timing.detail),
       props.planHub && React.createElement("p", { style: { fontSize: 14 } }, "Your own target, not a benefits deadline. No app notification is scheduled."),
       React.createElement(props.planHub ? "details" : "div", null,
@@ -8607,7 +8611,7 @@ function MemberPlanningLoop(props) {
       React.createElement("p", { style: { fontSize: 14 } }, "This is your own planning date, not a benefits deadline. It does not send a notification."),
       canExportPersonalStep() && React.createElement("button", { id: "tops-personal-calendar-open", type: "button", style: button, onClick: reviewPersonalCalendar }, "Add this step to my calendar"),
       React.createElement("button", { id: "tops-loop-date-review", type: "button", style: button, onClick: function() { if (supportStep) { if (!supportReview) reviewSupport("edit", "tops-loop-date-review"); requestAnimationFrame(function() { var date = document.getElementById("tops-support-date"); if (date) date.focus(); }); return; } setEditing(true); requestAnimationFrame(function() { var date = document.getElementById("tops-action-date"); if (date) date.focus(); }); } }, "Review my target date"))),
-    calendarPreview && React.createElement("section", { "aria-labelledby": "tops-personal-calendar-heading", style: { display: "grid", gap: 12, lineHeight: 1.5, padding: 16, border: "1px solid " + C.border, borderRadius: 8 } },
+    !supportReview && calendarPreview && React.createElement("section", { "aria-labelledby": "tops-personal-calendar-heading", style: { display: "grid", gap: 12, lineHeight: 1.5, padding: 16, border: "1px solid " + C.border, borderRadius: 8 } },
       React.createElement("h4", { id: "tops-personal-calendar-heading", tabIndex: -1, style: { margin: 0 } }, "Review your calendar step"),
       React.createElement("p", { style: { margin: 0, whiteSpace: "pre-wrap", overflowWrap: "anywhere" } }, calendarPreview.text), React.createElement("p", { style: { margin: 0 } }, "All-day planning date: " + calendarPreview.date),
       React.createElement("p", { style: { margin: 0 } }, "The file requests reminders 7 days and 1 day before this date. Check alert times after importing; alerts already in the past may not appear. Alerts depend on your calendar's import and notification settings."),
@@ -8615,16 +8619,16 @@ function MemberPlanningLoop(props) {
       (!calendarPreview.signature || !canExportPersonalStep() || calendarPreview.signature !== personalCalendarSignature()) && React.createElement("p", { role: "status", style: { margin: 0 } }, "Your step or saved plan changed. Cancel this preview and review the current step before downloading."),
       React.createElement("button", { id: "tops-personal-calendar-download", type: "button", style: Object.assign({}, button, { width: "100%", maxWidth: 360, minHeight: 44, margin: 0, justifySelf: "start" }), disabled: !calendarPreview.signature || !canExportPersonalStep() || calendarPreview.signature !== personalCalendarSignature(), onClick: downloadPersonalCalendar }, "Download calendar file"),
       React.createElement("button", { type: "button", style: Object.assign({}, button, { width: "100%", maxWidth: 360, minHeight: 44, margin: 0, justifySelf: "start" }), onClick: function() { setCalendarPreview(null); setCalendarMessage(""); requestAnimationFrame(function() { var target = document.getElementById("tops-personal-calendar-open") || document.getElementById("tops-loop-title"); if (target) target.focus(); }); } }, "Cancel calendar preview")),
-    React.createElement("p", { role: "status", "aria-live": "polite" }, calendarMessage),
+    !supportReview && React.createElement("p", { role: "status", "aria-live": "polite" }, calendarMessage),
     completionUI,
-    props.profile === "guard" && g.pathway && React.createElement("button", { type: "button", style: Object.assign({}, button, { marginTop: 12 }), onClick: function() {
+    !supportReview && props.profile === "guard" && g.pathway && React.createElement("button", { type: "button", style: Object.assign({}, button, { marginTop: 12 }), onClick: function() {
       setBlocker("service"); setServiceMoment(""); setReplaceStep(false);
       requestAnimationFrame(function() { var details = document.getElementById("tops-loop-checkin"), field = document.getElementById("tops-loop-service-moment"); if (details) { details.open = true; for (var parent = details.parentElement; parent; parent = parent.parentElement) { if (parent.tagName === "DETAILS") parent.open = true; } } if (field) { field.focus(); field.scrollIntoView({ block: "center" }); } });
     } }, "Plan around my service commitments"),
-    editing && g.pathway && React.createElement(CareerAction, { colors: C, state: props.actionState, setState: props.setActionState, guide: g, onClear: props.supportPlan.clearReview }),
+    !supportReview && editing && g.pathway && React.createElement(CareerAction, { colors: C, state: props.actionState, setState: props.setActionState, guide: g, onClear: props.supportPlan.clearReview }),
     ),
-    React.createElement(props.planHub ? "details" : "div", { id: props.planHub ? "tops-plan-options" : undefined, className: "tops-loop-utilities", style: { borderTop: "1px solid " + C.border } }, props.planHub && React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Review direction or get help with this step"), move.kind !== "choose" && priorityUI, checkinUI, helpUI, directionUI, comparisonUI),
-    React.createElement("p", { className: "tops-loop-meta", role: "status", "aria-live": "polite", style: { fontSize: 13, lineHeight: 1.5, margin: 0, color: C.textSecondary } }, message || (props.guideState.status === "Use this guide without saving, or choose Save guide details to keep them on this browser." ? "" : props.guideState.status)));
+    !supportReview && React.createElement(props.planHub ? "details" : "div", { id: props.planHub ? "tops-plan-options" : undefined, className: "tops-loop-utilities", style: { borderTop: "1px solid " + C.border } }, props.planHub && React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Review direction or get help with this step"), move.kind !== "choose" && priorityUI, checkinUI, helpUI, directionUI, comparisonUI),
+    !supportReview && React.createElement("p", { className: "tops-loop-meta", role: "status", "aria-live": "polite", style: { fontSize: 13, lineHeight: 1.5, margin: 0, color: C.textSecondary } }, message || (props.guideState.status === "Use this guide without saving, or choose Save guide details to keep them on this browser." ? "" : props.guideState.status)));
 }
 // MEMBER_LOOP_END
 

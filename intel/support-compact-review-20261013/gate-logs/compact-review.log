@@ -1,0 +1,42 @@
+PASS single h2/h3 review, one exact original step, visible limits and conditional focus change, primary Save; standard375px editor visible and Save offset shorter than retained baseline
+PASS completed original is stated once; calendar preview is hidden during review and returns unchanged after cancellation
+PASS stale conflict remains visible and labels the original snapshot accurately
+{
+  "measurements": [
+    {
+      "direction": "support",
+      "headingTag": "H3",
+      "outerHeading": "tops-loop-title",
+      "editorOffset": 238,
+      "saveOffset": 548,
+      "cardHeight": 839,
+      "reviewHeight": 708,
+      "hidden": true,
+      "focus": "",
+      "current": "Current step: Ask a Wisconsin Job Center about eligibility and approval before paying for tools or training. (unfinished). Target: 2027-01-12.",
+      "primary": true,
+      "help": "Name documents only. No contents, identifiers or uploads.",
+      "dateHelp": "Your date, not a program deadline.",
+      "boundary": "Saving or using this update replaces your current step as unfinished. It does not contact the provider.",
+      "saveBefore": "Unsaved update. Save before refreshing or closing this tab."
+    },
+    {
+      "direction": "change",
+      "headingTag": "H3",
+      "outerHeading": "tops-loop-title",
+      "editorOffset": 238,
+      "saveOffset": 640,
+      "cardHeight": 931,
+      "reviewHeight": 800,
+      "hidden": true,
+      "focus": "Focus changes from Change careers to Get work or training support. Future suggestions use that focus. Your role, goal and worksheet stay unchanged.",
+      "current": "Current step: Ask a Wisconsin Job Center about eligibility and approval before paying for tools or training. (unfinished). Target: 2027-01-12.",
+      "primary": true,
+      "help": "Name documents only. No contents, identifiers or uploads.",
+      "dateHelp": "Your date, not a program deadline.",
+      "boundary": "Saving or using this update replaces your current step as unfinished. It does not contact the provider.",
+      "saveBefore": "Unsaved update. Save before refreshing or closing this tab."
+    }
+  ]
+}
+COMPACT SUPPORT REVIEW: LOCAL AUTOMATION PASS. 320/375 reflow and44px controls; no provider calls. Manual AT/native phone/hosted checks remain pending.

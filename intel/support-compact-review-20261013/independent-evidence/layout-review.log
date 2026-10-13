@@ -1,0 +1,5 @@
+MEASURE baseline support editor236/save572; now {"headingTop":132,"editorTop":370,"editorOffset":238,"saveOffset":548,"reviewHeight":708,"scrollWidth":375,"innerWidth":375}
+MEASURE baseline change editor332/save668; now {"headingTop":132,"editorTop":394,"editorOffset":262,"saveOffset":664,"reviewHeight":824,"scrollWidth":375,"innerWidth":375}
+PASS375/320 light/dark review-first layout, exact current action once, conditional focus disclosure, target sizes/reflow, completed/long values and cancel restoration
+PASS reference return keeps exact proposed text/date; stale snapshot is labeled as original review, blocks save and keeps edited proposal
+LAYOUT DELTA LOCAL AUTOMATION PASS

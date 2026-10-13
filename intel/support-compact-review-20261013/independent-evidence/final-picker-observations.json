@@ -1,0 +1,24 @@
+[
+  {
+    "theme": "professional",
+    "scheme": "light",
+    "filter": "none",
+    "background": "rgb(251, 248, 239)",
+    "color": "rgb(41, 57, 35)",
+    "width": 240,
+    "height": 44,
+    "scrollWidth": 320,
+    "innerWidth": 320
+  },
+  {
+    "theme": "tactical",
+    "scheme": "dark",
+    "filter": "none",
+    "background": "rgb(14, 18, 11)",
+    "color": "rgb(245, 240, 225)",
+    "width": 240,
+    "height": 44,
+    "scrollWidth": 320,
+    "innerWidth": 320
+  }
+]

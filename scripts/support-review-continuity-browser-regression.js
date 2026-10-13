@@ -43,7 +43,7 @@ const server = http.createServer((req, res) => {
     const plan = () => ev('JSON.stringify(["tops_personal_guide_v1","tops_career_action_v1","tops_career_gap_v1"].map(k=>localStorage.getItem(k)))');
 
     const navigate=async label=>{await ev(`Array.from(document.querySelectorAll('.bottom-nav button')).find(n=>n.querySelector('.nav-label').textContent===${JSON.stringify(label)}).click()`);await wait('!!document.getElementById("tops-loop-title")');};
-    const proposal=()=>ev('JSON.stringify([document.getElementById("tops-support-outcome").value,document.getElementById("tops-support-text").value,document.getElementById("tops-support-date").value])');
+    const proposal=()=>ev('JSON.stringify([document.getElementById("tops-support-outcome-label").dataset.outcome,document.getElementById("tops-support-text").value,document.getElementById("tops-support-date").value])');
     const reference=async()=>{await reveal('tops-support-wisconsin-reference');await tap('tops-support-wisconsin-reference');await wait('!!document.getElementById("tops-wi-work-support-resources-heading")');};
     await load('dashboard');await seed();
     await c.send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});

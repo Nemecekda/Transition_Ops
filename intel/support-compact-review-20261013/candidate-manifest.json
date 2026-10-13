@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-13",
+  "branch": "codex/support-outcome-follow-through",
+  "base": "ec6506a4378b751824f3f29529b344df08fa044a",
+  "origin_main": "2fbd8b4e1a87ac4b20b104290604e78c33d708b1",
+  "cache": 285,
+  "publication": "local only",
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 1539295,
+      "sha256": "dab0b79095bf4a6856e25e35942a31aa8b384f52885db440de2561e4c025864e"
+    },
+    {
+      "path": "pwa-sw.js",
+      "bytes": 4609,
+      "sha256": "a7d764d75fe89abbe01b0c5d379ed9385de0386dc761d8daa3ef8690d71e1f46"
+    },
+    {
+      "path": "scripts/support-compact-review-browser-regression.js",
+      "bytes": 11291,
+      "sha256": "adfbfb9e561960c5fdd877838452d2427f467e0020c322393e3e4325b1641167"
+    },
+    {
+      "path": "scripts/support-outcome-browser-regression.js",
+      "bytes": 11934,
+      "sha256": "47e2357fa907dc74f97281c2a13ef64e13a297944192181cea3dd592bcd3f232"
+    },
+    {
+      "path": "scripts/support-review-continuity-browser-regression.js",
+      "bytes": 11001,
+      "sha256": "6385cbda04f3b5f479e708629eef4895ab168cc5dc7c58bb2a14bbae407b13c7"
+    }
+  ]
+}
