@@ -1,0 +1,80 @@
+Browser tab: 8, Title: "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits", URL: "http://127.0.0.1:18778/?tool=timeline".
+0 AXWebArea Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits, URL: 127.0.0.1:18778/?tool=timeline
+	1 container
+		2 container
+			3 text VETERAN BRIDGE SOLUTIONS
+			4 heading TRANSITION OPS™, Value: 1
+				5 text TRANSITION OPS™
+			6 button Switch to dark theme
+				7 text ☀
+				8 text Dark
+			9 button UPDATES 49
+				10 text UPDATES
+				11 text 49
+		12 container Primary
+			13 button Home
+			14 button My Plan
+			15 button Career
+			16 button (collapsed) Benefits, Secondary Actions: Expand
+			17 button (collapsed) More, Secondary Actions: Expand
+		18 container tops-main-content
+			19 container tops-page-orientation
+				20 heading My Plan, Value: 2, ID: tops-page-title
+					21 text My Plan
+				22 button Ask Navigator
+				23 button All tools
+			24 button (collapsed) Suicide prevention & support, Secondary Actions: Expand
+				25 text Suicide prevention & support
+			132 container Description: My Plan, ID: tops-plan-hub
+				133 container YOUR NEXT STEP
+					134 heading YOUR NEXT STEP, Value: 2, ID: tops-loop-title
+						135 text YOUR NEXT STEP
+					136 heading Ask the Job Center which work tools I should discuss at my appointment., Value: 3
+						137 text Ask the Job Center which work tools I should discuss at my appointment.
+					138 button Update this step, ID: tops-loop-support-open
+					139 container
+						140 text Your direction:  Get work or training support
+					141 container tops-support-follow-through
+						142 text What happened next?
+						143 pop up button (collapsed, settable) What happened next?, Value: Choose an update, ID: tops-support-outcome, Secondary Actions: Expand
+							144 menu
+								145 (selected) Choose an update
+								146 Waiting for a reply
+								147 They asked for documents
+								148 I need another option
+								149 Ready for the next step
+						150 button (collapsed) Find support or review approval questions, Secondary Actions: Expand
+							151 text Find support or review approval questions
+					152 container tops-loop-completion
+						153 button Mark step complete
+						154 text Saves your progress on this browser immediately. You can change it back; your step and target date are kept.
+					155 button (collapsed) Review direction or get help with this step, Secondary Actions: Expand
+						156 text Review direction or get help with this step
+					157 text Loaded your saved guide details from this browser.
+				158 container Plan destinations
+					159 button Career and service plan Explore roles, continue career work, or plan around service commitments., ID: tops-plan-open-career
+						160 text Career and service plan
+						161 text Explore roles, continue career work, or plan around service commitments.
+					162 button Separation timeline Review your separation date, milestones and tasks., ID: tops-plan-open-timeline
+						163 text Separation timeline
+						164 text Review your separation date, milestones and tasks.
+			165 container My Plan tools
+				166 button Reminders & follow-ups, ID: tops-plan-shortcut-reminders
+				167 button Documents, ID: tops-plan-shortcut-resources
+				168 button Transition checklist, ID: tops-plan-shortcut-readiness
+			169 container Plan backup
+				170 button (collapsed) Back up or restore my plan, Secondary Actions: Expand
+					171 text Back up or restore my plan
+		121 text BUILT BY
+		122 link Description: VETERAN BRIDGE SOLUTIONS, Value: veteranbridgesolutions.com/
+		123 link Description: www.veteranbridgesolutions.com, Value: veteranbridgesolutions.com/
+		124 text Bridging the gap between service and civilian success.
+		125 button ✉ FEEDBACK IS A GIFT, Help: Send feedback to Dean
+			126 text ✉
+			127 text FEEDBACK
+			128 text IS A GIFT
+		129 button Privacy
+		130 button Notification options
+		131 text Push alerts are currently disabled.
+
+The focused UI element is 167 button Documents, ID: tops-plan-shortcut-resources

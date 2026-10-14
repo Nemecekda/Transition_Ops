@@ -1,0 +1,64 @@
+{
+  "candidate": "8a2d37e29dfee8794668a1951bd67683234559441fbab52f60188e6933a07cea",
+  "cases": [
+    {
+      "name": "All nine resource topics have one correctly named return with selector focus",
+      "status": "PASS"
+    },
+    {
+      "name": "Healthcare origin survives refresh; explicit return and native Forward/Back are stable",
+      "status": "PASS"
+    },
+    {
+      "name": "Existing directory filter remains selected during in-app return",
+      "status": "PASS"
+    },
+    {
+      "name": "Wisconsin guide returns to visible heading and retains guide URL after refresh",
+      "status": "PASS"
+    },
+    {
+      "name": "Healthcare selected after Wisconsin guide returns Healthcare, not old guide",
+      "status": "FAIL",
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Back to Wisconsin guide'\n- 'Back to Healthcare'\n           ^\n"
+    },
+    {
+      "name": "Home continuation and optional tile return to visible original control after reload",
+      "status": "PASS"
+    },
+    {
+      "name": "My Plan returns to Documents shortcut; readiness control takes precedence",
+      "status": "PASS"
+    },
+    {
+      "name": "Fresh direct link has no origin; explicit fallback remains inside app",
+      "status": "PASS"
+    },
+    {
+      "name": "Unknown and malformed return metadata fails closed with no member content reflected",
+      "status": "PASS"
+    },
+    {
+      "name": "Return metadata absent on unrelated route; adjacent search/support draft unaffected",
+      "status": "PASS"
+    }
+  ],
+  "observations": [
+    {
+      "healthcareReturn": {
+        "url": "?tool=resources",
+        "focus": "tops-resource-topic",
+        "title": "Resources and support",
+        "topic": "healthcare",
+        "docs": false,
+        "history": {
+          "tops": 1,
+          "documentParentTopic": "healthcare"
+        },
+        "length": 5
+      }
+    }
+  ],
+  "errors": [],
+  "providerPosts": 0
+}

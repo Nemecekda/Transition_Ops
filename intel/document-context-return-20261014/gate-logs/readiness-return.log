@@ -1,0 +1,5 @@
+Error: browser evaluation failed: TypeError: Cannot set properties of null (setting 'value')
+    at <anonymous>:1:69
+    at <anonymous>:1:136
+    at Object.evaluate (eval at <anonymous> (/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/readiness-tool-return-browser-regression.js:5:9), <anonymous>:166:11)
+    at async /Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/readiness-tool-return-browser-regression.js:27:310

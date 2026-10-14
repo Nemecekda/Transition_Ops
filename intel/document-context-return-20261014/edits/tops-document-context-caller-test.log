@@ -1,0 +1,2 @@
+CALLER TEST OLD: await ev('(()=>{const n=document.getElementById("tops-resource-topic");n.value="healthcare";n.dispatchEvent(new Event("change",{bubbles:true}))})()');assert.equal(await ev('!!document.getElementById("tops-readiness-return")'),false);await load(); NEW: await click("Back to Healthcare");await wait('document.getElementById("tops-resource-topic")?.value==="healthcare"');assert.equal(await ev('!!document.getElementById("tops-readiness-return")'),false);await load();
+new expect1/actual 1 old expect0/actual 0

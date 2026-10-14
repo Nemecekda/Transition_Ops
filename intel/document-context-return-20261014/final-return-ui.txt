@@ -1,0 +1,89 @@
+Browser tab: 8, Title: "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits", URL: "http://127.0.0.1:18778/?tool=resources".
+1 AXWebArea Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits, URL: 127.0.0.1:18778/?tool=resources
+	2 container
+		3 container
+			4 text VETERAN BRIDGE SOLUTIONS
+			5 heading TRANSITION OPS™, Value: 1
+				6 text TRANSITION OPS™
+			7 button Switch to dark theme
+				8 text ☀
+				9 text Dark
+			10 button UPDATES 49
+				11 text UPDATES
+				12 text 49
+		13 container Primary
+			14 button Home
+			15 button My Plan
+			16 button Career
+			17 button (collapsed) Benefits, Secondary Actions: Expand
+			18 button (collapsed) More, Secondary Actions: Expand
+		19 container tops-main-content
+			20 container tops-page-orientation
+				21 heading Resources and support, Value: 2, ID: tops-page-title
+					22 text Resources and support
+				23 button Ask Navigator
+				24 button All tools
+			25 button (collapsed) Suicide prevention & support, Secondary Actions: Expand
+				26 text Suicide prevention & support
+			27 button (collapsed) Talk with a person, Secondary Actions: Expand
+				28 text Talk with a person
+			126 button (collapsed) Resources for workplace groups, Secondary Actions: Expand
+				127 text Resources for workplace groups
+			128 text Choose a resource topic
+			129 pop up button (collapsed, settable) Choose a resource topic, Value: Healthcare, ID: tops-resource-topic, Secondary Actions: Expand
+				130 menu
+					131 All resources
+					132 Claims help and veteran organizations
+					133 Transition assistance programs
+					134 Mindset and adjustment
+					135 Leadership and communication
+					136 Military spouse resources
+					137 Veteran discounts and perks
+					138 SkillBridge
+					139 (selected) Healthcare
+					140 Document checklist
+			141 heading HEALTHCARE TRANSITION, Value: 2, ID: tops-healthcare-transition
+				142 text HEALTHCARE TRANSITION
+			143 text No automatic bridge from TRICARE to VA. Plan ahead.
+			144 text Active Duty
+			145 text TRICARE Prime
+			146 text Ensure all conditions documented before separation
+			147 text Separation Day
+			148 text Coverage ends
+			149 text Last day of active duty TRICARE
+			150 text Day 1 - Day 180 if TAMP-eligible
+			151 text TAMP
+			152 text 180 days of premium-free TRICARE if your service determines you qualify. Continuing an existing Prime option requires reenrollment; plan requirements apply.
+			153 text After active-duty coverage or TAMP
+			154 text Next coverage, if eligible
+			155 text CHCBP: confirm eligibility with Humana Military (800-444-5445); submit DD Form 2837, required proof and initial payment within 60 days of losing regular TRICARE or TAMP. Other paths include employer coverage, VA health care if eligible, or Marketplace coverage.
+			156 text VA Healthcare
+			157 text Priority Group
+			158 text Enroll at VA.gov. Combat vets: 10-year enhanced eligibility.
+			159 text VA Dental
+			160 text VADIP
+			161 text Free VA dental is limited (100% SC, service-connected dental conditions, ex-POW — plus one-time care if you APPLY WITHIN 180 DAYS of separation). Most vets: VADIP insurance.
+			162 text KEY INTEL
+			163 container
+				164 text ●  TAMP (service-determined eligibility): 180 days of premium-free TRICARE; plan enrollment requirements apply
+			165 container
+				166 text ●  Must ACTIVELY enroll in VA healthcare
+			167 container
+				168 text ●  Combat vets: 10-year enhanced eligibility
+			169 container
+				170 text ●  CHCBP if eligible: apply within 60 days of losing regular TRICARE or TAMP
+			171 container
+				172 text ●  VA dental limited — apply within 180 days of separation for one-time care
+		115 text BUILT BY
+		116 link Description: VETERAN BRIDGE SOLUTIONS, Value: veteranbridgesolutions.com/
+		117 link Description: www.veteranbridgesolutions.com, Value: veteranbridgesolutions.com/
+		118 text Bridging the gap between service and civilian success.
+		119 button ✉ FEEDBACK IS A GIFT, Help: Send feedback to Dean
+			120 text ✉
+			121 text FEEDBACK
+			122 text IS A GIFT
+		123 button Privacy
+		124 button Notification options
+		125 text Push alerts are currently disabled.
+
+The focused UI element is 129 pop up button (collapsed, settable) Choose a resource topic, Value: Healthcare, ID: tops-resource-topic, Secondary Actions: Expand
