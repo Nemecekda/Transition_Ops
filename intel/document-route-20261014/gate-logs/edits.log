@@ -1,0 +1,57 @@
+EDIT 1 OLD: function topsCurrentToolURL(href, tool) { NEW: const TOPS_DOCUMENT_RETURN_TOPICS = ["directory", "vsos", "tap", "mindset", "leadership", "spouse", "perks", "skillbridge", "healthcare"];
+function topsIsDocumentURL(href) {
+  try { var q = new URL(href).searchParams; return q.getAll("tool").length === 1 && q.get("tool") === "resources" && q.getAll("view").length === 1 && q.get("view") === "documents" && !q.has("guide"); } catch (error) { return false; }
+}
+function topsCurrentToolURL(href, tool) {
+new expected 1 actual 1 old expected 1 actual 1
+EDIT 2 OLD: const [subTab, setSubTab] = useState("vsos"); NEW: const [subTab, setSubTab] = useState(function() { return topsIsDocumentURL(window.location.href) ? "documents" : "vsos"; });
+new expected 1 actual 1 old expected 0 actual 0
+EDIT 3 OLD: const __planHistory = useRef(null); NEW: const __planHistory = useRef(null);
+  const __documentHistory = useRef(null);
+  __documentHistory.current = { active: activeTab === "resources" && subTab === "documents", overlay: showMoreMenu || feedbackOpen || aboutOpen || whatsNewOpen || policyPanelOpen || showNotifPanel, restore: function() {
+    var url = new URL(window.location.href), tool = url.searchParams.get("tool"), state = history.state || {};
+    if (TOPS_TOOL_ROUTES.indexOf(tool) === -1) tool = "dashboard";
+    var docs = topsIsDocumentURL(url.href);
+    wiGuideRequested.current = tool === "resources" && topsIsWisconsinGuideURL(url.href);
+    if (tool === "resources") setSubTab(docs ? "documents" : wiGuideRequested.current ? "directory" : TOPS_DOCUMENT_RETURN_TOPICS.includes(state.documentParentTopic) ? state.documentParentTopic : "vsos");
+    if (tool === "timeline") { setPlanView(state.planView === "timeline" ? "timeline" : "hub"); setSelectedMilestone(null); }
+    continuationFocus.current = docs ? "tops-plan-documents" : wiGuideRequested.current ? "tops-wi-work-support-resources-heading" : tool === "timeline" ? "tops-plan-shortcut-resources" : "tops-page-title";
+    setContinuationRevision(function(value) { return value + 1; });
+    setActiveTab(tool);
+  } };
+new expected 1 actual 1 old expected 1 actual 1
+EDIT 4 OLD: try { var next = topsCurrentToolURL(window.location.href, activeTab); if (next) { var url = new URL(next); if (activeTab === "resources" && wiGuideRequested.current) { if (url.searchParams.get("guide") !== "wisconsin-work-support") url.searchParams.set("guide", "wisconsin-work-support"); } else { if (url.searchParams.has("guide")) url.searchParams.delete("guide"); wiGuideRequested.current = false; } if (url.href !== window.location.href) history.replaceState(history.state, "", url.href); } } catch (error) {} NEW: try { var next = topsCurrentToolURL(window.location.href, activeTab); if (next) { var url = new URL(next), docs = activeTab === "resources" && subTab === "documents";
+      if (docs) { url.searchParams.set("view", "documents"); url.searchParams.delete("guide"); wiGuideRequested.current = false; }
+      else { if (url.searchParams.has("view")) url.searchParams.delete("view"); if (activeTab === "resources" && wiGuideRequested.current) { if (url.searchParams.get("guide") !== "wisconsin-work-support") url.searchParams.set("guide", "wisconsin-work-support"); } else { if (url.searchParams.has("guide")) url.searchParams.delete("guide"); wiGuideRequested.current = false; } }
+      if (url.href !== window.location.href) history.replaceState(history.state, "", url.href);
+    } } catch (error) {}
+new expected 1 actual 1 old expected 0 actual 0
+EDIT 5 OLD: if (activeTab !== "dashboard") depth += 1; NEW: if (activeTab !== "dashboard") depth += 1;
+      if (activeTab === "resources" && subTab === "documents") depth += 1;
+new expected 1 actual 1 old expected 1 actual 1
+EDIT 6 OLD: if (activeTab === "timeline") state.planView = planView; else delete state.planView; history.replaceState(state, ""); NEW: if (activeTab === "timeline") state.planView = planView; else delete state.planView; if (activeTab === "resources" && TOPS_DOCUMENT_RETURN_TOPICS.includes(subTab)) state.documentParentTopic = subTab; else delete state.documentParentTopic; history.replaceState(state, "");
+new expected 1 actual 1 old expected 0 actual 0
+EDIT 7 OLD: }, [showOnboarding, onboardStep, activeTab, planView, selectedMilestone, journeyTarget, pathwayMode, careerScreen, careerStage, showMoreMenu, feedbackOpen, aboutOpen, whatsNewOpen, policyPanelOpen, showNotifPanel, __histRevision]); NEW: }, [showOnboarding, onboardStep, activeTab, subTab, planView, selectedMilestone, journeyTarget, pathwayMode, careerScreen, careerStage, showMoreMenu, feedbackOpen, aboutOpen, whatsNewOpen, policyPanelOpen, showNotifPanel, __histRevision]);
+new expected 1 actual 1 old expected 0 actual 0
+EDIT 8 OLD: __histSkipSync.current = true;
+      var plan = __planHistory.current NEW: __histSkipSync.current = true;
+      var documentsRoute = __documentHistory.current;
+      if (documentsRoute && !documentsRoute.overlay && (documentsRoute.active || topsIsDocumentURL(window.location.href))) { __histDepth.current = (history.state && history.state.tops) || 0; documentsRoute.restore(); return; }
+      var plan = __planHistory.current
+new expected 1 actual 1 old expected 0 actual 0
+EDIT 9 OLD: const continuationFocus = useRef(null); NEW: const continuationFocus = useRef(topsIsDocumentURL(window.location.href) ? "tops-plan-documents" : null);
+new expected 1 actual 1 old expected 0 actual 0
+EDIT 10 OLD: if (tab === "resources") setSubTab("documents"); NEW: if (tab === "resources") { wiGuideRequested.current = false; setSubTab("documents"); setContinuationRevision(function(value) { return value + 1; }); }
+new expected 1 actual 1 old expected 0 actual 0
+EDIT 11 OLD: onChange: function(event) { if (event.target.value === "documents") continuationFocus.current = "tops-plan-documents"; setSubTab(event.target.value); } NEW: onChange: function(event) { if (event.target.value === "documents") openPlanRoute("resources", "tops-plan-documents", "tops-resource-topic"); else setSubTab(event.target.value); }
+new expected 1 actual 1 old expected 0 actual 0
+EDIT 12 OLD: React.createElement("div", { className: "dash-card tops-progress-card", style: { margin: 0 }, onClick: function() { setActiveTab("resources"); setSubTab("documents"); } }, NEW: React.createElement("button", { id: "tops-home-documents", type: "button", className: "dash-card tops-progress-card", style: { margin: 0, minHeight: 44, textAlign: "left", font: "inherit" }, onClick: function() { openPlanRoute("resources", "tops-plan-documents", "tops-home-documents"); } },
+new expected 1 actual 1 old expected 0 actual 0
+EDIT 13 OLD: React.createElement("div", { style: { fontSize: 10, color: C.gold, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 8 } }, "DOCUMENTS"), NEW: React.createElement("div", { style: { fontSize: 16, fontWeight: 600, color: C.textPrimary, marginBottom: 8 } }, "Document checklist"),
+new expected 1 actual 1 old expected 0 actual 0
+EDIT 14 OLD: }, docsSecured + "/" + docsTotal), NEW: }, docsSecured + " of " + docsTotal),
+new expected 1 actual 1 old expected 0 actual 0
+EDIT 15 OLD: React.createElement("div", { style: { fontSize: 10, color: C.inactive, marginTop: 4 } }, "secured") NEW: React.createElement("div", { style: { fontSize: 14, color: C.textSecondary, marginTop: 4 } }, "marked as obtained")
+new expected 1 actual 1 old expected 0 actual 0
+EDIT 16 OLD: const CACHE_NAME = "transition-ops-v287"; NEW: const CACHE_NAME = "transition-ops-v288";
+new expected 1 actual 1 old expected 0 actual 0

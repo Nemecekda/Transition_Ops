@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-14",
+  "reviewer": "/root/j1_diagnostic_contract",
+  "disposition": "PASS",
+  "scope": "Document route, entry and return; local independent review only",
+  "base": "c1a1f64",
+  "index_sha256": "05a37549112e5e39b4a68470c538c4422abae477833ce028300b8b1f868059ee",
+  "worker_sha256": "50b71f1390878635d600c104054ab390caea30da1ae6a6540c6a78f5956cd2d7",
+  "cache": 288,
+  "author_test_sha256_observed": "99c8727b24ec996f4010d97aea7e33cda4b7c77ee81e635f077e828f6a0fe718",
+  "evidence": {
+    "independent-review.md": "ca8858fbc7b37a17b964a474c9495ce2ddcc17429498e2b2358b9e49006463d1",
+    "baseline-results.json": "d089b0b14f589fbf7a06322c6921714ef588781e7a2db9daa9ddb247214ffe1b",
+    "independent-results.json": "87725af47531dd5c584a247b2f5d2f1cd0d7f4b0c773a3be777ebb9481a3983b",
+    "fresh-final-results.json": "960373c601b0965e8fc05e849f9af1ab9cc57b387253cf8d94694296f506b874",
+    "mobile-results.json": "68ae6a2d9942bde362419ed02f6d0de2766b3bb17d050f419674fd8fdb3081fe",
+    "inventory-comparison.json": "4c380734886f386a257c4b1fa4964e4b2614c20d14cd8b1aad01813180f3d162"
+  },
+  "resolved_finding": "Fresh8d88 direct Documents entry duplicated browser history;05a37549 fixes logical base and explicit return",
+  "limitations": [
+    "Manual AT and hosted release not performed",
+    "Real member usefulness and retention UNMEASURED",
+    "One final harness cross-document teardown resolved by isolated browser-history rerun"
+  ]
+}

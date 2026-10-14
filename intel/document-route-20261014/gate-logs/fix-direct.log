@@ -1,0 +1,16 @@
+EDIT 17 OLD: const __histDepth = useRef((history.state && history.state.tops) || 0); NEW: const __histDepth = useRef((history.state && history.state.tops) || 0);
+  const __documentEntryBase = useRef(topsIsDocumentURL(window.location.href) && (!history.state || typeof history.state.tops !== "number" || history.state.documentEntryBase === true) ? 2 : 0);
+new expected1 actual 1 old expected 1 actual 1
+EDIT 18 OLD: if (__histSuppress.current > 0) return;
+    var prev = __histDepth.current; NEW: if (__histSuppress.current > 0) return;
+    if (__documentEntryBase.current && !(activeTab === "resources" && subTab === "documents")) __documentEntryBase.current = 0;
+    depth = Math.max(0, depth - __documentEntryBase.current);
+    var prev = __histDepth.current;
+new expected1 actual 1 old expected 0 actual 0
+EDIT 19 OLD: var state = Object.assign({}, history.state); if (activeTab === "pathway") NEW: var state = Object.assign({}, history.state); if (__documentEntryBase.current) { state.documentEntryBase = true; state.tops = depth; } else delete state.documentEntryBase; if (activeTab === "pathway")
+new expected1 actual 1 old expected 0 actual 0
+EDIT 20 OLD: __histSkipSync.current = true;
+      var documentsRoute NEW: __histSkipSync.current = true;
+      __documentEntryBase.current = topsIsDocumentURL(window.location.href) && history.state && history.state.documentEntryBase === true ? 2 : 0;
+      var documentsRoute
+new expected1 actual 1 old expected 0 actual 0

@@ -1,0 +1,81 @@
+{
+  "candidate": "05a37549112e5e39b4a68470c538c4422abae477833ce028300b8b1f868059ee",
+  "cases": [
+    {
+      "name": "Home tile and document arrival reflow in both phone widths/themes",
+      "status": "PASS"
+    }
+  ],
+  "observations": [
+    {
+      "tile": {
+        "width": 320,
+        "theme": "professional",
+        "tag": "BUTTON",
+        "height": 214,
+        "targetWidth": 135,
+        "overflow": false,
+        "text": "Document checklist2 of 12marked as obtained"
+      },
+      "doc": {
+        "focus": "tops-plan-documents",
+        "backTop": 131.796875,
+        "backBottom": 175.796875,
+        "overflow": false
+      }
+    },
+    {
+      "tile": {
+        "width": 320,
+        "theme": "tactical",
+        "tag": "BUTTON",
+        "height": 214,
+        "targetWidth": 135,
+        "overflow": false,
+        "text": "Document checklist2 of 12marked as obtained"
+      },
+      "doc": {
+        "focus": "tops-plan-documents",
+        "backTop": 131.796875,
+        "backBottom": 175.796875,
+        "overflow": false
+      }
+    },
+    {
+      "tile": {
+        "width": 375,
+        "theme": "professional",
+        "tag": "BUTTON",
+        "height": 197,
+        "targetWidth": 162.5,
+        "overflow": false,
+        "text": "Document checklist2 of 12marked as obtained"
+      },
+      "doc": {
+        "focus": "tops-plan-documents",
+        "backTop": 131.796875,
+        "backBottom": 175.796875,
+        "overflow": false
+      }
+    },
+    {
+      "tile": {
+        "width": 375,
+        "theme": "tactical",
+        "tag": "BUTTON",
+        "height": 197,
+        "targetWidth": 162.5,
+        "overflow": false,
+        "text": "Document checklist2 of 12marked as obtained"
+      },
+      "doc": {
+        "focus": "tops-plan-documents",
+        "backTop": 131.796875,
+        "backBottom": 175.796875,
+        "overflow": false
+      }
+    }
+  ],
+  "errors": [],
+  "providerPosts": 0
+}

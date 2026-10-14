@@ -1,0 +1,117 @@
+{
+  "candidate": "05a37549112e5e39b4a68470c538c4422abae477833ce028300b8b1f868059ee",
+  "cases": [
+    {
+      "name": "Fresh direct entry has no duplicate Docs; native Back leaves; explicit My Plan stays in app",
+      "status": "PASS"
+    }
+  ],
+  "observations": [
+    {
+      "freshBefore": {
+        "currentIndex": 2,
+        "entries": [
+          {
+            "id": 6,
+            "url": "about:blank",
+            "userTypedURL": "about:blank",
+            "title": "",
+            "transitionType": "auto_toplevel"
+          },
+          {
+            "id": 17,
+            "url": "http://127.0.0.1:61491/?tool=dashboard",
+            "userTypedURL": "http://127.0.0.1:61491/?tool=dashboard",
+            "title": "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits",
+            "transitionType": "typed"
+          },
+          {
+            "id": 19,
+            "url": "about:blank",
+            "userTypedURL": "about:blank",
+            "title": "",
+            "transitionType": "typed"
+          }
+        ]
+      },
+      "freshAfter": {
+        "currentIndex": 3,
+        "entries": [
+          {
+            "id": 6,
+            "url": "about:blank",
+            "userTypedURL": "about:blank",
+            "title": "",
+            "transitionType": "auto_toplevel"
+          },
+          {
+            "id": 17,
+            "url": "http://127.0.0.1:61491/?tool=dashboard",
+            "userTypedURL": "http://127.0.0.1:61491/?tool=dashboard",
+            "title": "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits",
+            "transitionType": "typed"
+          },
+          {
+            "id": 19,
+            "url": "about:blank",
+            "userTypedURL": "about:blank",
+            "title": "",
+            "transitionType": "typed"
+          },
+          {
+            "id": 21,
+            "url": "http://127.0.0.1:61491/?tool=resources&view=documents&probe=fresh-final",
+            "userTypedURL": "http://127.0.0.1:61491/?tool=resources&view=documents&probe=fresh-final",
+            "title": "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits",
+            "transitionType": "typed"
+          }
+        ]
+      },
+      "freshReload": {
+        "currentIndex": 3,
+        "entries": [
+          {
+            "id": 6,
+            "url": "about:blank",
+            "userTypedURL": "about:blank",
+            "title": "",
+            "transitionType": "auto_toplevel"
+          },
+          {
+            "id": 17,
+            "url": "http://127.0.0.1:61491/?tool=dashboard",
+            "userTypedURL": "http://127.0.0.1:61491/?tool=dashboard",
+            "title": "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits",
+            "transitionType": "typed"
+          },
+          {
+            "id": 19,
+            "url": "about:blank",
+            "userTypedURL": "about:blank",
+            "title": "",
+            "transitionType": "typed"
+          },
+          {
+            "id": 21,
+            "url": "http://127.0.0.1:61491/?tool=resources&view=documents&probe=fresh-final",
+            "userTypedURL": "http://127.0.0.1:61491/?tool=resources&view=documents&probe=fresh-final",
+            "title": "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits",
+            "transitionType": "reload"
+          }
+        ]
+      },
+      "freshFinal": {
+        "url": "http://127.0.0.1:61491/?tool=resources&probe=fresh-final&view=documents",
+        "focus": "tops-plan-documents",
+        "title": "Document checklist",
+        "docs": true,
+        "history": {
+          "tops": 2
+        },
+        "length": 6
+      }
+    }
+  ],
+  "errors": [],
+  "providerPosts": 0
+}

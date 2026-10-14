@@ -1,0 +1,22 @@
+{
+  "base": "c1a1f64",
+  "width": 375,
+  "beforeReload": {
+    "url": "http://127.0.0.1:58525/?tool=resources",
+    "title": "Document checklist",
+    "section": "Your checklist",
+    "nav": "My Plan",
+    "topic": null,
+    "documents": true,
+    "obtained": "1 of 12 marked as obtained"
+  },
+  "afterReload": {
+    "url": "http://127.0.0.1:58525/?tool=resources",
+    "title": "Resources and support",
+    "nav": "Benefits",
+    "topic": "vsos",
+    "documents": false
+  },
+  "careerUnchanged": true,
+  "errors": []
+}
