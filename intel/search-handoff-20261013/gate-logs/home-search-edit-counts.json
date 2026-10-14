@@ -1,0 +1,130 @@
+[
+  {
+    "edit": "search origin state",
+    "old": "  const [searchQ, setSearchQ] = useState(\"\");",
+    "new": "  const [searchQ, setSearchQ] = useState(\"\");\n  const [homeSearchSelection, setHomeSearchSelection] = useState(null);",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 1
+  },
+  {
+    "edit": "search navigation helpers",
+    "old": "  function renderHomeSearch() { return",
+    "new": "  function returnToHomeSearch() {\n    var target = homeSearchSelection && homeSearchSelection.returnId || \"tops-home-search\";\n    primaryNavFocus.current = false; continuationFocus.current = target; continuationReturn.current = null;\n    setHomeSearchSelection(null); setActiveTab(\"dashboard\"); setContinuationRevision(function(value) { return value + 1; });\n  }\n  function searchReturnControl() { return React.createElement(\"div\", { style: { marginBottom: 12 } },\n    React.createElement(\"button\", { id: \"tops-search-back\", type: \"button\", onClick: returnToHomeSearch, style: { minHeight: 44, padding: \"10px 14px\", background: C.bgCard, color: C.textPrimary, border: \"1px solid \" + C.border, borderRadius: 8, font: \"inherit\", cursor: \"pointer\" } }, \"Back to search\"),\n    React.createElement(\"p\", { style: { fontSize: 14, lineHeight: 1.5, margin: \"8px 0 0\", overflowWrap: \"anywhere\" } }, \"Search: \" + searchQ)); }\n  function openHomeSearchResult(hit, returnId) {\n    if (hit.act === \"reminder\" || hit.act === \"window\") {\n      var tab = hit.act === \"reminder\" ? \"reminders\" : \"critical\";\n      setHomeSearchSelection({ tab: tab, id: hit.id, title: hit.title, returnId: returnId });\n      primaryNavFocus.current = false; setShowMoreMenu(false);\n      if (tab === \"reminders\") openPlanRoute(tab, \"tops-reminder-\" + hit.id, returnId);\n      else { setCriticalFilter(\"ALL\"); setExpandedWindow(hit.id); continuationReturn.current = returnId; setActiveTab(tab); }\n      return;\n    }\n    setHomeSearchSelection(null);\n    if (hit.act === \"wi-work-support\") openWisconsinGuide(); else openExperienceTool(hit.tab);\n  }\n  useEffect(function() {\n    if (!homeSearchSelection) return;\n    if (activeTab !== homeSearchSelection.tab) {\n      if (activeTab !== \"dashboard\" && continuationReturn.current === homeSearchSelection.returnId) continuationReturn.current = null;\n      setHomeSearchSelection(null); return;\n    }\n    if (activeTab === \"critical\") {\n      var available = !!separationDate && filterCriticalWindows(userStatus).some(function(item) { return item.id === homeSearchSelection.id; });\n      setExpandedWindow(homeSearchSelection.id);\n      continuationFocus.current = available ? \"tops-window-title-\" + homeSearchSelection.id : \"tops-search-critical-context\";\n      setContinuationRevision(function(value) { return value + 1; });\n    }\n  }, [activeTab, homeSearchSelection, separationDate, userStatus]);\n  function renderHomeSearch() { return",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 1
+  },
+  {
+    "edit": "reminder identity",
+    "old": "act: \"tab\", tab: \"reminders\" });",
+    "new": "act: \"reminder\", id: r.id });",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  },
+  {
+    "edit": "window identity",
+    "old": "act: \"tab\", tab: \"critical\" });",
+    "new": "act: \"window\", id: w.id });",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  },
+  {
+    "edit": "result hierarchy",
+    "old": "          React.createElement(\"div\", { key: \"t\", style: { display: \"flex\", alignItems: \"center\", gap: 8, marginBottom: 3 } },\n            React.createElement(\"span\", { style: { fontSize: 9, padding: \"2px 6px\", background: C.bgElevated, color: h.tagColor, borderRadius: 4, fontFamily: \"'Oswald', sans-serif\", letterSpacing: 1, flexShrink: 0 } }, h.tag),\n            React.createElement(\"span\", { style: { fontFamily: \"'Oswald', sans-serif\", fontSize: 13, color: C.textPrimary } }, h.title)\n          ),\n          React.createElement(\"div\", { key: \"s\", style: { fontSize: 13, color: C.textBody, lineHeight: 1.5, overflow: \"hidden\", textOverflow: \"ellipsis\", display: \"-webkit-box\", WebkitLineClamp: 2, WebkitBoxOrient: \"vertical\" } }, h.snip)",
+    "new": "          React.createElement(\"div\", { key: \"t\", style: { fontSize: 16, fontWeight: 600, lineHeight: 1.35, color: C.textPrimary, overflowWrap: \"anywhere\" } }, h.title),\n          React.createElement(\"div\", { key: \"k\", style: { fontSize: 12, color: C.textSecondary, margin: \"4px 0\", lineHeight: 1.4 } }, { TOOL: \"Tool\", REMINDER: \"Reminder\", \"CRITICAL WINDOW\": \"Critical window\", RESOURCE: \"Resource\", \"VSO / ORG\": \"Organization\", SKILLBRIDGE: \"SkillBridge\" }[h.tag], h.act === \"url\" ? \" - Opens a new tab\" : \"\"),\n          React.createElement(\"div\", { key: \"s\", style: { fontSize: 14, color: C.textBody, lineHeight: 1.45, overflow: \"hidden\", textOverflow: \"ellipsis\", display: \"-webkit-box\", WebkitLineClamp: 2, WebkitBoxOrient: \"vertical\" } }, h.snip)",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  },
+  {
+    "edit": "result targets",
+    "old": "var rowStyle = { display: \"block\", padding: \"10px 14px\",",
+    "new": "var rowStyle = { display: \"block\", minHeight: 44, padding: \"12px 14px\",",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  },
+  {
+    "edit": "result action",
+    "old": "        return React.createElement(\"button\", { key: i, type: \"button\", onClick: function() { if (h.act === \"wi-work-support\") { openWisconsinGuide(); } else openExperienceTool(h.tab); setSearchQ(\"\"); }, style: Object.assign({}, rowStyle, { width: \"100%\", minHeight: 44, textAlign: \"left\", background: \"transparent\", border: 0, borderBottom: rowStyle.borderBottom, font: \"inherit\" }) }, inner);",
+    "new": "        var resultId = \"tops-home-search-result-\" + (h.id || h.tab || h.act);\n        return React.createElement(\"button\", { key: resultId, id: resultId, type: \"button\", onClick: function() { openHomeSearchResult(h, resultId); }, style: Object.assign({}, rowStyle, { width: \"100%\", minHeight: 44, textAlign: \"left\", background: \"transparent\", border: 0, borderBottom: rowStyle.borderBottom, font: \"inherit\" }) }, inner);",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  },
+  {
+    "edit": "reminder search return",
+    "old": "          React.createElement(\"button\", { type: \"button\", style: actionStyle, onClick: function() { continuationReturn.current = reminderTimedOnly ? \"tops-home-reminder-count\" : continuationReturn.current || \"tops-home-actions-title\"; setActiveTab(\"dashboard\"); } }, \"Back to Home\"),",
+    "new": "          homeSearchSelection && homeSearchSelection.tab === \"reminders\" ? searchReturnControl() : React.createElement(\"button\", { type: \"button\", style: actionStyle, onClick: function() { continuationReturn.current = reminderTimedOnly ? \"tops-home-reminder-count\" : continuationReturn.current || \"tops-home-actions-title\"; setActiveTab(\"dashboard\"); } }, \"Back to Home\"),",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  },
+  {
+    "edit": "all reminder exits search",
+    "old": "onClick: function() { setReminderTimedOnly(false); setFocusedReminderId(null); continuationFocus.current = \"tops-reminder-\" + r.id;",
+    "new": "onClick: function() { setHomeSearchSelection(null); continuationReturn.current = null; setReminderTimedOnly(false); setFocusedReminderId(null); continuationFocus.current = \"tops-reminder-\" + r.id;",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  },
+  {
+    "edit": "critical selected context",
+    "old": "    var windows = filterCriticalWindows(userStatus);\n    var pushNudge",
+    "new": "    var windows = filterCriticalWindows(userStatus);\n    var searchWindow = homeSearchSelection && homeSearchSelection.tab === \"critical\" ? homeSearchSelection : null;\n    var searchWindowAvailable = searchWindow && windows.some(function(item) { return item.id === searchWindow.id; });\n    var searchWindowGate = searchWindow && (!searchWindowAvailable || daysOut === null) && React.createElement(\"section\", { style: { marginBottom: 16 } }, searchReturnControl(),\n      React.createElement(\"h2\", { id: \"tops-search-critical-context\", tabIndex: -1, style: { fontSize: 22, lineHeight: 1.35, color: C.textPrimary } }, searchWindow.title),\n      React.createElement(\"p\", { role: \"status\", style: { fontSize: 14, lineHeight: 1.5 } }, !searchWindowAvailable ? \"This window is not shown for your selected service profile. Your profile has not changed.\" : \"Add your separation date below to see this window's timing. Your search is kept.\"));\n    var pushNudge",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  },
+  {
+    "edit": "critical no-date context",
+    "old": "    if (daysOut === null) {\n      return React.createElement(\"div\", null,\n        React.createElement(\"div\", {style:{...S.card",
+    "new": "    if (daysOut === null) {\n      return React.createElement(\"div\", null, searchWindowGate,\n        React.createElement(\"div\", {style:{...S.card",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  },
+  {
+    "edit": "critical profile context",
+    "old": "    return React.createElement(\"div\", null, pushNudge,\n      React.createElement(\"div\", {style:{background:\"linear-gradient",
+    "new": "    return React.createElement(\"div\", null, searchWindowGate, pushNudge,\n      React.createElement(\"div\", {style:{background:\"linear-gradient",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  },
+  {
+    "edit": "critical selected row",
+    "old": "        return React.createElement(\"div\", {key:w.id, style:{background:C.bgCard",
+    "new": "        return React.createElement(\"div\", {key:w.id, \"data-search-selected\": searchWindow && searchWindow.id === w.id ? \"true\" : undefined, style:{background:C.bgCard",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  },
+  {
+    "edit": "critical return near selected card",
+    "old": "          React.createElement(\"button\", {\"aria-expanded\":isExpanded, \"aria-controls\":\"tops-window-detail-\" + w.id,",
+    "new": "          searchWindow && searchWindow.id === w.id && React.createElement(\"div\", { style: { padding: \"14px 16px 0\" } }, searchReturnControl()),\n          React.createElement(\"button\", {\"aria-expanded\":isExpanded, \"aria-controls\":\"tops-window-detail-\" + w.id,",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 1
+  },
+  {
+    "edit": "critical title focus",
+    "old": "React.createElement(\"div\", {style:{fontFamily:\"'Oswald',sans-serif\", fontSize:14, letterSpacing:2, color:C.textPrimary, fontWeight:700}}, w.name),",
+    "new": "React.createElement(\"span\", {id:\"tops-window-title-\" + w.id, tabIndex:-1, style:{display:\"block\", fontFamily:\"'Oswald',sans-serif\", fontSize:14, letterSpacing:2, color:C.textPrimary, fontWeight:700}}, w.name),",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  },
+  {
+    "edit": "selected card scroll",
+    "old": "      var wiDetail = currentId === \"tops-wi-work-support-resources-heading\" && target.closest(\"details\");\n      (wiDetail || jobsHeading || target).scrollIntoView({ block: wiDetail || jobsHeading || [\"tops-my-jobs-heading\", \"tops-plan-timeline\", \"tops-loop-title\"].includes(currentId) ? \"start\" : \"center\" });",
+    "new": "      var wiDetail = currentId === \"tops-wi-work-support-resources-heading\" && target.closest(\"details\");\n      var searchCard = currentId.indexOf(\"tops-window-title-\") === 0 && target.closest('[data-search-selected=\"true\"]');\n      (searchCard || wiDetail || jobsHeading || target).scrollIntoView({ block: searchCard || wiDetail || jobsHeading || [\"tops-my-jobs-heading\", \"tops-plan-timeline\", \"tops-loop-title\"].includes(currentId) ? \"start\" : \"center\" });",
+    "old_before": 1,
+    "new_after": 1,
+    "old_after": 0
+  }
+]

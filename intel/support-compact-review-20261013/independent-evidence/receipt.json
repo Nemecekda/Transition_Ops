@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "date": "2026-10-13",
+  "reviewer": "/root/j1_diagnostic_contract",
+  "disposition": "accepted_bounded_local_implementation",
+  "base_commit": "ec6506a4378b751824f3f29529b344df08fa044a",
+  "final_index_sha256": "dab0b79095bf4a6856e25e35942a31aa8b384f52885db440de2561e4c025864e",
+  "worker_sha256": "a7d764d75fe89abbe01b0c5d379ed9385de0386dc761d8daa3ef8690d71e1f46",
+  "cache": 285,
+  "final_css_delta_exact": true,
+  "tests": {
+    "independent_layout_cases": 12,
+    "layout_tested_index_sha256": "326166370e91cc3ac54bf71d1e7ba07ec553632598ff4764f6ff2a795d5358e9",
+    "final_css_theme_cases": 2,
+    "local_synthetic_only": true,
+    "all_external_requests_blocked": true,
+    "publication": false
+  },
+  "author_test_hashes": {
+    "support-compact-review-browser-regression.js": "adfbfb9e561960c5fdd877838452d2427f467e0020c322393e3e4325b1641167",
+    "support-outcome-browser-regression.js": "47e2357fa907dc74f97281c2a13ef64e13a297944192181cea3dd592bcd3f232",
+    "support-review-continuity-browser-regression.js": "6385cbda04f3b5f479e708629eef4895ab168cc5dc7c58bb2a14bbae407b13c7"
+  },
+  "artifacts": {
+    "layout-review.cjs": "4ab3610e568a16ff192245daa8ca728fbd1fc719e749067fcb13b7be645c2e81",
+    "layout-review.log": "d7ad4e6b4a1fefda6d24ee30e03cd3465c88aaf578cde73fdd4b1fd18fc846d2",
+    "layout-observations.json": "5a7ff58e05a7efb443744bc38e94a5bc6413d5c5710cba502a956a2e145fe1bc",
+    "320-dark-long.png": "adc5638a1f55140ed12e4500897c50f7811b436c893fc8af95862165a429e555",
+    "initial-layout-review.log": "93e045585d710228e89ccfb24798ae99074fd8be1d27cf77c9bab5889cee216c",
+    "initial-layout-observations.json": "5e0d66a92559f42ad17ecf8e609c54ed5cd4736e1d6f10a65dd04563811a22f8",
+    "initial-320-dark-long.png": "bcd16c1060f9d18f9955c0c87d62bba43eb7e9a926e7d7aa1a70a2c31faa8fb7",
+    "final-copy-delta.json": "2304ff5cf61cef1d5dcfbf6dfdea4fc0473bb970a514d4f56280b3c21c38b968",
+    "final-picker-delta.json": "b388cdd0fc72f2728c1aeb4f9a5636584d098da0778480d8d478574b06cc3520",
+    "picker-review.cjs": "c01b93e7bff941d41c7b272a01ea29f21db0e5366504bd78ec94022acd4f74d1",
+    "picker-review.log": "07ccf11dcee2dc97f5176321fe11f723f87ed09e987688a0838846870f355e61",
+    "final-picker-observations.json": "327bed220396c1eed01e25674d5c061bb5e31f1c4a53ecaf2f0410979d820efc",
+    "final-picker-professional-320.png": "5da81be0643992e023245c0bae9d6bded4586569893ffc7269298adb06e1ae1a",
+    "final-picker-tactical-320.png": "6bfe7ae1d4b47da34ae218efeeaa6fe69f1eaa33edf89ad80081c71e8c82359f",
+    "independent-review.md": "e001ad27138f6540be05d9462256dd5cfc5dc32fdeb0ebf01043a89b34246e60"
+  },
+  "limitations": [
+    "Lab emulation, not field usability or retention",
+    "Manual assistive-technology and native phone picker not exercised",
+    "Not a hosted or publication acceptance",
+    "Prior unchanged persistence cases reused; final delta is CSS-only"
+  ]
+}

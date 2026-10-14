@@ -1,0 +1,5 @@
+PASS reference/Home/My Plan share exactly one unsaved text/date/outcome draft; cancel clears both and preserves saved bytes
+PASS outcome starts at review heading; direct update and target-date cancellation return to their actual invokers
+PASS original snapshot survives navigation; changed disk rejects save and visit while keeping recoverable text
+PASS pending reload reset is explicit; accepted visit/save clear pending state with correct persistence and exact reopen
+SUPPORT REVIEW CONTINUITY: LOCAL AUTOMATION PASS. No provider calls. Native phone/AT and hosted checks remain pending.

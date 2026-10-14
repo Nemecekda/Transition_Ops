@@ -1,0 +1,61 @@
+{
+  "candidate": "34e0b310765c0622ff46cf0680fbe9618061e14b1ed8462c687182a49634ed32",
+  "cases": [
+    "Final scroll delta: checklist heading keeps focus; Back and first checkbox visible at320/375 in both themes; no overflow or orphaned labels; explicit return restores invoker",
+    "Benefits→Resources resets document subtab to directory; existing Healthcare selector and Benefits ownership work; choosing Documents opens My Plan checklist without orphaned topic label"
+  ],
+  "layout": [
+    {
+      "width": 320,
+      "theme": "professional",
+      "cardTop": 131.796875,
+      "backTop": 131.796875,
+      "backBottom": 175.796875,
+      "headingTop": 187.796875,
+      "firstCheckboxTop": 384.796875,
+      "focus": "tops-plan-documents",
+      "overflow": false,
+      "missingLabels": []
+    },
+    {
+      "width": 320,
+      "theme": "tactical",
+      "cardTop": 131.796875,
+      "backTop": 131.796875,
+      "backBottom": 175.796875,
+      "headingTop": 187.796875,
+      "firstCheckboxTop": 384.796875,
+      "focus": "tops-plan-documents",
+      "overflow": false,
+      "missingLabels": []
+    },
+    {
+      "width": 375,
+      "theme": "professional",
+      "cardTop": 131.796875,
+      "backTop": 131.796875,
+      "backBottom": 175.796875,
+      "headingTop": 187.796875,
+      "firstCheckboxTop": 384.796875,
+      "focus": "tops-plan-documents",
+      "overflow": false,
+      "missingLabels": []
+    },
+    {
+      "width": 375,
+      "theme": "tactical",
+      "cardTop": 131.796875,
+      "backTop": 131.796875,
+      "backBottom": 175.796875,
+      "headingTop": 187.796875,
+      "firstCheckboxTop": 384.796875,
+      "focus": "tops-plan-documents",
+      "overflow": false,
+      "missingLabels": []
+    }
+  ],
+  "resourceSelectFocus": {
+    "id": "",
+    "tag": "BODY"
+  }
+}

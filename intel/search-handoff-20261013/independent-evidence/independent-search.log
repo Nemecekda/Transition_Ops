@@ -1,0 +1,9 @@
+PASS exact reminder selection, repeat, light/dark320/375, query/result focus return, targets/reflow and no progress writes
+PASS completed reminder inspection does not reopen or complete anything
+PASS exact reminder bypasses only stale browsing filters
+PASS no-date critical context preserves selected title, date gate and saved values
+PASS old filter reset for exact window; closed BDD retains closed/standard-claim guidance
+PASS native Enter toggles focused critical button; deliberate filter change ends exact-search context without losing query
+PASS Guard/retired excluded-window context does not change profile or infer eligibility
+PASS native Back/result focus, Forward has no stale search context, All reminders/unrelated routes/reload clear selection without query URL/storage
+INDEPENDENT EXACT SEARCH LOCAL AUTOMATION PASS

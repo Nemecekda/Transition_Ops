@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "date": "2026-10-13",
+  "reviewer": "/root/j1_diagnostic_contract",
+  "disposition": "accepted_bounded_local_implementation",
+  "base_commit": "cd5cd5b6f83bd0d1d2b40cbcf849237ca290c798",
+  "index_sha256": "f419f3b84c4569e17752f5ca68ec562a722d3c91b63fca05a4caafed60a0a260",
+  "worker_sha256": "b7dc485d15fa3de3e8806b13152d24ad5b5dd4bdabb6ef7c9152e052c92ee0be",
+  "cache": 286,
+  "author_test_sha256": "4d4b50f1fb1cb3ba108243ab5d7da78e988d9bbba7f9763e7096dc3da29da80c",
+  "independent_runtime": "PASS",
+  "external_requests_admitted": 0,
+  "publication": false,
+  "artifacts": {
+    "final-observations.json": "d8f8d281585c03f870c8e1cc6dbe7a37172159ce25f42c78f7efb19a26e7a935",
+    "search-review.log": "be6d1e0ad8981321bcbc021e7ce419e3a5f74438753237faa24350dd0c686b19",
+    "baseline-count-overlap.log": "be6d1e0ad8981321bcbc021e7ce419e3a5f74438753237faa24350dd0c686b19",
+    "independent-review.md": "c3d2dd1972a46fad97e79f3985cb78aa290833f0065cff703ef1a52c7442f100",
+    "independent-search.cjs": "20309452867b0bd896e9ffd79310f53d6f9a88b7fed8dcee2a60351f4b0a98fc",
+    "observation.json": "ae43059f82b89499920adde6fa8cf6b0d3a405287f2c76794bc0e3c07abf7ef2",
+    "search-review.cjs": "c32e54f904b0de1b65194b4dab56fd8bd19b46acda7e476e5cda8822b7e8fa0a",
+    "native-enter-incomplete-event.log": "a241396b685a9b6b41a9f1fd3e913ce26b7552e2a500d9b4a76233bb48ccd3e3",
+    "independent-search.log": "cf35c30849ecbc948c28d47ecf9b725fdc3c20ee456e2d91647ef1870738f3c4",
+    "after-itp-search.png": "72852d1d135a22040842a91cc07397f6d3a0bf73a9129535c2dab7e29a6ca0b5",
+    "initial-independent-search.log": "fecbe40792ed39dcc8c92d17d7206a0963a1c8329e61e6cd1d3b87e5207d1230"
+  },
+  "limitations": [
+    "Native phone and manual AT not tested",
+    "Not hosted acceptance",
+    "Exact Forward restoration unchanged and not claimed",
+    "Element counts do not prove speed, effectiveness or retention"
+  ]
+}

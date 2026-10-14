@@ -1,0 +1,181 @@
+{
+  "candidate": "05a37549112e5e39b4a68470c538c4422abae477833ce028300b8b1f868059ee",
+  "cases": [
+    {
+      "name": "Fresh direct entry has no duplicate Docs; native Back leaves; explicit My Plan stays in app",
+      "status": "FAIL",
+      "error": "Inspected target navigated or closed"
+    },
+    {
+      "name": "Readiness explicit and browser return preserve exact a6 entry",
+      "status": "PASS"
+    },
+    {
+      "name": "My Plan to Docs; same checklist and saved flags after reload",
+      "status": "PASS"
+    },
+    {
+      "name": "Direct docs URL stays on Docs; reload creates no extra history entries",
+      "status": "PASS"
+    },
+    {
+      "name": "vsos parent native Back/Forward restores exact topic and Docs",
+      "status": "PASS"
+    },
+    {
+      "name": "directory parent native Back/Forward restores exact topic and Docs",
+      "status": "PASS"
+    },
+    {
+      "name": "healthcare parent native Back/Forward restores exact topic and Docs",
+      "status": "PASS"
+    },
+    {
+      "name": "My Plan parent native Back/Forward",
+      "status": "PASS"
+    },
+    {
+      "name": "WI guide parent retains guide across Docs native Back/Forward",
+      "status": "PASS"
+    },
+    {
+      "name": "Closed URL helper refuses duplicates, wrong tool, arbitrary view or any guide",
+      "status": "PASS"
+    },
+    {
+      "name": "Home document tile keyboard opens exact checklist with honest count",
+      "status": "PASS"
+    },
+    {
+      "name": "Existing search result return and unsaved support update survive shared route changes",
+      "status": "PASS"
+    }
+  ],
+  "observations": [
+    {
+      "reload": {
+        "url": "http://127.0.0.1:60635/?tool=resources&view=documents",
+        "focus": "tops-plan-documents",
+        "title": "Document checklist",
+        "docs": true,
+        "history": {
+          "tops": 2
+        },
+        "length": 6
+      }
+    },
+    {
+      "directBefore": {
+        "currentIndex": 5,
+        "entries": [
+          {
+            "id": 6,
+            "url": "about:blank",
+            "userTypedURL": "about:blank",
+            "title": "",
+            "transitionType": "auto_toplevel"
+          },
+          {
+            "id": 17,
+            "url": "http://127.0.0.1:60635/?tool=dashboard",
+            "userTypedURL": "http://127.0.0.1:60635/?tool=dashboard",
+            "title": "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits",
+            "transitionType": "typed"
+          },
+          {
+            "id": 19,
+            "url": "about:blank",
+            "userTypedURL": "about:blank",
+            "title": "",
+            "transitionType": "typed"
+          },
+          {
+            "id": 24,
+            "url": "http://127.0.0.1:60635/?tool=readiness",
+            "userTypedURL": "",
+            "title": "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits",
+            "transitionType": "typed"
+          },
+          {
+            "id": 25,
+            "url": "http://127.0.0.1:60635/?tool=timeline",
+            "userTypedURL": "",
+            "title": "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits",
+            "transitionType": "link"
+          },
+          {
+            "id": 29,
+            "url": "http://127.0.0.1:60635/?tool=resources&view=documents",
+            "userTypedURL": "http://127.0.0.1:60635/?tool=resources&view=documents",
+            "title": "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits",
+            "transitionType": "typed"
+          }
+        ]
+      },
+      "directAfter": {
+        "currentIndex": 5,
+        "entries": [
+          {
+            "id": 6,
+            "url": "about:blank",
+            "userTypedURL": "about:blank",
+            "title": "",
+            "transitionType": "auto_toplevel"
+          },
+          {
+            "id": 17,
+            "url": "http://127.0.0.1:60635/?tool=dashboard",
+            "userTypedURL": "http://127.0.0.1:60635/?tool=dashboard",
+            "title": "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits",
+            "transitionType": "typed"
+          },
+          {
+            "id": 19,
+            "url": "about:blank",
+            "userTypedURL": "about:blank",
+            "title": "",
+            "transitionType": "typed"
+          },
+          {
+            "id": 24,
+            "url": "http://127.0.0.1:60635/?tool=readiness",
+            "userTypedURL": "",
+            "title": "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits",
+            "transitionType": "typed"
+          },
+          {
+            "id": 25,
+            "url": "http://127.0.0.1:60635/?tool=timeline",
+            "userTypedURL": "",
+            "title": "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits",
+            "transitionType": "link"
+          },
+          {
+            "id": 29,
+            "url": "http://127.0.0.1:60635/?tool=resources&view=documents",
+            "userTypedURL": "http://127.0.0.1:60635/?tool=resources&view=documents",
+            "title": "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits",
+            "transitionType": "reload"
+          }
+        ]
+      }
+    },
+    {
+      "topic": "vsos",
+      "beforeEntries": 8,
+      "afterEntries": 9
+    },
+    {
+      "topic": "directory",
+      "beforeEntries": 9,
+      "afterEntries": 9
+    },
+    {
+      "topic": "healthcare",
+      "beforeEntries": 9,
+      "afterEntries": 9
+    }
+  ],
+  "errors": [],
+  "providerPosts": 0
+}

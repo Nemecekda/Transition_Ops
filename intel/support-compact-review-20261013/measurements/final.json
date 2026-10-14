@@ -1,0 +1,164 @@
+{
+  "index": "dab0b79095bf4a6856e25e35942a31aa8b384f52885db440de2561e4c025864e",
+  "observations": [
+    {
+      "direction": "support",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "boxes": [
+        {
+          "id": "tops-support-review-heading",
+          "top": 88,
+          "bottom": 111,
+          "height": 23,
+          "width": 295
+        },
+        {
+          "id": "tops-support-unsaved",
+          "top": 144,
+          "bottom": 186,
+          "height": 42,
+          "width": 295
+        },
+        {
+          "id": "tops-support-current",
+          "top": 194,
+          "bottom": 290,
+          "height": 96,
+          "width": 295
+        },
+        {
+          "id": "tops-support-focus",
+          "absent": true
+        },
+        {
+          "id": "tops-support-text",
+          "top": 326,
+          "bottom": 402,
+          "height": 76,
+          "width": 295
+        },
+        {
+          "id": "tops-support-help",
+          "top": 414,
+          "bottom": 456,
+          "height": 42,
+          "width": 295
+        },
+        {
+          "id": "tops-support-date",
+          "top": 480,
+          "bottom": 524,
+          "height": 44,
+          "width": 295
+        },
+        {
+          "id": "tops-support-date-help",
+          "top": 536,
+          "bottom": 557,
+          "height": 21,
+          "width": 295
+        },
+        {
+          "id": "tops-support-save",
+          "top": 636,
+          "bottom": 684,
+          "height": 48,
+          "width": 295
+        },
+        {
+          "id": "tops-support-cancel",
+          "top": 748,
+          "bottom": 796,
+          "height": 48,
+          "width": 165.21875
+        }
+      ],
+      "sectionHeight": 708,
+      "cardHeight": 839
+    },
+    {
+      "direction": "change",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "boxes": [
+        {
+          "id": "tops-support-review-heading",
+          "top": 88,
+          "bottom": 111,
+          "height": 23,
+          "width": 295
+        },
+        {
+          "id": "tops-support-unsaved",
+          "top": 144,
+          "bottom": 186,
+          "height": 42,
+          "width": 295
+        },
+        {
+          "id": "tops-support-current",
+          "top": 194,
+          "bottom": 290,
+          "height": 96,
+          "width": 295
+        },
+        {
+          "id": "tops-support-focus",
+          "top": 565,
+          "bottom": 649,
+          "height": 84,
+          "width": 295
+        },
+        {
+          "id": "tops-support-text",
+          "top": 326,
+          "bottom": 402,
+          "height": 76,
+          "width": 295
+        },
+        {
+          "id": "tops-support-help",
+          "top": 414,
+          "bottom": 456,
+          "height": 42,
+          "width": 295
+        },
+        {
+          "id": "tops-support-date",
+          "top": 480,
+          "bottom": 524,
+          "height": 44,
+          "width": 295
+        },
+        {
+          "id": "tops-support-date-help",
+          "top": 536,
+          "bottom": 557,
+          "height": 21,
+          "width": 295
+        },
+        {
+          "id": "tops-support-save",
+          "top": 728,
+          "bottom": 776,
+          "height": 48,
+          "width": 295
+        },
+        {
+          "id": "tops-support-cancel",
+          "top": 840,
+          "bottom": 888,
+          "height": 48,
+          "width": 165.21875
+        }
+      ],
+      "sectionHeight": 800,
+      "cardHeight": 931
+    }
+  ]
+}

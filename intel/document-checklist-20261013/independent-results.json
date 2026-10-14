@@ -1,0 +1,21 @@
+{
+  "candidate": "1b54c1d0ba4fc73c8e4b08e6dad1dfe4f7cfd56a1cd63547f093f0bcc0a09de3",
+  "cases": [
+    "12 labelled native checkboxes; title/My Plan ownership; explicit label and keyboard Space; notes/source do not toggle; existing flags and career data preserved",
+    "Back to My Plan restores document invoker focus; reload retains exact obtained flags",
+    "Denied write reports unconfirmed; visit change survives navigation, older disk preserved; reload restores prior saved state",
+    "Silent write drop/readback mismatch never reports saved and does not overwrite prior disk",
+    "Explicit embedded-mode branch simulation: visit-only status, no docProgress write (not a real host iframe test)",
+    "Actual CDP file upload + explicit backup restore: exactly one compact document write, no normalization effect rewrite, verified saved status",
+    "320/375 light/dark reflow and 44px minimum labels pass"
+  ],
+  "observations": {
+    "benefitsResources": {
+      "topic": "directory",
+      "title": "Resources and support",
+      "nav": "Benefits"
+    },
+    "jsErrors": [],
+    "providerPosts": 0
+  }
+}

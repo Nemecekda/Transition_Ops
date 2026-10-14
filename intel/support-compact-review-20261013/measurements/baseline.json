@@ -1,0 +1,167 @@
+{
+  "index": "51b3c1e8569ed44233764aca807de113253f9724a0e9f56e6c4ef4ae6cd2a81e",
+  "observations": [
+    {
+      "direction": "support",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "boxes": [
+        {
+          "id": "tops-support-review-heading",
+          "top": 87.59375,
+          "bottom": 108.59375,
+          "height": 21,
+          "width": 295
+        },
+        {
+          "id": "tops-support-unsaved",
+          "top": 116.59375,
+          "bottom": 179.59375,
+          "height": 63,
+          "width": 295
+        },
+        {
+          "id": "tops-support-current",
+          "top": 179.59375,
+          "bottom": 275.59375,
+          "height": 96,
+          "width": 295
+        },
+        {
+          "id": "tops-support-focus",
+          "top": 275.59375,
+          "bottom": 299.59375,
+          "height": 24,
+          "width": 295
+        },
+        {
+          "id": "tops-support-text",
+          "top": 323.59375,
+          "bottom": 399.59375,
+          "height": 76,
+          "width": 295
+        },
+        {
+          "id": "tops-support-help",
+          "top": 411.59375,
+          "bottom": 495.59375,
+          "height": 84,
+          "width": 295
+        },
+        {
+          "id": "tops-support-date",
+          "top": 519.59375,
+          "bottom": 563.59375,
+          "height": 44,
+          "width": 295
+        },
+        {
+          "id": "tops-support-date-help",
+          "top": 575.59375,
+          "bottom": 659.59375,
+          "height": 84,
+          "width": 295
+        },
+        {
+          "id": "tops-support-save",
+          "top": 659.59375,
+          "bottom": 703.59375,
+          "height": 44,
+          "width": 136.109375
+        },
+        {
+          "id": "tops-support-cancel",
+          "top": 711.59375,
+          "bottom": 755.59375,
+          "height": 44,
+          "width": 159.234375
+        }
+      ],
+      "sectionHeight": 681,
+      "cardHeight": 1757.40625
+    },
+    {
+      "direction": "change",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "boxes": [
+        {
+          "id": "tops-support-review-heading",
+          "top": 87.59375,
+          "bottom": 108.59375,
+          "height": 21,
+          "width": 295
+        },
+        {
+          "id": "tops-support-unsaved",
+          "top": 116.59375,
+          "bottom": 179.59375,
+          "height": 63,
+          "width": 295
+        },
+        {
+          "id": "tops-support-current",
+          "top": 179.59375,
+          "bottom": 275.59375,
+          "height": 96,
+          "width": 295
+        },
+        {
+          "id": "tops-support-focus",
+          "top": 275.59375,
+          "bottom": 395.59375,
+          "height": 120,
+          "width": 295
+        },
+        {
+          "id": "tops-support-text",
+          "top": 419.59375,
+          "bottom": 495.59375,
+          "height": 76,
+          "width": 295
+        },
+        {
+          "id": "tops-support-help",
+          "top": 507.59375,
+          "bottom": 591.59375,
+          "height": 84,
+          "width": 295
+        },
+        {
+          "id": "tops-support-date",
+          "top": 615.59375,
+          "bottom": 659.59375,
+          "height": 44,
+          "width": 295
+        },
+        {
+          "id": "tops-support-date-help",
+          "top": 671.59375,
+          "bottom": 755.59375,
+          "height": 84,
+          "width": 295
+        },
+        {
+          "id": "tops-support-save",
+          "top": 755.59375,
+          "bottom": 799.59375,
+          "height": 44,
+          "width": 136.109375
+        },
+        {
+          "id": "tops-support-cancel",
+          "top": 807.59375,
+          "bottom": 851.59375,
+          "height": 44,
+          "width": 159.234375
+        }
+      ],
+      "sectionHeight": 777,
+      "cardHeight": 1898.09375
+    }
+  ]
+}

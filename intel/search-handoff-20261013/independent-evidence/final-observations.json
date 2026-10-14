@@ -1,0 +1,48 @@
+[
+  {
+    "width": 375,
+    "theme": "professional",
+    "case": "exact-itp",
+    "elements": 184,
+    "reminderCards": 0,
+    "targetTop": 401.796875,
+    "backWidth": 137.328125,
+    "backHeight": 44
+  },
+  {
+    "width": 375,
+    "theme": "tactical",
+    "case": "exact-itp",
+    "elements": 184,
+    "reminderCards": 0,
+    "targetTop": 401.796875,
+    "backWidth": 137.328125,
+    "backHeight": 44
+  },
+  {
+    "width": 320,
+    "theme": "professional",
+    "case": "exact-itp",
+    "elements": 184,
+    "reminderCards": 0,
+    "targetTop": 385.796875,
+    "backWidth": 137.328125,
+    "backHeight": 44
+  },
+  {
+    "width": 320,
+    "theme": "tactical",
+    "case": "exact-itp",
+    "elements": 184,
+    "reminderCards": 0,
+    "targetTop": 385.796875,
+    "backWidth": 137.328125,
+    "backHeight": 44
+  },
+  {
+    "case": "native-forward-existing-route",
+    "url": "http://127.0.0.1:51129/?tool=dashboard",
+    "active": "tops-home-search-result-r-24-itp",
+    "selectedBack": false
+  }
+]

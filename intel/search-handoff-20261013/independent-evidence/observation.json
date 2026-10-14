@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-13",
+  "viewport": {
+    "width": 375,
+    "height": 812
+  },
+  "scenario": "onboarded, no date/profile, ITP Home search",
+  "result": [
+    {
+      "text": "Clear search",
+      "rect": {
+        "x": 20,
+        "y": 1331.03125,
+        "width": 116.890625,
+        "height": 44,
+        "top": 1331.03125,
+        "right": 136.890625,
+        "bottom": 1375.03125,
+        "left": 20
+      }
+    },
+    {
+      "text": "REMINDERInitiate Individual Transition Plan (ITP)Sit down with your commander and establish your ITP. This is the foundation — everything builds from here.",
+      "rect": {
+        "x": 21,
+        "y": 1382.03125,
+        "width": 333,
+        "height": 77,
+        "top": 1382.03125,
+        "right": 354,
+        "bottom": 1459.03125,
+        "left": 21
+      }
+    }
+  ],
+  "after": {
+    "url": "http://127.0.0.1:49603/?tool=reminders",
+    "activeElement": "",
+    "scrollY": 0,
+    "heading": "Reminders and follow-ups",
+    "focusedTitle": null,
+    "targetPresent": true,
+    "targetExpanded": "false",
+    "targetTop": 727.921875,
+    "viewport": 812,
+    "visibleText": "VETERAN BRIDGE SOLUTIONS\nTRANSITION OPS™\n☀ Dark\nUPDATES\n49\nHome\nMy Plan\nCareer\nBenefits\nMore\nReminders and follow-ups\nAsk Navigator\nAll tools\nSuicide prevention & support\nReminders & follow-ups\n\nAdd your transition date below to build calendar reminders. Then open Critical Windows to review and download your deadlines.\n\nSET YOUR ETS DATE TO ACTIVATE REMINDERS\nALL\nCRITICAL\nHIGH\nADVISORY\nALL\nADMIN\nCAREER\nBENEFITS\nFINANCE\nHEALTH\nHOUSING\nCRITICAL\nHEALTH\n5mo post\nCheck VA Dental Eligibility Before Day 180\nVA lists a 180-day application window for Class II one-time dental care. Eligibility depends on your active service, dis...\n▾\nADVISORY\nADMIN\n24mo out\nInitiate Individual Transition Plan (ITP)\nSit down with your commander and establish your ITP. This is the foundation — everything builds from here.\n▾\nADVISORY\nCAREER\n24mo out\nBegin Building Your Civilian Network\nYour DD214 won't get you hired — your network will. Start now.\n▾\nHIGH\nCAREER\n18mo out\nResearch SkillBridge Opportunities\nSkillBridge = civilian experience during your final months while continuing military compensation and benefits. Duration...\n▾\nHIGH\nCAREER\n18mo out\nBegin Resume Development\nTranslating military experience into civilian language takes time. Don't wait.\n▾\nCRITICAL\nBENEFITS\n12mo out\n⚠️ BDD Claim — Prep Now, File at 180 Days\nIf eligible, file through BDD during the 180–90-day window. If VA grants direct service connection, the effective date m...\n▾\nCRITICAL\nFINANCE\n12mo out\n⚠️ State Tax Residency — Legal RESIDENCE Matters\nYour state of LEGAL RESIDENCE (not Home of Record) determines state tax on retired pay. $5K-$15K+/year impact.\n▾\nCRITICAL\nFINANCE\n12mo out\n⚠️ Survivor Benefit Plan (SBP) — IRREVOCABLE\nRet"
+  },
+  "errors": [],
+  "externalBlocked": 2
+}

@@ -1,0 +1,9 @@
+PASS exact reminder selection, repeat, light/dark320/375, query/result focus return, targets/reflow and no progress writes
+PASS completed reminder inspection does not reopen or complete anything
+PASS exact reminder bypasses only stale browsing filters
+PASS no-date critical context preserves selected title, date gate and saved values
+PASS old filter reset for exact window; closed BDD retains closed/standard-claim guidance
+PASS Guard/retired excluded-window context does not change profile or infer eligibility
+Error: runtime evidence unavailable for document.getElementById("tops-page-title")?.textContent?.includes("Critical"); last=false
+    at Object.waitForExpression (eval at <anonymous> (/private/tmp/tops-home-search-review-20261013/independent-search.cjs:5:9), <anonymous>:183:9)
+    at async /private/tmp/tops-home-search-review-20261013/independent-search.cjs:46:62

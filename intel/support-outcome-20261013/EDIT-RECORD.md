@@ -1,0 +1,11 @@
+# Discrete edit record
+
+EDIT mode began with only index.html and pwa-sw.js modified after a clean branch from published main. The full source patch was displayed hunk-by-hunk before commit. No global text normalization.
+
+The reviewed `/tmp/support-outcome-edit.py` asserted exactly one old span and exactly one resulting new span before each successive change: (1) exact support eligibility and four outcome suggestions, (2) local proposal state, (3) review/keep handlers, (4) recognized support candidate, (5) compact review UI, (6) suppress old generic reflection for support, (7) retain current support title, (8) exact editor primary, (9) exclude generic continuation, (10) prevent duplicate legacy editor, (11) prevent generic suggestion replacement, (12) compact references, (13) insert outcome UI, (14) include service profile in conflict snapshot, (15) reuse atomic guarded save, (16) wire outcome writer, (17) general work-support route.
+
+Subsequent single-span corrections each asserted old1/new1: plain focus-change punctuation; one React closing parenthesis; precise provider-contact wording; accepted-action focus fallback; original WI Update this step; support-date shortcut into the same editor. Cache name separately asserted old282 count1 and new283 count1. Initial script stopped on an incorrect worker string before touching the worker; the exact actual worker constant was then changed. The first structural check identified the extra parenthesis; final structural validation passes. No failed-check output is represented as a pass.
+
+New focused test was created once, then its three storage-key identifiers were corrected to actual string keys used in browser scope. Initial test failed at setup before application assertions; the final rerun passes. No assertions were weakened. The gate runner reuses existing inventory checks, changing only output path and the accurate 4N-not-applicable statement.
+
+Final single-span correction: suppress the previous career explanation paragraph for recognized completed support steps (old1 to0, new0 to1). The focused test adds an explicit absence assertion for this explanation. All five required suites and focused regression passed again on the final app.

@@ -1,0 +1,9 @@
+PASS four outcome previews/cancel preserve unfinished prior plan
+PASS four outcome previews/cancel preserve completed prior plan
+PASS documents edited step/date saved→reloaded→same editor, intentional support focus, roles/goal/worksheet unchanged
+PASS failed atomic save retains old guide/action/worksheet and edited candidate
+PASS stale disk cannot overwrite new action or change planning focus
+PASS visit-only keeps saved plan and waiting never completes old action
+PASS unrelated career step is not treated as a support task
+PASS neutral support availability, 320/375 reflow and targets; no member-data/model/contact request
+INDEPENDENT LOCAL AUTOMATION PASS; no manual AT, hosted or uncoached-member evidence.

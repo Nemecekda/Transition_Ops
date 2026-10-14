@@ -1,0 +1,14 @@
+{
+  "index.html": {
+    "bytes": 1546945,
+    "sha256": "05a37549112e5e39b4a68470c538c4422abae477833ce028300b8b1f868059ee"
+  },
+  "pwa-sw.js": {
+    "bytes": 4609,
+    "sha256": "50b71f1390878635d600c104054ab390caea30da1ae6a6540c6a78f5956cd2d7"
+  },
+  "scripts/document-route-browser-regression.js": {
+    "bytes": 12185,
+    "sha256": "99c8727b24ec996f4010d97aea7e33cda4b7c77ee81e635f077e828f6a0fe718"
+  }
+}

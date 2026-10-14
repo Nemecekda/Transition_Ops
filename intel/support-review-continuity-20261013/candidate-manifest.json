@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-13",
+  "branch": "codex/support-outcome-follow-through",
+  "prior_local_commit": "5e58a8ea2ffacb7dd547bb3e933bde4470df10ca",
+  "reconciled_main": "2fbd8b4e1a87ac4b20b104290604e78c33d708b1",
+  "merge_base": "577812f6629dead44579b9939a8485569ae66671",
+  "cache": 284,
+  "publication": "not requested; local only",
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 1538735,
+      "sha256": "51b3c1e8569ed44233764aca807de113253f9724a0e9f56e6c4ef4ae6cd2a81e"
+    },
+    {
+      "path": "pwa-sw.js",
+      "bytes": 4609,
+      "sha256": "d9baca37b9bba2b66834b6260faf5ee4ca0b81489682da3dc2075571332fce52"
+    },
+    {
+      "path": "scripts/support-review-continuity-browser-regression.js",
+      "bytes": 10985,
+      "sha256": "7bfbfc9c326f549ec0b36b27fa4430cf6c2d2b2bc62ddfc28dd618fd9bd8e6f3"
+    }
+  ]
+}

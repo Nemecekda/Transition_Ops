@@ -1,0 +1,32 @@
+{
+  "verdict": "ACCEPT_TESTED_LOCAL_SCOPE",
+  "base_commit": "577812f6629dead44579b9939a8485569ae66671",
+  "index_sha256": "51b3c1e8569ed44233764aca807de113253f9724a0e9f56e6c4ef4ae6cd2a81e",
+  "worker_sha256": "d9baca37b9bba2b66834b6260faf5ee4ca0b81489682da3dc2075571332fce52",
+  "cache": "transition-ops-v284",
+  "focused_matrix_index_sha256": "da0a72f1fe9081f4d5d0b792ad59da6748b27b0549116fa37187d44c53ab8ca8",
+  "environment": {
+    "browser": "Google Chrome 155.0.8059.41",
+    "viewport": "375x812 CSSpx for focused matrix; final narrow delta desktop",
+    "data": "synthetic only",
+    "external_and_function_requests": "blocked"
+  },
+  "files": {
+    "draft-reference-repro.cjs": "27ef498df3bf2233af9bde9b80cf38c05e29533095309e3b36d026b4efe5d62a",
+    "draft-reference-repro.log": "3114d8e8aab48f5e634d6ede54c133df224f881dc2ac0fcbb20afde8123cb4bb",
+    "draft-return.cjs": "abdd3767cebb5f0c92b890cc0684be72656e40d5d0f9af9d653e0847c3f5bd62",
+    "draft-return.log": "677cfc62f05fa303c224958145faf02b3b4f7aca2fd541cfcfabf4f920875061",
+    "final-delta.cjs": "9a41ab2d755e74ee0cbafe9c9d22684c3058e29560f842df01d808dfaf983c11",
+    "final-delta.json": "3aaf5dec1d5ba2abe2b7f6b2fc056d8a845f0cb54834cf441cfa8e38ed9679cf",
+    "final-delta.log": "8777d7029b77440287ec825b181f530e27a456792b456276af37a979931990ba",
+    "independent-review.md": "6dfbf73e91be7ec7c6cfd09fb001f9a6b569267952a0e1ca103cd5570ca11f0e",
+    "review-scope.md": "f69e3a2ee7ccd4636d67c7050acf8fe787e894444e414e4130ca580397dec8c4",
+    "skillbridge-preserved.json": "994a344851707dda56b2d7fe98d0c13d86ecc6cdff164c17d541651d05abbeb6"
+  },
+  "limits": [
+    "No hosted release or publication",
+    "No native phone picker or manual AT",
+    "Field usefulness and retention unmeasured",
+    "Unsaved review remains page-memory only"
+  ]
+}

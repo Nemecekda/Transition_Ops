@@ -1,0 +1,32 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http'),os=require('node:os'),{spawn}=require('node:child_process');
+const root='/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops';
+const utility=fs.readFileSync(path.join(root,'scripts/privacy-network-regression.js'),'utf8');
+const h=new Function('fs','path','os','spawn',utility.slice(utility.indexOf('function findChrome()'),utility.indexOf('const PROBE_SCRIPT ='))+'\nreturn {findChrome,launchChrome,stopChrome,evaluate,waitForExpression};')(fs,path,os,spawn);
+const server=http.createServer((req,res)=>{const name=req.url.split('?')[0];const file=path.join(root,name==='/'?'index.html':name);if(!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);return res.end();}res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.html')?'text/html':'application/octet-stream');res.end(fs.readFileSync(file));});
+(async()=>{let chrome;const errors=[],blocked=[];try{
+await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port;chrome=await h.launchChrome(h.findChrome(),12);const c=chrome.client;
+await c.send('Page.enable');await c.send('Runtime.enable');c.on('Runtime.exceptionThrown',e=>errors.push(e.exceptionDetails.text));await c.send('Fetch.enable',{patterns:[{urlPattern:'*'}]});c.on('Fetch.requestPaused',async e=>{const local=e.request.url.startsWith(origin)&&!e.request.url.includes('/.netlify/');if(!local)blocked.push(e.request);try{await c.send(local?'Fetch.continueRequest':'Fetch.failRequest',local?{requestId:e.requestId}:{requestId:e.requestId,errorReason:'BlockedByClient'});}catch{}});
+const ev=x=>h.evaluate(c,x,true),wait=x=>h.waitForExpression(c,x,x,10000);
+const home=async()=>{await c.send('Page.navigate',{url:origin+'/?tool=dashboard'});await wait('!!document.getElementById("tops-loop-title")');};
+const reveal=id=>ev(`(()=>{const n=document.getElementById(${JSON.stringify(id)});if(!n)throw Error('missing '+${JSON.stringify(id)});const parents=[];for(let p=n.parentElement;p;p=p.parentElement)if(p.tagName==='DETAILS'&&!p.open)parents.unshift(p);for(const p of parents)p.querySelector(':scope > summary').click();})()`);
+const click=async id=>{await reveal(id);await ev(`document.getElementById(${JSON.stringify(id)}).click()`);};
+const edit=async(id,value)=>{await reveal(id);await ev(`(()=>{const n=document.getElementById(${JSON.stringify(id)});const proto=n.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:n.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(proto,'value').set.call(n,${JSON.stringify(value)});n.dispatchEvent(new Event(n.tagName==='SELECT'?'change':'input',{bubbles:true}));})()`);};
+const disk=()=>ev('JSON.stringify(["tops_personal_guide_v1","tops_career_action_v1","tops_career_gap_v1"].map(k=>localStorage.getItem(k)))');
+const guide={version:1,pathway:'change',currentRole:'Synthetic equipment technician',targetRole:'Synthetic supervisor',goal:'Keep my planned goal'};
+const WI='Ask a Wisconsin Job Center about eligibility and approval before paying for tools or training.';
+const seed=async(done=false,text=WI,pathway='change')=>{await ev(`localStorage.clear();localStorage.setItem('tops_onboarded','1');localStorage.setItem('tops_user_status','separated');const g=${JSON.stringify(guide)};g.pathway=${JSON.stringify(pathway)};const a={version:1,text:${JSON.stringify(text)},date:'2027-01-10',done:${done},context:g};const gap=topsEmptyGap();gap.target='Earlier worksheet target';gap.rows[0].have='SYNTHETIC_SOURCE_NEVER_SEND';localStorage.setItem('tops_personal_guide_v1',JSON.stringify(g));localStorage.setItem('tops_career_action_v1',JSON.stringify(a));localStorage.setItem('tops_career_gap_v1',JSON.stringify(gap));`);await home();};
+await home();
+
+await c.send('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
+await ev(`localStorage.clear();localStorage.setItem('tops_onboarded','1');localStorage.setItem('tops_theme','professional');`);await home();
+const before=await disk();await edit('tops-home-search','ITP');
+const result=await ev(`Array.from(document.querySelectorAll('.tops-home-search button')).map(b=>({text:b.textContent,rect:b.getBoundingClientRect().toJSON()}))`);
+await ev(`Array.from(document.querySelectorAll('.tops-home-search button')).find(b=>b.textContent.includes('Initiate Individual')).click()`);
+await wait('!!document.getElementById("tops-plan-reminders")');
+const after=await ev(`(()=>{const target=document.getElementById('tops-reminder-r-24-itp');return {url:location.href,activeElement:document.activeElement?.id,scrollY:window.scrollY,heading:document.getElementById('tops-page-title')?.textContent,focusedTitle:document.getElementById('tops-focused-title')?.textContent||null,totalElements:document.querySelectorAll('*').length,reminderCards:document.querySelectorAll('[id^=tops-reminder-r-],[id^=tops-reminder-cw-]').length,targetPresent:!!target,targetExpanded:target?.getAttribute('aria-expanded'),targetTop:target?.getBoundingClientRect().top,viewport:innerHeight,visibleText:document.body.innerText.slice(0,1700)}})()`);
+assert.equal(after.focusedTitle,null);assert.equal(after.targetExpanded,'false');assert.equal(await disk(),before);
+const shot=await c.send('Page.captureScreenshot',{format:'png'});fs.writeFileSync('/tmp/tops-home-search-review-20261013/after-itp-search.png',Buffer.from(shot.data,'base64'));
+const data={date:'2026-10-13',viewport:{width:375,height:812},scenario:'onboarded, no date/profile, ITP Home search',result,after,errors,externalBlocked:blocked.length};fs.writeFileSync('/tmp/tops-home-search-review-20261013/observation.json',JSON.stringify(data,null,2)+'\n');console.log(JSON.stringify(data,null,2));
+assert.deepEqual(errors,[]);
+}finally{if(chrome){await h.stopChrome(chrome);chrome.child.stderr?.destroy();}await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e.stack);process.exitCode=1;});

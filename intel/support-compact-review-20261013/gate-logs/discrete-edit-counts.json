@@ -1,0 +1,182 @@
+{
+  "baseline": "ec6506a4378b751824f3f29529b344df08fa044a",
+  "edits": [
+    {
+      "edit": "review spacing",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "idle outcome label",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "idle outcome selector",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "review hierarchy",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "current snapshot block",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "remove repeated or premature focus paragraph",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 0,
+      "new_actual": 0
+    },
+    {
+      "edit": "proposed action label",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "waiting help",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "documents help",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "another option help",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "ready help",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "direct edit help",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "date and deliberate acceptance notices",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "begin idle shell",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "end idle shell",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "idle timing",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "preserved but hidden calendar review",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "idle calendar message",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "idle service action",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "idle action editor",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "idle utilities",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "idle status",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "final short unsaved boundary",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "final clear acceptance consequence",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    },
+    {
+      "edit": "support picker-only contrast fix",
+      "old_before_expected": 1,
+      "old_before_actual": 1,
+      "new_expected": 1,
+      "new_actual": 1
+    }
+  ],
+  "exact_index_replay": true,
+  "cache_one_span": true
+}

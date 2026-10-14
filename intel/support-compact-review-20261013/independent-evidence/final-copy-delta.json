@@ -1,0 +1,9 @@
+{
+  "base_index": "2ec21b5f7c0fc98e6dc0d96c65a2a4a3fd552d8f7802e7532ebfecd4d78eece9",
+  "final_index": "326166370e91cc3ac54bf71d1e7ba07ec553632598ff4764f6ff2a795d5358e9",
+  "exact_replacements": 2,
+  "changed": [
+    "Shorter normal unsaved notice",
+    "Unambiguous save/use replacement and no-contact notice"
+  ]
+}

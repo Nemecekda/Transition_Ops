@@ -1,0 +1,11 @@
+PASS edited outcome/date survive Wisconsin reference→Home and Home↔My Plan; one shared draft; explicit cancel clears both and returns outcome focus, with disk unchanged
+PASS direct WI edit survives reference return and cancel restores its actual Update this step invoker
+PASS generic support uses same edit label and cross-page cancellation returns direct edit focus
+PASS date shortcut cancellation returns date invoker; opening date during an outcome keeps original draft and outcome invoker
+PASS original pre-navigation snapshot blocks stale disk replacement and retains edited action/date for recovery
+PASS accepted visit-only clears the shared draft and shows chosen step across Home/My Plan; reload retains only original saved plan
+PASS completed-step follow-up also retains draft through reference and clears it only after successful explicit save
+PASS failed explicit guide clear preserves lifted draft and existing saved plan
+PASS successful explicit guide clear removes draft/message; restoring the same visible guide cannot resurrect the cleared review
+PASS failed backup restore retains draft; successful deliberate restore clears the old review on both Home/My Plan
+FOCUSED INDEPENDENT DRAFT-RETURN PASS; synthetic local Chrome375, external/function requests blocked, no paid/member/provider calls.

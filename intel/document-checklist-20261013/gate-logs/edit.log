@@ -1,0 +1,244 @@
+
+EDIT 1 OLD
+ const TOPS_TAP_PREP = {
+NEW
+ function DocumentChecklist(props) {
+  var C = props.colors, obtained = props.documents.filter(function(d) { return d.obtained; }).length;
+  function row(d) {
+    return React.createElement("div", { key: d.id, id: "tops-document-" + d.id, tabIndex: -1, style: { padding: "10px 14px", marginBottom: 10, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 10 } },
+      React.createElement("label", { htmlFor: "tops-document-check-" + d.id, style: { display: "flex", alignItems: "center", gap: 12, minHeight: 44, cursor: "pointer" } },
+        React.createElement("input", { id: "tops-document-check-" + d.id, type: "checkbox", checked: d.obtained, onChange: function() { props.toggle(d.id); }, "aria-labelledby": "tops-document-name-" + d.id, "aria-describedby": "tops-document-note-" + d.id, style: { flex: "0 0 24px", width: 24, height: 24, margin: 0, accentColor: C.greenBright, cursor: "pointer" } }),
+        React.createElement("span", { style: { minWidth: 0 } }, React.createElement("span", { id: "tops-document-name-" + d.id, style: { display: "block", color: C.textPrimary, fontSize: 16, lineHeight: 1.4, fontWeight: 600 } }, d.name),
+          React.createElement("span", { style: { display: "block", color: C.textSecondary, fontSize: 14, lineHeight: 1.5 } }, d.obtained ? "Obtained" : "Not yet obtained"))),
+      React.createElement("p", { id: "tops-document-note-" + d.id, style: { margin: "6px 0 0", fontSize: 14, lineHeight: 1.5, color: C.textBody } }, d.notes),
+      d.id === "d8" && React.createElement("a", { id: "tops-vgli-document-source", href: "https://www.va.gov/life-insurance/options-eligibility/vgli/", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, maxWidth: "100%", boxSizing: "border-box", padding: "8px 0", color: C.greenBright, fontSize: 14, textDecoration: "underline", lineHeight: 1.5 } }, "VA VGLI eligibility and application guidance (opens a new tab)"));
+  }
+  return React.createElement("section", { "aria-label": "Document checklist", id: "tops-document-checklist" },
+    props.readinessReturn || React.createElement("button", { id: "tops-documents-back", type: "button", onClick: props.back, style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" } }, "Back to My Plan"),
+    React.createElement("div", { style: { marginBottom: 16 } },
+      React.createElement("h3", { id: "tops-plan-documents", tabIndex: -1, style: { fontSize: 20, margin: "0 0 8px", color: C.textPrimary } }, "Your checklist"),
+      React.createElement("p", { style: { margin: "0 0 10px", fontSize: 16, lineHeight: 1.5, color: C.textBody } }, "Mark the documents you have. You do not upload documents here."),
+      React.createElement("p", { id: "tops-document-progress", style: { margin: "0 0 4px", fontSize: 16, fontWeight: 600, color: C.textPrimary } }, obtained + " of " + props.documents.length + " marked as obtained"),
+      React.createElement("p", { id: "tops-document-save-status", role: "status", "aria-live": "polite", style: { margin: "0 0 12px", fontSize: 14, lineHeight: 1.5, color: C.textSecondary } }, props.saveStatus === "saved" ? "Checkmarks saved on this browser." : props.saveStatus === "visit" ? "Checkmarks are for this visit only in this embedded view." : props.saveStatus === "unconfirmed" ? "Saving could not be confirmed. Your checkmarks are still in this tab; keep it open." : "Checking saved progress...")),
+    [true, false].map(function(critical) { return React.createElement("section", { key: String(critical), "aria-labelledby": critical ? "tops-documents-critical" : "tops-documents-supporting" },
+      React.createElement("h4", { id: critical ? "tops-documents-critical" : "tops-documents-supporting", style: { fontSize: 16, fontWeight: 600, margin: "16px 0 10px", color: C.textPrimary } }, critical ? "Critical documents" : "Supporting documents"), props.documents.filter(function(d) { return d.critical === critical; }).map(row)); }));
+}
+
+const TOPS_TAP_PREP = {
+COUNT new expected 1 actual 1 old expected 1 actual 1
+
+EDIT 2 OLD
+   const [documents, setDocuments] = useState(topsRestoreDocuments);
+NEW
+   const [documents, setDocuments] = useState(topsRestoreDocuments);
+  const [documentSaveStatus, setDocumentSaveStatus] = useState("checking");
+COUNT new expected 1 actual 1 old expected 1 actual 1
+
+EDIT 3 OLD
+   useEffect(() => {
+    if (window.__IS_IFRAME) return;
+    if (restorePlanEffects.current.documents) { restorePlanEffects.current.documents = false; return; }
+    try {
+      window.__safeSet("docProgress", JSON.stringify(documents));
+    } catch (e) {}
+  }, [documents]);
+NEW
+   useEffect(() => {
+    if (window.__IS_IFRAME) { setDocumentSaveStatus("visit"); return; }
+    if (restorePlanEffects.current.documents) { restorePlanEffects.current.documents = false; return; }
+    try {
+      var raw = JSON.stringify(documents);
+      localStorage.setItem("docProgress", raw);
+      setDocumentSaveStatus(localStorage.getItem("docProgress") === raw ? "saved" : "unconfirmed");
+    } catch (e) { setDocumentSaveStatus("unconfirmed"); }
+  }, [documents]);
+COUNT new expected 1 actual 1 old expected 0 actual 0
+
+EDIT 4 OLD
+     setMilestones(result.progress.milestones); setDocuments(result.progress.documents);
+NEW
+     setMilestones(result.progress.milestones); setDocuments(result.progress.documents); setDocumentSaveStatus("saved");
+COUNT new expected 1 actual 1 old expected 1 actual 1
+
+EDIT 5 OLD
+ n.id === "benefits" ? ["critical","vamath","vapay","resources","taxes"].indexOf(activeTab) !== -1 : n.id === "timeline" ? ["timeline","reminders","readiness","dd214"].indexOf(activeTab) !== -1
+NEW
+ n.id === "benefits" ? ["critical","vamath","vapay","resources","taxes"].indexOf(activeTab) !== -1 && !(activeTab === "resources" && subTab === "documents") : n.id === "timeline" ? ["timeline","reminders","readiness","dd214"].indexOf(activeTab) !== -1 || (activeTab === "resources" && subTab === "documents")
+COUNT new expected 1 actual 1 old expected 0 actual 0
+
+EDIT 6 OLD
+ activeTab === "dashboard" ? "Home" : (TOPS_TOOL_CHOICES.find(
+NEW
+ activeTab === "dashboard" ? "Home" : activeTab === "resources" && subTab === "documents" ? "Document checklist" : (TOPS_TOOL_CHOICES.find(
+COUNT new expected 1 actual 1 old expected 0 actual 0
+
+EDIT 7 OLD
+ subTab === "documents" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...S.card,
+      padding: 14
+    }
+  }, renderReadinessReturn("a6"), /*#__PURE__*/React.createElement("div", {
+    id: "tops-plan-documents", tabIndex: -1, role: "heading", "aria-level": 2,
+    style: S.cardTitle
+  }, "DOCUMENT VAULT"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...S.bodyText,
+      marginBottom: 8
+    }
+  }, "Track every critical document. Mark each as obtained."), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      fontSize: 12,
+      color: C.textSecondary
+    }
+  }, /*#__PURE__*/React.createElement("span", null, "SECURED"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: docsObtained === documents.length ? C.greenBright : C.textPrimary,
+      fontWeight: 700
+    }
+  }, docsObtained, "/", documents.length)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: C.bg,
+      borderRadius: 4,
+      height: 6,
+      overflow: "hidden",
+      marginTop: 4
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: Math.round(docsObtained / documents.length * 100) + "%",
+      height: "100%",
+      background: docsObtained === documents.length ? C.green : C.gold,
+      transition: "width 0.3s"
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: S.sectionLabel
+  }, "CRITICAL DOCUMENTS"), documents.filter(d => d.critical).map(d => /*#__PURE__*/React.createElement("button", {
+    key: d.id,
+    onClick: () => toggleDoc(d.id),
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      gap: 10,
+      padding: "10px 12px",
+      background: d.obtained ? C.gradStart : C.bgCard,
+      border: "1px solid " + (d.obtained ? C.green : C.border),
+      borderLeft: d.obtained ? "4px solid " + C.green : "4px solid #8B0000",
+      borderRadius: 4,
+      marginBottom: 5,
+      cursor: "pointer",
+      width: "100%",
+      textAlign: "left"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 18,
+      height: 18,
+      minWidth: 18,
+      border: "2px solid " + (d.obtained ? C.green : "#8B0000"),
+      borderRadius: 4,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: d.obtained ? C.green : "transparent"
+    }
+  }, d.obtained && /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: C.textPrimary,
+      fontSize: 11,
+      fontWeight: 700
+    }
+  }, "\u2713")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "'Oswald', sans-serif",
+      fontSize: 14,
+      color: d.obtained ? (C.isLight ? C.greenBright : "#6B8E23") : C.textPrimary,
+      textDecoration: d.obtained ? "line-through" : "none"
+    }
+  }, d.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: C.inactive,
+      marginTop: 2,
+      lineHeight: 1.4,
+      fontFamily: "'Source Sans 3', sans-serif"
+    }
+  }, d.notes)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...S.sectionLabel,
+      marginTop: 16
+    }
+  }, "SUPPORTING DOCUMENTS"), documents.filter(d => !d.critical).map(d => /*#__PURE__*/React.createElement("div", { key: d.id }, React.createElement("button", {
+    id: "tops-document-" + d.id,
+    onClick: () => toggleDoc(d.id),
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      gap: 10,
+      padding: "10px 12px",
+      background: d.obtained ? C.gradStart : C.bgCard,
+      border: "1px solid " + (d.obtained ? C.green : C.border),
+      borderRadius: 4,
+      marginBottom: 5,
+      cursor: "pointer",
+      width: "100%",
+      textAlign: "left"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 18,
+      height: 18,
+      minWidth: 18,
+      border: "2px solid " + (d.obtained ? C.green : C.inactive),
+      borderRadius: 4,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: d.obtained ? C.green : "transparent"
+    }
+  }, d.obtained && /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: C.textPrimary,
+      fontSize: 11,
+      fontWeight: 700
+    }
+  }, "\u2713")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "'Oswald', sans-serif",
+      fontSize: 12,
+      color: d.obtained ? (C.isLight ? C.greenBright : "#6B8E23") : C.textPrimary,
+      textDecoration: d.obtained ? "line-through" : "none"
+    }
+  }, d.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: d.id === "d8" ? 13 : 9,
+      color: C.inactive,
+      marginTop: 2,
+      lineHeight: 1.4,
+      fontFamily: "'Source Sans 3', sans-serif"
+    }
+  }, d.notes))), d.id === "d8" && React.createElement("a", { id: "tops-vgli-document-source", href: "https://www.va.gov/life-insurance/options-eligibility/vgli/", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, maxWidth: "100%", boxSizing: "border-box", padding: "8px 12px", marginBottom: 8, color: C.greenBright, fontSize: 14, textDecoration: "underline", lineHeight: 1.5 } }, "VA VGLI eligibility and application guidance (opens a new tab)"))))
+NEW
+ subTab === "documents" && React.createElement(DocumentChecklist, { colors: C, documents: documents, toggle: toggleDoc, saveStatus: documentSaveStatus, readinessReturn: renderReadinessReturn("a6"), back: function() { setPlanView("hub"); setSelectedMilestone(null); continuationFocus.current = "tops-plan-shortcut-resources"; continuationReturn.current = null; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("timeline"); } })
+COUNT new expected 1 actual 1 old expected 0 actual 0
+
+EDIT 8 OLD
+   const docsObtained = documents.filter(d => d.obtained).length;
+
+NEW
+
+COUNT new expected 0 actual 0 old expected 0 actual 0
+
+EDIT 9 OLD
+ desc:"VSOs, SkillBridge, healthcare, document vault"
+NEW
+ desc:"VSOs, SkillBridge, healthcare, document checklist"
+COUNT new expected 1 actual 1 old expected 0 actual 0
+
+EDIT 10 OLD
+ const CACHE_NAME = "transition-ops-v286";
+NEW
+ const CACHE_NAME = "transition-ops-v287";
+COUNT new expected 1 actual 1 old expected 0 actual 0

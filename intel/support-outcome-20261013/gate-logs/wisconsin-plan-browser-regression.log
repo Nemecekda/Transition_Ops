@@ -1,0 +1,7 @@
+PASS fresh support Save needs no career choice; reloaded Home reopens exact WI guide
+PASS support guide/action/backup export-parse-restore, unknown values rejected, old directions valid, neutral completion/clear/time fallback
+PASS explicit replacement preserves existing direction/roles/goal/worksheet; cancel/visit preserve disk, accepted save resets only step/date/done
+PASS newer/invalid saved bytes and atomic-write failure cannot overwrite plan; review and question text retained
+PASS shared edited questions survive Career/Resources; explicit short details append once without source text or persistence
+PASS origin-only fixed link; copy denial focus/select; 320/375px reflow/44px controls; zero source/provider or member-data requests
+WI FOLLOW-THROUGH: LOCAL AUTOMATION PASS. Manual AT and hosted release checks remain pending.

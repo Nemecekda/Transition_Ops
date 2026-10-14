@@ -1,0 +1,15 @@
+PASS Guard/Reserve service situations, replacement consent reset, explicit save, reload, focus and profile isolation
+PASS service check-in reflow and select target professional 320
+PASS service check-in reflow and select target professional 375
+PASS service check-in reflow and select target professional 900
+PASS service check-in reflow and select target tactical 320
+PASS service check-in reflow and select target tactical 375
+PASS service check-in reflow and select target tactical 900
+MEMBER LOOP PROFILE PASS  change
+MEMBER LOOP PROFILE PASS active transition
+MEMBER LOOP PROFILE PASS separated change
+MEMBER LOOP PROFILE PASS retired change
+MEMBER LOOP PROFILE PASS guard change
+MEMBER LOOP PROFILE PASS guard skills
+MEMBER LOOP PROFILE PASS spouse change
+MEMBER LOOP PASS: seven visitor/path scenarios; all four visible priorities without storage; explicit direction save; no date requirement; choose/edit/save/reload; completion/reflection; goal drift review; orphan-step recovery; save denial; 320/375; zero model calls/member-text requests/errors
