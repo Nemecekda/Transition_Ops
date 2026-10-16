@@ -1,0 +1,7 @@
+PASS: fresh direct link has one history entry; reload adds none; explicit My Plan return and later Back/Forward stay inside app.
+PASS: My Plan to Documents, reload and browser Back/Forward restore exact destination, flags and focus.
+PASS: Healthcare/directory parent selection survives Documents Back/Forward.
+PASS: Wisconsin guide marker cannot leak into a Documents link, including same-resource topic entry.
+PASS: closed-route validation, copied/direct links and harmless existing URL context.
+PASS: native Home tile, overlay Back and generic Resources exit retain their distinct routes.
+DOCUMENT ROUTE PASS: both themes320/375; saved plan/document bytes exact; no private state in URL/history; zero provider POST.

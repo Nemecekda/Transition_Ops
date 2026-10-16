@@ -1,0 +1,11 @@
+{
+  "base": "7fbc9bb30ec10c7e9fd0d1318ffc4cfaefcf98f3",
+  "branch": "codex/document-context-return",
+  "cache": "transition-ops-v289",
+  "files": {
+    "index.html": "3686af60c75d065a338065931b080d0a71f64d0d5fac79645ddc5edbf69e203d",
+    "pwa-sw.js": "86800106fac991d24a953071d38b5cfcfac9bea83f21495e88ea706d695cad0d",
+    "scripts/document-context-return-browser-regression.js": "28c7aba01811dfbd3964747a7bb399f3f70cc220db23bfb68706735e85cf483a",
+    "scripts/readiness-tool-return-browser-regression.js": "5ed52e644008c939cb1c1bd43e6a05821b7641958c349107793d8b29670267b1"
+  }
+}

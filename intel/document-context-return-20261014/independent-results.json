@@ -1,0 +1,148 @@
+{
+  "candidate": "3686af60c75d065a338065931b080d0a71f64d0d5fac79645ddc5edbf69e203d",
+  "cases": [
+    {
+      "name": "All nine resource topics have one correctly named return with selector focus",
+      "status": "PASS"
+    },
+    {
+      "name": "Healthcare origin survives refresh; explicit return and native Forward/Back are stable",
+      "status": "PASS"
+    },
+    {
+      "name": "Existing directory filter remains selected during in-app return",
+      "status": "PASS"
+    },
+    {
+      "name": "Wisconsin guide returns to visible heading and retains guide URL after refresh",
+      "status": "PASS"
+    },
+    {
+      "name": "Healthcare selected after Wisconsin guide returns Healthcare, not old guide",
+      "status": "PASS"
+    },
+    {
+      "name": "Home continuation and optional tile return to visible original control after reload",
+      "status": "PASS"
+    },
+    {
+      "name": "My Plan returns to Documents shortcut; readiness control takes precedence",
+      "status": "PASS"
+    },
+    {
+      "name": "Fresh direct link has no origin; explicit fallback remains inside app",
+      "status": "PASS"
+    },
+    {
+      "name": "Unknown and malformed return metadata fails closed with no member content reflected",
+      "status": "PASS"
+    },
+    {
+      "name": "Return metadata absent on unrelated route; adjacent search/support draft unaffected",
+      "status": "PASS"
+    },
+    {
+      "name": "Explicit return cycles reuse original parent and Docs history entries",
+      "status": "PASS"
+    },
+    {
+      "name": "320/375 light/dark longest return label reflows; native Enter restores selector",
+      "status": "PASS"
+    }
+  ],
+  "observations": [
+    {
+      "healthcareReturn": {
+        "url": "?tool=resources",
+        "focus": "tops-resource-topic",
+        "title": "Resources and support",
+        "topic": "healthcare",
+        "docs": false,
+        "history": {
+          "tops": 1,
+          "documentParentTopic": "healthcare"
+        },
+        "length": 5
+      }
+    },
+    {
+      "historyCycles": [
+        {
+          "iteration": 0,
+          "parentId": 130,
+          "docsId": 131,
+          "length": 21,
+          "index": 20
+        },
+        {
+          "iteration": 1,
+          "parentId": 130,
+          "docsId": 131,
+          "length": 21,
+          "index": 20
+        },
+        {
+          "iteration": 2,
+          "parentId": 130,
+          "docsId": 131,
+          "length": 21,
+          "index": 20
+        }
+      ]
+    },
+    {
+      "mobile": {
+        "width": 320,
+        "theme": "light",
+        "scrollWidth": 320,
+        "left": 20,
+        "right": 300,
+        "top": 131.796875,
+        "bottom": 189.796875,
+        "height": 58,
+        "label": "Back to claims help and veteran organizations"
+      }
+    },
+    {
+      "mobile": {
+        "width": 320,
+        "theme": "tactical",
+        "scrollWidth": 320,
+        "left": 20,
+        "right": 300,
+        "top": 131.796875,
+        "bottom": 189.796875,
+        "height": 58,
+        "label": "Back to claims help and veteran organizations"
+      }
+    },
+    {
+      "mobile": {
+        "width": 375,
+        "theme": "light",
+        "scrollWidth": 375,
+        "left": 20,
+        "right": 355,
+        "top": 131.796875,
+        "bottom": 189.796875,
+        "height": 58,
+        "label": "Back to claims help and veteran organizations"
+      }
+    },
+    {
+      "mobile": {
+        "width": 375,
+        "theme": "tactical",
+        "scrollWidth": 375,
+        "left": 20,
+        "right": 355,
+        "top": 131.796875,
+        "bottom": 189.796875,
+        "height": 58,
+        "label": "Back to claims help and veteran organizations"
+      }
+    }
+  ],
+  "errors": [],
+  "providerPosts": 0
+}

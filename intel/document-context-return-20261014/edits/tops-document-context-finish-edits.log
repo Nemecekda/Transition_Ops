@@ -1,0 +1,7 @@
+EDIT 8 OLD: }, "Back to My Plan"),
+    React.createElement("div", { style: { marginBottom: 16 } }, NEW: }, props.backLabel || "Open My Plan"),
+    React.createElement("div", { style: { marginBottom: 16 } },
+new expect1/actual 1 old expect0/actual 0
+EDIT 9 OLD: readinessReturn: renderReadinessReturn("a6"), back: function() { setPlanView("hub"); setSelectedMilestone(null); continuationFocus.current = "tops-plan-shortcut-resources"; continuationReturn.current = null; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("timeline"); } NEW: readinessReturn: renderReadinessReturn("a6"), backLabel: TOPS_DOCUMENT_RETURNS[topsDocumentReturnKey(documentReturn.current)] || "Open My Plan", back: returnFromDocuments
+new expect1/actual 1 old expect0/actual 0
+EDIT10 OLD: const CACHE_NAME = 'transition-ops-v288'; NEW: const CACHE_NAME = 'transition-ops-v289';

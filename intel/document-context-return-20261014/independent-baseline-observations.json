@@ -1,0 +1,44 @@
+{
+  "base": "4080b37",
+  "indexSha256": "05a37549112e5e39b4a68470c538c4422abae477833ce028300b8b1f868059ee",
+  "viewport": "375x812",
+  "parent": {
+    "title": "Resources and support",
+    "url": "?tool=resources",
+    "topic": "healthcare",
+    "back": null,
+    "focus": "",
+    "nav": "Benefits"
+  },
+  "docs": {
+    "title": "Document checklist",
+    "url": "?tool=resources&view=documents",
+    "topic": null,
+    "back": "Back to My Plan",
+    "focus": "tops-plan-documents",
+    "nav": "My Plan"
+  },
+  "returned": {
+    "title": "My Plan",
+    "url": "?tool=timeline",
+    "topic": null,
+    "back": null,
+    "focus": "tops-plan-shortcut-resources",
+    "nav": "My Plan"
+  },
+  "recoveryAdditionalChoices": [
+    "Benefits",
+    "Resources",
+    "Healthcare"
+  ],
+  "recovered": {
+    "title": "Resources and support",
+    "url": "?tool=resources",
+    "topic": "healthcare",
+    "back": null,
+    "focus": "tops-page-title",
+    "nav": "Benefits"
+  },
+  "planUnchanged": true,
+  "errors": []
+}

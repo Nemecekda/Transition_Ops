@@ -1,0 +1,350 @@
+MODE EDIT
+ M index.html
+ M pwa-sw.js
+ M scripts/readiness-tool-return-browser-regression.js
+?? intel/document-context-return-20261014/
+?? scripts/document-context-return-browser-regression.js
+
+INLINE 1 JS lines 6-12 bytes 246 PASS
+INLINE 2 JS lines 23-50 bytes 1336 PASS
+INLINE 3 JSON lines 83-139 bytes 2276 PASS
+INLINE 4 JS lines 880-19176 bytes 1476369 PASS
+JS INVENTORY 124
+JS OneSignalSDKWorker.js 76 bytes PASS
+JS intel/career-focused-workspace-20261012/independent-evidence/career-review-clear-focus.js 5846 bytes PASS
+JS intel/career-focused-workspace-20261012/independent-evidence/career-review-empty-focus.js 5919 bytes PASS
+JS intel/career-focused-workspace-20261012/independent-evidence/career-review-file-import.js 5723 bytes PASS
+JS intel/career-focused-workspace-20261012/independent-evidence/career-review-independent.js 10236 bytes PASS
+JS intel/wi-follow-through-20261013/independent-evidence/wi-follow-through-independent.js 23670 bytes PASS
+JS intel/wi-follow-through-20261013/independent-evidence/wi-follow-through-navigator.js 2266 bytes PASS
+JS intel/wi-workforce-20261013/independent-evidence/wi-review-independent.js 10669 bytes PASS
+JS netlify/functions/jobs.js 3933 bytes PASS
+JS push/onesignal/OneSignalSDKWorker.js 843 bytes PASS
+JS pwa-sw.js 4609 bytes PASS
+JS scripts/accessibility-release-regression.js 84996 bytes PASS
+JS scripts/build-public.js 10454 bytes PASS
+JS scripts/business-ownership-browser-regression.js 4756 bytes PASS
+JS scripts/calendar-export-regression.js 5119 bytes PASS
+JS scripts/career-action-browser-regression.js 9635 bytes PASS
+JS scripts/career-action-card-browser-regression.js 9024 bytes PASS
+JS scripts/career-action-regression.js 2724 bytes PASS
+JS scripts/career-ai-journey-regression.js 16466 bytes PASS
+JS scripts/career-application-followup-return-browser-regression.js 16399 bytes PASS
+JS scripts/career-central-review-browser-regression.js 10232 bytes PASS
+JS scripts/career-checkin-browser-regression.js 14535 bytes PASS
+JS scripts/career-clarity-browser-regression.js 12380 bytes PASS
+JS scripts/career-completed-step-browser-regression.js 8156 bytes PASS
+JS scripts/career-composer-layout-browser-regression.js 11081 bytes PASS
+JS scripts/career-conversation-browser-regression.js 4152 bytes PASS
+JS scripts/career-direction-browser-regression.js 9430 bytes PASS
+JS scripts/career-direction-choice-browser-regression.js 11931 bytes PASS
+JS scripts/career-exploration-return-browser-regression.js 9676 bytes PASS
+JS scripts/career-focused-message-browser-regression.js 10921 bytes PASS
+JS scripts/career-guidance-regression.js 6240 bytes PASS
+JS scripts/career-guided-workspace-browser-regression.js 14711 bytes PASS
+JS scripts/career-help-continuation-browser-regression.js 10611 bytes PASS
+JS scripts/career-home-search-continuity-browser-regression.js 10680 bytes PASS
+JS scripts/career-intake-continuity-browser-regression.js 14294 bytes PASS
+JS scripts/career-intent-browser-regression.js 12204 bytes PASS
+JS scripts/career-introduction-continuity-browser-regression.js 13504 bytes PASS
+JS scripts/career-job-comparison-browser-regression.js 12505 bytes PASS
+JS scripts/career-job-relevance-browser-regression.js 12393 bytes PASS
+JS scripts/career-job-result-comparison-browser-regression.js 12087 bytes PASS
+JS scripts/career-job-search-flow-browser-regression.js 11381 bytes PASS
+JS scripts/career-learning-browser-regression.js 10431 bytes PASS
+JS scripts/career-learning-next-browser-regression.js 11101 bytes PASS
+JS scripts/career-networking-browser-regression.js 14146 bytes PASS
+JS scripts/career-networking-next-browser-regression.js 9127 bytes PASS
+JS scripts/career-networking-review-browser-regression.js 10096 bytes PASS
+JS scripts/career-reflection-networking-browser-regression.js 8618 bytes PASS
+JS scripts/career-resume-handoff-browser-regression.js 11809 bytes PASS
+JS scripts/career-resume-next-browser-regression.js 9890 bytes PASS
+JS scripts/career-simple-entry-browser-regression.js 18551 bytes PASS
+JS scripts/career-specialist-browser-regression.js 10570 bytes PASS
+JS scripts/career-start-browser-regression.js 16557 bytes PASS
+JS scripts/career-start-regression.js 3783 bytes PASS
+JS scripts/career-starter-browser-regression.js 9678 bytes PASS
+JS scripts/career-starter-regression.js 2642 bytes PASS
+JS scripts/career-tools-focus-browser-regression.js 6793 bytes PASS
+JS scripts/career-visit-draft-browser-regression.js 23035 bytes PASS
+JS scripts/counselor-preparation-regression.js 6716 bytes PASS
+JS scripts/dd214-reader-regression.js 9626 bytes PASS
+JS scripts/dd214-upload-browser-regression.js 20121 bytes PASS
+JS scripts/dd214-upload-regression.js 7883 bytes PASS
+JS scripts/document-checklist-browser-regression.js 14692 bytes PASS
+JS scripts/document-route-browser-regression.js 12185 bytes PASS
+JS scripts/due-followup-regression.js 3662 bytes PASS
+JS scripts/federal-jobs-browser-regression.js 8868 bytes PASS
+JS scripts/focused-action-regression.js 4152 bytes PASS
+JS scripts/followthrough-regression.js 3018 bytes PASS
+JS scripts/guard-reserve-browser-regression.js 18880 bytes PASS
+JS scripts/guard-reserve-regression.js 9691 bytes PASS
+JS scripts/home-actions-regression.js 7443 bytes PASS
+JS scripts/home-search-handoff-browser-regression.js 12421 bytes PASS
+JS scripts/home-visual-browser-regression.js 7702 bytes PASS
+JS scripts/member-action-hierarchy-browser-regression.js 6518 bytes PASS
+JS scripts/member-loop-browser-regression.js 27954 bytes PASS
+JS scripts/member-navigator-browser-regression.js 12274 bytes PASS
+JS scripts/member-priority-browser-regression.js 10777 bytes PASS
+JS scripts/my-jobs-application-review-browser-regression.js 12584 bytes PASS
+JS scripts/my-jobs-backup-regression.js 9080 bytes PASS
+JS scripts/my-jobs-browser-regression.js 13356 bytes PASS
+JS scripts/my-plan-orientation-browser-regression.js 13057 bytes PASS
+JS scripts/my-plan-shortcuts-regression.js 3281 bytes PASS
+JS scripts/nav-token-regression.js 8516 bytes PASS
+JS scripts/navigation-refresh-regression.js 3238 bytes PASS
+JS scripts/notification-options-browser-regression.js 5829 bytes PASS
+JS scripts/openai-migration-regression.js 301079 bytes PASS
+JS scripts/personal-guide-browser-regression.js 18336 bytes PASS
+JS scripts/personal-guide-regression.js 10905 bytes PASS
+JS scripts/personal-step-calendar-browser-regression.js 10320 bytes PASS
+JS scripts/personal-step-calendar-regression.js 2313 bytes PASS
+JS scripts/plan-backup-browser-regression.js 9466 bytes PASS
+JS scripts/plan-backup-regression.js 5915 bytes PASS
+JS scripts/policy-content-regression.js 13373 bytes PASS
+JS scripts/privacy-network-regression.js 43659 bytes PASS
+JS scripts/profile-access-browser-regression.js 7596 bytes PASS
+JS scripts/readiness-checklist-regression.js 4367 bytes PASS
+JS scripts/readiness-next-step-browser-regression.js 14215 bytes PASS
+JS scripts/readiness-tool-return-browser-regression.js 10431 bytes PASS
+JS scripts/reminder-count-regression.js 10290 bytes PASS
+JS scripts/resume-docx-render-regression.js 46283 bytes PASS
+JS scripts/runtime-ai-spend-regression.js 68796 bytes PASS
+JS scripts/service-career-browser-regression.js 8238 bytes PASS
+JS scripts/service-career-regression.js 3253 bytes PASS
+JS scripts/support-compact-review-browser-regression.js 11291 bytes PASS
+JS scripts/support-outcome-browser-regression.js 11934 bytes PASS
+JS scripts/support-review-continuity-browser-regression.js 11001 bytes PASS
+JS scripts/sw-privacy-regression.js 34405 bytes PASS
+JS scripts/tap-integration-regression.js 7336 bytes PASS
+JS scripts/tap-worksheet-browser-regression.js 8323 bytes PASS
+JS scripts/theme-palette-regression.js 1769 bytes PASS
+JS scripts/tool-url-continuity-browser-regression.js 9904 bytes PASS
+JS scripts/vgli-document-browser-regression.js 6495 bytes PASS
+JS scripts/vgli-window-regression.js 6132 bytes PASS
+JS scripts/wisconsin-plan-browser-regression.js 16264 bytes PASS
+JS scripts/wisconsin-work-support-browser-regression.js 10880 bytes PASS
+JS sw.js 4033 bytes PASS
+JS vendor/pdfjs/wasm/jbig2_nowasm_fallback.js 145703 bytes PASS
+JS vendor/pdfjs/wasm/openjpeg_nowasm_fallback.js 451590 bytes PASS
+JS vendor/react-dom.production.min.js 131882 bytes PASS
+JS vendor/react.production.min.js 10737 bytes PASS
+JS vendor/tesseract/tesseract-core-lstm.wasm.js 3896484 bytes PASS
+JS vendor/tesseract/tesseract-core-relaxedsimd-lstm.wasm.js 3905767 bytes PASS
+JS vendor/tesseract/tesseract-core-simd-lstm.wasm.js 3899472 bytes PASS
+JS vendor/tesseract/worker.min.js 111307 bytes PASS
+JS scripts/document-context-return-browser-regression.js 12869 bytes PASS
+MJS INVENTORY 9
+MJS netlify/functions/_shared/federal-jobs.mjs 6390 bytes PASS
+MJS netlify/functions/federal-jobs.mjs 110 bytes PASS
+MJS netlify/functions/navigator.mjs 71603 bytes PASS
+MJS netlify/functions/resume.mjs 97068 bytes PASS
+MJS scripts/dd214-layout-regression.mjs 8867 bytes PASS
+MJS scripts/federal-jobs-regression.mjs 5816 bytes PASS
+MJS vendor/dd214-reader.mjs 11328 bytes PASS
+MJS vendor/pdfjs/pdf.min.mjs 458717 bytes PASS
+MJS vendor/pdfjs/pdf.worker.min.mjs 1265417 bytes PASS
+CJS INVENTORY 38
+CJS intel/document-checklist-20261013/gate-logs/structural-runner.cjs 3396 bytes PASS
+CJS intel/document-route-20261014/gate-logs/structural-runner.cjs 3317 bytes PASS
+CJS intel/search-handoff-20261013/gate-logs/structural-runner.cjs 3324 bytes PASS
+CJS intel/search-handoff-20261013/independent-evidence/independent-search.cjs 13087 bytes PASS
+CJS intel/search-handoff-20261013/independent-evidence/search-review.cjs 6078 bytes PASS
+CJS intel/support-compact-review-20261013/gate-logs/structural-runner.cjs 3532 bytes PASS
+CJS intel/support-compact-review-20261013/independent-evidence/layout-review.cjs 9838 bytes PASS
+CJS intel/support-compact-review-20261013/independent-evidence/picker-review.cjs 6113 bytes PASS
+CJS intel/support-compact-review-20261013/measurements/baseline-measure.cjs 7036 bytes PASS
+CJS intel/support-compact-review-20261013/measurements/final-measure.cjs 6836 bytes PASS
+CJS intel/support-outcome-20261013/gate-logs/structural-runner.cjs 3532 bytes PASS
+CJS intel/support-outcome-20261013/independent-evidence/final-display-delta.cjs 6066 bytes PASS
+CJS intel/support-outcome-20261013/independent-evidence/focus-follow-on.cjs 6115 bytes PASS
+CJS intel/support-outcome-20261013/independent-evidence/independent-browser.cjs 9229 bytes PASS
+CJS intel/support-outcome-20261013/independent-evidence/native-date.cjs 7585 bytes PASS
+CJS intel/support-review-continuity-20261013/gate-logs/structural-runner.cjs 3532 bytes PASS
+CJS intel/support-review-continuity-20261013/independent-evidence/draft-reference-repro.cjs 5908 bytes PASS
+CJS intel/support-review-continuity-20261013/independent-evidence/draft-return.cjs 14566 bytes PASS
+CJS intel/support-review-continuity-20261013/independent-evidence/final-delta.cjs 5954 bytes PASS
+CJS intel/wi-follow-through-20261013/gate-logs/structural-runner.cjs 3525 bytes PASS
+CJS intel/wi-workforce-20261013/evidence/structural-gate.cjs 3487 bytes PASS
+CJS netlify/functions/_shared/openai-budget.cjs 29412 bytes PASS
+CJS netlify/functions/_shared/openai-client.cjs 2626 bytes PASS
+CJS scratchpad/alert-browser-test.cjs 16492 bytes PASS
+CJS scratchpad/alert-disabled-test.cjs 1741 bytes PASS
+CJS scratchpad/alert-persistence-test.cjs 13383 bytes PASS
+CJS scratchpad/alert-verification-synthetic.cjs 5400 bytes PASS
+CJS scratchpad/federal-hosted-1b6b586/hosted-1b6b586-diagnostic.cjs 2735 bytes PASS
+CJS scratchpad/federal-resume-iteration-10/iteration-10-scope.cjs 3174 bytes PASS
+CJS scratchpad/federal-resume-iteration-6/iteration-6-comparison.cjs 2250 bytes PASS
+CJS scratchpad/federal-resume-iteration-8/iteration-8-scope.cjs 3370 bytes PASS
+CJS scratchpad/federal-resume-iteration-9/iteration-9-scope.cjs 3421 bytes PASS
+CJS scratchpad/member-return-loop-2026-09-08/adverse.cjs 13845 bytes PASS
+CJS scratchpad/member-return-loop-2026-09-08/browser-episodes.cjs 11167 bytes PASS
+CJS scratchpad/member-return-loop-2026-09-08/date-and-preservation.cjs 4254 bytes PASS
+CJS scratchpad/member-return-loop-2026-09-08/freeze-fixtures.cjs 5428 bytes PASS
+CJS scripts/mobile-obstruction-regression.cjs 13948 bytes PASS
+CJS intel/document-context-return-20261014/structural-gate.cjs 3824 bytes PASS
+JSON INVENTORY 140
+JSON .claude/pao-task-evidence.json 2098 bytes PASS
+JSON .github/scripts/tests/fixtures/coverage-blind.json 455 bytes PASS
+JSON .github/scripts/tests/fixtures/hostile-structure.json 817 bytes PASS
+JSON .github/scripts/tests/fixtures/malformed-result.json 88 bytes PASS
+JSON .github/scripts/tests/fixtures/packet-20261012-actual.json 3896 bytes PASS
+JSON .github/scripts/tests/fixtures/packet-cvso-object.json 8804 bytes PASS
+JSON .github/scripts/tests/fixtures/packet-inputs-unread.json 787 bytes PASS
+JSON .github/scripts/tests/fixtures/packet-malformed.json 125 bytes PASS
+JSON .github/scripts/tests/fixtures/packet-no-cvso.json 1049 bytes PASS
+JSON .github/scripts/tests/fixtures/packet-normal.json 2923 bytes PASS
+JSON .github/scripts/tests/fixtures/packet-quiet.json 552 bytes PASS
+JSON .github/scripts/tests/fixtures/packet-resources-unchanged.json 2781 bytes PASS
+JSON .github/scripts/tests/fixtures/packet-voice-violations.json 1053 bytes PASS
+JSON .github/scripts/tests/fixtures/real-issue-14.json 2893 bytes PASS
+JSON intel/career-focused-workspace-20261012/evidence/candidate.json 1620 bytes PASS
+JSON intel/career-focused-workspace-20261012/independent-evidence/receipt.json 2082 bytes PASS
+JSON intel/document-checklist-20261013/baseline-observation.json 746 bytes PASS
+JSON intel/document-checklist-20261013/candidate-hashes.json 656 bytes PASS
+JSON intel/document-checklist-20261013/final-34e0-results.json 1805 bytes PASS
+JSON intel/document-checklist-20261013/final-delta-results.json 1822 bytes PASS
+JSON intel/document-checklist-20261013/independent-receipt.json 1541 bytes PASS
+JSON intel/document-checklist-20261013/independent-results.json 1113 bytes PASS
+JSON intel/document-checklist-20261013/source-checks.json 376 bytes PASS
+JSON intel/document-route-20261014/baseline-results.json 520 bytes PASS
+JSON intel/document-route-20261014/candidate-hashes.json 409 bytes PASS
+JSON intel/document-route-20261014/fresh-final-results.json 3778 bytes PASS
+JSON intel/document-route-20261014/independent-receipt.json 1450 bytes PASS
+JSON intel/document-route-20261014/independent-results.json 5671 bytes PASS
+JSON intel/document-route-20261014/inventory-comparison.json 6635 bytes PASS
+JSON intel/document-route-20261014/mobile-results.json 1928 bytes PASS
+JSON intel/improvement-reviews/2026-09-30-cache184-publication.json 1063 bytes PASS
+JSON intel/improvement-reviews/2026-09-30-cache185-publication.json 809 bytes PASS
+JSON intel/improvement-reviews/2026-09-30-cache186-publication.json 876 bytes PASS
+JSON intel/improvement-reviews/2026-09-30-cache187-publication.json 895 bytes PASS
+JSON intel/pao-usefulness-20261012/evidence/changed-file-hashes.json 1087 bytes PASS
+JSON intel/pao-usefulness-20261012/evidence/independent-review/receipt.json 2025 bytes PASS
+JSON intel/pao-usefulness-20261012/evidence/offline/actual-packet-validation.json 348 bytes PASS
+JSON intel/pao-usefulness-20261012/evidence/offline/pao-baseline.json 130 bytes PASS
+JSON intel/pao-usefulness-20261012/evidence/offline/pao-run-context.json 858 bytes PASS
+JSON intel/pao-usefulness-20261012/evidence/offline/supported-handout-fixture.json 2411 bytes PASS
+JSON intel/pao-usefulness-20261012/evidence/offline/supported-handout-validation.json 311 bytes PASS
+JSON intel/pao-usefulness-20261012/evidence/workflow-gate.json 783 bytes PASS
+JSON intel/pao-usefulness-20261012/production-identity.json 459 bytes PASS
+JSON intel/search-handoff-20261013/candidate-manifest.json 585 bytes PASS
+JSON intel/search-handoff-20261013/gate-logs/home-search-edit-counts.json 12031 bytes PASS
+JSON intel/search-handoff-20261013/gate-logs/search-navigation-fix-counts.json 1335 bytes PASS
+JSON intel/search-handoff-20261013/independent-evidence/final-observations.json 998 bytes PASS
+JSON intel/search-handoff-20261013/independent-evidence/observation.json 2995 bytes PASS
+JSON intel/search-handoff-20261013/independent-evidence/receipt.json 1910 bytes PASS
+JSON intel/support-compact-review-20261013/candidate-manifest.json 1110 bytes PASS
+JSON intel/support-compact-review-20261013/gate-logs/discrete-edit-counts.json 4153 bytes PASS
+JSON intel/support-compact-review-20261013/gate-logs/staged-scope.json 3325 bytes PASS
+JSON intel/support-compact-review-20261013/independent-evidence/final-copy-delta.json 317 bytes PASS
+JSON intel/support-compact-review-20261013/independent-evidence/final-picker-delta.json 337 bytes PASS
+JSON intel/support-compact-review-20261013/independent-evidence/final-picker-observations.json 472 bytes PASS
+JSON intel/support-compact-review-20261013/independent-evidence/initial-layout-observations.json 3007 bytes PASS
+JSON intel/support-compact-review-20261013/independent-evidence/layout-observations.json 3007 bytes PASS
+JSON intel/support-compact-review-20261013/independent-evidence/receipt.json 2891 bytes PASS
+JSON intel/support-compact-review-20261013/measurements/baseline.json 3860 bytes PASS
+JSON intel/support-compact-review-20261013/measurements/final.json 3520 bytes PASS
+JSON intel/support-outcome-20261013/candidate-manifest.json 1541 bytes PASS
+JSON intel/support-outcome-20261013/independent-evidence/mobile-focus.json 916 bytes PASS
+JSON intel/support-outcome-20261013/independent-evidence/native-date.json 884 bytes PASS
+JSON intel/support-outcome-20261013/independent-evidence/receipt-initial.json 1843 bytes PASS
+JSON intel/support-outcome-20261013/independent-evidence/receipt.json 2385 bytes PASS
+JSON intel/support-review-continuity-20261013/candidate-manifest.json 834 bytes PASS
+JSON intel/support-review-continuity-20261013/gate-logs/discrete-edit-counts.json 7249 bytes PASS
+JSON intel/support-review-continuity-20261013/gate-logs/staged-scope.json 2606 bytes PASS
+JSON intel/support-review-continuity-20261013/independent-evidence/final-delta.json 394 bytes PASS
+JSON intel/support-review-continuity-20261013/independent-evidence/receipt.json 1806 bytes PASS
+JSON intel/support-review-continuity-20261013/independent-evidence/skillbridge-preserved.json 201 bytes PASS
+JSON intel/wi-follow-through-20261013/base-refs.json 499 bytes PASS
+JSON intel/wi-follow-through-20261013/candidate-hashes.json 631 bytes PASS
+JSON intel/wi-follow-through-20261013/independent-evidence/receipt.json 4393 bytes PASS
+JSON intel/wi-release-20261013/candidate-hashes.json 401 bytes PASS
+JSON intel/wi-release-20261013/expected-hosted-manifest.json 9855 bytes PASS
+JSON intel/wi-release-20261013/production-before.json 527 bytes PASS
+JSON intel/wi-workforce-20261013/independent-evidence/receipt.json 1205 bytes PASS
+JSON manifest.json 492 bytes PASS
+JSON package-lock.json 25042 bytes PASS
+JSON package.json 758 bytes PASS
+JSON scratchpad/federal-hosted-1b6b586/evidence.json 2181 bytes PASS
+JSON scratchpad/federal-hosted-1b6b586/proposed-extraction-number-gate.json 3374 bytes PASS
+JSON scratchpad/federal-hosted-3347fb6/evidence.json 2204 bytes PASS
+JSON scratchpad/federal-hosted-349770c/deployment.json 856 bytes PASS
+JSON scratchpad/federal-hosted-349770c/draft-result.json 8979 bytes PASS
+JSON scratchpad/federal-hosted-349770c/facts.json 4898 bytes PASS
+JSON scratchpad/federal-hosted-7c79057/artifact-verification.json 1216 bytes PASS
+JSON scratchpad/federal-hosted-7c79057/browser-final.json 163 bytes PASS
+JSON scratchpad/federal-hosted-7c79057/deployment.json 684 bytes PASS
+JSON scratchpad/federal-hosted-7c79057/draft-result.json 12684 bytes PASS
+JSON scratchpad/federal-hosted-7c79057/facts.json 4898 bytes PASS
+JSON scratchpad/federal-hosted-7c79057/phone-opening.json 568 bytes PASS
+JSON scratchpad/federal-hosted-7c79057/released-draft.json 5917 bytes PASS
+JSON scratchpad/federal-hosted-964a93e/deployment.json 853 bytes PASS
+JSON scratchpad/federal-hosted-964a93e/draft-result.json 6965 bytes PASS
+JSON scratchpad/federal-hosted-964a93e/facts.json 4942 bytes PASS
+JSON scratchpad/federal-hosted-9f39034/deployment.json 870 bytes PASS
+JSON scratchpad/federal-hosted-9f39034/draft-result.json 955 bytes PASS
+JSON scratchpad/federal-hosted-9f39034/facts.json 4900 bytes PASS
+JSON scratchpad/federal-hosted-fbf0996/deployment.json 815 bytes PASS
+JSON scratchpad/federal-hosted-fbf0996/draft-result.json 836 bytes PASS
+JSON scratchpad/federal-hosted-fbf0996/facts-verification.json 324 bytes PASS
+JSON scratchpad/federal-hosted-fbf0996/facts.json 4844 bytes PASS
+JSON scratchpad/federal-resume-iteration-10/manifest.json 4271 bytes PASS
+JSON scratchpad/federal-resume-iteration-3/manifest.json 1804 bytes PASS
+JSON scratchpad/federal-resume-iteration-4/manifest.json 2333 bytes PASS
+JSON scratchpad/federal-resume-iteration-5/manifest.json 2302 bytes PASS
+JSON scratchpad/federal-resume-iteration-6/manifest.json 2683 bytes PASS
+JSON scratchpad/federal-resume-readiness-evidence/manifest.json 2737 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/adverse-network.json 4101 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/adverse.json 3238 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/baseline-run1-selector-error.json 56006 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/baseline.json 57284 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/cache-edit.json 232 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/cache-ledger.json 2045 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/candidate-keyboard.json 62853 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/candidate-provisional-before-cache-bump.json 62852 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/candidate.json 62938 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/edit-assertions.json 2455 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/fixtures-v1.json 283085 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/manifest.json 1345 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/preservation-and-blindspots.json 4062 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/public-manifest.json 5207 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/restore-fixtures.json 141523 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/shared-preservation.json 1677 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/structural.json 15808 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/suite-exits.json 307 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/validation-summary.json 1775 bytes PASS
+JSON scratchpad/member-return-loop-2026-09-08/version-test-edit.json 231 bytes PASS
+JSON scratchpad/resume-feedback-accessibility-2026-09-07/final-remote-state.json 505 bytes PASS
+JSON scratchpad/resume-feedback-accessibility-2026-09-07/fix-scope.json 664 bytes PASS
+JSON scratchpad/resume-feedback-accessibility-2026-09-07/hosted-rejections.json 5674 bytes PASS
+JSON scratchpad/resume-feedback-accessibility-2026-09-07/policy-provenance.json 1299 bytes PASS
+JSON scratchpad/resume-feedback-accessibility-2026-09-07/resolved-build-config.json 392 bytes PASS
+JSON intel/document-context-return-20261014/candidate-hashes.json 580 bytes PASS
+JSON intel/document-context-return-20261014/independent-baseline-observations.json 1004 bytes PASS
+JSON intel/document-context-return-20261014/independent-initial-results.json 1960 bytes PASS
+JSON intel/document-context-return-20261014/independent-receipt.json 1577 bytes PASS
+JSON intel/document-context-return-20261014/independent-results.json 3758 bytes PASS
+YAML .github/workflows/j1-federal-scan.yml 20703 bytes 1 documents PASS
+YAML .github/workflows/j2-weekly-analysis.yml 49480 bytes 1 documents PASS
+YAML .github/workflows/j3-weekly-sitrep.yml 20981 bytes 1 documents PASS
+YAML .github/workflows/j4-link-audit.yml 39875 bytes 1 documents PASS
+YAML .github/workflows/j5-spend-check.yml 37182 bytes 1 documents PASS
+YAML .github/workflows/pao-weekly-packet.yml 15928 bytes 1 documents PASS
+
+ENCODING added curly quotes and NBSP0 PASS
+PRESENCE closed return validator expect 1 actual 1 PASS
+PRESENCE return adapter expect 1 actual 1 PASS
+PRESENCE dynamic fixed label expect 1 actual 1 PASS
+PRESENCE readiness stale key clear expect 1 actual 1 PASS
+PRESENCE mixed-origin directory guard expect 1 actual 1 PASS
+PRESENCE push off expect 1 actual 1 PASS
+CACHE one declaration288→289 PASS
+DOCUMENT_VAULT source data byte-identical PASS
+DIFF whitespace PASS
+ index.html                                         | 35 +++++++++++++++++++---
+ pwa-sw.js                                          |  2 +-
+ .../readiness-tool-return-browser-regression.js    |  2 +-
+ 3 files changed, 33 insertions(+), 6 deletions(-)
+
+4S/4B/4N N/A: no workflow, public-builder, package, function or config changes.
+STRUCTURAL GATE PASS
