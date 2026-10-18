@@ -7650,10 +7650,10 @@ function StateLocalHelp(props) {
       review && React.createElement("section", { "aria-labelledby": "tops-state-help-review", style: { marginTop: 12, paddingTop: 12, borderTop: "1px solid " + C.border } },
         React.createElement("h4", { id: "tops-state-help-review", tabIndex: -1 }, "Review your next step"), React.createElement("p", null, review.item.action),
         review.plan.action.text && React.createElement("div", null, React.createElement("p", { style: { overflowWrap: "anywhere" } }, "Current step: " + review.plan.action.text + (review.plan.action.date ? " Target: " + review.plan.action.date + "." : "") + (review.plan.action.done ? " Marked done." : "")), React.createElement("label", { style: { display: "flex", alignItems: "center", gap: 10, minHeight: 44 } }, React.createElement("input", { id: "tops-state-help-replace", type: "checkbox", checked: replace, onChange: function(e) { setReplace(e.target.checked); }, style: { width: 24, height: 24 } }), "Replace my current step with this unfinished step, without a target date.")),
-        React.createElement("p", null, "Your direction, worksheet and Career draft stay unchanged. Use for this visit leaves your saved copy unchanged."),
+        React.createElement("p", null, "Your existing direction, worksheet and Career draft stay unchanged. Unsaved changes to this step are lost when you refresh."),
         React.createElement("button", { id: "tops-state-help-save", type: "button", style: button, disabled: !!window.__IS_IFRAME || (!!review.plan.action.text && !replace), onClick: function() { keep(true); } }, "Save on this browser"),
-        React.createElement("button", { id: "tops-state-help-visit", type: "button", style: button, disabled: !!review.plan.action.text && !replace, onClick: function() { keep(false); } }, "Use for this visit"),
-        React.createElement("button", { type: "button", style: button, onClick: function() { setReview(null); setReplace(false); setMessage("Your current step was kept."); focus("tops-state-help-plan"); } }, "Keep my current step")),
+        React.createElement("button", { id: "tops-state-help-visit", type: "button", style: button, disabled: !!review.plan.action.text && !replace, onClick: function() { keep(false); } }, "Use without saving"),
+        React.createElement("button", { type: "button", style: button, onClick: function() { setReview(null); setReplace(false); setMessage("No changes made."); focus("tops-state-help-plan"); } }, review.plan.action.text ? "Keep my current step" : "Cancel")),
       React.createElement("p", { role: "status", "aria-live": "polite" }, message),
       stepReady && React.createElement("button", { id: "tops-state-help-view-step", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onTool("my-plan"); } }, "View my next step"),
       items.length > 1 && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", cursor: "pointer" } }, "Related options and eligibility"), items.slice(1).map(function(item) { return React.createElement("div", { key: item.id, style: { padding: "12px 0", borderTop: "1px solid " + C.border } }, React.createElement("h4", { style: { margin: "0 0 6px" } }, item.title), React.createElement("p", null, item.summary), React.createElement("p", { style: { fontSize: 14 } }, item.caveat), official(item, false)); })),
@@ -10393,12 +10393,12 @@ function App() {
     if (save) {
       var known = false;
       try { var before = JSON.parse(careerDiskGuard.current.disk), now = JSON.parse(current.disk), values = [current.guide, current.action, current.gap], validators = [topsValidateGuide, topsValidateAction, topsValidateGap]; known = Array.isArray(before) && Array.isArray(now) && now.length === 3 && before.length === 3 && now.every(function(value, i) { return (value === null || (typeof value === "string" && !!validators[i](JSON.parse(value)))) && (value === before[i] || value === JSON.stringify(values[i])); }); } catch (error) {}
-      if (!known) return { ok: false, message: "Newer or unreadable saved work, or unavailable storage, prevents saving. Your questions and current step are intact. Use for this visit, or reload the saved plan after copying your questions." };
+      if (!known) return { ok: false, message: "Newer or unreadable saved work, or unavailable storage, prevents saving. Your questions and current step are intact. You can continue without saving, or copy your work before refreshing." };
       var result = topsSaveCareerSession(guide, next, current.gap);
-      if (!result.ok) return { ok: false, message: result.reason === "partial" ? "Saving was interrupted and some saved fields may have changed. Keep this tab open and review your plan." : "Not saved. Your earlier saved plan was kept. Your questions are still here; try Use for this visit." };
+      if (!result.ok) return { ok: false, message: result.reason === "partial" ? "Saving was interrupted and some saved fields may have changed. Keep this tab open and review your plan." : "Not saved. Nothing was changed. You can continue without saving." };
       careerDiskGuard.current.disk = topsCareerDiskSnapshot();
     }
-    var status = save ? "Saved on this browser." : "For this visit only. Your saved copy is unchanged.";
+    var status = save ? "Saved on this browser." : "This step is not saved.";
     setGuideState({ draft: guide, ready: true, status: status }); setActionState({ draft: next, status: status });
     return { ok: true, message: status };
   }
