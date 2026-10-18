@@ -1,0 +1,8 @@
+{
+  "old": "continuationFocus.current = docs ? \"tops-plan-documents\" : wiGuideRequested.current",
+  "new": "continuationFocus.current = docs ? \"tops-plan-documents\" : localHelp ? \"tops-state-help-heading\" : wiGuideRequested.current",
+  "expected": 1,
+  "old_before": 1,
+  "new_after": 1,
+  "old_after": 0
+}

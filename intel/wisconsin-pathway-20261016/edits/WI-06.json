@@ -1,0 +1,8 @@
+{
+  "old": "active: activeTab === \"resources\" && subTab === \"documents\", overlay:",
+  "new": "active: activeTab === \"resources\" && (subTab === \"documents\" || subTab === \"state-help\"), overlay:",
+  "expected": 1,
+  "old_before": 1,
+  "new_after": 1,
+  "old_after": 0
+}

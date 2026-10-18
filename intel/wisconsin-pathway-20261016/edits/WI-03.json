@@ -1,0 +1,8 @@
+{
+  "old": "const TOPS_DOCUMENT_RETURNS = { plan:",
+  "new": "const TOPS_DOCUMENT_RETURNS = { \"state-help\": \"Back to state and local help\", plan:",
+  "expected": 1,
+  "old_before": 1,
+  "new_after": 1,
+  "old_after": 0
+}

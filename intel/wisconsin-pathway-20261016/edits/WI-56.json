@@ -1,0 +1,6 @@
+{
+  "old": "if (event.target.value === \"documents\") openPlanRoute(\"resources\", \"tops-plan-documents\", \"tops-resource-topic\"); else setSubTab(event.target.value);",
+  "new": "if (event.target.value === \"documents\") openPlanRoute(\"resources\", \"tops-plan-documents\", \"tops-resource-topic\"); else if (event.target.value === \"state-help\") openStateHelp(stateHelpContext); else setSubTab(event.target.value);",
+  "new_after": 1,
+  "old_after": 0
+}

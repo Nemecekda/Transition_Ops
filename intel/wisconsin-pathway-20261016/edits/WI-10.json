@@ -1,0 +1,8 @@
+{
+  "old": "      if (docs) { url.searchParams.set(\"view\", \"documents\");",
+  "new": "      [\"area\", \"situation\", \"need\"].forEach(function(key) { url.searchParams.delete(key); });\n      if (activeTab === \"resources\" && subTab === \"state-help\") { var local = topsStateHelpContext(stateHelpContext); url.searchParams.set(\"view\", \"state-help\"); url.searchParams.delete(\"guide\"); Object.keys(local).forEach(function(key) { url.searchParams.set(key, local[key]); }); wiGuideRequested.current = false; }\n      else if (docs) { url.searchParams.set(\"view\", \"documents\");",
+  "expected": 1,
+  "old_before": 1,
+  "new_after": 1,
+  "old_after": 0
+}

@@ -1,0 +1,7 @@
+{
+  "file": "index.html",
+  "old": "  var work = [\"start\", \"work\", \"education\", \"service\"].includes(context.need);",
+  "new": "  var work = [\"start\", \"work\", \"education\", \"service\"].includes(context.need), localHelp = TOPS_WISCONSIN_LOCAL_HELP.filter(function(item) { return item.needs.includes(context.need); });",
+  "new_after": 1,
+  "old_after": 0
+}

@@ -1,0 +1,9 @@
+UTC 2026-10-16T15:34:43.536658+00:00
+COMMAND ['node', 'scripts/wisconsin-welcome-browser-regression.js']
+PASS national default remains national; Wisconsin welcome includes return/move/already-here visitors; useful official action precedes all collapsed extras.
+Error: CDP timeout for Runtime.evaluate
+    at Timeout.eval [as _onTimeout] (eval at <anonymous> (/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/wisconsin-welcome-browser-regression.js:5:9), <anonymous>:89:16)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+
+EXIT 1

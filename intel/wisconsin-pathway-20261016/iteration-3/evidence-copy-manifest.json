@@ -1,0 +1,569 @@
+{
+  "scope": "Only iteration-3 evidence, excluding this self-manifest. Raw TXT browser/Claude/source receipts are referenced by absolute path/hash and remain unchanged in primary worktree; they are not duplicated. Screenshots and scripts copied byte-exact.",
+  "files": [
+    {
+      "path": "ROOT-SITREP.md",
+      "source_sha256": "b45c91c2edc7da2adcff87426937d0342ab698da45a1fbe3ff3113a169133863",
+      "candidate_sha256": "b45c91c2edc7da2adcff87426937d0342ab698da45a1fbe3ff3113a169133863",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "S3-PREP.md",
+      "source_sha256": "7daac92a31f23f2a3d52759affd990b3e7f97f868d4f85668978e46353f9311a",
+      "candidate_sha256": "7daac92a31f23f2a3d52759affd990b3e7f97f868d4f85668978e46353f9311a",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "S3-PROGRESS.md",
+      "source_sha256": "575f31a34460d2e9a96ca28c185d6c05cd8a3bcf019350d4aadd011b2a4adbd2",
+      "candidate_sha256": "575f31a34460d2e9a96ca28c185d6c05cd8a3bcf019350d4aadd011b2a4adbd2",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "S3-VALIDATION.md",
+      "source_sha256": "8079a6ddf30061cbfabf2cf64895f199aaa5840f52ec50123729477aa48b37e2",
+      "candidate_sha256": "8079a6ddf30061cbfabf2cf64895f199aaa5840f52ec50123729477aa48b37e2",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "SITREP.md",
+      "source_sha256": "be0342ee90fd4ec954c3b6bfac7433d3cd2fd98277d2ceec08568cc62c03004e",
+      "candidate_sha256": "be0342ee90fd4ec954c3b6bfac7433d3cd2fd98277d2ceec08568cc62c03004e",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "adjacent-claims-copy.md",
+      "source_sha256": "56b1a9ee782ec82ced88b07c638fe463f4b29a8e8b3bf29eb785de5f4f03ce59",
+      "candidate_sha256": "56b1a9ee782ec82ced88b07c638fe463f4b29a8e8b3bf29eb785de5f4f03ce59",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "adjacent-job-center-copy.md",
+      "source_sha256": "1b38b4f70c72ee579714f2ed428248ed989c6f1aaecd94bf24bb16b61c1597e6",
+      "candidate_sha256": "1b38b4f70c72ee579714f2ed428248ed989c6f1aaecd94bf24bb16b61c1597e6",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "baseline.json",
+      "source_sha256": "98a00eb6277c470dc75de872983ddb5dba1a285ea309fa4331b492ea1bd3d367",
+      "candidate_sha256": "98a00eb6277c470dc75de872983ddb5dba1a285ea309fa4331b492ea1bd3d367",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "candidate-manifest.json",
+      "source_sha256": "99e8ed368bbac1b25ad926714aa906442f0949ae7490d8fe42039b26d11b6a2e",
+      "candidate_sha256": "99e8ed368bbac1b25ad926714aa906442f0949ae7490d8fe42039b26d11b6a2e",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "charity-dryhootch-browser.txt",
+      "source_path": "/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-3/charity-dryhootch-browser.txt",
+      "source_sha256": "0e6106a12aceb01b1461c256655c9f0b2b1291834d42637e509741c7b62c28bd",
+      "copy": "not duplicated; raw capture retained at source_path"
+    },
+    {
+      "path": "charity-vow-browser.txt",
+      "source_path": "/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-3/charity-vow-browser.txt",
+      "source_sha256": "772c1e37c56afafa3a7ad6eedefb1448858de4ea5c35932c289e58026ca2d128",
+      "copy": "not duplicated; raw capture retained at source_path"
+    },
+    {
+      "path": "checks/a11y-cd93-revalidation.log",
+      "source_sha256": "de070be953a071585cdd68ba4ad2db327cf986d072470d9557b0517915e7cd44",
+      "candidate_sha256": "de070be953a071585cdd68ba4ad2db327cf986d072470d9557b0517915e7cd44",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/a11y-cd93.log",
+      "source_sha256": "0fbc9c8886b9acff952ee3b3b729aa5c6829c7bf849e553e0e0844ce7024c0ef",
+      "candidate_sha256": "0fbc9c8886b9acff952ee3b3b729aa5c6829c7bf849e553e0e0844ce7024c0ef",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/help-cd93-final.log",
+      "source_sha256": "08e14d399d7b0dcfe1f3af5f3c3e7e63e8d1110e20717712d35495dd125cf9be",
+      "candidate_sha256": "08e14d399d7b0dcfe1f3af5f3c3e7e63e8d1110e20717712d35495dd125cf9be",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/help-cd93-revalidation.log",
+      "source_sha256": "6312ee0021e38494c78a09b5e3ef415d76fcde9ddca42fdb6b2a48cdb70cfb53",
+      "candidate_sha256": "6312ee0021e38494c78a09b5e3ef415d76fcde9ddca42fdb6b2a48cdb70cfb53",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/help-cd93.log",
+      "source_sha256": "12289a77def4242faf506aa42ebdd9fa6d57b550ab5f3a7961dce2c5818fd45f",
+      "candidate_sha256": "12289a77def4242faf506aa42ebdd9fa6d57b550ab5f3a7961dce2c5818fd45f",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/help-official-preflight.log",
+      "source_sha256": "8031911c5d0915aa2ff6cef8b7104dbd1d4e5950bf51d2c6b31d07db8e9ffc94",
+      "candidate_sha256": "8031911c5d0915aa2ff6cef8b7104dbd1d4e5950bf51d2c6b31d07db8e9ffc94",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/network-cd93-revalidation.log",
+      "source_sha256": "c1b1da2a96f378f44f4bdefa79757ae4c1b1c6d245b88307a004b1ccd65341b3",
+      "candidate_sha256": "c1b1da2a96f378f44f4bdefa79757ae4c1b1c6d245b88307a004b1ccd65341b3",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/network-cd93.log",
+      "source_sha256": "3105602cce6d6d9052f8957eeeb0de1bd46a47ed0fb6bc9c05116087e00ffba9",
+      "candidate_sha256": "3105602cce6d6d9052f8957eeeb0de1bd46a47ed0fb6bc9c05116087e00ffba9",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/openai-cd93-revalidation.log",
+      "source_sha256": "e5fa84a294443809e6e698cc41ac7f370fa190def3340b30dbb6965e9ae43882",
+      "candidate_sha256": "e5fa84a294443809e6e698cc41ac7f370fa190def3340b30dbb6965e9ae43882",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/openai-cd93.log",
+      "source_sha256": "3094877181ee8e2d4bc500e4469c7956c97a85887dcc1194be51955e0153f02b",
+      "candidate_sha256": "3094877181ee8e2d4bc500e4469c7956c97a85887dcc1194be51955e0153f02b",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/pathway-cd93-revalidation.log",
+      "source_sha256": "d1a4ebe096a38a0de4f9a9d8be705e7bfb6af272573c9833ef4857ba904dbab4",
+      "candidate_sha256": "d1a4ebe096a38a0de4f9a9d8be705e7bfb6af272573c9833ef4857ba904dbab4",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/pathway-cd93.log",
+      "source_sha256": "f941f339b67e77f84b60756e90e5c54644448f4c1bc1c20738e3785370aa7909",
+      "candidate_sha256": "f941f339b67e77f84b60756e90e5c54644448f4c1bc1c20738e3785370aa7909",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/policy-cd93-revalidation.log",
+      "source_sha256": "19279179effb3b73ae37e1b26ebdc4d050a5cc964c5c213ca2da4f79b6b1ee26",
+      "candidate_sha256": "19279179effb3b73ae37e1b26ebdc4d050a5cc964c5c213ca2da4f79b6b1ee26",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/policy-cd93.log",
+      "source_sha256": "30affae5c9153edae00139c2a3acef49aae91b0db8cd42f5d2df08c21d6f6738",
+      "candidate_sha256": "30affae5c9153edae00139c2a3acef49aae91b0db8cd42f5d2df08c21d6f6738",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/public-cd93-revalidation.log",
+      "source_sha256": "1bf00ecf99c4c7169d2b8d44131f1c329fd22312cda7a8c830ddb8d93c451d8b",
+      "candidate_sha256": "1bf00ecf99c4c7169d2b8d44131f1c329fd22312cda7a8c830ddb8d93c451d8b",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/source-contract-cd93.json",
+      "source_sha256": "5286d8ad795c7cfb625d9a537b87aaca42af7a9ec0362c0dcc56041d18bd6654",
+      "candidate_sha256": "5286d8ad795c7cfb625d9a537b87aaca42af7a9ec0362c0dcc56041d18bd6654",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/spend-cd93-revalidation.log",
+      "source_sha256": "57e91b17115c23c0a04ff27817624e24e0d757b172528c03255c62e46739b7c0",
+      "candidate_sha256": "57e91b17115c23c0a04ff27817624e24e0d757b172528c03255c62e46739b7c0",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/spend-cd93.log",
+      "source_sha256": "0f594ed8da64754b83fc0bf9d050b1a2fb26f6cb1ea54947a953cc81ceb0877c",
+      "candidate_sha256": "0f594ed8da64754b83fc0bf9d050b1a2fb26f6cb1ea54947a953cc81ceb0877c",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/structural-cd93-revalidation.log",
+      "source_sha256": "3970fcf94047e006f16ad890fe7bc9247ecd6b9480e98cf12daa3c52169b514d",
+      "candidate_sha256": "3970fcf94047e006f16ad890fe7bc9247ecd6b9480e98cf12daa3c52169b514d",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/structural-final-package.log",
+      "source_sha256": "e4aefb2adb78ff6b6aeb605c9662486dc0eb25c11ab0285465477a36dd5c1108",
+      "candidate_sha256": "e4aefb2adb78ff6b6aeb605c9662486dc0eb25c11ab0285465477a36dd5c1108",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/sw-cd93-revalidation.log",
+      "source_sha256": "98bb3f9b4ce6c1035c93038a4ed6633f358ca2df04608e9b1b5d189f7801588f",
+      "candidate_sha256": "98bb3f9b4ce6c1035c93038a4ed6633f358ca2df04608e9b1b5d189f7801588f",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/sw-cd93.log",
+      "source_sha256": "ef85881891311aa829bedfc182075454ae7d701f727502de8a6f40efb02e1df2",
+      "candidate_sha256": "ef85881891311aa829bedfc182075454ae7d701f727502de8a6f40efb02e1df2",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/welcome-cd93-revalidation.log",
+      "source_sha256": "fdf56c05c1e1df38e6689a3e64255c121975827b25764a7923af7d8bf419c48d",
+      "candidate_sha256": "fdf56c05c1e1df38e6689a3e64255c121975827b25764a7923af7d8bf419c48d",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/welcome-cd93.log",
+      "source_sha256": "f9fb45dab61212cd6e785b00e38c0b4620a04960c1a33863568020ab000a8ad7",
+      "candidate_sha256": "f9fb45dab61212cd6e785b00e38c0b4620a04960c1a33863568020ab000a8ad7",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "claude-nonprofit-review.txt",
+      "source_path": "/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-3/claude-nonprofit-review.txt",
+      "source_sha256": "66e564e8f9ffd36386ea9f0b6ef8adf34cd652c86c3f97473b6f8436fdebcf8e",
+      "copy": "not duplicated; raw capture retained at source_path"
+    },
+    {
+      "path": "coverage-and-ux-contract.md",
+      "source_sha256": "28352b787f6893820e3bda289ca77d0ffa8a87205666cde75f92d8a064de9a69",
+      "candidate_sha256": "b34cd7913d5408c04e4893bb33b717df620e3b556b6c6be5b70234d8f1abce06",
+      "copy": "punctuation-normalized text"
+    },
+    {
+      "path": "edits/WI3-01.json",
+      "source_sha256": "534320f8dcc9972de1575fe896bbe4cd75bb38463411a5bdacbad04f871bd3fa",
+      "candidate_sha256": "534320f8dcc9972de1575fe896bbe4cd75bb38463411a5bdacbad04f871bd3fa",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-02.json",
+      "source_sha256": "f3f8a9bd34aec3909dd621f5ffd856e467d54b65348b4ce309baa993a3787918",
+      "candidate_sha256": "f3f8a9bd34aec3909dd621f5ffd856e467d54b65348b4ce309baa993a3787918",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-03.json",
+      "source_sha256": "27d113f6e1f0e607f09e5eef37cffdfb356bed40f70653659308b832e2b5fcb3",
+      "candidate_sha256": "27d113f6e1f0e607f09e5eef37cffdfb356bed40f70653659308b832e2b5fcb3",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-04.json",
+      "source_sha256": "00ee2c38ec0c78fc715fd13b2e1cd0b1c3abefa27fc000bcd26ae545d5acdf4b",
+      "candidate_sha256": "00ee2c38ec0c78fc715fd13b2e1cd0b1c3abefa27fc000bcd26ae545d5acdf4b",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-05.json",
+      "source_sha256": "dfb25eb103e9abc5069e5e6d14ea5af1f64caf0a02c4b8c72104c141aa8085de",
+      "candidate_sha256": "dfb25eb103e9abc5069e5e6d14ea5af1f64caf0a02c4b8c72104c141aa8085de",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-06.json",
+      "source_sha256": "9ba306884dbe45db48c9313a54cb79fadc88b52a6e25f63f6ddb5fa92f0b194d",
+      "candidate_sha256": "9ba306884dbe45db48c9313a54cb79fadc88b52a6e25f63f6ddb5fa92f0b194d",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-07.json",
+      "source_sha256": "2a07072b78878c2eb7b8295548217cde7c9eacf0528a1f36f9c37ac09e170098",
+      "candidate_sha256": "2a07072b78878c2eb7b8295548217cde7c9eacf0528a1f36f9c37ac09e170098",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-08.json",
+      "source_sha256": "9be79e678cef174d9372725882fef37f65d18e82f438cea261ded94171b2cf0f",
+      "candidate_sha256": "9be79e678cef174d9372725882fef37f65d18e82f438cea261ded94171b2cf0f",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-09.json",
+      "source_sha256": "9da650c5f3a073d2a26fac9707177a731da0c6a7a25407c3baa7d76d64dfa3bd",
+      "candidate_sha256": "9da650c5f3a073d2a26fac9707177a731da0c6a7a25407c3baa7d76d64dfa3bd",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-10.json",
+      "source_sha256": "031ea9e4abb80f639f7e3dc19726329ea103cd75c8460eff707219708c8f7f75",
+      "candidate_sha256": "031ea9e4abb80f639f7e3dc19726329ea103cd75c8460eff707219708c8f7f75",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-11.json",
+      "source_sha256": "b04c1d5a3a8cf7659d1bcc763692dff79a6ce607c39fda9f7bb85fc2e855f50e",
+      "candidate_sha256": "b04c1d5a3a8cf7659d1bcc763692dff79a6ce607c39fda9f7bb85fc2e855f50e",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-12.json",
+      "source_sha256": "1dab83f42fc1b56c7a632a0cd8d2c2358b38f7e5a08ab57e8a9b053a3c763904",
+      "candidate_sha256": "1dab83f42fc1b56c7a632a0cd8d2c2358b38f7e5a08ab57e8a9b053a3c763904",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-13.json",
+      "source_sha256": "58388e60de8a4c93ccf992fe02bc1852c4571e309995a4959bade49787702a78",
+      "candidate_sha256": "58388e60de8a4c93ccf992fe02bc1852c4571e309995a4959bade49787702a78",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-14.json",
+      "source_sha256": "b4444965d2181ebe2438c321732eb3bf524670e7e5401a7a7a257c7511681510",
+      "candidate_sha256": "b4444965d2181ebe2438c321732eb3bf524670e7e5401a7a7a257c7511681510",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-15.json",
+      "source_sha256": "56d7bb702c2e89496aad50bcfb4b047a2cdd362a9138e3c6612d999b7563063d",
+      "candidate_sha256": "56d7bb702c2e89496aad50bcfb4b047a2cdd362a9138e3c6612d999b7563063d",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-16.json",
+      "source_sha256": "0378be283fe35c2a1aeab9c6dae720e87c3efe0cc7964bf1fadc0dad334cc854",
+      "candidate_sha256": "0378be283fe35c2a1aeab9c6dae720e87c3efe0cc7964bf1fadc0dad334cc854",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-17.json",
+      "source_sha256": "9bae6563557c63206ee87cec1e44f3e0ffb851595df3078035e6738d02e261c0",
+      "candidate_sha256": "9bae6563557c63206ee87cec1e44f3e0ffb851595df3078035e6738d02e261c0",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-18.json",
+      "source_sha256": "6e63ee01909af74a10a20bd8f2a3ef2166a190f0274c92e3834d6daf63837f50",
+      "candidate_sha256": "6e63ee01909af74a10a20bd8f2a3ef2166a190f0274c92e3834d6daf63837f50",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-19.json",
+      "source_sha256": "19772c2da40472dc72042562ada16693255751c9566a18c561451fc16e2bfd2e",
+      "candidate_sha256": "19772c2da40472dc72042562ada16693255751c9566a18c561451fc16e2bfd2e",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-20.json",
+      "source_sha256": "e0176123c5b2098a50be172b5ddfa630348bfbfb450e14385cf02d246ee90c6c",
+      "candidate_sha256": "e0176123c5b2098a50be172b5ddfa630348bfbfb450e14385cf02d246ee90c6c",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-21.json",
+      "source_sha256": "824b664f907fb1289d50071688ec7537d456a6390d7c1d5440a1654dad8d9262",
+      "candidate_sha256": "824b664f907fb1289d50071688ec7537d456a6390d7c1d5440a1654dad8d9262",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-22.json",
+      "source_sha256": "b0fc46ba02024f5beac6664060e5f719ad9e172d9da366ec6becbfab693109f1",
+      "candidate_sha256": "b0fc46ba02024f5beac6664060e5f719ad9e172d9da366ec6becbfab693109f1",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-23.json",
+      "source_sha256": "8f64571072d40f017c42f26fb75c7cbc6428373112ce4d5e7ed0287a450ce42e",
+      "candidate_sha256": "8f64571072d40f017c42f26fb75c7cbc6428373112ce4d5e7ed0287a450ce42e",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-24.json",
+      "source_sha256": "ced8363ff9f5b55a5e940aa068c5b3e218959dc3a7df7ace198a3d5b117cd377",
+      "candidate_sha256": "ced8363ff9f5b55a5e940aa068c5b3e218959dc3a7df7ace198a3d5b117cd377",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-25.json",
+      "source_sha256": "39a0af087de57d1c6197be1a891b30a1e288c7588ea08c153a9b777e51034be6",
+      "candidate_sha256": "39a0af087de57d1c6197be1a891b30a1e288c7588ea08c153a9b777e51034be6",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-26.json",
+      "source_sha256": "7a13b07d363a0823274c8ddcfd052f30af8f4fc95dd707285bccfb784db6f5f2",
+      "candidate_sha256": "7a13b07d363a0823274c8ddcfd052f30af8f4fc95dd707285bccfb784db6f5f2",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-27.json",
+      "source_sha256": "7975b99a8593b2e56ed1d1288121dba22342c22dca350b38396ec55408c77a59",
+      "candidate_sha256": "7975b99a8593b2e56ed1d1288121dba22342c22dca350b38396ec55408c77a59",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-28.json",
+      "source_sha256": "273f9e04a18057a1728dfb84b53a68a279e4f36ff036b5ebf338ca7380885010",
+      "candidate_sha256": "273f9e04a18057a1728dfb84b53a68a279e4f36ff036b5ebf338ca7380885010",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-29.json",
+      "source_sha256": "ca7f856b47c7bd7f80dc66a771b19877159e6b56b9fd17f8281705cb7b48d06e",
+      "candidate_sha256": "ca7f856b47c7bd7f80dc66a771b19877159e6b56b9fd17f8281705cb7b48d06e",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "edits/WI3-30.json",
+      "source_sha256": "523156f62f38f3620709deecc9223b70adf3e8dc8cb6d3efc56744f901b91cee",
+      "candidate_sha256": "523156f62f38f3620709deecc9223b70adf3e8dc8cb6d3efc56744f901b91cee",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "esgr-awards-browser.txt",
+      "source_path": "/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-3/esgr-awards-browser.txt",
+      "source_sha256": "8a5defe2c200876339aa4f675e08a905a44ec0aa68e64e3cde6348defe11e329",
+      "copy": "not duplicated; raw capture retained at source_path"
+    },
+    {
+      "path": "esgr-patriot-browser.txt",
+      "source_path": "/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-3/esgr-patriot-browser.txt",
+      "source_sha256": "a55216131014647015575d33fd6960661d5120fabbf771fa8021a82d0b9d9741",
+      "copy": "not duplicated; raw capture retained at source_path"
+    },
+    {
+      "path": "government-source-review.md",
+      "source_sha256": "df47a99c8198944098313e3f078738da740e8f3b3ae784276c709918543a1e10",
+      "candidate_sha256": "df47a99c8198944098313e3f078738da740e8f3b3ae784276c709918543a1e10",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "independent-government-review.md",
+      "source_sha256": "4869d8446fe26eee0b550bcb676ca51c0052616bb929b4a691681361613e41e2",
+      "candidate_sha256": "41bed1b1af51710f376ed61b1d813fe244ba8f5f3f2eecf37025446895aacceb",
+      "copy": "punctuation-normalized text"
+    },
+    {
+      "path": "irs-cvi-browser.txt",
+      "source_path": "/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-3/irs-cvi-browser.txt",
+      "source_sha256": "a4a5b09102acce25f596a248991429b55a76869fdfbdbc4f0bc268daebe3329e",
+      "copy": "not duplicated; raw capture retained at source_path"
+    },
+    {
+      "path": "irs-dryhootch-browser.txt",
+      "source_path": "/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-3/irs-dryhootch-browser.txt",
+      "source_sha256": "3638e09262caed7ed1f14aa8b4b9f71bb824ae986e08e11ccc878a758f4eb01b",
+      "copy": "not duplicated; raw capture retained at source_path"
+    },
+    {
+      "path": "irs-vetsnet-browser.txt",
+      "source_path": "/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-3/irs-vetsnet-browser.txt",
+      "source_sha256": "d51d474f243526a446b6a4a4ce7cfe94194a671f0798d044fff7a5a5336fe88a",
+      "copy": "not duplicated; raw capture retained at source_path"
+    },
+    {
+      "path": "irs-vow-browser.txt",
+      "source_path": "/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-3/irs-vow-browser.txt",
+      "source_sha256": "213d8a1aa2c43bd5e53824c0360a46ad32b648e16f1793d3a224a64dd5a8eb7b",
+      "copy": "not duplicated; raw capture retained at source_path"
+    },
+    {
+      "path": "jcw-vets-ready-browser.txt",
+      "source_path": "/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-3/jcw-vets-ready-browser.txt",
+      "source_sha256": "d757b6a9027c0a72079e29616463a8e9c0676bfddaa162a82b4bbc8d6c509218",
+      "copy": "not duplicated; raw capture retained at source_path"
+    },
+    {
+      "path": "mobile-housing-dark-320.png",
+      "source_sha256": "d249e3e28408b616320e2bb7aa9111d26656072ec6ce0a95e4b1925d425b08f1",
+      "candidate_sha256": "d249e3e28408b616320e2bb7aa9111d26656072ec6ce0a95e4b1925d425b08f1",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "mobile-navigation-light.png",
+      "source_sha256": "765241478968ffcc335d24c361f5db2a5f39225950d5f1ef2121f37000c369d0",
+      "candidate_sha256": "765241478968ffcc335d24c361f5db2a5f39225950d5f1ef2121f37000c369d0",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "mobile-work-light.png",
+      "source_sha256": "b690e9922d561b9c88d5038e4b8f4c73dca38f33ecd608fb971c99ff4a132cc3",
+      "candidate_sha256": "b690e9922d561b9c88d5038e4b8f4c73dca38f33ecd608fb971c99ff4a132cc3",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "nonprofit-held-candidates.json",
+      "source_sha256": "c26d57ac82279477a1ec6cce05c5fbddd137837f967c0f2fd8e5551a4d493d1c",
+      "candidate_sha256": "60f7258a3e445ad39dd946784bd42f131fae20a29b98a7c6ba2f490cee8f2c53",
+      "copy": "ASCII JSON serialization; values preserved"
+    },
+    {
+      "path": "nonprofit-implementation-review.md",
+      "source_sha256": "ed48b8c6e10cbba3e1d9621b546cdd1c30103507d881a5dd276a2827209bdd06",
+      "candidate_sha256": "ed48b8c6e10cbba3e1d9621b546cdd1c30103507d881a5dd276a2827209bdd06",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "nonprofit-independent-browser.js",
+      "source_sha256": "7bab654ab81bcf4324079d99c33d8c02b5bc4139c81382b6f23dd05706d37f0a",
+      "candidate_sha256": "7bab654ab81bcf4324079d99c33d8c02b5bc4139c81382b6f23dd05706d37f0a",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "nonprofit-independent-browser.json",
+      "source_sha256": "d9d16619cdcd7a688d24126433a70463b72fa4ffec21865149e268a3b7706a92",
+      "candidate_sha256": "11f180b8407c83eec6e977a277d7dd7c983b5ad50c6fdbc71ff53de0bff8e829",
+      "copy": "ASCII JSON serialization; values preserved"
+    },
+    {
+      "path": "nonprofit-runtime-copy.json",
+      "source_sha256": "3e167feabed3b03643078704393a48a6ceb3e638f3720b06c68946019b0a6f23",
+      "candidate_sha256": "e746d0867d12b73fa9b93ffec57d4103c0cb20c57ed8ff2409a74f045a377ca4",
+      "copy": "ASCII JSON serialization; values preserved"
+    },
+    {
+      "path": "nonprofit-source-contract.json",
+      "source_sha256": "85e526991e92969883d62c3f5dbfd44be47dcf128c1df69e02ec8884f1a16a1f",
+      "candidate_sha256": "85e526991e92969883d62c3f5dbfd44be47dcf128c1df69e02ec8884f1a16a1f",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "nonprofit-source-review.md",
+      "source_sha256": "735338f291e81d6df8db96d4f74207bb49046ecdf12dbed891c8c6f0372815ce",
+      "candidate_sha256": "ac373efc5b1af49d377fb38136f0cc5871c7b8d9e7eff9d052a74cc03e25e984",
+      "copy": "punctuation-normalized text"
+    },
+    {
+      "path": "nonprofit-verification-log-append.md",
+      "source_sha256": "979649de8328deaf3161453103960ade645ad5efcbd09112d6e6f14a6c2a777f",
+      "candidate_sha256": "0066d1bed222d05700162d3f89093e18d10c836c8f1e3268029cb309cd1885bc",
+      "copy": "punctuation-normalized text"
+    },
+    {
+      "path": "root-research-disposition.md",
+      "source_sha256": "1331602b2b4ab62b0beb2b6b60ad7623f9556c0ee90d0d7e3903f82106b3c9fd",
+      "candidate_sha256": "1331602b2b4ab62b0beb2b6b60ad7623f9556c0ee90d0d7e3903f82106b3c9fd",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "root-visual-review.md",
+      "source_sha256": "bf769c84af03d9309c6cd7dc96ddf8d4e46fb4e9b602ae274e3664fb4bc90673",
+      "candidate_sha256": "bf769c84af03d9309c6cd7dc96ddf8d4e46fb4e9b602ae274e3664fb4bc90673",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "runtime-copy.json",
+      "source_sha256": "aa0d7b34f46b362aee1d7007cc98f98e42c16a785156090690dcf19789fa508c",
+      "candidate_sha256": "aa0d7b34f46b362aee1d7007cc98f98e42c16a785156090690dcf19789fa508c",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "ssvf-provider-route-browser.txt",
+      "source_path": "/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-3/ssvf-provider-route-browser.txt",
+      "source_sha256": "88f376905658643c7287303c91344f1dd3674122378fb3f469910be05ea40cc5",
+      "copy": "not duplicated; raw capture retained at source_path"
+    },
+    {
+      "path": "va-representative-browser.txt",
+      "source_path": "/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-3/va-representative-browser.txt",
+      "source_sha256": "7033dea2a745dc8eaa3d6c8ea2e70daf3036cbf02b03461fba4145a6dbcd1981",
+      "copy": "not duplicated; raw capture retained at source_path"
+    },
+    {
+      "path": "verification-log-append.md",
+      "source_sha256": "d3f8d405cab4b0c015d08cc872d43bb128cd2051e94d90ce4ea4627ee7fccfab",
+      "candidate_sha256": "d3f8d405cab4b0c015d08cc872d43bb128cd2051e94d90ce4ea4627ee7fccfab",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "wisconsin-employers-final.png",
+      "source_sha256": "cf11ef0f712653c6f64b091d040003a23d4604bd48393903861748383764058c",
+      "candidate_sha256": "cf11ef0f712653c6f64b091d040003a23d4604bd48393903861748383764058c",
+      "copy": "byte-exact"
+    }
+  ]
+}

@@ -1,0 +1,253 @@
+{
+  "checked_utc": "2026-10-16T16:09:23.320290+00:00",
+  "mode": "EDIT",
+  "checkout": "/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops",
+  "branch": "codex/wisconsin-pathway",
+  "head": "ffede2397c22af055c97c74a8afe631d22edbc7b",
+  "status": "M index.html\n M intel/verification-log.md\n M pwa-sw.js\n?? intel/wisconsin-pathway-20261016/\n?? scripts/wisconsin-help-browser-regression.js\n?? scripts/wisconsin-pathway-browser-regression.js\n?? scripts/wisconsin-welcome-browser-regression.js",
+  "staged": "",
+  "artifacts": {
+    "index.html": "cd93e02c3de0b32be4fbed8befc8f8b5005482c6952be92bb4136699546077c1",
+    "pwa-sw.js": "5672aedc5556ebaa8c9236f48e5f862f50fe39fc074bb8563aba32cc41bf6799",
+    "intel/verification-log.md": "dbe89ab015b355922a5de657dae6a37e8c642d4ddbe9c09397ea56610b140359",
+    "scripts/wisconsin-pathway-browser-regression.js": "d02938cf0b6ad2146d9adab4339299a51d154fa30e0dd913eb497eadb352d337",
+    "scripts/wisconsin-welcome-browser-regression.js": "23568872b0e16add8023e38b8bdb0308b601ee1db48ad59c439044b33148881a",
+    "scripts/wisconsin-help-browser-regression.js": "44bc51d158ba0520ac69e06a75d5d5e6fe3270a30fbb328efc567b16b7e2957a"
+  },
+  "remote_refs": [
+    {
+      "ref": "refs/heads/codex/about-safari-tab-cycle",
+      "sha": "117dd581137975f3b7d14359c0785f43a1579556",
+      "merge_base": "117dd581137975f3b7d14359c0785f43a1579556",
+      "unique_HEAD_remote": "123\t0"
+    },
+    {
+      "ref": "refs/heads/codex/alert-verification-followup",
+      "sha": "c395c454d254de2b5021fab129996b6ff38e0f55",
+      "merge_base": "d82516389ed5906febad467cfe57887acda97053",
+      "unique_HEAD_remote": "205\t3"
+    },
+    {
+      "ref": "refs/heads/codex/app-release-cache219",
+      "sha": "3960b507147e27c2da810bd1307f26123c5b52dd",
+      "merge_base": "3960b507147e27c2da810bd1307f26123c5b52dd",
+      "unique_HEAD_remote": "40\t0"
+    },
+    {
+      "ref": "refs/heads/codex/app-release-cache232-public",
+      "sha": "f93d526b053938d40a3cef09be5afb56ce6e7e9a",
+      "merge_base": "f93d526b053938d40a3cef09be5afb56ce6e7e9a",
+      "unique_HEAD_remote": "38\t0"
+    },
+    {
+      "ref": "refs/heads/codex/app-release-cache237-public",
+      "sha": "5f96b7ce84fc891b0d6e9dee97860b4c4d8b58bf",
+      "merge_base": "5f96b7ce84fc891b0d6e9dee97860b4c4d8b58bf",
+      "unique_HEAD_remote": "36\t0"
+    },
+    {
+      "ref": "refs/heads/codex/app-release-cache240-public",
+      "sha": "9be4c38888180dc737a9fce8503fbc7ed0c19a66",
+      "merge_base": "9be4c38888180dc737a9fce8503fbc7ed0c19a66",
+      "unique_HEAD_remote": "34\t0"
+    },
+    {
+      "ref": "refs/heads/codex/app-release-cache243-public",
+      "sha": "dc66432cdb823dff3d0eff9dfcf7f060f3e3dea2",
+      "merge_base": "dc66432cdb823dff3d0eff9dfcf7f060f3e3dea2",
+      "unique_HEAD_remote": "32\t0"
+    },
+    {
+      "ref": "refs/heads/codex/app-release-cache245-public",
+      "sha": "50e4ba301907a4bc86b3717043ed44d6274468e9",
+      "merge_base": "50e4ba301907a4bc86b3717043ed44d6274468e9",
+      "unique_HEAD_remote": "30\t0"
+    },
+    {
+      "ref": "refs/heads/codex/benefits-review-20260915",
+      "sha": "5d73bf6ce3c6f95c83f80cc7bfce7644095a28b7",
+      "merge_base": "5d73bf6ce3c6f95c83f80cc7bfce7644095a28b7",
+      "unique_HEAD_remote": "103\t0"
+    },
+    {
+      "ref": "refs/heads/codex/blender-interface",
+      "sha": "4dce69c8f16e1880ade38891680a48d08506b5c7",
+      "merge_base": "4dce69c8f16e1880ade38891680a48d08506b5c7",
+      "unique_HEAD_remote": "105\t0"
+    },
+    {
+      "ref": "refs/heads/codex/consistent-theme-20260920",
+      "sha": "d40734bf5462bca904bfb278d70bcd8e000399ac",
+      "merge_base": "d40734bf5462bca904bfb278d70bcd8e000399ac",
+      "unique_HEAD_remote": "79\t0"
+    },
+    {
+      "ref": "refs/heads/codex/dd214-career-release",
+      "sha": "deb1c8e3b9a49272bfcdc138acf4835d72e55aa2",
+      "merge_base": "deb1c8e3b9a49272bfcdc138acf4835d72e55aa2",
+      "unique_HEAD_remote": "70\t0"
+    },
+    {
+      "ref": "refs/heads/codex/document-context-return",
+      "sha": "1149ede281423de94d4ef1f93cefa35a18f12ca7",
+      "merge_base": "7fbc9bb30ec10c7e9fd0d1318ffc4cfaefcf98f3",
+      "unique_HEAD_remote": "1\t1"
+    },
+    {
+      "ref": "refs/heads/codex/due-followup-preview-20260920",
+      "sha": "e9f481d935f7504157fea0092ee7fcc91468c80a",
+      "merge_base": "e9f481d935f7504157fea0092ee7fcc91468c80a",
+      "unique_HEAD_remote": "81\t0"
+    },
+    {
+      "ref": "refs/heads/codex/federal-resume-readiness",
+      "sha": "92d6df3cc9fd06a553b5a88c14cf5f8869dc7354",
+      "merge_base": "92d6df3cc9fd06a553b5a88c14cf5f8869dc7354",
+      "unique_HEAD_remote": "129\t0"
+    },
+    {
+      "ref": "refs/heads/codex/j2-parser-release-20260927",
+      "sha": "946a63d0aba0ee8868ce22712066442e077ed6b9",
+      "merge_base": "946a63d0aba0ee8868ce22712066442e077ed6b9",
+      "unique_HEAD_remote": "75\t0"
+    },
+    {
+      "ref": "refs/heads/codex/job-application-review",
+      "sha": "017b87cc608ee7932ba8ee09ac976a661b7e0dc6",
+      "merge_base": "017b87cc608ee7932ba8ee09ac976a661b7e0dc6",
+      "unique_HEAD_remote": "13\t0"
+    },
+    {
+      "ref": "refs/heads/codex/job-relevance",
+      "sha": "be152c030ebe2bf5dbeeb67c8ad740bf1650b02b",
+      "merge_base": "be152c030ebe2bf5dbeeb67c8ad740bf1650b02b",
+      "unique_HEAD_remote": "18\t0"
+    },
+    {
+      "ref": "refs/heads/codex/job-search-flow",
+      "sha": "a1a48f578d289424deb9e71c99a31225c48df0a9",
+      "merge_base": "a1a48f578d289424deb9e71c99a31225c48df0a9",
+      "unique_HEAD_remote": "22\t0"
+    },
+    {
+      "ref": "refs/heads/codex/job-to-comparison",
+      "sha": "ed22ffb884eb41a469313ee76d97a8158072583f",
+      "merge_base": "ed22ffb884eb41a469313ee76d97a8158072583f",
+      "unique_HEAD_remote": "20\t0"
+    },
+    {
+      "ref": "refs/heads/codex/journey-continuity",
+      "sha": "8d74f9f46bd9334b20fceeb40762a601ddfa1b3f",
+      "merge_base": "8d74f9f46bd9334b20fceeb40762a601ddfa1b3f",
+      "unique_HEAD_remote": "7\t0"
+    },
+    {
+      "ref": "refs/heads/codex/member-planning-loop",
+      "sha": "ab30135c2155fce7dcb087c89eb839d1b3d1d37a",
+      "merge_base": "ab30135c2155fce7dcb087c89eb839d1b3d1d37a",
+      "unique_HEAD_remote": "42\t0"
+    },
+    {
+      "ref": "refs/heads/codex/member-return-loop",
+      "sha": "721e96f4df67ad25f1ae556d3f5ebdf98addb282",
+      "merge_base": "721e96f4df67ad25f1ae556d3f5ebdf98addb282",
+      "unique_HEAD_remote": "115\t0"
+    },
+    {
+      "ref": "refs/heads/codex/my-jobs-shortlist",
+      "sha": "0cbb657400b5453cf317e9038956d52c844be60e",
+      "merge_base": "0cbb657400b5453cf317e9038956d52c844be60e",
+      "unique_HEAD_remote": "16\t0"
+    },
+    {
+      "ref": "refs/heads/codex/navigation-refresh-20260920",
+      "sha": "22e2d3c2c6550da234225d9aa72d85d3ec36508f",
+      "merge_base": "22e2d3c2c6550da234225d9aa72d85d3ec36508f",
+      "unique_HEAD_remote": "83\t0"
+    },
+    {
+      "ref": "refs/heads/codex/openai-weekend-integration",
+      "sha": "72271b6dcb59c2a96e36d81ce36bb80257a4f419",
+      "merge_base": "72271b6dcb59c2a96e36d81ce36bb80257a4f419",
+      "unique_HEAD_remote": "142\t0"
+    },
+    {
+      "ref": "refs/heads/codex/pao-useful-packets",
+      "sha": "a360dce09536e2f29742bafb771b1635752eb323",
+      "merge_base": "959c99e480eb3c5931069eabb5c7110f343df1b0",
+      "unique_HEAD_remote": "6\t2"
+    },
+    {
+      "ref": "refs/heads/codex/privacy-footer-clearance",
+      "sha": "2808d8fc9de2320e4ea62f4a947b6fb13f6749d4",
+      "merge_base": "2808d8fc9de2320e4ea62f4a947b6fb13f6749d4",
+      "unique_HEAD_remote": "125\t0"
+    },
+    {
+      "ref": "refs/heads/codex/release-cache257",
+      "sha": "e9e268a3fb1bc7b4185610a043a5d85f476603a4",
+      "merge_base": "e9e268a3fb1bc7b4185610a043a5d85f476603a4",
+      "unique_HEAD_remote": "28\t0"
+    },
+    {
+      "ref": "refs/heads/codex/release-cache266",
+      "sha": "309dd52f305fc7fe82c5978df7053a66a955235b",
+      "merge_base": "309dd52f305fc7fe82c5978df7053a66a955235b",
+      "unique_HEAD_remote": "26\t0"
+    },
+    {
+      "ref": "refs/heads/codex/release-cache272",
+      "sha": "689ffa039414c3d566d530d0878f2b701c2c9d35",
+      "merge_base": "689ffa039414c3d566d530d0878f2b701c2c9d35",
+      "unique_HEAD_remote": "24\t0"
+    },
+    {
+      "ref": "refs/heads/codex/restore-google-analytics",
+      "sha": "9d16512ba7ba5a1c87a7167b8ddba2bbcda2e524",
+      "merge_base": "9d16512ba7ba5a1c87a7167b8ddba2bbcda2e524",
+      "unique_HEAD_remote": "111\t0"
+    },
+    {
+      "ref": "refs/heads/codex/resume-error-accessibility",
+      "sha": "01ecad8ad019f226c55be81b6ae15d5361d08908",
+      "merge_base": "01ecad8ad019f226c55be81b6ae15d5361d08908",
+      "unique_HEAD_remote": "127\t0"
+    },
+    {
+      "ref": "refs/heads/codex/support-outcome-follow-through",
+      "sha": "4080b37ee51fc24c1e9e1192f401cadb9030f11f",
+      "merge_base": "2fbd8b4e1a87ac4b20b104290604e78c33d708b1",
+      "unique_HEAD_remote": "2\t7"
+    },
+    {
+      "ref": "refs/heads/codex/tool-navigation-20260920",
+      "sha": "dcfd344050355c92126520c5cf9a7c114e7833fc",
+      "merge_base": "dcfd344050355c92126520c5cf9a7c114e7833fc",
+      "unique_HEAD_remote": "77\t0"
+    },
+    {
+      "ref": "refs/heads/codex/veteran-records-order",
+      "sha": "0a19f1bc571247cb0d9787301519fd40fee7ecd5",
+      "merge_base": "0a19f1bc571247cb0d9787301519fd40fee7ecd5",
+      "unique_HEAD_remote": "113\t0"
+    },
+    {
+      "ref": "refs/heads/codex/wisconsin-plan-follow-through",
+      "sha": "78b4931aa5f11cedad62ebe05b836112267c7d77",
+      "merge_base": "2e0dfdf34ce1dcf004554916aa41e08c43007817",
+      "unique_HEAD_remote": "4\t4"
+    },
+    {
+      "ref": "refs/heads/main",
+      "sha": "ffede2397c22af055c97c74a8afe631d22edbc7b",
+      "merge_base": "ffede2397c22af055c97c74a8afe631d22edbc7b",
+      "unique_HEAD_remote": "0\t0"
+    }
+  ],
+  "served_worker": {
+    "url": "https://transitionops.org/pwa-sw.js",
+    "sha256": "86800106fac991d24a953071d38b5cfcfac9bea83f21495e88ea706d695cad0d",
+    "cache": "transition-ops-v289"
+  },
+  "preservation": "All existing iteration1/2/3 uncommitted changes and three test scripts preserved. Remote tracking refreshed with git fetch origin; no reset, integration, push or app edit."
+}

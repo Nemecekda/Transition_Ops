@@ -1,0 +1,7 @@
+{
+  "old": "      var wiSupportScore = score([TOPS_WISCONSIN_WORK_SUPPORT.title",
+  "new": "      var stateHelpScore = score([\"State benefits and local help\", \"Wisconsin local office moving returning Guard Reserve school college education health housing family taxes work training licenses\"]);\n      if (stateHelpScore > 0) hits.push({ s: stateHelpScore + 5, tag: \"RESOURCE\", tagColor: C.textPrimary, title: \"State benefits and local help\", snip: \"Choose national resources or Wisconsin guidance. Find one useful next step.\", act: \"state-help\", context: /\\bwisconsin\\b/i.test(searchQ) ? { area: \"wi\", situation: topsStateHelpDefault(userStatus).situation, need: \"start\" } : null });\n      var wiSupportScore = score([TOPS_WISCONSIN_WORK_SUPPORT.title",
+  "expected": 1,
+  "new_after": 1,
+  "old_after": 1
+}

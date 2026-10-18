@@ -1,0 +1,6 @@
+{
+  "edit": 30,
+  "file": "/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/wisconsin-help-browser-regression.js",
+  "sha256": "44bc51d158ba0520ac69e06a75d5d5e6fe3270a30fbb328efc567b16b7e2957a",
+  "reason": "Test harness correction: read rendered card via member navigation, not closure-scoped constant."
+}

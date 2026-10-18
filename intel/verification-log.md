@@ -1875,3 +1875,1047 @@ Added participant-facing employment resource and career timeline task. Nationwid
 Sources reviewed: https://www.govinfo.gov/content/pkg/CFR-2025-title20-vol4/pdf/CFR-2025-title20-vol4-sec680-900.pdf (work tools allowable); https://www.dol.gov/agencies/eta/workforce-investment/adult (national AJC network); https://dwd.wisconsin.gov/wioa/policy/08/08.6.htm (Wisconsin local policy and prior approval); https://dwd.wisconsin.gov/wioa/policy/08/08.2.htm (eligibility). Local client discussion is implementation context, not proof of universal funding.
 
 Release reconciliation note, October 13, 2026: retain the nationwide resource and timeline task from main `2e0dfdf`; display its funding as conditional and exclude it from the FREE cost filter. The conditional policy wording, local approval and existing population tags are unchanged. This corrects the directory label, not an eligibility or funding decision.
+
+# Wisconsin pathway verification-log append
+
+Prepared 2026-10-16 for S3 to append to `intel/verification-log.md` before inserting the corresponding app copy. Keep IDs intact. Sources establish bounded referrals, not comprehensive coverage or individual entitlement. Full inventory and maintained gaps: `intel/wisconsin-pathway-20261016/source-coverage.md`. No amount or deadline is added.
+
+
+## WI-20261016-01 — Local benefits adviser
+
+CONFIRMED: County and tribal offices provide a route to benefits assistance.
+
+Primary source(s): https://dva.wi.gov/resources/find-my-cvso-tvso/
+Access date: 2026-10-16. Highest ladder tier used: 1 (direct primary page).
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY, ALREADY SEPARATED; the source names service members, veterans and families. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Use WDVA's Find My CVSO/TVSO directory to contact the county or tribal office for your Wisconsin benefits questions."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: NONE.
+A4 cost: NOTHING.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-02 — MyWisVets
+
+CONFIRMED: WDVA's public portal describes state-benefit applications and agency review; an account is not an award.
+
+Primary source(s): https://apps.dva.wisconsin.gov/mywisvets | https://dva.wi.gov/get-started-with-wdva/
+Access date: 2026-10-16. Highest ladder tier used: 1 (direct primary page).
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four for information and appropriate referral; the portal separates veteran applications and family information. Current service or a planned move alone does not establish veteran-benefit eligibility. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Open MyWisVets to see the state-benefit process and WDVA review requirements, or use a county/tribal office for help."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: NONE.
+A4 cost: NOTHING.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-03 — Wisconsin GI Bill
+
+CONFIRMED: State and federal GI Bills differ; WDVA certification and school determination are distinct. No award, amount or residency finding is made for a visitor.
+
+Primary source(s): https://dva.wi.gov/benefits/education/wi-gi-bill/
+Access date: 2026-10-16. Highest ladder tier used: 1 (direct primary page).
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four as prospective applicants seeking the appropriate veteran or dependent determination; no automatic eligibility from population membership. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Follow WDVA's Wisconsin GI Bill application guidance and contact your school's Veteran Certifying Official about the school determination and benefit use."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: FIRED: Wisconsin GI Bill / federal GI Bill / Guard tuition confusion; validation owns sweep.
+A4 cost: MONEY.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-04 — Wisconsin Guard tuition
+
+CONFIRMED: DMA has a separate state tuition program for Wisconsin National Guard members at qualifying schools. Detailed caps, term windows and coordination rules are outside this record.
+
+Primary source(s): https://dma.wi.gov/wisconsin-national-guard-tuition-grant/ | https://dma.wi.gov/wisconsin-national-guard-tuition-grant-reference-manual/
+Access date: 2026-10-16. Highest ladder tier used: 1 (direct primary page); reference-manual corroboration at tier 2 (root browser), retained wing-manual-browser-20261016.txt.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: GUARD/RESERVE, specifically Wisconsin National Guard applicants. This does not establish entitlement for members solely of another Reserve component, nonmember veterans or family members. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Open DMA's Wisconsin National Guard Tuition Grant page and use its administrator contact to check application and school requirements."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: FIRED: Guard tuition / Wisconsin GI Bill confusion; validation owns sweep.
+A4 cost: NOTHING.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-05 — Work and training support
+
+CONFIRMED: DWD provides Job Center referral and job-search routes; locally administered WIOA support is conditional. Existing work-cost guide is reused.
+
+Primary source(s): https://dwd.wisconsin.gov/veterans/employment/ | https://wisconsinjobcenter.org/directory/ | https://dwd.wisconsin.gov/wioa/policy/08/08.6.htm
+Access date: 2026-10-16. Highest ladder tier used: 1 (direct primary page).
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four can inquire about work/training services. Program-funded support and any priority rules remain separately assessed. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Contact a Wisconsin Job Center about job-search help and eligibility and approval for training or work-cost support before spending."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: NONE.
+A4 cost: MONEY.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-06 — Professional licensing
+
+CONFIRMED: DSPS identifies military-related training equivalency, fee assistance and reciprocity pathways; profession-specific requirements still apply.
+
+Primary source(s): https://dsps.wi.gov/credentialing/military-benefits-related-to-credentialing/
+Access date: 2026-10-16. Highest ladder tier used: 1 (direct primary page).
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: SEPARATING (active component), GUARD/RESERVE, ALREADY SEPARATED, SPOUSE/FAMILY (eligible spouse pathways only). This does not establish a dependent child's credential entitlement or a blanket spouse fee waiver. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Open DSPS military credentialing guidance and check your profession's requirements for training credit, reciprocity and fee assistance."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: FIRED: credential fee waiver versus training equivalency/reciprocity; validation owns sweep.
+A4 cost: MONEY.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-07 — Housing instability
+
+CONFIRMED: VHRP gives referral/application contacts for veterans homeless or at risk. Spouses/children cannot reside at VHRP sites; staff can help find family alternatives.
+
+Primary source(s): https://dva.wi.gov/services/housing-and-financial-services/veterans-housing-and-recovery/
+Access date: 2026-10-16. Highest ladder tier used: 1 (direct primary page).
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four may seek the appropriate referral; admission is a separate veteran assessment. This does not permit spouses or children to reside at VHRP sites. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "If housing is unstable, contact the VHRP office on WDVA's page about referrals, applications and family housing alternatives when applicable."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: NONE.
+A4 cost: NOTHING.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-08 — Health-care/subsistence aid
+
+CONFIRMED: WDVA describes limited conditional aid after other support is exhausted, with applications through a county/tribal office. No general emergency-cash promise.
+
+Primary source(s): https://dva.wi.gov/services/mental-health-and-emergency-services/subsistence-aid-health-care-aid-grants/
+Access date: 2026-10-16. Highest ladder tier used: 1 (direct primary page).
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four can ask about the relevant veteran or military-family rules; grant recipients are defined separately by WDVA. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Contact your county or tribal Veterans Service Office through WDVA's directory to ask whether Health Care Aid or Subsistence Aid requirements fit your situation."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: FIRED: health-care aid versus insurance coverage; validation owns sweep.
+A4 cost: NOTHING.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-09 — VORP recovery support
+
+CONFIRMED: WDVA describes regional community-service connections for people who served, including current Guard/Reserve members; no emergency-response claim.
+
+Primary source(s): https://dva.wi.gov/services/mental-health-and-emergency-services/veterans-outreach-and-recovery/
+Access date: 2026-10-16. Highest ladder tier used: 1 (direct primary page).
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: SEPARATING (active component), GUARD/RESERVE, ALREADY SEPARATED who have served. This does not establish treatment eligibility for family members solely by relation to a service member. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Use WDVA's VORP page to contact your Wisconsin region's coordinator about support and community services."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: NONE.
+A4 cost: NOTHING.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-10 — Moving and taxes
+
+CONFIRMED: DOR's military/veteran hub routes residency, income and credit questions. WDVA separately provides veteran property-tax-credit certification guidance. No individualized tax determination.
+
+Primary source(s): https://www.revenue.wi.gov/Pages/Individuals/military.aspx | https://dva.wi.gov/services/housing-and-financial-services/property-tax-credit/
+Access date: 2026-10-16. Highest ladder tier used: 1 (direct primary page).
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four can have residency, military-income or survivor-tax questions; military affiliation alone establishes no credit. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Open DOR's military/veteran tax hub for residency and tax questions and use WDVA's certification guidance if seeking the veteran property tax credit."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: FIRED: property tax credit versus exemption; validation owns sweep.
+A4 cost: NOTHING.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-11 — Service and family support
+
+CONFIRMED: DMA describes service/member/family referral support across the deployment cycle; individual programs have separate rules.
+
+Primary source(s): https://dma.wi.gov/service-member-support-division/
+Access date: 2026-10-16. Highest ladder tier used: 1 (direct primary page).
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four: source describes service members, veterans and families; referral access is distinct from eligibility for a grant or benefit. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Contact Wisconsin's Service Member Support team through DMA's support page to identify the office for your current service or family question."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: NONE.
+A4 cost: NOTHING.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-12 — Retirement and survivors
+
+CONFIRMED: DMA lists retiree offices for information and referral, not a pension award or an independently validated catalog of every linked legacy resource.
+
+Primary source(s): https://dma.wi.gov/retiree-activities-office/
+Access date: 2026-10-16. Highest ladder tier used: 1 (direct primary page).
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: SEPARATING (active component) approaching retirement, GUARD/RESERVE retirement inquiries, ALREADY SEPARATED retirees, SPOUSE/FAMILY survivors. This is not a retirement-pay entitlement for every separated veteran. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Use DMA's Retiree Activities Office page to contact an office for military-retiree or survivor information and referrals."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: NONE.
+A4 cost: NOTHING.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-HEALTH-DIRECTORY — Wisconsin health coverage directory
+
+CONFIRMED: DHS provides a directory of care and coverage information, including state health-program options. No visitor-specific coverage or enrollment conclusion is made.
+
+Primary source(s): https://www.dhs.wisconsin.gov/health-care-coverage/index.htm
+Access date: 2026-10-16. Highest ladder tier used: 1 (direct primary page).
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four may need care/coverage information; individual Medicaid, BadgerCare, VA or TRICARE requirements are not determined by this directory. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Open Wisconsin DHS's Health Care and Coverage directory to find official information for the health program or care option you need."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: FIRED: state health programs versus VA/TRICARE and health-care aid; validation owns sweep.
+A4 cost: NOTHING.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-NATIONAL — Find another state's veterans office
+
+CONFIRMED: The VA external-resource directory contains state veterans-office entries, including Wisconsin and surrounding states. Do not promise a preselected filter.
+
+Primary source(s): https://discover.va.gov/external-resources/?_per_page=100&_resource_type=state-veterans-affairs-office
+Access date: 2026-10-16. Highest ladder tier used: 2 (root browser), retained national-locator-browser-20261016.txt.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four can locate the state office for their question; each destination establishes its own program rules. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Open VA's external-resource directory and find the veterans office for your state."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: NONE.
+A4 cost: NOTHING.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-USERRA — Civilian employment after service
+
+CONFIRMED: DOL VETS provides official USERRA information and help with service-related civilian-employment problems. No specific deadline, reinstatement result or personal legal determination.
+
+Primary source(s): https://www.dol.gov/agencies/vets/programs/userra
+Access date: 2026-10-16. Highest ladder tier used: 2 (root browser), retained dol-userra-browser-20261016.txt.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: SEPARATING (active component), GUARD/RESERVE and ALREADY SEPARATED with service-related civilian-employment questions. This does not establish a spouse's independent USERRA protection based solely on military marriage. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Open DOL VETS' USERRA page for official guidance and assistance with a service-related civilian-employment question."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: NONE.
+A4 cost: NOTHING.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+
+## WI-20261016-ESGR — Optional deployment resource
+
+CONFIRMED: ESGR page and assistance links are readable, but root accessibility text did not include the checklist body. Referral existence only is confirmed.
+
+Primary source(s): https://esgr.mil/Service-Members-Family/Deployment-Tips-and-Checklist
+Access date: 2026-10-16. Highest ladder tier used: 2 (root browser), retained esgr-browser-20261016.txt.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: GUARD/RESERVE and SEPARATING (active component) with deployment/employer-support questions. This does not establish an individual reemployment entitlement or a family member's independent right. Band: condition-triggered information/application inquiry; no separation-date band or day offset applies. Timing: ACT AVAILABLE NOW.
+A2 act: "Open ESGR's deployment resource page and use its official USERRA or assistance links for employer-support questions."
+A3 surface(s): RESOURCES state/local-help guide; existing national/Guard routes retained. Token: NONE (direct links, not Navigator citations). Sweep trigger: NONE.
+A4 cost: NOTHING.
+EXPIRES: NONE. Source maintenance remains required; no permanent availability assurance.
+
+# Iteration 2 verification append packet
+
+Checked 2026-10-16, America/Chicago. Stage these records in intel/verification-log.md before copying member text. CONFIRMED means the narrow claim only. Employer-directory identity is first-party evidence; cohort membership is Dean-reported, not federal certification. No new rates, caps, benefit deadlines or personal eligibility decisions are added.
+
+## WI2-20261016-SKILLBRIDGE — Before accepting SkillBridge support
+
+Rating: **CONFIRMED**. The official SkillBridge overview confirms continued military compensation and benefits during participation. The official MOU prohibits provider compensation or gifts for services performed during SkillBridge. Its cost provisions and current FAQ distinguish conditional subsistence, lodging and travel assistance; the FAQ directs legal review before accepting an offer. Active-duty Guard/Reserve participation has service-specific rules.
+
+Source(s):
+- [SB-OVERVIEW](https://skillbridge.mil/programoverview)
+- [SB-FAQ](https://skillbridge.mil/faq)
+- [SB-MOU](https://www.skillbridge.mil/docs/DoD_SkillBridge_MOU_Aug_2024_Release.pdf)
+
+Tier 1 primary direct reads on 2026-10-16. FAQ initial HTML shell resolved by root tier 2; retained skillbridge-faq-browser.txt. Overview read at root tier 2 and retained in skillbridge-overview-browser.txt. MOU read directly.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: SEPARATING (active component); GUARD/RESERVE considering authorized active-duty participation. band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset. excluded: This does not establish SkillBridge participation or these military compensation rules for already-separated veterans or spouses/family merely because a company offers a civilian training program. timing: ACT AVAILABLE NOW
+A2 act: "Use the SkillBridge FAQ and ask your installation SkillBridge office and servicing legal office to review proposed pay, gifts or travel/lodging support before accepting; Guard and Reserve members should also confirm participation rules with their Education or Transition Office."
+A3 surface(s): RESOURCES; existing Career income/reminder/resource surfaces only for INCOME and VA-OJT bounded correction. token: NONE; direct official links. sweep trigger: FIRED — SkillBridge vs paid civilian work; state vs federal funding; GI Bill OJT vs VR&E vs employer reimbursement; unsupported fixed income totals and active-duty payment implications. Validation-gate owns the sweep.
+A4 cost: MONEY
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: During SkillBridge, military pay and benefits continue. Provider pay for SkillBridge work is prohibited; an offer to help with travel or lodging has separate conditions.
+Runtime boundary: Do not assume an offer is permitted. Your service rules, approved program and legal review matter; ordinary paid employment is a separate arrangement.
+
+## WI2-20261016-WIOA — Ask about work and training costs
+
+Rating: **CONFIRMED**. DWD allows locally assessed support for participation in career/training services, including tools and transport. VA education/training benefits need not be exhausted before WIOA consideration. Funding coordination and eligibility remain separate decisions; duplicate payments are improper.
+
+Source(s):
+- [WIOA-TRAIN](https://dwd.wisconsin.gov/wioa/policy/08/08.5.htm)
+- [WIOA-SUPPORT](https://dwd.wisconsin.gov/wioa/policy/08/08.6.htm)
+- [WIOA-PAYMENT](https://dwd.wisconsin.gov/wioa/policy/04/04.11.htm)
+- [JOB-CENTER](https://wisconsinjobcenter.org/directory/)
+
+Tier 1 primary direct reads on 2026-10-16.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four may seek an assessment: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY and ALREADY SEPARATED; payment depends on the applicable program rather than military affiliation. band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset. excluded: No categorical award follows from military service, Wisconsin interest, employer participation or referral. timing: ACT AVAILABLE NOW
+A2 act: "Contact a Wisconsin Job Center to review eligibility, proposed work or training costs, other funding and approval before spending, identifying whether you are in SkillBridge, starting paid work or already employed."
+A3 surface(s): RESOURCES; existing Career income/reminder/resource surfaces only for INCOME and VA-OJT bounded correction. token: NONE; direct official links. sweep trigger: FIRED — SkillBridge vs paid civilian work; state vs federal funding; GI Bill OJT vs VR&E vs employer reimbursement; unsupported fixed income totals and active-duty payment implications. Validation-gate owns the sweep.
+A4 cost: MONEY
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: A Wisconsin Job Center can review help with training, tools, transportation or other work costs. Veterans and eligible spouses do not have to use up VA training benefits first.
+Runtime boundary: A SkillBridge placement does not itself establish WIOA eligibility or payment for an expense. Ask which program will pay each cost before spending.
+
+## WI2-20261016-OJT — Paid training after hiring
+
+Rating: **CONFIRMED**. WIOA OJT is occupational training for a paid participant under a local WDB/provider contract with the employer or apprenticeship sponsor. The wage-based training reimbursement goes to the employer, not an automatic member bonus.
+
+Source(s):
+- [WIOA-TRAIN](https://dwd.wisconsin.gov/wioa/policy/08/08.5.htm)
+- [JOB-CENTER](https://wisconsinjobcenter.org/directory/)
+
+Tier 1 primary direct reads on 2026-10-16.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: ALREADY SEPARATED; GUARD/RESERVE in eligible civilian paid work; SPOUSE/FAMILY as independently eligible workers; SEPARATING (active component) for planning a later civilian hire only. band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset. excluded: This does not authorize employer wages for work performed during SkillBridge or make every new hire eligible. timing: ACT AVAILABLE NOW
+A2 act: "Ask a Wisconsin Job Center and the employer whether a WIOA on-the-job training agreement fits the paid job and which training costs it would cover."
+A3 surface(s): RESOURCES; existing Career income/reminder/resource surfaces only for INCOME and VA-OJT bounded correction. token: NONE; direct official links. sweep trigger: FIRED — SkillBridge vs paid civilian work; state vs federal funding; GI Bill OJT vs VR&E vs employer reimbursement; unsupported fixed income totals and active-duty payment implications. Validation-gate owns the sweep.
+A4 cost: MONEY
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: An approved on-the-job training agreement may help an employer train an eligible paid employee.
+Runtime boundary: This is employer training support, not extra SkillBridge pay. The Job Center and employer must check the worker, job and agreement.
+
+## WI2-20261016-IWT — Training for people already employed
+
+Rating: **CONFIRMED**. DWD incumbent worker training is coordinated with employers for established employees and requires employer/worker review. It is distinct from OJT for a new hire and from an unpaid SkillBridge placement.
+
+Source(s):
+- [WIOA-TRAIN](https://dwd.wisconsin.gov/wioa/policy/08/08.5.htm)
+- [JOB-CENTER](https://wisconsinjobcenter.org/directory/)
+
+Tier 1 primary direct reads on 2026-10-16.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four only in the capacity of an independently qualifying existing civilian employee or as planning information; no military-status eligibility inferred. band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset. excluded: A SkillBridge placement alone does not establish the required employer-employee relationship or work history. timing: ACT AVAILABLE NOW
+A2 act: "Ask a Wisconsin Job Center and your employer whether incumbent worker training fits your established employment and skill needs."
+A3 surface(s): RESOURCES; existing Career income/reminder/resource surfaces only for INCOME and VA-OJT bounded correction. token: NONE; direct official links. sweep trigger: FIRED — SkillBridge vs paid civilian work; state vs federal funding; GI Bill OJT vs VR&E vs employer reimbursement; unsupported fixed income totals and active-duty payment implications. Validation-gate owns the sweep.
+A4 cost: MONEY
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: Incumbent worker training may help an employer build the skills of established employees.
+Runtime boundary: Prior employment, the training purpose and local rules matter. This is not a benefit promised to every new hire or SkillBridge participant.
+
+## WI2-20261016-APPRENTICESHIP-WIOA — Coordinate apprenticeship costs
+
+Rating: **CONFIRMED**. DWD permits WIOA OJT agreements for the job-training portion of registered apprenticeship and individual training accounts for related instruction. Combined payment methods must cover separate training components and depend on individual need/local policy.
+
+Source(s):
+- [WIOA-TRAIN](https://dwd.wisconsin.gov/wioa/policy/08/08.5.htm)
+- [JOB-CENTER](https://wisconsinjobcenter.org/directory/)
+
+Tier 1 primary direct reads on 2026-10-16.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four can explore an independently eligible civilian apprenticeship; separating members plan for the appropriate duty-status and employment stage. band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset. excluded: No specific employer, apprenticeship, worker or same-time combination is approved by this referral. timing: ACT AVAILABLE NOW
+A2 act: "Ask a Wisconsin Job Center and the apprenticeship sponsor to identify approved job-training and classroom costs and which program would pay each component."
+A3 surface(s): RESOURCES; existing Career income/reminder/resource surfaces only for INCOME and VA-OJT bounded correction. token: NONE; direct official links. sweep trigger: FIRED — SkillBridge vs paid civilian work; state vs federal funding; GI Bill OJT vs VR&E vs employer reimbursement; unsupported fixed income totals and active-duty payment implications. Validation-gate owns the sweep.
+A4 cost: MONEY
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: A registered apprenticeship can combine paid work and related instruction. A Job Center can review which parts may qualify for workforce funding.
+Runtime boundary: Registered apprenticeship, VA approval and SkillBridge approval are separate checks. One does not establish the others.
+
+## WI2-20261016-VA-OJT — Check GI Bill support for paid training
+
+Rating: **CONFIRMED**. Eligible people in a VA-approved OJT/apprenticeship program may receive VA support while earning employer wages. VA expressly excludes active-duty members and active-duty spouses using transferred benefits from its OJT benefit. Program and individual eligibility must both be checked.
+
+Source(s):
+- [VA-OJT](https://www.va.gov/education/about-gi-bill-benefits/how-to-use-benefits/on-the-job-training-apprenticeships/)
+- [VA-RATES](https://www.va.gov/education/benefit-rates/post-9-11-gi-bill-rates/)
+
+Tier 1 primary direct reads on 2026-10-16.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: ALREADY SEPARATED; eligible GUARD/RESERVE not excluded by active-duty status; eligible SPOUSE/FAMILY under the specified education programs; SEPARATING (active component) only for future planning. band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset. excluded: This does not apply as a current OJT payment to active-duty members or spouses using transferred benefits while the member is active duty. timing: ACT AVAILABLE NOW
+A2 act: "Use VA's on-the-job training guidance and linked GI Bill Comparison Tool to check the employer's program, then confirm your benefit eligibility and application with VA before counting on payments."
+A3 surface(s): RESOURCES; existing Career income/reminder/resource surfaces only for INCOME and VA-OJT bounded correction. token: NONE; direct official links. sweep trigger: FIRED — SkillBridge vs paid civilian work; state vs federal funding; GI Bill OJT vs VR&E vs employer reimbursement; unsupported fixed income totals and active-duty payment implications. Validation-gate owns the sweep.
+A4 cost: MONEY
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: Eligible trainees who are not on active duty may receive GI Bill support while earning wages in a VA-approved apprenticeship or on-the-job training program.
+Runtime boundary: VA must approve the training program and your benefit eligibility. Active-duty members cannot receive this GI Bill OJT benefit; spouses using transferred benefits while the member is active duty are also excluded.
+
+## WI2-20261016-VRE — Ask about support for a service-connected condition
+
+Rating: **CONFIRMED**. VR&E is an employment program with counselor-determined entitlement, including some eligible active-duty members. It differs from the GI Bill. VA tells people eligible for both to choose the benefit; an optional GI Bill-based subsistence rate is an election within VR&E, not two concurrent allowances. Employer incentives require separate VA review.
+
+Source(s):
+- [VA-VRE](https://www.va.gov/careers-employment/vocational-rehabilitation/eligibility/)
+- [VA-VRE-LONG](https://www.va.gov/careers-employment/vocational-rehabilitation/programs/long-term-services/)
+- [VA-VRE-EMPLOYER](https://www.benefits.va.gov/vocrehab/employers.asp)
+
+Tier 1 primary direct reads on 2026-10-16.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: SEPARATING (active component), GUARD/RESERVE and ALREADY SEPARATED who meet the relevant service-connected disability and entitlement rules. band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset. excluded: This does not establish Chapter 31 entitlement for spouses/family through relationship alone, or automatic approval for everyone with a VA rating. timing: ACT AVAILABLE NOW
+A2 act: "Open VA's VR&E eligibility and application guidance and ask a Vocational Rehabilitation Counselor which employment plan and benefit election fit your needs before committing training benefits."
+A3 surface(s): RESOURCES; existing Career income/reminder/resource surfaces only for INCOME and VA-OJT bounded correction. token: NONE; direct official links. sweep trigger: FIRED — SkillBridge vs paid civilian work; state vs federal funding; GI Bill OJT vs VR&E vs employer reimbursement; unsupported fixed income totals and active-duty payment implications. Validation-gate owns the sweep.
+A4 cost: MONEY
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: If a service-connected condition affects work, VR&E may help you prepare for or keep suitable employment.
+Runtime boundary: A VA Vocational Rehabilitation Counselor decides entitlement and the plan. VR&E is separate from the GI Bill; a GI Bill-based VR&E allowance is not a second payment.
+
+## WI2-20261016-INCOME — Plan around confirmed income
+
+Rating: **CONFIRMED**. Current VA housing and training payments depend on personal eligibility, duty status, training/enrollment and payment rules. Work Study needs a separate application and approved work. The app's fixed combined totals do not establish a member's expected income.
+
+Source(s):
+- [VA-RATES](https://www.va.gov/education/benefit-rates/post-9-11-gi-bill-rates/)
+- [VA-WORKSTUDY](https://www.va.gov/education/about-gi-bill-benefits/how-to-use-benefits/work-study/)
+
+Tier 1 primary direct reads on 2026-10-16.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four may plan household income; each actual payment has distinct member, dependent, enrollment and duty-status rules. band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset. excluded: The planning action creates no entitlement or combined monthly amount. timing: ACT AVAILABLE NOW
+A2 act: "Use VA's current education payment guidance and Work Study application guidance to confirm eligibility and payment timing with VA, and ask your school's financial aid office about your approved costs before adding those amounts to a budget."
+A3 surface(s): RESOURCES; existing Career income/reminder/resource surfaces only for INCOME and VA-OJT bounded correction. token: NONE; direct official links. sweep trigger: FIRED — SkillBridge vs paid civilian work; state vs federal funding; GI Bill OJT vs VR&E vs employer reimbursement; unsupported fixed income totals and active-duty payment implications. Validation-gate owns the sweep.
+A4 cost: MONEY
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: Build your budget from confirmed pay and benefit decisions. Training payments and Work Study depend on your eligibility, approval and schedule.
+Runtime boundary: Do not count employer reimbursement as personal income or assume every payment begins together. Confirm VA payments with VA and school costs with your school.
+
+## WI2-20261016-PARKS — Find a place to explore
+
+Rating: **CONFIRMED**. Wisconsin DNR provides a Find a Park directory with activity and accessible-feature filters. Its visitor guide supplies property information, admission/trail-pass requirements and conditions to check.
+
+Source(s):
+- [DNR-FIND](https://dnr.wisconsin.gov/topic/parks/findapark)
+- [DNR-NEW](https://dnr.wisconsin.gov/topic/parks/newtoparks)
+
+Tier 1 primary direct reads on 2026-10-16.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four, as visitors or residents seeking ordinary public recreation information; no military or residency eligibility inferred. band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset. excluded: A directory listing does not guarantee current access, free admission or a military discount. timing: ACT AVAILABLE NOW
+A2 act: "Use Wisconsin DNR's Find a Park directory to choose a place and open its property information for access, conditions and pass requirements before visiting."
+A3 surface(s): RESOURCES; existing Career income/reminder/resource surfaces only for INCOME and VA-OJT bounded correction. token: NONE; direct official links. sweep trigger: FIRED — SkillBridge vs paid civilian work; state vs federal funding; GI Bill OJT vs VR&E vs employer reimbursement; unsupported fixed income totals and active-duty payment implications. Validation-gate owns the sweep.
+A4 cost: NOTHING
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: Find a Wisconsin park, trail or recreation area that fits the activities and accessible features you want.
+Runtime boundary: Check the property's conditions and admission or trail-pass requirements before visiting. No military discount is promised here.
+
+## WI2-20261016-AIRTECH — Air Tech Heating, Inc.
+
+Rating: **CONFIRMED**. The company's own website confirms its identity, career page and the bounded field description. Dean reports the company as part of his Wisconsin employer cohort; this is relationship provenance, not government approval.
+
+Source(s):
+- [AIRTECH](https://airtechhtg.com/careers/)
+
+Tier 1 primary direct reads on 2026-10-16. Root first-party reads and Dean's cohort statement supplied to S2; Air Tech also independently read by S2. Only identity and career subject verified.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four may explore civilian career information; eligibility for employment, training or SkillBridge is separately determined. band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset. excluded: Cohort membership does not establish a current opening, VA training approval, SkillBridge authorization, preferred access or an endorsement. timing: ACT AVAILABLE NOW
+A2 act: "Open Air Tech Heating, Inc.'s official careers page to review its role information and application instructions."
+A3 surface(s): RESOURCES; existing Career income/reminder/resource surfaces only for INCOME and VA-OJT bounded correction. token: NONE; direct official links. sweep trigger: FIRED — SkillBridge vs paid civilian work; state vs federal funding; GI Bill OJT vs VR&E vs employer reimbursement; unsupported fixed income totals and active-duty payment implications. Validation-gate owns the sweep.
+A4 cost: NOTHING
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: HVAC installation and service in the Fond du Lac and Ripon area.
+Runtime boundary: Employer career information. Confirm openings, location, requirements and any SkillBridge arrangement directly; no job, benefit or approved placement is promised.
+
+## WI2-20261016-WMC — Wisconsin Management Company
+
+Rating: **CONFIRMED**. The company's own website confirms its identity, career page and the bounded field description. Dean reports the company as part of his Wisconsin employer cohort; this is relationship provenance, not government approval.
+
+Source(s):
+- [WMC](https://www.wisconsinmanagement.com/careers)
+
+Tier 1 primary direct reads on 2026-10-16. Root first-party reads and Dean's cohort statement supplied to S2; Air Tech also independently read by S2. Only identity and career subject verified.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four may explore civilian career information; eligibility for employment, training or SkillBridge is separately determined. band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset. excluded: Cohort membership does not establish a current opening, VA training approval, SkillBridge authorization, preferred access or an endorsement. timing: ACT AVAILABLE NOW
+A2 act: "Open Wisconsin Management Company's official careers page to review its role information and application instructions."
+A3 surface(s): RESOURCES; existing Career income/reminder/resource surfaces only for INCOME and VA-OJT bounded correction. token: NONE; direct official links. sweep trigger: FIRED — SkillBridge vs paid civilian work; state vs federal funding; GI Bill OJT vs VR&E vs employer reimbursement; unsupported fixed income totals and active-duty payment implications. Validation-gate owns the sweep.
+A4 cost: NOTHING
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: Property management and maintenance.
+Runtime boundary: Employer career information. Confirm openings, location, requirements and any SkillBridge arrangement directly; no job, benefit or approved placement is promised.
+
+## WI2-20261016-KRIETE — Kriete Truck Centers
+
+Rating: **CONFIRMED**. The company's own website confirms its identity, career page and the bounded field description. Dean reports the company as part of his Wisconsin employer cohort; this is relationship provenance, not government approval.
+
+Source(s):
+- [KRIETE](https://krietetrucks.com/careers/)
+- [KRIETE-TECH](https://krietetrucks.com/careers/service-technicians/)
+
+Tier 1 primary direct reads on 2026-10-16. Root first-party reads and Dean's cohort statement supplied to S2; Air Tech also independently read by S2. Only identity and career subject verified.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four may explore civilian career information; eligibility for employment, training or SkillBridge is separately determined. band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset. excluded: Cohort membership does not establish a current opening, VA training approval, SkillBridge authorization, preferred access or an endorsement. timing: ACT AVAILABLE NOW
+A2 act: "Open Kriete Truck Centers's official careers page to review its role information and application instructions."
+A3 surface(s): RESOURCES; existing Career income/reminder/resource surfaces only for INCOME and VA-OJT bounded correction. token: NONE; direct official links. sweep trigger: FIRED — SkillBridge vs paid civilian work; state vs federal funding; GI Bill OJT vs VR&E vs employer reimbursement; unsupported fixed income totals and active-duty payment implications. Validation-gate owns the sweep.
+A4 cost: NOTHING
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: Truck service, technician and body-shop careers.
+Runtime boundary: Employer career information. Confirm openings, location, requirements and any SkillBridge arrangement directly; no job, benefit or approved placement is promised.
+
+## Declined or unresolved material
+
+- DECLINE / LOG ONLY: No new employer reimbursement percentage, allowance amount, tax-free income total or grant deadline is needed to route the member. Numeric details were intentionally not drafted or cross-checked for publication.
+- UNVERIFIED combination: WIOA paying a particular SkillBridge participant's expense, WIOA and VA paying the same employer wage/training cost, a named company's program approval, or a specific person's entitlement. Do not run A1–A4 for these assumed combinations. The separately confirmed referral records provide the useful act.
+- WI education stacking is deferred: the first-iteration state GI Bill and Guard tuition referrals remain valid within their original narrow scope. No new simultaneous-use instruction is established here.
+
+## WI2-20261016-SKILLBRIDGE-FINDER — Find an official SkillBridge opportunity
+
+Rating: **CONFIRMED**, referral only. The official finder provides keyword, state/ZIP and service filters. Its notice identifies the approval records underlying listed opportunities. No named company, vacancy, or member approval was checked.
+
+Source: [SB-FINDER](https://skillbridge.mil/locations). Checked 2026-10-16 via root tier 2, following the visible official FAQ footer link. Full visible record retained as `skillbridge-finder-browser.txt`. This verifies a usable directory destination, not results for Wisconsin or any cohort company.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: SEPARATING (active component); GUARD/RESERVE considering authorized participation. band: Condition-triggered program exploration, no fixed separation offset. excluded: No SkillBridge participation for already-separated veterans or spouses/family is established by this referral. No named company or member approval established. timing: ACT AVAILABLE NOW
+A2 act: "Use the official SkillBridge opportunity finder to check a specific program and position, then confirm participation with your service Education or Transition Office and the provider."
+A3 surface(s): RESOURCES, immediately before local company referrals. token: NONE; direct official link. sweep trigger: FIRED — local company/cohort identity must remain separate from official program and position approval.
+A4 cost: NOTHING
+EXPIRES: NONE; individual listings and service rules require checking when acting.
+
+Runtime summary: Search official SkillBridge opportunities by career, state or ZIP code.
+Runtime boundary: Check the exact program and position with your service and the provider. A company in this local directory is not automatically an approved SkillBridge opportunity.
+
+# Iteration 3 verification append packet
+
+Checked October 16, 2026, America/Chicago. Government referral records only; no copied employer roster, new numeric benefit amount, deadline, personalized eligibility decision, nonprofit endorsement or current-vacancy claim. Existing routes are reused when noted. Import into the verification log before runtime copy.
+
+## WI3-20261016-LOCAL-HELP — Start with local benefits help
+
+Rating: **CONFIRMED**. WDVA directs veterans, service members and families to county/tribal officers for federal, state and local benefit assistance. Its official page links the office locator.
+
+Sources read directly on 2026-10-16 (tier 1):
+- https://dva.wi.gov/resources/find-my-cvso-tvso/
+- https://dva.wi.gov/community-legacy/tribal-veterans/tribal-veterans-service-offices/
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY and ALREADY SEPARATED may seek the described public referral; each underlying service or benefit has separate eligibility. band: Condition-triggered need or inquiry; no fixed separation band or day-offset. excluded: No specific officer accreditation, service capacity or individual benefit award is certified here. timing: ACT AVAILABLE NOW
+A2 act: "Use WDVA's Find My CVSO/TVSO page to contact the appropriate county or tribal veterans office about your benefits questions."
+A3 surface(s): RESOURCES / State benefits and local help; existing claims-help locator for CLAIMS-HELP. Placement: reuse existing WI-20261016-01 route; do not duplicate card. token: NONE; direct links. sweep trigger: FIRED — awards vs ownership certification vs current jobs/SkillBridge; claims accreditation vs organization membership; member vs employer grants. Validation-gate owns execution.
+A4 cost: NOTHING
+EXPIRES: NONE
+
+Runtime summary: A county or tribal veterans office can help you work through benefits questions and find the right local support.
+Runtime boundary: Ask the office which services and benefits fit your service history, family situation and Wisconsin connection. A referral does not establish eligibility.
+
+## WI3-20261016-CLAIMS-HELP — Find accredited VA claims help
+
+Rating: **CONFIRMED**. VA provides representative guidance and an accreditation search. Accredited VSO claims representation is free; accredited attorneys and claims agents may charge permitted fees. Availability and appointment are separate.
+
+Sources read on 2026-10-16 (guidance and OGC tier 1; finder tier 2):
+- https://www.va.gov/get-help-from-accredited-representative/
+- https://www.va.gov/ogc/apps/accreditation/index.asp
+- https://www.benefits.va.gov/vso/
+
+Root tier 2 resolved the finder HTML shell: public search form without login, no individual search or appointment. Receipt: `va-representative-browser.txt`. Primary destination: https://www.va.gov/get-help-from-accredited-representative/find-rep/ . Guidance and OGC remain the sources for fee/accreditation distinctions.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY and ALREADY SEPARATED may seek the described public referral; each underlying service or benefit has separate eligibility. band: Condition-triggered need or inquiry; no fixed separation band or day-offset. excluded: This does not approve an individual claim, guarantee a representative is available, or make every service from a listed organization free. timing: ACT AVAILABLE NOW
+A2 act: "Use VA's accredited-representative guidance and OGC Accreditation Search to check the representative, then contact them about availability and fees before appointing them."
+A3 surface(s): RESOURCES / State benefits and local help; existing claims-help locator for CLAIMS-HELP. Placement: claims/help destination plus bounded existing locator copy correction. token: NONE; direct links. sweep trigger: FIRED — awards vs ownership certification vs current jobs/SkillBridge; claims accreditation vs organization membership; member vs employer grants. Validation-gate owns execution.
+A4 cost: MONEY
+EXPIRES: NONE
+
+Runtime summary: Find a VA-accredited representative for help with a claim or decision review. Accredited VSO representatives provide claims help free of charge; attorneys and claims agents may charge fees.
+Runtime boundary: Check accreditation and availability before appointing someone. Membership in an organization does not by itself establish that a particular person is accredited.
+
+## WI3-20261016-JOB-HELP — Get help finding your next job
+
+Rating: **CONFIRMED**. DWD directs job seekers to local Job Centers for one-on-one support. DVOP individualized services target eligible people with specified employment barriers; LVER contacts serve employer outreach.
+
+Sources read directly on 2026-10-16 (tier 1):
+- https://dwd.wisconsin.gov/veterans/
+- https://dwd.wisconsin.gov/veterans/employment/
+- https://dwd.wisconsin.gov/veterans/vetreps.htm
+- https://wisconsinjobcenter.org/directory/
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY and ALREADY SEPARATED may seek the described public referral; each underlying service or benefit has separate eligibility. band: Condition-triggered need or inquiry; no fixed separation band or day-offset. excluded: Do not promise DVOP eligibility to every veteran or send job seekers to the employer-only LVER route. timing: ACT AVAILABLE NOW
+A2 act: "Use the Wisconsin Job Center directory to contact a nearby center and ask for one-on-one employment support and any veteran services that fit your situation."
+A3 surface(s): RESOURCES / State benefits and local help; existing claims-help locator for CLAIMS-HELP. Placement: reuse existing WI work guide; optional local help choice. token: NONE; direct links. sweep trigger: FIRED — awards vs ownership certification vs current jobs/SkillBridge; claims accreditation vs organization membership; member vs employer grants. Validation-gate owns execution.
+A4 cost: NOTHING
+EXPIRES: NONE
+
+Runtime summary: A Wisconsin Job Center can help you plan a job search and connect with employment or training services.
+Runtime boundary: Ask which services fit your situation. Specialized veteran services have eligibility rules; an appointment or referral does not guarantee a job or funding.
+
+## WI3-20261016-VETS-READY — Find employers recognized for veteran support
+
+Rating: **CONFIRMED**. DWD operates Vets Ready, an employer-recognition initiative. The official page read today lists 2025 winners, corroborated by DWD's 2025 recipient announcement. DWD says JCW lets job seekers search jobs posted by Vets Ready employers. Root tier 2 verified the public Advanced Search filter and tagged job results without signing in. The base link does not select the filter automatically; result counts and availability are transient.
+
+Sources read 2026-10-16:
+- https://dwd.wisconsin.gov/veterans/hirevets/vetsready.htm
+- https://www.dwd.wisconsin.gov/press/2025/251111-vets-ready-employers.htm
+- https://jobcenterofwisconsin.com/Presentation/JobSeekers/JobSearch.aspx
+
+DWD program/list and dated release: tier 1 direct. JCW: tier 1 403, resolved root tier 2; `jcw-vets-ready-browser.txt` contains public search/results. No account or personal data used. No live-result counts or vacancy guarantees copied.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY and ALREADY SEPARATED may seek the described public referral; each underlying service or benefit has separate eligibility. band: Condition-triggered need or inquiry; no fixed separation band or day-offset. excluded: No employment benefit or program eligibility follows from browsing the list. No 2026 recipient list or named-company current vacancy is claimed. timing: ACT AVAILABLE NOW
+A2 act: "Open Job Center of Wisconsin Job Search, choose Advanced Search, then set Vets Ready Employers to All Vets Ready Employers and search; check each posting before applying."
+A3 surface(s): RESOURCES / existing Wisconsin employer section. token: NONE; direct public search link plus optional DWD award-list link. sweep trigger: FIRED — recognition vs ownership vs live jobs vs SkillBridge approval.
+A4 cost: NOTHING
+EXPIRES: NONE for directory referral; individual postings expire and must be checked. The award list remains explicitly 2025 history.
+
+Runtime summary: Find current job listings from employers recognized by Wisconsin's Vets Ready initiative.
+Runtime instructions: Advanced Search → Vets Ready Employers → All Vets Ready Employers
+Runtime boundary: An award recognizes veteran support; it does not establish a current opening, job quality for every worker, hiring preference, or SkillBridge approval. Check current postings and the support that matters to you.
+Award-list caption if included: Published recognition list reviewed October 16, 2026: 2025 recipients.
+
+## WI3-20261016-RETRAINING — Ask about help paying for retraining
+
+Rating: **CONFIRMED**. WDVA offers a needs-based Retraining Grant route for qualifying veterans facing unemployment/underemployment. Other funding is considered; OJT support is paid to the employer. The current fact sheet names WDVA 2019 and 2039 and WDVA review.
+
+Sources read directly on 2026-10-16 (tier 1):
+- https://dva.wi.gov/benefits/grants/employment-grants/
+- https://dva.wi.gov/wp-content/uploads/2025/06/WDVA_2469-Retraining-Grant-Fact-Sheet.pdf
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: ALREADY SEPARATED and GUARD/RESERVE only where independently qualified under WDVA veteran and program criteria; SEPARATING (active component) may plan for a later qualifying circumstance. band: Condition-triggered need or inquiry; no fixed separation band or day-offset. excluded: This does not apply to spouses/family by relationship alone or establish a grant for a current SkillBridge placement. timing: ACT AVAILABLE NOW
+A2 act: "Ask the WDVA Grants Unit through its Employment Grants page to review your retraining situation and the appropriate WDVA 2019 and, for OJT, WDVA 2039 forms before counting on grant support."
+A3 surface(s): RESOURCES / State benefits and local help; existing claims-help locator for CLAIMS-HELP. Placement: conditional training/work-cost detail; avoid another first-screen card. token: NONE; direct links. sweep trigger: FIRED — awards vs ownership certification vs current jobs/SkillBridge; claims accreditation vs organization membership; member vs employer grants. Validation-gate owns execution.
+A4 cost: MONEY
+EXPIRES: NONE
+
+Runtime summary: If a job loss or reduced work means you need retraining, ask WDVA whether its Retraining Grant fits your situation.
+Runtime boundary: Veteran status, work history, financial need and training approval matter. Other funding is reviewed; this is not automatic extra income. OJT payments go to the employer.
+
+## WI3-20261016-EMPLOYMENT-GRANT — Employer support for qualifying veteran hires
+
+Rating: **CONFIRMED**. WDVA currently lists an ongoing Veterans Employment Grant for qualifying employers hiring qualifying veterans with a specified service-connected disability. Employer application and WDVA employee certification are separate forms.
+
+Sources read directly on 2026-10-16 (tier 1):
+- https://dva.wi.gov/benefits/grants/employment-grants/
+- https://dva.wi.gov/wp-content/uploads/2024/05/WDVA_2643-Application-for-Veterans-Employment-Grant-Program.pdf
+- https://dva.wi.gov/wp-content/uploads/2024/05/WDVA_2642-Certification-Request-For-Veterans-Employment-Grant.pdf
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: ALREADY SEPARATED; GUARD/RESERVE only if independently qualifying as the covered veteran; SEPARATING (active component) for future-hire planning only. band: Condition-triggered need or inquiry; no fixed separation band or day-offset. excluded: This does not apply to spouses/family by relationship alone or to every veteran hire; government-agency employers are excluded by the current application. timing: ACT AVAILABLE NOW
+A2 act: "Use WDVA Employment Grants to ask the WDVA Grants Unit about the employer application WDVA 2643 and employee certification WDVA 2642 for the proposed hire."
+A3 surface(s): RESOURCES / State benefits and local help; existing claims-help locator for CLAIMS-HELP. Placement: collapsed employer detail only. token: NONE; direct links. sweep trigger: FIRED — awards vs ownership certification vs current jobs/SkillBridge; claims accreditation vs organization membership; member vs employer grants. Validation-gate owns execution.
+A4 cost: MONEY
+EXPIRES: NONE
+
+Runtime summary: WDVA has an employer grant for qualifying veteran hires with a service-connected disability. The employer receives the grant.
+Runtime boundary: The worker, employer and employment conditions must be reviewed by WDVA. This is not member cash, SkillBridge wages, or approval to combine reimbursements for the same cost.
+
+## WI3-20261016-VETERAN-OWNED — Find Wisconsin veteran-owned businesses
+
+Rating: **CONFIRMED**. WDVA provides a certified veteran-owned-business directory with county and business-type filters. This is ownership certification, separate from DWD veteran-support recognition or current hiring.
+
+Sources read directly on 2026-10-16 (tier 1):
+- https://dva.wi.gov/benefits/employment/veteran-owned-business/
+- https://apps.dva.wisconsin.gov/veteranownedbusiness
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY and ALREADY SEPARATED may seek the described public referral; each underlying service or benefit has separate eligibility. band: Condition-triggered need or inquiry; no fixed separation band or day-offset. excluded: The directory does not certify a job vacancy or determine eligibility for a contracting preference. timing: ACT AVAILABLE NOW
+A2 act: "Use WDVA's certified veteran-owned-business directory to find a business by county or category and review its own website for the service or opportunity you need."
+A3 surface(s): RESOURCES / State benefits and local help; existing claims-help locator for CLAIMS-HELP. Placement: optional business ownership/networking detail; not primary job results. token: NONE; direct links. sweep trigger: FIRED — awards vs ownership certification vs current jobs/SkillBridge; claims accreditation vs organization membership; member vs employer grants. Validation-gate owns execution.
+A4 cost: NOTHING
+EXPIRES: NONE
+
+Runtime summary: Explore WDVA's directory of certified veteran-owned businesses by county or type of business.
+Runtime boundary: Veteran ownership does not establish a job opening, Vets Ready recognition, nonprofit status, or SkillBridge approval.
+
+## WI3-20261016-STATE-JOBS — Explore Wisconsin state careers
+
+Rating: **CONFIRMED**. DWD and WDVA identify Wisc.Jobs as the state-government job portal. DPM separately describes a non-competitive appointment route for qualifying disabled veterans, subject to conditions and vacancies.
+
+Sources read directly on 2026-10-16 (tier 1):
+- https://dva.wi.gov/benefits/employment/state-of-wisconsin-employment/
+- https://dpm.wi.gov/Pages/Job_Seekers/VeteranHiring.aspx
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY and ALREADY SEPARATED may seek the described public referral; each underlying service or benefit has separate eligibility. band: Condition-triggered need or inquiry; no fixed separation band or day-offset. excluded: The ordinary careers portal is open to job seekers; a family connection or military service alone does not establish eligibility for the specialized appointment route. timing: ACT AVAILABLE NOW
+A2 act: "Use WDVA's State of Wisconsin Employment page to reach Wisc.Jobs and the veteran appointment instructions; ask the Division of Personnel Management about eligibility or the application process."
+A3 surface(s): RESOURCES / State benefits and local help; existing claims-help locator for CLAIMS-HELP. Placement: optional job-search detail; no new first-screen destination. token: NONE; direct links. sweep trigger: FIRED — awards vs ownership certification vs current jobs/SkillBridge; claims accreditation vs organization membership; member vs employer grants. Validation-gate owns execution.
+A4 cost: NOTHING
+EXPIRES: NONE
+
+Runtime summary: Explore Wisconsin state-government careers and check whether a veteran hiring route fits your situation.
+Runtime boundary: Job requirements still apply. Veteran hiring routes have separate criteria and do not guarantee selection.
+
+## WI3-20261016-FAMILY-HOUSING — Find housing support for your household
+
+Rating: **CONFIRMED**. VA SSVF serves low-income veteran families experiencing or at imminent risk of homelessness and directs visitors to a provider list. This differs from a veteran-only residential bed or a universal grant.
+
+Sources read directly 2026-10-16:
+- https://department.va.gov/homeless/supportive-services-for-veteran-families/
+- https://department.va.gov/homeless/supportive-services-for-veteran-families/program-library/
+
+Root tier 2 verified the SSVF Providers destination as the official FY26 intake workbook: https://department.va.gov/homeless/wp-content/uploads/sites/72/2026/03/SSVF_Provider_Intake_List_FY26.xlsx . Receipt: `ssvf-provider-route-browser.txt`. Tier 1 cannot parse that workbook (400 Unsupported content-type). Directory route confirmed; workbook rows and provider capacity not certified.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: ALREADY SEPARATED and SPOUSE/FAMILY in an eligible veteran household; GUARD/RESERVE only where independently meeting the program veteran criteria. band: Condition-triggered housing instability; no fixed separation offset. excluded: This does not establish eligibility from current military service or family relationship alone; it is not routine relocation assistance for every household. timing: ACT AVAILABLE NOW
+A2 act: "Open VA's Supportive Services for Veteran Families page and use its SSVF Providers link to locate an organization serving your area, then ask that provider to review your household's situation."
+A3 surface(s): RESOURCES / State benefits and local help. token: NONE. sweep trigger: FIRED — household support vs veteran-only housing and routine moving; program referral vs individual entitlement.
+A4 cost: MONEY
+EXPIRES: NONE; service availability and provider eligibility must be checked
+
+Runtime summary: If your household is at risk of losing housing or is already without a home, VA Supportive Services for Veteran Families may be a route to housing support.
+Runtime boundary: The provider reviews veteran-family eligibility, income, housing need, local service area and available help. This is not a guarantee of a payment or place to stay.
+
+## WI3-20261016-WOMEN-VETERANS — Connect with Wisconsin women veterans support
+
+Rating: **CONFIRMED**. WDVA maintains a Women Veterans Program with outreach, advocacy, connection resources and a named program contact.
+
+Sources read directly 2026-10-16:
+- https://dva.wi.gov/community-legacy/women-veterans/
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: Women in ALREADY SEPARATED; women in GUARD/RESERVE with qualifying veteran status; SEPARATING (active component) may ask about transition connections. band: Condition-triggered support or connection inquiry; no fixed separation offset. excluded: This does not establish a women-veterans service or benefit for spouses/family solely through relationship; general county/tribal help remains available. timing: ACT AVAILABLE NOW
+A2 act: "Open WDVA's Women Veterans page and contact the Women Veterans Program using the published program contact to ask about resources and connections for your situation."
+A3 surface(s): RESOURCES / State benefits and local help. token: NONE. sweep trigger: FIRED — household support vs veteran-only housing and routine moving; program referral vs individual entitlement.
+A4 cost: NOTHING
+EXPIRES: NONE; current services checked with program
+
+Runtime summary: WDVA's Women Veterans Program offers a place to ask about support, advocacy and connections for women veterans in Wisconsin.
+Runtime boundary: Ask the program which resources fit your needs. A referral does not establish eligibility for a benefit, event or clinical service.
+
+# Iteration 3 nonprofit verification append packet
+
+Checked October 16, 2026. Three narrow referral acts cleared. Codex performed source vetting; root supplied public browser receipts where direct readers could not complete checks. Actual Claude was a scout, not a citation of record. This is not a comprehensive service-quality, financial-health or availability audit. Ratings stay internal.
+
+## WI3-NP-20261016-VETSNET — Wisconsin Veterans Network (VetsNet)
+
+Rating: **CONFIRMED** for the narrow referral. Tier 2 disposition: **AUTO-INGEST RECOMMENDED**. Dean's current request authorizes verified nonprofit referrals; no outreach, donation or application was performed.
+
+Source-supported act: Contact VetsNet through its official transition page to ask about a navigator or transition sponsor for your Wisconsin plans.
+Scope: Wisconsin; ask about support in your community. Ask which services fit your needs. Its Onward Ops sponsorship route is a separate service from Transition OPS.
+
+Primary provider/government pages read directly (source ladder tier 1):
+- https://wisvetsnet.org/transitioning-service-members-services/
+- https://wisvetsnet.org/current-veterans-services/
+- https://www.va.gov/HEALTHPARTNERSHIPS/vspn.asp
+
+Organization check (source ladder tier 2): IRS TEOS <https://apps.irs.gov/app/eos/> and its details view confirmed legal identity/EIN **82-1043745**, Publication 78 Yes and code PC. Receipt: `irs-vetsnet-browser.txt`. No unobserved revocation status or tax guarantee is claimed.
+Independent rating assessment: Charity Navigator direct read: 89%, three stars, one of four beacons; accountability/finance only. No member-outcome conclusion. Source: https://www.charitynavigator.org/ein/821043745
+Accreditation applicability: Not a claims-representation referral; OGC not applicable to the narrow navigation act. Keep official accredited-claims route separate.
+Operating history and source conflicts: see `nonprofit-source-review.md`; no automatic rejection flag was established for this narrow referral from the checks performed. This is not an all-clear for every service offered.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 bounded nonprofit verifier | 2026-10-16 | revisit NONE
+A1 population: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY and ALREADY SEPARATED may ask about community navigation; sponsor suitability is reviewed by the provider. band: Condition-triggered inquiry; no fixed separation band or day-offset. excluded: No VA benefit enrollment, VA endorsement, accredited claims representation, guaranteed sponsor availability or Transition OPS affiliation is established. timing: ACT AVAILABLE NOW
+A2 act: "Contact VetsNet through its official transition page to ask about a navigator or transition sponsor for your Wisconsin plans."
+A3 surface(s): RESOURCES / State benefits and local help / Wisconsin, optional collapsed local support. Need routing: start, service. token: NONE; public external links. Sweep trigger: FIRED — geography, household eligibility, peer vs clinical support, navigation vs accredited claims representation. Validation-gate owns execution.
+A4 cost: NOTHING
+EXPIRES: NONE; provider service area, availability and operating information must be checked when contacting it.
+
+## WI3-NP-20261016-CVI-SSVF — Center for Veterans Issues (CVI)
+
+Rating: **CONFIRMED** for the narrow referral. Tier 2 disposition: **AUTO-INGEST RECOMMENDED**. Dean's current request authorizes verified nonprofit referrals; no outreach, donation or application was performed.
+
+Source-supported act: Review the county list on CVI's SSVF page, then contact its intake team for a housing assessment.
+Scope: Participating Wisconsin counties; check CVI's county list. CVI reviews your housing situation, eligibility and county. A referral does not guarantee funding or a place to stay.
+
+Primary provider/government pages read directly (source ladder tier 1):
+- https://www.cvivet.org/supportive-services-for-veteran-families/
+- https://www.cvivet.org/cvi-office-locations/
+- https://www.va.gov/milwaukee-health-care/news-releases/three-historic-buildings-on-milwaukee-va-campus-to-be-renovated-for-service-of-veterans/
+
+Organization check (source ladder tier 2): IRS TEOS <https://apps.irs.gov/app/eos/> and its details view confirmed legal identity/EIN **39-1712359**, Publication 78 Yes and code PC. Receipt: `irs-cvi-browser.txt`. No unobserved revocation status or tax guarantee is claimed.
+Independent rating assessment: Charity Navigator direct read: 90%, four stars, one of four beacons; accountability/finance only. No housing-outcome conclusion. Source: https://www.charitynavigator.org/ein/391712359
+Accreditation applicability: Housing/intake referral, not claims representation; OGC not applicable to the narrow act.
+Operating history and source conflicts: see `nonprofit-source-review.md`; no automatic rejection flag was established for this narrow referral from the checks performed. This is not an all-clear for every service offered.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 bounded nonprofit verifier | 2026-10-16 | revisit NONE
+A1 population: ALREADY SEPARATED and SPOUSE/FAMILY within eligible veteran households; GUARD/RESERVE only where independently qualified under SSVF veteran criteria. SEPARATING members may inquire for planning, not assume current eligibility. band: Condition-triggered inquiry; no fixed separation band or day-offset. excluded: Not all Wisconsin counties; not every CVI program has the same area. No automatic eligibility from Guard/Reserve service, family relationship or app state selection. No current housing vacancy or benefit amount is certified. timing: ACT AVAILABLE NOW
+A2 act: "Review the county list on CVI's SSVF page, then contact its intake team for a housing assessment."
+A3 surface(s): RESOURCES / State benefits and local help / Wisconsin, optional collapsed local support. Need routing: moving. token: NONE; public external links. Sweep trigger: FIRED — geography, household eligibility, peer vs clinical support, navigation vs accredited claims representation. Validation-gate owns execution.
+A4 cost: NOTHING
+EXPIRES: NONE; provider service area, availability and operating information must be checked when contacting it.
+
+## WI3-NP-20261016-VOW-MARKET — Veterans Outreach of Wisconsin (VOW)
+
+Rating: **CONFIRMED** for the narrow referral. Tier 2 disposition: **AUTO-INGEST RECOMMENDED**. Dean's current request authorizes verified nonprofit referrals; no outreach, donation or application was performed.
+
+Source-supported act: Open the Veterans Marketplace page, check its registration requirements and hours, and contact VOW with questions before visiting.
+Scope: Racine; in-person Veterans Marketplace. Check registration requirements and shopping hours before visiting. This is a food-support referral, not a housing placement.
+
+Primary provider/government pages read directly (source ladder tier 1):
+- https://vowvillages.com/veterans-marketplace
+- https://vowvillages.com/about-veterans-outreach-wisconsin
+
+Organization check (source ladder tier 2): IRS TEOS <https://apps.irs.gov/app/eos/> and its details view confirmed legal identity/EIN **46-4449307**, Publication 78 Yes and code PC. Receipt: `irs-vow-browser.txt`. No unobserved revocation status or tax guarantee is claimed.
+Independent rating assessment: Root browser read Charity Navigator 97%, four stars, one of four beacons, Accountability & Finance FY2024. This is not a member-outcome or service-quality measure. Receipt charity-vow-browser.txt. Source: https://www.charitynavigator.org/ein/464449307
+Accreditation applicability: Food-support referral, not claims representation; OGC not applicable.
+Operating history and source conflicts: see `nonprofit-source-review.md`; no automatic rejection flag was established for this narrow referral from the checks performed. This is not an all-clear for every service offered.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 bounded nonprofit verifier | 2026-10-16 | revisit NONE
+A1 population: ALREADY SEPARATED and SPOUSE/FAMILY limited here to surviving spouses; current GUARD/RESERVE or SEPARATING members must ask the provider whether their circumstances and service proof qualify. band: Condition-triggered inquiry; no fixed separation band or day-offset. excluded: Not all spouses, no statewide mobile market claim, no housing vacancy, no imported stale pantry hours or address. timing: ACT AVAILABLE NOW
+A2 act: "Open the Veterans Marketplace page, check its registration requirements and hours, and contact VOW with questions before visiting."
+A3 surface(s): RESOURCES / State benefits and local help / Wisconsin, optional collapsed local support. Need routing: moving. token: NONE; public external links. Sweep trigger: FIRED — geography, household eligibility, peer vs clinical support, navigation vs accredited claims representation. Validation-gate owns execution.
+A4 cost: NOTHING
+EXPIRES: NONE; provider service area, availability and operating information must be checked when contacting it.
+
+## WI3-20261016-AJC-PRIORITY — Job Center priority and specialist access
+
+Rating: **CONFIRMED** for the narrow correction. The directly read DOL VPL 05-24 attachment distinguishes covered persons for priority of service from DVOP-eligible populations. Its background and appendix describe priority for DOL-funded programs; sections VI and IX require screening for specialist services. The appendix defines eligible spouses, rather than all military spouses, as covered persons. No new amounts, time windows, eligibility percentages or demographic estimates are proposed.
+
+Sources read directly 2026-10-16:
+- https://www.dol.gov/node/179224 — DOL-hosted full text of VPL 05-24, attached to TEGL 03-24. Relevant sections: IV; VI.A; IX.A–B; appendix E. The page contains the operative attachment text, not only a search snippet.
+- https://dwd.wisconsin.gov/veterans/employment/ — DWD directs jobseekers to their local Job Center for one-on-one help; current Wisconsin referral corroboration.
+
+Access limitations: the guessed DOL `/agencies/vets/programs/priority-of-service` route failed; direct `/agencies/eta/jobs-for-veterans-act` returned 403; `/node/159628` and the existing CareerOneStop locator could not be fetched by this web tool. None supplied the evidentiary basis. The fully readable DOL operative attachment above supports this narrower correction. The locator is an existing unchanged app destination; its page was not newly certified here.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY and ALREADY SEPARATED may seek ordinary Job Center help and ask for a service review. This does not give every visitor priority or specialist eligibility. band: Condition-triggered employment or training need; no fixed separation band or day-offset. excluded: Military connection or spouse status alone is not a priority-of-service or DVOP determination. timing: ACT AVAILABLE NOW
+A2 act: "Use the American Job Center locator to contact a center and ask staff which employment, training, priority-of-service and specialist services fit your situation."
+A3 surface(s): RESOURCES record `american-job-centers` and the same contradictory sentence in the historical v81 in-app release note; bounded correction adjacent to the Wisconsin Job Center route. token: NONE. sweep trigger: FIRED — priority of service versus specialized DVOP eligibility; ordinary access versus eligibility for priority. Validation-gate owns execution.
+A4 cost: NOTHING
+EXPIRES: NONE
+
+Acceptance: searching the directory for Job Centers must not promise priority to every spouse or specialist help to every disabled veteran. The record must retain an executable center-contact action and must not imply that an ineligible priority applicant is excluded from ordinary jobsearch help.
+
+
+# Wisconsin benefit-gap verification packet
+
+Checked October16,2026. S2 primary-source verifier. Read standing orders, shared-development instructions, policy-verification, member-impact and brand-voice. No app edits, form submissions, accounts, credentials, outreach or paid calls. Narrow descriptions only; amounts and detailed eligibility windows remain with the responsible agency.
+
+## WI4-20261016-DMV — Driver license and vehicle help
+
+Rating: **CONFIRMED**. WisDOT provides a current military/veteran hub linking Veteran-identifier certification, special plate rules, disability parking and military CDL options. The marker requires WDVA eligibility review before DMV application. National Guard plates confer no special parking privileges.
+
+Sources directly read 2026-10-16 (tier1):
+- https://wisconsindot.gov/Pages/dmv/license-drvs/rnew-and-chge/veterans.aspx
+- https://wisconsindot.gov/Pages/dmv/vehicles/title-plates/wng.aspx
+- https://wisconsindot.gov/Pages/dmv/com-drv-vehs/cdl-how-aply/cdl-military.aspx
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four may use the public DMV route for a relevant vehicle or license question; individual military/veteran products have separate eligibility. band: Condition-triggered need or planning inquiry; no fixed separation band or day-offset. excluded: Family connection, military service or a state choice in this app alone does not establish entitlement to a marker, special plate, disability parking or CDL waiver. DMV licensing is separate from DSPS occupational licensing. timing: ACT AVAILABLE NOW
+A2 act: "Open Wisconsin DMV's Military veterans page and follow the instructions for the license, plate or permit you need; confirm Veteran-marker eligibility with WDVA before applying at DMV."
+A3 surface(s): RESOURCES / State benefits and local help. Placement: Optional DMV/vehicle detail; preserve the primary moving answer and the maximum-three local-help block. Do not append a fourth housing help row. token: NONE. sweep trigger: FIRED — DMV versus DSPS; nursing care versus homeless housing; cemetery eligibility/pre-registration versus funeral honors; Guard/Reserve service versus program-specific eligibility. Validation-gate owns execution.
+A4 cost: NOTHING
+EXPIRES: NONE
+
+Runtime summary: Check Wisconsin DMV options for a Veteran license or ID marker, military plates, parking permits and military driving experience.
+Runtime boundary: WDVA must confirm eligibility for the Veteran marker. Each plate, permit and CDL option has separate rules. Military service does not automatically qualify you.
+
+Evidence limit: Special plates page currently reports its online service unavailable. Refer to current official instructions; do not promise online ordering works. CDL time window requires the separate correction record.
+
+## WI4-20261016-VETERANS-HOMES — Explore long-term nursing care
+
+Rating: **CONFIRMED**. WDVA links to its Homes site, which identifies skilled nursing homes and home-specific admissions processes. Official home pages describe veteran, spouse/surviving-spouse and qualifying parent categories and admission priorities. The current WDVA4006 checklist lists service, relationship, health and insurance documentation.
+
+Sources directly read 2026-10-16 (tier1):
+- https://dva.wi.gov/services/
+- https://wisvetshomes.com/
+- https://wisvetshomes.com/chippewa-falls/
+- https://wisvetshomes.com/king/
+- https://wisvetshomes.com/union-grove/
+- https://wisvetshomes.com/wp-content/uploads/2026/08/WDVA-4006-Applicant-Checklist-for-Admission.pdf
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: ALREADY SEPARATED and qualifying SPOUSE/FAMILY applicants; GUARD/RESERVE only if independently meeting the applicable veteran or family admission criteria. Other visitors may use this public route on behalf of a qualifying relative. band: Condition-triggered need or planning inquiry; no fixed separation band or day-offset. excluded: This does not establish admissions eligibility for every currently serving member, drilling Reservist, spouse or dependent child. It is not a VHRP homeless-housing placement or a guarantee of free care. timing: ACT AVAILABLE NOW
+A2 act: "Open the Wisconsin Veterans Homes site, choose a home, and contact admissions about eligibility, care needs, costs and availability; use its Admissions Inquiry or WDVA4000 application instructions if appropriate."
+A3 surface(s): RESOURCES / State benefits and local help. Placement: Optional health/family help, separate from VHRP or household housing routes. token: NONE. sweep trigger: FIRED — DMV versus DSPS; nursing care versus homeless housing; cemetery eligibility/pre-registration versus funeral honors; Guard/Reserve service versus program-specific eligibility. Validation-gate owns execution.
+A4 cost: NOTHING
+EXPIRES: NONE
+
+Runtime summary: Wisconsin Veterans Homes provide skilled nursing and long-term care for eligible veterans and certain family members.
+Runtime boundary: Ask admissions about service or family eligibility, care needs, costs and available beds. These are care homes, not temporary housing.
+
+Evidence limit: No applicant or care decision was evaluated; no form was submitted. Official pages accept out-of-state applications but describe residency priorities; no runtime residency threshold or admission promise is proposed.
+
+## WI4-20261016-CEMETERY — Plan a Wisconsin veterans cemetery burial
+
+Rating: **CONFIRMED**. WDVA identifies state cemetery locations, veteran/family eligibility, pre-registration via MyWisVets or form2111, separate gravesite assignment rules and funeral-director scheduling. Family fees and other charges differ from eligible veteran interment.
+
+Sources directly read 2026-10-16 (tier1):
+- https://dva.wi.gov/services/state-veterans-cemeteries/
+- https://apps.dva.wisconsin.gov/mywisvets
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four may plan or ask on behalf of an eligible veteran or family member; burial eligibility is based on the deceased veteran/service and family rules, not on the person browsing. band: Condition-triggered need or planning inquiry; no fixed separation band or day-offset. excluded: Current Guard/Reserve service alone does not establish cemetery eligibility, and being a spouse or relative alone does not establish eligibility for every family member. No particular gravesite, eligibility result or complete funeral payment is promised. timing: ACT AVAILABLE NOW
+A2 act: "Use WDVA's Wisconsin Veteran Memorial Cemeteries page to contact a cemetery about eligibility and fees and find MyWisVets pre-registration instructions; for a burial now, ask the funeral director to contact the cemetery."
+A3 surface(s): RESOURCES / State benefits and local help. Placement: Optional benefits/family planning detail; separate from military funeral honors. token: NONE. sweep trigger: FIRED — DMV versus DSPS; nursing care versus homeless housing; cemetery eligibility/pre-registration versus funeral honors; Guard/Reserve service versus program-specific eligibility. Validation-gate owns execution.
+A4 cost: NOTHING
+EXPIRES: NONE
+
+Runtime summary: Use WDVA's cemetery page to check eligibility and pre-register, or ask a funeral director to contact the cemetery when arranging a burial.
+Runtime boundary: Veteran and eligible-family rules and fees differ. Pre-registration checks eligibility; it does not by itself reserve a gravesite or request funeral honors.
+
+Evidence limit: The official page documents limited exceptions to advance reservations. The statement is specifically that pre-registration by itself does not reserve a site. No dollar figure or burial-eligibility threshold is copied.
+
+## WI4-20261016-FUNERAL-HONORS — Arrange military funeral honors
+
+Rating: **CONFIRMED**. WDVA coordinates funeral honors, provides an eligibility-review route and a family/funeral-director request process. Current form2800 expressly covers honors conducted in Wisconsin and describes the ceremony request, rather than cemetery interment or a funeral-expense payment.
+
+Sources directly read 2026-10-16 (tier1):
+- https://dva.wi.gov/services/military-funeral-honors/
+- https://dva.wi.gov/wp-content/uploads/2024/05/WDVA_2800_Military_Funeral_Honors_Request.pdf
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: All four may seek information or arrange honors on behalf of a qualifying deceased service member or veteran; service and discharge eligibility apply to the deceased. band: Condition-triggered need or planning inquiry; no fixed separation band or day-offset. excluded: An eligible family member for cemetery burial does not automatically qualify for military funeral honors through that relationship. This is not a cash burial allowance or an automatic accompaniment to cemetery registration. timing: ACT AVAILABLE NOW
+A2 act: "Use WDVA's Military Funeral Honors page to ask the funeral director or Honors Coordination Office about eligibility and submitting WDVA Form2800 for honors in Wisconsin."
+A3 surface(s): RESOURCES / State benefits and local help. Placement: Optional benefits/family planning detail, distinct from cemetery burial. token: NONE. sweep trigger: FIRED — DMV versus DSPS; nursing care versus homeless housing; cemetery eligibility/pre-registration versus funeral honors; Guard/Reserve service versus program-specific eligibility. Validation-gate owns execution.
+A4 cost: NOTHING
+EXPIRES: NONE
+
+Runtime summary: For a funeral in Wisconsin, ask the funeral director or WDVA Honors Coordination Office how to request military funeral honors.
+Runtime boundary: Qualifying military service and discharge rules apply. Honors are a separate request from cemetery burial and do not pay other funeral expenses.
+
+Evidence limit: No personal identifiers are collected in Transition OPS. No ceremony composition or availability is guaranteed. No phone number was copied.
+
+
+
+# WI4-20261016-CDL-COORDINATION — Military CDL waiver and state decision
+
+Rating: **CONFIRMED** for the narrow correction and state-review action. Checked October16,2026. The temporary federal waiver is **active on this review date**, not expired. Wisconsin adoption of its expanded period is **not established** by the state page inspected; neither universal adoption nor rejection is asserted.
+
+Sources directly read (tier1):
+- https://www.fmcsa.dot.gov/90DayMilitaryWaiver — operative agency text, effective July30,2026 through October29,2026. Applies a two-year qualifying-military-employment lookback where adopted; state application and remaining conditions apply.
+- https://www.fmcsa.dot.gov/sites/fmcsa.dot.gov/files/2026-07/Waiver%20For%20Current%20and%20Former%20Military%20Service%20Members_1.pdf — signed four-page operative waiver independently opened. Dates and scope crosschecked against the agency HTML. Both are versions of the same primary authority, not two independent policy decisions.
+- https://www.transportation.gov/briefing-room/president-trump-transportation-secretary-duffy-host-vets-white-house-promote-new — separate DOT announcement corroborates the initiative and expansion. Its broader promotional shorthand does not override the operative waiver's qualifying-employment and state-participation conditions.
+- https://www.fmcsa.dot.gov/military-skills-test-waiver — current program page, linked from DOT, still describes the permanent one-year rule and directs applicants to the state licensing agency.
+- https://wisconsindot.gov/Pages/dmv/com-drv-vehs/cdl-how-aply/cdl-military.aspx — state requirements, applications and separate endorsement/permit fees. Still describes a one-year window; no statement adopting the current temporary expansion was found in this page.
+
+Correction basis: existing resource3372 and policy-history3186 say the window doubled after active duty. The operative waiver measures the qualifying experience period and permits state adoption; military service or separation date alone is insufficient. The existing resource also implies a universally free route and housing support during training. Those promises are not established by this CDL waiver. Refer VA education decisions separately rather than recertifying them through DOT promotional copy.
+
+Exact runtime replacements are in `adjacent-cdl-copy.json`. They deliberately avoid a date-specific eligibility promise. They preserve the potential value of temporary relief and send the applicant to the state DMV to determine whether a current waiver applies. The source link points to the readable operative waiver, which publishes its own dates; it does not imply renewal after its stated expiration.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: SEPARATING (active component), GUARD/RESERVE and ALREADY SEPARATED with qualifying military commercial-vehicle experience. band: Condition-triggered CDL application or training decision; no fixed separation band or day-offset because qualifying employment and application dates are distinct. excluded: This military test-waiver route does not apply to SPOUSE/FAMILY solely by relationship or to applicants without the required military driving experience. timing: ACT AVAILABLE NOW
+A2 act: "Read FMCSA's military waiver and ask your state DMV whether any current temporary waiver applies to your military driving record, what proof and tests are required, and which fees remain before applying or paying for training; verify any VA training benefit separately with VA."
+A3 surface(s): RESOURCES `cdl-veteran-fast-track`; existing July30 policy-history row; optional Wisconsin DMV route. token: NONE. sweep trigger: FIRED — temporary federal authority versus state adoption/permanent rules; qualifying employment versus separation date; test waiver versus automatic license/free training/VA allowance. Validation-gate owns bounded sweep execution.
+A4 cost: A CLOSED WINDOW
+EXPIRES: The recorded temporary federal authority ends2026-10-29 unless amended or replaced; no such later authority was established by this check. The evergreen DMV-referral correction has no fixed expiry but must not be represented as confirmation of an extension.
+
+Access ledger: the old app destination `https://www.fmcsa.dot.gov/registration/commercial-drivers-license/military-driver-programs` returned404 to the web tool; the alternate `/commercial-drivers-license/military-driver-programs` returned a cache miss. No website-wide outage is inferred. The new operative URL and program URL both opened fully. No PDF, application, command certification, or DMV transaction was submitted.
+
+Acceptance: a qualifying synthetic Guard/Reserve applicant sees a possible route to a test waiver, can find the state decision point, and is not promised automatic eligibility, an extension after separation, all tests waived, no fees or a VA housing allowance. Both directly adjacent runtime summaries must be corrected together.
+
+
+# Wisconsin iteration4 education and housing verification append
+
+Checked2026-10-16 by Codex S2/force-mod. Authoritative agency and public-system sources read directly, except the VORP map recovered by root browser. Existing nonprofit vetting is reused without expansion. Separate conflicting claims remain below CONFIRMED and do not enter the impact assessment.
+
+## WI4-20261016-PUBLIC-EDUCATION — UW or Wisconsin technical college
+
+Rating: CONFIRMED. Access: Tier1 direct public source read2026-10-16; no account or member data submitted.
+Vetting: TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim
+Claim: WDVA describes separate agency certification and school determination. Public university and technical-college systems provide campus veterans-service routes. Referral and process only; no numerical residency rule is published.
+Sources: https://dva.wi.gov/benefits/education/wi-gi-bill/ ; https://www.wisconsin.edu/veteran-military-connected-student-resources/ ; https://mywtcs.wtcsystem.edu/educational-services/student-services/veterans-services/
+
+IMPACT: SHIP — ACT | A2/A3 | Codex S2 | 2026-10-16 | revisit NONE
+A1 population: All four may seek this planning or eligibility-review route: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY, ALREADY SEPARATED. Each person and benefit requires separate qualification. band: Condition-triggered planning or need; no fixed separation band or day-offset. excluded: No claim that all four populations qualify for the Wisconsin GI Bill. No private-school tuition-remission claim. timing: ACT AVAILABLE NOW
+A2 act: "Use WDVA's Wisconsin GI Bill guidance to request veteran certification through MyWisVets or WDVA 2030, then contact the school's Veteran Certifying Official about WDVA 2029, student residency and the other education benefits you plan to use before enrolling."
+A3 surface(s): RESOURCES / State benefits and local help. education only; enrich/reuse WI-20261016-03, not a duplicate primary card. token: NONE; fixed direct links. sweep trigger: FIRED — state versus federal GI Bill; agency versus school residency; Guard versus other Reserve; tuition reimbursement versus member cash; VORP versus family housing. Validation-gate owns execution.
+A4 cost: MONEY
+EXPIRES: NONE; contacts and eligibility require current agency review
+
+Runtime summary: Ask your school's veterans office to help coordinate tuition support before you enroll.
+Runtime boundary: The Wisconsin GI Bill is separate from federal benefits. WDVA reviews veteran certification; the school decides student eligibility, including residency for tuition. Moving to Wisconsin does not settle either decision.
+
+## WI4-20261016-FEDERAL-EDUCATION — Check federal benefits before choosing
+
+Rating: CONFIRMED. Access: Tier1 direct public source read2026-10-16; no account or member data submitted.
+Vetting: TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim
+Claim: VA describes different programs for members, veterans, qualifying dependents/survivors and Selected Reserve, including cases where a program election restricts later choices; its GI Bill contact route answers education-benefit questions.
+Sources: https://www.va.gov/education/eligibility/ ; https://www.benefits.va.gov/gibill/contact_us.asp ; https://www.va.gov/education/about-gi-bill-benefits/montgomery-selected-reserve/
+
+IMPACT: SHIP — ACT | A2/A3 | Codex S2 | 2026-10-16 | revisit NONE
+A1 population: All four may seek the official information route: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY, ALREADY SEPARATED. Eligibility and election effects are individual and program-specific. band: Condition-triggered planning or need; no fixed separation band or day-offset. excluded: This does not promise transferred benefits, dependent eligibility, added entitlement or reversal of a past election. timing: ACT AVAILABLE NOW
+A2 act: "Use VA's Education and Training Contact Us page to ask the GI Bill team about the federal benefit choice for your service or family history before applying, and discuss the result with your school's certifying official."
+A3 surface(s): RESOURCES / State benefits and local help. education coordination note/link; also available in family context. token: NONE; fixed direct links. sweep trigger: FIRED — state versus federal GI Bill; agency versus school residency; Guard versus other Reserve; tuition reimbursement versus member cash; VORP versus family housing. Validation-gate owns execution.
+A4 cost: A LOST OR FORECLOSED ELECTION
+EXPIRES: NONE; contacts and eligibility require current agency review
+
+Runtime summary: Ask VA which education benefits fit your service or family history before choosing a benefit.
+Runtime boundary: Federal benefits and Wisconsin programs have different rules. Some federal choices affect what you can use later; the app does not choose or combine benefits for you.
+
+## WI4-20261016-WING-EDUCATION — Serving in the Wisconsin National Guard
+
+Rating: CONFIRMED. Access: Tier1 direct public source read2026-10-16; no account or member data submitted.
+Vetting: TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim
+Claim: DMA lists the administrator and current online portal. Its FAQ requires an application each term, pays the school and states eligibility and interaction conditions. No award amount or application-window number is repeated.
+Sources: https://dma.wi.gov/wisconsin-national-guard-tuition-grant/ ; https://dma.wi.gov/wisconsin-national-guard-tuition-grant-faqs/
+
+IMPACT: SHIP — ACT | A2/A3 | Codex S2 | 2026-10-16 | revisit NONE
+A1 population: GUARD/RESERVE, specifically otherwise-qualifying current Wisconsin National Guard members. band: Condition-triggered planning or need; no fixed separation band or day-offset. excluded: This does not apply to other Reserve components, separated veterans or spouses/family through that status alone; active-duty component service is not Wisconsin Guard membership. timing: ACT AVAILABLE NOW
+A2 act: "Use the Wisconsin National Guard Tuition Grant page to contact the Tuition Grant Administrator about eligibility, other education funding and the current online term application before relying on the grant."
+A3 surface(s): RESOURCES / State benefits and local help. reuse WI-20261016-04; promote only explicit guard context, never combined serving/reserve. token: NONE; fixed direct links. sweep trigger: FIRED — state versus federal GI Bill; agency versus school residency; Guard versus other Reserve; tuition reimbursement versus member cash; VORP versus family housing. Validation-gate owns execution.
+A4 cost: MONEY
+EXPIRES: NONE; contacts and eligibility require current agency review
+
+Runtime summary: Use the Wisconsin Guard tuition-grant portal for each term and ask the program administrator how your other funding affects the application.
+Runtime boundary: The program has member, school and term requirements. It pays the school. Other Reserve service or a family relationship does not qualify you for this Guard grant.
+
+## WI4-20261016-SELECTED-RESERVE — Serving in another Reserve component
+
+Rating: CONFIRMED. Access: Tier1 direct public source read2026-10-16; no account or member data submitted.
+Vetting: TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim
+Claim: VA directs eligible Selected Reserve members to obtain DD2384-1 from their unit and confirm program approval before enrollment. Current membership alone is insufficient, and there are qualified exceptions after departure.
+Sources: https://www.va.gov/education/about-gi-bill-benefits/montgomery-selected-reserve/ ; https://www.va.gov/education/eligibility/
+
+IMPACT: SHIP — ACT | A2/A3 | Codex S2 | 2026-10-16 | revisit NONE
+A1 population: GUARD/RESERVE where the person meets Selected Reserve program requirements; explicit other-Reserve UI is a navigation preference, not a qualification. band: Condition-triggered planning or need; no fixed separation band or day-offset. excluded: This does not apply to spouses/family by relationship alone or promise active-duty-component eligibility; separated people must check the specific VA exception rules. timing: ACT AVAILABLE NOW
+A2 act: "Ask your unit about the Notice of Basic Eligibility, DD Form 2384-1, and use VA's Montgomery GI Bill Selected Reserve guidance to check the program with the school before enrolling."
+A3 surface(s): RESOURCES / State benefits and local help. education detail; relevant in reserve/serving/orders/guard contexts; never hide other federal options. token: NONE; fixed direct links. sweep trigger: FIRED — state versus federal GI Bill; agency versus school residency; Guard versus other Reserve; tuition reimbursement versus member cash; VORP versus family housing. Validation-gate owns execution.
+A4 cost: MONEY
+EXPIRES: NONE; contacts and eligibility require current agency review
+
+Runtime summary: For the federal Selected Reserve GI Bill, start with your unit and check that VA approves your training program.
+Runtime boundary: Selected Reserve eligibility is separate from Wisconsin Guard tuition. Membership alone does not settle eligibility, and leaving the Selected Reserve can affect the benefit.
+
+## WI4-20261016-PRIVATE-EDUCATION — Wisconsin private nonprofit college
+
+Rating: CONFIRMED. Access: Tier1 direct public source read2026-10-16; no account or member data submitted.
+Vetting: TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim
+Claim: HEAB has a distinct private-nonprofit tuition grant. The November2025 application has student and school parts and directs WDVA certification; it includes veteran/spouse/child categories. HEAB verifies awards; its Q&A describes school payment and coordination with federal tuition support.
+Sources: https://heab.state.wi.us/features/vets.html ; https://heab.state.wi.us/files/features/wiveterans.pdf ; https://heab.state.wi.us/files/features/wivets-qanda.pdf
+
+IMPACT: SHIP — ACT | A2/A3 | Codex S2 | 2026-10-16 | revisit NONE
+A1 population: ALREADY SEPARATED and SPOUSE/FAMILY where individually qualified; GUARD/RESERVE only if independently qualifying under the program. SEPARATING (active component) may use the public planning route before later enrollment. band: Condition-triggered planning or need; no fixed separation band or day-offset. excluded: No automatic eligibility for all veterans, Guard/Reserve members, spouses, children or private schools; no certificate-program award or living-expense claim. timing: ACT AVAILABLE NOW
+A2 act: "Check HEAB's participating-school list, request the WDVA certification required by its Wisconsin Veteran Grant application, and take the student portion to the school's Financial Aid Office to review eligibility and other tuition funding."
+A3 surface(s): RESOURCES / State benefits and local help. education-only detail; distinct from UW/WTCS remission. token: NONE; fixed direct links. sweep trigger: FIRED — state versus federal GI Bill; agency versus school residency; Guard versus other Reserve; tuition reimbursement versus member cash; VORP versus family housing. Validation-gate owns execution.
+A4 cost: MONEY
+EXPIRES: NONE; contacts and eligibility require current agency review
+
+Runtime summary: Ask the school's financial aid office about the Wisconsin Veteran Grant for Private Non-Profit Schools.
+Runtime boundary: Only participating schools and qualifying students are covered. The school and HEAB coordinate the award with other tuition funding; it is paid to the school, not extra spending money.
+
+## WI4-20261016-VETED-REVIEW — Ask whether VetEd fits
+
+Rating: CONFIRMED. Access: Tier1 direct public source read2026-10-16; no account or member data submitted.
+Vetting: TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim
+Claim: Both sources support a conditional reimbursement program, no-bachelor restriction and official application/help route. Exact interaction rules conflict between the webpage and linked fact sheet and are NOT cleared; only the deciding-office review is cleared.
+Sources: https://dva.wi.gov/benefits/education/vet-ed-reimbursement-grant/ ; https://dva.wi.gov/wp-content/uploads/2025/06/WDVA_2468-VetEd-Fact-Sheet.pdf
+
+IMPACT: SHIP — ACT | A2/A3 | Codex S2 | 2026-10-16 | revisit NONE
+A1 population: ALREADY SEPARATED and GUARD/RESERVE only where independently qualifying as a covered veteran; SEPARATING (active component) may plan for review before a later course. band: Condition-triggered planning or need; no fixed separation band or day-offset. excluded: This does not apply to spouses/family by relationship alone. This referral does not establish eligibility alongside Post-9/11, Guard or Reserve tuition assistance. timing: ACT AVAILABLE NOW
+A2 act: "Contact WDVA through its VetEd Reimbursement Grant page, or your county or tribal veterans office, to have your service and other education benefits reviewed and confirm the WDVA 2200 application deadline before the course begins."
+A3 surface(s): RESOURCES / State benefits and local help. secondary education detail; do not promote as a stack or default Guard route. token: NONE; fixed direct links. sweep trigger: FIRED — state versus federal GI Bill; agency versus school residency; Guard versus other Reserve; tuition reimbursement versus member cash; VORP versus family housing. Validation-gate owns execution.
+A4 cost: MONEY
+EXPIRES: NONE; contacts and eligibility require current agency review
+
+Runtime summary: VetEd reimburses approved tuition and fees after successful coursework for eligible veterans who have not earned a bachelor's degree.
+Runtime boundary: Ask WDVA to check your service, other education benefits and the application deadline before you count on reimbursement. It is not automatic extra funding.
+
+## WI4-20261016-HOUSING-NAVIGATOR — Find local housing and utility support
+
+Rating: CONFIRMED. Access: Tier1 page successful; map direct returned Cache miss, root Tier2 browser read succeeded and captured vorp-county-map-browser.png.
+Vetting: TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim
+Claim: Current WDVA page explicitly covers housing/utilities and all who served, including current Guard/Reserve. It provides regional contacts and supervisor coverage for vacancies. Root browser read the current county map; no capacity verified.
+Sources: https://dva.wi.gov/services/mental-health-and-emergency-services/veterans-outreach-and-recovery/ ; https://dva.wi.gov/wp-content/uploads/2025/07/VORP_Map_2025_11_Regions_Cropped.avif
+
+IMPACT: SHIP — ACT | A2/A3 | Codex S2 | 2026-10-16 | revisit NONE
+A1 population: SEPARATING (active component), GUARD/RESERVE, ALREADY SEPARATED as people who served. SPOUSE/FAMILY may seek assistance with the person who served, but this is not an independently established family-treatment or housing entitlement. band: Condition-triggered planning or need; no fixed separation band or day-offset. excluded: A family relationship alone does not establish individual VORP eligibility. Keep the separately cleared SSVF household route and VHRP family-occupancy boundary. timing: ACT AVAILABLE NOW
+A2 act: "Open WDVA's Veterans Outreach and Recovery page, find your county on its regional map, and contact the listed coordinator or vacancy-covering supervisor about housing, utilities and community-service connections; use the published VORP referral contact if you cannot identify the region."
+A3 surface(s): RESOURCES / State benefits and local help. moving/housing related official help, reusing WI-20261016-09 rather than duplicating the provider; retain household/SSVF alternatives. token: NONE; fixed direct links. sweep trigger: FIRED — state versus federal GI Bill; agency versus school residency; Guard versus other Reserve; tuition reimbursement versus member cash; VORP versus family housing. Validation-gate owns execution.
+A4 cost: NOTHING
+EXPIRES: NONE; contacts and eligibility require current agency review
+
+Runtime summary: Use WDVA's county map to find the VORP coordinator for your area and ask for help connecting with housing, utilities and community services.
+Runtime boundary: People who have served, including current Guard and Reserve members, can contact VORP. Use the listed supervisor when a regional position is vacant. A referral does not guarantee funding, a bed or immediate intake.

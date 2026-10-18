@@ -1,0 +1,18 @@
+{
+  "file": "/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/wisconsin-welcome-browser-regression.js",
+  "edits": [
+    {
+      "old": "{type:'keyDown',key,code,windowsVirtualKeyCode:key==='Enter'?13:32,nativeVirtualKeyCode:key==='Enter'?13:32}",
+      "new": "{type:'keyDown',key,code,text:key==='Enter'?'\\r':' ',unmodifiedText:key==='Enter'?'\\r':' ',windowsVirtualKeyCode:key==='Enter'?13:32,nativeVirtualKeyCode:key==='Enter'?13:32}"
+    },
+    {
+      "old": "document.querySelectorAll(\"#tops-wisconsin-cohort a\")",
+      "new": "document.querySelectorAll(\"#tops-wisconsin-cohort > div a\")"
+    },
+    {
+      "old": " await expand('tops-wisconsin-cohort');assert.match",
+      "new": " await expand('tops-wisconsin-cohort');assert.equal(await ev('document.querySelector(\"#tops-wisconsin-cohort > a\").href'),'https://skillbridge.mil/locations');assert.match"
+    }
+  ],
+  "reason": "native Enter text uses existing repository CDP protocol; direct finder presence plus separate three company links checked"
+}

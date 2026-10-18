@@ -1,0 +1,114 @@
+{
+  "checked": "2026-10-16",
+  "scope": "Three cleared, bounded nonprofit referrals. Import their matching nonprofit-verification-log-append.md entries before runtime copy. Provider-described service facts, IRS organizational identity and independent accountability ratings were assessed separately. No broad endorsement, availability guarantee, clinical/accreditation claim or personal data collection. Dryhootch remains held outside this runtime packet.",
+  "records": [
+    {
+      "id": "WI3-NP-20261016-VETSNET",
+      "org": "Wisconsin Veterans Network (VetsNet)",
+      "title": "Find help navigating your transition",
+      "geography": "Wisconsin; ask about support in your community.",
+      "summary": "VetsNet connects service members, veterans and families with community support. It also offers a transition-sponsor route.",
+      "caveat": "Ask which services fit your needs. Its Onward Ops sponsorship route is a separate service from Transition OPS.",
+      "action": "Contact VetsNet through its official transition page to ask about a navigator or transition sponsor for your Wisconsin plans.",
+      "label": "Ask VetsNet about transition support",
+      "url": "https://wisvetsnet.org/transitioning-service-members-services/",
+      "sources": [
+        "https://wisvetsnet.org/transitioning-service-members-services/",
+        "https://wisvetsnet.org/current-veterans-services/",
+        "https://www.va.gov/HEALTHPARTNERSHIPS/vspn.asp",
+        "https://apps.irs.gov/app/eos/"
+      ],
+      "population": "SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY and ALREADY SEPARATED may ask about community navigation; sponsor suitability is reviewed by the provider.",
+      "excluded": "No VA benefit enrollment, VA endorsement, accredited claims representation, guaranteed sponsor availability or Transition OPS affiliation is established.",
+      "needs": [
+        "start",
+        "service"
+      ],
+      "independentRating": "Charity Navigator direct read: 89%, three stars, one of four beacons; accountability/finance only. No member-outcome conclusion.",
+      "ratingSource": "https://www.charitynavigator.org/ein/821043745",
+      "checked": "2026-10-16",
+      "rating": "CONFIRMED",
+      "tier": "TIER 2; AUTO-INGEST RECOMMENDED for the narrow referral",
+      "disposition": "AUTO-INGEST RECOMMENDED",
+      "stageAllowed": true,
+      "band": "Condition-triggered inquiry; no fixed separation band or day-offset.",
+      "timing": "ACT AVAILABLE NOW",
+      "cost": "NOTHING",
+      "expires": "NONE; provider service area, availability and operating information must be checked when contacting it.",
+      "ogcApplicability": "Not a claims-representation referral; OGC not applicable to the narrow navigation act. Keep official accredited-claims route separate.",
+      "identityEvidence": "Root browser read IRS TEOS identity, Publication 78 Yes and deductibility code PC; determination/returns were listed where applicable. No unobserved revocation status or tax guarantee inferred. Receipt: irs-vetsnet-browser.txt",
+      "ein": "82-1043745"
+    },
+    {
+      "id": "WI3-NP-20261016-CVI-SSVF",
+      "org": "Center for Veterans Issues (CVI)",
+      "title": "Ask about housing help for your household",
+      "geography": "Participating Wisconsin counties; check CVI\u2019s county list.",
+      "summary": "CVI\u2019s SSVF program supports eligible low-income veteran households facing homelessness or housing loss.",
+      "caveat": "CVI reviews your housing situation, eligibility and county. A referral does not guarantee funding or a place to stay.",
+      "action": "Review the county list on CVI\u2019s SSVF page, then contact its intake team for a housing assessment.",
+      "label": "Check CVI housing support",
+      "url": "https://www.cvivet.org/supportive-services-for-veteran-families/",
+      "sources": [
+        "https://www.cvivet.org/supportive-services-for-veteran-families/",
+        "https://www.cvivet.org/cvi-office-locations/",
+        "https://www.va.gov/milwaukee-health-care/news-releases/three-historic-buildings-on-milwaukee-va-campus-to-be-renovated-for-service-of-veterans/",
+        "https://apps.irs.gov/app/eos/"
+      ],
+      "population": "ALREADY SEPARATED and SPOUSE/FAMILY within eligible veteran households; GUARD/RESERVE only where independently qualified under SSVF veteran criteria. SEPARATING members may inquire for planning, not assume current eligibility.",
+      "excluded": "Not all Wisconsin counties; not every CVI program has the same area. No automatic eligibility from Guard/Reserve service, family relationship or app state selection. No current housing vacancy or benefit amount is certified.",
+      "needs": [
+        "moving"
+      ],
+      "independentRating": "Charity Navigator direct read: 90%, four stars, one of four beacons; accountability/finance only. No housing-outcome conclusion.",
+      "ratingSource": "https://www.charitynavigator.org/ein/391712359",
+      "checked": "2026-10-16",
+      "rating": "CONFIRMED",
+      "tier": "TIER 2; AUTO-INGEST RECOMMENDED for the narrow referral",
+      "disposition": "AUTO-INGEST RECOMMENDED",
+      "stageAllowed": true,
+      "band": "Condition-triggered inquiry; no fixed separation band or day-offset.",
+      "timing": "ACT AVAILABLE NOW",
+      "cost": "NOTHING",
+      "expires": "NONE; provider service area, availability and operating information must be checked when contacting it.",
+      "ogcApplicability": "Housing/intake referral, not claims representation; OGC not applicable to the narrow act.",
+      "identityEvidence": "Root browser read IRS TEOS identity, Publication 78 Yes and deductibility code PC; determination/returns were listed where applicable. No unobserved revocation status or tax guarantee inferred. Receipt: irs-cvi-browser.txt",
+      "ein": "39-1712359"
+    },
+    {
+      "id": "WI3-NP-20261016-VOW-MARKET",
+      "org": "Veterans Outreach of Wisconsin (VOW)",
+      "title": "Find food and essentials in Racine",
+      "geography": "Racine; in-person Veterans Marketplace.",
+      "summary": "VOW\u2019s Veterans Marketplace provides food and personal-care items for veterans and surviving spouses.",
+      "caveat": "Check registration requirements and shopping hours before visiting. This is a food-support referral, not a housing placement.",
+      "action": "Open the Veterans Marketplace page, check its registration requirements and hours, and contact VOW with questions before visiting.",
+      "label": "Check VOW Marketplace details",
+      "url": "https://vowvillages.com/veterans-marketplace",
+      "sources": [
+        "https://vowvillages.com/veterans-marketplace",
+        "https://vowvillages.com/about-veterans-outreach-wisconsin",
+        "https://apps.irs.gov/app/eos/"
+      ],
+      "population": "ALREADY SEPARATED and SPOUSE/FAMILY limited here to surviving spouses; current GUARD/RESERVE or SEPARATING members must ask the provider whether their circumstances and service proof qualify.",
+      "excluded": "Not all spouses, no statewide mobile market claim, no housing vacancy, no imported stale pantry hours or address.",
+      "needs": [
+        "moving"
+      ],
+      "independentRating": "Root browser read Charity Navigator 97%, four stars, one of four beacons, Accountability & Finance FY2024. This is not a member-outcome or service-quality measure. Receipt charity-vow-browser.txt.",
+      "ratingSource": "https://www.charitynavigator.org/ein/464449307",
+      "checked": "2026-10-16",
+      "rating": "CONFIRMED",
+      "tier": "TIER 2; AUTO-INGEST RECOMMENDED for the narrow referral",
+      "disposition": "AUTO-INGEST RECOMMENDED",
+      "stageAllowed": true,
+      "band": "Condition-triggered inquiry; no fixed separation band or day-offset.",
+      "timing": "ACT AVAILABLE NOW",
+      "cost": "NOTHING",
+      "expires": "NONE; provider service area, availability and operating information must be checked when contacting it.",
+      "ogcApplicability": "Food-support referral, not claims representation; OGC not applicable.",
+      "ein": "46-4449307",
+      "identityEvidence": "Root browser read IRS TEOS Veterans Outreach of Wisconsin, EIN 46-4449307, Racine; Publication 78 Yes and deductibility code PC, 2014 determination letter and Form 990 2024 listed. Receipt irs-vow-browser.txt. No unobserved revocation status or tax guarantee inferred."
+    }
+  ]
+}

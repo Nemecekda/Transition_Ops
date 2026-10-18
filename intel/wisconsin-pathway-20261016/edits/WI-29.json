@@ -1,0 +1,7 @@
+{
+  "old": "if (hit.act === \"wi-work-support\") openWisconsinGuide(); else openExperienceTool(hit.tab);",
+  "new": "if (hit.act === \"state-help\") openStateHelp(hit.context); else if (hit.act === \"wi-work-support\") openWisconsinGuide(); else openExperienceTool(hit.tab);",
+  "expected": 1,
+  "new_after": 1,
+  "old_after": 1
+}

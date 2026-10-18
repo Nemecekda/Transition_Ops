@@ -1,0 +1,8 @@
+{
+  "old": "if (activeTab === \"resources\" && TOPS_DOCUMENT_RETURN_TOPICS.includes(subTab)) state.documentParentTopic",
+  "new": "if (activeTab === \"resources\" && (subTab === \"state-help\" || (subTab === \"documents\" && documentReturn.current === \"state-help\"))) state.stateHelp = topsStateHelpContext(stateHelpContext); else delete state.stateHelp; if (activeTab === \"resources\" && TOPS_DOCUMENT_RETURN_TOPICS.includes(subTab)) state.documentParentTopic",
+  "expected": 1,
+  "old_before": 1,
+  "new_after": 1,
+  "old_after": 1
+}

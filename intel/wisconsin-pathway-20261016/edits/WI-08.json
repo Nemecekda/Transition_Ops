@@ -1,0 +1,8 @@
+{
+  "old": "setSubTab(docs ? \"documents\" : wiGuideRequested.current ? \"directory\"",
+  "new": "setSubTab(docs ? \"documents\" : localHelp ? \"state-help\" : wiGuideRequested.current ? \"directory\"",
+  "expected": 1,
+  "old_before": 1,
+  "new_after": 1,
+  "old_after": 0
+}

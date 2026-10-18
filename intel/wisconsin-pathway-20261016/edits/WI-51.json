@@ -1,0 +1,6 @@
+{
+  "old": "    if (localHelp || (docs && state.documentReturn === \"state-help\")) setStateHelpContext(localHelp ? topsReadStateHelpURL(url.href) : topsStateHelpContext(state.stateHelp));",
+  "new": "    stateHelpReturn.current = [\"pathway\", \"healthcare\", \"wi-work-support\", \"finalpcs\"].includes(state.stateHelpReturn) ? state.stateHelpReturn : \"\";\n    if (localHelp || stateHelpReturn.current || (docs && state.documentReturn === \"state-help\")) setStateHelpContext(localHelp ? topsReadStateHelpURL(url.href) : topsStateHelpContext(state.stateHelp));",
+  "new_after": 1,
+  "old_after": 0
+}

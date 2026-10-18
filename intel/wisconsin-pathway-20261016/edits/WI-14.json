@@ -1,0 +1,8 @@
+{
+  "old": "continuationFocus.current = key === \"wisconsin\" ? \"tops-wi-work-support-resources-heading\" : \"tops-resource-topic\";",
+  "new": "continuationFocus.current = key === \"state-help\" ? \"tops-state-help-next\" : key === \"wisconsin\" ? \"tops-wi-work-support-resources-heading\" : \"tops-resource-topic\";",
+  "expected": 1,
+  "old_before": 1,
+  "new_after": 1,
+  "old_after": 0
+}

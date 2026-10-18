@@ -1,0 +1,10 @@
+UTC 2026-10-16T15:38:10.396830+00:00
+COMMAND ['node', 'scripts/wisconsin-welcome-browser-regression.js']
+PASS national default remains national; Wisconsin welcome includes return/move/already-here visitors; useful official action precedes all collapsed extras.
+PASS official SkillBridge directory precedes conditional program options; VA/WIOA coordination and scoped active-duty limits remain distinct from employer OJT/IWT/apprenticeship funding.
+PASS three verified company identities have unique hardened links and honest cohort boundaries; DNR conditions are explicit; browsing/expansion writes no saved data.
+PASS health/moving remain focused; switching All states removes every Wisconsin extra without changing the saved plan.
+MEASURED work-entry action geometry (CSS px): [{"width":320,"theme":"professional","top":592.578125,"bottom":638.578125,"navTop":606.609375},{"width":320,"theme":"tactical","top":548.578125,"bottom":594.578125,"navTop":606.609375},{"width":371,"theme":"professional","top":524.578125,"bottom":570.578125,"navTop":606.609375},{"width":371,"theme":"tactical","top":524.578125,"bottom":570.578125,"navTop":606.609375},{"width":375,"theme":"professional","top":524.578125,"bottom":570.578125,"navTop":606.609375},{"width":375,"theme":"tactical","top":524.578125,"bottom":570.578125,"navTop":606.609375}]
+WISCONSIN WELCOME PASS: local synthetic375x667 plus320/371 widths, both themes, native disclosure keyboard,44px controls, zero provider POSTs and exceptions.
+
+EXIT 0

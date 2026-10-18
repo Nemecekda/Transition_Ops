@@ -1,0 +1,8 @@
+{
+  "file": "index.html",
+  "old": "Whether you're returning, planning a move or already here, find your next step.",
+  "new": "Returning, moving or already here? Find your next step.",
+  "new_after": 1,
+  "old_after": 0,
+  "reason": "root actual IAB 371px check: preserve readable text/44px controls while removing redundant state label and tightening inclusive welcome"
+}

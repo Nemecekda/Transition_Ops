@@ -1,0 +1,6 @@
+{
+  "old": "\"This changes the offices shown. It does not set your residence, change your service profile or decide eligibility.\"",
+  "new": "\"Browsing a state does not establish residence or eligibility.\"",
+  "new_after": 1,
+  "old_after": 0
+}

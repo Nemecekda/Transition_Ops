@@ -1,0 +1,76 @@
+{
+  "checked": "2026-10-16",
+  "index_sha256": "d7343131c8d6197abe420820e6de4c63d2583bf4e64611955bb50277edd47501",
+  "environment": "Isolated headless Google Chrome, synthetic local loopback, 320/375 \u00d7 667, both themes; all external/function requests blocked",
+  "result": "FAIL_LAYOUT",
+  "checks": [
+    "375 primary action visible above bottom navigation",
+    "320/375 reflow and primary target size",
+    "all new disclosures initially collapsed",
+    "native Enter expands member/employer/cohort content",
+    "no numbered funding ladder",
+    "official SkillBridge route precedes resolved company websites",
+    "external link safety",
+    "browsing does not change local storage",
+    "All states removes Wisconsin welcome/content",
+    "zero uncaught exceptions or POST attempts"
+  ],
+  "screens": [
+    {
+      "theme": "professional",
+      "width": 320,
+      "height": 667,
+      "action": {
+        "top": 592.578125,
+        "bottom": 638.578125,
+        "width": 231.46875,
+        "height": 46
+      },
+      "navTop": 606.609375,
+      "scrollWidth": 320,
+      "heading": "Welcome to Wisconsin"
+    },
+    {
+      "theme": "professional",
+      "width": 375,
+      "height": 667,
+      "action": {
+        "top": 568.578125,
+        "bottom": 614.578125,
+        "width": 231.46875,
+        "height": 46
+      },
+      "navTop": 606.609375,
+      "scrollWidth": 375,
+      "heading": "Welcome to Wisconsin"
+    },
+    {
+      "theme": "tactical",
+      "width": 320,
+      "height": 667,
+      "action": {
+        "top": 592.578125,
+        "bottom": 638.578125,
+        "width": 231.46875,
+        "height": 46
+      },
+      "navTop": 606.609375,
+      "scrollWidth": 320,
+      "heading": "Welcome to Wisconsin"
+    },
+    {
+      "theme": "tactical",
+      "width": 375,
+      "height": 667,
+      "action": {
+        "top": 568.578125,
+        "bottom": 614.578125,
+        "width": 231.46875,
+        "height": 46
+      },
+      "navTop": 606.609375,
+      "scrollWidth": 375,
+      "heading": "Welcome to Wisconsin"
+    }
+  ]
+}

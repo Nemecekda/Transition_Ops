@@ -1,0 +1,41 @@
+{
+  "checked": "2026-10-16",
+  "records": [
+    {
+      "id": "WI3-NP-20261016-DRYHOOTCH",
+      "org": "Dryhootch",
+      "title": "Talk with someone who has served",
+      "geography": "Milwaukee contact; ask about current peer and family programs.",
+      "summary": "Dryhootch offers veteran peer support and resources for families adjusting to civilian life.",
+      "caveat": "Ask about current programs and locations. Peer support is not clinical treatment or an emergency response service.",
+      "action": "Use Dryhootch\u2019s official contact page to ask about its current Milwaukee peer-support and family programs.",
+      "label": "Contact Dryhootch about peer support",
+      "url": "https://www.dryhootch.org/contact",
+      "sources": [
+        "https://www.dryhootch.org/",
+        "https://www.dryhootch.org/families",
+        "https://www.dryhootch.org/contact",
+        "https://www.waukeshacounty.gov/health-and-human-services/veterans/veterans-related-links/dryhootch/"
+      ],
+      "population": "ALREADY SEPARATED and SPOUSE/FAMILY may ask about peer support. SEPARATING and GUARD/RESERVE members may inquire; the provider determines program fit and availability.",
+      "excluded": "No Madison site availability, clinical qualification, treatment outcome, immediate-response availability or claims accreditation is certified.",
+      "needs": [
+        "health"
+      ],
+      "einCandidate": "26-2778659",
+      "independentRating": "No current profile/rating available in root browser. Receipt charity-dryhootch-browser.txt.",
+      "ratingSource": "https://www.charitynavigator.org/ein/262778659",
+      "checked": "2026-10-16",
+      "rating": "UNVERIFIED organization status; provider-described peer service only",
+      "tier": "TIER 2",
+      "disposition": "PERSONAL OUTREACH",
+      "stageAllowed": false,
+      "band": "Condition-triggered inquiry; no fixed separation band or day-offset.",
+      "timing": "ACT AVAILABLE NOW",
+      "cost": "NOTHING",
+      "expires": "NONE; provider service area, availability and operating information must be checked when contacting it.",
+      "ogcApplicability": "Peer-support inquiry, not claims representation; OGC not applicable.",
+      "identityEvidence": "Root IRS browser found the named EIN with a 2008 determination letter and 2009 Form 990-N, but no current Publication 78 listing was displayed. Charity Navigator browser returned Organization Not Found in its most recent BMF data. These observations do not establish revocation, illegitimacy or misconduct. Exact current operating legal identity remains unresolved. Do not substitute Great Lakes Dryhootch EIN 81-3879969 without official linkage."
+    }
+  ]
+}

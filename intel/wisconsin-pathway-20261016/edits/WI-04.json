@@ -1,0 +1,8 @@
+{
+  "old": "  const wiGuideRequested = useRef(topsIsWisconsinGuideURL(window.location.href));",
+  "new": "  const wiGuideRequested = useRef(topsIsWisconsinGuideURL(window.location.href));\n  const [stateHelpContext, setStateHelpContext] = useState(function() { return topsIsStateHelpURL(window.location.href) ? topsReadStateHelpURL(window.location.href) : topsIsDocumentURL(window.location.href) && history.state && history.state.documentReturn === \"state-help\" ? topsStateHelpContext(history.state.stateHelp) : topsStateHelpDefault(userStatus); });\n  const stateHelpReturn = useRef(false);",
+  "expected": 1,
+  "old_before": 1,
+  "new_after": 1,
+  "old_after": 1
+}

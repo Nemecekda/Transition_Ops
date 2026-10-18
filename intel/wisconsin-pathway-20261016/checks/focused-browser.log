@@ -1,0 +1,10 @@
+UTC 2026-10-16T15:12:10.010421+00:00
+COMMAND ['node', 'scripts/wisconsin-pathway-browser-regression.js']
+PASS: Benefits plus State help are two navigation choices; national default reuses combined Guard/Reserve without inferring Wisconsin Guard.
+PASS: Resources picker selection focuses the new State help heading.
+PASS: six synthetic audiences find a useful action; returning orders uses DOL; reload preserves closed selection.
+Error: browser evaluation failed: SyntaxError: missing ) after argument list
+    at Object.evaluate (eval at <anonymous> (/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/wisconsin-pathway-browser-regression.js:1:1), <anonymous>:166:11)
+    at async /Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/wisconsin-pathway-browser-regression.js:34:51
+
+EXIT 1

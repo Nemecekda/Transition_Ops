@@ -1,0 +1,6 @@
+{
+  "old": "style: { fontSize: 24, lineHeight: 1.3, margin: \"8px 0\" } }, \"State benefits and local help\"",
+  "new": "style: { fontSize: 24, lineHeight: 1.3, margin: \"8px 0 14px\" } }, \"State and local help\"",
+  "new_after": 1,
+  "old_after": 0
+}

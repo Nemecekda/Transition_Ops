@@ -1,0 +1,6 @@
+{
+  "old": "style: context.area === \"wi\" ? { padding: \"14px 16px\", margin: \"0 0 16px\", borderLeft: \"3px solid \" + C.greenBright, borderRadius: \"0 10px 10px 0\", background: \"linear-gradient(110deg, \" + C.bgCard + \", \" + C.bg + \")\" } : { margin: \"8px 0 14px\" } },\n      context.area === \"wi\" && React.createElement(\"p\", { style: { margin: \"0 0 4px\", fontSize: 12, fontWeight: 600, letterSpacing: \".08em\", color: C.textSecondary } }, \"YOUR NEXT CHAPTER\"),",
+  "new": "style: context.area === \"wi\" ? { padding: \"10px 12px\", margin: \"0 0 12px\", borderLeft: \"3px solid \" + C.greenBright, borderRadius: \"0 10px 10px 0\", background: \"linear-gradient(110deg, \" + C.bgCard + \", \" + C.bg + \")\" } : { margin: \"8px 0 14px\" } },",
+  "new_after": 1,
+  "old_after": 0
+}

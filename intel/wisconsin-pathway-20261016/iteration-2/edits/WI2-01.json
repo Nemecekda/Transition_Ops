@@ -1,0 +1,7 @@
+{
+  "file": "index.html",
+  "old": "    React.createElement(\"h2\", { id: \"tops-state-help-heading\", tabIndex: -1, style: { fontSize: 24, lineHeight: 1.3, margin: \"8px 0 14px\" } }, \"State and local help\"),",
+  "new": "    React.createElement(\"header\", { id: \"tops-state-help-welcome\", style: context.area === \"wi\" ? { padding: \"14px 16px\", margin: \"0 0 16px\", borderLeft: \"3px solid \" + C.greenBright, borderRadius: \"0 10px 10px 0\", background: \"linear-gradient(110deg, \" + C.bgCard + \", \" + C.bg + \")\" } : { margin: \"8px 0 14px\" } },\n      context.area === \"wi\" && React.createElement(\"p\", { style: { margin: \"0 0 4px\", fontSize: 12, fontWeight: 600, letterSpacing: \".08em\", color: C.textSecondary } }, \"YOUR NEXT CHAPTER\"),\n      React.createElement(\"h2\", { id: \"tops-state-help-heading\", tabIndex: -1, style: { fontSize: 24, lineHeight: 1.3, margin: 0 } }, context.area === \"wi\" ? \"Welcome to Wisconsin\" : \"State and local help\"),\n      context.area === \"wi\" && React.createElement(\"p\", { style: { margin: \"6px 0 0\", fontSize: 15, lineHeight: 1.5, color: C.textSecondary } }, \"Whether you're returning, planning a move or already here, find your next step.\")),",
+  "new_after": 1,
+  "old_after": 0
+}

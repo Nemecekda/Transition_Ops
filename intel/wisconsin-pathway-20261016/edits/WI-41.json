@@ -1,0 +1,6 @@
+{
+  "old": "return TOPS_STATE_HELP_RECORDS.filter(function(item) { return item.area === c.area && item.need === need && (!item.situations || item.situations.includes(c.situation)); });",
+  "new": "return TOPS_STATE_HELP_RECORDS.filter(function(item) { return item.area === c.area && item.need === need && (!item.situations || item.situations.includes(c.situation)); }).sort(function(a, b) { var rank = function(item) { return c.situation === \"orders\" && item.verification === \"WI-20261016-USERRA\" || c.situation === \"guard\" && item.id === \"WI-20261016-04\" ? -1 : 0; }; return rank(a) - rank(b); });",
+  "old_after": 0,
+  "new_after": 1
+}

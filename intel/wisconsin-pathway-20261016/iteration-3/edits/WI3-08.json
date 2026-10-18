@@ -1,0 +1,7 @@
+{
+  "file": "index.html",
+  "old": "style: summary }, \"Wisconsin employers to explore\"),\n      React.createElement(\"p\",",
+  "new": "style: summary }, \"Wisconsin employers to explore\"),\n      React.createElement(\"section\", { id: \"tops-wisconsin-vets-ready\", style: { padding: \"8px 0 14px\" } }, React.createElement(\"h4\", { style: { margin: \"0 0 6px\", fontSize: 17 } }, TOPS_WISCONSIN_RECOGNITION.title),\n        React.createElement(\"p\", { style: { margin: \"6px 0\" } }, TOPS_WISCONSIN_RECOGNITION.body), React.createElement(\"p\", { style: { margin: \"6px 0\", fontSize: 14, color: C.textSecondary } }, TOPS_WISCONSIN_RECOGNITION.instructions), link(TOPS_WISCONSIN_RECOGNITION),\n        React.createElement(\"p\", { style: { margin: \"6px 0\", fontSize: 14, color: C.textSecondary } }, TOPS_WISCONSIN_RECOGNITION.note),\n        React.createElement(\"p\", { style: { margin: \"6px 0\", fontSize: 14, color: C.textSecondary } }, \"Recognition by \" + TOPS_WISCONSIN_RECOGNITION.issuer + \". The linked recipient list is for \" + TOPS_WISCONSIN_RECOGNITION.year + \".\"), link({ url: TOPS_WISCONSIN_RECOGNITION.awardURL, label: TOPS_WISCONSIN_RECOGNITION.awardLabel })),\n      React.createElement(\"h4\", { id: \"tops-wisconsin-cohort-heading\", style: { margin: \"8px 0 6px\", fontSize: 17 } }, \"VBS cohort companies\"),\n      React.createElement(\"p\",",
+  "new_after": 1,
+  "old_after": 0
+}

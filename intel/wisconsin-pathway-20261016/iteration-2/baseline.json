@@ -1,0 +1,14 @@
+{
+  "checked_at_utc": "2026-10-16T15:24:15.241808+00:00",
+  "branch": "codex/wisconsin-pathway",
+  "head": "ffede2397c22af055c97c74a8afe631d22edbc7b",
+  "porcelain": " M index.html\n M intel/verification-log.md\n M pwa-sw.js\n?? intel/wisconsin-pathway-20261016/\n?? scripts/wisconsin-pathway-browser-regression.js\n",
+  "prior_candidate_cache": 290,
+  "prior_files": {
+    "index.html": "2acb1be174325661050f982cdd56acaf3d74e0e754ef912ca9e857fccf7ca43b",
+    "pwa-sw.js": "48776d6f3ce49c559ed280121b3218d0da48ef10e4e2e387e799719899f93317",
+    "scripts/wisconsin-pathway-browser-regression.js": "dfa60218377012ae73fb46857651a08c9170da9f58a3ffc2709639bcf38d1625",
+    "intel/verification-log.md": "5028d29b615f262ff5f3cc89b9250a8912e2822284e07d2393bed04516bf98fd"
+  },
+  "scope": "Preserve iteration1; local Wisconsin welcome, source-qualified SkillBridge relationship guidance, user-confirmed cohort employer referrals; no publish or provider calls."
+}

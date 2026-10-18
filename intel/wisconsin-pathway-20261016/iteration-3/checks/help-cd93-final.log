@@ -1,0 +1,10 @@
+UTC 2026-10-16T16:01:59.395119+00:00
+COMMAND ['node', 'scripts/wisconsin-help-browser-regression.js']
+PASS VetsNet is distinct from Transition OPS; nonprofit coverage is visibly local/program-specific, CVI limits are explicit and Racine food support does not promise housing or all-spouse access.
+PASS adjacent national descriptions preserve ordinary Job Center access while qualifying priority/specialist eligibility and claims-accreditation distinctions.
+PASS task-matched optional help is bounded, distinct and uses safe links; claims fees/accreditation and household housing limits remain explicit without changing a saved plan.
+PASS DWD recognition has dated attribution and explicit unfiltered-search instructions; VBS membership and SkillBridge approval are separate; employer grants are not promised as member income.
+MEASURED work-entry action geometry (CSS px): [{"width":320,"theme":"professional","top":570.578125,"bottom":616.578125,"navTop":606.609375},{"width":320,"theme":"tactical","top":526.578125,"bottom":572.578125,"navTop":606.609375},{"width":375,"theme":"professional","top":502.578125,"bottom":548.578125,"navTop":606.609375},{"width":375,"theme":"tactical","top":502.578125,"bottom":548.578125,"navTop":606.609375}]
+WISCONSIN HELP PASS: local synthetic320/375x667, both themes, native keyboard disclosures, bounded relevant referrals, zero provider POSTs and exceptions.
+
+EXIT 0

@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-16T16:04:20.833269+00:00",
+  "checkout": "/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops",
+  "branch": "codex/wisconsin-pathway",
+  "base": "ffede2397c22af055c97c74a8afe631d22edbc7b",
+  "cache": 292,
+  "files": {
+    "index.html": "cd93e02c3de0b32be4fbed8befc8f8b5005482c6952be92bb4136699546077c1",
+    "pwa-sw.js": "5672aedc5556ebaa8c9236f48e5f862f50fe39fc074bb8563aba32cc41bf6799",
+    "intel/verification-log.md": "dbe89ab015b355922a5de657dae6a37e8c642d4ddbe9c09397ea56610b140359",
+    "scripts/wisconsin-pathway-browser-regression.js": "d02938cf0b6ad2146d9adab4339299a51d154fa30e0dd913eb497eadb352d337",
+    "scripts/wisconsin-welcome-browser-regression.js": "23568872b0e16add8023e38b8bdb0308b601ee1db48ad59c439044b33148881a",
+    "scripts/wisconsin-help-browser-regression.js": "44bc51d158ba0520ac69e06a75d5d5e6fe3270a30fbb328efc567b16b7e2957a"
+  },
+  "checks": {
+    "openai-cd93-revalidation": "PASS",
+    "sw-cd93-revalidation": "PASS",
+    "network-cd93-revalidation": "PASS",
+    "spend-cd93-revalidation": "PASS",
+    "a11y-cd93-revalidation": "PASS",
+    "pathway-cd93-revalidation": "PASS",
+    "welcome-cd93-revalidation": "PASS",
+    "help-cd93-revalidation": "PASS",
+    "policy-cd93-revalidation": "PASS",
+    "public-cd93-revalidation": "PASS"
+  },
+  "public_files": 74,
+  "release": "LOCAL ONLY; no commit/push/merge/deploy",
+  "post_copy_structural": "see checks/structural-final-package.log"
+}

@@ -1,0 +1,6 @@
+{
+  "old": "{\"id\":\"WI-20261016-07\",\"area\":\"wi\",\"need\":\"moving\"",
+  "new": "{\"id\":\"WI-20261016-10-property\",\"area\":\"wi\",\"need\":\"moving\",\"title\":\"Veteran property tax credit requirements\",\"summary\":\"Review WDVA certification requirements and Wisconsin Department of Revenue tax-credit guidance.\",\"caveat\":\"WDVA certification and tax-credit administration are separate steps. Moving to Wisconsin does not automatically qualify you.\",\"label\":\"Check veteran property tax credit requirements\",\"url\":\"https://dva.wi.gov/services/housing-and-financial-services/property-tax-credit/\",\"agency\":\"Wisconsin Department of Veterans Affairs\",\"action\":\"Review WDVA certification requirements and Wisconsin Department of Revenue guidance for the veteran property tax credit.\",\"verification\":\"WI-20261016-10\"},{\"id\":\"WI-20261016-07\",\"area\":\"wi\",\"need\":\"moving\"",
+  "new_after": 1,
+  "old_after": 1
+}

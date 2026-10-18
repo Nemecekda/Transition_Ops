@@ -1,0 +1,7 @@
+{
+  "file": "scripts/wisconsin-welcome-browser-regression.js",
+  "old": "/returning, planning a move or already here/",
+  "new": "/Returning, moving or already here/",
+  "new_after": 1,
+  "old_after": 0
+}

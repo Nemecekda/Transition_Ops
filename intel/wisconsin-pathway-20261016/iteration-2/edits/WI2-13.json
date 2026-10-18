@@ -1,0 +1,6 @@
+{
+  "file": "intel/verification-log.md",
+  "operation": "append confirmed S2 claims before app copy",
+  "new_records": 12,
+  "marker_after": 1
+}

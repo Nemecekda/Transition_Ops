@@ -1,0 +1,6 @@
+{
+  "old": "const TOPS_WISCONSIN_SETTLE_IN = [];",
+  "new": "const TOPS_WISCONSIN_SETTLE_IN = [{\"id\":\"WI2-20261016-PARKS\",\"body\":\"Find a park or trail for your next day off.\",\"note\":\"Check the property's conditions and admission or trail-pass requirements before visiting.\",\"label\":\"Explore Wisconsin parks\",\"url\":\"https://dnr.wisconsin.gov/topic/parks/findapark\",\"verification\":\"WI2-20261016-PARKS\"}];",
+  "new_after": 1,
+  "old_after": 0
+}

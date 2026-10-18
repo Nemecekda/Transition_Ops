@@ -1,0 +1,23 @@
+{
+  "index_sha256": "ac4cd90dc61ca39c1230665a1b6c7465aca31324f77c3a9b63a4a92aa7090df9",
+  "verification_ids": [
+    "WI4-20261016-DMV",
+    "WI4-20261016-VETERANS-HOMES",
+    "WI4-20261016-CEMETERY",
+    "WI4-20261016-FUNERAL-HONORS",
+    "WI4-20261016-PUBLIC-EDUCATION",
+    "WI4-20261016-FEDERAL-EDUCATION",
+    "WI4-20261016-WING-EDUCATION",
+    "WI4-20261016-SELECTED-RESERVE",
+    "WI4-20261016-PRIVATE-EDUCATION",
+    "WI4-20261016-VETED-REVIEW",
+    "WI4-20261016-HOUSING-NAVIGATOR",
+    "WI4-20261016-CDL-COORDINATION"
+  ],
+  "records": 26,
+  "education_rows": 4,
+  "primary_and_resume_context_cases": 112,
+  "preserved": "Entire StateLocalHelp renderer/save component byte-identical to iteration3; all22 prior record action strings/URLs preserved; same112 primary IDs and resume contexts.",
+  "source_copy": "Government and education runtime summaries/caveats/links match packets except approved public-school caveat compression and VORP reuse; exact original/source boundaries retained.",
+  "result": "PASS"
+}

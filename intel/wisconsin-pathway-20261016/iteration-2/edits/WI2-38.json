@@ -1,0 +1,5 @@
+{
+  "file": "scripts/wisconsin-welcome-browser-regression.js",
+  "operation": "add focused behavioral welcome/disclosure/source-boundary/mobile regression",
+  "lines": 52
+}

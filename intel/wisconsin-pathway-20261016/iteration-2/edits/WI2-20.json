@@ -1,0 +1,6 @@
+{
+  "old": "\"label\":\"Find a Wisconsin Job Center\",\"url\":\"https://wisconsinjobcenter.org/directory/\",\"agency\"",
+  "new": "\"label\":\"Find a Job Center\",\"url\":\"https://wisconsinjobcenter.org/directory/\",\"agency\"",
+  "new_after": 1,
+  "old_after": 0
+}

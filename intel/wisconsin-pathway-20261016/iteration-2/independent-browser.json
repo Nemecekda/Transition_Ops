@@ -1,0 +1,76 @@
+{
+  "checked": "2026-10-16",
+  "index_sha256": "9344287234955f5bcb5d33fe6b80dad325271ab186f174892dd5faa2ee969fad",
+  "environment": "Isolated headless Google Chrome, synthetic local loopback, 320/375 \u00d7 667, both themes; all external/function requests blocked",
+  "result": "PASS",
+  "checks": [
+    "375 primary action visible above bottom navigation",
+    "320/375 reflow and primary target size",
+    "all new disclosures initially collapsed",
+    "native Enter expands member/employer/cohort content",
+    "no numbered funding ladder",
+    "official SkillBridge route precedes resolved company websites",
+    "external link safety",
+    "browsing does not change local storage",
+    "All states removes Wisconsin welcome/content",
+    "zero uncaught exceptions or POST attempts"
+  ],
+  "screens": [
+    {
+      "theme": "professional",
+      "width": 320,
+      "height": 667,
+      "action": {
+        "top": 570.578125,
+        "bottom": 616.578125,
+        "width": 231.46875,
+        "height": 46
+      },
+      "navTop": 606.609375,
+      "scrollWidth": 320,
+      "heading": "Welcome to Wisconsin"
+    },
+    {
+      "theme": "professional",
+      "width": 375,
+      "height": 667,
+      "action": {
+        "top": 546.578125,
+        "bottom": 592.578125,
+        "width": 231.46875,
+        "height": 46
+      },
+      "navTop": 606.609375,
+      "scrollWidth": 375,
+      "heading": "Welcome to Wisconsin"
+    },
+    {
+      "theme": "tactical",
+      "width": 320,
+      "height": 667,
+      "action": {
+        "top": 570.578125,
+        "bottom": 616.578125,
+        "width": 231.46875,
+        "height": 46
+      },
+      "navTop": 606.609375,
+      "scrollWidth": 320,
+      "heading": "Welcome to Wisconsin"
+    },
+    {
+      "theme": "tactical",
+      "width": 375,
+      "height": 667,
+      "action": {
+        "top": 546.578125,
+        "bottom": 592.578125,
+        "width": 231.46875,
+        "height": 46
+      },
+      "navTop": 606.609375,
+      "scrollWidth": 375,
+      "heading": "Welcome to Wisconsin"
+    }
+  ]
+}

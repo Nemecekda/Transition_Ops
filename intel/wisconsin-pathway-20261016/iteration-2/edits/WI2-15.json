@@ -1,0 +1,6 @@
+{
+  "old": "const TOPS_WISCONSIN_COHORT_EMPLOYERS = [];",
+  "new": "const TOPS_WISCONSIN_COHORT_EMPLOYERS = [{\"id\":\"WI2-20261016-AIRTECH\",\"name\":\"Air Tech Heating, Inc.\",\"description\":\"HVAC installation and service in the Fond du Lac and Ripon area.\",\"label\":\"Air Tech careers\",\"url\":\"https://airtechhtg.com/careers/\",\"verification\":\"WI2-20261016-AIRTECH\"},{\"id\":\"WI2-20261016-WMC\",\"name\":\"Wisconsin Management Company\",\"description\":\"Property management and maintenance.\",\"label\":\"Wisconsin Management careers\",\"url\":\"https://www.wisconsinmanagement.com/careers\",\"verification\":\"WI2-20261016-WMC\"},{\"id\":\"WI2-20261016-KRIETE\",\"name\":\"Kriete Truck Centers\",\"description\":\"Truck service, technician and body-shop careers.\",\"label\":\"Kriete careers\",\"url\":\"https://krietetrucks.com/careers/\",\"verification\":\"WI2-20261016-KRIETE\"}];",
+  "new_after": 1,
+  "old_after": 0
+}

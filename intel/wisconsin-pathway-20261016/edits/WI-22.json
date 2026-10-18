@@ -1,0 +1,7 @@
+{
+  "old": "  // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 DASHBOARD TAB \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550",
+  "new": "  stateHelpToolActive() && React.createElement(\"button\", { id: \"tops-state-help-return\", type: \"button\", onClick: function() { openStateHelp(stateHelpContext, \"tops-state-help-next\"); }, style: { minHeight: 44, padding: \"10px 14px\", marginBottom: 12, border: \"1px solid \" + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgCard, font: \"inherit\" } }, stateHelpContext.area === \"wi\" ? \"Back to Wisconsin help\" : \"Back to state and local help\"),\n  // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 DASHBOARD TAB \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550",
+  "expected": 1,
+  "new_after": 1,
+  "old_after": 1
+}

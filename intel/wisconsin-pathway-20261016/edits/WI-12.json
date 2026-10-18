@@ -1,0 +1,8 @@
+{
+  "old": "subTab, planView, selectedMilestone, journeyTarget, pathwayMode, careerScreen, careerStage, showMoreMenu",
+  "new": "subTab, stateHelpContext, planView, selectedMilestone, journeyTarget, pathwayMode, careerScreen, careerStage, showMoreMenu",
+  "expected": 1,
+  "old_before": 1,
+  "new_after": 1,
+  "old_after": 0
+}

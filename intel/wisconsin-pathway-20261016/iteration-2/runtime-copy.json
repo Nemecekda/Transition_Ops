@@ -1,0 +1,351 @@
+{
+  "checked": "2026-10-16",
+  "analyst": "S2 primary-source verifier (Codex)",
+  "baseline": "2acb1be / cache 290, as reported by root",
+  "scope": "Narrow referral and program-relationship packet; not a determination that all programs stack. Import matching verification records before app copy. No company role availability or benefit amounts promised.",
+  "records": [
+    {
+      "id": "WI2-20261016-SKILLBRIDGE",
+      "title": "Before accepting SkillBridge support",
+      "rating": "CONFIRMED",
+      "checked": "2026-10-16",
+      "audience": "member",
+      "claim": "The official SkillBridge overview confirms continued military compensation and benefits during participation. The official MOU prohibits provider compensation or gifts for services performed during SkillBridge. Its cost provisions and current FAQ distinguish conditional subsistence, lodging and travel assistance; the FAQ directs legal review before accepting an offer. Active-duty Guard/Reserve participation has service-specific rules.",
+      "summary": "During SkillBridge, military pay and benefits continue. Provider pay for SkillBridge work is prohibited; an offer to help with travel or lodging has separate conditions.",
+      "caveat": "Do not assume an offer is permitted. Your service rules, approved program and legal review matter; ordinary paid employment is a separate arrangement.",
+      "action": "Use the SkillBridge FAQ and ask your installation SkillBridge office and servicing legal office to review proposed pay, gifts or travel/lodging support before accepting; Guard and Reserve members should also confirm participation rules with their Education or Transition Office.",
+      "label": "Check SkillBridge support rules",
+      "url": "https://skillbridge.mil/faq",
+      "sources": [
+        {
+          "id": "SB-OVERVIEW",
+          "url": "https://skillbridge.mil/programoverview"
+        },
+        {
+          "id": "SB-FAQ",
+          "url": "https://skillbridge.mil/faq"
+        },
+        {
+          "id": "SB-MOU",
+          "url": "https://www.skillbridge.mil/docs/DoD_SkillBridge_MOU_Aug_2024_Release.pdf"
+        }
+      ],
+      "population": "SEPARATING (active component); GUARD/RESERVE considering authorized active-duty participation.",
+      "excluded": "This does not establish SkillBridge participation or these military compensation rules for already-separated veterans or spouses/family merely because a company offers a civilian training program.",
+      "cost": "MONEY"
+    },
+    {
+      "id": "WI2-20261016-WIOA",
+      "title": "Ask about work and training costs",
+      "rating": "CONFIRMED",
+      "checked": "2026-10-16",
+      "audience": "member",
+      "claim": "DWD allows locally assessed support for participation in career/training services, including tools and transport. VA education/training benefits need not be exhausted before WIOA consideration. Funding coordination and eligibility remain separate decisions; duplicate payments are improper.",
+      "summary": "A Wisconsin Job Center can review help with training, tools, transportation or other work costs. Veterans and eligible spouses do not have to use up VA training benefits first.",
+      "caveat": "A SkillBridge placement does not itself establish WIOA eligibility or payment for an expense. Ask which program will pay each cost before spending.",
+      "action": "Contact a Wisconsin Job Center to review eligibility, proposed work or training costs, other funding and approval before spending, identifying whether you are in SkillBridge, starting paid work or already employed.",
+      "label": "Find a Wisconsin Job Center",
+      "url": "https://wisconsinjobcenter.org/directory/",
+      "sources": [
+        {
+          "id": "WIOA-TRAIN",
+          "url": "https://dwd.wisconsin.gov/wioa/policy/08/08.5.htm"
+        },
+        {
+          "id": "WIOA-SUPPORT",
+          "url": "https://dwd.wisconsin.gov/wioa/policy/08/08.6.htm"
+        },
+        {
+          "id": "WIOA-PAYMENT",
+          "url": "https://dwd.wisconsin.gov/wioa/policy/04/04.11.htm"
+        },
+        {
+          "id": "JOB-CENTER",
+          "url": "https://wisconsinjobcenter.org/directory/"
+        }
+      ],
+      "population": "All four may seek an assessment: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY and ALREADY SEPARATED; payment depends on the applicable program rather than military affiliation.",
+      "excluded": "No categorical award follows from military service, Wisconsin interest, employer participation or referral.",
+      "cost": "MONEY"
+    },
+    {
+      "id": "WI2-20261016-OJT",
+      "title": "Paid training after hiring",
+      "rating": "CONFIRMED",
+      "checked": "2026-10-16",
+      "audience": "employer-detail",
+      "claim": "WIOA OJT is occupational training for a paid participant under a local WDB/provider contract with the employer or apprenticeship sponsor. The wage-based training reimbursement goes to the employer, not an automatic member bonus.",
+      "summary": "An approved on-the-job training agreement may help an employer train an eligible paid employee.",
+      "caveat": "This is employer training support, not extra SkillBridge pay. The Job Center and employer must check the worker, job and agreement.",
+      "action": "Ask a Wisconsin Job Center and the employer whether a WIOA on-the-job training agreement fits the paid job and which training costs it would cover.",
+      "label": "Ask about paid training",
+      "url": "https://wisconsinjobcenter.org/directory/",
+      "sources": [
+        {
+          "id": "WIOA-TRAIN",
+          "url": "https://dwd.wisconsin.gov/wioa/policy/08/08.5.htm"
+        },
+        {
+          "id": "JOB-CENTER",
+          "url": "https://wisconsinjobcenter.org/directory/"
+        }
+      ],
+      "population": "ALREADY SEPARATED; GUARD/RESERVE in eligible civilian paid work; SPOUSE/FAMILY as independently eligible workers; SEPARATING (active component) for planning a later civilian hire only.",
+      "excluded": "This does not authorize employer wages for work performed during SkillBridge or make every new hire eligible.",
+      "cost": "MONEY"
+    },
+    {
+      "id": "WI2-20261016-IWT",
+      "title": "Training for people already employed",
+      "rating": "CONFIRMED",
+      "checked": "2026-10-16",
+      "audience": "employer-detail",
+      "claim": "DWD incumbent worker training is coordinated with employers for established employees and requires employer/worker review. It is distinct from OJT for a new hire and from an unpaid SkillBridge placement.",
+      "summary": "Incumbent worker training may help an employer build the skills of established employees.",
+      "caveat": "Prior employment, the training purpose and local rules matter. This is not a benefit promised to every new hire or SkillBridge participant.",
+      "action": "Ask a Wisconsin Job Center and your employer whether incumbent worker training fits your established employment and skill needs.",
+      "label": "Ask about employee training",
+      "url": "https://wisconsinjobcenter.org/directory/",
+      "sources": [
+        {
+          "id": "WIOA-TRAIN",
+          "url": "https://dwd.wisconsin.gov/wioa/policy/08/08.5.htm"
+        },
+        {
+          "id": "JOB-CENTER",
+          "url": "https://wisconsinjobcenter.org/directory/"
+        }
+      ],
+      "population": "All four only in the capacity of an independently qualifying existing civilian employee or as planning information; no military-status eligibility inferred.",
+      "excluded": "A SkillBridge placement alone does not establish the required employer-employee relationship or work history.",
+      "cost": "MONEY"
+    },
+    {
+      "id": "WI2-20261016-APPRENTICESHIP-WIOA",
+      "title": "Coordinate apprenticeship costs",
+      "rating": "CONFIRMED",
+      "checked": "2026-10-16",
+      "audience": "employer-detail",
+      "claim": "DWD permits WIOA OJT agreements for the job-training portion of registered apprenticeship and individual training accounts for related instruction. Combined payment methods must cover separate training components and depend on individual need/local policy.",
+      "summary": "A registered apprenticeship can combine paid work and related instruction. A Job Center can review which parts may qualify for workforce funding.",
+      "caveat": "Registered apprenticeship, VA approval and SkillBridge approval are separate checks. One does not establish the others.",
+      "action": "Ask a Wisconsin Job Center and the apprenticeship sponsor to identify approved job-training and classroom costs and which program would pay each component.",
+      "label": "Plan apprenticeship funding",
+      "url": "https://wisconsinjobcenter.org/directory/",
+      "sources": [
+        {
+          "id": "WIOA-TRAIN",
+          "url": "https://dwd.wisconsin.gov/wioa/policy/08/08.5.htm"
+        },
+        {
+          "id": "JOB-CENTER",
+          "url": "https://wisconsinjobcenter.org/directory/"
+        }
+      ],
+      "population": "All four can explore an independently eligible civilian apprenticeship; separating members plan for the appropriate duty-status and employment stage.",
+      "excluded": "No specific employer, apprenticeship, worker or same-time combination is approved by this referral.",
+      "cost": "MONEY"
+    },
+    {
+      "id": "WI2-20261016-VA-OJT",
+      "title": "Check GI Bill support for paid training",
+      "rating": "CONFIRMED",
+      "checked": "2026-10-16",
+      "audience": "member",
+      "claim": "Eligible people in a VA-approved OJT/apprenticeship program may receive VA support while earning employer wages. VA expressly excludes active-duty members and active-duty spouses using transferred benefits from its OJT benefit. Program and individual eligibility must both be checked.",
+      "summary": "Eligible trainees who are not on active duty may receive GI Bill support while earning wages in a VA-approved apprenticeship or on-the-job training program.",
+      "caveat": "VA must approve the training program and your benefit eligibility. Active-duty members cannot receive this GI Bill OJT benefit; spouses using transferred benefits while the member is active duty are also excluded.",
+      "action": "Use VA's on-the-job training guidance and linked GI Bill Comparison Tool to check the employer's program, then confirm your benefit eligibility and application with VA before counting on payments.",
+      "label": "Check VA-approved training",
+      "url": "https://www.va.gov/education/about-gi-bill-benefits/how-to-use-benefits/on-the-job-training-apprenticeships/",
+      "sources": [
+        {
+          "id": "VA-OJT",
+          "url": "https://www.va.gov/education/about-gi-bill-benefits/how-to-use-benefits/on-the-job-training-apprenticeships/"
+        },
+        {
+          "id": "VA-RATES",
+          "url": "https://www.va.gov/education/benefit-rates/post-9-11-gi-bill-rates/"
+        }
+      ],
+      "population": "ALREADY SEPARATED; eligible GUARD/RESERVE not excluded by active-duty status; eligible SPOUSE/FAMILY under the specified education programs; SEPARATING (active component) only for future planning.",
+      "excluded": "This does not apply as a current OJT payment to active-duty members or spouses using transferred benefits while the member is active duty.",
+      "cost": "MONEY"
+    },
+    {
+      "id": "WI2-20261016-VRE",
+      "title": "Ask about support for a service-connected condition",
+      "rating": "CONFIRMED",
+      "checked": "2026-10-16",
+      "audience": "member",
+      "claim": "VR&E is an employment program with counselor-determined entitlement, including some eligible active-duty members. It differs from the GI Bill. VA tells people eligible for both to choose the benefit; an optional GI Bill-based subsistence rate is an election within VR&E, not two concurrent allowances. Employer incentives require separate VA review.",
+      "summary": "If a service-connected condition affects work, VR&E may help you prepare for or keep suitable employment.",
+      "caveat": "A VA Vocational Rehabilitation Counselor decides entitlement and the plan. VR&E is separate from the GI Bill; a GI Bill-based VR&E allowance is not a second payment.",
+      "action": "Open VA's VR&E eligibility and application guidance and ask a Vocational Rehabilitation Counselor which employment plan and benefit election fit your needs before committing training benefits.",
+      "label": "Check VR&E support",
+      "url": "https://www.va.gov/careers-employment/vocational-rehabilitation/eligibility/",
+      "sources": [
+        {
+          "id": "VA-VRE",
+          "url": "https://www.va.gov/careers-employment/vocational-rehabilitation/eligibility/"
+        },
+        {
+          "id": "VA-VRE-LONG",
+          "url": "https://www.va.gov/careers-employment/vocational-rehabilitation/programs/long-term-services/"
+        },
+        {
+          "id": "VA-VRE-EMPLOYER",
+          "url": "https://www.benefits.va.gov/vocrehab/employers.asp"
+        }
+      ],
+      "population": "SEPARATING (active component), GUARD/RESERVE and ALREADY SEPARATED who meet the relevant service-connected disability and entitlement rules.",
+      "excluded": "This does not establish Chapter 31 entitlement for spouses/family through relationship alone, or automatic approval for everyone with a VA rating.",
+      "cost": "MONEY"
+    },
+    {
+      "id": "WI2-20261016-INCOME",
+      "title": "Plan around confirmed income",
+      "rating": "CONFIRMED",
+      "checked": "2026-10-16",
+      "audience": "member",
+      "claim": "Current VA housing and training payments depend on personal eligibility, duty status, training/enrollment and payment rules. Work Study needs a separate application and approved work. The app's fixed combined totals do not establish a member's expected income.",
+      "summary": "Build your budget from confirmed pay and benefit decisions. Training payments and Work Study depend on your eligibility, approval and schedule.",
+      "caveat": "Do not count employer reimbursement as personal income or assume every payment begins together. Confirm VA payments with VA and school costs with your school.",
+      "action": "Use VA's current education payment guidance and Work Study application guidance to confirm eligibility and payment timing with VA, and ask your school's financial aid office about your approved costs before adding those amounts to a budget.",
+      "label": "Check VA payment rules",
+      "url": "https://www.va.gov/education/benefit-rates/post-9-11-gi-bill-rates/",
+      "sources": [
+        {
+          "id": "VA-RATES",
+          "url": "https://www.va.gov/education/benefit-rates/post-9-11-gi-bill-rates/"
+        },
+        {
+          "id": "VA-WORKSTUDY",
+          "url": "https://www.va.gov/education/about-gi-bill-benefits/how-to-use-benefits/work-study/"
+        }
+      ],
+      "population": "All four may plan household income; each actual payment has distinct member, dependent, enrollment and duty-status rules.",
+      "excluded": "The planning action creates no entitlement or combined monthly amount.",
+      "cost": "MONEY"
+    },
+    {
+      "id": "WI2-20261016-PARKS",
+      "title": "Find a place to explore",
+      "rating": "CONFIRMED",
+      "checked": "2026-10-16",
+      "audience": "member",
+      "claim": "Wisconsin DNR provides a Find a Park directory with activity and accessible-feature filters. Its visitor guide supplies property information, admission/trail-pass requirements and conditions to check.",
+      "summary": "Find a Wisconsin park, trail or recreation area that fits the activities and accessible features you want.",
+      "caveat": "Check the property's conditions and admission or trail-pass requirements before visiting. No military discount is promised here.",
+      "action": "Use Wisconsin DNR's Find a Park directory to choose a place and open its property information for access, conditions and pass requirements before visiting.",
+      "label": "Explore Wisconsin parks",
+      "url": "https://dnr.wisconsin.gov/topic/parks/findapark",
+      "sources": [
+        {
+          "id": "DNR-FIND",
+          "url": "https://dnr.wisconsin.gov/topic/parks/findapark"
+        },
+        {
+          "id": "DNR-NEW",
+          "url": "https://dnr.wisconsin.gov/topic/parks/newtoparks"
+        }
+      ],
+      "population": "All four, as visitors or residents seeking ordinary public recreation information; no military or residency eligibility inferred.",
+      "excluded": "A directory listing does not guarantee current access, free admission or a military discount.",
+      "cost": "NOTHING"
+    },
+    {
+      "id": "WI2-20261016-AIRTECH",
+      "title": "Air Tech Heating, Inc.",
+      "rating": "CONFIRMED",
+      "checked": "2026-10-16",
+      "audience": "company-directory",
+      "claim": "The company's own website confirms its identity, career page and the bounded field description. Dean reports the company as part of his Wisconsin employer cohort; this is relationship provenance, not government approval.",
+      "summary": "HVAC installation and service in the Fond du Lac and Ripon area.",
+      "caveat": "Employer career information. Confirm openings, location, requirements and any SkillBridge arrangement directly; no job, benefit or approved placement is promised.",
+      "action": "Open Air Tech Heating, Inc.'s official careers page to review its role information and application instructions.",
+      "label": "Visit company careers",
+      "url": "https://airtechhtg.com/careers/",
+      "sources": [
+        {
+          "id": "AIRTECH",
+          "url": "https://airtechhtg.com/careers/"
+        }
+      ],
+      "population": "All four may explore civilian career information; eligibility for employment, training or SkillBridge is separately determined.",
+      "excluded": "Cohort membership does not establish a current opening, VA training approval, SkillBridge authorization, preferred access or an endorsement.",
+      "cost": "NOTHING"
+    },
+    {
+      "id": "WI2-20261016-WMC",
+      "title": "Wisconsin Management Company",
+      "rating": "CONFIRMED",
+      "checked": "2026-10-16",
+      "audience": "company-directory",
+      "claim": "The company's own website confirms its identity, career page and the bounded field description. Dean reports the company as part of his Wisconsin employer cohort; this is relationship provenance, not government approval.",
+      "summary": "Property management and maintenance.",
+      "caveat": "Employer career information. Confirm openings, location, requirements and any SkillBridge arrangement directly; no job, benefit or approved placement is promised.",
+      "action": "Open Wisconsin Management Company's official careers page to review its role information and application instructions.",
+      "label": "Visit company careers",
+      "url": "https://www.wisconsinmanagement.com/careers",
+      "sources": [
+        {
+          "id": "WMC",
+          "url": "https://www.wisconsinmanagement.com/careers"
+        }
+      ],
+      "population": "All four may explore civilian career information; eligibility for employment, training or SkillBridge is separately determined.",
+      "excluded": "Cohort membership does not establish a current opening, VA training approval, SkillBridge authorization, preferred access or an endorsement.",
+      "cost": "NOTHING"
+    },
+    {
+      "id": "WI2-20261016-KRIETE",
+      "title": "Kriete Truck Centers",
+      "rating": "CONFIRMED",
+      "checked": "2026-10-16",
+      "audience": "company-directory",
+      "claim": "The company's own website confirms its identity, career page and the bounded field description. Dean reports the company as part of his Wisconsin employer cohort; this is relationship provenance, not government approval.",
+      "summary": "Truck service, technician and body-shop careers.",
+      "caveat": "Employer career information. Confirm openings, location, requirements and any SkillBridge arrangement directly; no job, benefit or approved placement is promised.",
+      "action": "Open Kriete Truck Centers's official careers page to review its role information and application instructions.",
+      "label": "Visit company careers",
+      "url": "https://krietetrucks.com/careers/",
+      "sources": [
+        {
+          "id": "KRIETE",
+          "url": "https://krietetrucks.com/careers/"
+        },
+        {
+          "id": "KRIETE-TECH",
+          "url": "https://krietetrucks.com/careers/service-technicians/"
+        }
+      ],
+      "population": "All four may explore civilian career information; eligibility for employment, training or SkillBridge is separately determined.",
+      "excluded": "Cohort membership does not establish a current opening, VA training approval, SkillBridge authorization, preferred access or an endorsement.",
+      "cost": "NOTHING"
+    },
+    {
+      "id": "WI2-20261016-SKILLBRIDGE-FINDER",
+      "title": "Find an official SkillBridge opportunity",
+      "rating": "CONFIRMED",
+      "checked": "2026-10-16",
+      "audience": "member",
+      "claim": "The official SkillBridge opportunity finder provides keyword, state or ZIP searches and service filters. Its visible notice says listed opportunities reflect approved organization, program and position announcement records. No named company approval or opportunity availability was checked.",
+      "summary": "Search official SkillBridge opportunities by career, state or ZIP code.",
+      "caveat": "Check the exact program and position with your service and the provider. A company in this local directory is not automatically an approved SkillBridge opportunity.",
+      "action": "Use the official SkillBridge opportunity finder to check a specific program and position, then confirm participation with your service Education or Transition Office and the provider.",
+      "label": "Find official SkillBridge opportunities",
+      "url": "https://skillbridge.mil/locations",
+      "sources": [
+        {
+          "id": "SB-FINDER",
+          "url": "https://skillbridge.mil/locations"
+        }
+      ],
+      "population": "SEPARATING (active component); GUARD/RESERVE exploring authorized participation under their service rules. Other visitors may browse only.",
+      "excluded": "No company in the local directory, individual participant or available position is approved by this referral. It does not establish participation for already-separated veterans or spouses/family.",
+      "cost": "NOTHING"
+    }
+  ],
+  "pending": {}
+}

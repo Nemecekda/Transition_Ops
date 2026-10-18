@@ -1,0 +1,323 @@
+{
+  "scope": "Only iteration-4 evidence, excluding this self-manifest and post-commit release proofs. Release evidence stays in primary to bind the final immutable candidate without editing it. Raw TXT browser/Claude/source receipts are referenced by absolute path/hash and remain unchanged in primary worktree; they are not duplicated. Screenshots and scripts copied byte-exact.",
+  "files": [
+    {
+      "path": "PR-BODY.md",
+      "source_sha256": "477ff85fbbcf64eb75a50609f9a3f766793e8b4fc39020889a138d168b6feb2b",
+      "candidate_sha256": "477ff85fbbcf64eb75a50609f9a3f766793e8b4fc39020889a138d168b6feb2b",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "RECONCILIATION.md",
+      "source_sha256": "3d9bc2025845678185541c7da8a8ecad0609c92840b15cdc4e7166d10638a8a7",
+      "candidate_sha256": "3d9bc2025845678185541c7da8a8ecad0609c92840b15cdc4e7166d10638a8a7",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "S3-VALIDATION.md",
+      "source_sha256": "67cb56079a03174183e9bf0606caf3ea53bcaefcb12b926fef44a99093b05030",
+      "candidate_sha256": "67cb56079a03174183e9bf0606caf3ea53bcaefcb12b926fef44a99093b05030",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "SITREP.md",
+      "source_sha256": "303df6d1bd2f4efdf603945359f3574c8538f24ff24850bdaeaa0209e5ae1d00",
+      "candidate_sha256": "303df6d1bd2f4efdf603945359f3574c8538f24ff24850bdaeaa0209e5ae1d00",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "adjacent-cdl-copy.json",
+      "source_sha256": "5425883ae967380b1071d082fb5123d9748c340d664231ec17270189000eb820",
+      "candidate_sha256": "5425883ae967380b1071d082fb5123d9748c340d664231ec17270189000eb820",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "baseline.json",
+      "source_sha256": "a8824582107a3d5cac25ffcc956777240ef476759c281c01641d90d6daa30489",
+      "candidate_sha256": "a8824582107a3d5cac25ffcc956777240ef476759c281c01641d90d6daa30489",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "candidate-manifest.json",
+      "source_sha256": "10b7ef40e8e760f3316d3d39681d675d20ad1f85df1649649fdbba5282411f35",
+      "candidate_sha256": "10b7ef40e8e760f3316d3d39681d675d20ad1f85df1649649fdbba5282411f35",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "cdl-verification-log-append.md",
+      "source_sha256": "e8f87557cbe807f6895ca0b9986062b5238e9e9c9f42963b3ef6307878bbc505",
+      "candidate_sha256": "e8f87557cbe807f6895ca0b9986062b5238e9e9c9f42963b3ef6307878bbc505",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/a11y-ac4-revalidation.log",
+      "source_sha256": "8c36b9f77665f4af0506c0b59bc62004c57bb1e2a0e037f07672624278fb762d",
+      "candidate_sha256": "8c36b9f77665f4af0506c0b59bc62004c57bb1e2a0e037f07672624278fb762d",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/a11y-ac4.log",
+      "source_sha256": "9c7fcfbedec67ebcaff1f4d05acf111179599eef3f446760118d3acc9836f38e",
+      "candidate_sha256": "9c7fcfbedec67ebcaff1f4d05acf111179599eef3f446760118d3acc9836f38e",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/benefits-ac4-revalidation.log",
+      "source_sha256": "a0a48e1a0950ba7e878320b28d61f282c114ba4f7456721ac6758b33fbef30b4",
+      "candidate_sha256": "a0a48e1a0950ba7e878320b28d61f282c114ba4f7456721ac6758b33fbef30b4",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/help-ac4-revalidation.log",
+      "source_sha256": "081c68ff73b696817c5cd8e1a9c3470c55dd91cab5d14d73305bac10546ded75",
+      "candidate_sha256": "081c68ff73b696817c5cd8e1a9c3470c55dd91cab5d14d73305bac10546ded75",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/network-ac4-revalidation.log",
+      "source_sha256": "459def2494da38ff77e79e01dffca1a32936c69e54726ca9a03fb43c6ea91762",
+      "candidate_sha256": "459def2494da38ff77e79e01dffca1a32936c69e54726ca9a03fb43c6ea91762",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/network-ac4.log",
+      "source_sha256": "439326b8ad6ab65375d3fbcd6eb2f399cb189a404b8686bbec27fae9b1610adc",
+      "candidate_sha256": "439326b8ad6ab65375d3fbcd6eb2f399cb189a404b8686bbec27fae9b1610adc",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/openai-ac4-revalidation.log",
+      "source_sha256": "5f85f3fb85b1da3b8e477c23c0443cc2c6795e7d713ba7450bf4569e6f6ba805",
+      "candidate_sha256": "5f85f3fb85b1da3b8e477c23c0443cc2c6795e7d713ba7450bf4569e6f6ba805",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/openai-ac4.log",
+      "source_sha256": "06b66fef10836c6b47a41f759e9aa0534c222e0fab979591c329b57c1c149f50",
+      "candidate_sha256": "06b66fef10836c6b47a41f759e9aa0534c222e0fab979591c329b57c1c149f50",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/pathway-ac4-revalidation.log",
+      "source_sha256": "b066272da8c7b7b15756e1bbe580f5238a5f254b0e8fb8a79ec4a645dfe02d4e",
+      "candidate_sha256": "b066272da8c7b7b15756e1bbe580f5238a5f254b0e8fb8a79ec4a645dfe02d4e",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/pathway-ac4.log",
+      "source_sha256": "2600cd054ec3eb7aa532b041d5581cb1d8cca87e08468a84baa554896a97f5d3",
+      "candidate_sha256": "2600cd054ec3eb7aa532b041d5581cb1d8cca87e08468a84baa554896a97f5d3",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/policy-ac4-revalidation.log",
+      "source_sha256": "bacef07c457e5c060bf4140f41f5c56067cf49595e45d572feef3b2eef5c69f4",
+      "candidate_sha256": "bacef07c457e5c060bf4140f41f5c56067cf49595e45d572feef3b2eef5c69f4",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/public-ac4-revalidation.log",
+      "source_sha256": "c1b2b25a9c45e89df43d1beb90e4dbb5dea6ae37019faecaf6bef77c310c46d2",
+      "candidate_sha256": "c1b2b25a9c45e89df43d1beb90e4dbb5dea6ae37019faecaf6bef77c310c46d2",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/source-contract-ac4.json",
+      "source_sha256": "2201b8209b36cd41bf36d2e8a82a5174bbcc623baf5f52dd06ebae47387c448d",
+      "candidate_sha256": "2201b8209b36cd41bf36d2e8a82a5174bbcc623baf5f52dd06ebae47387c448d",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/spend-ac4-revalidation.log",
+      "source_sha256": "782b5e3f2087a41205e9d7f9287605c140830e8c7b9aaf02c2b48a38ba3e8d47",
+      "candidate_sha256": "782b5e3f2087a41205e9d7f9287605c140830e8c7b9aaf02c2b48a38ba3e8d47",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/spend-ac4.log",
+      "source_sha256": "c966aea3303d61781d51c63d3265be2188f41e29d7466bd38387436c48224b5b",
+      "candidate_sha256": "c966aea3303d61781d51c63d3265be2188f41e29d7466bd38387436c48224b5b",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/structural-ac4-revalidation.log",
+      "source_sha256": "d9d43877226637e7d6bb4a69c4c90aaf93e79a2c71dd906ea4942464197f4049",
+      "candidate_sha256": "d9d43877226637e7d6bb4a69c4c90aaf93e79a2c71dd906ea4942464197f4049",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/structural-ac4.log",
+      "source_sha256": "b07061f8a776be9867306df84bdde0cb40cddd54a49924a8c16e963296e0e8d4",
+      "candidate_sha256": "b07061f8a776be9867306df84bdde0cb40cddd54a49924a8c16e963296e0e8d4",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/sw-ac4-revalidation.log",
+      "source_sha256": "6988390262b8fe0c81996185a9c23b9e6e1877b52b8dc204d8478431e7b1da22",
+      "candidate_sha256": "6988390262b8fe0c81996185a9c23b9e6e1877b52b8dc204d8478431e7b1da22",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/sw-ac4.log",
+      "source_sha256": "af45082eb27c4188c68b2e9db835826cf60b5773c17f76c8c6d8342eec94971d",
+      "candidate_sha256": "af45082eb27c4188c68b2e9db835826cf60b5773c17f76c8c6d8342eec94971d",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/welcome-ac4-revalidation.log",
+      "source_sha256": "5a2d0496134859a9498750fa1694362eeba4d9c95f44ce9a400e65a7ddfd3a8a",
+      "candidate_sha256": "5a2d0496134859a9498750fa1694362eeba4d9c95f44ce9a400e65a7ddfd3a8a",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "claude-ux-review-raw.txt",
+      "source_path": "/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-4/claude-ux-review-raw.txt",
+      "source_sha256": "a6b87634c41bd4f12e804547060dffa21510355275b9c998633b49e58fdc4d2b",
+      "copy": "not duplicated; raw capture retained at source_path"
+    },
+    {
+      "path": "coverage-and-ux-contract.md",
+      "source_sha256": "290b9525389a088e2e45ba8327815ed34363e471ad3f099b3d900bd1162d2ff9",
+      "candidate_sha256": "290b9525389a088e2e45ba8327815ed34363e471ad3f099b3d900bd1162d2ff9",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "education-runtime-copy.json",
+      "source_sha256": "defc03da8918759e94e38bf049ec37296dd1112f6c07eee3206b75c0f1e9763a",
+      "candidate_sha256": "defc03da8918759e94e38bf049ec37296dd1112f6c07eee3206b75c0f1e9763a",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "education-source-review.md",
+      "source_sha256": "97fc1d8f6026ef360d750a5da1460d0672b1ff2ee76126f46264db732b51c9c0",
+      "candidate_sha256": "97fc1d8f6026ef360d750a5da1460d0672b1ff2ee76126f46264db732b51c9c0",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "education-verification-log-append.md",
+      "source_sha256": "30b5591ce20ab9f016d56e111b6bc318ffbb708913ffdba87fc63c9e0c9e81f9",
+      "candidate_sha256": "30b5591ce20ab9f016d56e111b6bc318ffbb708913ffdba87fc63c9e0c9e81f9",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "gaps-runtime-copy.json",
+      "source_sha256": "81a981a7d9b22d688adef1c7eb4ed43f2c76e2a97cf7708c552a452d76ea218f",
+      "candidate_sha256": "81a981a7d9b22d688adef1c7eb4ed43f2c76e2a97cf7708c552a452d76ea218f",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "gaps-source-access-ledger.md",
+      "source_sha256": "6757228ac1ce2adcf432b4917d4ac75854f9231b737312b7d1236301cb62d0bf",
+      "candidate_sha256": "6757228ac1ce2adcf432b4917d4ac75854f9231b737312b7d1236301cb62d0bf",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "gaps-verification-log-append.md",
+      "source_sha256": "db53a5a045153e46027655b16bedae3a6066c82dc48b4dbbadbbc6df53376dc2",
+      "candidate_sha256": "db53a5a045153e46027655b16bedae3a6066c82dc48b4dbbadbbc6df53376dc2",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "independent-education-browser.js",
+      "source_sha256": "22af5951de1230c76ee74bbeacdf41e80164ebdfef35cd32bc34199991020321",
+      "candidate_sha256": "22af5951de1230c76ee74bbeacdf41e80164ebdfef35cd32bc34199991020321",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "independent-education-browser.json",
+      "source_sha256": "0c7056167746eff769efeb294d720ffe448494141f09afae05a5dfa0b1f2fff1",
+      "candidate_sha256": "b39588d5aa535188bf1e3d53cd41032dc3aa02d49fa0763a970cbc8632b1eaf4",
+      "copy": "ASCII JSON serialization; values preserved"
+    },
+    {
+      "path": "independent-education-review.md",
+      "source_sha256": "230c41a447351aeef800ddc022c10553da1e4489ebf873bd282f36b7599ef5a8",
+      "candidate_sha256": "230c41a447351aeef800ddc022c10553da1e4489ebf873bd282f36b7599ef5a8",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "independent-education-source-contract.json",
+      "source_sha256": "2589de41acfa2cac0b1bc9f184d2aaa2b05fd2f63dad5c530509647368f9c3a2",
+      "candidate_sha256": "2589de41acfa2cac0b1bc9f184d2aaa2b05fd2f63dad5c530509647368f9c3a2",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "independent-government-review.md",
+      "source_sha256": "0cede10b7bbec4e665bcba3a6a417c12594e5e6a3a5376be6bcfa17812b453ea",
+      "candidate_sha256": "e8357b3a5f0096a84ede0c238f6d81215fa30990c1a065bc9341108bd9f4be9c",
+      "copy": "punctuation-normalized text"
+    },
+    {
+      "path": "mobile-education-375.png",
+      "source_sha256": "5b087093cf4982c3db8423c6dabfdd79af3431c1a4f0ea8674ea20c74a7abb3f",
+      "candidate_sha256": "5b087093cf4982c3db8423c6dabfdd79af3431c1a4f0ea8674ea20c74a7abb3f",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "mobile-education-entry.png",
+      "source_sha256": "4d7bb879a96fc40da7478b82bcc6afd0a52628815e8f76f276e5b51275d9f2b5",
+      "candidate_sha256": "4d7bb879a96fc40da7478b82bcc6afd0a52628815e8f76f276e5b51275d9f2b5",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "mobile-education-final-375.png",
+      "source_sha256": "23fc0259b3ead345e725ad571057135ee5f6368c0c04c9e89f7ed00ccdb05e0d",
+      "candidate_sha256": "23fc0259b3ead345e725ad571057135ee5f6368c0c04c9e89f7ed00ccdb05e0d",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "mobile-health-dark-320.png",
+      "source_sha256": "26f2450c8c7b1b18c584cc4b9bcb4d16245a95ae81c44ccaf8655ed6b18d85ec",
+      "candidate_sha256": "26f2450c8c7b1b18c584cc4b9bcb4d16245a95ae81c44ccaf8655ed6b18d85ec",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "mobile-health-details-dark-320.png",
+      "source_sha256": "bb7c2e84ad9dcb0c3de6dd0687b7e0beba4514a200c5eae3ebbbed5e776fcab5",
+      "candidate_sha256": "bb7c2e84ad9dcb0c3de6dd0687b7e0beba4514a200c5eae3ebbbed5e776fcab5",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "mobile-homes-dark-320.png",
+      "source_sha256": "176eaaaae42a7aa529fae28b4c90a96796afbd6598861ed59b4b0a0a9f61e14c",
+      "candidate_sha256": "176eaaaae42a7aa529fae28b4c90a96796afbd6598861ed59b4b0a0a9f61e14c",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "resume-20261018.json",
+      "source_sha256": "1017baefd336d6c1f1ec705528c592ce565da35661f5d3da6e6cb0ca1ac1f4e4",
+      "candidate_sha256": "1017baefd336d6c1f1ec705528c592ce565da35661f5d3da6e6cb0ca1ac1f4e4",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "root-review-notes.md",
+      "source_sha256": "e25bbef9ba305f2cb9f138bd1851d40ee9856719a19e9b54490c79bf5b623056",
+      "candidate_sha256": "e25bbef9ba305f2cb9f138bd1851d40ee9856719a19e9b54490c79bf5b623056",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "root-visual-review.md",
+      "source_sha256": "2883d98e8ba01372284cc3826d03744dd41d8d6a272d8da8cfeb75c50fdf9791",
+      "candidate_sha256": "2883d98e8ba01372284cc3826d03744dd41d8d6a272d8da8cfeb75c50fdf9791",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "vorp-county-map-browser.png",
+      "source_sha256": "0129a594c944dbece10633caf49c9cf7bedbbbcdd2059d67cba962c9a1eb7b08",
+      "candidate_sha256": "0129a594c944dbece10633caf49c9cf7bedbbbcdd2059d67cba962c9a1eb7b08",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "wtcs-contact-pdf-browser.png",
+      "source_sha256": "8ebcc97ef2ebd0fc07111c6080a29a7fd25bb20ad73b67b54961462a143fa45d",
+      "candidate_sha256": "8ebcc97ef2ebd0fc07111c6080a29a7fd25bb20ad73b67b54961462a143fa45d",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/structural-final-package.log",
+      "source_sha256": "de8e9aaaa6b1bc9ab1704f9555be617187c49d4560c41d6e75db25709af58bd8",
+      "candidate_sha256": "de8e9aaaa6b1bc9ab1704f9555be617187c49d4560c41d6e75db25709af58bd8",
+      "copy": "byte-exact"
+    }
+  ]
+}

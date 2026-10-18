@@ -1,0 +1,6 @@
+{
+  "old": "function WisconsinNextChapter(props) {",
+  "new": "const TOPS_WISCONSIN_EMPLOYER_SUPPORT = [{\"id\":\"WI2-20261016-OJT\",\"title\":\"Paid training after hiring\",\"body\":\"An approved on-the-job training agreement may help an employer train an eligible paid employee.\",\"note\":\"This is employer training support, not extra SkillBridge pay. The Job Center and employer must check the worker, job and agreement.\",\"verification\":\"WI2-20261016-OJT\"},{\"id\":\"WI2-20261016-IWT\",\"title\":\"Training for people already employed\",\"body\":\"Incumbent worker training may help an employer build the skills of established employees.\",\"note\":\"Prior employment, the training purpose and local rules matter. This is not a benefit promised to every new hire or SkillBridge participant.\",\"verification\":\"WI2-20261016-IWT\"},{\"id\":\"WI2-20261016-APPRENTICESHIP-WIOA\",\"title\":\"Coordinate apprenticeship costs\",\"body\":\"A registered apprenticeship can combine paid work and related instruction. A Job Center can review which parts may qualify for workforce funding.\",\"note\":\"Registered apprenticeship, VA approval and SkillBridge approval are separate checks. One does not establish the others.\",\"verification\":\"WI2-20261016-APPRENTICESHIP-WIOA\"}];\nfunction WisconsinNextChapter(props) {",
+  "new_after": 1,
+  "old_after": 1
+}

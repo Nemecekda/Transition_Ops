@@ -1,0 +1,7 @@
+{
+  "file": "index.html",
+  "old": "    React.createElement(\"button\", { id: \"tops-state-help-all\",",
+  "new": "    React.createElement(WisconsinNextChapter, { colors: C, context: context, button: button }),\n    React.createElement(\"button\", { id: \"tops-state-help-all\",",
+  "new_after": 1,
+  "old_after": 1
+}

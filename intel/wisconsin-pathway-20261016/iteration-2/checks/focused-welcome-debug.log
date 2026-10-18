@@ -1,0 +1,25 @@
+UTC 2026-10-16T15:35:21.425689+00:00
+COMMAND ['node', '/private/tmp/tops-wi2-welcome-debug.js']
+EVAL new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))
+EVAL (()=>{localStorage.clear();localStorage.setItem('tops_onboarded','1');localStorage.setItem('tops_user_status',"guard");localStorage.setItem('tops_theme',"profes
+EVAL new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))
+EVAL JSON.stringify(Object.entries(localStorage).sort())
+EVAL new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))
+EVAL document.getElementById("tops-state-help-heading").textContent
+EVAL !!document.getElementById("tops-wisconsin-next-chapter")
+EVAL new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))
+EVAL document.getElementById("tops-state-help-heading").textContent
+EVAL document.getElementById("tops-state-help-welcome").textContent
+EVAL document.getElementById("tops-wisconsin-skillbridge").open
+EVAL document.getElementById("tops-wisconsin-cohort").open
+EVAL document.getElementById("tops-wisconsin-settle-in").open
+EVAL document.querySelector("#tops-state-help article > a").compareDocumentPosition(document.getElementById("tops-wisconsin-skillbridge")) & Node.DOCUMENT_POSITION_F
+PASS national default remains national; Wisconsin welcome includes return/move/already-here visitors; useful official action precedes all collapsed extras.
+EVAL document.querySelector("#tops-wisconsin-skillbridge > summary").focus()
+EVAL new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))
+Error: CDP timeout for Runtime.evaluate
+    at Timeout.eval [as _onTimeout] (eval at <anonymous> (/private/tmp/tops-wi2-welcome-debug.js:5:9), <anonymous>:89:16)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+
+EXIT 1

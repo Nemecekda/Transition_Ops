@@ -1,0 +1,7 @@
+{
+  "file": "scripts/wisconsin-pathway-browser-regression.js",
+  "old": "['wi','active','work','Find a Wisconsin Job Center']",
+  "new": "['wi','active','work','Find a Job Center']",
+  "new_after": 1,
+  "old_after": 0
+}

@@ -1,0 +1,36 @@
+UTC 2026-10-16T15:13:48.130566+00:00
+COMMAND ['npm', 'run', 'test:accessibility-release']
+
+> transition-ops@1.0.0 test:accessibility-release
+> node scripts/accessibility-release-regression.js
+
+PASS document source declares a language
+PASS document source declares a nonempty title
+PASS viewport does not disable user scaling
+PASS viewport does not cap required zoom
+PASS browser source does not force orientation
+PASS manifest does not force orientation
+PASS source defines a reduced-motion mode
+PASS A11Y-NR source contract navigatorPrompts
+PASS A11Y-NR source contract navigatorInput
+PASS A11Y-NR source contract navigatorSend
+PASS A11Y-NR source contract resumeDisclosure
+PASS A11Y-NR source contract formatControls
+PASS A11Y-NR source contract exampleDisclosure
+PASS A11Y-NR source contract lengthControls
+PASS A11Y-NR source contract jobsDisclosure
+PASS A11Y-NR source contract persistentLabels
+PASS A11Y-NR-01 click-only Navigator mutation fails
+PASS A11Y-NR-02 placeholder-only Navigator mutation fails
+PASS A11Y-NR-03 click-only Resume disclosure mutation fails
+PASS A11Y-NR-04 unlabeled Resume form mutation fails
+PASS A11Y-NR-05 full scenario and route matrix is configured
+PASS A11Y-NR-05 dashboard-only route mutation fails
+ARTIFACT index.html sha256=78c6411e8e8b9cf777f64c6972956745fc128f0f81e0cc0113fc9e1bea0a5e04
+BROWSER Chrome/155.0.8059.80 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36
+FIXTURE synthetic local state; outbound connections denied before network
+Error: required rendered evidence unavailable for 320 portrait default dashboard rendered app; last=false
+    at waitForExpression (/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/accessibility-release-regression.js:390:9)
+    at async run (/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/accessibility-release-regression.js:1201:9)
+
+EXIT 1

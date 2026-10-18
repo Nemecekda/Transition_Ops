@@ -1,0 +1,79 @@
+{
+  "index_sha256": "ac4cd90dc61ca39c1230665a1b6c7465aca31324f77c3a9b63a4a92aa7090df9",
+  "worker_sha256": "47b9e649af493b53bf7def5d5dec5cdb1bda5891289d299699a98f8eb70aba65",
+  "checks": [
+    {
+      "path": "checks/structural-20261018-final.log",
+      "source_sha256": "251ac9a35b2e64ee617d96dff1faf3a738071876a2ccf5f33a8784d4c3abc396",
+      "candidate_sha256": "251ac9a35b2e64ee617d96dff1faf3a738071876a2ccf5f33a8784d4c3abc396",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/openai-20261018-final.log",
+      "source_sha256": "10388bc5b20c75f769ab784187bac7a244a6f8193dc301963bc138aa3aa92543",
+      "candidate_sha256": "10388bc5b20c75f769ab784187bac7a244a6f8193dc301963bc138aa3aa92543",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/sw-20261018-final.log",
+      "source_sha256": "1a78de00013d19807f5edbced3c8780b3735a0b3839b6f6bfc8d68e35b686cd6",
+      "candidate_sha256": "1a78de00013d19807f5edbced3c8780b3735a0b3839b6f6bfc8d68e35b686cd6",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/network-20261018-final.log",
+      "source_sha256": "b288bb55c45057d252d9c503bf16ca61ca201aa8e76247eff42d70be8d592cd8",
+      "candidate_sha256": "b288bb55c45057d252d9c503bf16ca61ca201aa8e76247eff42d70be8d592cd8",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/spend-20261018-final.log",
+      "source_sha256": "47125db1e355bcb25e7ed31dba928ea2f80e5b02e053866e8df4c901ca28658b",
+      "candidate_sha256": "47125db1e355bcb25e7ed31dba928ea2f80e5b02e053866e8df4c901ca28658b",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/a11y-20261018-final.log",
+      "source_sha256": "4c029d6b81d957c58370abf3321a091b0748ccca998212b56eaafead2e0d6d5c",
+      "candidate_sha256": "4c029d6b81d957c58370abf3321a091b0748ccca998212b56eaafead2e0d6d5c",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/pathway-20261018-final.log",
+      "source_sha256": "771d0b68dbbd63c2b8019c8c5f2763346dcf99fea98a6e19df61bbb775514ac3",
+      "candidate_sha256": "771d0b68dbbd63c2b8019c8c5f2763346dcf99fea98a6e19df61bbb775514ac3",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/welcome-20261018-final.log",
+      "source_sha256": "54fc5347ac024d07cbfcee047295a651f675c1fb839ecd88d1473c0e114e79d0",
+      "candidate_sha256": "54fc5347ac024d07cbfcee047295a651f675c1fb839ecd88d1473c0e114e79d0",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/help-20261018-final.log",
+      "source_sha256": "2e189e613a7e870b237a12742a6303460e8c0778563ee613f907cf55a96888fa",
+      "candidate_sha256": "2e189e613a7e870b237a12742a6303460e8c0778563ee613f907cf55a96888fa",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/benefits-20261018-final.log",
+      "source_sha256": "c899ec25fc3aa003b9668ebc12b9f97c3c02eb659dfbf880b2f2ea9518648efc",
+      "candidate_sha256": "c899ec25fc3aa003b9668ebc12b9f97c3c02eb659dfbf880b2f2ea9518648efc",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/policy-20261018-final.log",
+      "source_sha256": "aad6116c93a8cf0736e99012d1ed33f1d19631668be6c080bd03e03606ded95e",
+      "candidate_sha256": "aad6116c93a8cf0736e99012d1ed33f1d19631668be6c080bd03e03606ded95e",
+      "copy": "byte-exact"
+    },
+    {
+      "path": "checks/public-20261018-final.log",
+      "source_sha256": "6d0449b88bb026e29450104170ecaac0d63eb3095259b19edc8c0d2ba807c197",
+      "candidate_sha256": "6d0449b88bb026e29450104170ecaac0d63eb3095259b19edc8c0d2ba807c197",
+      "copy": "byte-exact"
+    }
+  ],
+  "scope": "Only final local receipts; post-commit release proof stays in primary."
+}

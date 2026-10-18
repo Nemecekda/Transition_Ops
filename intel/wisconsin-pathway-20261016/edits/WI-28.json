@@ -1,0 +1,7 @@
+{
+  "old": "    [{id:\"reminders\",icon:\"bell\",label:\"REMINDERS & ALERTS\"",
+  "new": "    React.createElement(\"button\", { id: \"tops-menu-state-help\", type: \"button\", className: \"tops-more-tool\", onClick: function() { openStateHelp(); } }, React.createElement(\"span\", { style: { color: C.gold, flexShrink: 0 } }, TIcon(\"link\", 30)), React.createElement(\"div\", null, React.createElement(\"strong\", null, \"State benefits and local help\"), React.createElement(\"div\", { style: { fontSize: 14, color: C.textSecondary, marginTop: 4 } }, \"Find the right office for where you live or plan to move.\"))),\n    [{id:\"reminders\",icon:\"bell\",label:\"REMINDERS & ALERTS\"",
+  "expected": 1,
+  "new_after": 1,
+  "old_after": 1
+}

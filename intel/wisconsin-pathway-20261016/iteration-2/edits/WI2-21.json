@@ -1,0 +1,7 @@
+{
+  "file": "intel/verification-log.md",
+  "operation": "refresh final confirmed packet before runtime corrections",
+  "old_records": 12,
+  "new_records": 13,
+  "new_after": 1
+}

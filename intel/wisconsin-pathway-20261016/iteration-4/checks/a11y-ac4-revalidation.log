@@ -1,0 +1,995 @@
+UTC 2026-10-16T16:19:20.309228+00:00
+COMMAND ['npm', 'run', 'test:accessibility-release']
+
+> transition-ops@1.0.0 test:accessibility-release
+> node scripts/accessibility-release-regression.js
+
+PASS document source declares a language
+PASS document source declares a nonempty title
+PASS viewport does not disable user scaling
+PASS viewport does not cap required zoom
+PASS browser source does not force orientation
+PASS manifest does not force orientation
+PASS source defines a reduced-motion mode
+PASS A11Y-NR source contract navigatorPrompts
+PASS A11Y-NR source contract navigatorInput
+PASS A11Y-NR source contract navigatorSend
+PASS A11Y-NR source contract resumeDisclosure
+PASS A11Y-NR source contract formatControls
+PASS A11Y-NR source contract exampleDisclosure
+PASS A11Y-NR source contract lengthControls
+PASS A11Y-NR source contract jobsDisclosure
+PASS A11Y-NR source contract persistentLabels
+PASS A11Y-NR-01 click-only Navigator mutation fails
+PASS A11Y-NR-02 placeholder-only Navigator mutation fails
+PASS A11Y-NR-03 click-only Resume disclosure mutation fails
+PASS A11Y-NR-04 unlabeled Resume form mutation fails
+PASS A11Y-NR-05 full scenario and route matrix is configured
+PASS A11Y-NR-05 dashboard-only route mutation fails
+ARTIFACT index.html sha256=ac4cd90dc61ca39c1230665a1b6c7465aca31324f77c3a9b63a4a92aa7090df9
+BROWSER Chrome/155.0.8059.80 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36
+FIXTURE synthetic local state; outbound connections denied before network
+PASS 320 portrait default dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+PASS 320 portrait default dashboard Privacy clears fixed navigation at maximum scroll
+SCENARIO 320 portrait default dashboard {"clientWidth":320,"docWidth":320,"headings":7,"liveRegions":6,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":40,"zoom":"1"}
+PASS 320 portrait default navigator Navigator input has a persistent name
+PASS 320 portrait default navigator Navigator prompts are native enabled buttons
+PASS 320 portrait default navigator Navigator SEND is natively disabled while empty
+PASS 320 portrait default navigator Navigator synthetic input was entered locally
+PASS 320 portrait default navigator Navigator name persists after entry
+PASS 320 portrait default navigator Navigator semantics test makes zero function requests
+PASS 320 portrait default navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+PASS 320 portrait default navigator Privacy clears fixed navigation at maximum scroll
+SCENARIO 320 portrait default navigator {"clientWidth":320,"docWidth":320,"headings":2,"liveRegions":2,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":17,"zoom":"1"}
+PASS 320 portrait default pathway Career menu starts collapsed and keyboard focusable
+PASS 320 portrait default pathway expanded Career menu preserves reflow and semantics
+PASS 320 portrait default pathway Other Career tools is keyboard focusable
+PASS 320 portrait default pathway Resume shortcut keyboard focusable
+PASS 320 portrait default pathway Resume disclosure is a keyboard-focusable native expanded button
+PASS 320 portrait default pathway Resume federal-format control is keyboard focusable
+PASS 320 portrait default pathway Resume civilian-format control is keyboard focusable
+PASS 320 portrait default pathway tops-resume-format-options summary keyboard focusable
+PASS 320 portrait default pathway tops-resume-contact-options summary keyboard focusable
+PASS 320 portrait default pathway Resume length control is keyboard focusable
+PASS 320 portrait default pathway Resume example disclosure is keyboard focusable
+PASS 320 portrait default pathway visible Resume fields keep persistent labels
+PASS 320 portrait default pathway Resume semantics test makes zero function requests
+PASS 320 portrait default pathway CIVILIAN validation busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait default pathway CIVILIAN validation busy presentation retains readable contrast, reflow, and semantics
+PASS 320 portrait default pathway CIVILIAN validation repeated activation makes no duplicate request
+PASS 320 portrait default pathway CIVILIAN validation exact failure text is an atomic alert
+PASS 320 portrait default pathway CIVILIAN validation completion preserves current focus and allows a deliberate retry
+PASS 320 portrait default pathway CIVILIAN validation browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait default pathway CIVILIAN budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait default pathway CIVILIAN budget denial repeated activation makes no duplicate request
+PASS 320 portrait default pathway CIVILIAN budget denial exact failure text is an atomic alert
+PASS 320 portrait default pathway CIVILIAN budget denial completion preserves current focus and allows a deliberate retry
+PASS 320 portrait default pathway CIVILIAN budget denial browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait default pathway CIVILIAN provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait default pathway CIVILIAN provider unavailable repeated activation makes no duplicate request
+PASS 320 portrait default pathway CIVILIAN provider unavailable exact failure text is an atomic alert
+PASS 320 portrait default pathway CIVILIAN provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 320 portrait default pathway CIVILIAN provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait default pathway CIVILIAN non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait default pathway CIVILIAN non-JSON transport failure repeated activation makes no duplicate request
+PASS 320 portrait default pathway CIVILIAN non-JSON transport failure exact failure text is an atomic alert
+PASS 320 portrait default pathway CIVILIAN non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 320 portrait default pathway CIVILIAN non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait default pathway FEDERAL validation busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait default pathway FEDERAL validation busy presentation retains readable contrast, reflow, and semantics
+PASS 320 portrait default pathway FEDERAL validation repeated activation makes no duplicate request
+PASS 320 portrait default pathway FEDERAL validation exact failure text is an atomic alert
+PASS 320 portrait default pathway FEDERAL validation completion preserves current focus and allows a deliberate retry
+PASS 320 portrait default pathway FEDERAL validation browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait default pathway FEDERAL budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait default pathway FEDERAL budget denial repeated activation makes no duplicate request
+PASS 320 portrait default pathway FEDERAL budget denial exact failure text is an atomic alert
+PASS 320 portrait default pathway FEDERAL budget denial completion preserves current focus and allows a deliberate retry
+PASS 320 portrait default pathway FEDERAL budget denial browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait default pathway FEDERAL provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait default pathway FEDERAL provider unavailable repeated activation makes no duplicate request
+PASS 320 portrait default pathway FEDERAL provider unavailable exact failure text is an atomic alert
+PASS 320 portrait default pathway FEDERAL provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 320 portrait default pathway FEDERAL provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait default pathway FEDERAL non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait default pathway FEDERAL non-JSON transport failure repeated activation makes no duplicate request
+PASS 320 portrait default pathway FEDERAL non-JSON transport failure exact failure text is an atomic alert
+PASS 320 portrait default pathway FEDERAL non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 320 portrait default pathway FEDERAL non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait default pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+PASS 320 portrait default pathway Privacy clears fixed navigation at maximum scroll
+SCENARIO 320 portrait default pathway {"clientWidth":320,"docWidth":320,"headings":2,"liveRegions":5,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"1"}
+PASS 375 portrait default dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+PASS 375 portrait default dashboard Privacy clears fixed navigation at maximum scroll
+SCENARIO 375 portrait default dashboard {"clientWidth":375,"docWidth":375,"headings":7,"liveRegions":6,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":40,"zoom":"1"}
+PASS 375 portrait default navigator Navigator input has a persistent name
+PASS 375 portrait default navigator Navigator prompts are native enabled buttons
+PASS 375 portrait default navigator Navigator SEND is natively disabled while empty
+PASS 375 portrait default navigator Navigator synthetic input was entered locally
+PASS 375 portrait default navigator Navigator name persists after entry
+PASS 375 portrait default navigator Navigator semantics test makes zero function requests
+PASS 375 portrait default navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+PASS 375 portrait default navigator Privacy clears fixed navigation at maximum scroll
+SCENARIO 375 portrait default navigator {"clientWidth":375,"docWidth":375,"headings":2,"liveRegions":2,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":17,"zoom":"1"}
+PASS 375 portrait default pathway Career menu starts collapsed and keyboard focusable
+PASS 375 portrait default pathway expanded Career menu preserves reflow and semantics
+PASS 375 portrait default pathway Other Career tools is keyboard focusable
+PASS 375 portrait default pathway Resume shortcut keyboard focusable
+PASS 375 portrait default pathway Resume disclosure is a keyboard-focusable native expanded button
+PASS 375 portrait default pathway Resume federal-format control is keyboard focusable
+PASS 375 portrait default pathway Resume civilian-format control is keyboard focusable
+PASS 375 portrait default pathway tops-resume-format-options summary keyboard focusable
+PASS 375 portrait default pathway tops-resume-contact-options summary keyboard focusable
+PASS 375 portrait default pathway Resume length control is keyboard focusable
+PASS 375 portrait default pathway Resume example disclosure is keyboard focusable
+PASS 375 portrait default pathway visible Resume fields keep persistent labels
+PASS 375 portrait default pathway Resume semantics test makes zero function requests
+PASS 375 portrait default pathway CIVILIAN validation busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait default pathway CIVILIAN validation busy presentation retains readable contrast, reflow, and semantics
+PASS 375 portrait default pathway CIVILIAN validation repeated activation makes no duplicate request
+PASS 375 portrait default pathway CIVILIAN validation exact failure text is an atomic alert
+PASS 375 portrait default pathway CIVILIAN validation completion preserves current focus and allows a deliberate retry
+PASS 375 portrait default pathway CIVILIAN validation browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait default pathway CIVILIAN budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait default pathway CIVILIAN budget denial repeated activation makes no duplicate request
+PASS 375 portrait default pathway CIVILIAN budget denial exact failure text is an atomic alert
+PASS 375 portrait default pathway CIVILIAN budget denial completion preserves current focus and allows a deliberate retry
+PASS 375 portrait default pathway CIVILIAN budget denial browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait default pathway CIVILIAN provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait default pathway CIVILIAN provider unavailable repeated activation makes no duplicate request
+PASS 375 portrait default pathway CIVILIAN provider unavailable exact failure text is an atomic alert
+PASS 375 portrait default pathway CIVILIAN provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 375 portrait default pathway CIVILIAN provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait default pathway CIVILIAN non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait default pathway CIVILIAN non-JSON transport failure repeated activation makes no duplicate request
+PASS 375 portrait default pathway CIVILIAN non-JSON transport failure exact failure text is an atomic alert
+PASS 375 portrait default pathway CIVILIAN non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 375 portrait default pathway CIVILIAN non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait default pathway FEDERAL validation busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait default pathway FEDERAL validation busy presentation retains readable contrast, reflow, and semantics
+PASS 375 portrait default pathway FEDERAL validation repeated activation makes no duplicate request
+PASS 375 portrait default pathway FEDERAL validation exact failure text is an atomic alert
+PASS 375 portrait default pathway FEDERAL validation completion preserves current focus and allows a deliberate retry
+PASS 375 portrait default pathway FEDERAL validation browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait default pathway FEDERAL budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait default pathway FEDERAL budget denial repeated activation makes no duplicate request
+PASS 375 portrait default pathway FEDERAL budget denial exact failure text is an atomic alert
+PASS 375 portrait default pathway FEDERAL budget denial completion preserves current focus and allows a deliberate retry
+PASS 375 portrait default pathway FEDERAL budget denial browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait default pathway FEDERAL provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait default pathway FEDERAL provider unavailable repeated activation makes no duplicate request
+PASS 375 portrait default pathway FEDERAL provider unavailable exact failure text is an atomic alert
+PASS 375 portrait default pathway FEDERAL provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 375 portrait default pathway FEDERAL provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait default pathway FEDERAL non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait default pathway FEDERAL non-JSON transport failure repeated activation makes no duplicate request
+PASS 375 portrait default pathway FEDERAL non-JSON transport failure exact failure text is an atomic alert
+PASS 375 portrait default pathway FEDERAL non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 375 portrait default pathway FEDERAL non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait default pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+PASS 375 portrait default pathway Privacy clears fixed navigation at maximum scroll
+SCENARIO 375 portrait default pathway {"clientWidth":375,"docWidth":375,"headings":2,"liveRegions":5,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"1"}
+PASS 320 landscape default dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+PASS 320 landscape default dashboard Privacy clears fixed navigation at maximum scroll
+SCENARIO 320 landscape default dashboard {"clientWidth":640,"docWidth":640,"headings":7,"liveRegions":6,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":40,"zoom":"1"}
+PASS 320 landscape default navigator Navigator input has a persistent name
+PASS 320 landscape default navigator Navigator prompts are native enabled buttons
+PASS 320 landscape default navigator Navigator SEND is natively disabled while empty
+PASS 320 landscape default navigator Navigator synthetic input was entered locally
+PASS 320 landscape default navigator Navigator name persists after entry
+PASS 320 landscape default navigator Navigator semantics test makes zero function requests
+PASS 320 landscape default navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+PASS 320 landscape default navigator Privacy clears fixed navigation at maximum scroll
+SCENARIO 320 landscape default navigator {"clientWidth":640,"docWidth":640,"headings":2,"liveRegions":2,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":17,"zoom":"1"}
+PASS 320 landscape default pathway Career menu starts collapsed and keyboard focusable
+PASS 320 landscape default pathway expanded Career menu preserves reflow and semantics
+PASS 320 landscape default pathway Other Career tools is keyboard focusable
+PASS 320 landscape default pathway Resume shortcut keyboard focusable
+PASS 320 landscape default pathway Resume disclosure is a keyboard-focusable native expanded button
+PASS 320 landscape default pathway Resume federal-format control is keyboard focusable
+PASS 320 landscape default pathway Resume civilian-format control is keyboard focusable
+PASS 320 landscape default pathway tops-resume-format-options summary keyboard focusable
+PASS 320 landscape default pathway tops-resume-contact-options summary keyboard focusable
+PASS 320 landscape default pathway Resume length control is keyboard focusable
+PASS 320 landscape default pathway Resume example disclosure is keyboard focusable
+PASS 320 landscape default pathway visible Resume fields keep persistent labels
+PASS 320 landscape default pathway Resume semantics test makes zero function requests
+PASS 320 landscape default pathway CIVILIAN validation busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape default pathway CIVILIAN validation busy presentation retains readable contrast, reflow, and semantics
+PASS 320 landscape default pathway CIVILIAN validation repeated activation makes no duplicate request
+PASS 320 landscape default pathway CIVILIAN validation exact failure text is an atomic alert
+PASS 320 landscape default pathway CIVILIAN validation completion preserves current focus and allows a deliberate retry
+PASS 320 landscape default pathway CIVILIAN validation browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape default pathway CIVILIAN budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape default pathway CIVILIAN budget denial repeated activation makes no duplicate request
+PASS 320 landscape default pathway CIVILIAN budget denial exact failure text is an atomic alert
+PASS 320 landscape default pathway CIVILIAN budget denial completion preserves current focus and allows a deliberate retry
+PASS 320 landscape default pathway CIVILIAN budget denial browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape default pathway CIVILIAN provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape default pathway CIVILIAN provider unavailable repeated activation makes no duplicate request
+PASS 320 landscape default pathway CIVILIAN provider unavailable exact failure text is an atomic alert
+PASS 320 landscape default pathway CIVILIAN provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 320 landscape default pathway CIVILIAN provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape default pathway CIVILIAN non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape default pathway CIVILIAN non-JSON transport failure repeated activation makes no duplicate request
+PASS 320 landscape default pathway CIVILIAN non-JSON transport failure exact failure text is an atomic alert
+PASS 320 landscape default pathway CIVILIAN non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 320 landscape default pathway CIVILIAN non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape default pathway FEDERAL validation busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape default pathway FEDERAL validation busy presentation retains readable contrast, reflow, and semantics
+PASS 320 landscape default pathway FEDERAL validation repeated activation makes no duplicate request
+PASS 320 landscape default pathway FEDERAL validation exact failure text is an atomic alert
+PASS 320 landscape default pathway FEDERAL validation completion preserves current focus and allows a deliberate retry
+PASS 320 landscape default pathway FEDERAL validation browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape default pathway FEDERAL budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape default pathway FEDERAL budget denial repeated activation makes no duplicate request
+PASS 320 landscape default pathway FEDERAL budget denial exact failure text is an atomic alert
+PASS 320 landscape default pathway FEDERAL budget denial completion preserves current focus and allows a deliberate retry
+PASS 320 landscape default pathway FEDERAL budget denial browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape default pathway FEDERAL provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape default pathway FEDERAL provider unavailable repeated activation makes no duplicate request
+PASS 320 landscape default pathway FEDERAL provider unavailable exact failure text is an atomic alert
+PASS 320 landscape default pathway FEDERAL provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 320 landscape default pathway FEDERAL provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape default pathway FEDERAL non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape default pathway FEDERAL non-JSON transport failure repeated activation makes no duplicate request
+PASS 320 landscape default pathway FEDERAL non-JSON transport failure exact failure text is an atomic alert
+PASS 320 landscape default pathway FEDERAL non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 320 landscape default pathway FEDERAL non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape default pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+PASS 320 landscape default pathway Privacy clears fixed navigation at maximum scroll
+SCENARIO 320 landscape default pathway {"clientWidth":640,"docWidth":640,"headings":2,"liveRegions":5,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"1"}
+PASS 375 landscape default dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+PASS 375 landscape default dashboard Privacy clears fixed navigation at maximum scroll
+SCENARIO 375 landscape default dashboard {"clientWidth":667,"docWidth":667,"headings":7,"liveRegions":6,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":40,"zoom":"1"}
+PASS 375 landscape default navigator Navigator input has a persistent name
+PASS 375 landscape default navigator Navigator prompts are native enabled buttons
+PASS 375 landscape default navigator Navigator SEND is natively disabled while empty
+PASS 375 landscape default navigator Navigator synthetic input was entered locally
+PASS 375 landscape default navigator Navigator name persists after entry
+PASS 375 landscape default navigator Navigator semantics test makes zero function requests
+PASS 375 landscape default navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+PASS 375 landscape default navigator Privacy clears fixed navigation at maximum scroll
+SCENARIO 375 landscape default navigator {"clientWidth":667,"docWidth":667,"headings":2,"liveRegions":2,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":17,"zoom":"1"}
+PASS 375 landscape default pathway Career menu starts collapsed and keyboard focusable
+PASS 375 landscape default pathway expanded Career menu preserves reflow and semantics
+PASS 375 landscape default pathway Other Career tools is keyboard focusable
+PASS 375 landscape default pathway Resume shortcut keyboard focusable
+PASS 375 landscape default pathway Resume disclosure is a keyboard-focusable native expanded button
+PASS 375 landscape default pathway Resume federal-format control is keyboard focusable
+PASS 375 landscape default pathway Resume civilian-format control is keyboard focusable
+PASS 375 landscape default pathway tops-resume-format-options summary keyboard focusable
+PASS 375 landscape default pathway tops-resume-contact-options summary keyboard focusable
+PASS 375 landscape default pathway Resume length control is keyboard focusable
+PASS 375 landscape default pathway Resume example disclosure is keyboard focusable
+PASS 375 landscape default pathway visible Resume fields keep persistent labels
+PASS 375 landscape default pathway Resume semantics test makes zero function requests
+PASS 375 landscape default pathway CIVILIAN validation busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape default pathway CIVILIAN validation busy presentation retains readable contrast, reflow, and semantics
+PASS 375 landscape default pathway CIVILIAN validation repeated activation makes no duplicate request
+PASS 375 landscape default pathway CIVILIAN validation exact failure text is an atomic alert
+PASS 375 landscape default pathway CIVILIAN validation completion preserves current focus and allows a deliberate retry
+PASS 375 landscape default pathway CIVILIAN validation browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape default pathway CIVILIAN budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape default pathway CIVILIAN budget denial repeated activation makes no duplicate request
+PASS 375 landscape default pathway CIVILIAN budget denial exact failure text is an atomic alert
+PASS 375 landscape default pathway CIVILIAN budget denial completion preserves current focus and allows a deliberate retry
+PASS 375 landscape default pathway CIVILIAN budget denial browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape default pathway CIVILIAN provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape default pathway CIVILIAN provider unavailable repeated activation makes no duplicate request
+PASS 375 landscape default pathway CIVILIAN provider unavailable exact failure text is an atomic alert
+PASS 375 landscape default pathway CIVILIAN provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 375 landscape default pathway CIVILIAN provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape default pathway CIVILIAN non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape default pathway CIVILIAN non-JSON transport failure repeated activation makes no duplicate request
+PASS 375 landscape default pathway CIVILIAN non-JSON transport failure exact failure text is an atomic alert
+PASS 375 landscape default pathway CIVILIAN non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 375 landscape default pathway CIVILIAN non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape default pathway FEDERAL validation busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape default pathway FEDERAL validation busy presentation retains readable contrast, reflow, and semantics
+PASS 375 landscape default pathway FEDERAL validation repeated activation makes no duplicate request
+PASS 375 landscape default pathway FEDERAL validation exact failure text is an atomic alert
+PASS 375 landscape default pathway FEDERAL validation completion preserves current focus and allows a deliberate retry
+PASS 375 landscape default pathway FEDERAL validation browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape default pathway FEDERAL budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape default pathway FEDERAL budget denial repeated activation makes no duplicate request
+PASS 375 landscape default pathway FEDERAL budget denial exact failure text is an atomic alert
+PASS 375 landscape default pathway FEDERAL budget denial completion preserves current focus and allows a deliberate retry
+PASS 375 landscape default pathway FEDERAL budget denial browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape default pathway FEDERAL provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape default pathway FEDERAL provider unavailable repeated activation makes no duplicate request
+PASS 375 landscape default pathway FEDERAL provider unavailable exact failure text is an atomic alert
+PASS 375 landscape default pathway FEDERAL provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 375 landscape default pathway FEDERAL provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape default pathway FEDERAL non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape default pathway FEDERAL non-JSON transport failure repeated activation makes no duplicate request
+PASS 375 landscape default pathway FEDERAL non-JSON transport failure exact failure text is an atomic alert
+PASS 375 landscape default pathway FEDERAL non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 375 landscape default pathway FEDERAL non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape default pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+PASS 375 landscape default pathway Privacy clears fixed navigation at maximum scroll
+SCENARIO 375 landscape default pathway {"clientWidth":667,"docWidth":667,"headings":2,"liveRegions":5,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"1"}
+PASS 320 portrait 200 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait 200 percent dashboard {"clientWidth":640,"docWidth":640,"headings":7,"liveRegions":6,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":40,"zoom":"2"}
+PASS 320 portrait 200 percent navigator Navigator input has a persistent name
+PASS 320 portrait 200 percent navigator Navigator prompts are native enabled buttons
+PASS 320 portrait 200 percent navigator Navigator SEND is natively disabled while empty
+PASS 320 portrait 200 percent navigator Navigator synthetic input was entered locally
+PASS 320 portrait 200 percent navigator Navigator name persists after entry
+PASS 320 portrait 200 percent navigator Navigator semantics test makes zero function requests
+PASS 320 portrait 200 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait 200 percent navigator {"clientWidth":640,"docWidth":640,"headings":2,"liveRegions":2,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":17,"zoom":"2"}
+PASS 320 portrait 200 percent pathway Career menu starts collapsed and keyboard focusable
+PASS 320 portrait 200 percent pathway expanded Career menu preserves reflow and semantics
+PASS 320 portrait 200 percent pathway Other Career tools is keyboard focusable
+PASS 320 portrait 200 percent pathway Resume shortcut keyboard focusable
+PASS 320 portrait 200 percent pathway Resume disclosure is a keyboard-focusable native expanded button
+PASS 320 portrait 200 percent pathway Resume federal-format control is keyboard focusable
+PASS 320 portrait 200 percent pathway Resume civilian-format control is keyboard focusable
+PASS 320 portrait 200 percent pathway tops-resume-format-options summary keyboard focusable
+PASS 320 portrait 200 percent pathway tops-resume-contact-options summary keyboard focusable
+PASS 320 portrait 200 percent pathway Resume length control is keyboard focusable
+PASS 320 portrait 200 percent pathway Resume example disclosure is keyboard focusable
+PASS 320 portrait 200 percent pathway visible Resume fields keep persistent labels
+PASS 320 portrait 200 percent pathway Resume semantics test makes zero function requests
+PASS 320 portrait 200 percent pathway CIVILIAN validation busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 200 percent pathway CIVILIAN validation busy presentation retains readable contrast, reflow, and semantics
+PASS 320 portrait 200 percent pathway CIVILIAN validation repeated activation makes no duplicate request
+PASS 320 portrait 200 percent pathway CIVILIAN validation exact failure text is an atomic alert
+PASS 320 portrait 200 percent pathway CIVILIAN validation completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 200 percent pathway CIVILIAN validation browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 200 percent pathway CIVILIAN budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 200 percent pathway CIVILIAN budget denial repeated activation makes no duplicate request
+PASS 320 portrait 200 percent pathway CIVILIAN budget denial exact failure text is an atomic alert
+PASS 320 portrait 200 percent pathway CIVILIAN budget denial completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 200 percent pathway CIVILIAN budget denial browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 200 percent pathway CIVILIAN provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 200 percent pathway CIVILIAN provider unavailable repeated activation makes no duplicate request
+PASS 320 portrait 200 percent pathway CIVILIAN provider unavailable exact failure text is an atomic alert
+PASS 320 portrait 200 percent pathway CIVILIAN provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 200 percent pathway CIVILIAN provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 200 percent pathway CIVILIAN non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 200 percent pathway CIVILIAN non-JSON transport failure repeated activation makes no duplicate request
+PASS 320 portrait 200 percent pathway CIVILIAN non-JSON transport failure exact failure text is an atomic alert
+PASS 320 portrait 200 percent pathway CIVILIAN non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 200 percent pathway CIVILIAN non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 200 percent pathway FEDERAL validation busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 200 percent pathway FEDERAL validation busy presentation retains readable contrast, reflow, and semantics
+PASS 320 portrait 200 percent pathway FEDERAL validation repeated activation makes no duplicate request
+PASS 320 portrait 200 percent pathway FEDERAL validation exact failure text is an atomic alert
+PASS 320 portrait 200 percent pathway FEDERAL validation completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 200 percent pathway FEDERAL validation browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 200 percent pathway FEDERAL budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 200 percent pathway FEDERAL budget denial repeated activation makes no duplicate request
+PASS 320 portrait 200 percent pathway FEDERAL budget denial exact failure text is an atomic alert
+PASS 320 portrait 200 percent pathway FEDERAL budget denial completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 200 percent pathway FEDERAL budget denial browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 200 percent pathway FEDERAL provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 200 percent pathway FEDERAL provider unavailable repeated activation makes no duplicate request
+PASS 320 portrait 200 percent pathway FEDERAL provider unavailable exact failure text is an atomic alert
+PASS 320 portrait 200 percent pathway FEDERAL provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 200 percent pathway FEDERAL provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 200 percent pathway FEDERAL non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 200 percent pathway FEDERAL non-JSON transport failure repeated activation makes no duplicate request
+PASS 320 portrait 200 percent pathway FEDERAL non-JSON transport failure exact failure text is an atomic alert
+PASS 320 portrait 200 percent pathway FEDERAL non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 200 percent pathway FEDERAL non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 200 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait 200 percent pathway {"clientWidth":640,"docWidth":640,"headings":2,"liveRegions":5,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"2"}
+PASS 375 portrait 200 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait 200 percent dashboard {"clientWidth":750,"docWidth":750,"headings":7,"liveRegions":6,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":40,"zoom":"2"}
+PASS 375 portrait 200 percent navigator Navigator input has a persistent name
+PASS 375 portrait 200 percent navigator Navigator prompts are native enabled buttons
+PASS 375 portrait 200 percent navigator Navigator SEND is natively disabled while empty
+PASS 375 portrait 200 percent navigator Navigator synthetic input was entered locally
+PASS 375 portrait 200 percent navigator Navigator name persists after entry
+PASS 375 portrait 200 percent navigator Navigator semantics test makes zero function requests
+PASS 375 portrait 200 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait 200 percent navigator {"clientWidth":750,"docWidth":750,"headings":2,"liveRegions":2,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":17,"zoom":"2"}
+PASS 375 portrait 200 percent pathway Career menu starts collapsed and keyboard focusable
+PASS 375 portrait 200 percent pathway expanded Career menu preserves reflow and semantics
+PASS 375 portrait 200 percent pathway Other Career tools is keyboard focusable
+PASS 375 portrait 200 percent pathway Resume shortcut keyboard focusable
+PASS 375 portrait 200 percent pathway Resume disclosure is a keyboard-focusable native expanded button
+PASS 375 portrait 200 percent pathway Resume federal-format control is keyboard focusable
+PASS 375 portrait 200 percent pathway Resume civilian-format control is keyboard focusable
+PASS 375 portrait 200 percent pathway tops-resume-format-options summary keyboard focusable
+PASS 375 portrait 200 percent pathway tops-resume-contact-options summary keyboard focusable
+PASS 375 portrait 200 percent pathway Resume length control is keyboard focusable
+PASS 375 portrait 200 percent pathway Resume example disclosure is keyboard focusable
+PASS 375 portrait 200 percent pathway visible Resume fields keep persistent labels
+PASS 375 portrait 200 percent pathway Resume semantics test makes zero function requests
+PASS 375 portrait 200 percent pathway CIVILIAN validation busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 200 percent pathway CIVILIAN validation busy presentation retains readable contrast, reflow, and semantics
+PASS 375 portrait 200 percent pathway CIVILIAN validation repeated activation makes no duplicate request
+PASS 375 portrait 200 percent pathway CIVILIAN validation exact failure text is an atomic alert
+PASS 375 portrait 200 percent pathway CIVILIAN validation completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 200 percent pathway CIVILIAN validation browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 200 percent pathway CIVILIAN budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 200 percent pathway CIVILIAN budget denial repeated activation makes no duplicate request
+PASS 375 portrait 200 percent pathway CIVILIAN budget denial exact failure text is an atomic alert
+PASS 375 portrait 200 percent pathway CIVILIAN budget denial completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 200 percent pathway CIVILIAN budget denial browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 200 percent pathway CIVILIAN provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 200 percent pathway CIVILIAN provider unavailable repeated activation makes no duplicate request
+PASS 375 portrait 200 percent pathway CIVILIAN provider unavailable exact failure text is an atomic alert
+PASS 375 portrait 200 percent pathway CIVILIAN provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 200 percent pathway CIVILIAN provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 200 percent pathway CIVILIAN non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 200 percent pathway CIVILIAN non-JSON transport failure repeated activation makes no duplicate request
+PASS 375 portrait 200 percent pathway CIVILIAN non-JSON transport failure exact failure text is an atomic alert
+PASS 375 portrait 200 percent pathway CIVILIAN non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 200 percent pathway CIVILIAN non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 200 percent pathway FEDERAL validation busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 200 percent pathway FEDERAL validation busy presentation retains readable contrast, reflow, and semantics
+PASS 375 portrait 200 percent pathway FEDERAL validation repeated activation makes no duplicate request
+PASS 375 portrait 200 percent pathway FEDERAL validation exact failure text is an atomic alert
+PASS 375 portrait 200 percent pathway FEDERAL validation completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 200 percent pathway FEDERAL validation browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 200 percent pathway FEDERAL budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 200 percent pathway FEDERAL budget denial repeated activation makes no duplicate request
+PASS 375 portrait 200 percent pathway FEDERAL budget denial exact failure text is an atomic alert
+PASS 375 portrait 200 percent pathway FEDERAL budget denial completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 200 percent pathway FEDERAL budget denial browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 200 percent pathway FEDERAL provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 200 percent pathway FEDERAL provider unavailable repeated activation makes no duplicate request
+PASS 375 portrait 200 percent pathway FEDERAL provider unavailable exact failure text is an atomic alert
+PASS 375 portrait 200 percent pathway FEDERAL provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 200 percent pathway FEDERAL provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 200 percent pathway FEDERAL non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 200 percent pathway FEDERAL non-JSON transport failure repeated activation makes no duplicate request
+PASS 375 portrait 200 percent pathway FEDERAL non-JSON transport failure exact failure text is an atomic alert
+PASS 375 portrait 200 percent pathway FEDERAL non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 200 percent pathway FEDERAL non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 200 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait 200 percent pathway {"clientWidth":750,"docWidth":750,"headings":2,"liveRegions":5,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"2"}
+PASS 320 landscape 200 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape 200 percent dashboard {"clientWidth":1280,"docWidth":1280,"headings":7,"liveRegions":6,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":40,"zoom":"2"}
+PASS 320 landscape 200 percent navigator Navigator input has a persistent name
+PASS 320 landscape 200 percent navigator Navigator prompts are native enabled buttons
+PASS 320 landscape 200 percent navigator Navigator SEND is natively disabled while empty
+PASS 320 landscape 200 percent navigator Navigator synthetic input was entered locally
+PASS 320 landscape 200 percent navigator Navigator name persists after entry
+PASS 320 landscape 200 percent navigator Navigator semantics test makes zero function requests
+PASS 320 landscape 200 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape 200 percent navigator {"clientWidth":1280,"docWidth":1280,"headings":2,"liveRegions":2,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":17,"zoom":"2"}
+PASS 320 landscape 200 percent pathway Career menu starts collapsed and keyboard focusable
+PASS 320 landscape 200 percent pathway expanded Career menu preserves reflow and semantics
+PASS 320 landscape 200 percent pathway Other Career tools is keyboard focusable
+PASS 320 landscape 200 percent pathway Resume shortcut keyboard focusable
+PASS 320 landscape 200 percent pathway Resume disclosure is a keyboard-focusable native expanded button
+PASS 320 landscape 200 percent pathway Resume federal-format control is keyboard focusable
+PASS 320 landscape 200 percent pathway Resume civilian-format control is keyboard focusable
+PASS 320 landscape 200 percent pathway tops-resume-format-options summary keyboard focusable
+PASS 320 landscape 200 percent pathway tops-resume-contact-options summary keyboard focusable
+PASS 320 landscape 200 percent pathway Resume length control is keyboard focusable
+PASS 320 landscape 200 percent pathway Resume example disclosure is keyboard focusable
+PASS 320 landscape 200 percent pathway visible Resume fields keep persistent labels
+PASS 320 landscape 200 percent pathway Resume semantics test makes zero function requests
+PASS 320 landscape 200 percent pathway CIVILIAN validation busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 200 percent pathway CIVILIAN validation busy presentation retains readable contrast, reflow, and semantics
+PASS 320 landscape 200 percent pathway CIVILIAN validation repeated activation makes no duplicate request
+PASS 320 landscape 200 percent pathway CIVILIAN validation exact failure text is an atomic alert
+PASS 320 landscape 200 percent pathway CIVILIAN validation completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 200 percent pathway CIVILIAN validation browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 200 percent pathway CIVILIAN budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 200 percent pathway CIVILIAN budget denial repeated activation makes no duplicate request
+PASS 320 landscape 200 percent pathway CIVILIAN budget denial exact failure text is an atomic alert
+PASS 320 landscape 200 percent pathway CIVILIAN budget denial completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 200 percent pathway CIVILIAN budget denial browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 200 percent pathway CIVILIAN provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 200 percent pathway CIVILIAN provider unavailable repeated activation makes no duplicate request
+PASS 320 landscape 200 percent pathway CIVILIAN provider unavailable exact failure text is an atomic alert
+PASS 320 landscape 200 percent pathway CIVILIAN provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 200 percent pathway CIVILIAN provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 200 percent pathway CIVILIAN non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 200 percent pathway CIVILIAN non-JSON transport failure repeated activation makes no duplicate request
+PASS 320 landscape 200 percent pathway CIVILIAN non-JSON transport failure exact failure text is an atomic alert
+PASS 320 landscape 200 percent pathway CIVILIAN non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 200 percent pathway CIVILIAN non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 200 percent pathway FEDERAL validation busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 200 percent pathway FEDERAL validation busy presentation retains readable contrast, reflow, and semantics
+PASS 320 landscape 200 percent pathway FEDERAL validation repeated activation makes no duplicate request
+PASS 320 landscape 200 percent pathway FEDERAL validation exact failure text is an atomic alert
+PASS 320 landscape 200 percent pathway FEDERAL validation completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 200 percent pathway FEDERAL validation browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 200 percent pathway FEDERAL budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 200 percent pathway FEDERAL budget denial repeated activation makes no duplicate request
+PASS 320 landscape 200 percent pathway FEDERAL budget denial exact failure text is an atomic alert
+PASS 320 landscape 200 percent pathway FEDERAL budget denial completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 200 percent pathway FEDERAL budget denial browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 200 percent pathway FEDERAL provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 200 percent pathway FEDERAL provider unavailable repeated activation makes no duplicate request
+PASS 320 landscape 200 percent pathway FEDERAL provider unavailable exact failure text is an atomic alert
+PASS 320 landscape 200 percent pathway FEDERAL provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 200 percent pathway FEDERAL provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 200 percent pathway FEDERAL non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 200 percent pathway FEDERAL non-JSON transport failure repeated activation makes no duplicate request
+PASS 320 landscape 200 percent pathway FEDERAL non-JSON transport failure exact failure text is an atomic alert
+PASS 320 landscape 200 percent pathway FEDERAL non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 200 percent pathway FEDERAL non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 200 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape 200 percent pathway {"clientWidth":1280,"docWidth":1280,"headings":2,"liveRegions":5,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"2"}
+PASS 375 landscape 200 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape 200 percent dashboard {"clientWidth":1334,"docWidth":1334,"headings":7,"liveRegions":6,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":40,"zoom":"2"}
+PASS 375 landscape 200 percent navigator Navigator input has a persistent name
+PASS 375 landscape 200 percent navigator Navigator prompts are native enabled buttons
+PASS 375 landscape 200 percent navigator Navigator SEND is natively disabled while empty
+PASS 375 landscape 200 percent navigator Navigator synthetic input was entered locally
+PASS 375 landscape 200 percent navigator Navigator name persists after entry
+PASS 375 landscape 200 percent navigator Navigator semantics test makes zero function requests
+PASS 375 landscape 200 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape 200 percent navigator {"clientWidth":1334,"docWidth":1334,"headings":2,"liveRegions":2,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":17,"zoom":"2"}
+PASS 375 landscape 200 percent pathway Career menu starts collapsed and keyboard focusable
+PASS 375 landscape 200 percent pathway expanded Career menu preserves reflow and semantics
+PASS 375 landscape 200 percent pathway Other Career tools is keyboard focusable
+PASS 375 landscape 200 percent pathway Resume shortcut keyboard focusable
+PASS 375 landscape 200 percent pathway Resume disclosure is a keyboard-focusable native expanded button
+PASS 375 landscape 200 percent pathway Resume federal-format control is keyboard focusable
+PASS 375 landscape 200 percent pathway Resume civilian-format control is keyboard focusable
+PASS 375 landscape 200 percent pathway tops-resume-format-options summary keyboard focusable
+PASS 375 landscape 200 percent pathway tops-resume-contact-options summary keyboard focusable
+PASS 375 landscape 200 percent pathway Resume length control is keyboard focusable
+PASS 375 landscape 200 percent pathway Resume example disclosure is keyboard focusable
+PASS 375 landscape 200 percent pathway visible Resume fields keep persistent labels
+PASS 375 landscape 200 percent pathway Resume semantics test makes zero function requests
+PASS 375 landscape 200 percent pathway CIVILIAN validation busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 200 percent pathway CIVILIAN validation busy presentation retains readable contrast, reflow, and semantics
+PASS 375 landscape 200 percent pathway CIVILIAN validation repeated activation makes no duplicate request
+PASS 375 landscape 200 percent pathway CIVILIAN validation exact failure text is an atomic alert
+PASS 375 landscape 200 percent pathway CIVILIAN validation completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 200 percent pathway CIVILIAN validation browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 200 percent pathway CIVILIAN budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 200 percent pathway CIVILIAN budget denial repeated activation makes no duplicate request
+PASS 375 landscape 200 percent pathway CIVILIAN budget denial exact failure text is an atomic alert
+PASS 375 landscape 200 percent pathway CIVILIAN budget denial completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 200 percent pathway CIVILIAN budget denial browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 200 percent pathway CIVILIAN provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 200 percent pathway CIVILIAN provider unavailable repeated activation makes no duplicate request
+PASS 375 landscape 200 percent pathway CIVILIAN provider unavailable exact failure text is an atomic alert
+PASS 375 landscape 200 percent pathway CIVILIAN provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 200 percent pathway CIVILIAN provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 200 percent pathway CIVILIAN non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 200 percent pathway CIVILIAN non-JSON transport failure repeated activation makes no duplicate request
+PASS 375 landscape 200 percent pathway CIVILIAN non-JSON transport failure exact failure text is an atomic alert
+PASS 375 landscape 200 percent pathway CIVILIAN non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 200 percent pathway CIVILIAN non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 200 percent pathway FEDERAL validation busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 200 percent pathway FEDERAL validation busy presentation retains readable contrast, reflow, and semantics
+PASS 375 landscape 200 percent pathway FEDERAL validation repeated activation makes no duplicate request
+PASS 375 landscape 200 percent pathway FEDERAL validation exact failure text is an atomic alert
+PASS 375 landscape 200 percent pathway FEDERAL validation completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 200 percent pathway FEDERAL validation browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 200 percent pathway FEDERAL budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 200 percent pathway FEDERAL budget denial repeated activation makes no duplicate request
+PASS 375 landscape 200 percent pathway FEDERAL budget denial exact failure text is an atomic alert
+PASS 375 landscape 200 percent pathway FEDERAL budget denial completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 200 percent pathway FEDERAL budget denial browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 200 percent pathway FEDERAL provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 200 percent pathway FEDERAL provider unavailable repeated activation makes no duplicate request
+PASS 375 landscape 200 percent pathway FEDERAL provider unavailable exact failure text is an atomic alert
+PASS 375 landscape 200 percent pathway FEDERAL provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 200 percent pathway FEDERAL provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 200 percent pathway FEDERAL non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 200 percent pathway FEDERAL non-JSON transport failure repeated activation makes no duplicate request
+PASS 375 landscape 200 percent pathway FEDERAL non-JSON transport failure exact failure text is an atomic alert
+PASS 375 landscape 200 percent pathway FEDERAL non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 200 percent pathway FEDERAL non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 200 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape 200 percent pathway {"clientWidth":1334,"docWidth":1334,"headings":2,"liveRegions":5,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"2"}
+PASS 320 portrait 400 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait 400 percent dashboard {"clientWidth":1280,"docWidth":1280,"headings":7,"liveRegions":6,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":40,"zoom":"4"}
+PASS 320 portrait 400 percent navigator Navigator input has a persistent name
+PASS 320 portrait 400 percent navigator Navigator prompts are native enabled buttons
+PASS 320 portrait 400 percent navigator Navigator SEND is natively disabled while empty
+PASS 320 portrait 400 percent navigator Navigator synthetic input was entered locally
+PASS 320 portrait 400 percent navigator Navigator name persists after entry
+PASS 320 portrait 400 percent navigator Navigator semantics test makes zero function requests
+PASS 320 portrait 400 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait 400 percent navigator {"clientWidth":1280,"docWidth":1280,"headings":2,"liveRegions":2,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":17,"zoom":"4"}
+PASS 320 portrait 400 percent pathway Career menu starts collapsed and keyboard focusable
+PASS 320 portrait 400 percent pathway expanded Career menu preserves reflow and semantics
+PASS 320 portrait 400 percent pathway Other Career tools is keyboard focusable
+PASS 320 portrait 400 percent pathway Resume shortcut keyboard focusable
+PASS 320 portrait 400 percent pathway Resume disclosure is a keyboard-focusable native expanded button
+PASS 320 portrait 400 percent pathway Resume federal-format control is keyboard focusable
+PASS 320 portrait 400 percent pathway Resume civilian-format control is keyboard focusable
+PASS 320 portrait 400 percent pathway tops-resume-format-options summary keyboard focusable
+PASS 320 portrait 400 percent pathway tops-resume-contact-options summary keyboard focusable
+PASS 320 portrait 400 percent pathway Resume length control is keyboard focusable
+PASS 320 portrait 400 percent pathway Resume example disclosure is keyboard focusable
+PASS 320 portrait 400 percent pathway visible Resume fields keep persistent labels
+PASS 320 portrait 400 percent pathway Resume semantics test makes zero function requests
+PASS 320 portrait 400 percent pathway CIVILIAN validation busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 400 percent pathway CIVILIAN validation busy presentation retains readable contrast, reflow, and semantics
+PASS 320 portrait 400 percent pathway CIVILIAN validation repeated activation makes no duplicate request
+PASS 320 portrait 400 percent pathway CIVILIAN validation exact failure text is an atomic alert
+PASS 320 portrait 400 percent pathway CIVILIAN validation completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 400 percent pathway CIVILIAN validation browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 400 percent pathway CIVILIAN budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 400 percent pathway CIVILIAN budget denial repeated activation makes no duplicate request
+PASS 320 portrait 400 percent pathway CIVILIAN budget denial exact failure text is an atomic alert
+PASS 320 portrait 400 percent pathway CIVILIAN budget denial completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 400 percent pathway CIVILIAN budget denial browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 400 percent pathway CIVILIAN provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 400 percent pathway CIVILIAN provider unavailable repeated activation makes no duplicate request
+PASS 320 portrait 400 percent pathway CIVILIAN provider unavailable exact failure text is an atomic alert
+PASS 320 portrait 400 percent pathway CIVILIAN provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 400 percent pathway CIVILIAN provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 400 percent pathway CIVILIAN non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 400 percent pathway CIVILIAN non-JSON transport failure repeated activation makes no duplicate request
+PASS 320 portrait 400 percent pathway CIVILIAN non-JSON transport failure exact failure text is an atomic alert
+PASS 320 portrait 400 percent pathway CIVILIAN non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 400 percent pathway CIVILIAN non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 400 percent pathway FEDERAL validation busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 400 percent pathway FEDERAL validation busy presentation retains readable contrast, reflow, and semantics
+PASS 320 portrait 400 percent pathway FEDERAL validation repeated activation makes no duplicate request
+PASS 320 portrait 400 percent pathway FEDERAL validation exact failure text is an atomic alert
+PASS 320 portrait 400 percent pathway FEDERAL validation completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 400 percent pathway FEDERAL validation browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 400 percent pathway FEDERAL budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 400 percent pathway FEDERAL budget denial repeated activation makes no duplicate request
+PASS 320 portrait 400 percent pathway FEDERAL budget denial exact failure text is an atomic alert
+PASS 320 portrait 400 percent pathway FEDERAL budget denial completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 400 percent pathway FEDERAL budget denial browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 400 percent pathway FEDERAL provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 400 percent pathway FEDERAL provider unavailable repeated activation makes no duplicate request
+PASS 320 portrait 400 percent pathway FEDERAL provider unavailable exact failure text is an atomic alert
+PASS 320 portrait 400 percent pathway FEDERAL provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 400 percent pathway FEDERAL provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 400 percent pathway FEDERAL non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 320 portrait 400 percent pathway FEDERAL non-JSON transport failure repeated activation makes no duplicate request
+PASS 320 portrait 400 percent pathway FEDERAL non-JSON transport failure exact failure text is an atomic alert
+PASS 320 portrait 400 percent pathway FEDERAL non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 320 portrait 400 percent pathway FEDERAL non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 320 portrait 400 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 portrait 400 percent pathway {"clientWidth":1280,"docWidth":1280,"headings":2,"liveRegions":5,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"4"}
+PASS 375 portrait 400 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait 400 percent dashboard {"clientWidth":1500,"docWidth":1500,"headings":7,"liveRegions":6,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":40,"zoom":"4"}
+PASS 375 portrait 400 percent navigator Navigator input has a persistent name
+PASS 375 portrait 400 percent navigator Navigator prompts are native enabled buttons
+PASS 375 portrait 400 percent navigator Navigator SEND is natively disabled while empty
+PASS 375 portrait 400 percent navigator Navigator synthetic input was entered locally
+PASS 375 portrait 400 percent navigator Navigator name persists after entry
+PASS 375 portrait 400 percent navigator Navigator semantics test makes zero function requests
+PASS 375 portrait 400 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait 400 percent navigator {"clientWidth":1500,"docWidth":1500,"headings":2,"liveRegions":2,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":17,"zoom":"4"}
+PASS 375 portrait 400 percent pathway Career menu starts collapsed and keyboard focusable
+PASS 375 portrait 400 percent pathway expanded Career menu preserves reflow and semantics
+PASS 375 portrait 400 percent pathway Other Career tools is keyboard focusable
+PASS 375 portrait 400 percent pathway Resume shortcut keyboard focusable
+PASS 375 portrait 400 percent pathway Resume disclosure is a keyboard-focusable native expanded button
+PASS 375 portrait 400 percent pathway Resume federal-format control is keyboard focusable
+PASS 375 portrait 400 percent pathway Resume civilian-format control is keyboard focusable
+PASS 375 portrait 400 percent pathway tops-resume-format-options summary keyboard focusable
+PASS 375 portrait 400 percent pathway tops-resume-contact-options summary keyboard focusable
+PASS 375 portrait 400 percent pathway Resume length control is keyboard focusable
+PASS 375 portrait 400 percent pathway Resume example disclosure is keyboard focusable
+PASS 375 portrait 400 percent pathway visible Resume fields keep persistent labels
+PASS 375 portrait 400 percent pathway Resume semantics test makes zero function requests
+PASS 375 portrait 400 percent pathway CIVILIAN validation busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 400 percent pathway CIVILIAN validation busy presentation retains readable contrast, reflow, and semantics
+PASS 375 portrait 400 percent pathway CIVILIAN validation repeated activation makes no duplicate request
+PASS 375 portrait 400 percent pathway CIVILIAN validation exact failure text is an atomic alert
+PASS 375 portrait 400 percent pathway CIVILIAN validation completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 400 percent pathway CIVILIAN validation browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 400 percent pathway CIVILIAN budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 400 percent pathway CIVILIAN budget denial repeated activation makes no duplicate request
+PASS 375 portrait 400 percent pathway CIVILIAN budget denial exact failure text is an atomic alert
+PASS 375 portrait 400 percent pathway CIVILIAN budget denial completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 400 percent pathway CIVILIAN budget denial browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 400 percent pathway CIVILIAN provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 400 percent pathway CIVILIAN provider unavailable repeated activation makes no duplicate request
+PASS 375 portrait 400 percent pathway CIVILIAN provider unavailable exact failure text is an atomic alert
+PASS 375 portrait 400 percent pathway CIVILIAN provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 400 percent pathway CIVILIAN provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 400 percent pathway CIVILIAN non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 400 percent pathway CIVILIAN non-JSON transport failure repeated activation makes no duplicate request
+PASS 375 portrait 400 percent pathway CIVILIAN non-JSON transport failure exact failure text is an atomic alert
+PASS 375 portrait 400 percent pathway CIVILIAN non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 400 percent pathway CIVILIAN non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 400 percent pathway FEDERAL validation busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 400 percent pathway FEDERAL validation busy presentation retains readable contrast, reflow, and semantics
+PASS 375 portrait 400 percent pathway FEDERAL validation repeated activation makes no duplicate request
+PASS 375 portrait 400 percent pathway FEDERAL validation exact failure text is an atomic alert
+PASS 375 portrait 400 percent pathway FEDERAL validation completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 400 percent pathway FEDERAL validation browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 400 percent pathway FEDERAL budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 400 percent pathway FEDERAL budget denial repeated activation makes no duplicate request
+PASS 375 portrait 400 percent pathway FEDERAL budget denial exact failure text is an atomic alert
+PASS 375 portrait 400 percent pathway FEDERAL budget denial completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 400 percent pathway FEDERAL budget denial browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 400 percent pathway FEDERAL provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 400 percent pathway FEDERAL provider unavailable repeated activation makes no duplicate request
+PASS 375 portrait 400 percent pathway FEDERAL provider unavailable exact failure text is an atomic alert
+PASS 375 portrait 400 percent pathway FEDERAL provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 400 percent pathway FEDERAL provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 400 percent pathway FEDERAL non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 375 portrait 400 percent pathway FEDERAL non-JSON transport failure repeated activation makes no duplicate request
+PASS 375 portrait 400 percent pathway FEDERAL non-JSON transport failure exact failure text is an atomic alert
+PASS 375 portrait 400 percent pathway FEDERAL non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 375 portrait 400 percent pathway FEDERAL non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 375 portrait 400 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 portrait 400 percent pathway {"clientWidth":1500,"docWidth":1500,"headings":2,"liveRegions":5,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"4"}
+PASS 320 landscape 400 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape 400 percent dashboard {"clientWidth":2560,"docWidth":2560,"headings":7,"liveRegions":6,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":40,"zoom":"4"}
+PASS 320 landscape 400 percent navigator Navigator input has a persistent name
+PASS 320 landscape 400 percent navigator Navigator prompts are native enabled buttons
+PASS 320 landscape 400 percent navigator Navigator SEND is natively disabled while empty
+PASS 320 landscape 400 percent navigator Navigator synthetic input was entered locally
+PASS 320 landscape 400 percent navigator Navigator name persists after entry
+PASS 320 landscape 400 percent navigator Navigator semantics test makes zero function requests
+PASS 320 landscape 400 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape 400 percent navigator {"clientWidth":2560,"docWidth":2560,"headings":2,"liveRegions":2,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":17,"zoom":"4"}
+PASS 320 landscape 400 percent pathway Career menu starts collapsed and keyboard focusable
+PASS 320 landscape 400 percent pathway expanded Career menu preserves reflow and semantics
+PASS 320 landscape 400 percent pathway Other Career tools is keyboard focusable
+PASS 320 landscape 400 percent pathway Resume shortcut keyboard focusable
+PASS 320 landscape 400 percent pathway Resume disclosure is a keyboard-focusable native expanded button
+PASS 320 landscape 400 percent pathway Resume federal-format control is keyboard focusable
+PASS 320 landscape 400 percent pathway Resume civilian-format control is keyboard focusable
+PASS 320 landscape 400 percent pathway tops-resume-format-options summary keyboard focusable
+PASS 320 landscape 400 percent pathway tops-resume-contact-options summary keyboard focusable
+PASS 320 landscape 400 percent pathway Resume length control is keyboard focusable
+PASS 320 landscape 400 percent pathway Resume example disclosure is keyboard focusable
+PASS 320 landscape 400 percent pathway visible Resume fields keep persistent labels
+PASS 320 landscape 400 percent pathway Resume semantics test makes zero function requests
+PASS 320 landscape 400 percent pathway CIVILIAN validation busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 400 percent pathway CIVILIAN validation busy presentation retains readable contrast, reflow, and semantics
+PASS 320 landscape 400 percent pathway CIVILIAN validation repeated activation makes no duplicate request
+PASS 320 landscape 400 percent pathway CIVILIAN validation exact failure text is an atomic alert
+PASS 320 landscape 400 percent pathway CIVILIAN validation completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 400 percent pathway CIVILIAN validation browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 400 percent pathway CIVILIAN budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 400 percent pathway CIVILIAN budget denial repeated activation makes no duplicate request
+PASS 320 landscape 400 percent pathway CIVILIAN budget denial exact failure text is an atomic alert
+PASS 320 landscape 400 percent pathway CIVILIAN budget denial completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 400 percent pathway CIVILIAN budget denial browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 400 percent pathway CIVILIAN provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 400 percent pathway CIVILIAN provider unavailable repeated activation makes no duplicate request
+PASS 320 landscape 400 percent pathway CIVILIAN provider unavailable exact failure text is an atomic alert
+PASS 320 landscape 400 percent pathway CIVILIAN provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 400 percent pathway CIVILIAN provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 400 percent pathway CIVILIAN non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 400 percent pathway CIVILIAN non-JSON transport failure repeated activation makes no duplicate request
+PASS 320 landscape 400 percent pathway CIVILIAN non-JSON transport failure exact failure text is an atomic alert
+PASS 320 landscape 400 percent pathway CIVILIAN non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 400 percent pathway CIVILIAN non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 400 percent pathway FEDERAL validation busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 400 percent pathway FEDERAL validation busy presentation retains readable contrast, reflow, and semantics
+PASS 320 landscape 400 percent pathway FEDERAL validation repeated activation makes no duplicate request
+PASS 320 landscape 400 percent pathway FEDERAL validation exact failure text is an atomic alert
+PASS 320 landscape 400 percent pathway FEDERAL validation completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 400 percent pathway FEDERAL validation browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 400 percent pathway FEDERAL budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 400 percent pathway FEDERAL budget denial repeated activation makes no duplicate request
+PASS 320 landscape 400 percent pathway FEDERAL budget denial exact failure text is an atomic alert
+PASS 320 landscape 400 percent pathway FEDERAL budget denial completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 400 percent pathway FEDERAL budget denial browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 400 percent pathway FEDERAL provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 400 percent pathway FEDERAL provider unavailable repeated activation makes no duplicate request
+PASS 320 landscape 400 percent pathway FEDERAL provider unavailable exact failure text is an atomic alert
+PASS 320 landscape 400 percent pathway FEDERAL provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 400 percent pathway FEDERAL provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 400 percent pathway FEDERAL non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 320 landscape 400 percent pathway FEDERAL non-JSON transport failure repeated activation makes no duplicate request
+PASS 320 landscape 400 percent pathway FEDERAL non-JSON transport failure exact failure text is an atomic alert
+PASS 320 landscape 400 percent pathway FEDERAL non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 320 landscape 400 percent pathway FEDERAL non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 320 landscape 400 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 320 landscape 400 percent pathway {"clientWidth":2560,"docWidth":2560,"headings":2,"liveRegions":5,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"4"}
+PASS 375 landscape 400 percent dashboard semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape 400 percent dashboard {"clientWidth":2668,"docWidth":2668,"headings":7,"liveRegions":6,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":40,"zoom":"4"}
+PASS 375 landscape 400 percent navigator Navigator input has a persistent name
+PASS 375 landscape 400 percent navigator Navigator prompts are native enabled buttons
+PASS 375 landscape 400 percent navigator Navigator SEND is natively disabled while empty
+PASS 375 landscape 400 percent navigator Navigator synthetic input was entered locally
+PASS 375 landscape 400 percent navigator Navigator name persists after entry
+PASS 375 landscape 400 percent navigator Navigator semantics test makes zero function requests
+PASS 375 landscape 400 percent navigator semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape 400 percent navigator {"clientWidth":2668,"docWidth":2668,"headings":2,"liveRegions":2,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":17,"zoom":"4"}
+PASS 375 landscape 400 percent pathway Career menu starts collapsed and keyboard focusable
+PASS 375 landscape 400 percent pathway expanded Career menu preserves reflow and semantics
+PASS 375 landscape 400 percent pathway Other Career tools is keyboard focusable
+PASS 375 landscape 400 percent pathway Resume shortcut keyboard focusable
+PASS 375 landscape 400 percent pathway Resume disclosure is a keyboard-focusable native expanded button
+PASS 375 landscape 400 percent pathway Resume federal-format control is keyboard focusable
+PASS 375 landscape 400 percent pathway Resume civilian-format control is keyboard focusable
+PASS 375 landscape 400 percent pathway tops-resume-format-options summary keyboard focusable
+PASS 375 landscape 400 percent pathway tops-resume-contact-options summary keyboard focusable
+PASS 375 landscape 400 percent pathway Resume length control is keyboard focusable
+PASS 375 landscape 400 percent pathway Resume example disclosure is keyboard focusable
+PASS 375 landscape 400 percent pathway visible Resume fields keep persistent labels
+PASS 375 landscape 400 percent pathway Resume semantics test makes zero function requests
+PASS 375 landscape 400 percent pathway CIVILIAN validation busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 400 percent pathway CIVILIAN validation busy presentation retains readable contrast, reflow, and semantics
+PASS 375 landscape 400 percent pathway CIVILIAN validation repeated activation makes no duplicate request
+PASS 375 landscape 400 percent pathway CIVILIAN validation exact failure text is an atomic alert
+PASS 375 landscape 400 percent pathway CIVILIAN validation completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 400 percent pathway CIVILIAN validation browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 400 percent pathway CIVILIAN budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 400 percent pathway CIVILIAN budget denial repeated activation makes no duplicate request
+PASS 375 landscape 400 percent pathway CIVILIAN budget denial exact failure text is an atomic alert
+PASS 375 landscape 400 percent pathway CIVILIAN budget denial completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 400 percent pathway CIVILIAN budget denial browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 400 percent pathway CIVILIAN provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 400 percent pathway CIVILIAN provider unavailable repeated activation makes no duplicate request
+PASS 375 landscape 400 percent pathway CIVILIAN provider unavailable exact failure text is an atomic alert
+PASS 375 landscape 400 percent pathway CIVILIAN provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 400 percent pathway CIVILIAN provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 400 percent pathway CIVILIAN non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 400 percent pathway CIVILIAN non-JSON transport failure repeated activation makes no duplicate request
+PASS 375 landscape 400 percent pathway CIVILIAN non-JSON transport failure exact failure text is an atomic alert
+PASS 375 landscape 400 percent pathway CIVILIAN non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 400 percent pathway CIVILIAN non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 400 percent pathway FEDERAL validation busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 400 percent pathway FEDERAL validation busy presentation retains readable contrast, reflow, and semantics
+PASS 375 landscape 400 percent pathway FEDERAL validation repeated activation makes no duplicate request
+PASS 375 landscape 400 percent pathway FEDERAL validation exact failure text is an atomic alert
+PASS 375 landscape 400 percent pathway FEDERAL validation completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 400 percent pathway FEDERAL validation browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 400 percent pathway FEDERAL budget denial busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 400 percent pathway FEDERAL budget denial repeated activation makes no duplicate request
+PASS 375 landscape 400 percent pathway FEDERAL budget denial exact failure text is an atomic alert
+PASS 375 landscape 400 percent pathway FEDERAL budget denial completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 400 percent pathway FEDERAL budget denial browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 400 percent pathway FEDERAL provider unavailable busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 400 percent pathway FEDERAL provider unavailable repeated activation makes no duplicate request
+PASS 375 landscape 400 percent pathway FEDERAL provider unavailable exact failure text is an atomic alert
+PASS 375 landscape 400 percent pathway FEDERAL provider unavailable completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 400 percent pathway FEDERAL provider unavailable browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 400 percent pathway FEDERAL non-JSON transport failure busy button retains keyboard focus and exposes unavailable state
+PASS 375 landscape 400 percent pathway FEDERAL non-JSON transport failure repeated activation makes no duplicate request
+PASS 375 landscape 400 percent pathway FEDERAL non-JSON transport failure exact failure text is an atomic alert
+PASS 375 landscape 400 percent pathway FEDERAL non-JSON transport failure completion preserves current focus and allows a deliberate retry
+PASS 375 landscape 400 percent pathway FEDERAL non-JSON transport failure browser accessibility tree exposes assertive alert semantics
+PASS 375 landscape 400 percent pathway semantics, reflow, targets, contrast, orientation, and reduced motion
+SCENARIO 375 landscape 400 percent pathway {"clientWidth":2668,"docWidth":2668,"headings":2,"liveRegions":5,"mainLandmarks":1,"maxMotionSeconds":0.00001,"navigationLandmarks":1,"targets":28,"zoom":"4"}
+PASS A11Y-NR-05 all configured route scenarios executed
+PASS desktop reported viewport unfocused Privacy fully clears navigation and receives pointer hits at maximum scroll
+PRIVACY GEOMETRY desktop reported viewport {"clear":true,"atEnd":true,"hits":true,"scrollY":1621,"scrollHeight":2421,"clientHeight":800,"innerHeight":800,"targetTop":708.296875,"targetBottom":752.296875,"navTop":-1537,"navHeight":50,"navOverlay":false,"width":44,"height":44,"gap":-2289.296875,"x":343.203125,"y":730.296875}
+PASS desktop reported viewport About receives focus after pointer activation
+PASS desktop reported viewport About restores Privacy focus
+PASS desktop reported viewport Privacy stays visible after focus leaves
+PASS desktop wide unfocused Privacy fully clears navigation and receives pointer hits at maximum scroll
+PRIVACY GEOMETRY desktop wide {"clear":true,"atEnd":true,"hits":true,"scrollY":1392,"scrollHeight":2292,"clientHeight":900,"innerHeight":900,"targetTop":808.265625,"targetBottom":852.265625,"navTop":-1308,"navHeight":50,"navOverlay":false,"width":44,"height":44,"gap":-2160.265625,"x":632.203125,"y":830.265625}
+PASS desktop wide About receives focus after pointer activation
+PASS desktop wide About restores Privacy focus
+PASS desktop wide Privacy stays visible after focus leaves
+PASS mobile safe-area 34 unfocused Privacy fully clears navigation and receives pointer hits at maximum scroll
+PRIVACY GEOMETRY mobile safe-area 34 {"clear":true,"atEnd":true,"hits":true,"scrollY":2574,"scrollHeight":3241,"clientHeight":667,"innerHeight":667,"targetTop":481.234375,"targetBottom":525.234375,"navTop":572.609375,"navHeight":94.390625,"navOverlay":true,"width":44,"height":44,"gap":47.375,"x":101.703125,"y":503.234375}
+PASS mobile safe-area 34 About receives focus after pointer activation
+PASS mobile safe-area 34 About restores Privacy focus
+PASS mobile safe-area 34 Privacy stays visible after focus leaves
+PASS Privacy regression rejects the original 26px footer defect
+PASS Privacy clearance restored after negative control
+PASS mobile safe-area 59 and enlarged labels unfocused Privacy fully clears navigation and receives pointer hits at maximum scroll
+PRIVACY GEOMETRY mobile safe-area 59 and enlarged labels {"clear":true,"atEnd":true,"hits":true,"scrollY":2826,"scrollHeight":3466,"clientHeight":640,"innerHeight":640,"targetTop":388,"targetBottom":432,"navTop":480,"navHeight":160,"navOverlay":true,"width":44,"height":44,"gap":48,"x":74.203125,"y":410}
+PASS mobile safe-area 59 and enlarged labels About receives focus after pointer activation
+PASS mobile safe-area 59 and enlarged labels About restores Privacy focus
+PASS mobile safe-area 59 and enlarged labels Privacy stays visible after focus leaves
+PASS landscape safe-area 21 unfocused Privacy fully clears navigation and receives pointer hits at maximum scroll
+PRIVACY GEOMETRY landscape safe-area 21 {"clear":true,"atEnd":true,"hits":true,"scrollY":2118,"scrollHeight":2493,"clientHeight":375,"innerHeight":375,"targetTop":201.515625,"targetBottom":245.515625,"navTop":293.609375,"navHeight":81.390625,"navOverlay":true,"width":44,"height":44,"gap":48.09375,"x":247.703125,"y":223.515625}
+PASS landscape safe-area 21 About receives focus after pointer activation
+PASS landscape safe-area 21 About restores Privacy focus
+PASS landscape safe-area 21 Privacy stays visible after focus leaves
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard Tab moves focus to a control
+PASS keyboard-focused control is visible
+PASS keyboard-focused control has an accessible name
+PASS keyboard-focused control has a visible focus indicator
+PASS keyboard-focused control is not obscured
+PASS keyboard traversal reaches multiple distinct controls
+PASS rendered app exposes a dialog flow
+PASS dialog exposes modal semantics
+PASS dialog has an accessible name
+PASS dialog receives focus on open
+PASS dialog contains an operable control
+ABOUT TAB SKIP FIXTURE {"ok":true,"steps":[{"shiftKey":false,"altKey":false,"before":0,"expected":1,"actual":1,"cancelled":true,"inside":true},{"shiftKey":false,"altKey":false,"before":1,"expected":0,"actual":0,"cancelled":true,"inside":true},{"shiftKey":false,"altKey":false,"before":0,"expected":1,"actual":1,"cancelled":true,"inside":true},{"shiftKey":false,"altKey":false,"before":1,"expected":0,"actual":0,"cancelled":true,"inside":true},{"shiftKey":true,"altKey":false,"before":0,"expected":1,"actual":1,"cancelled":true,"inside":true},{"shiftKey":true,"altKey":false,"before":1,"expected":0,"actual":0,"cancelled":true,"inside":true},{"shiftKey":true,"altKey":false,"before":0,"expected":1,"actual":1,"cancelled":true,"inside":true},{"shiftKey":true,"altKey":false,"before":1,"expected":0,"actual":0,"cancelled":true,"inside":true},{"shiftKey":false,"altKey":true,"before":0,"expected":1,"actual":1,"cancelled":true,"inside":true},{"shiftKey":false,"altKey":true,"before":1,"expected":0,"actual":0,"cancelled":true,"inside":true},{"shiftKey":false,"altKey":true,"before":0,"expected":1,"actual":1,"cancelled":true,"inside":true},{"shiftKey":false,"altKey":true,"before":1,"expected":0,"actual":0,"cancelled":true,"inside":true},{"shiftKey":true,"altKey":true,"before":0,"expected":1,"actual":1,"cancelled":true,"inside":true},{"shiftKey":true,"altKey":true,"before":1,"expected":0,"actual":0,"cancelled":true,"inside":true},{"shiftKey":true,"altKey":true,"before":0,"expected":1,"actual":1,"cancelled":true,"inside":true},{"shiftKey":true,"altKey":true,"before":1,"expected":0,"actual":0,"cancelled":true,"inside":true}]}
+PASS About cycles each Tab step when native traversal skips links
+PASS About actual Tab changes control and stays inside, modifiers=0 step=0
+PASS About actual Tab changes control and stays inside, modifiers=0 step=1
+PASS About actual Tab changes control and stays inside, modifiers=0 step=2
+PASS About actual Tab changes control and stays inside, modifiers=0 step=3
+PASS About actual Tab changes control and stays inside, modifiers=8 step=0
+PASS About actual Tab changes control and stays inside, modifiers=8 step=1
+PASS About actual Tab changes control and stays inside, modifiers=8 step=2
+PASS About actual Tab changes control and stays inside, modifiers=8 step=3
+PASS About actual Tab changes control and stays inside, modifiers=1 step=0
+PASS About actual Tab changes control and stays inside, modifiers=1 step=1
+PASS About actual Tab changes control and stays inside, modifiers=1 step=2
+PASS About actual Tab changes control and stays inside, modifiers=1 step=3
+PASS About actual Tab changes control and stays inside, modifiers=9 step=0
+PASS About actual Tab changes control and stays inside, modifiers=9 step=1
+PASS About actual Tab changes control and stays inside, modifiers=9 step=2
+PASS About actual Tab changes control and stays inside, modifiers=9 step=3
+PASS About recovers background focus while open
+PASS modal dialog contains keyboard focus
+PASS modal dialog contains keyboard focus
+PASS modal dialog contains keyboard focus
+PASS modal dialog contains keyboard focus
+PASS dialog restores focus to its invoker after Escape
+PASS About releases its focus guard after close
+PASS browser accessibility tree has no unnamed interactive nodes
+PASS rendered automation has no uncaught browser exceptions
+PASS rendered app attempts no external provider network
+NETWORK target external attempts=0; blocking proxy contacts=295
+SCOPE local browser automation only; manual assistive-technology and hosted release acceptance remain untested
+LOCAL AUTOMATION PASS
+
+EXIT 0
+SECONDS 23.22

@@ -1,0 +1,8 @@
+{
+  "old": "    var docs = topsIsDocumentURL(url.href);",
+  "new": "    var docs = topsIsDocumentURL(url.href), localHelp = topsIsStateHelpURL(url.href);\n    if (localHelp || (docs && state.documentReturn === \"state-help\")) setStateHelpContext(localHelp ? topsReadStateHelpURL(url.href) : topsStateHelpContext(state.stateHelp));",
+  "expected": 1,
+  "old_before": 1,
+  "new_after": 1,
+  "old_after": 0
+}

@@ -1,0 +1,6 @@
+{
+  "old": "situation: item.situations && item.situations[0] || \"browse\", need: item.need",
+  "new": "situation: item.id === \"WI-20261016-04\" ? \"guard\" : item.situations && item.situations[0] || \"browse\", need: item.need",
+  "new_after": 1,
+  "old_after": 0
+}

@@ -1,0 +1,8 @@
+{
+  "old": "subTab === \"directory\" && /*#__PURE__*/React.createElement(\"div\", null, React.createElement(WisconsinWorkSupport,",
+  "new": "subTab === \"directory\" && /*#__PURE__*/React.createElement(\"div\", null, wiGuideRequested.current && React.createElement(WisconsinWorkSupport,",
+  "expected": 1,
+  "old_before": 1,
+  "new_after": 1,
+  "old_after": 0
+}
