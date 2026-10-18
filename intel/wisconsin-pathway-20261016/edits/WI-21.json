@@ -1,0 +1,7 @@
+{
+  "old": "subTab === \"directory\" && /*#__PURE__*/React.createElement(\"div\", null, wiGuideRequested.current",
+  "new": "subTab === \"state-help\" && React.createElement(StateLocalHelp, { colors: C, context: stateHelpContext, onContext: setStateHelpContext, onTool: openStateHelpTool, getPlan: wisconsinPlanSnapshot, applyStep: applyStateHelpStep }), subTab === \"directory\" && /*#__PURE__*/React.createElement(\"div\", null, wiGuideRequested.current",
+  "expected": 1,
+  "new_after": 1,
+  "old_after": 1
+}

@@ -1,0 +1,7 @@
+{
+  "file": "index.html",
+  "old": "TOPS_WISCONSIN_EMPLOYER_SUPPORT.map(function(item) { return React.createElement(\"section\", { key: item.id, style: { margin: \"8px 0 16px\" } }, React.createElement(\"h4\", { style: { margin: \"0 0 6px\", fontSize: 17 } }, item.title), React.createElement(\"p\", { style: { margin: \"6px 0\" } }, item.body), React.createElement(\"p\", { style: { margin: \"6px 0\", fontSize: 14, color: C.textSecondary } }, item.note)); }),",
+  "new": "TOPS_WISCONSIN_EMPLOYER_SUPPORT.map(function(item) { return React.createElement(\"section\", { key: item.id, style: { margin: \"8px 0 16px\" } }, React.createElement(\"h4\", { style: { margin: \"0 0 6px\", fontSize: 17 } }, item.title), React.createElement(\"p\", { style: { margin: \"6px 0\" } }, item.body), React.createElement(\"p\", { style: { margin: \"6px 0\", fontSize: 14, color: C.textSecondary } }, item.note), link(item)); }),",
+  "new_after": 1,
+  "old_after": 0
+}

@@ -1,0 +1,13 @@
+UTC 2026-10-16T15:13:59.691912+00:00
+COMMAND ['node', 'scripts/document-context-return-browser-regression.js']
+PASS: all nine resource topics return in one click with destination label and selector focus; descriptor absent outside Documents.
+PASS: Healthcare visible return survives reload and native Back/Forward without duplicate entries.
+PASS: all-resources return preserves the existing in-memory cost filter and rendered results.
+PASS: fixed Wisconsin guide origin returns to its expanded heading, including after reload.
+PASS: Wisconsin guide followed by Healthcare captures the actual Healthcare origin.
+PASS: My Plan preserves its shortcut focus; Home tile is revealed and focused even after a Documents reload.
+PASS: direct or malformed origin safely opens My Plan; arbitrary values never become labels or navigation targets.
+PASS: existing Readiness return takes precedence with its exact checklist item focus.
+DOCUMENT CONTEXT RETURN PASS: exact saved bytes, both themes320/375, native Enter, wrapping44px controls and zero provider POST.
+
+EXIT 0

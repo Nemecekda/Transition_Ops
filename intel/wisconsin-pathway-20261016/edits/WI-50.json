@@ -1,0 +1,6 @@
+{
+  "old": "      React.createElement(\"button\", { id: \"tops-state-help-documents\",",
+  "new": "      context.need === \"moving\" && React.createElement(\"button\", { id: \"tops-state-help-finalpcs\", type: \"button\", style: button, onClick: function() { props.onTool(\"finalpcs\"); } }, \"Open final move planner\"),\n      React.createElement(\"button\", { id: \"tops-state-help-documents\",",
+  "new_after": 1,
+  "old_after": 1
+}

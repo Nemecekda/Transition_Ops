@@ -1,0 +1,4 @@
+PASS: keep/cancel preserves exact current action and focus; changing context discards replacement permission without writing a new key.
+PASS: simulated quota failure keeps disk unchanged and allows visit-only DOL action; My Plan resumes the exact orders referral without changing saved service profile.
+PASS: unrelated Home→Career navigation clears a stale state-help return banner.
+INDEPENDENT WI ADVERSE PASS: synthetic local browser, zero exceptions/provider POSTs.

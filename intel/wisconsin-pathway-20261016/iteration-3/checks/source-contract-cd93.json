@@ -1,0 +1,9 @@
+{
+  "index_sha256": "cd93e02c3de0b32be4fbed8befc8f8b5005482c6952be92bb4136699546077c1",
+  "runtime_records": 9,
+  "verification_records": 14,
+  "exact_source_copy": "PASS after typographic normalization",
+  "old_false_claims_absent": "PASS",
+  "state_context_primary_component_and_save_guards": "byte-identical to iteration2",
+  "held_nonprofit_absent": true
+}

@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-16",
+  "scope": "Local iteration 2 plus preserved Wisconsin pathway iteration 1; no publish",
+  "checkout": "/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops",
+  "branch": "codex/wisconsin-pathway",
+  "base": "ffede2397c22af055c97c74a8afe631d22edbc7b",
+  "cache": 291,
+  "artifacts": {
+    "index.html": "9344287234955f5bcb5d33fe6b80dad325271ab186f174892dd5faa2ee969fad",
+    "pwa-sw.js": "33a6bb9de82da88577628f485999bfeeb736ab53799704fe17a516570ea69c37",
+    "intel/verification-log.md": "48a33cbd8762810c5603406b04c02c06c254be4fa485b0d56ec37ea031f6750d",
+    "scripts/wisconsin-pathway-browser-regression.js": "d02938cf0b6ad2146d9adab4339299a51d154fa30e0dd913eb497eadb352d337",
+    "scripts/wisconsin-welcome-browser-regression.js": "23568872b0e16add8023e38b8bdb0308b601ee1db48ad59c439044b33148881a"
+  },
+  "successful_final_checks": [
+    "openai-migration-9344.log",
+    "sw-privacy-9344.log",
+    "privacy-network-9344.log",
+    "runtime-ai-spend-9344.log",
+    "accessibility-release-9344.log",
+    "focused-pathway-9344.log",
+    "focused-welcome-9344.log",
+    "policy-content-9344.log",
+    "public-build-9344.log",
+    "structural-9344.log"
+  ],
+  "independent_review": "FINAL-INDEPENDENT-REVIEW.md",
+  "actual_browser_review": "root-review.md",
+  "no_provider_calls": true,
+  "no_push_merge_deploy": true,
+  "structural_inventory": {
+    "standalone_js": 130,
+    "json": 261,
+    "yaml": 6,
+    "inline_js": 3,
+    "json_ld": 1
+  },
+  "structure_inventory_note": "Before adding only this final SITREP/remote receipt; final copy-check confirms added evidence encoding and JSON."
+}

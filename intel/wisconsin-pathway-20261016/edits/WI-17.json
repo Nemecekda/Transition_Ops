@@ -1,0 +1,7 @@
+{
+  "old": "topsIsDocumentURL(window.location.href) && history.state && history.state.documentReturn === \"state-help\" ? topsStateHelpContext(history.state.stateHelp)",
+  "new": "history.state && (topsIsDocumentURL(window.location.href) && history.state.documentReturn === \"state-help\" || [\"pathway\", \"healthcare\", \"wi-work-support\"].includes(history.state.stateHelpReturn)) ? topsStateHelpContext(history.state.stateHelp)",
+  "expected": 1,
+  "new_after": 1,
+  "old_after": 0
+}

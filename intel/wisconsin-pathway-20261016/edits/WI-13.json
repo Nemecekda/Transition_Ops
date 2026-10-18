@@ -1,0 +1,8 @@
+{
+  "old": "(documentsRoute.active || topsIsDocumentURL(window.location.href))",
+  "new": "(documentsRoute.active || topsIsDocumentURL(window.location.href) || topsIsStateHelpURL(window.location.href))",
+  "expected": 1,
+  "old_before": 1,
+  "new_after": 1,
+  "old_after": 0
+}

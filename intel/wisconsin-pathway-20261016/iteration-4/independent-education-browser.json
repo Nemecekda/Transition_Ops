@@ -1,0 +1,292 @@
+{
+  "checked": "2026-10-16",
+  "index_sha256": "ac4cd90dc61ca39c1230665a1b6c7465aca31324f77c3a9b63a4a92aa7090df9",
+  "result": "PASS",
+  "environment": "Isolated headless Chrome; loopback only; external/functions blocked; 320/375 \u00d7667; two themes; synthetic contexts. Not a field usability or service-availability test.",
+  "checks": [
+    "education only and collapsed first view",
+    "primary matrix preserved incl moving DOR and explicit Guard",
+    "Selected Reserve context matching",
+    "agency/school and tuition/cash distinction",
+    "no conflicted residency rule",
+    "family and federal route retained",
+    "county map and vacancy supervisor fallback",
+    "three household helper rows retained",
+    "native keyboard disclosure",
+    "safe external links",
+    "no horizontal overflow",
+    "unchanged storage by browsing/reload",
+    "All states hides Wisconsin details",
+    "zero runtime exceptions or POST attempts"
+  ],
+  "cases": [
+    {
+      "theme": "professional",
+      "need": "education",
+      "situation": "browse",
+      "width": 375,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "education",
+      "situation": "active",
+      "width": 320,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "education",
+      "situation": "veteran",
+      "width": 375,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "education",
+      "situation": "guard",
+      "width": 320,
+      "primary": "Wisconsin Guard tuition",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-SELECTED-RESERVE",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "education",
+      "situation": "reserve",
+      "width": 375,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-SELECTED-RESERVE",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "education",
+      "situation": "serving",
+      "width": 320,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-SELECTED-RESERVE",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "education",
+      "situation": "orders",
+      "width": 375,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-SELECTED-RESERVE",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "education",
+      "situation": "family",
+      "width": 320,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "moving",
+      "situation": "family",
+      "width": 375,
+      "primary": "Plan your Wisconsin move",
+      "educationIds": [],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "moving",
+      "situation": "reserve",
+      "width": 320,
+      "primary": "Plan your Wisconsin move",
+      "educationIds": [],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "education",
+      "situation": "browse",
+      "width": 375,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "education",
+      "situation": "active",
+      "width": 320,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "education",
+      "situation": "veteran",
+      "width": 375,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "education",
+      "situation": "guard",
+      "width": 320,
+      "primary": "Wisconsin Guard tuition",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-SELECTED-RESERVE",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "education",
+      "situation": "reserve",
+      "width": 375,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-SELECTED-RESERVE",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "education",
+      "situation": "serving",
+      "width": 320,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-SELECTED-RESERVE",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "education",
+      "situation": "orders",
+      "width": 375,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-SELECTED-RESERVE",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "education",
+      "situation": "family",
+      "width": 320,
+      "primary": "Pay for school",
+      "educationIds": [
+        "WI4-20261016-PUBLIC-EDUCATION",
+        "WI4-20261016-PRIVATE-EDUCATION",
+        "WI4-20261016-FEDERAL-EDUCATION",
+        "WI4-20261016-VETED-REVIEW"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "moving",
+      "situation": "family",
+      "width": 375,
+      "primary": "Plan your Wisconsin move",
+      "educationIds": [],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "moving",
+      "situation": "reserve",
+      "width": 320,
+      "primary": "Plan your Wisconsin move",
+      "educationIds": [],
+      "overflow": false
+    }
+  ]
+}

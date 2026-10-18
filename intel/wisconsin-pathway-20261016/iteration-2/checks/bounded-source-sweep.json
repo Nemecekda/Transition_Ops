@@ -1,0 +1,140 @@
+{
+  "index_sha256": "9344287234955f5bcb5d33fe6b80dad325271ab186f174892dd5faa2ee969fad",
+  "scope": "13 exact source-qualified adjacent corrections; not a full income audit",
+  "probe_correction": "Initial whole-file substring count==1 rejected the short GI Bill housing payments title because the phrase also properly appears inside three explanatory paragraphs. Final test requires all old literals absent, replacement text present, and the exact named title once.",
+  "corrections": [
+    {
+      "old": "After active duty, eligible trainees may receive GI Bill support while earning wages in a VA-approved apprenticeship or on-the-job training program.",
+      "old_literal_count": 0,
+      "old_js_escaped_count": 0,
+      "new_substring_count": 1
+    },
+    {
+      "old": "INTEL: Income Stack Planning",
+      "old_literal_count": 0,
+      "old_js_escaped_count": 0,
+      "new_substring_count": 1
+    },
+    {
+      "old": "Map your post-sep income: VA disability + GI Bill BAH + work-study can = $5,000+/mo tax-free. Plan the stack. Pathway \u2192 Step 4.",
+      "old_literal_count": 0,
+      "old_js_escaped_count": 0,
+      "new_substring_count": 1
+    },
+    {
+      "old": "IMMEDIATE INCOME SOURCES",
+      "old_literal_count": 0,
+      "old_js_escaped_count": 0,
+      "new_substring_count": 1
+    },
+    {
+      "old": "GI Bill BAH (if in school)",
+      "old_literal_count": 0,
+      "old_js_escaped_count": 0,
+      "new_substring_count": 4
+    },
+    {
+      "old": "Monthly housing allowance while enrolled, at the E-5 w/dependents rate for your school's ZIP. Tax-free. Varies widely by location.",
+      "old_literal_count": 0,
+      "old_js_escaped_count": 0,
+      "new_substring_count": 1
+    },
+    {
+      "old": "If using VR&E (Ch. 31), monthly subsistence allowance while training. Can be used after GI Bill.",
+      "old_literal_count": 0,
+      "old_js_escaped_count": 0,
+      "new_substring_count": 1
+    },
+    {
+      "old": "Work part-time at VA facilities while using GI Bill. Up to 25 hrs/week.",
+      "old_literal_count": 0,
+      "old_js_escaped_count": 0,
+      "new_substring_count": 1
+    },
+    {
+      "old": "\ud83d\udca1 STACK YOUR INCOME",
+      "old_literal_count": 0,
+      "old_js_escaped_count": 0,
+      "new_substring_count": 1
+    },
+    {
+      "old": "Example: VA Disability ($1,800) + GI Bill BAH ($2,800) + VA Work-Study ($600) = $5,200/mo tax-free while earning your degree. That's more take-home than many E-6s. Build your stack.",
+      "old_literal_count": 0,
+      "old_js_escaped_count": 0,
+      "new_substring_count": 1
+    },
+    {
+      "old": "and your GI Bill housing allowance can stack on top during training.",
+      "old_literal_count": 0,
+      "old_js_escaped_count": 0,
+      "new_substring_count": 1
+    },
+    {
+      "old": "IUEC elevator apprenticeship added \u2014 earn from day one, GI Bill stacks on top.",
+      "old_literal_count": 0,
+      "old_js_escaped_count": 0,
+      "new_substring_count": 1
+    },
+    {
+      "old": "\ud83d\udca1 PRO TIP: With a 10%+ rating you may qualify for VR&E \u2014 evaluate it BEFORE the GI Bill. It can cover what the GI Bill does and more, without burning your 36 GI Bill months. GI Bill MHA pays at the E-5-with-dependents BAH rate for your school's ZIP (tax-free; varies widely).",
+      "old_literal_count": 0,
+      "old_js_escaped_count": 0,
+      "new_substring_count": 1
+    }
+  ],
+  "verification_records": [
+    {
+      "id": "WI2-20261016-SKILLBRIDGE",
+      "log_count": 1
+    },
+    {
+      "id": "WI2-20261016-WIOA",
+      "log_count": 1
+    },
+    {
+      "id": "WI2-20261016-OJT",
+      "log_count": 1
+    },
+    {
+      "id": "WI2-20261016-IWT",
+      "log_count": 1
+    },
+    {
+      "id": "WI2-20261016-APPRENTICESHIP-WIOA",
+      "log_count": 1
+    },
+    {
+      "id": "WI2-20261016-VA-OJT",
+      "log_count": 1
+    },
+    {
+      "id": "WI2-20261016-VRE",
+      "log_count": 1
+    },
+    {
+      "id": "WI2-20261016-INCOME",
+      "log_count": 1
+    },
+    {
+      "id": "WI2-20261016-PARKS",
+      "log_count": 1
+    },
+    {
+      "id": "WI2-20261016-AIRTECH",
+      "log_count": 1
+    },
+    {
+      "id": "WI2-20261016-WMC",
+      "log_count": 1
+    },
+    {
+      "id": "WI2-20261016-KRIETE",
+      "log_count": 1
+    },
+    {
+      "id": "WI2-20261016-SKILLBRIDGE-FINDER",
+      "log_count": 1
+    }
+  ],
+  "untouched_other_income_claims": "Not recertified; unrelated retired-pay example retained"
+}

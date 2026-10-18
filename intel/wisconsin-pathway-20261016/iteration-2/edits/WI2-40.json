@@ -1,0 +1,7 @@
+{
+  "file": "index.html",
+  "old": "      TOPS_WISCONSIN_COHORT_EMPLOYERS.map(function(item)",
+  "new": "      link(TOPS_WISCONSIN_SKILLBRIDGE_FINDER),\n      TOPS_WISCONSIN_COHORT_EMPLOYERS.map(function(item)",
+  "new_after": 1,
+  "reason": "independent P2: approval-check route visible when only company disclosure is open"
+}

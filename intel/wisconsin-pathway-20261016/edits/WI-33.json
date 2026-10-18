@@ -1,0 +1,6 @@
+{
+  "old": "subTab !== \"documents\" && React.createElement(\"details\", { style: { marginBottom: 14 } }",
+  "new": "subTab !== \"documents\" && subTab !== \"state-help\" && React.createElement(\"details\", { style: { marginBottom: 14 } }",
+  "new_after": 1,
+  "old_after": 0
+}

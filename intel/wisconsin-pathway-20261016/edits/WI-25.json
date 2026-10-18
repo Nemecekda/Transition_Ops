@@ -1,0 +1,7 @@
+{
+  "old": "      currentWisconsin && React.createElement(\"button\", { id: \"tops-loop-wisconsin\",",
+  "new": "      currentStateHelp && React.createElement(\"button\", { id: \"tops-loop-state-help\", type: \"button\", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(\"state-help\", currentStateHelp); } }, currentStateHelp.area === \"wi\" ? \"Open Wisconsin help\" : \"Open state and local help\"),\n      currentStateHelp && supportStep && !supportReview && React.createElement(\"button\", { type: \"button\", style: button, onClick: function() { reviewSupport(\"edit\", \"tops-loop-state-help\"); } }, \"Update this step\"),\n      currentWisconsin && React.createElement(\"button\", { id: \"tops-loop-wisconsin\",",
+  "expected": 1,
+  "new_after": 1,
+  "old_after": 1
+}

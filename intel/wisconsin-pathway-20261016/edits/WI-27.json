@@ -1,0 +1,7 @@
+{
+  "old": "      if (route === \"wi-work-support\") { openWisconsinGuide(); return; }",
+  "new": "      if (route === \"state-help\") { openStateHelp(moment); return; }\n      if (route === \"wi-work-support\") { openWisconsinGuide(); return; }",
+  "expected": 1,
+  "new_after": 1,
+  "old_after": 1
+}

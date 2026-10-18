@@ -1,0 +1,6 @@
+{
+  "old": "stateHelpReturn.current === \"pathway\" ? activeTab === \"pathway\"",
+  "new": "[\"pathway\", \"finalpcs\"].includes(stateHelpReturn.current) ? activeTab === stateHelpReturn.current",
+  "new_after": 1,
+  "old_after": 0
+}

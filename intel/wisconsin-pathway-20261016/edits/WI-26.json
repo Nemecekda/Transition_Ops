@@ -1,0 +1,7 @@
+{
+  "old": "move.kind === \"continue\" && !supportStep && !currentWisconsin && !currentPriority",
+  "new": "move.kind === \"continue\" && !supportStep && !currentWisconsin && !currentStateHelp && !currentPriority",
+  "expected": 1,
+  "new_after": 1,
+  "old_after": 0
+}

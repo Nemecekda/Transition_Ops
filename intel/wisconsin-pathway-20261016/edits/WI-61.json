@@ -1,0 +1,6 @@
+{
+  "old": "[\"area\", \"situation\", \"need\"].forEach(function(key) { url.searchParams.delete(key); });",
+  "new": "[\"area\", \"situation\", \"need\"].forEach(function(key) { if (url.searchParams.has(key)) url.searchParams.delete(key); });",
+  "new_after": 1,
+  "old_after": 0
+}

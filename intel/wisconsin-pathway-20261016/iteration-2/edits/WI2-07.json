@@ -1,0 +1,6 @@
+{
+  "old": "React.createElement(\"ol\", { style: { margin: \"4px 0 12px\", paddingLeft: 24 } }, TOPS_WISCONSIN_SKILLBRIDGE_STAGES.map(function(item) { return React.createElement(\"li\", { key: item.id, style: { padding: \"8px 0 14px 6px\" } }",
+  "new": "React.createElement(\"div\", { style: { margin: \"4px 0 12px\" } }, TOPS_WISCONSIN_SKILLBRIDGE_STAGES.map(function(item) { return React.createElement(\"section\", { key: item.id, style: { padding: \"8px 0 14px\" } }",
+  "new_after": 1,
+  "old_after": 0
+}

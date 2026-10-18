@@ -1,0 +1,18 @@
+{
+  "checked_utc": "2026-10-18T14:07:06.552326+00:00",
+  "head": "ffede2397c22af055c97c74a8afe631d22edbc7b",
+  "origin_main": "ffede2397c22af055c97c74a8afe631d22edbc7b",
+  "candidate_manifest_files_unchanged": {
+    "index.html": true,
+    "pwa-sw.js": true,
+    "intel/verification-log.md": true,
+    "scripts/wisconsin-pathway-browser-regression.js": true,
+    "scripts/wisconsin-welcome-browser-regression.js": true,
+    "scripts/wisconsin-help-browser-regression.js": true,
+    "scripts/wisconsin-benefits-browser-regression.js": true
+  },
+  "changed_or_new_remote_heads": {},
+  "production_worker_sha256": "86800106fac991d24a953071d38b5cfcfac9bea83f21495e88ea706d695cad0d",
+  "production_cache": "transition-ops-v289",
+  "decision": "Reuse completed exact-hash Oct16 tests; packaging and rollback proof remain. No runtime edits."
+}

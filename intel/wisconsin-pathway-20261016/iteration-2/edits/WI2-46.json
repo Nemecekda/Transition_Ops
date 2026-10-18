@@ -1,0 +1,7 @@
+{
+  "file": "index.html",
+  "old": "</style>",
+  "new": "@media (max-width: 420px) {\n  #tops-state-help[data-state-area=\"wi\"] #tops-state-help-welcome { padding: 4px 12px !important; margin-bottom: 6px !important; }\n  #tops-state-help[data-state-area=\"wi\"] > article { padding: 12px !important; }\n}\n</style>",
+  "new_after": 1,
+  "reason": "root actual IAB final22px spacing request; only WI state-help at<=420px; type size and targets unchanged"
+}

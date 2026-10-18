@@ -1,0 +1,34 @@
+{
+  "checked_utc": "2026-10-16T16:20:50.408618+00:00",
+  "checkout": "/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops",
+  "branch": "codex/wisconsin-pathway",
+  "base": "ffede2397c22af055c97c74a8afe631d22edbc7b",
+  "cache": 293,
+  "files": {
+    "index.html": "ac4cd90dc61ca39c1230665a1b6c7465aca31324f77c3a9b63a4a92aa7090df9",
+    "pwa-sw.js": "47b9e649af493b53bf7def5d5dec5cdb1bda5891289d299699a98f8eb70aba65",
+    "intel/verification-log.md": "ebdec695fe9e32f26db8a8f5cff8fac4560acab548b557541d6fbb563fdae524",
+    "scripts/wisconsin-pathway-browser-regression.js": "cfc751524a60a8c5622ec99ba21a8de9d7dcaaa1cb495f2e99175b359744662d",
+    "scripts/wisconsin-welcome-browser-regression.js": "23568872b0e16add8023e38b8bdb0308b601ee1db48ad59c439044b33148881a",
+    "scripts/wisconsin-help-browser-regression.js": "44bc51d158ba0520ac69e06a75d5d5e6fe3270a30fbb328efc567b16b7e2957a",
+    "scripts/wisconsin-benefits-browser-regression.js": "f288ba02dbed0a3d42711c3b26097a035ebd4730ae86647b8e84b5c830e3fdd6"
+  },
+  "checks": {
+    "structural": "PASS: checks/structural-ac4-revalidation.log",
+    "openai": "PASS: checks/openai-ac4-revalidation.log",
+    "sw": "PASS: checks/sw-ac4-revalidation.log",
+    "network": "PASS: checks/network-ac4-revalidation.log",
+    "spend": "PASS: checks/spend-ac4-revalidation.log",
+    "a11y": "PASS: checks/a11y-ac4-revalidation.log",
+    "pathway": "PASS: checks/pathway-ac4-revalidation.log",
+    "welcome": "PASS: checks/welcome-ac4-revalidation.log",
+    "help": "PASS: checks/help-ac4-revalidation.log",
+    "benefits": "PASS: checks/benefits-ac4-revalidation.log",
+    "policy": "PASS: checks/policy-ac4-revalidation.log",
+    "public": "PASS: checks/public-ac4-revalidation.log"
+  },
+  "public_count": 74,
+  "manual_at": "PENDING",
+  "hosted": "PENDING",
+  "release": "Validated local candidate; commit-bound rollback and root publication follow separately."
+}

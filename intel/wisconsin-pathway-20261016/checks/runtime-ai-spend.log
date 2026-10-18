@@ -1,0 +1,27 @@
+UTC 2026-10-16T15:12:18.731785+00:00
+COMMAND ['npm', 'run', 'test:runtime-ai-spend']
+
+> transition-ops@1.0.0 test:runtime-ai-spend
+> node scripts/runtime-ai-spend-regression.js
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
+  [
+    [
++     'runtime-ai-spend phase=blob_store_load subphase=module_load'
+-     'runtime-ai-spend phase=ledger_read subphase=strong_context'
+    ]
+  ]
+
+    at testContentFreePhaseDiagnostics (/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/runtime-ai-spend-regression.js:660:10)
+    at async run (/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/runtime-ai-spend-regression.js:1517:3) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: [Array],
+  expected: [Array],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+EXIT 1

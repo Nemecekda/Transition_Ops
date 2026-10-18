@@ -1,0 +1,29 @@
+{
+  "verification": "WI4-20261016-CDL-COORDINATION",
+  "checked": "2026-10-16",
+  "resource": {
+    "id": "cdl-veteran-fast-track",
+    "name": "Military CDL test-waiver options",
+    "url": "https://www.fmcsa.dot.gov/90DayMilitaryWaiver",
+    "cost": "conditional",
+    "description": "Military driving experience may help you qualify for a CDL test waiver. A temporary FMCSA waiver may extend the qualifying military-experience period where the state adopts it. Ask your state DMV whether a current waiver applies to your record and which application documents and tests are required. A military license is not an automatic civilian CDL, and a test waiver does not promise free training. Check VA training benefits separately before enrolling."
+  },
+  "history": {
+    "identify": "30 JUL 2026 / Freedom Haulers existing policy-history row",
+    "title": "Military CDL waiver: check state rules",
+    "sum": "FMCSA issued a temporary military CDL waiver. It allows participating states to use a longer period of qualifying military driving experience, not simply time since separation. Ask your state DMV whether a current waiver applies and what documents and tests it requires. A waiver is not automatic CDL approval or a promise of free training.",
+    "src": "FMCSA \u2014 Military CDL waiver",
+    "url": "https://www.fmcsa.dot.gov/90DayMilitaryWaiver"
+  },
+  "wisconsinOptional": {
+    "summary": "Military driving experience may help with a Wisconsin CDL application. Ask Wisconsin DMV whether a current FMCSA waiver applies to your record.",
+    "caveat": "State participation, driving experience, timing and other licensing rules still apply. Do not assume Wisconsin adopted a temporary federal extension.",
+    "label": "Check Wisconsin military CDL rules",
+    "url": "https://wisconsindot.gov/Pages/dmv/com-drv-vehs/cdl-how-aply/cdl-military.aspx"
+  },
+  "notes": [
+    "Preserve original row identity and audience filters; change the unsupported free cost tag to conditional. No other CDL or GI Bill catalog rewrite is authorized by this packet.",
+    "The temporary federal waiver is confirmed active on 2026-10-16; the operative period is2026-07-30 through2026-10-29. Do not label it expired today. Evergreen runtime wording preserves awareness of possible temporary relief while requiring the current authority and state decision.",
+    "Do not assert Wisconsin adopted the extension. The state page and permanent FMCSA skills-waiver page still describe a one-year period. The operative temporary waiver uses qualifying military CMV employment, not a universal separation-date rule."
+  ]
+}

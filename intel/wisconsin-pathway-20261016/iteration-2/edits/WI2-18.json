@@ -1,0 +1,6 @@
+{
+  "old": "item.note), link(item)); }))),\n    work && TOPS_WISCONSIN_COHORT_EMPLOYERS",
+  "new": "item.note), link(item)); })),\n      React.createElement(\"details\", { id: \"tops-wisconsin-employer-help\", style: { borderTop: \"1px solid \" + C.border } }, React.createElement(\"summary\", { style: summary }, \"Help for employers\"),\n        TOPS_WISCONSIN_EMPLOYER_SUPPORT.map(function(item) { return React.createElement(\"section\", { key: item.id, style: { margin: \"8px 0 16px\" } }, React.createElement(\"h4\", { style: { margin: \"0 0 6px\", fontSize: 17 } }, item.title), React.createElement(\"p\", { style: { margin: \"6px 0\" } }, item.body), React.createElement(\"p\", { style: { margin: \"6px 0\", fontSize: 14, color: C.textSecondary } }, item.note)); }),\n        link({ url: \"https://dwd.wisconsin.gov/wioa/policy/08/08.5.htm\", label: \"Read Wisconsin training guidance\" }))),\n    work && TOPS_WISCONSIN_COHORT_EMPLOYERS",
+  "new_after": 1,
+  "old_after": 0
+}

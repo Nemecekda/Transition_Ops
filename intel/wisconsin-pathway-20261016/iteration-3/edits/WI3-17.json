@@ -1,0 +1,10 @@
+{
+  "edit": "WI3-17",
+  "file": "intel/verification-log.md",
+  "records": [
+    "WI3-NP-20261016-VETSNET",
+    "WI3-NP-20261016-CVI-SSVF",
+    "WI3-NP-20261016-VOW-MARKET"
+  ],
+  "sha256": "c67cf20d4e81b8877562bbf03ef5bfd7055746603d46dc87a0b14ac1bd5bb356"
+}

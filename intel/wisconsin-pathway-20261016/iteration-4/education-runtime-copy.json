@@ -1,0 +1,211 @@
+{
+  "checked": "2026-10-16",
+  "scope": "Bounded education coordination and county-level housing referral. Import matching verification records before runtime copy. No eligibility calculator, new intake, benefit stack or completed application.",
+  "records": [
+    {
+      "checked": "2026-10-16",
+      "rating": "CONFIRMED",
+      "tier": "TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim",
+      "stageAllowed": true,
+      "band": "Condition-triggered planning or need; no fixed separation band or day-offset.",
+      "timing": "ACT AVAILABLE NOW",
+      "expires": "NONE; contacts and eligibility require current agency review",
+      "id": "WI4-20261016-PUBLIC-EDUCATION",
+      "title": "UW or Wisconsin technical college",
+      "summary": "Ask your school's veterans office to help coordinate tuition support before you enroll.",
+      "caveat": "The Wisconsin GI Bill is separate from federal benefits. WDVA reviews veteran certification; the school decides student eligibility, including residency for tuition. Moving to Wisconsin does not settle either decision.",
+      "action": "Use WDVA's Wisconsin GI Bill guidance to request veteran certification through MyWisVets or WDVA 2030, then contact the school's Veteran Certifying Official about WDVA 2029, student residency and the other education benefits you plan to use before enrolling.",
+      "label": "Check Wisconsin GI Bill steps",
+      "url": "https://dva.wi.gov/benefits/education/wi-gi-bill/",
+      "sources": [
+        "https://dva.wi.gov/benefits/education/wi-gi-bill/",
+        "https://www.wisconsin.edu/veteran-military-connected-student-resources/",
+        "https://mywtcs.wtcsystem.edu/educational-services/student-services/veterans-services/"
+      ],
+      "claim": "WDVA describes separate agency certification and school determination. Public university and technical-college systems provide campus veterans-service routes. Referral and process only; no numerical residency rule is published.",
+      "population": "All four may seek this planning or eligibility-review route: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY, ALREADY SEPARATED. Each person and benefit requires separate qualification.",
+      "excluded": "No claim that all four populations qualify for the Wisconsin GI Bill. No private-school tuition-remission claim.",
+      "cost": "MONEY",
+      "placement": "education only; enrich/reuse WI-20261016-03, not a duplicate primary card",
+      "relatedLinks": [
+        {
+          "label": "Find a UW campus veterans office",
+          "url": "https://www.wisconsin.edu/veteran-military-connected-student-resources/"
+        },
+        {
+          "label": "Find technical-college veterans services",
+          "url": "https://mywtcs.wtcsystem.edu/educational-services/student-services/veterans-services/"
+        }
+      ]
+    },
+    {
+      "checked": "2026-10-16",
+      "rating": "CONFIRMED",
+      "tier": "TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim",
+      "stageAllowed": true,
+      "band": "Condition-triggered planning or need; no fixed separation band or day-offset.",
+      "timing": "ACT AVAILABLE NOW",
+      "expires": "NONE; contacts and eligibility require current agency review",
+      "id": "WI4-20261016-FEDERAL-EDUCATION",
+      "title": "Check federal benefits before choosing",
+      "summary": "Ask VA which education benefits fit your service or family history before choosing a benefit.",
+      "caveat": "Federal benefits and Wisconsin programs have different rules. Some federal choices affect what you can use later; the app does not choose or combine benefits for you.",
+      "action": "Use VA's Education and Training Contact Us page to ask the GI Bill team about the federal benefit choice for your service or family history before applying, and discuss the result with your school's certifying official.",
+      "label": "Ask VA about education benefits",
+      "url": "https://www.benefits.va.gov/gibill/contact_us.asp",
+      "sources": [
+        "https://www.va.gov/education/eligibility/",
+        "https://www.benefits.va.gov/gibill/contact_us.asp",
+        "https://www.va.gov/education/about-gi-bill-benefits/montgomery-selected-reserve/"
+      ],
+      "claim": "VA describes different programs for members, veterans, qualifying dependents/survivors and Selected Reserve, including cases where a program election restricts later choices; its GI Bill contact route answers education-benefit questions.",
+      "population": "All four may seek the official information route: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY, ALREADY SEPARATED. Eligibility and election effects are individual and program-specific.",
+      "excluded": "This does not promise transferred benefits, dependent eligibility, added entitlement or reversal of a past election.",
+      "cost": "A LOST OR FORECLOSED ELECTION",
+      "placement": "education coordination note/link; also available in family context",
+      "relatedLinks": [
+        {
+          "label": "See VA education eligibility routes",
+          "url": "https://www.va.gov/education/eligibility/"
+        }
+      ]
+    },
+    {
+      "checked": "2026-10-16",
+      "rating": "CONFIRMED",
+      "tier": "TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim",
+      "stageAllowed": true,
+      "band": "Condition-triggered planning or need; no fixed separation band or day-offset.",
+      "timing": "ACT AVAILABLE NOW",
+      "expires": "NONE; contacts and eligibility require current agency review",
+      "id": "WI4-20261016-WING-EDUCATION",
+      "title": "Serving in the Wisconsin National Guard",
+      "summary": "Use the Wisconsin Guard tuition-grant portal for each term and ask the program administrator how your other funding affects the application.",
+      "caveat": "The program has member, school and term requirements. It pays the school. Other Reserve service or a family relationship does not qualify you for this Guard grant.",
+      "action": "Use the Wisconsin National Guard Tuition Grant page to contact the Tuition Grant Administrator about eligibility, other education funding and the current online term application before relying on the grant.",
+      "label": "Check Wisconsin Guard tuition",
+      "url": "https://dma.wi.gov/wisconsin-national-guard-tuition-grant/",
+      "sources": [
+        "https://dma.wi.gov/wisconsin-national-guard-tuition-grant/",
+        "https://dma.wi.gov/wisconsin-national-guard-tuition-grant-faqs/"
+      ],
+      "claim": "DMA lists the administrator and current online portal. Its FAQ requires an application each term, pays the school and states eligibility and interaction conditions. No award amount or application-window number is repeated.",
+      "population": "GUARD/RESERVE, specifically otherwise-qualifying current Wisconsin National Guard members.",
+      "excluded": "This does not apply to other Reserve components, separated veterans or spouses/family through that status alone; active-duty component service is not Wisconsin Guard membership.",
+      "cost": "MONEY",
+      "placement": "reuse WI-20261016-04; promote only explicit guard context, never combined serving/reserve",
+      "relatedLinks": []
+    },
+    {
+      "checked": "2026-10-16",
+      "rating": "CONFIRMED",
+      "tier": "TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim",
+      "stageAllowed": true,
+      "band": "Condition-triggered planning or need; no fixed separation band or day-offset.",
+      "timing": "ACT AVAILABLE NOW",
+      "expires": "NONE; contacts and eligibility require current agency review",
+      "id": "WI4-20261016-SELECTED-RESERVE",
+      "title": "Serving in another Reserve component",
+      "summary": "For the federal Selected Reserve GI Bill, start with your unit and check that VA approves your training program.",
+      "caveat": "Selected Reserve eligibility is separate from Wisconsin Guard tuition. Membership alone does not settle eligibility, and leaving the Selected Reserve can affect the benefit.",
+      "action": "Ask your unit about the Notice of Basic Eligibility, DD Form 2384-1, and use VA's Montgomery GI Bill Selected Reserve guidance to check the program with the school before enrolling.",
+      "label": "Check Selected Reserve education steps",
+      "url": "https://www.va.gov/education/about-gi-bill-benefits/montgomery-selected-reserve/",
+      "sources": [
+        "https://www.va.gov/education/about-gi-bill-benefits/montgomery-selected-reserve/",
+        "https://www.va.gov/education/eligibility/"
+      ],
+      "claim": "VA directs eligible Selected Reserve members to obtain DD2384-1 from their unit and confirm program approval before enrollment. Current membership alone is insufficient, and there are qualified exceptions after departure.",
+      "population": "GUARD/RESERVE where the person meets Selected Reserve program requirements; explicit other-Reserve UI is a navigation preference, not a qualification.",
+      "excluded": "This does not apply to spouses/family by relationship alone or promise active-duty-component eligibility; separated people must check the specific VA exception rules.",
+      "cost": "MONEY",
+      "placement": "education detail; relevant in reserve/serving/orders/guard contexts; never hide other federal options",
+      "relatedLinks": []
+    },
+    {
+      "checked": "2026-10-16",
+      "rating": "CONFIRMED",
+      "tier": "TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim",
+      "stageAllowed": true,
+      "band": "Condition-triggered planning or need; no fixed separation band or day-offset.",
+      "timing": "ACT AVAILABLE NOW",
+      "expires": "NONE; contacts and eligibility require current agency review",
+      "id": "WI4-20261016-PRIVATE-EDUCATION",
+      "title": "Wisconsin private nonprofit college",
+      "summary": "Ask the school's financial aid office about the Wisconsin Veteran Grant for Private Non-Profit Schools.",
+      "caveat": "Only participating schools and qualifying students are covered. The school and HEAB coordinate the award with other tuition funding; it is paid to the school, not extra spending money.",
+      "action": "Check HEAB's participating-school list, request the WDVA certification required by its Wisconsin Veteran Grant application, and take the student portion to the school's Financial Aid Office to review eligibility and other tuition funding.",
+      "label": "Check private-college tuition help",
+      "url": "https://heab.state.wi.us/features/vets.html",
+      "sources": [
+        "https://heab.state.wi.us/features/vets.html",
+        "https://heab.state.wi.us/files/features/wiveterans.pdf",
+        "https://heab.state.wi.us/files/features/wivets-qanda.pdf"
+      ],
+      "claim": "HEAB has a distinct private-nonprofit tuition grant. The November2025 application has student and school parts and directs WDVA certification; it includes veteran/spouse/child categories. HEAB verifies awards; its Q&A describes school payment and coordination with federal tuition support.",
+      "population": "ALREADY SEPARATED and SPOUSE/FAMILY where individually qualified; GUARD/RESERVE only if independently qualifying under the program. SEPARATING (active component) may use the public planning route before later enrollment.",
+      "excluded": "No automatic eligibility for all veterans, Guard/Reserve members, spouses, children or private schools; no certificate-program award or living-expense claim.",
+      "cost": "MONEY",
+      "placement": "education-only detail; distinct from UW/WTCS remission",
+      "relatedLinks": []
+    },
+    {
+      "checked": "2026-10-16",
+      "rating": "CONFIRMED",
+      "tier": "TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim",
+      "stageAllowed": true,
+      "band": "Condition-triggered planning or need; no fixed separation band or day-offset.",
+      "timing": "ACT AVAILABLE NOW",
+      "expires": "NONE; contacts and eligibility require current agency review",
+      "id": "WI4-20261016-VETED-REVIEW",
+      "title": "Ask whether VetEd fits",
+      "summary": "VetEd reimburses approved tuition and fees after successful coursework for eligible veterans who have not earned a bachelor's degree.",
+      "caveat": "Ask WDVA to check your service, other education benefits and the application deadline before you count on reimbursement. It is not automatic extra funding.",
+      "action": "Contact WDVA through its VetEd Reimbursement Grant page, or your county or tribal veterans office, to have your service and other education benefits reviewed and confirm the WDVA 2200 application deadline before the course begins.",
+      "label": "Ask WDVA about VetEd",
+      "url": "https://dva.wi.gov/benefits/education/vet-ed-reimbursement-grant/",
+      "sources": [
+        "https://dva.wi.gov/benefits/education/vet-ed-reimbursement-grant/",
+        "https://dva.wi.gov/wp-content/uploads/2025/06/WDVA_2468-VetEd-Fact-Sheet.pdf"
+      ],
+      "claim": "Both sources support a conditional reimbursement program, no-bachelor restriction and official application/help route. Exact interaction rules conflict between the webpage and linked fact sheet and are NOT cleared; only the deciding-office review is cleared.",
+      "population": "ALREADY SEPARATED and GUARD/RESERVE only where independently qualifying as a covered veteran; SEPARATING (active component) may plan for review before a later course.",
+      "excluded": "This does not apply to spouses/family by relationship alone. This referral does not establish eligibility alongside Post-9/11, Guard or Reserve tuition assistance.",
+      "cost": "MONEY",
+      "placement": "secondary education detail; do not promote as a stack or default Guard route",
+      "relatedLinks": []
+    },
+    {
+      "checked": "2026-10-16",
+      "rating": "CONFIRMED",
+      "tier": "TIER 1 government/public-system referral; AUTO-INGEST RECOMMENDED for the narrow claim",
+      "stageAllowed": true,
+      "band": "Condition-triggered planning or need; no fixed separation band or day-offset.",
+      "timing": "ACT AVAILABLE NOW",
+      "expires": "NONE; contacts and eligibility require current agency review",
+      "id": "WI4-20261016-HOUSING-NAVIGATOR",
+      "title": "Find local housing and utility support",
+      "summary": "Use WDVA's county map to find the VORP coordinator for your area and ask for help connecting with housing, utilities and community services.",
+      "caveat": "People who have served, including current Guard and Reserve members, can contact VORP. Use the listed supervisor when a regional position is vacant. A referral does not guarantee funding, a bed or immediate intake.",
+      "action": "Open WDVA's Veterans Outreach and Recovery page, find your county on its regional map, and contact the listed coordinator or vacancy-covering supervisor about housing, utilities and community-service connections; use the published VORP referral contact if you cannot identify the region.",
+      "label": "Find housing help for my area",
+      "url": "https://dva.wi.gov/services/mental-health-and-emergency-services/veterans-outreach-and-recovery/",
+      "sources": [
+        "https://dva.wi.gov/services/mental-health-and-emergency-services/veterans-outreach-and-recovery/",
+        "https://dva.wi.gov/wp-content/uploads/2025/07/VORP_Map_2025_11_Regions_Cropped.avif"
+      ],
+      "claim": "Current WDVA page explicitly covers housing/utilities and all who served, including current Guard/Reserve. It provides regional contacts and supervisor coverage for vacancies. Root browser read the current county map; no capacity verified.",
+      "population": "SEPARATING (active component), GUARD/RESERVE, ALREADY SEPARATED as people who served. SPOUSE/FAMILY may seek assistance with the person who served, but this is not an independently established family-treatment or housing entitlement.",
+      "excluded": "A family relationship alone does not establish individual VORP eligibility. Keep the separately cleared SSVF household route and VHRP family-occupancy boundary.",
+      "cost": "NOTHING",
+      "placement": "moving/housing related official help, reusing WI-20261016-09 rather than duplicating the provider; retain household/SSVF alternatives",
+      "relatedLinks": [
+        {
+          "label": "Find a county or tribal veterans office",
+          "url": "https://dva.wi.gov/resources/find-my-cvso-tvso/"
+        }
+      ],
+      "access": "Tier1 page successful; map direct returned Cache miss, root Tier2 browser read succeeded and captured vorp-county-map-browser.png."
+    }
+  ]
+}

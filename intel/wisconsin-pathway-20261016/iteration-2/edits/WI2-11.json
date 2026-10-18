@@ -1,0 +1,6 @@
+{
+  "old": "      React.createElement(\"p\", { style: { fontSize: 14, margin: \"8px 0\", lineHeight: 1.5 } }, main.caveat),\n      official(main, true),",
+  "new": "      official(main, true),\n      React.createElement(\"p\", { style: { fontSize: 14, margin: \"8px 0\", lineHeight: 1.5 } }, main.caveat),",
+  "new_after": 1,
+  "old_after": 0
+}

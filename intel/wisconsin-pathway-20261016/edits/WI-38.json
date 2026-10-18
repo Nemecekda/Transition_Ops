@@ -1,0 +1,6 @@
+{
+  "old": "  function openStateHelpTool(tool) {",
+  "new": "  function openStateHelpTool(tool) {\n    if (tool === \"directory\") { stateHelpReturn.current = \"\"; wiGuideRequested.current = false; setSubTab(\"directory\"); continuationFocus.current = \"tops-resource-topic\"; setContinuationRevision(function(value) { return value + 1; }); return; }",
+  "new_after": 1,
+  "old_after": 1
+}

@@ -1,0 +1,6 @@
+{
+  "old": "    React.createElement(\"p\", { style: { fontSize: 14, color: C.textSecondary } }, \"You can browse before moving or leaving service. Ask the responsible office which rules apply to your situation.\"));",
+  "new": "    React.createElement(\"p\", { id: \"tops-state-help-area-hint\", style: { fontSize: 14, color: C.textSecondary } }, \"You can browse before moving or leaving service. Choosing a state does not establish residence or eligibility. Ask the responsible office which rules apply to your situation.\"));",
+  "new_after": 1,
+  "old_after": 0
+}

@@ -1,0 +1,7 @@
+{
+  "old": "if (activeTab === \"resources\" && (subTab === \"state-help\" || (subTab === \"documents\" && documentReturn.current === \"state-help\"))) state.stateHelp = topsStateHelpContext(stateHelpContext); else delete state.stateHelp;",
+  "new": "if (stateHelpToolActive()) state.stateHelpReturn = stateHelpReturn.current; else { delete state.stateHelpReturn; stateHelpReturn.current = \"\"; } if (stateHelpToolActive() || (activeTab === \"resources\" && (subTab === \"state-help\" || (subTab === \"documents\" && documentReturn.current === \"state-help\")))) state.stateHelp = topsStateHelpContext(stateHelpContext); else delete state.stateHelp;",
+  "expected": 1,
+  "new_after": 1,
+  "old_after": 0
+}

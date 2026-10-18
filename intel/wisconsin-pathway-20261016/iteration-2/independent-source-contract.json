@@ -1,0 +1,18 @@
+{
+  "checked": "2026-10-16",
+  "result": "PASS",
+  "index_sha256": "9344287234955f5bcb5d33fe6b80dad325271ab186f174892dd5faa2ee969fad",
+  "runtimeRecords": 12,
+  "verificationRecords": 13,
+  "checks": [
+    "12 visible new records resolve to confirmed packet entries with matching URLs and material approved copy",
+    "13 unique corresponding verification log entries including adjacent income record",
+    "exact old bounded income-stack/immediate/automatic phrases removed",
+    "confirmed-income headings and duty/benefit election boundaries present"
+  ],
+  "limitations": [
+    "No full-app income validation",
+    "DNR brief recreation copy is shortened without new entitlement claim",
+    "Human outcome and retention unmeasured"
+  ]
+}

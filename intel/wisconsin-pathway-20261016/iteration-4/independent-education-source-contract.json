@@ -1,0 +1,9 @@
+{
+  "checked": "2026-10-16",
+  "index_sha256": "ac4cd90dc61ca39c1230665a1b6c7465aca31324f77c3a9b63a4a92aa7090df9",
+  "result": "PASS",
+  "routing_cases": 112,
+  "all_primary_contexts_preserved": true,
+  "guard_resume_exact": true,
+  "all_seven_verification_records_unique": true
+}

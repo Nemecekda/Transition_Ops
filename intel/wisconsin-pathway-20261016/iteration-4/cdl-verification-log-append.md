@@ -1,0 +1,25 @@
+# WI4-20261016-CDL-COORDINATION — Military CDL waiver and state decision
+
+Rating: **CONFIRMED** for the narrow correction and state-review action. Checked October16,2026. The temporary federal waiver is **active on this review date**, not expired. Wisconsin adoption of its expanded period is **not established** by the state page inspected; neither universal adoption nor rejection is asserted.
+
+Sources directly read (tier1):
+- https://www.fmcsa.dot.gov/90DayMilitaryWaiver — operative agency text, effective July30,2026 through October29,2026. Applies a two-year qualifying-military-employment lookback where adopted; state application and remaining conditions apply.
+- https://www.fmcsa.dot.gov/sites/fmcsa.dot.gov/files/2026-07/Waiver%20For%20Current%20and%20Former%20Military%20Service%20Members_1.pdf — signed four-page operative waiver independently opened. Dates and scope crosschecked against the agency HTML. Both are versions of the same primary authority, not two independent policy decisions.
+- https://www.transportation.gov/briefing-room/president-trump-transportation-secretary-duffy-host-vets-white-house-promote-new — separate DOT announcement corroborates the initiative and expansion. Its broader promotional shorthand does not override the operative waiver's qualifying-employment and state-participation conditions.
+- https://www.fmcsa.dot.gov/military-skills-test-waiver — current program page, linked from DOT, still describes the permanent one-year rule and directs applicants to the state licensing agency.
+- https://wisconsindot.gov/Pages/dmv/com-drv-vehs/cdl-how-aply/cdl-military.aspx — state requirements, applications and separate endorsement/permit fees. Still describes a one-year window; no statement adopting the current temporary expansion was found in this page.
+
+Correction basis: existing resource3372 and policy-history3186 say the window doubled after active duty. The operative waiver measures the qualifying experience period and permits state adoption; military service or separation date alone is insufficient. The existing resource also implies a universally free route and housing support during training. Those promises are not established by this CDL waiver. Refer VA education decisions separately rather than recertifying them through DOT promotional copy.
+
+Exact runtime replacements are in `adjacent-cdl-copy.json`. They deliberately avoid a date-specific eligibility promise. They preserve the potential value of temporary relief and send the applicant to the state DMV to determine whether a current waiver applies. The source link points to the readable operative waiver, which publishes its own dates; it does not imply renewal after its stated expiration.
+
+IMPACT: SHIP — ACT | A2/A3 | S2 primary-source verifier | 2026-10-16 | revisit NONE
+A1 population: SEPARATING (active component), GUARD/RESERVE and ALREADY SEPARATED with qualifying military commercial-vehicle experience. band: Condition-triggered CDL application or training decision; no fixed separation band or day-offset because qualifying employment and application dates are distinct. excluded: This military test-waiver route does not apply to SPOUSE/FAMILY solely by relationship or to applicants without the required military driving experience. timing: ACT AVAILABLE NOW
+A2 act: "Read FMCSA's military waiver and ask your state DMV whether any current temporary waiver applies to your military driving record, what proof and tests are required, and which fees remain before applying or paying for training; verify any VA training benefit separately with VA."
+A3 surface(s): RESOURCES `cdl-veteran-fast-track`; existing July30 policy-history row; optional Wisconsin DMV route. token: NONE. sweep trigger: FIRED — temporary federal authority versus state adoption/permanent rules; qualifying employment versus separation date; test waiver versus automatic license/free training/VA allowance. Validation-gate owns bounded sweep execution.
+A4 cost: A CLOSED WINDOW
+EXPIRES: The recorded temporary federal authority ends2026-10-29 unless amended or replaced; no such later authority was established by this check. The evergreen DMV-referral correction has no fixed expiry but must not be represented as confirmation of an extension.
+
+Access ledger: the old app destination `https://www.fmcsa.dot.gov/registration/commercial-drivers-license/military-driver-programs` returned404 to the web tool; the alternate `/commercial-drivers-license/military-driver-programs` returned a cache miss. No website-wide outage is inferred. The new operative URL and program URL both opened fully. No PDF, application, command certification, or DMV transaction was submitted.
+
+Acceptance: a qualifying synthetic Guard/Reserve applicant sees a possible route to a test waiver, can find the state decision point, and is not promised automatic eligibility, an extension after separation, all tests waived, no fees or a VA housing allowance. Both directly adjacent runtime summaries must be corrected together.

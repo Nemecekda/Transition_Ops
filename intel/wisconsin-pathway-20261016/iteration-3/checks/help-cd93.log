@@ -1,0 +1,9 @@
+UTC 2026-10-16T16:00:52.362275+00:00
+COMMAND ['node', 'scripts/wisconsin-help-browser-regression.js']
+PASS VetsNet is distinct from Transition OPS; nonprofit coverage is visibly local/program-specific, CVI limits are explicit and Racine food support does not promise housing or all-spouse access.
+Error: browser evaluation failed: ReferenceError: RESOURCES is not defined
+    at <anonymous>:1:1
+    at Object.evaluate (eval at <anonymous> (/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/wisconsin-help-browser-regression.js:5:9), <anonymous>:166:11)
+    at async /Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/wisconsin-help-browser-regression.js:37:12
+
+EXIT 1

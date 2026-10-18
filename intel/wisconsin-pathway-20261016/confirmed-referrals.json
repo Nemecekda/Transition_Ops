@@ -1,0 +1,173 @@
+{
+  "checked": "2026-10-16",
+  "scope": "Official referral entry points only; not an eligibility decision or exhaustive benefits inventory",
+  "evidenceFile": "source-coverage.md",
+  "nationalFallback": {
+    "record": "WI-20261016-NATIONAL",
+    "status": "CONFIRMED referral only; root browser tier 2",
+    "checked": "2026-10-16",
+    "label": "Find another state's veterans office",
+    "agency": "U.S. Department of Veterans Affairs",
+    "url": "https://discover.va.gov/external-resources/?_per_page=100&_resource_type=state-veterans-affairs-office",
+    "note": "Find your state in VA's external resource directory. Do not promise that a filter is preselected.",
+    "receipt": "national-locator-browser-20261016.txt"
+  },
+  "groups": [
+    {
+      "id": "benefits",
+      "title": "Find benefits and local help",
+      "next": "Start with your county or tribal Veterans Service Office.",
+      "caveat": "Choosing Wisconsin here does not establish residence or eligibility. The responsible agency reviews your situation.",
+      "links": [
+        {
+          "record": "WI-20261016-01",
+          "label": "Find my local veterans office",
+          "agency": "Wisconsin Department of Veterans Affairs",
+          "url": "https://dva.wi.gov/resources/find-my-cvso-tvso/"
+        },
+        {
+          "record": "WI-20261016-02",
+          "label": "Open MyWisVets",
+          "agency": "Wisconsin Department of Veterans Affairs",
+          "url": "https://apps.dva.wisconsin.gov/mywisvets",
+          "note": "WDVA's state benefits portal. An account is not an eligibility award."
+        }
+      ]
+    },
+    {
+      "id": "work",
+      "title": "Find work or fund training",
+      "next": "Contact a Wisconsin Job Center for job-search help and an assessment of training or work-cost support.",
+      "caveat": "Ask about approval before spending. Funding and eligibility depend on the program and your situation.",
+      "links": [
+        {
+          "record": "WI-20261016-05",
+          "label": "Find a Wisconsin Job Center",
+          "agency": "Wisconsin Department of Workforce Development",
+          "url": "https://wisconsinjobcenter.org/directory/"
+        },
+        {
+          "record": "WI-20261016-06",
+          "label": "Check military licensing options",
+          "agency": "Wisconsin Department of Safety and Professional Services",
+          "url": "https://dsps.wi.gov/credentialing/military-benefits-related-to-credentialing/",
+          "note": "Check your profession's requirements for training credit, reciprocity and fee assistance."
+        }
+      ],
+      "existingTool": "Wisconsin work-cost guide; reuse existing WIOA action and question preparation"
+    },
+    {
+      "id": "education",
+      "title": "Pay for school",
+      "next": "Use the Wisconsin GI Bill application guidance and contact your school's Veteran Certifying Official.",
+      "caveat": "The Wisconsin GI Bill is separate from the federal GI Bill. WDVA and the school make different eligibility determinations.",
+      "links": [
+        {
+          "record": "WI-20261016-03",
+          "label": "See Wisconsin GI Bill steps",
+          "agency": "Wisconsin Department of Veterans Affairs",
+          "url": "https://dva.wi.gov/benefits/education/wi-gi-bill/"
+        },
+        {
+          "record": "WI-20261016-04",
+          "label": "Wisconsin Guard tuition guidance",
+          "agency": "Wisconsin Department of Military Affairs",
+          "url": "https://dma.wi.gov/wisconsin-national-guard-tuition-grant/",
+          "note": "A separate Wisconsin National Guard program. Do not assume service in another Reserve component qualifies."
+        }
+      ]
+    },
+    {
+      "id": "health",
+      "title": "Find health and recovery support",
+      "next": "Choose Wisconsin health coverage information or connect with a regional veteran recovery coordinator.",
+      "caveat": "Each program has its own rules. Keep the app's immediate-help route available; routine referrals do not replace emergency support.",
+      "links": [
+        {
+          "record": "WI-20261016-HEALTH-DIRECTORY",
+          "label": "See Wisconsin health coverage options",
+          "agency": "Wisconsin Department of Health Services",
+          "url": "https://www.dhs.wisconsin.gov/health-care-coverage/index.htm"
+        },
+        {
+          "record": "WI-20261016-09",
+          "label": "Find my regional VORP coordinator",
+          "agency": "Wisconsin Department of Veterans Affairs",
+          "url": "https://dva.wi.gov/services/mental-health-and-emergency-services/veterans-outreach-and-recovery/",
+          "note": "Community support for people who served, including current Guard and Reserve members."
+        }
+      ]
+    },
+    {
+      "id": "moving",
+      "title": "Move to Wisconsin and plan your costs",
+      "next": "Use Wisconsin military tax guidance to check residency and tax questions as you plan your move.",
+      "caveat": "Planning a move does not establish Wisconsin residence or eligibility. If housing is unstable, use the housing referral below; VHRP sites do not house spouses or children, but staff can help families find alternatives.",
+      "links": [
+        {
+          "record": "WI-20261016-10",
+          "label": "Open Wisconsin military tax guidance",
+          "agency": "Wisconsin Department of Revenue",
+          "url": "https://www.revenue.wi.gov/Pages/Individuals/military.aspx",
+          "note": "Official residency, military income and tax-credit information."
+        },
+        {
+          "record": "WI-20261016-07",
+          "label": "Contact Wisconsin housing support",
+          "agency": "Wisconsin Department of Veterans Affairs",
+          "url": "https://dva.wi.gov/services/housing-and-financial-services/veterans-housing-and-recovery/"
+        },
+        {
+          "record": "WI-20261016-08",
+          "label": "Check health-care and subsistence aid",
+          "agency": "Wisconsin Department of Veterans Affairs",
+          "url": "https://dva.wi.gov/services/mental-health-and-emergency-services/subsistence-aid-health-care-aid-grants/",
+          "note": "Limited, conditional aid after other support is exhausted; ask a county or tribal veterans office."
+        }
+      ],
+      "existingTool": "Final move planning; preserve existing conditions and verified federal guidance"
+    },
+    {
+      "id": "service",
+      "title": "Serve, return or retire",
+      "next": "Contact Wisconsin's Service Member Support team to find help for your current service or family situation.",
+      "caveat": "Support referrals do not establish eligibility for every program. Keep federal and branch-specific Guard/Reserve tools available.",
+      "links": [
+        {
+          "record": "WI-20261016-11",
+          "label": "Find service and family support",
+          "agency": "Wisconsin Department of Military Affairs",
+          "url": "https://dma.wi.gov/service-member-support-division/"
+        },
+        {
+          "record": "WI-20261016-12",
+          "label": "Find a retiree office",
+          "agency": "Wisconsin Department of Military Affairs",
+          "url": "https://dma.wi.gov/retiree-activities-office/",
+          "note": "Military-retiree and survivor information and referrals."
+        }
+      ],
+      "returnToWork": {
+        "record": "WI-20261016-USERRA",
+        "label": "Get help with civilian work after service",
+        "agency": "U.S. Department of Labor, VETS",
+        "url": "https://www.dol.gov/agencies/vets/programs/userra",
+        "note": "DOL provides USERRA information and assistance with service-related civilian employment problems. Individual circumstances and requirements apply.",
+        "receipt": "dol-userra-browser-20261016.txt",
+        "optionalESGR": {
+          "record": "WI-20261016-ESGR",
+          "label": "Open ESGR deployment resources",
+          "url": "https://esgr.mil/Service-Members-Family/Deployment-Tips-and-Checklist",
+          "note": "Referral only: the root browser read headings and assistance links, not the checklist body.",
+          "receipt": "esgr-browser-20261016.txt"
+        }
+      }
+    }
+  ],
+  "inventorySnapshot": {
+    "commit": "1149ede281423de94d4ef1f93cefa35a18f12ca7",
+    "note": "Pre-merge source inventory snapshot, not current branch identity",
+    "currentImplementationBaseline": "ffede2397c22af055c97c74a8afe631d22edbc7b",
+    "cache": 289
+  }
+}

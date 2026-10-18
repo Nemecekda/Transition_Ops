@@ -1,0 +1,6 @@
+{
+  "old": "    openExperienceTool(\"pathway\");\n  }\n  function stateHelpToolActive",
+  "new": "    openExperienceTool(tool);\n  }\n  function stateHelpToolActive",
+  "new_after": 1,
+  "old_after": 0
+}

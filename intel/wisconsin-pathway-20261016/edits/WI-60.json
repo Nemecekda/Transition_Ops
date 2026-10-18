@@ -1,0 +1,6 @@
+{
+  "old": "!!document.querySelector(\"#tops-state-help a[href=\\\"https://dva.wi.gov/services/housing-and-financial-services/property-tax-credit/\\\"]\")",
+  "new": "Array.from(document.querySelectorAll(\"#tops-state-help a\")).some(n=>n.href===\"https://dva.wi.gov/services/housing-and-financial-services/property-tax-credit/\")",
+  "new_after": 1,
+  "old_after": 0
+}

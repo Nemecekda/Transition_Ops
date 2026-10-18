@@ -1,0 +1,7 @@
+{
+  "file": "pwa-sw.js",
+  "old": "const CACHE_NAME = \"transition-ops-v291\";",
+  "new": "const CACHE_NAME = \"transition-ops-v292\";",
+  "new_after": 1,
+  "old_after": 0
+}

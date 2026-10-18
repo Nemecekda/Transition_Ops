@@ -1,0 +1,48 @@
+UTC 2026-10-16T16:17:50.545456+00:00
+COMMAND ['node', 'scripts/wisconsin-pathway-browser-regression.js']
+PASS: Benefits plus State help are two navigation choices; national default reuses combined Guard/Reserve without inferring Wisconsin Guard.
+PASS: Resources picker selection focuses the new State help heading.
+PASS: six synthetic audiences find a useful action; returning orders uses DOL; reload preserves closed selection.
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression /another Reserve component/. Input:
+
+'Pay for school\n' +
+  '\n' +
+  "Ask your school's veterans office to help coordinate tuition support before you enroll.\n" +
+  '\n' +
+  'See Wisconsin GI Bill steps (new tab)\n' +
+  '\n' +
+  'Wisconsin and federal GI Bills have different rules. WDVA checks veteran certification; your school checks student eligibility and tuition residency.\n' +
+  '\n' +
+  'Save as my next step\n' +
+  '\n' +
+  'Related options and eligibility\n' +
+  'Wisconsin Guard tuition\n' +
+  '\n' +
+  'Use the Wisconsin Guard tuition-grant portal for each term and ask the program administrator how your other funding affects the application.\n' +
+  '\n' +
+  'The program has member, school and term requirements. It pays the school. Other Reserve service or a family relationship does not qualify you for this Guard grant.\n' +
+  '\n' +
+  'Wisconsin Guard tuition guidance (new tab)\n' +
+  'Official source'
+
+    at /Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops/scripts/wisconsin-pathway-browser-regression.js:35:129 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'Pay for school\n' +
+    '\n' +
+    "Ask your school's veterans office to help coordinate tuition support before you enroll.\n" +
+    '\n' +
+    'See Wisconsin GI Bill steps (new tab)\n' +
+    '\n' +
+    'Wisconsin and federal GI Bills have different rules. WDVA checks veteran certification; your school checks student eligibility and tuition residency.\n' +
+    '\n' +
+    'Save as my next step\n' +
+    '\n' +
+    '...',
+  expected: /another Reserve component/,
+  operator: 'match',
+  diff: 'simple'
+}
+
+EXIT 1
+SECONDS 3.82

@@ -1,0 +1,7 @@
+{
+  "file": "index.html",
+  "old": "function WisconsinNextChapter(props) {",
+  "new": "const TOPS_WISCONSIN_SKILLBRIDGE_FINDER = {\"id\":\"WI2-20261016-SKILLBRIDGE-FINDER\",\"label\":\"Find official SkillBridge opportunities\",\"url\":\"https://skillbridge.mil/locations\",\"note\":\"Check the exact program and position with your service and the provider. A company in this local directory is not automatically an approved SkillBridge opportunity.\",\"verification\":\"WI2-20261016-SKILLBRIDGE-FINDER\"};\nfunction WisconsinNextChapter(props) {",
+  "new_after": 1,
+  "old_after": 1
+}

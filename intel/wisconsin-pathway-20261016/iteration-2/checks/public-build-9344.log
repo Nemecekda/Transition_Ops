@@ -1,0 +1,9 @@
+UTC 2026-10-16T15:39:44.426505+00:00
+COMMAND ['npm', 'run', 'build:public']
+
+> transition-ops@1.0.0 build:public
+> node scripts/build-public.js
+
+PUBLIC BUILD PASS: 74 files -> dist
+
+EXIT 0

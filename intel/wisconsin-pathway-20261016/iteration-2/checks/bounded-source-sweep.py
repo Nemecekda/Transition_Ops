@@ -1,0 +1,11 @@
+from pathlib import Path
+import re,json,hashlib
+root=Path('/Users/deannemecek/.codex/worktrees/pao-useful-packets/Transition_Ops');e=Path('/Users/deannemecek/.codex/worktrees/3dc7/Transition_Ops/intel/wisconsin-pathway-20261016/iteration-2');s=(root/'index.html').read_text();md=(e/'adjacent-copy-corrections.md').read_text();pairs=re.findall(r'(?:^|\n)(?:Title |Body |Section heading |GI Bill title |GI Bill description |VR&E description |Work Study description |Heading |Release note v87 |Resource )?[Oo]ld(?: clause)?: `([^`]+)`\n\n(?:Title |Body |Section heading |GI Bill title |GI Bill description |VR&E description |Work Study description |Heading |Release note v87 |Resource )?[Nn]ew(?: clause)?: `([^`]+)`',md)
+rows=[]
+for old,new in pairs:
+ escaped=json.dumps(old,ensure_ascii=True)[1:-1];escaped=re.sub(r'\\u[0-9a-fA-F]{4}',lambda m:m[0][:2]+m[0][2:].upper(),escaped)
+ row={'old':old,'old_literal_count':s.count(old),'old_js_escaped_count':s.count(escaped),'new_substring_count':s.count(new)};assert row['old_literal_count']==0 and row['old_js_escaped_count']==0 and row['new_substring_count']>=1,row;rows.append(row)
+assert s.count('name: "GI Bill housing payments"')==1
+log=(root/'intel/verification-log.md').read_text();records=json.loads((e/'runtime-copy.json').read_text())['records'];trace=[{'id':r['id'],'log_count':log.count('## '+r['id']+' ')} for r in records];assert all(x['log_count']==1 for x in trace)
+result={'index_sha256':hashlib.sha256(s.encode()).hexdigest(),'scope':'13 exact source-qualified adjacent corrections; not a full income audit','probe_correction':'Initial whole-file substring count==1 rejected the short GI Bill housing payments title because the phrase also properly appears inside three explanatory paragraphs. Final test requires all old literals absent, replacement text present, and the exact named title once.','corrections':rows,'verification_records':trace,'untouched_other_income_claims':'Not recertified; unrelated retired-pay example retained'}
+(e/'checks/bounded-source-sweep.json').write_text(json.dumps(result,indent=2)+'\n');print('PASS: 13 old claims absent, source-qualified replacements present, exact renamed title once, 13 source records traced.')

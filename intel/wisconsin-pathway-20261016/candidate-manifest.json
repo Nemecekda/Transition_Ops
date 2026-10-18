@@ -1,0 +1,25 @@
+{
+  "base": "ffede2397c22af055c97c74a8afe631d22edbc7b",
+  "branch": "codex/wisconsin-pathway",
+  "cache": 290,
+  "status": "local candidate, not published",
+  "files": {
+    "index.html": "2acb1be174325661050f982cdd56acaf3d74e0e754ef912ca9e857fccf7ca43b",
+    "pwa-sw.js": "48776d6f3ce49c559ed280121b3218d0da48ef10e4e2e387e799719899f93317",
+    "scripts/wisconsin-pathway-browser-regression.js": "dfa60218377012ae73fb46857651a08c9170da9f58a3ffc2709639bcf38d1625",
+    "intel/verification-log.md": "5028d29b615f262ff5f3cc89b9250a8912e2822284e07d2393bed04516bf98fd"
+  },
+  "check_logs": [
+    "openai-migration-final2",
+    "sw-privacy-final2",
+    "privacy-network-final2",
+    "runtime-ai-spend-final2",
+    "accessibility-release-final",
+    "focused-browser-final2",
+    "legacy-documents",
+    "legacy-wi-plan",
+    "legacy-wi-work"
+  ],
+  "paid_calls": 0,
+  "new_app_storage_keys": 0
+}

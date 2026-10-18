@@ -1,0 +1,6 @@
+{
+  "old": "React.createElement(\"option\", { value: \"national\" }, \"National resources / another state\")",
+  "new": "React.createElement(\"option\", { value: \"national\" }, \"All states\")",
+  "new_after": 1,
+  "old_after": 0
+}

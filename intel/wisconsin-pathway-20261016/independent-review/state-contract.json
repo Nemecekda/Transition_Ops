@@ -1,0 +1,142 @@
+{
+  "checked": "2026-10-16",
+  "evidence": "executed deterministic source helpers, no browser or provider calls",
+  "index_sha256": "2acb1be174325661050f982cdd56acaf3d74e0e754ef912ca9e857fccf7ca43b",
+  "combinations": 112,
+  "records": 22,
+  "resumable": [
+    {
+      "id": "NAT-20261016-01-benefits",
+      "context": {
+        "area": "national",
+        "situation": "browse",
+        "need": "benefits"
+      }
+    },
+    {
+      "id": "NAT-20261016-01-work",
+      "context": {
+        "area": "national",
+        "situation": "browse",
+        "need": "work"
+      }
+    },
+    {
+      "id": "NAT-20261016-01-education",
+      "context": {
+        "area": "national",
+        "situation": "browse",
+        "need": "education"
+      }
+    },
+    {
+      "id": "NAT-20261016-01-health",
+      "context": {
+        "area": "national",
+        "situation": "browse",
+        "need": "health"
+      }
+    },
+    {
+      "id": "NAT-20261016-01-moving",
+      "context": {
+        "area": "national",
+        "situation": "browse",
+        "need": "moving"
+      }
+    },
+    {
+      "id": "NAT-20261016-01-service",
+      "context": {
+        "area": "national",
+        "situation": "browse",
+        "need": "service"
+      }
+    },
+    {
+      "id": "NAT-20261016-02-national",
+      "context": {
+        "area": "national",
+        "situation": "orders",
+        "need": "service"
+      }
+    },
+    {
+      "id": "WI-20261016-01",
+      "context": {
+        "area": "wi",
+        "situation": "browse",
+        "need": "benefits"
+      }
+    },
+    {
+      "id": "WI-20261016-05",
+      "context": {
+        "area": "wi",
+        "situation": "browse",
+        "need": "work"
+      }
+    },
+    {
+      "id": "WI-20261016-03",
+      "context": {
+        "area": "wi",
+        "situation": "browse",
+        "need": "education"
+      }
+    },
+    {
+      "id": "WI-20261016-HEALTH-DIRECTORY",
+      "context": {
+        "area": "wi",
+        "situation": "browse",
+        "need": "health"
+      }
+    },
+    {
+      "id": "WI-20261016-10",
+      "context": {
+        "area": "wi",
+        "situation": "browse",
+        "need": "moving"
+      }
+    },
+    {
+      "id": "WI-20261016-11",
+      "context": {
+        "area": "wi",
+        "situation": "browse",
+        "need": "service"
+      }
+    },
+    {
+      "id": "WI-20261016-04",
+      "context": {
+        "area": "wi",
+        "situation": "guard",
+        "need": "education"
+      }
+    },
+    {
+      "id": "NAT-20261016-02-wi",
+      "context": {
+        "area": "wi",
+        "situation": "orders",
+        "need": "service"
+      }
+    }
+  ],
+  "checks": [
+    "all state/situation/need combinations nonempty",
+    "national records do not include Wisconsin referrals",
+    "Guard tuition visible for all WI education, primary only explicit Guard",
+    "ordinary moving routes to DOR first",
+    "orders routes to DOL for start/service",
+    "every reachable saved primary reopens same primary record",
+    "profile Guard remains unspecified serving",
+    "malformed and duplicate URL IDs safely fall back",
+    "all record IDs/action strings unique",
+    "every record has verification-log entry"
+  ],
+  "result": "PASS"
+}

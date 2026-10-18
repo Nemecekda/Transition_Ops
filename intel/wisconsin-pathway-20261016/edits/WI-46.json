@@ -1,0 +1,6 @@
+{
+  "old": "topsIsStateHelpURL(window.location.href) ? \"state-help\" : \"vsos\";",
+  "new": "topsIsStateHelpURL(window.location.href) ? \"state-help\" : history.state && history.state.stateHelpReturn === \"healthcare\" ? \"healthcare\" : \"vsos\";",
+  "new_after": 1,
+  "old_after": 0
+}

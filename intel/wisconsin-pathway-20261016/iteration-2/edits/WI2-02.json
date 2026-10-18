@@ -1,0 +1,7 @@
+{
+  "file": "index.html",
+  "old": "style: { padding: \"16px\", border: \"1px solid \" + C.border, borderRadius: 12, background: C.bgCard, margin: \"12px 0\" } },",
+  "new": "style: { padding: \"16px\", border: \"1px solid \" + C.border, borderTop: \"3px solid \" + C.greenBright, borderRadius: 12, background: C.bgCard, margin: \"12px 0\" } },",
+  "new_after": 1,
+  "old_after": 0
+}

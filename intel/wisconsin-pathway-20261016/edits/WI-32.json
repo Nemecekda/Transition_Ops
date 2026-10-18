@@ -1,0 +1,6 @@
+{
+  "old": "React.createElement(\"div\", { id: \"tops-page-orientation\", className:",
+  "new": "!(activeTab === \"resources\" && subTab === \"state-help\") && React.createElement(\"div\", { id: \"tops-page-orientation\", className:",
+  "new_after": 1,
+  "old_after": 1
+}

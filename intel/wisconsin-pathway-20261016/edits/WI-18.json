@@ -1,0 +1,7 @@
+{
+  "old": "const stateHelpReturn = useRef(false);",
+  "new": "const stateHelpReturn = useRef(history.state && [\"pathway\", \"healthcare\", \"wi-work-support\"].includes(history.state.stateHelpReturn) ? history.state.stateHelpReturn : \"\");",
+  "expected": 1,
+  "new_after": 1,
+  "old_after": 0
+}

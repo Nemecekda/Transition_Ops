@@ -1,0 +1,25 @@
+{
+  "checked": "2026-10-16",
+  "index_sha256": "cd93e02c3de0b32be4fbed8befc8f8b5005482c6952be92bb4136699546077c1",
+  "worker_sha256": "5672aedc5556ebaa8c9236f48e5f862f50fe39fc074bb8563aba32cc41bf6799",
+  "source_matches": [
+    {
+      "id": "WI3-NP-20261016-VETSNET",
+      "source_packet_match": true,
+      "normalization": "typographic apostrophes normalized to ASCII only"
+    },
+    {
+      "id": "WI3-NP-20261016-CVI-SSVF",
+      "source_packet_match": true,
+      "normalization": "typographic apostrophes normalized to ASCII only"
+    },
+    {
+      "id": "WI3-NP-20261016-VOW-MARKET",
+      "source_packet_match": true,
+      "normalization": "typographic apostrophes normalized to ASCII only"
+    }
+  ],
+  "held_dryhootch_absent": true,
+  "general_navigation_first": true,
+  "adjacent_AJC_correction": "Verified in index3377 and existing v81 history3157; independently source-cleared by wi_primary_sources in adjacent-job-center-copy.md."
+}

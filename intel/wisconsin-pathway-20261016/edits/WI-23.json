@@ -1,0 +1,7 @@
+{
+  "old": "  var currentWisconsin = move.kind === \"continue\" && a.text === TOPS_WISCONSIN_WORK_SUPPORT.action;",
+  "new": "  var currentWisconsin = move.kind === \"continue\" && a.text === TOPS_WISCONSIN_WORK_SUPPORT.action;\n  var currentStateHelp = move.kind === \"continue\" ? topsStateHelpSavedAction(a.text) : null;",
+  "expected": 1,
+  "new_after": 1,
+  "old_after": 1
+}

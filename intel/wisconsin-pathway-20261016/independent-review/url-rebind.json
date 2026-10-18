@@ -1,0 +1,16 @@
+{
+  "checked": "2026-10-16",
+  "index_sha256": "2acb1be174325661050f982cdd56acaf3d74e0e754ef912ca9e857fccf7ca43b",
+  "worker_sha256": "48776d6f3ce49c559ed280121b3218d0da48ef10e4e2e387e799719899f93317",
+  "result": "PASS",
+  "checks": 20,
+  "evidence": "Exact source URL synchronization executed in isolated Node VM; no browser or provider calls.",
+  "bounded_change": "Reverting only the conditional delete guard reproduces the previously independently reviewed index hash exactly.",
+  "coverage": [
+    "unrelated active-tool URLs retain exact percent/plus encoding and fragment",
+    "legacy Wisconsin guide URL remains byte-for-byte unchanged when already correct",
+    "Wisconsin Guard context remains stable",
+    "Documents removes state-help context",
+    "navigation away removes duplicate state-help keys while preserving unrelated decoded values"
+  ]
+}

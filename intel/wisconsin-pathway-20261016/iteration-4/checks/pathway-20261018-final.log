@@ -1,0 +1,17 @@
+UTC 2026-10-18T14:10:14.057927+00:00
+COMMAND ['node', 'scripts/wisconsin-pathway-browser-regression.js']
+PASS: Benefits plus State help are two navigation choices; national default reuses combined Guard/Reserve without inferring Wisconsin Guard.
+PASS: Resources picker selection focuses the new State help heading.
+PASS: six synthetic audiences find a useful action; returning orders uses DOL; reload preserves closed selection.
+PASS: ordinary move starts with tax/residency guidance; housing condition/family caveat and distinct Guard tuition remain explicit secondary options.
+PASS: Documents returns to exact Wisconsin/return-from-orders/health task through reload and native Back/Forward.
+PASS: Career, Healthcare, old WIOA guide and Final move preserve explicit return after reload.
+PASS: unknown/duplicate route values fall back to national help; browsing never writes profile or saved plan.
+PASS: deliberate replacement required; visit-only step leaves disk unchanged and Home reopens matching work task.
+PASS: stale review cannot overwrite a changed saved plan.
+PASS: saved fixed referral resumes matching state/need after Home reload.
+PASS: saved Guard tuition resumes its specific primary action without changing combined Guard/Reserve profile.
+WISCONSIN PATHWAY PASS: 320/375 both themes,44px controls,native Enter,zero exceptions/provider POSTs.
+
+EXIT 0
+SECONDS 9.01

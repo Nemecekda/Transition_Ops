@@ -1,0 +1,217 @@
+{
+  "checked": "2026-10-16",
+  "index_sha256": "cd93e02c3de0b32be4fbed8befc8f8b5005482c6952be92bb4136699546077c1",
+  "result": "PASS",
+  "environment": "Isolated headless Chrome; loopback only; external/functions blocked; 320/375 \u00d7 667; two themes; synthetic contexts. Not a field usability or service-availability test.",
+  "checks": [
+    "three cleared nonprofit IDs only",
+    "2\u20133 or fewer need-matched options",
+    "exact geography visible",
+    "surviving-spouse audience",
+    "Onward Ops distinct from Transition OPS",
+    "Guard/Reserve/family contexts do not broaden eligibility",
+    "native Enter opens local help",
+    "collapsed first view",
+    "no horizontal overflow",
+    "external links no completion handler",
+    "storage unchanged by browsing",
+    "All states hides Wisconsin helpers",
+    "zero runtime errors or POST attempts"
+  ],
+  "cases": [
+    {
+      "theme": "professional",
+      "need": "start",
+      "situation": "active",
+      "width": 375,
+      "ids": [
+        "WI3-NP-20261016-VETSNET",
+        "WI3-20261016-WOMEN-VETERANS"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "service",
+      "situation": "guard",
+      "width": 320,
+      "ids": [
+        "WI3-NP-20261016-VETSNET",
+        "WI3-20261016-WOMEN-VETERANS"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "service",
+      "situation": "reserve",
+      "width": 375,
+      "ids": [
+        "WI3-NP-20261016-VETSNET",
+        "WI3-20261016-WOMEN-VETERANS"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "moving",
+      "situation": "family",
+      "width": 375,
+      "ids": [
+        "WI3-20261016-FAMILY-HOUSING",
+        "WI3-NP-20261016-CVI-SSVF",
+        "WI3-NP-20261016-VOW-MARKET"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "moving",
+      "situation": "veteran",
+      "width": 320,
+      "ids": [
+        "WI3-20261016-FAMILY-HOUSING",
+        "WI3-NP-20261016-CVI-SSVF",
+        "WI3-NP-20261016-VOW-MARKET"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "health",
+      "situation": "veteran",
+      "width": 375,
+      "ids": [
+        "WI3-20261016-WOMEN-VETERANS"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "benefits",
+      "situation": "veteran",
+      "width": 320,
+      "ids": [
+        "WI3-20261016-CLAIMS-HELP"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "work",
+      "situation": "orders",
+      "width": 375,
+      "ids": [
+        "WI3-20261016-RETRAINING"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "professional",
+      "need": "education",
+      "situation": "serving",
+      "width": 320,
+      "ids": [
+        "WI3-20261016-RETRAINING"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "start",
+      "situation": "active",
+      "width": 375,
+      "ids": [
+        "WI3-NP-20261016-VETSNET",
+        "WI3-20261016-WOMEN-VETERANS"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "service",
+      "situation": "guard",
+      "width": 320,
+      "ids": [
+        "WI3-NP-20261016-VETSNET",
+        "WI3-20261016-WOMEN-VETERANS"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "service",
+      "situation": "reserve",
+      "width": 375,
+      "ids": [
+        "WI3-NP-20261016-VETSNET",
+        "WI3-20261016-WOMEN-VETERANS"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "moving",
+      "situation": "family",
+      "width": 375,
+      "ids": [
+        "WI3-20261016-FAMILY-HOUSING",
+        "WI3-NP-20261016-CVI-SSVF",
+        "WI3-NP-20261016-VOW-MARKET"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "moving",
+      "situation": "veteran",
+      "width": 320,
+      "ids": [
+        "WI3-20261016-FAMILY-HOUSING",
+        "WI3-NP-20261016-CVI-SSVF",
+        "WI3-NP-20261016-VOW-MARKET"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "health",
+      "situation": "veteran",
+      "width": 375,
+      "ids": [
+        "WI3-20261016-WOMEN-VETERANS"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "benefits",
+      "situation": "veteran",
+      "width": 320,
+      "ids": [
+        "WI3-20261016-CLAIMS-HELP"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "work",
+      "situation": "orders",
+      "width": 375,
+      "ids": [
+        "WI3-20261016-RETRAINING"
+      ],
+      "overflow": false
+    },
+    {
+      "theme": "tactical",
+      "need": "education",
+      "situation": "serving",
+      "width": 320,
+      "ids": [
+        "WI3-20261016-RETRAINING"
+      ],
+      "overflow": false
+    }
+  ]
+}

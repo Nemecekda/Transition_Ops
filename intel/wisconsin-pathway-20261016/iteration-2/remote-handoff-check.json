@@ -1,0 +1,12 @@
+{
+  "checked_utc": "2026-10-16T15:42:24.167597+00:00",
+  "method": "Read-only git ls-remote origin refs/heads/main refs/heads/claude/* refs/heads/codex/*",
+  "remote_main": "ffede2397c22af055c97c74a8afe631d22edbc7b",
+  "remote_claude_refs_returned": [],
+  "remote_document_context_return": "1149ede281423de94d4ef1f93cefa35a18f12ca7",
+  "remote_pao_useful_packets": "a360dce09536e2f29742bafb771b1635752eb323",
+  "scope": "Final main and relevant remote tips unchanged from prepared baseline; full earlier merge-base/count proof in ../s3-baseline.json. No remote mutation.",
+  "local_status": " M index.html\n M intel/verification-log.md\n M pwa-sw.js\n?? intel/wisconsin-pathway-20261016/\n?? scripts/wisconsin-pathway-browser-regression.js\n?? scripts/wisconsin-welcome-browser-regression.js\n",
+  "local_branch": "codex/wisconsin-pathway",
+  "local_head": "ffede2397c22af055c97c74a8afe631d22edbc7b"
+}
