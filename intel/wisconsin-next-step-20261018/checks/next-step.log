@@ -1,0 +1,16 @@
+UTC 2026-10-18T14:27:11.635908+00:00
+COMMAND ['node', 'scripts/wisconsin-next-step-browser-regression.js']
+PASS confirmation/direct MyPlan/exact Guard resume {"width":320,"theme":"professional","saved":false,"target":{"height":46,"width":162.015625,"top":453.765625,"bottom":499.765625,"nav":751.609375,"overflow":false},"arrival":{"top":158.796875,"bottom":380.828125,"nav":751.609375,"scrollY":183,"overflow":false}}
+PASS confirmation/direct MyPlan/exact Guard resume {"width":320,"theme":"professional","saved":true,"target":{"height":46,"width":162.015625,"top":428.171875,"bottom":474.171875,"nav":751.609375,"overflow":false},"arrival":{"top":158.796875,"bottom":380.828125,"nav":751.609375,"scrollY":183,"overflow":false}}
+PASS confirmation/direct MyPlan/exact Guard resume {"width":320,"theme":"tactical","saved":false,"target":{"height":46,"width":162.015625,"top":431.765625,"bottom":477.765625,"nav":751.609375,"overflow":false},"arrival":{"top":114.796875,"bottom":336.828125,"nav":751.609375,"scrollY":183,"overflow":false}}
+PASS confirmation/direct MyPlan/exact Guard resume {"width":320,"theme":"tactical","saved":true,"target":{"height":46,"width":162.015625,"top":406.171875,"bottom":452.171875,"nav":751.609375,"overflow":false},"arrival":{"top":114.796875,"bottom":336.828125,"nav":751.609375,"scrollY":183,"overflow":false}}
+PASS confirmation/direct MyPlan/exact Guard resume {"width":375,"theme":"professional","saved":false,"target":{"height":46,"width":162.015625,"top":431.765625,"bottom":477.765625,"nav":751.609375,"overflow":false},"arrival":{"top":115,"bottom":305.3125,"nav":751.609375,"scrollY":144,"overflow":false}}
+PASS confirmation/direct MyPlan/exact Guard resume {"width":375,"theme":"professional","saved":true,"target":{"height":46,"width":162.015625,"top":406.171875,"bottom":452.171875,"nav":751.609375,"overflow":false},"arrival":{"top":115,"bottom":305.3125,"nav":751.609375,"scrollY":144,"overflow":false}}
+PASS confirmation/direct MyPlan/exact Guard resume {"width":375,"theme":"tactical","saved":false,"target":{"height":46,"width":162.015625,"top":431.765625,"bottom":477.765625,"nav":751.609375,"overflow":false},"arrival":{"top":115,"bottom":305.3125,"nav":751.609375,"scrollY":144,"overflow":false}}
+PASS confirmation/direct MyPlan/exact Guard resume {"width":375,"theme":"tactical","saved":true,"target":{"height":46,"width":162.015625,"top":406.171875,"bottom":452.171875,"nav":751.609375,"overflow":false},"arrival":{"top":115,"bottom":305.3125,"nav":751.609375,"scrollY":144,"overflow":false}}
+PASS new review, cancellation and changed topic do not retain prior success continuation.
+PASS stale and failed save never expose success; explicit visit recovery leaves saved bytes intact.
+WISCONSIN NEXT STEP PASS: eight mobile/theme/persistence journeys; one direct keyboard handoff, guarded storage, exact resume, no initial control or provider call.
+
+EXIT 0
+SECONDS 7.62

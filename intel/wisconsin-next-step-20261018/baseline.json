@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-18",
+  "branch": "codex/wisconsin-next-step",
+  "base": "370121e6b9a384cd93dea1a7eea8ec075c10f595",
+  "origin_main": "370121e6b9a384cd93dea1a7eea8ec075c10f595",
+  "previous_candidate": "032a60f6f74eefbe28c9b50da6c37ea6f9ab061f",
+  "previous_candidate_vs_main": "",
+  "cache_old": 293,
+  "cache_candidate": 294,
+  "prior_rollback294": "local proof only; never shipped or reserved; removed disposable tree",
+  "reconciliation": "Fresh fetch completed. Published main370121e and prior candidate032a60f have exact same tree. Existing feature branch and other worktrees preserved. Earlier divergent branches unchanged; their dispositions remain in prior iteration4 RECONCILIATION.md.",
+  "status": "M index.html\n M pwa-sw.js\n?? scripts/wisconsin-next-step-browser-regression.js",
+  "protected_sha256": {
+    "sw.js": "45a4f093d7a19d4403cdaa5da0e6d6ae0a7ae497080fe92694046be789108d32",
+    "OneSignalSDKWorker.js": "2f213985d10e5c5117acfde4f0cab00ad2c13035577ef38c7f0d86d2dd722fbc",
+    "push/onesignal/OneSignalSDKWorker.js": "c0dff569138a3876f942c7c931f4c3a1b812399565337d87d426207a26c4d69a",
+    "netlify/functions/resume.mjs": "a72c1be805ef99bf85f856780dd811ee818b8418b4308395cd64ca21ec6f8f03",
+    "netlify/functions/navigator.mjs": "ca9f23fdc2e13346164834e92da9b2e421c9cc64afa0cf985c5ec3b960741bcc",
+    "netlify.toml": "0d32e934f4295f4929ccc15083c9d52b3527261dfdf12efc9a6b9805c287c72b",
+    "package.json": "d01ce62b555a1d2da89a2dee00c103002d284478ba96ff75a2801fa0d3745ac0",
+    "package-lock.json": "5b0869b9e2dbf38e834a5765dd7054c68616e1f214716f930486cff773cb8e8b"
+  }
+}

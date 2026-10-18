@@ -1,0 +1,62 @@
+{
+  "base": "370121e6b9a384cd93dea1a7eea8ec075c10f595",
+  "branch": "codex/wisconsin-next-step",
+  "cache": 294,
+  "files": {
+    "index.html": "385e97a2df8eda4c753f49a8757ed7ae41b892b79a42895005113c3cfa9ae7c9",
+    "pwa-sw.js": "9914c651d773cf1d44b1fa6367e40c8038c289def8c384842d5389ec993cc07f",
+    "scripts/wisconsin-next-step-browser-regression.js": "3f9023ed40f394741233c82c92023b77ca882e5e0ea743886c9a91a281fe83c6"
+  },
+  "checks": {
+    "structural": {
+      "exit": 0,
+      "sha256": "7ca997c29403870840cee2682eb793d2f3efd538ef0548481094c6f4e7d43272"
+    },
+    "openai": {
+      "exit": 0,
+      "sha256": "8058ce1108e6411b9abea461ea99064eef45ec5fa142e31fd7c44108bd0fd0ec"
+    },
+    "sw": {
+      "exit": 0,
+      "sha256": "4f691c55cfcce43f338701633483c926ad81b5aef0c147db3d828697c4a91872"
+    },
+    "privacy": {
+      "exit": 0,
+      "sha256": "9bf08f3a64bfe57222dfa1479e4689f69a24b8a1952a3adfa40df7b817a912e0"
+    },
+    "spend": {
+      "exit": 0,
+      "sha256": "bcb91c70a27d11190f30a50086c6cc9bd08c87e267e079000bdfdd37658b0409"
+    },
+    "a11y": {
+      "exit": 0,
+      "sha256": "5883af1925d04008a40fa5bd05cda539fbc9307e4b61acd90ff2bb8898203470"
+    },
+    "next-step": {
+      "exit": 0,
+      "sha256": "92128b200b28f3e6493929808ad16e5f62c893738965aaae36d2df2933376ea2"
+    },
+    "pathway": {
+      "exit": 0,
+      "sha256": "859da12d5b8827db15b7ce767104f26962407e8d557c03fe4ecda1a020213ece"
+    },
+    "wi-plan": {
+      "exit": 0,
+      "sha256": "e1283fbe5fadfd8426465d17f8d095855802707d665626396a78c8ed9f99fcac"
+    },
+    "support-outcome": {
+      "exit": 0,
+      "sha256": "73a715171188858aec7231113319deaf1e43038c208a51179de3af4c69de12bf"
+    },
+    "public": {
+      "exit": 0,
+      "sha256": "69a7d6ed00284246367d59efb2755e270ab1bb1628b07be926c318d838e2c268"
+    }
+  },
+  "public_runtime_count": 74,
+  "manual_at": "PENDING",
+  "hosted_new_candidate": "NOT PUBLISHED",
+  "production": "PR154/cache293 remains live",
+  "preview_recommendation": "WARRANTED before a later authorized publication",
+  "scope": "confirmation and existing My Plan hub continuation only"
+}
