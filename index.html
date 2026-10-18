@@ -7621,13 +7621,13 @@ function WisconsinNextChapter(props) {
     TOPS_WISCONSIN_SETTLE_IN.length > 0 && React.createElement("details", { id: "tops-wisconsin-settle-in", style: section }, React.createElement("summary", { style: summary }, "Make Wisconsin home"), TOPS_WISCONSIN_SETTLE_IN.map(function(item) { return React.createElement("div", { key: item.id }, React.createElement("p", { style: { margin: "4px 0 8px" } }, item.body), item.note && React.createElement("p", { style: { margin: "4px 0 8px", fontSize: 14, color: C.textSecondary } }, item.note), link(item)); })));
 }
 function StateLocalHelp(props) {
-  var C = props.colors, context = topsStateHelpContext(props.context), items = topsStateHelpItems(context), main = items[0], [review, setReview] = useState(null), [replace, setReplace] = useState(false), [message, setMessage] = useState("");
+  var C = props.colors, context = topsStateHelpContext(props.context), items = topsStateHelpItems(context), main = items[0], [review, setReview] = useState(null), [replace, setReplace] = useState(false), [message, setMessage] = useState(""), [stepReady, setStepReady] = useState(false);
   var button = { display: "inline-flex", alignItems: "center", minHeight: 44, minWidth: 44, maxWidth: "100%", boxSizing: "border-box", padding: "10px 14px", margin: "4px 8px 4px 0", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgElevated, font: "inherit", lineHeight: 1.5, textDecoration: "none", cursor: "pointer" };
   var field = { display: "block", width: "100%", boxSizing: "border-box", minHeight: 48, padding: "10px 12px", margin: "6px 0 14px", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", fontSize: 16 };
   function focus(id) { requestAnimationFrame(function() { var n = document.getElementById(id); if (n) n.focus(); }); }
-  function choose(key, value) { setReview(null); setReplace(false); setMessage(""); props.onContext(topsStateHelpContext(Object.assign({}, context, { [key]: value }))); }
-  function reviewStep() { var plan = props.getPlan(); setReview({ snapshot: JSON.stringify(plan), plan: plan, item: main }); setReplace(false); setMessage(""); focus("tops-state-help-review"); }
-  function keep(save) { if (!review || (review.plan.action.text && !replace)) return; var result = props.applyStep(review.snapshot, review.item.id, save); setMessage(result.message); if (result.ok) { setReview(null); setReplace(false); focus("tops-state-help-plan"); } }
+  function choose(key, value) { setStepReady(false); setReview(null); setReplace(false); setMessage(""); props.onContext(topsStateHelpContext(Object.assign({}, context, { [key]: value }))); }
+  function reviewStep() { setStepReady(false); var plan = props.getPlan(); setReview({ snapshot: JSON.stringify(plan), plan: plan, item: main }); setReplace(false); setMessage(""); focus("tops-state-help-review"); }
+  function keep(save) { if (!review || (review.plan.action.text && !replace)) return; var result = props.applyStep(review.snapshot, review.item.id, save); setMessage(result.message); if (result.ok) { setReview(null); setReplace(false); setStepReady(true); focus("tops-state-help-view-step"); } }
   function official(item, primary) { return React.createElement("a", { href: item.url, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: primary ? Object.assign({}, button, { background: C.green, color: C.textOnFill }) : button }, item.label + " (new tab)"); }
   return React.createElement("section", { id: "tops-state-help", "data-state-area": context.area, "aria-labelledby": "tops-state-help-heading", style: { color: C.textPrimary, lineHeight: 1.6 } },
     React.createElement("header", { id: "tops-state-help-welcome", style: context.area === "wi" ? { padding: "10px 12px", margin: "0 0 12px", borderLeft: "3px solid " + C.greenBright, borderRadius: "0 10px 10px 0", background: "linear-gradient(110deg, " + C.bgCard + ", " + C.bg + ")" } : { margin: "8px 0 14px" } },
@@ -7655,6 +7655,7 @@ function StateLocalHelp(props) {
         React.createElement("button", { id: "tops-state-help-visit", type: "button", style: button, disabled: !!review.plan.action.text && !replace, onClick: function() { keep(false); } }, "Use for this visit"),
         React.createElement("button", { type: "button", style: button, onClick: function() { setReview(null); setReplace(false); setMessage("Your current step was kept."); focus("tops-state-help-plan"); } }, "Keep my current step")),
       React.createElement("p", { role: "status", "aria-live": "polite" }, message),
+      stepReady && React.createElement("button", { id: "tops-state-help-view-step", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onTool("my-plan"); } }, "View my next step"),
       items.length > 1 && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", cursor: "pointer" } }, "Related options and eligibility"), items.slice(1).map(function(item) { return React.createElement("div", { key: item.id, style: { padding: "12px 0", borderTop: "1px solid " + C.border } }, React.createElement("h4", { style: { margin: "0 0 6px" } }, item.title), React.createElement("p", null, item.summary), React.createElement("p", { style: { fontSize: 14 } }, item.caveat), official(item, false)); })),
       React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", cursor: "pointer" } }, "Official source"), React.createElement("p", null, main.agency + ". Referral guidance checked October 16, 2026. Programs have separate rules; this is a starting point, not a complete benefits list."), React.createElement("a", { href: main.source || main.url, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: button }, "Read the official guidance (new tab)"))),
     React.createElement(WisconsinNextChapter, { colors: C, context: context, button: button }),
@@ -10354,6 +10355,7 @@ function App() {
     continuationReturn.current = null; continuationFocus.current = focusId || "tops-state-help-heading"; setContinuationRevision(function(value) { return value + 1; });
   }
   function openStateHelpTool(tool) {
+    if (tool === "my-plan") { openExperienceTool("timeline"); return; }
     if (tool === "directory") { stateHelpReturn.current = ""; wiGuideRequested.current = false; setSubTab("directory"); continuationFocus.current = "tops-resource-topic"; setContinuationRevision(function(value) { return value + 1; }); return; }
     if (tool === "documents") { openPlanRoute("resources", "tops-plan-documents", "tops-state-help-documents"); return; }
     if (!["pathway", "healthcare", "wi-work-support", "finalpcs"].includes(tool)) return;
@@ -10396,7 +10398,7 @@ function App() {
       if (!result.ok) return { ok: false, message: result.reason === "partial" ? "Saving was interrupted and some saved fields may have changed. Keep this tab open and review your plan." : "Not saved. Your earlier saved plan was kept. Your questions are still here; try Use for this visit." };
       careerDiskGuard.current.disk = topsCareerDiskSnapshot();
     }
-    var status = save ? "Saved on this browser. Open this step from Home." : "For this visit only. Open this step from Home; your saved copy is unchanged.";
+    var status = save ? "Saved on this browser." : "For this visit only. Your saved copy is unchanged.";
     setGuideState({ draft: guide, ready: true, status: status }); setActionState({ draft: next, status: status });
     return { ok: true, message: status };
   }

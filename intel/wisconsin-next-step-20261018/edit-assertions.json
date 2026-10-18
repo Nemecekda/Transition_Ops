@@ -1,0 +1,81 @@
+[
+  {
+    "edit": 1,
+    "label": "success state",
+    "old": "items = topsStateHelpItems(context), main = items[0], [review, setReview] = useState(null), [replace, setReplace] = useState(false), [message, setMessage] = useState(\"\");",
+    "new": "items = topsStateHelpItems(context), main = items[0], [review, setReview] = useState(null), [replace, setReplace] = useState(false), [message, setMessage] = useState(\"\"), [stepReady, setStepReady] = useState(false);",
+    "expected_old_after": 0,
+    "actual_old_after": 0,
+    "expected_new_after": 1,
+    "actual_new_after": 1
+  },
+  {
+    "edit": 2,
+    "label": "clear on context",
+    "old": "function choose(key, value) { setReview(null); setReplace(false); setMessage(\"\"); props.onContext",
+    "new": "function choose(key, value) { setStepReady(false); setReview(null); setReplace(false); setMessage(\"\"); props.onContext",
+    "expected_old_after": 0,
+    "actual_old_after": 0,
+    "expected_new_after": 1,
+    "actual_new_after": 1
+  },
+  {
+    "edit": 3,
+    "label": "clear on review",
+    "old": "function reviewStep() { var plan = props.getPlan(); setReview",
+    "new": "function reviewStep() { setStepReady(false); var plan = props.getPlan(); setReview",
+    "expected_old_after": 0,
+    "actual_old_after": 0,
+    "expected_new_after": 1,
+    "actual_new_after": 1
+  },
+  {
+    "edit": 4,
+    "label": "successful handoff",
+    "old": "function keep(save) { if (!review || (review.plan.action.text && !replace)) return; var result = props.applyStep(review.snapshot, review.item.id, save); setMessage(result.message); if (result.ok) { setReview(null); setReplace(false); focus(\"tops-state-help-plan\"); } }",
+    "new": "function keep(save) { if (!review || (review.plan.action.text && !replace)) return; var result = props.applyStep(review.snapshot, review.item.id, save); setMessage(result.message); if (result.ok) { setReview(null); setReplace(false); setStepReady(true); focus(\"tops-state-help-view-step\"); } }",
+    "expected_old_after": 0,
+    "actual_old_after": 0,
+    "expected_new_after": 1,
+    "actual_new_after": 1
+  },
+  {
+    "edit": 5,
+    "label": "direct continuation",
+    "old": "      React.createElement(\"p\", { role: \"status\", \"aria-live\": \"polite\" }, message),\n      items.length > 1",
+    "new": "      React.createElement(\"p\", { role: \"status\", \"aria-live\": \"polite\" }, message),\n      stepReady && React.createElement(\"button\", { id: \"tops-state-help-view-step\", type: \"button\", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onTool(\"my-plan\"); } }, \"View my next step\"),\n      items.length > 1",
+    "expected_old_after": 0,
+    "actual_old_after": 0,
+    "expected_new_after": 1,
+    "actual_new_after": 1
+  },
+  {
+    "edit": 6,
+    "label": "hub route",
+    "old": "  function openStateHelpTool(tool) {\n    if (tool === \"directory\")",
+    "new": "  function openStateHelpTool(tool) {\n    if (tool === \"my-plan\") { openExperienceTool(\"timeline\"); return; }\n    if (tool === \"directory\")",
+    "expected_old_after": 0,
+    "actual_old_after": 0,
+    "expected_new_after": 1,
+    "actual_new_after": 1
+  },
+  {
+    "edit": 7,
+    "label": "neutral persistence status",
+    "old": "var status = save ? \"Saved on this browser. Open this step from Home.\" : \"For this visit only. Open this step from Home; your saved copy is unchanged.\";",
+    "new": "var status = save ? \"Saved on this browser.\" : \"For this visit only. Your saved copy is unchanged.\";",
+    "expected_old_after": 0,
+    "actual_old_after": 0,
+    "expected_new_after": 1,
+    "actual_new_after": 1
+  },
+  {
+    "edit": 8,
+    "old": "const CACHE_NAME = \"transition-ops-v293\";",
+    "new": "const CACHE_NAME = \"transition-ops-v294\";",
+    "expected_old_after": 0,
+    "actual_old_after": 0,
+    "expected_new_after": 1,
+    "actual_new_after": 1
+  }
+]
