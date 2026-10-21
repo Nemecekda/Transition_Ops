@@ -12,3 +12,6 @@ http://www.transitionops.org/*  https://transitionops.org/:splat  301!
 
 # Redirect www to apex
 https://www.transitionops.org/*  https://transitionops.org/:splat  301!
+
+# Share Wisconsin guidance through the existing app route.
+/wisconsin  /?tool=resources&view=state-help&area=wi&situation=browse&need=start  302

@@ -7632,10 +7632,10 @@ function StateLocalHelp(props) {
   return React.createElement("section", { id: "tops-state-help", "data-state-area": context.area, "aria-labelledby": "tops-state-help-heading", style: { color: C.textPrimary, lineHeight: 1.6 } },
     React.createElement("header", { id: "tops-state-help-welcome", style: context.area === "wi" ? { padding: "10px 12px", margin: "0 0 12px", borderLeft: "3px solid " + C.greenBright, borderRadius: "0 10px 10px 0", background: "linear-gradient(110deg, " + C.bgCard + ", " + C.bg + ")" } : { margin: "8px 0 14px" } },
       React.createElement("h2", { id: "tops-state-help-heading", tabIndex: -1, style: { fontSize: 24, lineHeight: 1.3, margin: 0 } }, context.area === "wi" ? "Welcome to Wisconsin" : "State and local help"),
-      context.area === "wi" && React.createElement("p", { style: { margin: "6px 0 0", fontSize: 15, lineHeight: 1.5, color: C.textSecondary } }, "Returning, moving or already here? Find your next step.")),
+      context.area === "wi" && React.createElement("p", { style: { margin: "6px 0 0", fontSize: 15, lineHeight: 1.5, color: C.textSecondary } }, "Local guidance for veterans, service members and families.")),
     React.createElement("div", { style: { display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 12 } },
       React.createElement("div", null,
-        React.createElement("label", { htmlFor: "tops-state-help-area", style: { display: "block", fontSize: 14, fontWeight: 600 } }, "Show local help for"),
+        React.createElement("label", { htmlFor: "tops-state-help-area", style: { display: "block", fontSize: 14, fontWeight: 600 } }, "Choose your state"),
         React.createElement("select", { id: "tops-state-help-area", value: context.area, style: Object.assign({}, field, { marginBottom: 4 }), "aria-describedby": "tops-state-help-area-hint", onChange: function(e) { choose("area", e.target.value); } }, React.createElement("option", { value: "national" }, "All states"), React.createElement("option", { value: "wi" }, "Wisconsin"))),
       React.createElement("div", null,
         React.createElement("label", { htmlFor: "tops-state-help-need", style: { display: "block", fontSize: 14, fontWeight: 600 } }, "Find help with"),
@@ -7669,7 +7669,7 @@ function StateLocalHelp(props) {
       React.createElement("button", { id: "tops-state-help-documents", type: "button", style: button, onClick: function() { props.onTool("documents"); } }, "Open document checklist"),
       React.createElement("button", { id: "tops-state-help-career", type: "button", style: button, onClick: function() { props.onTool("pathway"); } }, "Open career tools"),
       React.createElement("button", { id: "tops-state-help-healthcare", type: "button", style: button, onClick: function() { props.onTool("healthcare"); } }, "Open healthcare guidance")),
-    React.createElement("p", { id: "tops-state-help-area-hint", style: { fontSize: 14, color: C.textSecondary } }, "You can browse before moving or leaving service. Choosing a state does not establish residence or eligibility. Ask the responsible office which rules apply to your situation."));
+    React.createElement("p", { id: "tops-state-help-area-hint", style: { fontSize: 14, color: C.textSecondary } }, "Wisconsin has expanded local guidance. National resources are available for every state. Choosing a state does not establish residence or eligibility. Ask the responsible office which rules apply to your situation."));
 }
 function CareerLearning(props) {
   var [dismissed, setDismissed] = useState([]), [pending, setPending] = useState(null), [message, setMessage] = useState("");
