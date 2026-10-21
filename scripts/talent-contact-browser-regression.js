@@ -27,7 +27,7 @@ const server=http.createServer((req,res)=>{const p=new URL(req.url,'http://local
  const disk=()=>ev('JSON.stringify(Object.keys(localStorage).sort().map(k=>[k,localStorage.getItem(k)]))');
  for(const width of [320,375])for(const theme of ['professional','tactical']){
   await c.send('Emulation.setDeviceMetricsOverride',{width,height:812,deviceScaleFactor:1,mobile:true});await load('/?tool=dashboard');
-  await ev(`localStorage.clear();localStorage.setItem('tops_theme',${JSON.stringify(theme)});`);await load('/');await wait('!!document.getElementById("tops-first-visit")');await click('tops-first-veteran');await click('tops-first-continue');await textClick('Continue without a resume');await wait('!!document.getElementById("tops-talent-contact")');
+  await ev(`localStorage.clear();localStorage.setItem('tops_theme',${JSON.stringify(theme)});`);await load('/');await wait('!!document.getElementById("tops-first-visit")');await click('tops-first-veteran');await textClick('Continue without a resume');await wait('!!document.getElementById("tops-talent-contact")');
   assert.equal(await ev('document.getElementById("tops-talent-contact").open'),false);
   await ev('document.querySelector("#tops-talent-contact summary").focus()');await c.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',unmodifiedText:'\r',windowsVirtualKeyCode:13,nativeVirtualKeyCode:13});await c.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13,nativeVirtualKeyCode:13});await frames();assert.equal(await ev('document.getElementById("tops-talent-contact").open'),true);
   const before=await disk();
