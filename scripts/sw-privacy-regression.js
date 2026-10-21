@@ -296,15 +296,16 @@ async function runExecutableWorkerChecks() {
     const actual = installHarness.exports.cacheKeyFor(navigationRequest(entry[0] + "?discarded=1"));
     check(actual === entry[1], "navigation cache key is closed and query-free for " + entry[0]);
   });
+  for (const unknownPath of ["/unknown/member-route?private=value", "/wisconsin", "/wisconsin/", "/wisconsin?private=synthetic"]) {
   check(
-    installHarness.exports.cacheKeyFor(navigationRequest("/unknown/member-route?private=value")) === null,
+    installHarness.exports.cacheKeyFor(navigationRequest(unknownPath)) === null,
     "unknown same-origin navigation has no cache key or root-key mapping"
   );
 
   const networkSuccessHarness = createWorkerHarness({
     fetch: function() { return Promise.resolve(htmlResponse()); }
   });
-  await dispatchFetch(networkSuccessHarness, navigationRequest("/unknown/member-route?private=value"));
+  await dispatchFetch(networkSuccessHarness, navigationRequest(unknownPath));
   check(
     networkSuccessHarness.cacheWrites.length === 0,
     "successful unknown navigation performs zero dynamic cache writes"
@@ -317,7 +318,7 @@ async function runExecutableWorkerChecks() {
   });
   const fallbackResponse = await dispatchFetch(
     networkFailureHarness,
-    navigationRequest("/unknown/member-route?private=value")
+    navigationRequest(unknownPath)
   );
   check(
     fallbackResponse === rootFallback &&
@@ -325,6 +326,7 @@ async function runExecutableWorkerChecks() {
       networkFailureHarness.cacheWrites.length === 0,
     "unknown navigation may read root fallback but never writes or matches a dynamic key"
   );
+  }
 }
 
 function runPublicBuildChecks(publicBuilder) {

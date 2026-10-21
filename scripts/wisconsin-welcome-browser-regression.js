@@ -24,7 +24,7 @@ const server=http.createServer((req,res)=>{const p=path.join(root,req.url.split(
  const expand=async id=>{await ev('document.querySelector("#'+id+' > summary").focus()');await key('Enter');assert.equal(await ev('document.getElementById("'+id+'").open'),true);};
  await seed('guard','change');const original=await allDisk();
  await help('national');assert.equal(await ev('document.getElementById("tops-state-help-heading").textContent'),'State and local help');assert.equal(await ev('!!document.getElementById("tops-wisconsin-next-chapter")'),false);
- await help();assert.equal(await ev('document.getElementById("tops-state-help-heading").textContent'),'Welcome to Wisconsin');assert.match(await ev('document.getElementById("tops-state-help-welcome").textContent'),/Returning, moving or already here/);
+ await help();assert.equal(await ev('document.getElementById("tops-state-help-heading").textContent'),'Welcome to Wisconsin');assert.match(await ev('document.getElementById("tops-state-help-welcome").textContent'),/Local guidance for veterans, service members and families/);
  for(const id of ['tops-wisconsin-skillbridge','tops-wisconsin-cohort','tops-wisconsin-settle-in'])assert.equal(await ev('document.getElementById("'+id+'").open'),false);
  assert.equal(await ev('document.querySelector("#tops-state-help article > a").compareDocumentPosition(document.getElementById("tops-wisconsin-skillbridge")) & Node.DOCUMENT_POSITION_FOLLOWING'),4);
  console.log('PASS national default remains national; Wisconsin welcome includes return/move/already-here visitors; useful official action precedes all collapsed extras.');
