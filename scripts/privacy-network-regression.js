@@ -128,7 +128,7 @@ function sourceChecks() {
   check(
     /const mailto = "mailto:" \+ FEEDBACK_EMAIL/.test(index) &&
       /window\.location\.href = mailto;/.test(index) &&
-      /Transition Ops does not submit or store this message\. No name or email field is collected in the app\./.test(index) &&
+      /Transition Ops does not submit or store this message\. Feedback does not ask for your name or email address\./.test(index) &&
       /EMAIL DRAFT REQUESTED/.test(index),
     "feedback is a truthful member-controlled email handoff"
   );
@@ -184,7 +184,9 @@ function sourceChecks() {
     countMatches(index, /One tap\. Add Transition OPS to your home screen for direct access\./) === 1 &&
       countMatches(index, /Two steps in Safari\. Add Transition OPS to your Home Screen for direct access\./) === 1 &&
       countMatches(index, /This in-app browser cannot install Transition OPS\./) === 1 &&
-      countMatches(index, /Track critical transition windows/) === 1 &&
+      countMatches(index, /Track critical transition windows/) === 0 &&
+      countMatches(index, /id: "tops-first-continue"/) === 1 &&
+      countMatches(index, /id: "tops-first-skip"/) === 1 &&
       countMatches(index, /Direct access\. No app store\./) === 0 &&
       countMatches(index, /\(not \\"Add Bookmark\\"\)/) === 2,
     "POFF-02 install surfaces use direct-access guidance without a push promise"

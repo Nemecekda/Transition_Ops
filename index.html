@@ -4903,7 +4903,7 @@ function FeedbackModal(props) {
     }, s);
   }))), /*#__PURE__*/React.createElement("div", {
     style: privacyStyle
-  }, "Transition Ops does not submit or store this message. No name or email field is collected in the app. Your email provider and device apply their own privacy practices if you send."), /*#__PURE__*/React.createElement("div", {
+  }, "Transition Ops does not submit or store this message. Feedback does not ask for your name or email address. Your email provider and device apply their own privacy practices if you send."), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 10
@@ -7837,6 +7837,88 @@ function CareerConversationCheckin(props) {
     React.createElement("p", { role: "status", "aria-live": "polite" }, message));
 }
 function topsCareerDiskSnapshot() { try { return JSON.stringify([TOPS_GUIDE_KEY, TOPS_ACTION_KEY, TOPS_GAP_KEY].map(function(key) { return localStorage.getItem(key); })); } catch (e) { return null; } }
+const TOPS_TALENT_EMAIL = "dean@veteranbridgesolutions.com";
+const TOPS_TALENT_BOOKING = "https://calendly.com/dean-veteranbridgesolutions/30min";
+function topsTalentMessage(mode, fields, permission) {
+  if (!["interest", "update", "withdraw"].includes(mode) || !fields || typeof fields !== "object") return null;
+  var limits = { name: 80, email: 120, roles: 180, location: 120, availability: 120, note: 240 };
+  var keys = mode === "interest" ? ["name", "email", "roles", "location", "availability"] : ["email", "note"];
+  if (!keys.every(function(key) { return typeof fields[key] === "string" && fields[key].length <= limits[key] && !/[\u0000-\u001f\u007f]/.test(fields[key]); })) return null;
+  var email = fields.email.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || mode === "interest" && permission !== true) return null;
+  var subjects = { interest: "VBS recruiting interest", update: "Update my VBS recruiting preferences", withdraw: "Withdraw my VBS recruiting contact permission" };
+  var lines = ["Hello Dean,", ""];
+  if (mode === "interest") {
+    lines.push("I'd like to connect with Veteran Bridge Solutions about recruiting opportunities.", "", "Name: " + (fields.name.trim() || "Not provided"), "Email: " + email, "Roles or interests: " + (fields.roles.trim() || "Still exploring"), "Location or remote preference: " + (fields.location.trim() || "Not provided"), "Availability: " + (fields.availability.trim() || "Not provided"), "", "I give Veteran Bridge Solutions permission to contact me about recruiting opportunities using the email above.");
+  } else {
+    lines.push(mode === "update" ? "Please update my recruiting preferences associated with the email below. This request does not grant new recruiting contact permission." : "Please stop recruiting contact and withdraw my recruiting contact permission for the email below.", "", "Email: " + email);
+    if (fields.note.trim()) lines.push("Request details: " + fields.note.trim());
+    lines.push("", "Please confirm when this request has been handled.");
+  }
+  return { to: TOPS_TALENT_EMAIL, subject: subjects[mode], body: lines.join("\n") };
+}
+function CareerTalentContact(props) {
+  var C = props.colors;
+  function blank() { return { name: "", email: "", roles: "", location: "", availability: "", note: "" }; }
+  var [mode, setMode] = useState("interest"), [fields, setFields] = useState(blank), [permission, setPermission] = useState(false);
+  var [review, setReview] = useState(null), [status, setStatus] = useState(""), [error, setError] = useState("");
+  var control = { minHeight: 44, padding: "11px 14px", border: "1px solid " + C.border, borderRadius: 8, font: "inherit", color: C.textPrimary, background: C.bgCard, cursor: "pointer" };
+  var input = Object.assign({}, control, { width: "100%", boxSizing: "border-box", fontSize: 16, cursor: "text", margin: "6px 0 14px" });
+  function invalidate() { setReview(null); setStatus(""); setError(""); }
+  function change(key, value) { setFields(function(previous) { return Object.assign({}, previous, { [key]: value }); }); setPermission(false); invalidate(); }
+  function focus(id) { requestAnimationFrame(function() { var element = document.getElementById(id); if (element) { element.focus(); element.scrollIntoView({ block: "nearest" }); } }); }
+  function prepare() {
+    var next = topsTalentMessage(mode, fields, permission);
+    if (!next) { setError("Enter a valid email address and short, single-line details." + (mode === "interest" ? " Check the contact permission box if you want VBS recruiting contact." : "")); return; }
+    setError(""); setStatus(""); setReview(next); focus("tops-talent-review-heading");
+  }
+  function currentReview() { return !!review && JSON.stringify(review) === JSON.stringify(topsTalentMessage(mode, fields, permission)); }
+  function openDraft() {
+    if (!currentReview()) { setError("Your details changed. Review the message again before opening a draft."); return; }
+    var link = document.createElement("a");
+    try { link.href = "mailto:" + TOPS_TALENT_EMAIL + "?subject=" + encodeURIComponent(review.subject) + "&body=" + encodeURIComponent(review.body); document.body.appendChild(link); link.click(); setStatus("Email draft requested. Nothing has been sent by this app. Check your email app, or copy the message below if it did not open."); }
+    catch (e) { setStatus("The email app could not be opened. Copy the message and address below to create your own email."); }
+    finally { link.remove(); }
+  }
+  async function copy(part) {
+    if (!currentReview()) return;
+    var value = part === "address" ? TOPS_TALENT_EMAIL : "Subject: " + review.subject + "\n\n" + review.body;
+    try { if (!navigator.clipboard || !navigator.clipboard.writeText) throw Error("unavailable"); await navigator.clipboard.writeText(value); setStatus(part === "address" ? "Email address copied. Nothing was sent." : "Message copied. Paste it into your email app and decide whether to send it."); }
+    catch (e) { setStatus("Copy is unavailable. Select and copy the address or message shown below manually."); }
+  }
+  function field(key, label, max, type) { return React.createElement("div", { key: key }, React.createElement("label", { htmlFor: "tops-talent-" + key }, label), React.createElement("input", { id: "tops-talent-" + key, type: type || "text", maxLength: max, autoComplete: "off", value: fields[key], required: key === "email", "aria-describedby": "tops-talent-notice" + (error ? " tops-talent-error" : ""), style: input, onChange: function(event) { change(key, event.target.value); } })); }
+  return React.createElement("details", { id: "tops-talent-contact", style: { borderTop: "1px solid " + C.border, margin: "16px 0 0", paddingTop: 4 } },
+    React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", fontWeight: 700, cursor: "pointer" } }, "Connect with Veteran Bridge Solutions (optional)"),
+    React.createElement("p", { style: { lineHeight: 1.5 } }, "Want help from a person? Talk with Dean or share what you're looking for. Your career plan stays separate. Sharing interest does not guarantee a response, interview or job."),
+    React.createElement("a", { id: "tops-talent-booking", href: TOPS_TALENT_BOOKING, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, control, { display: "inline-flex", alignItems: "center", boxSizing: "border-box", maxWidth: "100%", overflowWrap: "anywhere", lineHeight: 1.4 }) }, "Book a career conversation with Dean"),
+    React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "30-minute VBS Workforce Call on Calendly. Opens a new tab. Booking is separate from recruiting permission."),
+    React.createElement("h3", { style: { fontSize: 18 } }, "Email Dean about recruiting"),
+    React.createElement("label", { htmlFor: "tops-talent-purpose" }, "What would you like to do?"),
+    React.createElement("select", { id: "tops-talent-purpose", value: mode, style: input, onChange: function(event) { setMode(event.target.value); setPermission(false); invalidate(); } },
+      React.createElement("option", { value: "interest" }, "Share my recruiting interests"), React.createElement("option", { value: "update" }, "Update an earlier request"), React.createElement("option", { value: "withdraw" }, "Withdraw recruiting contact permission")),
+    React.createElement("p", { id: "tops-talent-notice", style: { fontSize: 14, lineHeight: 1.5 } }, "Review the email before opening it. Open email draft passes the reviewed details to your email app; you decide whether to send to dean@veteranbridgesolutions.com. These fields are not saved with your plan. Refreshing or Clear these fields clears this form. Leave out benefits, disability and other sensitive details."),
+    !review && React.createElement("div", null,
+      mode === "interest" && field("name", "Name (optional)", 80), field("email", "Your email address (required)", 120, "email"),
+      mode === "interest" ? React.createElement("div", null, field("roles", "Roles or interests (optional)", 180), field("location", "Location or remote preference (optional)", 120), field("availability", "Availability (optional)", 120)) : field("note", "Request details (optional)", 240),
+      mode === "interest" && React.createElement("label", { style: { display: "flex", alignItems: "center", gap: 10, minHeight: 44, margin: "8px 0", lineHeight: 1.5 } }, React.createElement("input", { id: "tops-talent-permission", type: "checkbox", checked: permission, onChange: function(event) { setPermission(event.target.checked); invalidate(); } }), "I give Veteran Bridge Solutions permission to contact me about recruiting opportunities using this email address."),
+      mode !== "interest" && React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "This prepares a request for Dean to review. It does not change an inbox record or confirm removal."),
+      React.createElement("button", { id: "tops-talent-prepare", type: "button", style: control, onClick: prepare }, "Review email message")),
+    review && React.createElement("section", { "aria-labelledby": "tops-talent-review-heading" },
+      React.createElement("h4", { id: "tops-talent-review-heading", tabIndex: -1 }, "Review your email"),
+      React.createElement("p", { style: { overflowWrap: "anywhere" } }, "To: ", review.to), React.createElement("p", null, "Subject: ", review.subject),
+      React.createElement("label", { htmlFor: "tops-talent-message" }, "Exact message"),
+      React.createElement("textarea", { id: "tops-talent-message", readOnly: true, rows: 10, value: review.body, style: Object.assign({}, input, { whiteSpace: "pre-wrap" }) }),
+      React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, mode === "interest" ? "Want to share a resume? Attach it yourself in your email app after reviewing it. No resume is attached here. Sending uses your email provider and VBS's inbox; ask Dean about handling or removing your information." : "Send this request from your email app. Dean will need to handle it; opening this draft does not confirm an update or withdrawal."),
+      React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
+        React.createElement("button", { id: "tops-talent-open", type: "button", style: Object.assign({}, control, { background: C.green, color: C.textOnFill }), onClick: openDraft }, "Open email draft"),
+        React.createElement("button", { id: "tops-talent-edit", type: "button", style: control, onClick: function() { setPermission(false); invalidate(); focus("tops-talent-email"); } }, "Edit details"),
+        React.createElement("button", { id: "tops-talent-copy-message", type: "button", style: control, onClick: function() { copy("message"); } }, "Copy message"),
+        React.createElement("button", { id: "tops-talent-copy-address", type: "button", style: control, onClick: function() { copy("address"); } }, "Copy email address"))),
+    error && React.createElement("p", { id: "tops-talent-error", role: "alert", style: { lineHeight: 1.5 } }, error),
+    React.createElement("p", { id: "tops-talent-status", role: "status", "aria-live": "polite", style: { lineHeight: 1.5 } }, status),
+    React.createElement("button", { id: "tops-talent-clear", type: "button", style: control, onClick: function() { setFields(blank()); setPermission(false); setReview(null); setError(""); setStatus("Form cleared here. This does not change messages in your email app or VBS's inbox."); focus("tops-talent-purpose"); } }, "Clear these fields"));
+}
+
 function CareerJourney(props) {
   var initial = useRef(props.visitDraft).current;
   var savedGuide = props.guideState.draft, savedAction = props.actionState.draft, savedGap = props.gapState.draft;
@@ -7845,6 +7927,7 @@ function CareerJourney(props) {
   var directEntry = !props.entry && !props.stageRequest && !props.jobRequest && !props.compareRequest;
   var entryStage = directEntry && initial ? initial.stage : 0;
   var [guidanceNext, setGuidanceNext] = useState(null);
+  var [entryGoal, setEntryGoal] = useState(initial && ["find", "grow", "pursue"].includes(props.entry) && initial.intent !== props.entry ? props.entry : "");
   var careerControlFocus = useRef(null);
   var initialRole = useRef(initial && typeof initial.initialRole === "string" ? initial.initialRole : props.guideState.draft.targetRole || props.gapState.draft.target || "");
   var generatedAction = useRef(initial && typeof initial.generatedAction === "string" ? initial.generatedAction : initial ? suggestion(initial.intent, initial.role) : "");
@@ -7874,7 +7957,7 @@ function CareerJourney(props) {
   function needsFreshReview() { if (!draft) return false; if (baseline.current !== current()) return true; try { return disk.current !== null && disk.current !== stored(); } catch (e) { return true; } }
 
   var introduction = props.introduction, setIntroduction = props.setIntroduction, [showIntroduction, setShowIntroduction] = useState(props.entry === "specialist" || props.entry === "network-learn");
-  useEffect(function() { if (props.entry === "network-learn" || props.entry === "specialist") { var entryPurpose = props.entry === "network-learn" ? "learn" : "specialist"; if (!introduction.text.trim()) setIntroduction(function(previous) { return Object.assign({}, previous, { purpose: entryPurpose, reviewed: false }); }); else if ((introduction.purpose || "specialist") !== entryPurpose) setStatus("Your existing message is for a different purpose. It is unchanged. Choose what you want help with, then review the message before replacing or sharing it."); } else if (props.entry === "resume") { if (initial) continueVisit(); else if (existing) { if (props.gapState.draft.target.trim() && props.guideState.draft.targetRole.trim() && props.gapState.draft.target.trim() !== props.guideState.draft.targetRole.trim()) setStatus("Your saved comparison and current career goal name different roles. Review your current career plan before continuing; nothing has been changed."); else resume(); } } else if (["find", "grow", "pursue"].includes(props.entry) && !initial) start(props.entry); else if (directEntry && !initial) { if (savedConflict) setStatus("Your saved comparison and current career goal need review before continuing. Choose what to work on below; nothing has been changed."); else if (coherentSavedPlan) resume(); } if (props.entry && props.consumeEntry) props.consumeEntry(); }, []);
+  useEffect(function() { if (props.entry === "network-learn" || props.entry === "specialist") { var entryPurpose = props.entry === "network-learn" ? "learn" : "specialist"; if (!introduction.text.trim()) setIntroduction(function(previous) { return Object.assign({}, previous, { purpose: entryPurpose, reviewed: false }); }); else if ((introduction.purpose || "specialist") !== entryPurpose) setStatus("Your existing message is for a different purpose. It is unchanged. Choose what you want help with, then review the message before replacing or sharing it."); } else if (props.entry === "resume") { if (initial) continueVisit(); else if (existing) { if (props.gapState.draft.target.trim() && props.guideState.draft.targetRole.trim() && props.gapState.draft.target.trim() !== props.guideState.draft.targetRole.trim()) setStatus("Your saved comparison and current career goal name different roles. Review your current career plan before continuing; nothing has been changed."); else resume(); } } else if (["find", "grow", "pursue"].includes(props.entry)) { if (!initial) start(props.entry); else if (initial.intent === props.entry) continueVisit(); } else if (directEntry && !initial) { if (savedConflict) setStatus("Your saved comparison and current career goal need review before continuing. Choose what to work on below; nothing has been changed."); else if (coherentSavedPlan) resume(); } if (props.entry && props.consumeEntry) props.consumeEntry(); }, []);
   var button = { minHeight: 44, padding: "12px 16px", margin: "6px 8px 6px 0", font: "inherit", color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" };
   var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 12, font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 8 };
   function current() { return JSON.stringify([props.guideState.draft, props.actionState.draft, props.gapState.draft]); }
@@ -8067,7 +8150,12 @@ function CareerJourney(props) {
       !["introduction", "followup"].includes(myJobReview.requestedAction) && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44 } }, "Review the posting change"), React.createElement("p", null, "Current posting: ", source ? source.posting || "None" : props.gapState.draft.rows.map(function(row) { return row.requirement; }).filter(Boolean).join("\n") || "None"), React.createElement("p", { style: { whiteSpace: "pre-wrap" } }, "Job excerpt: ", myJobReview.job.qualifications || "No excerpt saved. Add the posting in the next screen.")),
       React.createElement("button", { id: "tops-my-job-task-continue", type: "button", style: button, onClick: continueMyJob }, "Continue with this job"), " ", React.createElement("button", { type: "button", style: button, onClick: function() { setMyJobReview(null); focusCareerControl("tops-career-start-heading"); } }, "Keep my current work")),
     React.createElement("h2", { id: "tops-career-start-heading", hidden: !!myJobReview, tabIndex: -1, style: { color: C.textPrimary } }, stage === 0 ? (showIntroduction ? introduction.prepared ? "Your message" : (introduction.purpose || "specialist") === "specialist" ? "Prepare for career help" : "Prepare a career conversation" : hasVisitWork ? "Continue where you left off" : "What would you like to explore?") : stage === 1 ? (intent === "pursue" ? "Let's look at the job together" : intent === "grow" ? "Build on what you already do" : "Start with your experience") : choosingDirection ? "Choose a role to explore" : role || (intent === "grow" ? "Your next growth conversation" : "Your next career move")),
-    stage === 0 && React.createElement("div", { hidden: !!myJobReview },
+    stage === 0 && entryGoal && React.createElement("section", { "aria-labelledby": "tops-entry-goal-heading" },
+      React.createElement("h3", { id: "tops-entry-goal-heading" }, "You chose a different career goal"),
+      React.createElement("p", null, "You have an unfinished draft. Keep working on it, or use its experience for " + ({ find: "exploring career options", grow: "career growth", pursue: "comparing a job" }[entryGoal]) + ". Your saved plan stays unchanged."),
+      React.createElement("button", { id: "tops-entry-keep", type: "button", style: button, onClick: function() { setEntryGoal(""); continueVisit(); } }, "Keep unfinished draft"),
+      React.createElement("button", { id: "tops-entry-use-goal", type: "button", style: button, onClick: function() { var goal = entryGoal; setEntryGoal(""); start(goal); } }, "Use this goal with my experience")),
+    stage === 0 && !entryGoal && React.createElement("div", { hidden: !!myJobReview },
       !showIntroduction && !hasVisitWork && !coherentSavedPlan && React.createElement("div", null,
         React.createElement("p", { className: "tops-career-lede" }, "Start with your experience or explore a role first."),
         React.createElement("div", { className: "tops-career-entry-options" },
@@ -8161,6 +8249,7 @@ function CareerJourney(props) {
       React.createElement(CareerLearning, { wisconsinSupport: props.wisconsinSupport, key: JSON.stringify([role, draft.rows.map(function(row) { return row.requirement; })]), colors: C, button: button, role: role, rows: draft.rows, action: action, learningAction: topsCareerLearningAction, onAdd: function(resource) { if (baseline.current !== current()) { setStatus("Your plan changed in another tool. Review your career work again before changing this step."); return false; } setAction(topsCareerLearningAction(resource)); setActionDate(""); setSaved(false); setStatus(""); setChecked(false); setReplace(false); setStatus(""); return true; } }),
       React.createElement(CareerSpecialistSupport, { colors: C, button: button, field: field, role: role, rows: draft.rows, onJobs: function() { props.openTool("my-jobs"); }, state: introduction, setState: setIntroduction, action: action, onPlan: planNetworking, retainReviewedContext: networkingTransfer.current, consumeReviewedContext: function() { networkingTransfer.current = false; } }),
       (sameConversationRole || pendingCheckin || checkin.takeaway || checkin.next || checkin.date) && React.createElement(CareerConversationCheckin, { colors: C, button: button, field: field, role: role, state: checkin, saved: saved, hasPending: !!pendingCheckin, prep: props.gapState.draft.prep, action: action, getBase: checkinBase, getSnapshot: checkinSnapshot, onEdit: function(value) { setCheckin(value); setSaved(false); setStatus(""); setChecked(false); setReplace(false); }, onStage: stageCheckin, onClear: clearCheckin })))),
+    stage === 2 && draft && !myJobReview && !aiActive && !reviewPanel && React.createElement(CareerTalentContact, { colors: C }),
     stage > 0 && !myJobReview && !aiActive && !reviewPanel && introduction.prepared && introductionButton(),
     !saved && hasVisitWork && React.createElement("details", { className: "tops-career-draft-options" }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0" } }, "Draft options"),
       React.createElement("p", null, "This unfinished draft stays while you move between tools in this tab. Refreshing or closing the tab clears it. It is not included in plan backups."),
@@ -8336,6 +8425,11 @@ function PersonalGuide(props) {
 // PERSONAL_GUIDE_END
 
 // MEMBER_LOOP_START
+const TOPS_FIRST_VISIT_CHOICES = [
+  { id: "leave", title: "I'm preparing to leave service", detail: "Find one thing to work on before your transition.", action: "Open my transition checklist", situation: "browse" },
+  { id: "serve", title: "I'm continuing in the Guard or Reserve", detail: "Explore civilian work while continuing to serve.", action: "Explore civilian career options", situation: "serving" },
+  { id: "veteran", title: "I'm a veteran changing careers", detail: "Find a direction using the experience you already have.", action: "Explore my next career", situation: "veteran" }
+];
 const TOPS_MEMBER_PRIORITIES = [
   { id: "work", pathway: "change", title: "Find work soon", detail: "Start with current openings and one job to pursue." },
   { id: "explore", pathway: "change", title: "Explore a different career", detail: "Use your experience to explore possible roles." },
@@ -9149,11 +9243,13 @@ function App() {
       var validTabs = TOPS_TOOL_ROUTES;
       var t = new URLSearchParams(window.location.search).get("tool");
       if (t && validTabs.indexOf(t) !== -1) return false;
+      var returningKeys = [TOPS_GUIDE_KEY, TOPS_ACTION_KEY, TOPS_GAP_KEY, "tops_member_jobs_v1", "tops_sep_date", "taskProgress", "docProgress"];
+      if (returningKeys.some(function(key) { return !!window.__safeGet(key); })) return false;
       return !window.__safeGet("tops_onboarded");
     } catch(e) { return true; }
   });
   const [onboardStep, setOnboardStep] = useState(0);
-  const [onboardData, setOnboardData] = useState(function() { var branch = ""; try { var saved = window.__safeGet("tops_user_branch"); if (["army", "navy", "air_force", "marines", "coast_guard", "space_force"].includes(saved)) branch = saved; } catch (e) {} return { status: "", branch: branch, etsDate: "", concern: "" }; });
+  const [onboardData, setOnboardData] = useState(function() { var branch = ""; try { var saved = window.__safeGet("tops_user_branch"); if (["army", "navy", "air_force", "marines", "coast_guard", "space_force"].includes(saved)) branch = saved; } catch (e) {} return { status: "", branch: branch, etsDate: "", concern: "", journey: "", area: "national" }; });
   const [mosBranch, setMosBranch] = useState("");
   const [mosCode, setMosCode] = useState("");
   const [gapState, setGapState] = useState(topsLoadGap);
@@ -10579,7 +10675,7 @@ function App() {
   function renderHomeTools() {
     return React.createElement("section", { "aria-labelledby": "tops-home-tools-title", className: "tops-quick-tools", style: { marginBottom: 16 } },
       React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" } },
-        React.createElement("h2", { id: "tops-home-tools-title", style: { fontSize: 20, color: C.textPrimary, margin: "0 0 8px" } }, "Tools for your next step")),
+        React.createElement("h2", { id: "tops-home-tools-title", tabIndex: -1, style: { fontSize: 20, color: C.textPrimary, margin: "0 0 8px" } }, "Tools for your next step")),
       React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 } },
         [["timeline", "View my transition timeline"], ["pathway", "Explore careers"], ["vamath", "Calculate a VA rating"], ["resources", "Find benefits, services & support"]].map(function(item) {
           return React.createElement("button", { key: item[0], type: "button", onClick: function() { if (item[0] === "timeline") openPlanRoute("timeline", "tops-plan-timeline", "tops-home-tools-title"); else openExperienceTool(item[0]); }, style: { minHeight: 60, padding: "14px 12px", textAlign: "left", border: "1px solid " + C.border, borderRadius: 10, background: C.bgCard, color: C.textPrimary, font: "inherit", fontSize: 15, lineHeight: 1.4, cursor: "pointer" } }, React.createElement("span", null, item[1]), React.createElement("span", { "aria-hidden": true }));
@@ -10591,147 +10687,34 @@ function App() {
   if (showOnboarding) {
     var obC = C;
     var obSteps = [
-      // Step 0: Welcome — Responsive (Desktop two-column + Mobile stacked)
+      // Step 0: One starting choice, then the existing task workspace.
       function() {
-          const features = [{
-            icon: "🧮",
-            route: "vamath",
-            label: "VA MATH",
-            desc: "Estimate a combined rating using 38 CFR 4.25 Table I"
-          }, {
-            icon: "💵",
-            route: "vapay",
-            label: "VA PAY",
-            desc: "Project your monthly compensation"
-          }, {
-            icon: "🎯",
-            route: "pathway",
-            label: "CAREER PATHWAYS",
-            desc: "Explore roles using your military or civilian experience"
-          }, {
-            icon: "🏢",
-            route: "resources",
-            label: "SKILLBRIDGE",
-            desc: "Current employer opportunities"
-          }, {
-            icon: "💰",
-            route: "taxes",
-            label: "STATE TAX INTEL",
-            desc: "Retired pay taxation by state"
-          }, {
-            icon: "📅",
-            route: "timeline",
-            label: "SMART TIMELINE",
-            desc: "Track critical transition windows"
-          }];
-          return /*#__PURE__*/React.createElement("div", {
-            className: "onboard-welcome-root"
-          }, /*#__PURE__*/React.createElement("div", {
-            className: "onboard-welcome-container"
-          }, /*#__PURE__*/React.createElement("div", {
-            className: "onboard-welcome-hero"
-          }, TopsJourney("tops-welcome-scene"), /*#__PURE__*/React.createElement("div", {
-            className: "onboard-brand-stencil"
-          }, "VETERAN BRIDGE SOLUTIONS"), /*#__PURE__*/React.createElement("div", {
-            className: "onboard-logo-badge"
-          }, /*#__PURE__*/React.createElement("div", {
-            style: {
-              fontFamily: "'Oswald', sans-serif",
-              fontSize: 10,
-              fontWeight: 700,
-              color: (C.isLight ? C.textBody : "#d4cbb3"),
-              letterSpacing: 1,
-              lineHeight: 1
-            }
-          }, "TRANSITION"), /*#__PURE__*/React.createElement("div", {
-            style: {
-              fontFamily: "'Oswald', sans-serif",
-              fontSize: 26,
-              fontWeight: 700,
-              color: "#F5F0E1",
-              letterSpacing: 3,
-              lineHeight: 1.1
-            }
-          }, "OPS")), /*#__PURE__*/React.createElement("h1", {
-            className: "onboard-title"
-          }, "TRANSITION OPS™"), /*#__PURE__*/React.createElement("div", {
-            className: "onboard-tagline-lead"
-          }, "Practical help for your next move"), /*#__PURE__*/React.createElement("div", {
-            className: "onboard-divider"
-          }), /*#__PURE__*/React.createElement("p", {
-            className: "onboard-description"
-          }, "Find work, plan your transition, or grow your civilian career while you serve. Start with what you need today."), /*#__PURE__*/React.createElement("div", {
-            className: "onboard-micro-copy"
-          }, "For transitioning service members, Guard and Reserve members, veterans and military families.", /*#__PURE__*/React.createElement("br", null), "No resume or separation date needed to start."), /*#__PURE__*/React.createElement("button", {
-            onClick: function () {
+        var choice = TOPS_FIRST_VISIT_CHOICES.find(function(item) { return item.id === onboardData.journey; });
+        var control = { minHeight: 44, padding: "12px 16px", border: "1px solid " + C.border, borderRadius: 10, color: C.textPrimary, background: C.bgCard, font: "inherit", cursor: "pointer" };
+        return React.createElement("main", { id: "tops-first-visit", style: { minHeight: "100vh", boxSizing: "border-box", padding: "28px 20px", background: C.bg, color: C.textBody } },
+          React.createElement("div", { style: { maxWidth: 600, margin: "0 auto" } },
+            React.createElement("p", { style: { color: C.textSecondary, fontSize: 13, margin: "0 0 12px", letterSpacing: 1 } }, "TRANSITION OPS / VETERAN BRIDGE SOLUTIONS"),
+            React.createElement("h1", { id: "tops-first-visit-heading", tabIndex: -1, style: { fontSize: 30, lineHeight: 1.2, color: C.textPrimary, margin: "0 0 10px" } }, "Your next chapter starts here."),
+            React.createElement("p", { style: { margin: "0 0 20px", lineHeight: 1.5 } }, "Choose where you are today. We'll take you to one useful place to start."),
+            React.createElement("fieldset", { style: { padding: 0, margin: 0, border: 0 } },
+              React.createElement("legend", { style: { fontWeight: 700, color: C.textPrimary, marginBottom: 10 } }, "What brings you here?"),
+              TOPS_FIRST_VISIT_CHOICES.map(function(item) { return React.createElement("button", { id: "tops-first-" + item.id, key: item.id, type: "button", "aria-pressed": choice && choice.id === item.id || false, onClick: function() { setOnboardData(function(previous) { return Object.assign({}, previous, { journey: item.id }); }); }, style: Object.assign({}, control, { display: "block", width: "100%", textAlign: "left", marginBottom: 8, borderColor: choice && choice.id === item.id ? C.green : C.border, borderWidth: 2, background: choice && choice.id === item.id ? C.bgElevated : C.bgCard }) },
+                React.createElement("strong", { style: { display: "block", lineHeight: 1.4 } }, item.title),
+                React.createElement("span", { style: { display: "block", fontSize: 14, lineHeight: 1.4, color: C.textSecondary, marginTop: 4 } }, item.detail)); })),
+            React.createElement("label", { htmlFor: "tops-first-area", style: { display: "block", margin: "16px 0 6px", fontWeight: 600 } }, "Local help to include (optional)"),
+            React.createElement("select", { id: "tops-first-area", value: onboardData.area, "aria-describedby": "tops-first-area-hint", onChange: function(event) { var area = event.target.value; setOnboardData(function(previous) { return Object.assign({}, previous, { area: area === "wi" ? "wi" : "national" }); }); }, style: Object.assign({}, control, { width: "100%", fontSize: 16 }) }, React.createElement("option", { value: "national" }, "National resources - any state"), React.createElement("option", { value: "wi" }, "Wisconsin")),
+            React.createElement("p", { id: "tops-first-area-hint", style: { margin: "6px 0 16px", fontSize: 13, lineHeight: 1.5, color: C.textSecondary } }, "Wisconsin has expanded local guidance. Choosing it does not establish residence or eligibility."),
+            React.createElement("button", { id: "tops-first-continue", type: "button", disabled: !choice, style: Object.assign({}, control, { width: "100%", background: C.green, color: C.textOnFill, fontWeight: 700, opacity: choice ? 1 : 0.55 }), onClick: function() {
+              if (!choice) return;
               window.__safeSet("tops_onboarded", "1");
-              continuationFocus.current = "tops-loop-title";
-              setContinuationRevision(function(value) { return value + 1; });
-              setActiveTab("dashboard");
+              setStateHelpContext({ area: onboardData.area, situation: choice.situation, need: choice.id === "leave" ? "start" : "work" });
+              setMemberPriority(choice.id === "leave" ? "leave" : "explore");
               setShowOnboarding(false);
-            },
-            className: "onboard-cta-primary"
-          }, "FIND MY STARTING POINT"), /*#__PURE__*/React.createElement("button", {
-            onClick: function () {
-              setOnboardStep(1);
-            },
-            className: "onboard-cta-skip"
-          }, "PERSONALIZE MY VIEW (OPTIONAL)"), /*#__PURE__*/React.createElement("div", {
-            className: "onboard-trust-line"
-          }, "FREE \xB7 NO ADS \xB7 NO SUBSCRIPTION \xB7 BUILT BY A VETERAN")), /*#__PURE__*/React.createElement("div", {
-            className: "onboard-welcome-features"
-          }, /*#__PURE__*/React.createElement("div", {
-            className: "onboard-features-header"
-          }, /*#__PURE__*/React.createElement("div", {
-            className: "onboard-features-eyebrow"
-          }, "\u258CINSIDE THE APP"), /*#__PURE__*/React.createElement("div", {
-            className: "onboard-features-title"
-          }, "WHAT YOU GET")), /*#__PURE__*/React.createElement("div", {
-            className: "onboard-features-grid"
-          }, features.map(function (f, i) {
-            return /*#__PURE__*/React.createElement("button", {
-              key: i,
-              type: "button",
-              className: "onboard-feature-card",
-              onClick: function() {
-                if (window.__trackEvent) window.__trackEvent("explore_tool_tapped", { tool: f.route || f.label });
-                if (f.route) {
-                  try { window.__safeSet("tops_onboarded", "explored"); } catch (e) {}
-                  setActiveTab(f.route);
-                  setShowOnboarding(false);
-                }
-              },
-              style: { cursor: "pointer" }
-            }, /*#__PURE__*/React.createElement("div", {
-              className: "onboard-feature-icon"
-            }, TopsToolArt(f.route, f.icon, 76)), /*#__PURE__*/React.createElement("div", {
-              className: "onboard-feature-label"
-            }, f.label), /*#__PURE__*/React.createElement("div", {
-              className: "onboard-feature-desc"
-            }, f.desc), /*#__PURE__*/React.createElement("div", {
-              style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 1.5, color: "#8BB83C", marginTop: 8 }
-            }, "TAP TO EXPLORE \u2192"));
-          })), /*#__PURE__*/React.createElement("div", {
-            className: "onboard-features-footer"
-          }, /*#__PURE__*/React.createElement("div", {
-            className: "onboard-features-stat"
-          }, /*#__PURE__*/React.createElement("span", {
-            className: "onboard-stat-number"
-          }, "10+"), /*#__PURE__*/React.createElement("span", {
-            className: "onboard-stat-label"
-          }, "INTEGRATED TOOLS")), /*#__PURE__*/React.createElement("div", {
-            className: "onboard-features-stat"
-          }, /*#__PURE__*/React.createElement("span", {
-            className: "onboard-stat-number"
-          }, "50"), /*#__PURE__*/React.createElement("span", {
-            className: "onboard-stat-label"
-          }, "STATES COVERED")), /*#__PURE__*/React.createElement("div", {
-            className: "onboard-features-stat"
-          }, /*#__PURE__*/React.createElement("span", {
-            className: "onboard-stat-number"
-          }, "100%"), /*#__PURE__*/React.createElement("span", {
-            className: "onboard-stat-label"
-          }, "FREE TO USE"))))));
+              if (choice.id === "leave") openPlanRoute("readiness", "tops-plan-readiness", "tops-first-change");
+              else { activateCareerScreen("workspace"); setPathwayMode("journey"); setJourneyTarget(""); setCareerExperienceContext(null); setCareerEntry("find"); continuationFocus.current = "tops-career-start-heading"; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("pathway"); }
+            } }, choice ? choice.action : "Choose a starting point above"),
+            React.createElement("button", { id: "tops-first-skip", type: "button", style: Object.assign({}, control, { width: "100%", marginTop: 8, background: "transparent" }), onClick: function() { window.__safeSet("tops_onboarded", "explored"); setOnboardData(function(previous) { return Object.assign({}, previous, { journey: "" }); }); setShowOnboarding(false); continuationFocus.current = "tops-home-tools-title"; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("dashboard"); } }, "Explore all tools instead"),
+            React.createElement("p", { style: { fontSize: 13, lineHeight: 1.5, textAlign: "center", color: C.textSecondary } }, "Families and anyone unsure where to start are welcome. No resume or separation date required.")));
       },
             // Step 1: Military Status
       function() {
@@ -11185,6 +11168,9 @@ function App() {
   activeTab !== "dashboard" && continuationReturn.current && continuationReturn.current.indexOf("tops-guide-") === 0 && React.createElement("button", { type: "button", style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", cursor: "pointer" }, onClick: function() { continuationFocus.current = continuationReturn.current; continuationReturn.current = null; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("pathway"); } }, "Back to career guide"),
   React.createElement("div", { className: activeTab === "dashboard" ? "tops-home-support-row" : activeTab === "pathway" ? "tops-home-support-row tops-career-support" : undefined }, React.createElement(SuicideSupport, { colors: C }),
   (activeTab === "dashboard" || activeTab === "resources" || activeTab === "pathway") && React.createElement(HumanSupportChoices, { colors: C, id: activeTab === "pathway" ? "tops-career-human" : "tops-page-human" })),
+  onboardData.journey && ["pathway", "readiness"].includes(activeTab) && React.createElement("nav", { "aria-label": "Your starting point", style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 } },
+    React.createElement("button", { id: "tops-first-change", type: "button", style: { minHeight: 44, padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgCard, font: "inherit", cursor: "pointer" }, onClick: function() { setOnboardStep(0); setShowOnboarding(true); requestAnimationFrame(function() { var heading = document.getElementById("tops-first-visit-heading"); if (heading) heading.focus(); }); } }, "Change starting point"),
+    React.createElement("button", { id: "tops-first-local-help", type: "button", style: { minHeight: 44, padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgCard, font: "inherit", cursor: "pointer" }, onClick: function() { openStateHelp(stateHelpContext); } }, stateHelpContext.area === "wi" ? "Wisconsin help" : "State and local help")),
   React.createElement(MyJobs, { key: "jobs-" + guideRestoreRevision, open: activeTab === "pathway" && myJobsOpen, colors: C, state: myJobs, setState: setMyJobs, context: { guide: guideState.draft, action: actionState.draft, gap: gapState.draft, visit: careerVisitDraft }, candidate: myJobCandidate, consumeCandidate: function() { setMyJobCandidate(null); }, onClose: returnToCareerWorkspace, onAction: function(job, raw, requestedAction) { setMyJobsOpen(false); setJobsQ(function(previous) { return Object.assign({}, previous, { open: false }); }); setPathwayMode("journey"); setJourneyTarget(null); setCareerExperienceContext(null); setAiR(function(p) { return Object.assign({}, p, { open: false }); }); setCareerToolsOpen(false); setMyJobRequest({ job: job, raw: raw, requestedAction: requestedAction }); focusCareerWorksheet("tops-my-job-task-heading"); } }),
   activeTab === "pathway" && pathwayMode === "journey" && !journeyTarget && !careerExperienceContext && React.createElement(CareerJourney, { onClearSupportReview: clearSupportReview, wisconsinSupport: wisconsinSupport, openWisconsin: openWisconsinGuide, openSupport: function() { openExperienceTool("resources"); }, key: guideRestoreRevision, hidden: careerScreen !== "workspace", onStage: setCareerStage, stageRequest: careerStageRequest, consumeStageRequest: function() { setCareerStageRequest(null); }, jobRequest: myJobRequest, consumeJobRequest: function() { setMyJobRequest(null); }, entry: careerEntry, onIntroductionBack: function() { continuationFocus.current = null; }, consumeEntry: function() { setCareerEntry(""); }, compareRequest: careerCompareRequest, consumeCompare: function() { setCareerCompareRequest(0); }, introduction: introduction, setIntroduction: setIntroduction, visitDraft: careerVisitDraft, setVisitDraft: setCareerVisitDraft, diskGuard: careerDiskGuard.current, colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gapState: gapState, setGapState: setGapState, openTool: function(tool, role) { if (tool === "my-jobs") { activateCareerScreen("my-jobs"); focusCareerWorksheet("tops-my-jobs-heading"); } else if (tool === "jobs") { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, keyword: role || previous.keyword || guideState.draft.targetRole || "" }); }); focusCareerWorksheet("tops-live-jobs-panel"); } else if (tool === "resume") { setJobsQ(function(p) { return Object.assign({}, p, { open: false }); }); setAiR(function(previous) { var occupied = previous.loading || ["role", "years", "target", "skills", "certs", "exp", "posting", "facts", "out"].some(function(key) { return !!previous[key]; }); return Object.assign({}, previous, occupied ? { open: true, handoff: "kept" } : { open: true, handoff: "added", target: role.role, exp: role.experience, posting: role.posting }); }); focusCareerWorksheet("tops-resume-drafter-panel"); } else if (tool === "readiness") { openPlanRoute("readiness", "tops-plan-readiness", "tops-career-start-heading"); } else { setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-heading"); } }, home: function(focus) { continuationFocus.current = focus === "tops-loop-reflection" ? focus : "tops-loop-title"; setActiveTab("dashboard"); } }),
   activeTab === "pathway" && React.createElement("nav", { "aria-label": "Career shortcuts", style: { display: careerScreen !== "tools" ? "none" : "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 } },
