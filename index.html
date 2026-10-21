@@ -740,10 +740,24 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 .tops-product-shell .tops-next-move-continue .tops-next-move-main{padding:26px 30px}
 .tops-product-shell .tops-next-move-continue .tops-next-move-heading{font-size:clamp(26px,3vw,32px);line-height:1.22;max-width:42ch}
 .tops-next-move-continue .tops-next-move-context{max-width:72ch}
-.tops-welcome-layout{display:grid;gap:28px;align-items:center}
-.tops-welcome-title{font-size:clamp(36px,5vw,54px);line-height:1.08;letter-spacing:-.045em}
-.tops-welcome-choice:hover{box-shadow:0 4px 16px #15251b12}
-@media(min-width:820px){.tops-welcome-layout{grid-template-columns:1fr 1fr;gap:64px;min-height:540px}.tops-welcome-footer{max-width:48ch}}
+.tops-welcome-page{padding:24px 20px 32px;min-height:100vh;box-sizing:border-box}
+.tops-welcome-brand{display:flex;align-items:center;gap:12px;padding:0 2px 22px}
+.tops-welcome-mark{display:grid;place-items:center;width:42px;height:42px;border:1px solid #b5a574;border-radius:12px;background:#203b30;color:#e4d49e;font-weight:800;font-size:25px;flex-shrink:0}
+.tops-welcome-layout{display:grid;gap:24px;align-items:center;position:relative;overflow:hidden;padding:32px;border:1px solid #56715f;border-radius:24px;background:radial-gradient(ellipse at 12% 0%,#40593b 0,transparent 60%),#16382d;box-shadow:0 16px 45px #1023191a;color:#f6f7ed}
+.tops-welcome-title{font-size:clamp(34px,4.7vw,60px);line-height:1.06;letter-spacing:-.045em;font-weight:750;margin:0 0 18px;color:#fbfbf2}
+.tops-welcome-title span{display:block}.tops-welcome-title span:last-child{color:#ead59b}
+.tops-welcome-intro>p{font-size:17px;line-height:1.6;max-width:36ch;margin:0;color:#e2e9df}
+.tops-welcome-paths legend{font-size:13px;letter-spacing:.025em;color:#eef2e9;font-weight:650;margin-bottom:12px}
+.tops-welcome-choice{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:78px;text-align:left;margin-bottom:10px;padding:16px 18px;border:1px solid #e2e8dc;border-radius:14px;background:#f7f8f0;color:#18372b;font:inherit;cursor:pointer;box-sizing:border-box;box-shadow:0 4px 14px #071d171c}
+.tops-welcome-choice strong{display:block;font-size:17px;line-height:1.3}.tops-welcome-choice-detail{display:block;font-size:13px;line-height:1.4;color:#435b4d;margin-top:5px}
+.tops-welcome-arrow{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;border-radius:50%;background:#e6ecdf;color:#244a38;font-size:22px}
+.tops-welcome-choice:hover{background:#fffef5;border-color:#ead59b;box-shadow:0 5px 18px #071d1729}.tops-welcome-choice:focus-visible,.tops-welcome-skip:focus-visible{outline:3px solid #ffe6a0;outline-offset:3px}
+.tops-welcome-skip{width:100%;min-height:44px;margin-top:2px;padding:10px;border:0;border-radius:8px;color:#f5f7ec;background:transparent;font:inherit;font-size:14px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.tops-welcome-preview{margin:22px 2px 0;font-size:14px;line-height:1.6}
+.tops-welcome-footer{font-size:12px;line-height:1.6;margin:18px 2px 0;max-width:90ch}
+@media(min-width:820px){.tops-welcome-page{padding:32px 32px 40px}.tops-welcome-layout{grid-template-columns:1.05fr 1fr;gap:48px;min-height:450px;padding:48px}.tops-welcome-title span:last-child{white-space:nowrap}}
+@media(max-width:480px){.tops-welcome-page{padding:18px 16px 28px}.tops-welcome-brand{padding-bottom:18px}.tops-welcome-layout{padding:24px 20px;gap:22px;border-radius:20px}.tops-welcome-title{font-size:clamp(32px,9.5vw,40px);margin-bottom:12px}.tops-welcome-intro>p{font-size:15px;line-height:1.5}.tops-welcome-choice{padding:13px 14px;min-height:74px}.tops-welcome-choice strong{font-size:16px}.tops-welcome-choice-detail{font-size:12px}.tops-welcome-preview{margin-top:20px}}
+@media(forced-colors:active){.tops-welcome-layout,.tops-welcome-mark,.tops-welcome-choice,.tops-welcome-arrow{background:Canvas;color:CanvasText;border-color:CanvasText;box-shadow:none}.tops-welcome-title,.tops-welcome-title span:last-child,.tops-welcome-intro>p,.tops-welcome-paths legend,.tops-welcome-choice-detail,.tops-welcome-skip{color:CanvasText}.tops-welcome-choice:focus-visible,.tops-welcome-skip:focus-visible{outline-color:Highlight}}
 @media(max-width:760px){.tops-product-shell .tops-next-move-continue .tops-next-move-main{padding:22px 20px}.tops-product-shell .tops-next-move-continue .tops-next-move-heading{font-size:26px}}
 .tops-product-shell .tops-next-move-main>h2{font-size:11px!important;letter-spacing:.15em!important;opacity:.85}
 .tops-product-shell .tops-next-move-actions>button:not(.tops-move-primary){color:inherit!important}
@@ -10780,7 +10794,6 @@ function App() {
     var obSteps = [
       // Step 0: One starting choice, then the existing task workspace.
       function() {
-        var control = { minHeight: 44, padding: "16px", border: "1px solid " + C.border, borderRadius: 12, color: C.textPrimary, background: C.bgCard, font: "inherit", cursor: "pointer" };
         function begin(choice) {
           window.__safeSet("tops_onboarded", "1");
           setOnboardData(function(previous) { return Object.assign({}, previous, { journey: choice.id }); });
@@ -10791,23 +10804,24 @@ function App() {
           if (choice.id === "leave") openPlanRoute("readiness", "tops-plan-readiness", "tops-first-change");
           else { activateCareerScreen("workspace"); setPathwayMode("journey"); setJourneyTarget(""); setCareerExperienceContext(null); setCareerEntry("find"); continuationFocus.current = "tops-career-start-heading"; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("pathway"); }
         }
-        return React.createElement("main", { id: "tops-first-visit", style: { minHeight: "100vh", boxSizing: "border-box", padding: "24px 20px", background: C.bg, color: C.textBody } },
-          React.createElement("div", { style: { maxWidth: 1040, margin: "0 auto" } },
-            React.createElement("header", { style: { display: "flex", gap: 14, alignItems: "center", borderBottom: "1px solid " + C.border, paddingBottom: 20, marginBottom: 28 } },
-              React.createElement("span", { "aria-hidden": true, style: { width: 7, height: 42, borderRadius: 4, background: C.green, flexShrink: 0 } }),
-              React.createElement("div", null, React.createElement("div", { style: { fontWeight: 800, fontSize: 22, letterSpacing: ".025em", color: C.textPrimary } }, "TRANSITION OPS"), React.createElement("div", { style: { fontSize: 11, marginTop: 4, letterSpacing: ".12em", color: C.textSecondary } }, "BY VETERAN BRIDGE SOLUTIONS"))),
+        return React.createElement("main", { id: "tops-first-visit", className: "tops-welcome-page", style: { background: C.bg, color: C.textBody } },
+          React.createElement("div", { style: { maxWidth: 1140, margin: "0 auto" } },
+            React.createElement("header", { className: "tops-welcome-brand" },
+              React.createElement("span", { "aria-hidden": true, className: "tops-welcome-mark" }, "V"),
+              React.createElement("div", null, React.createElement("div", { style: { fontWeight: 800, fontSize: 20, letterSpacing: ".025em", color: C.textPrimary } }, "TRANSITION OPS"), React.createElement("div", { style: { fontSize: 10, marginTop: 4, letterSpacing: ".1em", color: C.textSecondary } }, "BY VETERAN BRIDGE SOLUTIONS"))),
             React.createElement("div", { className: "tops-welcome-layout" },
-              React.createElement("div", null,
-                React.createElement("h1", { id: "tops-first-visit-heading", tabIndex: -1, className: "tops-welcome-title", style: { color: C.textPrimary, margin: "0 0 16px", fontWeight: 750 } }, React.createElement("span", { style: { display: "block" } }, "Your service. "), React.createElement("span", { style: { display: "block" } }, "Your next move.")),
-                React.createElement("p", { style: { margin: 0, maxWidth: "38ch", fontSize: 17, lineHeight: 1.55 } }, "Find your next career, understand your benefits and build a plan that works for you.")),
-              React.createElement("div", null,
+              React.createElement("div", { className: "tops-welcome-intro" },
+                React.createElement("h1", { id: "tops-first-visit-heading", tabIndex: -1, className: "tops-welcome-title" }, React.createElement("span", null, "Your service. "), React.createElement("span", null, "Your next move.")),
+                React.createElement("p", null, "Find your next career, understand your benefits and build a plan that works for you.")),
+              React.createElement("div", { className: "tops-welcome-paths" },
                 React.createElement("fieldset", { style: { padding: 0, margin: 0, border: 0 } },
-                  React.createElement("legend", { style: { fontWeight: 700, color: C.textPrimary, marginBottom: 12 } }, "Where would you like to start?"),
-                  TOPS_FIRST_VISIT_CHOICES.map(function(item) { return React.createElement("button", { id: "tops-first-" + item.id, key: item.id, type: "button", className: "tops-welcome-choice", "aria-label": item.title + ". " + item.action, onClick: function() { begin(item); }, style: Object.assign({}, control, { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, width: "100%", textAlign: "left", marginBottom: 10 }) },
-                    React.createElement("span", null, React.createElement("strong", { style: { display: "block", lineHeight: 1.35, fontSize: 17 } }, item.title), React.createElement("span", { style: { display: "block", fontSize: 14, lineHeight: 1.4, color: C.textSecondary, marginTop: 5 } }, item.detail)),
-                    React.createElement("span", { "aria-hidden": true, style: { fontSize: 22, flexShrink: 0 } }, "\u2192")); })),
-                React.createElement("button", { id: "tops-first-skip", type: "button", style: Object.assign({}, control, { width: "100%", marginTop: 2, background: "transparent", borderColor: "transparent", textDecoration: "underline", textUnderlineOffset: 4 }), onClick: function() { window.__safeSet("tops_onboarded", "explored"); setOnboardData(function(previous) { return Object.assign({}, previous, { journey: "" }); }); setShowOnboarding(false); continuationFocus.current = "tops-home-tools-title"; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("dashboard"); } }, "Explore all tools"))),
-            React.createElement("p", { className: "tops-welcome-footer", style: { fontSize: 13, lineHeight: 1.5, margin: "24px 0 0", color: C.textSecondary } }, "Families and anyone unsure where to start are welcome. No resume or separation date required. State and local guidance is available inside.")));
+                  React.createElement("legend", null, "Where would you like to start?"),
+                  TOPS_FIRST_VISIT_CHOICES.map(function(item) { return React.createElement("button", { id: "tops-first-" + item.id, key: item.id, type: "button", className: "tops-welcome-choice", "aria-label": item.title + ". " + item.action, onClick: function() { begin(item); } },
+                    React.createElement("span", null, React.createElement("strong", null, item.title), React.createElement("span", { className: "tops-welcome-choice-detail" }, item.detail)),
+                    React.createElement("span", { "aria-hidden": true, className: "tops-welcome-arrow" }, "\u2192")); })),
+                React.createElement("button", { id: "tops-first-skip", type: "button", className: "tops-welcome-skip", onClick: function() { window.__safeSet("tops_onboarded", "explored"); setOnboardData(function(previous) { return Object.assign({}, previous, { journey: "" }); }); setShowOnboarding(false); continuationFocus.current = "tops-home-tools-title"; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("dashboard"); } }, "Explore all tools"))),
+            React.createElement("p", { className: "tops-welcome-preview", style: { color: C.textSecondary } }, "Explore careers, find benefits and local help, and compare the costs of your next move."),
+            React.createElement("p", { className: "tops-welcome-footer", style: { color: C.textSecondary } }, "Families and anyone unsure where to start are welcome. No resume or separation date required. State and local guidance is available inside.")));
       },
             // Step 1: Military Status
       function() {
