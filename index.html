@@ -740,6 +740,24 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 .tops-product-shell .tops-next-move-continue .tops-next-move-main{padding:26px 30px}
 .tops-product-shell .tops-next-move-continue .tops-next-move-heading{font-size:clamp(26px,3vw,32px);line-height:1.22;max-width:42ch}
 .tops-next-move-continue .tops-next-move-context{max-width:72ch}
+.tops-welcome-page{padding:24px 20px 32px;min-height:100vh;box-sizing:border-box}
+.tops-welcome-brand{display:flex;align-items:center;gap:12px;padding:0 2px 22px}
+.tops-welcome-mark{display:grid;place-items:center;width:42px;height:42px;border:1px solid #b5a574;border-radius:12px;background:#203b30;color:#e4d49e;font-weight:800;font-size:25px;flex-shrink:0}
+.tops-welcome-layout{display:grid;gap:24px;align-items:center;position:relative;overflow:hidden;padding:32px;border:1px solid #56715f;border-radius:24px;background:radial-gradient(ellipse at 12% 0%,#40593b 0,transparent 60%),#16382d;box-shadow:0 16px 45px #1023191a;color:#f6f7ed}
+.tops-welcome-title{font-size:clamp(34px,4.7vw,60px);line-height:1.06;letter-spacing:-.045em;font-weight:750;margin:0 0 18px;color:#fbfbf2}
+.tops-welcome-title span{display:block}.tops-welcome-title span:last-child{color:#ead59b}
+.tops-welcome-intro>p{font-size:17px;line-height:1.6;max-width:36ch;margin:0;color:#e2e9df}
+.tops-welcome-paths legend{font-size:13px;letter-spacing:.025em;color:#eef2e9;font-weight:650;margin-bottom:12px}
+.tops-welcome-choice{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:78px;text-align:left;margin-bottom:10px;padding:16px 18px;border:1px solid #e2e8dc;border-radius:14px;background:#f7f8f0;color:#18372b;font:inherit;cursor:pointer;box-sizing:border-box;box-shadow:0 4px 14px #071d171c}
+.tops-welcome-choice strong{display:block;font-size:17px;line-height:1.3}.tops-welcome-choice-detail{display:block;font-size:13px;line-height:1.4;color:#435b4d;margin-top:5px}
+.tops-welcome-arrow{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;border-radius:50%;background:#e6ecdf;color:#244a38;font-size:22px}
+.tops-welcome-choice:hover{background:#fffef5;border-color:#ead59b;box-shadow:0 5px 18px #071d1729}.tops-welcome-choice:focus-visible,.tops-welcome-skip:focus-visible{outline:3px solid #ffe6a0;outline-offset:3px}
+.tops-welcome-skip{width:100%;min-height:44px;margin-top:2px;padding:10px;border:0;border-radius:8px;color:#f5f7ec;background:transparent;font:inherit;font-size:14px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.tops-welcome-preview{margin:22px 2px 0;font-size:14px;line-height:1.6}
+.tops-welcome-footer{font-size:12px;line-height:1.6;margin:18px 2px 0;max-width:90ch}
+@media(min-width:820px){.tops-welcome-page{padding:32px 32px 40px}.tops-welcome-layout{grid-template-columns:1.05fr 1fr;gap:48px;min-height:450px;padding:48px}.tops-welcome-title span:last-child{white-space:nowrap}}
+@media(max-width:480px){.tops-welcome-page{padding:18px 16px 28px}.tops-welcome-brand{padding-bottom:18px}.tops-welcome-layout{padding:24px 20px;gap:22px;border-radius:20px}.tops-welcome-title{font-size:clamp(32px,9.5vw,40px);margin-bottom:12px}.tops-welcome-intro>p{font-size:15px;line-height:1.5}.tops-welcome-choice{padding:13px 14px;min-height:74px}.tops-welcome-choice strong{font-size:16px}.tops-welcome-choice-detail{font-size:12px}.tops-welcome-preview{margin-top:20px}}
+@media(forced-colors:active){.tops-welcome-layout,.tops-welcome-mark,.tops-welcome-choice,.tops-welcome-arrow{background:Canvas;color:CanvasText;border-color:CanvasText;box-shadow:none}.tops-welcome-title,.tops-welcome-title span:last-child,.tops-welcome-intro>p,.tops-welcome-paths legend,.tops-welcome-choice-detail,.tops-welcome-skip{color:CanvasText}.tops-welcome-choice:focus-visible,.tops-welcome-skip:focus-visible{outline-color:Highlight}}
 @media(max-width:760px){.tops-product-shell .tops-next-move-continue .tops-next-move-main{padding:22px 20px}.tops-product-shell .tops-next-move-continue .tops-next-move-heading{font-size:26px}}
 .tops-product-shell .tops-next-move-main>h2{font-size:11px!important;letter-spacing:.15em!important;opacity:.85}
 .tops-product-shell .tops-next-move-actions>button:not(.tops-move-primary){color:inherit!important}
@@ -6986,7 +7004,7 @@ function topsGuideActions(draft, gap, follow, dismissed) {
   var nextRow = gap && Array.isArray(gap.rows) && (!target || target === existing) ? gap.rows.find(function(row) { return row && ["have", "requirement", "next"].every(function(k) { return typeof row[k] === "string" && row[k].trim(); }); }) : null;
   var career = { id: "career", title: !target && !existing ? "Choose a role to explore" : nextRow ? "Review your worksheet for this target" : "Compare the role with your experience", why: nextRow ? "Your worksheet has experience, requirement and next-action notes. Check that they still fit your current target before deciding what to do; existing notes may need updating." : reason + (existing && target && existing !== target ? " Your worksheet still names " + existing + ". Keep it, or review the target change below." : " Use a current job posting to compare what you have with what the role requires."), route: "career" };
   var resources = { id: "resources", title: value.pathway === "skills" ? "Compare training options" : "Explore employment support", why: value.pathway === "skills" ? (value.currentRole.trim() ? "Build on your current experience: " + value.currentRole.trim() + ". " : "Choose one skill to practice. ") + "Compare program requirements, time and cost; a career change is not required." : "Use employment resources to find support for your next move.", route: value.pathway === "skills" ? "certs" : "employment" };
-  var money = { id: "money", title: "Review the money side of your plan", why: "Before committing to training or a job change, list income, essential expenses and training costs. Money Basics is a starting point; this app does not yet build a household budget.", route: "money" };
+  var money = { id: "money", title: "Review the money side of your plan", why: "Before committing to training or a job change, list income, essential expenses and training costs. Money Basics covers the essentials. Career also offers a next-move comparison using your own estimates.", route: "money" };
   var actions = value.pathway === "support" ? [{ id: "resources", title: "Find help with work or training", why: "Compare support options and ask the provider what can be approved before paying for anything.", route: "employment" }] : value.pathway === "transition" ? [{ id: "readiness", title: "Review your transition readiness", why: "You chose to prepare for civilian life. Review what is ready and what still needs attention; a separation date is not required to start.", route: "readiness" }, career, { id: "documents", title: "Review the documents you need", why: "Use the existing document checklist to prepare for your next conversation or application.", route: "documents" }] : value.pathway === "skills" && !target ? [resources, career, money] : [career, resources, money];
   if (waiting) actions.push({ id: "followups", title: "Review existing follow-ups", why: "My Plan has " + waiting + " follow-up" + (waiting === 1 ? "" : "s") + " marked working or waiting. These may relate to a different goal.", route: "followups" });
   return actions;
@@ -7919,6 +7937,90 @@ function CareerTalentContact(props) {
     React.createElement("button", { id: "tops-talent-clear", type: "button", style: control, onClick: function() { setFields(blank()); setPermission(false); setReview(null); setError(""); setStatus("Form cleared here. This does not change messages in your email app or VBS's inbox."); focus("tops-talent-purpose"); } }, "Clear these fields"));
 }
 
+// Member-entered estimates only. Integer cents keep calculations exact; blank is not zero.
+function topsMoveCents(value) {
+  if (typeof value !== "string" || !value.trim()) return null;
+  var text = value.trim();
+  if (!/^\d{1,7}(?:\.\d{1,2})?$/.test(text)) return null;
+  var parts = text.split("."), cents = Number(parts[0]) * 100 + Number((parts[1] || "").padEnd(2, "0"));
+  return Number.isSafeInteger(cents) && cents <= 100000000 ? cents : null;
+}
+function topsMoveBlank() {
+  function option() { return { label: "", income: "", expenses: "", moving: "", service: "", includeService: false, costs: { housing: "", transport: "", health: "", other: "" } }; }
+  return { cash: "", selected: 0, options: [option(), option()] };
+}
+function topsMoveResult(option, cash) {
+  var income = topsMoveCents(option.income), expenses = topsMoveCents(option.expenses), moving = topsMoveCents(option.moving), savings = topsMoveCents(cash), service = topsMoveCents(option.service);
+  var balance = income === null || expenses === null ? null : income - expenses;
+  var remaining = savings === null || moving === null ? null : savings - moving;
+  function runway(monthly) { return monthly !== null && monthly < 0 && remaining !== null && remaining >= 0 ? Math.floor(remaining * 10 / -monthly) / 10 : null; }
+  var whatIf = option.includeService && service !== null && balance !== null ? balance + service : null;
+  return { balance: balance, cash: remaining, runway: runway(balance), whatIf: whatIf, whatIfRunway: runway(whatIf) };
+}
+function topsMoveExpenseTotal(costs) {
+  var amounts = ["housing", "transport", "health", "other"].map(function(key) { return topsMoveCents(costs[key]); });
+  if (amounts.some(function(value) { return value === null; })) return null;
+  var total = amounts.reduce(function(sum, value) { return sum + value; }, 0);
+  return total <= 100000000 ? total : null;
+}
+function CareerMoveComparison(props) {
+  var C = props.colors, plan = props.value, selected = plan.selected, option = plan.options[selected];
+  var [helperError, setHelperError] = useState(""), [message, setMessage] = useState("");
+  var control = { minHeight: 44, padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 8, font: "inherit", background: C.bgCard, color: C.textPrimary, boxSizing: "border-box" };
+  var input = Object.assign({}, control, { width: "100%", fontSize: 16, marginTop: 5 });
+  function money(cents) { return (cents / 100).toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function update(key, value) {
+    setHelperError(""); setMessage("");
+    props.onChange(function(previous) { var options = previous.options.slice(); options[previous.selected] = Object.assign({}, options[previous.selected], { [key]: value }); return Object.assign({}, previous, { options: options }); });
+  }
+  function field(key, label, value, onChange, hint) {
+    var id = "tops-move-" + key, invalid = !!value.trim() && topsMoveCents(value) === null;
+    return React.createElement("div", { style: { marginBottom: 12 } }, React.createElement("label", { htmlFor: id, style: { display: "block", lineHeight: 1.4 } }, label),
+      React.createElement("input", { id: id, type: "text", inputMode: "decimal", autoComplete: "off", maxLength: 10, value: value, style: input, "aria-invalid": invalid, "aria-describedby": "tops-move-format" + (hint ? " " + id + "-hint" : "") + (invalid ? " " + id + "-error" : ""), onChange: function(event) { onChange(event.target.value); } }),
+      hint && React.createElement("p", { id: id + "-hint", style: { fontSize: 14, margin: "5px 0 0", lineHeight: 1.4 } }, hint),
+      invalid && React.createElement("p", { id: id + "-error", role: "alert", style: { fontSize: 14, margin: "5px 0 0" } }, "Use 0 to 1,000,000, with up to two decimal places and no commas."));
+  }
+  function result(item, number) {
+    var r = topsMoveResult(item, plan.cash), name = item.label.trim() || "Option " + (number + 1);
+    function monthly(value) { return value === 0 ? "Income matches expenses in these estimates." : value > 0 ? money(value) + " left each month after expenses." : money(-value) + " monthly gap to cover."; }
+    return React.createElement("section", { key: number, "aria-labelledby": "tops-move-result-" + number, style: { background: C.bg, border: "1px solid " + C.border, borderRadius: 10, padding: 12, minWidth: 0, overflowWrap: "anywhere" } },
+      React.createElement("h4", { id: "tops-move-result-" + number, style: { margin: "0 0 8px", fontSize: 17 } }, name),
+      React.createElement("p", { style: { margin: "0 0 8px", fontWeight: 700, lineHeight: 1.5 } }, r.balance === null ? "Add take-home pay and monthly expenses to see your monthly balance." : monthly(r.balance)),
+      React.createElement("p", { style: { margin: "0 0 8px", lineHeight: 1.5 } }, r.cash === null ? "Cash after moving: add available cash and moving costs." : r.cash < 0 ? "Moving costs exceed available cash by " + money(-r.cash) + "." : money(r.cash) + " cash left after moving."),
+      r.runway !== null && React.createElement("p", { style: { margin: "0 0 8px", lineHeight: 1.5 } }, "That cash covers about " + r.runway.toFixed(1) + " months of this monthly gap (rounded down)."),
+      r.balance !== null && r.balance >= 0 && (r.cash === null || r.cash >= 0) && React.createElement("p", { style: { margin: "0 0 8px", fontSize: 14, lineHeight: 1.5 } }, "No monthly gap in these estimates. This does not account for unexpected costs."),
+      r.balance !== null && React.createElement("p", { style: { margin: "8px 0", fontSize: 14, lineHeight: 1.5 } }, r.cash !== null && r.cash < 0 ? "Next: review moving costs or the cash you can use. Covering monthly bills and paying moving costs are separate." : r.cash === null ? "Next: add cash and moving costs to check the upfront part of this option." : r.balance < 0 ? "Next: check your largest monthly expense, or test a different take-home estimate." : "Next: check for missing costs and money you want to set aside before comparing the other option."),
+      item.includeService && React.createElement("p", { style: { borderTop: "1px solid " + C.border, paddingTop: 8, marginBottom: 0, lineHeight: 1.5 } }, r.whatIf === null ? "Service-income what-if: add a valid amount and both monthly estimates." : "With your optional service-income estimate: " + monthly(r.whatIf) + (r.whatIfRunway !== null ? " Cash covers about " + r.whatIfRunway.toFixed(1) + " months of that gap." : "")));
+  }
+  return React.createElement("details", { id: "tops-move-comparison", style: { borderTop: "1px solid " + C.border, marginTop: 16, paddingTop: 4 } },
+    React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", fontWeight: 700, cursor: "pointer" } }, "Can I afford my next move?"),
+    React.createElement("p", { style: { lineHeight: 1.5 } }, "Compare two places or job options using your own estimates. Start with one; add the other when you're ready."),
+    React.createElement("p", { id: "tops-move-notice", style: { fontSize: 14, lineHeight: 1.5 } }, "These estimates stay in this open app while you use other tools. Refreshing or Clear comparison clears them. They are not added to your saved plan, backup, AI request or recruiting email."),
+    React.createElement("p", { id: "tops-move-format", style: { fontSize: 14, lineHeight: 1.5 } }, "Amounts are in US dollars. Leave unknown amounts blank; enter 0 only when the amount is zero. These are estimates, not a recommendation to move."),
+    field("cash", "Cash available for this move", plan.cash, function(value) { props.onChange(function(previous) { return Object.assign({}, previous, { cash: value }); }); setMessage(""); }, "Use cash you could spend after setting aside any money you want to protect. This same amount is used for both options."),
+    React.createElement("div", { role: "group", "aria-label": "Choose which option to edit", style: { display: "flex", gap: 8, marginBottom: 14 } }, [0, 1].map(function(number) { return React.createElement("button", { key: number, id: "tops-move-option-" + number, type: "button", "aria-pressed": selected === number, style: Object.assign({}, control, { flex: 1, fontWeight: selected === number ? 700 : 400, border: (selected === number ? "2px solid " + C.textPrimary : "1px solid " + C.border), cursor: "pointer" }), onClick: function() { props.onChange(function(previous) { return Object.assign({}, previous, { selected: number }); }); setHelperError(""); setMessage(""); } }, "Option " + (number + 1)); })),
+    React.createElement("div", { style: { marginBottom: 12 } }, React.createElement("label", { htmlFor: "tops-move-label" }, "Place or option name (optional)"), React.createElement("input", { id: "tops-move-label", value: option.label, type: "text", autoComplete: "off", maxLength: 60, style: input, onChange: function(event) { update("label", event.target.value); } })),
+    field("income", "Monthly take-home pay", option.income, function(value) { update("income", value); }, "After taxes and payroll deductions, not a job's advertised salary. Leave out the optional service income below."),
+    field("expenses", "Total monthly expenses", option.expenses, function(value) { update("expenses", value); }),
+    React.createElement("details", { style: { margin: "0 0 12px" } }, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", cursor: "pointer" } }, "Help me add up monthly expenses"),
+      React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "Include costs you pay from your take-home income. Include utilities with housing; add food, debt, childcare and training in Everything else."),
+      [["housing", "Housing and utilities"], ["transport", "Transportation"], ["health", "Health costs not already deducted from take-home pay"], ["other", "Everything else"]].map(function(row) { return React.createElement("div", { key: row[0] }, field("cost-" + row[0], row[1], option.costs[row[0]], function(value) { update("costs", Object.assign({}, option.costs, { [row[0]]: value })); })); }),
+      React.createElement("button", { id: "tops-move-apply-costs", type: "button", style: Object.assign({}, control, { cursor: "pointer" }), onClick: function() { var total = topsMoveExpenseTotal(option.costs); if (total === null) { setHelperError("Enter all four costs, using 0 where appropriate. Their total must be no more than $1,000,000."); return; } update("expenses", (total / 100).toFixed(2)); setMessage("Expense total added to Option " + (selected + 1) + "."); } }, "Use expense total"),
+      helperError && React.createElement("p", { role: "alert" }, helperError)),
+    field("moving", "One-time moving costs", option.moving, function(value) { update("moving", value); }, "Include deposits, travel and other setup costs. Enter 0 if you are staying put."),
+    React.createElement("details", { style: { marginBottom: 12 } }, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", cursor: "pointer" } }, "Add a Guard or Reserve income what-if"),
+      React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "The main result excludes this amount. Use a conservative monthly take-home estimate that is not already included above; pay can vary."),
+      field("service", "Optional monthly service income", option.service, function(value) { update("service", value); }),
+      React.createElement("label", { style: { display: "flex", gap: 10, minHeight: 44, alignItems: "center", lineHeight: 1.5 } }, React.createElement("input", { id: "tops-move-include-service", type: "checkbox", checked: option.includeService, onChange: function(event) { update("includeService", event.target.checked); } }), "Show a separate result including this estimate")),
+    React.createElement("div", { id: "tops-move-results", "aria-live": "polite", "aria-atomic": true, style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: 10, margin: "16px 0" } }, plan.options.map(result)),
+    React.createElement("details", { style: { marginBottom: 12 } }, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", cursor: "pointer" } }, "Need help estimating local costs?"),
+      React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "MIT's Living Wage Calculator is a starting point for local basic needs, not your full budget. Savings, emergencies and leisure are outside its estimate. Enter your own amounts here; this app does not import those costs."),
+      React.createElement("a", { id: "tops-move-mit", href: "https://livingwage.mit.edu/pages/faqs", target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, control, { display: "flex", alignItems: "center", lineHeight: 1.4, marginBottom: 8 }) }, "Explore MIT Living Wage guidance (new tab)"),
+      React.createElement("a", { id: "tops-move-mos", href: "https://www.militaryonesource.mil/financial-legal/personal-finance/financial-tools-and-services/", target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, control, { display: "flex", alignItems: "center", lineHeight: 1.4 }) }, "Military OneSource financial tools (new tab)")),
+    React.createElement("p", { role: "status", style: { fontSize: 14 } }, message),
+    React.createElement("button", { id: "tops-move-clear", type: "button", style: Object.assign({}, control, { cursor: "pointer" }), onClick: function() { props.onChange(topsMoveBlank()); setHelperError(""); setMessage("Comparison cleared. Your career plan is unchanged."); requestAnimationFrame(function() { var field = document.getElementById("tops-move-cash"); if (field) field.focus(); }); } }, "Clear comparison"));
+}
+
 function CareerJourney(props) {
   var initial = useRef(props.visitDraft).current;
   var savedGuide = props.guideState.draft, savedAction = props.actionState.draft, savedGap = props.gapState.draft;
@@ -8249,6 +8351,7 @@ function CareerJourney(props) {
       React.createElement(CareerLearning, { wisconsinSupport: props.wisconsinSupport, key: JSON.stringify([role, draft.rows.map(function(row) { return row.requirement; })]), colors: C, button: button, role: role, rows: draft.rows, action: action, learningAction: topsCareerLearningAction, onAdd: function(resource) { if (baseline.current !== current()) { setStatus("Your plan changed in another tool. Review your career work again before changing this step."); return false; } setAction(topsCareerLearningAction(resource)); setActionDate(""); setSaved(false); setStatus(""); setChecked(false); setReplace(false); setStatus(""); return true; } }),
       React.createElement(CareerSpecialistSupport, { colors: C, button: button, field: field, role: role, rows: draft.rows, onJobs: function() { props.openTool("my-jobs"); }, state: introduction, setState: setIntroduction, action: action, onPlan: planNetworking, retainReviewedContext: networkingTransfer.current, consumeReviewedContext: function() { networkingTransfer.current = false; } }),
       (sameConversationRole || pendingCheckin || checkin.takeaway || checkin.next || checkin.date) && React.createElement(CareerConversationCheckin, { colors: C, button: button, field: field, role: role, state: checkin, saved: saved, hasPending: !!pendingCheckin, prep: props.gapState.draft.prep, action: action, getBase: checkinBase, getSnapshot: checkinSnapshot, onEdit: function(value) { setCheckin(value); setSaved(false); setStatus(""); setChecked(false); setReplace(false); }, onStage: stageCheckin, onClear: clearCheckin })))),
+    stage === 2 && draft && !myJobReview && !aiActive && !reviewPanel && React.createElement(CareerMoveComparison, { colors: C, value: props.moveComparison, onChange: props.setMoveComparison }),
     stage === 2 && draft && !myJobReview && !aiActive && !reviewPanel && React.createElement(CareerTalentContact, { colors: C }),
     stage > 0 && !myJobReview && !aiActive && !reviewPanel && introduction.prepared && introductionButton(),
     !saved && hasVisitWork && React.createElement("details", { className: "tops-career-draft-options" }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0" } }, "Draft options"),
@@ -8426,9 +8529,9 @@ function PersonalGuide(props) {
 
 // MEMBER_LOOP_START
 const TOPS_FIRST_VISIT_CHOICES = [
-  { id: "leave", title: "I'm preparing to leave service", detail: "Find one thing to work on before your transition.", action: "Open my transition checklist", situation: "browse" },
-  { id: "serve", title: "I'm continuing in the Guard or Reserve", detail: "Explore civilian work while continuing to serve.", action: "Explore civilian career options", situation: "serving" },
-  { id: "veteran", title: "I'm a veteran changing careers", detail: "Find a direction using the experience you already have.", action: "Explore my next career", situation: "veteran" }
+  { id: "leave", title: "Leaving service", detail: "Start with your transition checklist.", action: "Open my transition checklist", situation: "browse" },
+  { id: "serve", title: "Continuing Guard or Reserve", detail: "Explore civilian work while you serve.", action: "Explore civilian career options", situation: "serving" },
+  { id: "veteran", title: "Veteran exploring a new direction", detail: "Turn your experience into a career next step.", action: "Explore my next career", situation: "veteran" }
 ];
 const TOPS_MEMBER_PRIORITIES = [
   { id: "work", pathway: "change", title: "Find work soon", detail: "Start with current openings and one job to pursue." },
@@ -9037,6 +9140,8 @@ function topsCurrentToolURL(href, tool) {
   try { var url = new URL(href); if (url.searchParams.get("tool") === tool) return href; url.searchParams.set("tool", tool); return url.href; } catch (error) { return null; }
 }
 function App() {
+  // Deliberately separate from persisted career/profile state and all outbound tools.
+  const [moveComparison, setMoveComparison] = useState(topsMoveBlank);
   const [theme, setTheme] = useState(() => {
     try {
       if (!window.__IS_IFRAME) {
@@ -10689,32 +10794,34 @@ function App() {
     var obSteps = [
       // Step 0: One starting choice, then the existing task workspace.
       function() {
-        var choice = TOPS_FIRST_VISIT_CHOICES.find(function(item) { return item.id === onboardData.journey; });
-        var control = { minHeight: 44, padding: "12px 16px", border: "1px solid " + C.border, borderRadius: 10, color: C.textPrimary, background: C.bgCard, font: "inherit", cursor: "pointer" };
-        return React.createElement("main", { id: "tops-first-visit", style: { minHeight: "100vh", boxSizing: "border-box", padding: "28px 20px", background: C.bg, color: C.textBody } },
-          React.createElement("div", { style: { maxWidth: 600, margin: "0 auto" } },
-            React.createElement("p", { style: { color: C.textSecondary, fontSize: 13, margin: "0 0 12px", letterSpacing: 1 } }, "TRANSITION OPS / VETERAN BRIDGE SOLUTIONS"),
-            React.createElement("h1", { id: "tops-first-visit-heading", tabIndex: -1, style: { fontSize: 30, lineHeight: 1.2, color: C.textPrimary, margin: "0 0 10px" } }, "Your next chapter starts here."),
-            React.createElement("p", { style: { margin: "0 0 20px", lineHeight: 1.5 } }, "Choose where you are today. We'll take you to one useful place to start."),
-            React.createElement("fieldset", { style: { padding: 0, margin: 0, border: 0 } },
-              React.createElement("legend", { style: { fontWeight: 700, color: C.textPrimary, marginBottom: 10 } }, "What brings you here?"),
-              TOPS_FIRST_VISIT_CHOICES.map(function(item) { return React.createElement("button", { id: "tops-first-" + item.id, key: item.id, type: "button", "aria-pressed": choice && choice.id === item.id || false, onClick: function() { setOnboardData(function(previous) { return Object.assign({}, previous, { journey: item.id }); }); }, style: Object.assign({}, control, { display: "block", width: "100%", textAlign: "left", marginBottom: 8, borderColor: choice && choice.id === item.id ? C.green : C.border, borderWidth: 2, background: choice && choice.id === item.id ? C.bgElevated : C.bgCard }) },
-                React.createElement("strong", { style: { display: "block", lineHeight: 1.4 } }, item.title),
-                React.createElement("span", { style: { display: "block", fontSize: 14, lineHeight: 1.4, color: C.textSecondary, marginTop: 4 } }, item.detail)); })),
-            React.createElement("label", { htmlFor: "tops-first-area", style: { display: "block", margin: "16px 0 6px", fontWeight: 600 } }, "Local help to include (optional)"),
-            React.createElement("select", { id: "tops-first-area", value: onboardData.area, "aria-describedby": "tops-first-area-hint", onChange: function(event) { var area = event.target.value; setOnboardData(function(previous) { return Object.assign({}, previous, { area: area === "wi" ? "wi" : "national" }); }); }, style: Object.assign({}, control, { width: "100%", fontSize: 16 }) }, React.createElement("option", { value: "national" }, "National resources - any state"), React.createElement("option", { value: "wi" }, "Wisconsin")),
-            React.createElement("p", { id: "tops-first-area-hint", style: { margin: "6px 0 16px", fontSize: 13, lineHeight: 1.5, color: C.textSecondary } }, "Wisconsin has expanded local guidance. Choosing it does not establish residence or eligibility."),
-            React.createElement("button", { id: "tops-first-continue", type: "button", disabled: !choice, style: Object.assign({}, control, { width: "100%", background: C.green, color: C.textOnFill, fontWeight: 700, opacity: choice ? 1 : 0.55 }), onClick: function() {
-              if (!choice) return;
-              window.__safeSet("tops_onboarded", "1");
-              setStateHelpContext({ area: onboardData.area, situation: choice.situation, need: choice.id === "leave" ? "start" : "work" });
-              setMemberPriority(choice.id === "leave" ? "leave" : "explore");
-              setShowOnboarding(false);
-              if (choice.id === "leave") openPlanRoute("readiness", "tops-plan-readiness", "tops-first-change");
-              else { activateCareerScreen("workspace"); setPathwayMode("journey"); setJourneyTarget(""); setCareerExperienceContext(null); setCareerEntry("find"); continuationFocus.current = "tops-career-start-heading"; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("pathway"); }
-            } }, choice ? choice.action : "Choose a starting point above"),
-            React.createElement("button", { id: "tops-first-skip", type: "button", style: Object.assign({}, control, { width: "100%", marginTop: 8, background: "transparent" }), onClick: function() { window.__safeSet("tops_onboarded", "explored"); setOnboardData(function(previous) { return Object.assign({}, previous, { journey: "" }); }); setShowOnboarding(false); continuationFocus.current = "tops-home-tools-title"; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("dashboard"); } }, "Explore all tools instead"),
-            React.createElement("p", { style: { fontSize: 13, lineHeight: 1.5, textAlign: "center", color: C.textSecondary } }, "Families and anyone unsure where to start are welcome. No resume or separation date required.")));
+        function begin(choice) {
+          window.__safeSet("tops_onboarded", "1");
+          setOnboardData(function(previous) { return Object.assign({}, previous, { journey: choice.id }); });
+          // Keep a member's explicit local-help interest; situation is not eligibility.
+          setStateHelpContext(function(previous) { return Object.assign({}, previous, { situation: choice.situation, need: choice.id === "leave" ? "start" : "work" }); });
+          setMemberPriority(choice.id === "leave" ? "leave" : "explore");
+          setShowOnboarding(false);
+          if (choice.id === "leave") openPlanRoute("readiness", "tops-plan-readiness", "tops-first-change");
+          else { activateCareerScreen("workspace"); setPathwayMode("journey"); setJourneyTarget(""); setCareerExperienceContext(null); setCareerEntry("find"); continuationFocus.current = "tops-career-start-heading"; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("pathway"); }
+        }
+        return React.createElement("main", { id: "tops-first-visit", className: "tops-welcome-page", style: { background: C.bg, color: C.textBody } },
+          React.createElement("div", { style: { maxWidth: 1140, margin: "0 auto" } },
+            React.createElement("header", { className: "tops-welcome-brand" },
+              React.createElement("span", { "aria-hidden": true, className: "tops-welcome-mark" }, "V"),
+              React.createElement("div", null, React.createElement("div", { style: { fontWeight: 800, fontSize: 20, letterSpacing: ".025em", color: C.textPrimary } }, "TRANSITION OPS"), React.createElement("div", { style: { fontSize: 10, marginTop: 4, letterSpacing: ".1em", color: C.textSecondary } }, "BY VETERAN BRIDGE SOLUTIONS"))),
+            React.createElement("div", { className: "tops-welcome-layout" },
+              React.createElement("div", { className: "tops-welcome-intro" },
+                React.createElement("h1", { id: "tops-first-visit-heading", tabIndex: -1, className: "tops-welcome-title" }, React.createElement("span", null, "Your service. "), React.createElement("span", null, "Your next move.")),
+                React.createElement("p", null, "Find your next career, understand your benefits and build a plan that works for you.")),
+              React.createElement("div", { className: "tops-welcome-paths" },
+                React.createElement("fieldset", { style: { padding: 0, margin: 0, border: 0 } },
+                  React.createElement("legend", null, "Where would you like to start?"),
+                  TOPS_FIRST_VISIT_CHOICES.map(function(item) { return React.createElement("button", { id: "tops-first-" + item.id, key: item.id, type: "button", className: "tops-welcome-choice", "aria-label": item.title + ". " + item.action, onClick: function() { begin(item); } },
+                    React.createElement("span", null, React.createElement("strong", null, item.title), React.createElement("span", { className: "tops-welcome-choice-detail" }, item.detail)),
+                    React.createElement("span", { "aria-hidden": true, className: "tops-welcome-arrow" }, "\u2192")); })),
+                React.createElement("button", { id: "tops-first-skip", type: "button", className: "tops-welcome-skip", onClick: function() { window.__safeSet("tops_onboarded", "explored"); setOnboardData(function(previous) { return Object.assign({}, previous, { journey: "" }); }); setShowOnboarding(false); continuationFocus.current = "tops-home-tools-title"; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("dashboard"); } }, "Explore all tools"))),
+            React.createElement("p", { className: "tops-welcome-preview", style: { color: C.textSecondary } }, "Explore careers, find benefits and local help, and compare the costs of your next move."),
+            React.createElement("p", { className: "tops-welcome-footer", style: { color: C.textSecondary } }, "Families and anyone unsure where to start are welcome. No resume or separation date required. State and local guidance is available inside.")));
       },
             // Step 1: Military Status
       function() {
@@ -11172,7 +11279,7 @@ function App() {
     React.createElement("button", { id: "tops-first-change", type: "button", style: { minHeight: 44, padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgCard, font: "inherit", cursor: "pointer" }, onClick: function() { setOnboardStep(0); setShowOnboarding(true); requestAnimationFrame(function() { var heading = document.getElementById("tops-first-visit-heading"); if (heading) heading.focus(); }); } }, "Change starting point"),
     React.createElement("button", { id: "tops-first-local-help", type: "button", style: { minHeight: 44, padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgCard, font: "inherit", cursor: "pointer" }, onClick: function() { openStateHelp(stateHelpContext); } }, stateHelpContext.area === "wi" ? "Wisconsin help" : "State and local help")),
   React.createElement(MyJobs, { key: "jobs-" + guideRestoreRevision, open: activeTab === "pathway" && myJobsOpen, colors: C, state: myJobs, setState: setMyJobs, context: { guide: guideState.draft, action: actionState.draft, gap: gapState.draft, visit: careerVisitDraft }, candidate: myJobCandidate, consumeCandidate: function() { setMyJobCandidate(null); }, onClose: returnToCareerWorkspace, onAction: function(job, raw, requestedAction) { setMyJobsOpen(false); setJobsQ(function(previous) { return Object.assign({}, previous, { open: false }); }); setPathwayMode("journey"); setJourneyTarget(null); setCareerExperienceContext(null); setAiR(function(p) { return Object.assign({}, p, { open: false }); }); setCareerToolsOpen(false); setMyJobRequest({ job: job, raw: raw, requestedAction: requestedAction }); focusCareerWorksheet("tops-my-job-task-heading"); } }),
-  activeTab === "pathway" && pathwayMode === "journey" && !journeyTarget && !careerExperienceContext && React.createElement(CareerJourney, { onClearSupportReview: clearSupportReview, wisconsinSupport: wisconsinSupport, openWisconsin: openWisconsinGuide, openSupport: function() { openExperienceTool("resources"); }, key: guideRestoreRevision, hidden: careerScreen !== "workspace", onStage: setCareerStage, stageRequest: careerStageRequest, consumeStageRequest: function() { setCareerStageRequest(null); }, jobRequest: myJobRequest, consumeJobRequest: function() { setMyJobRequest(null); }, entry: careerEntry, onIntroductionBack: function() { continuationFocus.current = null; }, consumeEntry: function() { setCareerEntry(""); }, compareRequest: careerCompareRequest, consumeCompare: function() { setCareerCompareRequest(0); }, introduction: introduction, setIntroduction: setIntroduction, visitDraft: careerVisitDraft, setVisitDraft: setCareerVisitDraft, diskGuard: careerDiskGuard.current, colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gapState: gapState, setGapState: setGapState, openTool: function(tool, role) { if (tool === "my-jobs") { activateCareerScreen("my-jobs"); focusCareerWorksheet("tops-my-jobs-heading"); } else if (tool === "jobs") { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, keyword: role || previous.keyword || guideState.draft.targetRole || "" }); }); focusCareerWorksheet("tops-live-jobs-panel"); } else if (tool === "resume") { setJobsQ(function(p) { return Object.assign({}, p, { open: false }); }); setAiR(function(previous) { var occupied = previous.loading || ["role", "years", "target", "skills", "certs", "exp", "posting", "facts", "out"].some(function(key) { return !!previous[key]; }); return Object.assign({}, previous, occupied ? { open: true, handoff: "kept" } : { open: true, handoff: "added", target: role.role, exp: role.experience, posting: role.posting }); }); focusCareerWorksheet("tops-resume-drafter-panel"); } else if (tool === "readiness") { openPlanRoute("readiness", "tops-plan-readiness", "tops-career-start-heading"); } else { setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-heading"); } }, home: function(focus) { continuationFocus.current = focus === "tops-loop-reflection" ? focus : "tops-loop-title"; setActiveTab("dashboard"); } }),
+  activeTab === "pathway" && pathwayMode === "journey" && !journeyTarget && !careerExperienceContext && React.createElement(CareerJourney, { moveComparison: moveComparison, setMoveComparison: setMoveComparison, onClearSupportReview: clearSupportReview, wisconsinSupport: wisconsinSupport, openWisconsin: openWisconsinGuide, openSupport: function() { openExperienceTool("resources"); }, key: guideRestoreRevision, hidden: careerScreen !== "workspace", onStage: setCareerStage, stageRequest: careerStageRequest, consumeStageRequest: function() { setCareerStageRequest(null); }, jobRequest: myJobRequest, consumeJobRequest: function() { setMyJobRequest(null); }, entry: careerEntry, onIntroductionBack: function() { continuationFocus.current = null; }, consumeEntry: function() { setCareerEntry(""); }, compareRequest: careerCompareRequest, consumeCompare: function() { setCareerCompareRequest(0); }, introduction: introduction, setIntroduction: setIntroduction, visitDraft: careerVisitDraft, setVisitDraft: setCareerVisitDraft, diskGuard: careerDiskGuard.current, colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gapState: gapState, setGapState: setGapState, openTool: function(tool, role) { if (tool === "my-jobs") { activateCareerScreen("my-jobs"); focusCareerWorksheet("tops-my-jobs-heading"); } else if (tool === "jobs") { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, keyword: role || previous.keyword || guideState.draft.targetRole || "" }); }); focusCareerWorksheet("tops-live-jobs-panel"); } else if (tool === "resume") { setJobsQ(function(p) { return Object.assign({}, p, { open: false }); }); setAiR(function(previous) { var occupied = previous.loading || ["role", "years", "target", "skills", "certs", "exp", "posting", "facts", "out"].some(function(key) { return !!previous[key]; }); return Object.assign({}, previous, occupied ? { open: true, handoff: "kept" } : { open: true, handoff: "added", target: role.role, exp: role.experience, posting: role.posting }); }); focusCareerWorksheet("tops-resume-drafter-panel"); } else if (tool === "readiness") { openPlanRoute("readiness", "tops-plan-readiness", "tops-career-start-heading"); } else { setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-heading"); } }, home: function(focus) { continuationFocus.current = focus === "tops-loop-reflection" ? focus : "tops-loop-title"; setActiveTab("dashboard"); } }),
   activeTab === "pathway" && React.createElement("nav", { "aria-label": "Career shortcuts", style: { display: careerScreen !== "tools" ? "none" : "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 } },
     [["Start here", "tops-career-start-heading"], ["Career plan", "career-gap-heading"], ["Resume drafter", "tops-resume-drafter-panel"], ["Business ownership", "tops-ownership-heading"]].map(function(item) {
       return React.createElement("button", { key: item[1], type: "button", onClick: function() {

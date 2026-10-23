@@ -185,7 +185,9 @@ function sourceChecks() {
       countMatches(index, /Two steps in Safari\. Add Transition OPS to your Home Screen for direct access\./) === 1 &&
       countMatches(index, /This in-app browser cannot install Transition OPS\./) === 1 &&
       countMatches(index, /Track critical transition windows/) === 0 &&
-      countMatches(index, /id: "tops-first-continue"/) === 1 &&
+      countMatches(index, /id: "tops-first-continue"/) === 0 &&
+      countMatches(index, /TOPS_FIRST_VISIT_CHOICES\.map\(/) === 1 &&
+      countMatches(index, /onClick: function\(\) \{ begin\(item\); \}/) === 1 &&
       countMatches(index, /id: "tops-first-skip"/) === 1 &&
       countMatches(index, /Direct access\. No app store\./) === 0 &&
       countMatches(index, /\(not \\"Add Bookmark\\"\)/) === 2,
