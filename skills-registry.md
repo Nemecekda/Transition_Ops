@@ -71,6 +71,12 @@ project verdict and required manual assistive-technology matrix.
 production. **Local automation is not manual AT or hosted release acceptance.**
 
 ## CHANGE LOG
+- 2026-10-25 - **#2 `deploy-discipline` v1.9 documentation reconciliation.**
+  Canonical and Codex copies now map the ten already published journey WEBP
+  precache assets and describe the current closed 74-runtime/75-total hosted
+  inventory. The September 3 22/23 calibration remains explicitly historical.
+  No public allowlist, worker behavior, release authority or gate was expanded.
+  Force Mod review: `intel/wisconsin-return-release-20261025/contract-reconciliation.md`.
 - 2026-09-03 - **#2 `deploy-discipline` 1.8 -> 1.9 is CODIFIED.** The
   build-owned public `dist` contract remains exactly 22 files. A Git-backed
   Netlify hosted manifest is now a closed union of those 22 collision-free

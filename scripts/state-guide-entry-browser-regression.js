@@ -62,8 +62,9 @@ const server = http.createServer((req, res) => {
     for (const route of ['/wisconsin', '/wisconsin/']) {
       console.log('ROUTE',route); await load(route); await wait('!!document.getElementById("tops-state-help")');
       assert.equal(await ev('location.pathname+location.search'), destination);
-      assert.equal(await ev('document.getElementById("tops-state-help-heading").textContent'), 'Welcome to Wisconsin');
-      assert.match(await ev('document.getElementById("tops-state-help-welcome").textContent'), /Local guidance for veterans, service members and families\./);
+      assert.equal(await ev('document.getElementById("tops-state-help-heading").textContent'), 'Coming home to Wisconsin?');
+      assert.match(await ev('document.getElementById("tops-state-help-welcome").textContent'), /serving in the Guard or Reserve/);
+      assert.match(await ev('document.getElementById("tops-state-help-welcome").textContent'), /Veterans and families welcome/);
       assert.equal(await ev('document.querySelector("label[for=tops-state-help-area]").textContent'), 'Choose your state');
       assert.deepEqual(await ev('[...document.getElementById("tops-state-help-area").options].map(n=>n.text)'), ['All states', 'Wisconsin']);
       assert.equal(await ev('document.getElementById("tops-state-help-situation").value'), 'browse');

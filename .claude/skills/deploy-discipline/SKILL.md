@@ -167,6 +167,16 @@ entry. Mapping from cache entry to repo file:
 | `/bdd-timeline/` | `bdd-timeline/index.html` |
 | `/vendor/react.production.min.js` | `vendor/react.production.min.js` |
 | `/vendor/react-dom.production.min.js` | `vendor/react-dom.production.min.js` |
+| `/art/journey/briefcase.webp` | `art/journey/briefcase.webp` |
+| `/art/journey/calculator.webp` | `art/journey/calculator.webp` |
+| `/art/journey/calendar.webp` | `art/journey/calendar.webp` |
+| `/art/journey/compass.webp` | `art/journey/compass.webp` |
+| `/art/journey/compass-base.webp` | `art/journey/compass-base.webp` |
+| `/art/journey/compass-needle.webp` | `art/journey/compass-needle.webp` |
+| `/art/journey/documents.webp` | `art/journey/documents.webp` |
+| `/art/journey/ets-bezel.webp` | `art/journey/ets-bezel.webp` |
+| `/art/journey/journey-wide.webp` | `art/journey/journey-wide.webp` |
+| `/art/journey/toolcase.webp` | `art/journey/toolcase.webp` |
 
 The landing pages `/va-math/` and `/bdd-timeline/` and the two `vendor/` files
 are the ones agents forget. They are triggers. So is `manifest.json`. So are
@@ -223,11 +233,11 @@ assumed.
 ### Verify the trigger
 Committed branch work, against main:
 
-    git diff --name-only main...HEAD -- "$TOPS_PWA_WORKER_FILE" index.html manifest.json icon-192.png icon-512.png va-math/index.html bdd-timeline/index.html vendor/react.production.min.js vendor/react-dom.production.min.js
+    git diff --name-only main...HEAD -- "$TOPS_PWA_WORKER_FILE" index.html manifest.json icon-192.png icon-512.png va-math/index.html bdd-timeline/index.html vendor/react.production.min.js vendor/react-dom.production.min.js art/journey/briefcase.webp art/journey/calculator.webp art/journey/calendar.webp art/journey/compass.webp art/journey/compass-base.webp art/journey/compass-needle.webp art/journey/documents.webp art/journey/ets-bezel.webp art/journey/journey-wide.webp art/journey/toolcase.webp
 
 Uncommitted working tree:
 
-    git diff --name-only HEAD -- "$TOPS_PWA_WORKER_FILE" index.html manifest.json icon-192.png icon-512.png va-math/index.html bdd-timeline/index.html vendor/react.production.min.js vendor/react-dom.production.min.js
+    git diff --name-only HEAD -- "$TOPS_PWA_WORKER_FILE" index.html manifest.json icon-192.png icon-512.png va-math/index.html bdd-timeline/index.html vendor/react.production.min.js vendor/react-dom.production.min.js art/journey/briefcase.webp art/journey/calculator.webp art/journey/calendar.webp art/journey/compass.webp art/journey/compass-base.webp art/journey/compass-needle.webp art/journey/documents.webp art/journey/ets-bezel.webp art/journey/journey-wide.webp art/journey/toolcase.webp
 
 An untracked active PWA worker is automatically a cache-bump trigger even
 though `git diff` omits it. Record this check separately:
@@ -239,7 +249,7 @@ in the handoff rather than staying silent.
 
 Drift check, every run - the list above is a copy and copies rot:
 
-    grep -n -A 12 "const ASSETS" "$TOPS_PWA_WORKER_FILE"
+    sed -n '/^const ASSETS = \[/,/^];/p' "$TOPS_PWA_WORKER_FILE"
 
 If the active PWA worker has an entry this skill does not enumerate, STOP. Flag force-mod for
 a patch. Do not improvise a mapping.
@@ -305,18 +315,19 @@ after merge.
 
 ### Hosted Netlify control-plane manifest boundary
 
-The deterministic public builder owns exactly the 22-file `dist` tree defined
-by its closed allowlist. That inventory remains the complete build-owned public
+The deterministic public builder owns exactly the 74-file `dist` tree defined
+by its closed allowlist in `scripts/build-public.js`, matched exactly by
+`EXPECTED_PUBLIC_FILES` in `scripts/sw-privacy-regression.js`. That inventory remains the complete build-owned public
 runtime tree. Root `netlify.toml` is control-plane configuration: it must remain
 outside `dist`, outside the public allowlist, and outside every local public
-build. Never describe a hosted control-plane record as a 23rd runtime file.
+build. Never describe a hosted control-plane record as a 75th runtime file.
 
 For an immutable Git-backed Netlify candidate, bind the deploy ID to the exact
 candidate commit and tree, resolve the effective publish directory as exactly
 `dist`, and obtain the final hosted file manifest. Classify that manifest as a
 closed union of two disjoint sets:
 
-1. `RUNTIME_RECORDS`: exactly one hosted record for each of the 22 build-owned
+1. `RUNTIME_RECORDS`: exactly one hosted record for each of the 74 build-owned
    `dist` files, with matching route path, byte size, and SHA-1.
 2. `CONTROL_PLANE_RECORDS`: exactly one `/netlify.toml` record, with byte size
    and SHA-1 matching root `netlify.toml` from the exact candidate commit.
@@ -328,20 +339,27 @@ form matches it; preserve the candidate route as the asserted runtime identity.
 Two possible candidates, case-fold collisions, duplicate raw records, or an
 unresolved path make the classification ambiguous and are a STOP.
 
-Compute runtime size and SHA-1 evidence from the validated 22-file candidate
+Compute runtime size and SHA-1 evidence from the validated 74-file candidate
 `dist` tree. Compute the control-plane size and SHA-1 from root `netlify.toml`
 at the frozen candidate commit, not from an unrelated checkout or current
 working tree. Confirm that `/netlify.toml` is absent from `dist`; a locally
 published copy fails even when its bytes match. The hosted manifest must contain
-exactly 23 classified records: the 22 runtime records plus the one control-plane
+exactly 75 classified records: the 74 runtime records plus the one control-plane
 record. Missing, duplicate, mismatched, ambiguous, wrong-commit, locally
 published, or additional records are a STOP. A provider behavior change is not
 authority to widen either set; return through force-mod and Commander approval.
 
 This hosted boundary is deploy-discipline evidence. The validation-gate exact
-22-file local build PASS does not certify the hosted control-plane union, and a
-hosted 23-record PASS does not permit `netlify.toml` in local public output.
+74-file local build PASS does not certify the hosted control-plane union, and a
+hosted 75-record PASS does not permit `netlify.toml` in local public output.
 Record both results separately in the handoff.
+
+Current inventory reconciliation (2026-10-25): the already published closed
+allowlist evolved from 22 to 24, then 64, then 74 files. See
+`intel/wi-release-20261013/INVENTORY-RECONCILIATION.md` for merged provenance.
+The 2026-10-21 deploy-bound archive for commit `db2ce3b` verified all 74 runtime
+records plus the separate control-plane record. This documentation correction
+does not authorize new paths or relax any validation or publication gate.
 
 ### Commander ruling - current pre-main candidate
 
@@ -779,6 +797,10 @@ No application, browser, provider, hosted, rollback, commit, push, merge,
 deployment, production, or release action was executed or certified.
 
 ## VERSION 1.9 GOVERNANCE CALIBRATION
+
+Historical calibration: the following 22/23 counts describe the tested
+2026-09-03 inventory, not the current 74/75 inventory above. These historical
+results are preserved; this reconciliation does not claim they were rerun.
 
 - **DD-19-1:** DD-18-1 through DD-18-4 and validation-gate VG-112 remain PASS;
   the local build-owned public tree remains exactly 22 files and root
