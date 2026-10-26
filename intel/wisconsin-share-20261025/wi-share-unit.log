@@ -1,0 +1,1 @@
+PASS 9 targeted cases: native payload, cancel, clipboard, native error fallback, missing clipboard, denied clipboard, repeat clicks, accessible status, placement. No member state or page URL read.

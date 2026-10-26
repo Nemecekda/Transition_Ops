@@ -7638,6 +7638,38 @@ function WisconsinNextChapter(props) {
       TOPS_WISCONSIN_COHORT_EMPLOYERS.map(function(item) { return React.createElement("div", { key: item.id, style: { padding: "10px 0", borderTop: "1px solid " + C.border } }, React.createElement("h4", { style: { margin: "0 0 4px", fontSize: 17 } }, item.name), React.createElement("p", { style: { margin: "4px 0", color: C.textSecondary } }, item.description), link(item)); })),
     TOPS_WISCONSIN_SETTLE_IN.length > 0 && React.createElement("details", { id: "tops-wisconsin-settle-in", style: section }, React.createElement("summary", { style: summary }, "Make Wisconsin home"), TOPS_WISCONSIN_SETTLE_IN.map(function(item) { return React.createElement("div", { key: item.id }, React.createElement("p", { style: { margin: "4px 0 8px" } }, item.body), item.note && React.createElement("p", { style: { margin: "4px 0 8px", fontSize: 14, color: C.textSecondary } }, item.note), link(item)); })));
 }
+function WisconsinGuideShare(props) {
+  var [status, setStatus] = useState(""), [manual, setManual] = useState(false), [busy, setBusy] = useState(false), pending = React.useRef(false);
+  var url = "https://transitionops.org/wisconsin";
+  async function shareGuide() {
+    if (pending.current) return;
+    pending.current = true; setBusy(true); setStatus(""); setManual(false);
+    try {
+      if (typeof navigator.share === "function") {
+        try {
+          await navigator.share({ title: "Wisconsin transition guide", text: "Wisconsin transition guide for veterans, Guard/Reserve and families", url: url });
+          setStatus("Share options closed.");
+          return;
+        } catch (error) {
+          if (error && error.name === "AbortError") { setStatus("Sharing canceled."); return; }
+        }
+      }
+      try {
+        if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") throw new Error("Clipboard unavailable");
+        await navigator.clipboard.writeText(url);
+        setStatus("Link copied.");
+      } catch (error) {
+        setManual(true);
+        setStatus("Select and copy the guide link below.");
+      }
+    } finally { pending.current = false; setBusy(false); }
+  }
+  return React.createElement("div", { id: "tops-wisconsin-share", style: { margin: "8px 0 12px" } },
+    React.createElement("button", { id: "tops-wisconsin-share-button", type: "button", style: props.button, disabled: busy, "aria-describedby": "tops-wisconsin-share-status", onClick: shareGuide }, busy ? "Opening share options..." : "Share Wisconsin guide"),
+    React.createElement("p", { id: "tops-wisconsin-share-status", role: "status", "aria-live": "polite", "aria-atomic": "true", style: { margin: "4px 0", fontSize: 14 } }, status),
+    manual && React.createElement("label", { htmlFor: "tops-wisconsin-share-url", style: { display: "block", fontSize: 14 } }, "Wisconsin guide link"),
+    manual && React.createElement("input", { id: "tops-wisconsin-share-url", type: "text", readOnly: true, value: url, style: props.field, onFocus: function(event) { event.target.select(); } }));
+}
 function StateLocalHelp(props) {
   var C = props.colors, context = topsStateHelpContext(props.context), items = topsStateHelpItems(context), main = items[0], [review, setReview] = useState(null), [replace, setReplace] = useState(false), [message, setMessage] = useState(""), [stepReady, setStepReady] = useState(false);
   var button = { display: "inline-flex", alignItems: "center", minHeight: 44, minWidth: 44, maxWidth: "100%", boxSizing: "border-box", padding: "10px 14px", margin: "4px 8px 4px 0", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgElevated, font: "inherit", lineHeight: 1.5, textDecoration: "none", cursor: "pointer" };
@@ -7656,6 +7688,7 @@ function StateLocalHelp(props) {
         React.createElement("p", { style: { margin: "8px 0 16px", fontSize: 14, color: C.textSecondary } }, "Veterans and families welcome. No resume or separation date needed to explore."),
         React.createElement("nav", { "aria-label": "Wisconsin starting points", style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))", gap: 8 } },
           [["work", "Find work and training", "Employers, career support and training options"], ["benefits", "Explore my benefits", "State benefits and help with claims"], ["moving", "Plan my move", "Housing, moving and tax guidance"], ["start", "Find Wisconsin help", "Find a county or tribal veterans office"]].map(function(item) { return React.createElement("button", { key: item[0], id: "tops-wisconsin-start-" + item[0], type: "button", onClick: function() { choose("need", item[0]); focus("tops-state-help-next"); }, style: Object.assign({}, button, { display: "block", width: "100%", margin: 0, textAlign: "left", padding: "14px", borderRadius: 10 }) }, React.createElement("span", { style: { display: "block", fontWeight: 700 } }, item[1]), React.createElement("span", { style: { display: "block", fontSize: 14, color: C.textSecondary, marginTop: 4 } }, item[2])); })))),
+    context.area === "wi" && context.need === "start" && React.createElement(WisconsinGuideShare, { button: button, field: field }),
     context.area === "wi" && context.need === "start" && React.createElement("button", { id: "tops-wisconsin-all-states", type: "button", style: button, onClick: function() { choose("area", "national"); focus("tops-state-help-heading"); } }, "Explore help in any state"),
     context.area === "wi" && context.need !== "start" && React.createElement("button", { id: "tops-wisconsin-start-back", type: "button", style: button, onClick: function() { choose("need", "start"); focus("tops-state-help-heading"); } }, "Back to Wisconsin starting points"),
     React.createElement(context.area === "wi" && context.need === "start" ? "details" : "div", { style: { marginBottom: 12 } },
