@@ -1,0 +1,49 @@
+{
+  "cache": 302,
+  "indexSHA256": "62d869b32c770515f4b7cd2c6b8eb4ca49a2bafc91960217cb6d73fc5f93b1a6",
+  "workerSHA256": "2c716f240a1db87e121422ed112aeb9e2a3962a6c1b177c18cce1361d0ea8a39",
+  "checks": {
+    "wi-share-a11y.log": {
+      "sha256": "b79f8e317c55cba8f7b314981ee79e79df22acb28558be71954572c4113b3f8e",
+      "bytes": 104445,
+      "exit": 0
+    },
+    "wi-share-structure.log": {
+      "sha256": "f4073e4d3d23cc8615509aa1fef0a92ad325c95202d3b9d959b7f818bded8551",
+      "bytes": 119,
+      "exit": 0
+    },
+    "wi-share-build.log": {
+      "sha256": "e978091d789d3035df7db9531ea484918d037b04b9a89871a747a6e8e31ba98e",
+      "bytes": 105,
+      "exit": 0
+    },
+    "wi-share-spend.log": {
+      "sha256": "97de30e5a104a36dce9898396364b9a23f422d1f31e0d06e2f17fdd95d6c0471",
+      "bytes": 953,
+      "exit": 0
+    },
+    "wi-share-privacy.log": {
+      "sha256": "22ec720fe4175f242190bdb862a50f03fc179dd1b2a2f4b9bf22b21b36ebf72d",
+      "bytes": 4266,
+      "exit": 0
+    },
+    "wi-share-sw.log": {
+      "sha256": "eb9c8dc4791f939c7764a80a6a140a601ed32b9bd3752e6a8686600f0e0887a7",
+      "bytes": 6833,
+      "exit": 0
+    },
+    "wi-share-browser.log": {
+      "sha256": "3ad8f0a894b66a0b3119a5578647f947916eccebf2336f7e48e83f3a361fa3f3",
+      "bytes": 217,
+      "exit": 0
+    },
+    "wi-share-openai.log": {
+      "sha256": "18e5448ce6da35682f3e3fc277e647c66dc1d9a9269d772ec7b85f2cf26910a2",
+      "bytes": 12791,
+      "exit": 0
+    }
+  },
+  "manualAT": "UNPERFORMED",
+  "hosted": "PENDING"
+}
