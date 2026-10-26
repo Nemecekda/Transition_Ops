@@ -1,0 +1,39 @@
+{
+  "verdict": "LOCAL AUTOMATION PASS",
+  "checks": {
+    "targeted": {
+      "exitCode": 0,
+      "sha256": "e9fb3b3bc6cf317734c404b2c219f81a16d5b2047f52a727c59adc04568246c8"
+    },
+    "privacy": {
+      "exitCode": 0,
+      "sha256": "22ec720fe4175f242190bdb862a50f03fc179dd1b2a2f4b9bf22b21b36ebf72d"
+    },
+    "a11y": {
+      "exitCode": 0,
+      "sha256": "f6e217fa4d829efc77806a373af58f4836aba8ac7fa1a063ffa929786f777cb0"
+    },
+    "openai": {
+      "exitCode": 0,
+      "sha256": "18e5448ce6da35682f3e3fc277e647c66dc1d9a9269d772ec7b85f2cf26910a2"
+    },
+    "sw": {
+      "exitCode": 0,
+      "sha256": "6bdf8dd3d9d7a3d76a5e76b99188173637f522a27eb251b48eceaa5e740ad3cb"
+    },
+    "spend": {
+      "exitCode": 0,
+      "sha256": "97de30e5a104a36dce9898396364b9a23f422d1f31e0d06e2f17fdd95d6c0471"
+    },
+    "build": {
+      "exitCode": 0,
+      "sha256": "e978091d789d3035df7db9531ea484918d037b04b9a89871a747a6e8e31ba98e"
+    },
+    "structure": {
+      "exitCode": 0,
+      "sha256": "fa5faf92a62c9c0df6ed66a976e290b7e8138b8e7507c9edaea6a9ebca2197c9"
+    }
+  },
+  "manualAT": "UNPERFORMED",
+  "hosted": "UNPERFORMED"
+}
