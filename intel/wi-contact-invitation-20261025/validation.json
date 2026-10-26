@@ -1,0 +1,42 @@
+{
+  "verdict": "LOCAL AUTOMATION PASS",
+  "base": "b010022dc5b0e3063172a42da45320cef31e0629",
+  "cache": 305,
+  "indexSha256": "21c811cf80a3852282647e33f7dea5f18b75794f48f845bbb98e700b021c716e",
+  "checks": {
+    "wi-invitation-targeted.log": {
+      "exitCode": 0,
+      "sha256": "968c04d626b1c60ee419b235eb8105e9dfa4537d19d6e526690b6120043056d6"
+    },
+    "wi-invitation-openai.log": {
+      "exitCode": 0,
+      "sha256": "18e5448ce6da35682f3e3fc277e647c66dc1d9a9269d772ec7b85f2cf26910a2"
+    },
+    "wi-invitation-a11y.log": {
+      "exitCode": 0,
+      "sha256": "53568497b234f27d9d74c705a4f07d5e5a06b846ad7ec91eeb99046792574d31"
+    },
+    "wi-invitation-privacy.log": {
+      "exitCode": 0,
+      "sha256": "22ec720fe4175f242190bdb862a50f03fc179dd1b2a2f4b9bf22b21b36ebf72d"
+    },
+    "wi-invitation-sw.log": {
+      "exitCode": 0,
+      "sha256": "b6c2108ebfa4c622371b03cd5ea7b54407e1df843d4fd70ae9ce0746c64707c3"
+    },
+    "wi-invitation-build.log": {
+      "exitCode": 0,
+      "sha256": "e978091d789d3035df7db9531ea484918d037b04b9a89871a747a6e8e31ba98e"
+    },
+    "wi-invitation-spend.log": {
+      "exitCode": 0,
+      "sha256": "97de30e5a104a36dce9898396364b9a23f422d1f31e0d06e2f17fdd95d6c0471"
+    },
+    "wi-invitation-structure.log": {
+      "exitCode": 0,
+      "sha256": "873a5084104d5c802de70be8d98bb7e25373ba8b0f1a4558d3ab8d3668e6d0e5"
+    }
+  },
+  "manualAT": "UNPERFORMED",
+  "hosted": "UNPERFORMED"
+}
