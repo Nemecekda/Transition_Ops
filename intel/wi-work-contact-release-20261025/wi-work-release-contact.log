@@ -1,0 +1,6 @@
+PASS actual message bounds, control/header injection refusal, explicit consent, withdrawal independent of hidden interest fields
+PASS blank optional form, booking independence, consent/review/focus, exact mailto, copy fallback, edit invalidation, update/withdraw, clear/refresh, labels/targets/overflow, no storage writes 320 professional
+PASS blank optional form, booking independence, consent/review/focus, exact mailto, copy fallback, edit invalidation, update/withdraw, clear/refresh, labels/targets/overflow, no storage writes 320 tactical
+PASS blank optional form, booking independence, consent/review/focus, exact mailto, copy fallback, edit invalidation, update/withdraw, clear/refresh, labels/targets/overflow, no storage writes 375 professional
+PASS blank optional form, booking independence, consent/review/focus, exact mailto, copy fallback, edit invalidation, update/withdraw, clear/refresh, labels/targets/overflow, no storage writes 375 tactical
+TALENT CONTACT PASS:4 phone/theme cases, no email sent/booking requested/provider POSTs; all external actions intercepted.

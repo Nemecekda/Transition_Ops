@@ -40,7 +40,7 @@ const server=http.createServer((req,res)=>{const p=path.join(root,req.url.split(
    if(need!=='start'){await click('tops-wisconsin-start-back');assert.equal(await ev('document.activeElement.id'),'tops-state-help-heading');}
   }
   await expand('tops-talent-contact');
-  assert.match(await ev('document.querySelector("#tops-talent-contact > summary").textContent'),/career opportunities/);
+  assert.match(await ev('document.querySelector("#tops-talent-contact > summary").textContent'),/Dean, VBS recruiter/);
   assert.match(await ev('document.getElementById("tops-talent-notice").textContent'),/you decide whether to send/);
   assert.equal(await ev('document.getElementById("tops-talent-booking").href'),'https://calendly.com/dean-veteranbridgesolutions/30min');
   assert.equal(await ev('document.querySelectorAll("#tops-talent-contact").length'),1);
