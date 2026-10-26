@@ -30,9 +30,27 @@ const server=http.createServer((req,res)=>{const p=new URL(req.url,'http://local
   await ev(`localStorage.clear();localStorage.setItem('tops_theme',${JSON.stringify(theme)});`);await load('/');await wait('!!document.getElementById("tops-first-visit")');await click('tops-first-veteran');await textClick('Continue without a resume');await wait('!!document.getElementById("tops-talent-contact")');
   assert.equal(await ev('document.getElementById("tops-talent-contact").open'),false);
   await ev('document.querySelector("#tops-talent-contact summary").focus()');await c.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',unmodifiedText:'\r',windowsVirtualKeyCode:13,nativeVirtualKeyCode:13});await c.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13,nativeVirtualKeyCode:13});await frames();assert.equal(await ev('document.getElementById("tops-talent-contact").open'),true);
+  assert.equal(await ev('document.getElementById("tops-talent-email-section").open'),false);
+  assert.equal(await ev('document.getElementById("tops-talent-email").checkVisibility()'),false);
+  await ev('document.querySelector("#tops-talent-email-section > summary").click()');await frames();
+  assert.equal(await ev('document.getElementById("tops-talent-extra").open'),false);
+  assert.equal(await ev('document.getElementById("tops-talent-name").checkVisibility()'),false);
+  assert.equal(await ev('document.getElementById("tops-talent-location").checkVisibility()'),true);
+  await ev('document.querySelector("#tops-talent-extra > summary").click()');await frames();
   const before=await disk();
   await ev(`window.contactClicks=[];window.contactCopies=[];window.contactWrites=[];window.contactDenied=false;document.addEventListener('click',e=>{const a=e.target.closest('a');if(a&&(a.href.startsWith('mailto:')||a.href.startsWith('https://calendly.com/'))){e.preventDefault();contactClicks.push(a.href);}},true);Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async value=>{if(contactDenied)throw Error('synthetic denial');contactCopies.push(value);}}});const set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){contactWrites.push([k,v]);return set.call(this,k,v);};`);
   assert.deepEqual(await ev('[...document.querySelectorAll("#tops-talent-contact input:not([type=checkbox])")].map(n=>n.value)'),['','','','','']);assert.equal(await ev('document.getElementById("tops-talent-permission").checked'),false);
+  await type('tops-journey-role','SYNTHETIC Operations');
+  assert.equal(await ev('document.getElementById("tops-talent-roles").value'),'');
+  await click('tops-talent-use-role');
+  assert.equal(await ev('document.getElementById("tops-talent-roles").value'),'SYNTHETIC Operations');
+  assert.equal(await ev('document.getElementById("tops-talent-permission").checked'),false);
+  assert.equal(await disk(),before);
+  if(width===375&&theme==='professional'){
+   await ev('document.getElementById("tops-talent-extra").open=false;document.getElementById("tops-talent-contact").scrollIntoView({block:"start"})');
+   fs.writeFileSync('/tmp/dean-contact-375.png',Buffer.from((await c.send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+   await ev('document.getElementById("tops-talent-extra").open=true');
+  }
   assert.deepEqual(await ev('(()=>{const a=document.getElementById("tops-talent-booking");return [a.href,a.target,a.rel,a.referrerPolicy];})()'),['https://calendly.com/dean-veteranbridgesolutions/30min','_blank','noopener noreferrer','no-referrer']);
   await click('tops-talent-booking');assert.equal(await ev('contactClicks.length'),1);assert.equal(await ev('document.getElementById("tops-talent-permission").checked'),false);
   await click('tops-talent-prepare');assert.equal(await ev('document.getElementById("tops-talent-error").getAttribute("role")'),'alert');assert.equal(await ev('!!document.getElementById("tops-talent-open")'),false);
