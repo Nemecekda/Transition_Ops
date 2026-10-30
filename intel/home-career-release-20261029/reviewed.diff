@@ -1,0 +1,81 @@
+diff --git a/index.html b/index.html
+index 7ce3fec..1fbe9a4 100644
+--- a/index.html
++++ b/index.html
+@@ -868,6 +868,57 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
+   #tops-state-help[data-state-area="wi"] #tops-state-help-welcome { padding: 4px 12px !important; margin-bottom: 6px !important; }
+   #tops-state-help[data-state-area="wi"] > article { padding: 12px !important; }
+ }
++/* Home design: presentation only; shared planning and tool behavior remain intact. */
++.tops-home-shell .content-area{padding:26px 40px 72px!important}
++.tops-home-shell .tops-app-header{padding:26px 40px 20px!important}
++.tops-home-shell .bottom-nav{margin-left:40px;margin-right:40px}
++.tops-home-shell #tops-page-orientation{margin-bottom:18px!important}
++.tops-home-shell #tops-page-title{font-size:18px!important;letter-spacing:-.02em}
++.tops-home-shell .tops-home-support-row{margin-bottom:26px;gap:8px 28px}
++.tops-home-shell .tops-next-move{border-radius:24px!important;box-shadow:0 12px 36px #142c2010!important;margin-bottom:28px!important}
++.tops-home-shell .tops-next-move-main{padding:38px 40px!important;background:linear-gradient(120deg,#183b30,#294b3b);border-radius:24px 24px 0 0}
++.tops-home-shell .tops-next-move-main>h2{font:650 11px/1.5 system-ui,sans-serif!important;letter-spacing:.16em!important;color:#d7c991!important;margin-bottom:18px!important}
++.tops-home-shell .tops-next-move-heading{font:400 clamp(32px,4.4vw,48px)/1.13 Georgia,"Times New Roman",serif!important;letter-spacing:-.035em;max-width:25ch}
++.tops-home-shell .tops-next-move-continue .tops-next-move-heading{font-size:clamp(29px,3.6vw,40px)!important;max-width:34ch}
++.tops-home-shell .tops-next-move-main>p,.tops-home-shell .tops-next-move-context{line-height:1.7!important;max-width:62ch}
++.tops-home-shell .tops-next-move-actions{gap:12px!important;margin-top:22px}
++.tops-home-shell .tops-next-move-actions>button,.tops-home-shell .tops-next-move-actions>a{border-radius:10px!important;min-height:48px;padding:13px 20px!important;font-weight:600!important}
++.tops-home-shell .tops-next-move-actions>.tops-move-primary{background:#eee4c5!important;color:#183b30!important;border-color:#eee4c5!important}
++.tops-home-shell .tops-loop-utilities{padding:10px 40px}
++.tops-home-shell .tops-loop-meta{padding-left:40px;padding-right:40px}
++.tops-home-shell .tops-home-toolkit{padding-top:10px}
++.tops-home-shell .tops-home-search{margin-bottom:30px!important}
++.tops-home-shell .tops-home-search input{border-radius:12px!important;box-shadow:none!important}
++.tops-home-shell .tops-quick-tools>div:last-child{gap:14px!important}
++.tops-home-shell .tops-quick-tools>div:last-child>button{min-height:108px!important;padding:22px 20px!important;border-radius:16px!important;background:var(--product-surface)!important;align-items:flex-start;box-shadow:0 3px 14px #15251b04;font-size:16px!important;font-weight:600;letter-spacing:-.02em}
++.tops-home-shell .tops-quick-tools>div:last-child>button>span:last-child{margin-top:7px}
++.tops-home-shell #tops-home-tools-title{font-size:22px!important;letter-spacing:-.03em;margin-bottom:18px!important}
++.tops-home-shell :is(button,a,summary,input,select,textarea):focus-visible{outline:3px solid #a78324!important;outline-offset:4px}
++.tops-home-shell .tops-next-move-main :is(button,a,summary,input,select,textarea):focus-visible{outline-color:#eee4c5!important}
++@media(max-width:620px){.tops-home-shell .content-area{padding:18px 18px 100px!important}.tops-home-shell .tops-app-header{padding:20px 18px 14px!important}.tops-home-shell .bottom-nav{margin:0}.tops-home-shell .tops-home-support-row{margin-bottom:22px}.tops-home-shell .tops-next-move-main{padding:27px 24px!important}.tops-home-shell .tops-next-move-heading{font-size:34px!important}.tops-home-shell .tops-next-move-continue .tops-next-move-heading{font-size:29px!important}.tops-home-shell .tops-next-move-actions>button,.tops-home-shell .tops-next-move-actions>a{max-width:100%;white-space:normal}.tops-home-shell .tops-loop-utilities{padding:8px 24px}.tops-home-shell .tops-loop-meta{padding-left:24px;padding-right:24px}.tops-home-shell .tops-quick-tools>div:last-child{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}.tops-home-shell .tops-quick-tools>div:last-child>button{padding:17px 14px!important;font-size:14px!important;gap:10px;min-height:100px!important}}
++@media(forced-colors:active){.tops-home-shell .tops-next-move-main{background:Canvas;color:CanvasText}.tops-home-shell .tops-next-move-main>h2,.tops-home-shell .tops-next-move-heading{color:CanvasText!important}.tops-home-shell .tops-next-move-actions>.tops-move-primary{background:ButtonFace!important;color:ButtonText!important;border-color:ButtonText!important}.tops-home-shell .tops-next-move{border:1px solid CanvasText!important}}
++/* Career visual companion: scoped to the existing journey, not Resume or other tools. */
++.tops-career-shell .content-area{padding:26px 40px 72px!important}
++.tops-career-shell .tops-app-header{padding:26px 40px 20px!important}
++.tops-career-shell .bottom-nav{margin-left:40px;margin-right:40px}
++.tops-career-shell .tops-career-workspace{padding:36px 40px;border-radius:24px!important;background:var(--product-surface)!important;box-shadow:0 12px 36px #142c200b!important;border:1px solid var(--t-border)}
++.tops-career-shell .tops-career-workspace #tops-career-start-heading{font:400 clamp(32px,4.2vw,46px)/1.13 Georgia,"Times New Roman",serif!important;letter-spacing:-.035em;max-width:28ch;margin-bottom:18px}
++.tops-career-shell .tops-career-lede{font-size:17px;line-height:1.65!important;color:var(--product-muted)}
++.tops-career-shell .tops-career-entry-options{gap:14px;margin:26px 0}
++.tops-career-shell .tops-career-entry-options>button{padding:24px!important;border-radius:16px!important;min-height:120px}
++.tops-career-shell .tops-career-entry-options>button:first-child{background:#183b30!important;color:#f8f8ef!important;border-color:#183b30!important}
++.tops-career-shell .tops-career-entry-options>button:first-child span{color:#f8f8ef!important}
++.tops-career-shell .tops-career-entry-options>button strong{font-size:19px!important;letter-spacing:-.025em}
++.tops-career-shell .tops-career-entry-options>button span{font-size:14px;line-height:1.55}
++.tops-career-shell .tops-career-context{padding-bottom:18px;margin-bottom:20px;border-bottom:1px solid var(--t-border)}
++.tops-career-shell .tops-career-workspace .tops-career-resume{border-radius:16px;padding:24px 28px;border-left:3px solid #b79236}
++.tops-career-shell .tops-career-decision{border-radius:18px;background:var(--t-bg-card);padding:26px 28px;box-shadow:none}
++.tops-career-shell :is(#tops-career-search-next,#tops-career-next-after-completion,#tops-journey-review-open:not(.tops-career-secondary)){background:#183b30!important;color:#f8f8ef!important;border-color:#183b30!important}
++.tops-career-shell .tops-career-workspace .tops-career-goal{box-shadow:none!important}
++.tops-career-shell .tops-career-workspace>details>summary{font-weight:550;font-size:14px;min-height:48px}
++.tops-career-shell .tops-career-workspace :is(button,a,summary,input,select,textarea):focus-visible{outline:3px solid #a78324!important;outline-offset:4px}
++@media(max-width:620px){.tops-career-shell .content-area{padding:18px 18px 100px!important}.tops-career-shell .tops-app-header{padding:20px 18px 14px!important}.tops-career-shell .bottom-nav{margin:0}.tops-career-shell .tops-career-workspace{padding:26px 22px}.tops-career-shell .tops-career-workspace #tops-career-start-heading{font-size:34px!important}.tops-career-shell .tops-career-entry-options>button{padding:20px!important;min-height:100px}.tops-career-shell .tops-career-decision,.tops-career-shell .tops-career-workspace .tops-career-resume{padding:22px 20px}}
++@media(forced-colors:active){.tops-career-shell .tops-career-entry-options>button:first-child{background:ButtonFace!important;color:ButtonText!important;border-color:ButtonText!important}.tops-career-shell .tops-career-entry-options>button:first-child span{color:ButtonText!important}}
+ </style>
+ </head>
+ <body>
+@@ -11019,7 +11070,7 @@ function App() {
+   ); }
+ 
+   return /*#__PURE__*/React.createElement("div", {
+-    className: "tops-product-shell",
++    className: "tops-product-shell" + (activeTab === "dashboard" ? " tops-home-shell" : activeTab === "pathway" ? " tops-career-shell" : ""),
+     style: {
+       "--product-surface": C.isLight ? "#FFFEFA" : C.bgCard, "--product-forest": "#293F2F", "--product-ink": C.textPrimary, "--product-muted": C.textSecondary,
+       fontFamily: "system-ui, -apple-system, sans-serif",
+diff --git a/pwa-sw.js b/pwa-sw.js
+index f290e77..f4da4f8 100644
+--- a/pwa-sw.js
++++ b/pwa-sw.js
+@@ -1,4 +1,4 @@
+-const CACHE_NAME = "transition-ops-v305";
++const CACHE_NAME = "transition-ops-v306";
+ const CACHE_PREFIX = "transition-ops-v";
+ const NETWORK_TIMEOUT_MS = 3500;
+ 
