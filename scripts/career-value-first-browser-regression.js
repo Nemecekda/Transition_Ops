@@ -201,9 +201,9 @@ const server = http.createServer(async (req, res) => {
     assert.match(await ev('document.getElementById("tops-talent-status").textContent'), /Nothing has been sent/);
     await tap('tops-talent-edit');
     const searchContactFields = await ev('["email", "roles", "location", "note"].map(key => document.getElementById("tops-talent-" + key).value)');
-    await input('tops-job-role', '');
+    await input('tops-job-area', '');
     assert.equal(await ev('!!document.getElementById("tops-talent-email") && document.getElementById("tops-talent-email").checkVisibility()'), false);
-    await input('tops-job-role', 'Data Analyst'); await reveal('tops-talent-email');
+    await input('tops-job-area', 'Madison, WI'); await reveal('tops-talent-email');
     assert.deepEqual(await ev('["email", "roles", "location", "note"].map(key => document.getElementById("tops-talent-" + key).value)'), searchContactFields, 'temporary incomplete query preserves contact fields');
     assert.equal(calls.length, callsBeforeContactReturn);
     await reveal('tops-talent-purpose');
@@ -331,7 +331,14 @@ const server = http.createServer(async (req, res) => {
       await input('tops-job-area', area);
       assert.equal(await ev('!!document.getElementById("tops-vbs-cohort")'), false, 'unsupported district or incomplete format does not imply Wisconsin: ' + area);
       assert.equal(await ev('[...document.querySelectorAll("#tops-search-skillbridge a")].some(node => node.href.startsWith("https://vets2pm.zohorecruit.com/careers"))'), false);
-      assert.ok(await ev('[...document.querySelectorAll("#tops-search-skillbridge a")].some(node => node.href === "https://www.skillbridge.mil/locations" && node.checkVisibility())'), 'official discovery stays available outside the Wisconsin district list');
+      if (['53300', '53600', '60601', 'ZIP 53202'].includes(area)) {
+        assert.ok(await ev('[...document.querySelectorAll("#tops-search-skillbridge a")].some(node => node.href === "https://www.skillbridge.mil/locations" && node.checkVisibility())'), 'official discovery stays available for valid queries outside the Wisconsin district list');
+      } else {
+        assert.equal(await ev('!!document.getElementById("tops-search-skillbridge")'), false, 'invalid numeric ZIP syntax does not prepare query resources');
+        assert.equal(await ev('document.getElementById("tops-federal-search").disabled'), false);
+        await tap('tops-federal-search'); await wait('document.activeElement.id === "tops-job-area"');
+        assert.deepEqual(await ev('(() => { const field = document.getElementById("tops-job-area"), error = document.getElementById("tops-job-search-error"); return { visible: error.checkVisibility(), role: error.getAttribute("role"), invalid: field.getAttribute("aria-invalid"), associated: (field.getAttribute("aria-describedby") || "").split(" ").includes(error.id) }; })()'), { visible: true, role: 'alert', invalid: 'true', associated: true });
+      }
       assert.equal(calls.length, zipCalls);
     }
     await input('tops-job-area', '53202-1234'); await tap('tops-federal-search'); await wait('!!document.getElementById("tops-federal-results")');

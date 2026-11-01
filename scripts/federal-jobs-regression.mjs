@@ -10,6 +10,16 @@ r=await h(req());assert.equal(r.status,200);assert.match(r.headers.get('cache-co
 const u=new URL(last.url);assert.equal(u.origin,'https://data.usajobs.gov');assert.equal(u.pathname,'/api/search');assert.equal(u.searchParams.get('WhoMayApply'),'Public');assert.equal(u.searchParams.get('ResultsPerPage'),'10');assert.equal(last.opts.redirect,'error');assert.equal(last.opts.headers['Authorization-Key'],config.USAJOBS_API_KEY);
 for(const bad of [{keyword:'x',location:'   '},{keyword:'x',location:'',resume:'x'},{keyword:'x'.repeat(121),location:''},{keyword:'',location:''},{keyword:'x',location:'x'.repeat(81)},{keyword:'<x>',location:''},{keyword:'x'.repeat(3000),location:''}])assert.equal((await h(req(bad))).status,400);
 assert.equal(calls,1);assert.equal((await h(req(undefined,'https://evil.invalid'))).status,403);
+// Location-only keeps the exact two-string payload and omits upstream Keyword.
+assert.equal(u.searchParams.get('Keyword'),'Analyst');assert.equal(u.searchParams.get('LocationName'),'Madison, WI');
+for(const [keyword,location] of [['','54211'],['  ','Madison'],['','54211-1234'],['Data Analyst','54211']]){
+ const before=calls;r=await h(req({keyword,location}));assert.equal(r.status,200);assert.equal(calls,before+1);
+ const target=new URL(last.url);assert.equal(target.searchParams.get('LocationName'),location);assert.equal(target.searchParams.has('Keyword'),!!keyword.trim());if(keyword.trim())assert.equal(target.searchParams.get('Keyword'),keyword.trim());
+ assert.deepEqual([...target.searchParams.keys()].sort(),[...(keyword.trim()?['Keyword']:[]),'LocationName','ResultsPerPage','Page','Fields','WhoMayApply'].sort());assert.equal(target.searchParams.has('Radius'),false);
+}
+const afterLocationSearches=calls;
+for(const bad of [{keyword:'',location:''},{keyword:'',location:'  '},{keyword:'',location:'542'},{keyword:'',location:'!!!'},{keyword:'',location:'<WI>'},{keyword:'',location:'WI\nsecret'},{keyword:[],location:'54211'},{keyword:null,location:'54211'},{location:'54211'},{keyword:'',location:54211},{keyword:'',location:'54211',resume:'private'},{keyword:'x'.repeat(121),location:'54211'},{keyword:'x\nsecret',location:'54211'},{keyword:'<x>',location:'54211'}])assert.equal((await h(req(bad))).status,400);
+assert.equal((await h(req({keyword:'',location:'54211'},'https://evil.invalid'))).status,403);assert.equal(calls,afterLocationSearches);
 for(const url of ['https://www.usajobs.gov.evil.invalid/job/123','javascript:alert(1)','https://x@www.usajobs.gov/job/123','https://www.usajobs.gov/job/123?redirect=evil','http://www.usajobs.gov/job/123','https://www.usajobs.gov/else/123'])assert.equal(officialURL(url),null);
 assert(officialURL('https://www.usajobs.gov/GetJob/ViewDetails/123'));assert.equal(plain('<img src=x>text'),'text');
 const make=(fetchImpl,env=config)=>makeFederalJobsHandler({fetchImpl,env:()=>env,now:()=>new Date('2026-10-09T12:00:00Z'),timeoutMs:10});
