@@ -1,6 +1,6 @@
 # Value-first Career release - source and scope
 
-2026-11-01. Candidate on `codex/value-first-20261101`, based on published merge `e37233901df331597f6f787166a194b68f6c0fbc`. Initial building and preview authority was extended by the user's explicit "keep going one more time and then publish" instruction. This builder prepares the local commit, validation and rollback; the parent owns publication. Prior runtime and resume behavior are preserved. The active PWA cache advances from 306 to 307 for this release. No provider, account, tracking, delivery backend or spend changes.
+2026-11-01. Candidate on `codex/value-first-20261101`, based on published merge `e37233901df331597f6f787166a194b68f6c0fbc`. Initial building and preview authority was extended by the user's explicit "keep going one more time and then publish" instruction, followed by the requested learning-resource recommendations. This builder prepares the local commit, validation and rollback; the parent owns publication. Prior runtime and resume behavior are preserved. The active PWA cache advances from production 306 through preview 307 to corrected candidate 308. No new server/API provider integration, account creation, tracking, delivery backend or spend changes.
 
 ## Source evidence supplied by parent research
 
@@ -18,7 +18,7 @@ The user directly clarified November 1 that Kriete Trucking, Wisconsin Managemen
 
 Actual Claude review was relayed by parent: lead with role/location searches, no scraped/stale invented vacancies, separate employer route, and put the labelled VBS cohort after neutral sources. Adaptation preserves the existing authorized USAJOBS integration when available, with original source/eligibility and stale-response controls; no new listing provider is introduced.
 
-Learning cards reuse `TOPS_CAREER_LEARNING` and its exact role mapping, description, cost and eligibility conditions. They do not claim an inferred skills gap, certification, hiring outcome or a financial benefit stack. Unmapped roles receive a truthful resource-library fallback. No existing training claim was broadened.
+Learning cards share the fourteen-entry `TOPS_CAREER_LEARNING` catalogue. The five existing resource IDs, names, destinations, descriptions and access conditions are preserved. Nine verified additions include three general options; full source and access evidence is in `learning-catalogue.md`. Recommendations do not claim an inferred skills gap, required credential, hiring outcome, comprehensive coverage or a financial benefit stack. Unmapped or ambiguous titles receive clearly labelled general learning.
 
 ## Data and user controls
 
@@ -36,8 +36,24 @@ The parent performed visual/AX review on the retained local preview. No publicat
 
 ## Final release pass
 
-The final pass retained the reviewed app instead of adding more features. The fresh Career form has one primary content title and compact spacing, while its sharing notice stays before submit. Optional result-grouping and remote-search explanations are native disclosures. Learning costs and eligibility remain visible. On synthetic 375 x 812 layouts the primary button moved 329.56 CSS pixels upward and fits above navigation; 320 x 568 still needs scrolling. This measures layout, not intuitive usability or a real on-screen keyboard. Actual Enter submission is covered by the focused test.
+The final release adds a ZIP-based resource display hint and the requested curated learning recommendations to the reviewed app. The fresh Career form has one primary content title and compact spacing, while its sharing notice stays before submit. Optional result-grouping and remote-search explanations are native disclosures. Learning costs and eligibility remain visible with each displayed card. On synthetic 375 x 812 layouts the primary button moved 329.56 CSS pixels upward and fits above navigation; 320 x 568 still needs scrolling. This measures layout, not intuitive usability or a real on-screen keyboard. Actual Enter submission is covered by the focused test.
 
 Parent relayed the final actual Claude review from the existing chat: keep USAJOBS failure and zero-result states plain with working external-search alternatives. The focused regression covers empty, error and unavailable responses, and the existing federal function regression covers synthetic timeout and abort behavior. This is review input, not release clearance. A ZIP/radius provider expansion discussed separately is deferred; the release adds no provider or unsupported geographic matching claim.
 
-Parent freshly verified GitHub main `e37233901df331597f6f787166a194b68f6c0fbc`, production cache 306, and ready Netlify deploy `6ae493f425bdfe263ca0dc3b` on site `e8e39892-d7d1-47c0-b23a-847ed01120b8`, published October 30, 2026 at 12:56:34.577 UTC. Candidate cache 307 is fresh; the candidate-bound rollback uses 308. Publication and hosted identity checks remain the parent's responsibility.
+Parent freshly verified GitHub main `e37233901df331597f6f787166a194b68f6c0fbc`, production cache 306, and ready Netlify deploy `6ae493f425bdfe263ca0dc3b` on site `e8e39892-d7d1-47c0-b23a-847ed01120b8`, published October 30, 2026 at 12:56:34.577 UTC. Preview candidate 307 was held after the parent found that ZIP 53202 omitted Wisconsin resources. The corrected candidate advances to 308, with candidate-bound rollback 309. Publication and hosted identity checks remain the parent's responsibility.
+
+## Wisconsin ZIP display hint
+
+Primary source checked by parent and builder on November 1, 2026: [USPS three-digit ZIP Code list by area/district](https://about.usps.com/what/performance/service-performance/zip-3-by-area-district.htm). Its Wisconsin district row lists 530, 531, 532, 534, 535, 537, 538, 539, 540, 541, 542, 543, 544, 545, 546, 547, 548 and 549. The app uses only this explicit allowlist after matching a complete five-digit ZIP or ZIP+4; state-name and WI text behavior is preserved. The source is a postal district list, not an exhaustive validation of individual ZIP codes or a residency/eligibility dataset.
+
+The hint only displays the existing Wisconsin provider/VBS sections. It does not rewrite the search, perform geocoding, contact a new provider, prove that a ZIP exists, assess eligibility or imply a nearby vacancy. Provider capacity warnings, source dates and VBS roles-coming-soon wording remain unchanged. Focused cases include positive 53202, 54935, 54301 and ZIP+4; excluded prefixes 533/536, Illinois 60601 and partial/extra characters remain negative. ZIP query requests and share links preserve the entered value.
+
+## Learning selection and saved-job context
+
+The shared selector ranks explicit terms found in the available requirement excerpt first, then exact catalogue roles, then curated bounded title/family cues, then general options. It shows at most three default recommendations and quotes the actual matched term when explaining a posting signal. No frequency, demand or requirement is inferred from returned listings. Ambiguous technical communications, software maintenance and emergency-room nursing do not become marketing, trade-safety or first-response recommendations from those broad words alone.
+
+Search results and saved-job application reviews show one recommendation, with the other default choices behind "Show 2 more learning options". General options not already shown remain in "Skills useful in any role". Every card has a small practical next activity, explicit free/access and credential boundaries, and a fixed provider link. The saved-job view uses only that job's role and requirement excerpt, remains read-only, and does not substitute the global Career target or mutate the plan. No personal data is appended to provider links.
+
+The existing detailed Career learning group retains reviewed draft replacement, dismissal and save controls. Existing next-step action text remains stable; recognition uses all currently relevant catalogue matches before the top-three display limit. Thus a still-relevant saved choice survives reordering, while a changed role or requirement context still withholds an unrelated next link.
+
+Actual Claude review supplied by the parent recommended one strongest visible suggestion and collapsed alternatives, with no unverified durations. This presentation was adopted. Reviewer checks preserve the old five records and test bounded family cues and exact posting reasons; local test and hosted acceptance receipts remain separate.

@@ -298,6 +298,122 @@ const server = http.createServer(async (req, res) => {
     assert.deepEqual(await ev('["email", "roles", "location"].map(key => document.getElementById("tops-talent-" + key).value)'), ['synthetic.career@example.invalid', 'SYNTHETIC Career Operations', 'Green Bay, WI']);
     assert.equal(await plan(), before);
     assert.equal(calls.length, beforeReturn);
+
+    // Wisconsin district discovery does not validate an allocated ZIP or claim a local vacancy.
+    available = true; responseMode = 'success';
+    const beforeZIP = calls.length;
+    await load(origin + '/?tool=pathway');
+    await input('tops-career-search-role', 'Data Analyst'); await input('tops-career-search-area', '53202');
+    assert.equal(calls.length, beforeZIP, 'typing a ZIP is not a search');
+    await tap('tops-career-search-start'); await wait('!!document.getElementById("tops-federal-results")');
+    assert.equal(calls.length, beforeZIP + 1);
+    assert.deepEqual(calls.at(-1), { keyword: 'Data Analyst', location: '53202' }, 'the original ZIP is sent without inferred city or state');
+    const wisconsinLinks = ['https://vets2pm.zohorecruit.com/careers', 'https://airtechhtg.com/careers/', 'https://www.wisconsinmanagement.com/careers', 'https://krietetrucks.com/careers'];
+    const assertWisconsinDiscovery = async area => {
+      assert.equal(await ev('!!document.getElementById("tops-vbs-cohort")'), true, 'Wisconsin discovery must be offered for ' + area);
+      assert.equal(await ev('document.querySelector("#tops-vbs-cohort > summary").checkVisibility()'), true);
+      await ev('[...document.querySelectorAll("#tops-search-skillbridge details, #tops-vbs-cohort")].forEach(node => { if (!node.open) node.querySelector("summary").click(); })'); await frames();
+      const visibleLinks = await ev('[...document.querySelectorAll("#tops-search-skillbridge a, #tops-vbs-cohort a")].filter(node => node.checkVisibility()).map(node => node.href)');
+      assert.ok(wisconsinLinks.every(url => visibleLinks.includes(url)), 'provider and VBS employer resources remain accessible for ' + area);
+      assert.match(await ev('document.getElementById("tops-search-skillbridge").innerText'), /Current intake capacity is not confirmed/);
+      assert.match(await ev('document.getElementById("tops-vbs-cohort").innerText'), /not confirmed VBS or SkillBridge openings or matches for your search/);
+    };
+    await assertWisconsinDiscovery('53202');
+    await tap('tops-job-share-prepare');
+    const zipShare = new URL(await ev('document.getElementById("tops-job-share-url").value'));
+    assert.deepEqual(Object.fromEntries(zipShare.searchParams), { tool: 'pathway', view: 'jobs', role: 'Data Analyst', location: '53202' });
+    const zipCalls = calls.length;
+    for (const area of ['54935', '54301', '53202-1234', 'WI', 'Milwaukee, WI', 'Wisconsin']) {
+      await input('tops-job-area', area); await assertWisconsinDiscovery(area);
+      assert.equal(calls.length, zipCalls, 'Wisconsin discovery typing does not request jobs');
+    }
+    for (const area of ['53300', '53600', '60601', '532', '5320', '532020', '53202-123', '53202-12345', 'ZIP 53202']) {
+      await input('tops-job-area', area);
+      assert.equal(await ev('!!document.getElementById("tops-vbs-cohort")'), false, 'unsupported district or incomplete format does not imply Wisconsin: ' + area);
+      assert.equal(await ev('[...document.querySelectorAll("#tops-search-skillbridge a")].some(node => node.href.startsWith("https://vets2pm.zohorecruit.com/careers"))'), false);
+      assert.ok(await ev('[...document.querySelectorAll("#tops-search-skillbridge a")].some(node => node.href === "https://www.skillbridge.mil/locations" && node.checkVisibility())'), 'official discovery stays available outside the Wisconsin district list');
+      assert.equal(calls.length, zipCalls);
+    }
+    await input('tops-job-area', '53202-1234'); await tap('tops-federal-search'); await wait('!!document.getElementById("tops-federal-results")');
+    assert.equal(calls.length, zipCalls + 1);
+    assert.deepEqual(calls.at(-1), { keyword: 'Data Analyst', location: '53202-1234' }, 'ZIP+4 is sent exactly as entered');
+    await tap('tops-job-share-prepare');
+    const zipPlusShareURL = await ev('document.getElementById("tops-job-share-url").value');
+    assert.deepEqual(Object.fromEntries(new URL(zipPlusShareURL).searchParams), { tool: 'pathway', view: 'jobs', role: 'Data Analyst', location: '53202-1234' });
+    available = false; const beforeZIPReturn = calls.length;
+    await load(zipPlusShareURL); await wait('document.getElementById("tops-federal-status")?.textContent.includes("not connected")');
+    assert.equal(await ev('document.getElementById("tops-job-area").value'), '53202-1234');
+    await assertWisconsinDiscovery('shared ZIP+4');
+    assert.equal(calls.length, beforeZIPReturn, 'returning through a ZIP link does not submit a search');
+    assert.equal(await plan(), before);
+
+    // Free-text titles use reviewed role families; broader options remain explicitly general.
+    const learningEvidence = path.join(root, 'intel/value-first-20261101/release308/resources');
+    fs.mkdirSync(learningEvidence, { recursive: true });
+    const snapshot = async (name, selector) => {
+      await ev(`document.querySelector(${JSON.stringify(selector)}).scrollIntoView({block:"start"})`); await frames();
+      const shot = await c.send('Page.captureScreenshot', { format: 'png' });
+      fs.writeFileSync(path.join(learningEvidence, name + '.png'), Buffer.from(shot.data, 'base64'));
+    };
+    const searchCards = () => ev('[...document.querySelectorAll("[data-learning-default=search] [data-learning-id]")].map(node => ({id:node.dataset.learningId,visible:node.checkVisibility(),text:node.innerText}))');
+    const closeSearchDetails = async () => { await ev('[...document.querySelectorAll("[data-learning-more=search], [data-learning-general=search]")].forEach(node => { if (node.open) node.querySelector("summary").click(); })'); await frames(); };
+    const generalOnlyRoles = ['nurse', 'SYNTHETIC unknown occupation', 'writer', 'Satellite Communications Technician', 'Software Maintenance Engineer', 'Emergency Room Nurse'];
+    const roles = [['Senior Data Analyst', 'microsoft-powerbi'], ['recruiter', 'o2o-hr'], ['Talent Acquisition Specialist', 'o2o-hr'], ['helpdesk technician', 'microsoft-cloud-concepts'], ['IT support specialist', 'microsoft-cloud-concepts'], ['Supply Chain Analyst', 'learnfree-excel'], ['HVAC technician', 'osha-safety-guidance'], ...generalOnlyRoles.map(role => [role, 'learnfree-excel']), ['Salesforce Administrator', 'salesforce-trailhead']];
+    const resourceCalls = calls.length;
+    for (const [role, primary] of roles) {
+      await closeSearchDetails(); await input('tops-job-role', role);
+      const cards = await searchCards();
+      assert.ok(cards.length > 0 && cards.length <= 3, 'at most three default learning suggestions for ' + role);
+      assert.equal(cards[0].id, primary, 'role-family suggestion for ' + role);
+      assert.deepEqual(cards.filter(card => card.visible).map(card => card.id), [primary], 'only the first default suggestion starts visible');
+      assert.equal(await ev('document.querySelector("[data-learning-more=search]").open'), false);
+      assert.match(await ev('document.querySelector("[data-learning-more=search] > summary").textContent'), new RegExp('Show ' + (cards.length - 1) + ' more'));
+      assert.equal(await ev('(() => { const node=document.querySelector("[data-learning-general=search]"); return !node || !node.open; })()'), true, 'general extras start collapsed');
+      if (generalOnlyRoles.includes(role)) {
+        assert.deepEqual(cards.map(card => card.id), ['learnfree-excel', 'ibm-professional-skills', 'openlearn-workplace']);
+        assert.match(cards[0].text, /general option is not a match to a specific job requirement/);
+      }
+      if (role === 'Salesforce Administrator') assert.ok(!cards.some(card => card.id === 'hubspot-digital-marketing'), 'Salesforce is not matched to a sales family by substring');
+      if (role === 'Senior Data Analyst') {
+        await snapshot('search-first', '#tops-search-learning');
+        await ev('document.querySelector("[data-learning-more=search] > summary").click()'); await frames();
+        assert.equal((await searchCards()).filter(card => card.visible).length, cards.length);
+        await snapshot('search-more', '[data-learning-more=search]');
+        await ev('document.querySelector("[data-learning-general=search] > summary").click()'); await frames();
+        assert.ok(await ev('[...document.querySelectorAll("[data-learning-general=search] [data-learning-id]")].every(node=>node.checkVisibility())'));
+        await snapshot('search-general', '[data-learning-general=search]');
+      }
+      assert.equal(calls.length, resourceCalls, 'learning discovery never submits a job query');
+    }
+    const postingReason = await ev('topsCareerLearningOptions("SYNTHETIC unknown occupation",[{requirement:"Uses problem-solving at work."}])[0]');
+    assert.equal(postingReason.resource.id, 'ibm-professional-skills');
+    assert.match(postingReason.reason, /posting mentions problem-solving/);
+    assert.ok(!postingReason.reason.includes('communication and collaboration'), 'the reason names the actual posting cue');
+    assert.equal(await plan(), before);
+
+    // Saved jobs use their own title and posting, independent of the global Career direction.
+    const savedJobIds = await ev(`(() => { const guide=topsEmptyGuide(); guide.targetRole='Senior Data Analyst'; localStorage.setItem('tops_personal_guide_v1',JSON.stringify(guide)); const jobs=[topsNewJob(${JSON.stringify({ ...job, id: '111111111', title: 'HVAC technician', qualifications: 'Requirement: PMP and workplace safety; coordinate maintenance work.', url: 'https://www.usajobs.gov/job/111111111', retrievedAt: '2026-11-01T12:00:00Z' })}),topsNewJob(${JSON.stringify({ ...job, id: '222222222', title: 'Talent Acquisition Specialist', qualifications: 'Use Power BI to review recruiting data with care.', url: 'https://www.usajobs.gov/job/222222222', retrievedAt: '2026-11-01T12:00:00Z' })})]; const value={version:1,jobs}; if(!topsValidateJobs(value))throw Error('Invalid synthetic saved-job fixture'); localStorage.setItem('tops_my_jobs_v1',JSON.stringify(value)); return jobs.map(job=>job.id); })()`);
+    await load(origin + '/?tool=pathway'); await tap('tops-my-jobs-open');
+    const savedJobDisk = await plan();
+    for (const [index, id] of savedJobIds.entries()) {
+      const reviewSelector = '[data-job-review="' + id + '"]', panelSelector = '[data-job-learning="' + id + '"]', context = 'job-' + id;
+      await ev(`document.querySelector(${JSON.stringify(reviewSelector + ' > summary')}).click()`); await frames();
+      await ev(`document.querySelector(${JSON.stringify(panelSelector + ' > summary')}).click()`); await frames();
+      const cards = await ev(`[...document.querySelectorAll('[data-learning-default="' + ${JSON.stringify(context)} + '"] [data-learning-id]')].map(node=>({id:node.dataset.learningId,visible:node.checkVisibility(),text:node.innerText}))`);
+      assert.ok(cards.length <= 3); assert.equal(cards.filter(card=>card.visible).length, 1);
+      assert.equal(cards[0].id, index === 0 ? 'o2o-project' : 'microsoft-powerbi', 'saved posting evidence ranks before role-family suggestions');
+      assert.match(cards[0].text, /Your posting mentions/);
+      assert.ok(cards.some(card=>card.id === (index === 0 ? 'osha-safety-guidance' : 'o2o-hr')), 'the saved title supplies its own role family');
+      if (index === 0) assert.ok(!cards.some(card=>card.id === 'microsoft-powerbi'), 'global Data Analyst goal is not transferred to the HVAC job');
+      assert.equal(await ev(`document.querySelector('[data-learning-more="' + ${JSON.stringify(context)} + '"]').open`), false);
+      await snapshot('saved-job-' + index + '-first', panelSelector);
+      await ev(`document.querySelector('[data-learning-more="' + ${JSON.stringify(context)} + '"] > summary').click()`); await frames();
+      assert.equal(await ev(`[...document.querySelectorAll('[data-learning-default="' + ${JSON.stringify(context)} + '"] [data-learning-id]')].filter(node=>node.checkVisibility()).length`), cards.length);
+      await snapshot('saved-job-' + index + '-more', panelSelector);
+    }
+    assert.equal(await plan(), savedJobDisk, 'opening learning suggestions does not change saved jobs or the Career plan');
+    assert.equal(calls.length, resourceCalls);
+    assert.ok(await ev('(() => { const ids=[...document.querySelectorAll("[id]")].map(node=>node.id); return ids.length===new Set(ids).size; })()'), 'multiple saved-job and hidden search panels keep globally unique IDs');
     assert.deepEqual(errors, []);
     assert.equal(blocked.some(request => request.url.includes('/.netlify/') || request.url.includes('calendly') || request.postData?.includes('PRIVATE_')), false);
     assert.equal(requests.some(request => /account-plan|\/resume|\/navigator/.test(request.url)), false);
