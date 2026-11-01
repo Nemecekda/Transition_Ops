@@ -919,6 +919,10 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 .tops-career-shell .tops-career-workspace :is(button,a,summary,input,select,textarea):focus-visible{outline:3px solid #a78324!important;outline-offset:4px}
 @media(max-width:620px){.tops-career-shell .content-area{padding:18px 18px 100px!important}.tops-career-shell .tops-app-header{padding:20px 18px 14px!important}.tops-career-shell .bottom-nav{margin:0}.tops-career-shell .tops-career-workspace{padding:26px 22px}.tops-career-shell .tops-career-workspace #tops-career-start-heading{font-size:34px!important}.tops-career-shell .tops-career-entry-options>button{padding:20px!important;min-height:100px}.tops-career-shell .tops-career-decision,.tops-career-shell .tops-career-workspace .tops-career-resume{padding:22px 20px}}
 @media(forced-colors:active){.tops-career-shell .tops-career-entry-options>button:first-child{background:ButtonFace!important;color:ButtonText!important;border-color:ButtonText!important}.tops-career-shell .tops-career-entry-options>button:first-child span{color:ButtonText!important}}
+/* Fresh Career entry keeps the query and its notice together without a nested card. */
+.tops-career-shell .tops-career-workspace.tops-career-search-entry{padding:18px}
+.tops-career-shell .tops-career-search-entry #tops-career-start-heading{font:650 28px/1.2 system-ui,sans-serif!important;letter-spacing:-.025em;margin:0 0 12px}
+#root .tops-career-search-entry #tops-career-search-start-form input{padding:10px!important}
 </style>
 </head>
 <body>
@@ -7206,6 +7210,27 @@ function topsJobSearchLinks(role, area) {
     federal: "https://www.usajobs.gov/Search/Results?" + new URLSearchParams({ k: role, l: area }).toString()
   };
 }
+function topsJobSearchQuery(role, area) {
+  if (typeof role !== "string" || typeof area !== "string" || !topsJobSearchLinks(role, area) || /[<>]/.test(role + area)) return null;
+  return { keyword: role.trim(), state: area.trim() };
+}
+function topsReadJobSearchURL(href) {
+  try { var q = new URL(href).searchParams; if (q.size !== 4 || ["tool", "view", "role", "location"].some(function(key) { return q.getAll(key).length !== 1; }) || q.get("tool") !== "pathway" || q.get("view") !== "jobs") return null; return topsJobSearchQuery(q.get("role"), q.get("location")); } catch (error) { return null; }
+}
+function topsJobSearchURL(role, area, href) {
+  var query = topsJobSearchQuery(role, area); if (!query) return null;
+  try { var source = new URL(href), url = new URL(source.origin); url.pathname = source.pathname; url.search = new URLSearchParams({ tool: "pathway", view: "jobs", role: query.keyword, location: query.state }).toString(); return url.origin === source.origin ? url.href : null; } catch (error) { return null; }
+}
+function CareerSearchStart(props) {
+  var C = props.colors, state = props.state, query = topsJobSearchQuery(state.keyword, state.state);
+  var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 10, margin: "4px 0 10px", font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 8 };
+  function change(key, value) { props.setState(function(previous) { return Object.assign({}, previous, { [key]: value, searchRequest: 0 }); }); }
+  return React.createElement("form", { id: "tops-career-search-start-form", onSubmit: function(event) { event.preventDefault(); if (query) props.onOpen(); }, style: { margin: "0 0 20px" } },
+    React.createElement("label", { htmlFor: "tops-career-search-role", style: { margin: 0 } }, "Role or keywords"), React.createElement("input", { id: "tops-career-search-role", value: state.keyword, maxLength: 120, required: true, placeholder: "For example, Data Analyst", style: field, onChange: function(event) { change("keyword", event.target.value); } }),
+    React.createElement("label", { htmlFor: "tops-career-search-area", style: { margin: 0 } }, "City and state, or ZIP code"), React.createElement("input", { id: "tops-career-search-area", value: state.state, maxLength: 80, required: true, enterKeyHint: "search", placeholder: "For example, Milwaukee, WI", style: field, onChange: function(event) { change("state", event.target.value); } }),
+    React.createElement("p", { id: "tops-career-search-notice", style: { fontSize: 14, lineHeight: 1.5, margin: "2px 0 12px" } }, "Uses your role and area to search USAJOBS through Transition OPS when connected. Your resume is not included. No sign-in needed."),
+    React.createElement("button", { id: "tops-career-search-start", type: "submit", disabled: !query, "aria-describedby": "tops-career-search-notice", style: { width: "100%", minHeight: 44, padding: "12px 16px", font: "inherit", border: "1px solid " + C.border, borderRadius: 8, background: C.green, color: C.textOnFill, cursor: "pointer" } }, "Find jobs and resources"));
+}
 function topsFederalComparison(value) {
   if (!value || typeof value !== "object") return null;
   var fields = ["id", "title", "agency", "location", "qualifications", "url", "retrievedAt"];
@@ -7336,18 +7361,20 @@ function MyJobs(props) {
       React.createElement("details", { style: { marginTop: 16 } }, React.createElement("summary", { style: { minHeight: 44 } }, "Changed in another tab?"), React.createElement("p", null, "Reloading My jobs discards this open job edit and reads the saved list. Your other work stays open."), React.createElement("button", { type: "button", style: button, onClick: function() { props.setState(topsLoadJobs()); setDraft(null); setRemove(null); setMessage("My jobs reloaded from this browser."); } }, "Reload My jobs"))));
 }
 function CareerJobSearch(props) {
-  var C = props.colors, state = props.state, links = topsJobSearchLinks(state.keyword, state.state);
+  var C = props.colors, state = props.state, publicQuery = topsJobSearchQuery(state.keyword, state.state), links = publicQuery && topsJobSearchLinks(publicQuery.keyword, publicQuery.state);
   var [available, setAvailable] = useState(null), [searching, setSearching] = useState(false), [result, setResult] = useState(null), [searchMessage, setSearchMessage] = useState("");
+  var [share, setShare] = useState(null), [shareMessage, setShareMessage] = useState("");
   var [locationFilter, setLocationFilter] = useState("all");
-  var generation = useRef(0), request = useRef(null), currentQuery = useRef("");
+  var generation = useRef(0), request = useRef(null), currentQuery = useRef(""), entryRequest = useRef(0);
   var query = JSON.stringify([state.keyword, state.state]); currentQuery.current = query;
   useEffect(function() {
     var controller = new AbortController(), active = true;
     fetch("/.netlify/functions/federal-jobs?config=1", { cache: "no-store", credentials: "omit", signal: controller.signal }).then(function(response) { if (!response.ok) throw Error("unavailable"); return response.json(); }).then(function(config) { if (active) setAvailable(config.available === true && config.provider === "USAJOBS"); }).catch(function() { if (active) setAvailable(false); });
     return function() { active = false; controller.abort(); generation.current++; if (request.current) request.current.abort(); };
   }, []);
-  useEffect(function() { generation.current++; if (request.current) request.current.abort(); setSearching(false); setResult(null); setSearchMessage(""); setLocationFilter("all"); }, [query]);
+  useEffect(function() { generation.current++; if (request.current) request.current.abort(); setSearching(false); setResult(null); setSearchMessage(""); setLocationFilter("all"); setShare(null); setShareMessage(""); }, [query]);
   useEffect(function() { if (!state.open) { generation.current++; if (request.current) request.current.abort(); setSearching(false); } }, [state.open]);
+  useEffect(function() { if (!state.open || !state.searchRequest || state.searchRequest === entryRequest.current || available === null) return; entryRequest.current = state.searchRequest; if (available === true) searchFederal(); }, [state.open, state.searchRequest, available]);
   function compareFederalJob(job) {
     if (!props.onCompare || !result || result.query !== currentQuery.current || searching) { setSearchMessage("This search changed. Search again before choosing a job."); return; }
     var selected = topsFederalComparison(Object.assign({}, job, { retrievedAt: result.retrievedAt }));
@@ -7381,7 +7408,10 @@ function CareerJobSearch(props) {
   }
   var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 12, font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 8, margin: "6px 0 16px" };
   var link = { display: "block", minHeight: 44, boxSizing: "border-box", padding: "12px 16px", marginBottom: 10, color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, textDecoration: "underline" };
-  function change(key, value) { generation.current++; if (request.current) request.current.abort(); setResult(null); setSearching(false); setSearchMessage(""); props.setState(function(previous) { var next = Object.assign({}, previous); next[key] = value; return next; }); }
+  function change(key, value) { generation.current++; if (request.current) request.current.abort(); setResult(null); setSearching(false); setSearchMessage(""); props.setState(function(previous) { var next = Object.assign({}, previous); next[key] = value; next.searchRequest = 0; return next; }); }
+  function prepareShare() { var url = topsJobSearchURL(state.keyword, state.state, window.location.href); if (url) { setShare({ url: url, query: query }); setShareMessage(""); requestAnimationFrame(function() { var input = document.getElementById("tops-job-share-url"); if (input) input.focus(); }); } }
+  async function copyShare() { if (!share || share.query !== query) return; try { if (!navigator.clipboard || !navigator.clipboard.writeText) throw Error("unavailable"); await navigator.clipboard.writeText(share.url); setShareMessage("Search link copied. Keep it to return, or share it yourself."); } catch (error) { var input = document.getElementById("tops-job-share-url"); if (input) { input.focus(); input.select(); } setShareMessage("Select and copy the link, or download it below."); } }
+  function downloadShare() { if (!share || share.query !== query) return; var url = URL.createObjectURL(new Blob(["Career search: " + state.keyword.trim() + " in " + state.state.trim() + "\n" + share.url + "\n\nOpen this link to restore the query. Search again for current openings.\n"], { type: "text/plain;charset=utf-8" })), a = document.createElement("a"); a.href = url; a.download = "my-job-search.txt"; a.click(); setTimeout(function() { URL.revokeObjectURL(url); }, 1000); setShareMessage("Search link download requested. Keep the file to return to this query."); }
   function renderJob(job, i) { return React.createElement("article", { key: job.id + "-" + i, style: { display: "grid", gap: 12, padding: 20, border: "1px solid " + C.border, borderRadius: 10, marginBottom: 16, background: C.bgCard } },
           React.createElement("h5", { style: { margin: "0 0 8px", fontSize: 18, lineHeight: 1.4 } }, job.title || "Federal opening"),
           React.createElement("div", null, React.createElement("p", { style: { margin: 0, fontWeight: 600 } }, job.agency || "Agency not supplied"), React.createElement("p", { style: { margin: "4px 0 0", color: C.textSecondary } }, job.location || "Location not supplied")),
@@ -7397,7 +7427,6 @@ function CareerJobSearch(props) {
   return React.createElement("section", { "aria-labelledby": "tops-job-search-heading", style: { lineHeight: 1.55 } },
     React.createElement("h3", { id: "tops-job-search-heading", className: props.focused ? "sr-only" : undefined }, "Find openings for your next move"),
     !props.focused && props.onReturn && React.createElement("button", { id: "tops-job-return", type: "button", onClick: props.onReturn, style: { minHeight: 44, padding: "10px 14px", marginBottom: 12, font: "inherit", color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8 } }, "Back to Career"),
-    React.createElement("p", null, "Start with your career goal, then choose where you want to work. You can change either before opening a search."),
     React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,220px),1fr))", gap: "4px 16px", marginTop: 16 } },
       React.createElement("div", null, React.createElement("label", { htmlFor: "tops-job-role", style: { fontWeight: 600 } }, "Role or keywords"),
         React.createElement("input", { id: "tops-job-role", value: state.keyword, maxLength: 120, placeholder: "For example, logistics coordinator", onChange: function(e) { change("keyword", e.target.value); }, style: field })),
@@ -7414,7 +7443,8 @@ function CareerJobSearch(props) {
         React.createElement("p", null, "Source: USAJOBS · Retrieved ", new Date(result.retrievedAt).toLocaleString(), ". Listings may change. Transition OPS is not a federal agency and is not endorsed by USAJOBS. Eligibility is not assessed here; check the official announcement and closing instructions."),
         React.createElement("label", { htmlFor: "tops-job-location-filter" }, "Show within these results"),
         React.createElement("select", { id: "tops-job-location-filter", value: locationFilter, onChange: function(e) { setLocationFilter(e.target.value); }, style: field }, React.createElement("option", { value: "all" }, "All returned locations"), React.createElement("option", { value: "remote" }, "Explicitly listed remote")),
-        React.createElement("p", { role: "status" }, shownJobs.length + " of " + result.jobs.length + " returned openings shown. Title groups ignore common connecting words. Remote includes only listings explicitly marked remote; check official work-location terms."),
+        React.createElement("p", { role: "status" }, shownJobs.length + " of " + result.jobs.length + " returned openings shown."),
+        React.createElement("details", { id: "tops-job-grouping-help" }, React.createElement("summary", { style: { minHeight: 44, cursor: "pointer" } }, "How these results are grouped"), React.createElement("p", null, "Title groups ignore common connecting words. Remote includes only listings explicitly marked remote; check official work-location terms.")),
         !shownJobs.length && locationFilter === "remote" && React.createElement("button", { type: "button", style: link, onClick: function() { setLocationFilter("all"); requestAnimationFrame(function() { var n = document.getElementById("tops-job-location-filter"); if (n) n.focus(); }); } }, "Show all returned locations"),
         titleMatches.length > 0 ? React.createElement("div", null,
           React.createElement("h5", null, "Titles containing your role keywords (" + titleMatches.length + ")"), titleMatches.map(renderJob),
@@ -7425,9 +7455,21 @@ function CareerJobSearch(props) {
       React.createElement("p", { role: "status" }, "Search for " + state.keyword.trim() + " in " + state.state.trim()),
       React.createElement("a", { href: links.linkedin, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing", style: link }, "Search LinkedIn jobs (new tab)"),
       React.createElement("a", { href: links.federal, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing", style: link }, "Search federal jobs on USAJOBS (new tab)")) : React.createElement("p", { role: "status" }, "Add a role and area to prepare your searches."),
-    React.createElement("p", null, "Looking for remote or hybrid work? Set that filter on the job site. Check each posting's duties, requirements and work location before deciding whether it fits."),
+    React.createElement("details", { id: "tops-job-remote-help" }, React.createElement("summary", { style: { minHeight: 44, cursor: "pointer" } }, "Remote and hybrid search tips"), React.createElement("p", null, "Looking for remote or hybrid work? Set that filter on the job site. Check each posting's duties, requirements and work location before deciding whether it fits.")),
     React.createElement("a", { href: "https://www.careeronestop.org/Veterans/JobSearch/FindOpenings/state-job-banks.aspx", target: "_blank", rel: "noopener noreferrer", style: link }, "Browse official state job banks (new tab)"),
-    React.createElement("p", { style: { color: C.textSecondary } }, "Federal results are public USAJOBS listings, not verified matches. LinkedIn and state job banks open separately. Search edits and results stay in this visit and do not replace your saved career goal."));
+    React.createElement("p", { style: { color: C.textSecondary } }, "Federal results are public USAJOBS listings, not verified matches. LinkedIn and state job banks open separately. Search edits and results stay in this visit and do not replace your saved career goal."),
+    links && React.createElement("section", { "aria-labelledby": "tops-job-share-heading", style: { margin: "20px 0" } },
+      React.createElement("h3", { id: "tops-job-share-heading" }, "Keep this search"),
+      React.createElement("p", null, "Create a link containing only this role and location. Leave personal details out of these search fields. Anyone with the link can read its query; it does not include your resume, plan or results."),
+      React.createElement("button", { id: "tops-job-share-prepare", type: "button", onClick: prepareShare, style: link }, "Save or share this search"),
+      share && share.query === query && React.createElement("div", null,
+        React.createElement("label", { htmlFor: "tops-job-share-url" }, "Search link - open it later to restore this role and location"), React.createElement("input", { id: "tops-job-share-url", readOnly: true, value: share.url, style: field }),
+        React.createElement("button", { id: "tops-job-share-copy", type: "button", onClick: copyShare, style: link }, "Copy search link"), React.createElement("button", { id: "tops-job-share-download", type: "button", onClick: downloadShare, style: link }, "Download search link"),
+        React.createElement("p", null, "Keep the copied link or downloaded file. Opening it restores your query; choose Search federal jobs to check current openings.")),
+      React.createElement("p", { role: "status" }, shareMessage)),
+    links && React.createElement(CareerSearchResources, { colors: C, role: state.keyword.trim(), area: state.state.trim(), linkStyle: link }),
+    React.createElement(CareerTalentContact, { colors: C, hidden: !state.open || !links, contextKey: "search", summary: "Want help with this search? Talk with Dean (optional)", searchContext: { role: state.keyword.trim(), location: state.state.trim() } }),
+    links && React.createElement("aside", { style: { borderTop: "1px solid " + C.border, paddingTop: 16, marginTop: 20 } }, React.createElement("h3", null, "For employers"), React.createElement("p", null, "Talk with Veteran Bridge Solutions about building a military hiring program. This is separate from a job seeker's search or recruiting permission."), React.createElement("a", { id: "tops-employer-booking", href: TOPS_TALENT_BOOKING, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: link }, "Discuss a military hiring program (Calendly, new tab)")));
 }
 function CareerIdeas(props) {
   var C = props.colors, [query, setQuery] = useState("");
@@ -7541,6 +7583,25 @@ function topsCareerLearningOptions(role, rows) {
     if (!skill && !exact && !category) return null;
     return { resource: resource, priority: skill ? 0 : exact ? 1 : 2, reason: skill ? "Your posting mentions " + skill.label + ". This is a learning option to investigate, not proof that a credential is required." : "An option to build " + resource.topic + " for " + target.label + ". Check that it supports your own goal." };
   }).filter(Boolean).sort(function(a, b) { return a.priority - b.priority; }).slice(0, 3);
+}
+function CareerSearchResources(props) {
+  var options = topsCareerLearningOptions(props.role, []), C = props.colors;
+  var wisconsin = /\bWI\b|Wisconsin/i.test(props.area);
+  return React.createElement("div", null,
+    React.createElement("section", { id: "tops-search-learning", "aria-labelledby": "tops-search-learning-heading", style: { margin: "24px 0" } },
+      React.createElement("h3", { id: "tops-search-learning-heading" }, "Learning options for ", props.role),
+      options.length ? options.map(function(option) { var resource = option.resource; return React.createElement("article", { key: resource.id, style: { padding: 16, marginBottom: 12, border: "1px solid " + C.border, borderRadius: 8 } }, React.createElement("h4", { style: { marginTop: 0 } }, resource.name), React.createElement("p", null, option.reason), React.createElement("p", null, resource.what), React.createElement("p", null, resource.access), React.createElement("a", { href: resource.url, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: props.linkStyle }, "Explore this learning option (new tab)")); }) : React.createElement("p", null, "We do not have a reviewed learning option for this role yet. Browse the resource library and check each provider's costs and eligibility."),
+      React.createElement("a", { href: "?tool=resources", target: "_blank", rel: "noopener noreferrer", style: props.linkStyle }, "Browse the resource library (new tab)")),
+    React.createElement("section", { id: "tops-search-skillbridge", "aria-labelledby": "tops-search-skillbridge-heading", style: { margin: "24px 0" } },
+      React.createElement("h3", { id: "tops-search-skillbridge-heading" }, "Explore SkillBridge"),
+      React.createElement("p", null, "Use the official opportunity search to explore your role and location. Confirm current dates, availability, eligibility and required approval before making plans."),
+      React.createElement("a", { href: "https://www.skillbridge.mil/locations", target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: props.linkStyle }, "Search official SkillBridge opportunities (new tab)"),
+      wisconsin && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Provider-listed Wisconsin SkillBridge leads"),
+        React.createElement("p", null, "Vets2PM's board listed Data Center Associate Project Manager and Data Center Technician in Racine (posted August 7, 2026), and Field Service Technician in Mosinee (posted July 27, 2026), when checked November 1, 2026. Current intake capacity is not confirmed. Ask the provider about dates, availability and the host employer."),
+        React.createElement("a", { href: "https://vets2pm.zohorecruit.com/careers", target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: props.linkStyle }, "Check the Vets2PM opportunity board (new tab)"))),
+    wisconsin && React.createElement("details", { id: "tops-vbs-cohort", style: { margin: "20px 0" } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "VBS cohort employers - roles coming soon"),
+      React.createElement("p", null, "VBS roles with Kriete Trucking, Wisconsin Management Company, and Air Tech in Fond du Lac are not posted yet. These employer career pages are separate civilian resources to explore, not confirmed VBS or SkillBridge openings or matches for your search."),
+      [["Air Tech - employer careers", "https://airtechhtg.com/careers/"], ["Wisconsin Management Company - employer careers", "https://www.wisconsinmanagement.com/careers"], ["Kriete Truck Centers - employer careers", "https://krietetrucks.com/careers"]].map(function(item) { return React.createElement("a", { key: item[1], href: item[1], target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: props.linkStyle }, item[0] + " (new tab)"); })));
 }
 const TOPS_WISCONSIN_WORK_SUPPORT = {
   action: "Ask a Wisconsin Job Center about eligibility and approval before paying for tools or training.",
@@ -7952,16 +8013,18 @@ function topsCareerDiskSnapshot() { try { return JSON.stringify([TOPS_GUIDE_KEY,
 const TOPS_TALENT_EMAIL = "dean@veteranbridgesolutions.com";
 const TOPS_TALENT_BOOKING = "https://calendly.com/dean-veteranbridgesolutions/30min";
 function topsTalentMessage(mode, fields, permission) {
-  if (!["interest", "update", "withdraw"].includes(mode) || !fields || typeof fields !== "object") return null;
+  if (!["question", "interest", "update", "withdraw"].includes(mode) || !fields || typeof fields !== "object") return null;
   var limits = { name: 80, email: 120, roles: 180, location: 120, availability: 120, note: 240 };
-  var keys = mode === "interest" ? ["name", "email", "roles", "location", "availability"] : ["email", "note"];
+  var keys = mode === "interest" ? ["name", "email", "roles", "location", "availability"] : mode === "question" ? ["email", "roles", "location", "note"] : ["email", "note"];
   if (!keys.every(function(key) { return typeof fields[key] === "string" && fields[key].length <= limits[key] && !/[\u0000-\u001f\u007f]/.test(fields[key]); })) return null;
   var email = fields.email.trim();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || mode === "interest" && permission !== true) return null;
-  var subjects = { interest: "VBS recruiting interest", update: "Update my VBS recruiting preferences", withdraw: "Withdraw my VBS recruiting contact permission" };
+  var subjects = { question: "Question about my job search", interest: "VBS recruiting interest", update: "Update my VBS recruiting preferences", withdraw: "Withdraw my VBS recruiting contact permission" };
   var lines = ["Hello Dean,", ""];
   if (mode === "interest") {
     lines.push("I'd like to connect with Veteran Bridge Solutions about recruiting opportunities.", "", ...(fields.name.trim() ? ["Name: " + fields.name.trim()] : []), "Email: " + email, "Roles or interests: " + (fields.roles.trim() || "Still exploring"), ...(fields.location.trim() ? ["Location or remote preference: " + fields.location.trim()] : []), ...(fields.availability.trim() ? ["Availability: " + fields.availability.trim()] : []), "", "I give Veteran Bridge Solutions permission to contact me about recruiting opportunities using the email above.");
+  } else if (mode === "question") {
+    lines.push("I'd like to ask about my job search.", "", "Email: " + email, ...(fields.roles.trim() ? ["Role or interest: " + fields.roles.trim()] : []), ...(fields.location.trim() ? ["Location or remote preference: " + fields.location.trim()] : []), ...(fields.note.trim() ? ["My question: " + fields.note.trim()] : []), "", "This is a one-time inquiry. It does not give permission for ongoing recruiting contact.");
   } else {
     lines.push(mode === "update" ? "Please update my recruiting preferences associated with the email below. This request does not grant new recruiting contact permission." : "Please stop recruiting contact and withdraw my recruiting contact permission for the email below.", "", "Email: " + email);
     if (fields.note.trim()) lines.push("Request details: " + fields.note.trim());
@@ -7971,14 +8034,15 @@ function topsTalentMessage(mode, fields, permission) {
 }
 function CareerTalentContact(props) {
   var C = props.colors;
+  function controlId(id) { return props.hidden ? "hidden-" + (props.contextKey || "career") + "-" + id : id; }
   function blank() { return { name: "", email: "", roles: "", location: "", availability: "", note: "" }; }
-  var [mode, setMode] = useState("interest"), [fields, setFields] = useState(blank), [permission, setPermission] = useState(false);
+  var [mode, setMode] = useState(props.searchContext ? "question" : "interest"), [fields, setFields] = useState(blank), [permission, setPermission] = useState(false);
   var [review, setReview] = useState(null), [status, setStatus] = useState(""), [error, setError] = useState("");
   var control = { minHeight: 44, padding: "11px 14px", border: "1px solid " + C.border, borderRadius: 8, font: "inherit", color: C.textPrimary, background: C.bgCard, cursor: "pointer" };
   var input = Object.assign({}, control, { width: "100%", boxSizing: "border-box", fontSize: 16, cursor: "text", margin: "6px 0 14px" });
   function invalidate() { setReview(null); setStatus(""); setError(""); }
   function change(key, value) { setFields(function(previous) { return Object.assign({}, previous, { [key]: value }); }); setPermission(false); invalidate(); }
-  function focus(id) { requestAnimationFrame(function() { var element = document.getElementById(id); if (element) { element.focus(); element.scrollIntoView({ block: "nearest" }); } }); }
+  function focus(id) { requestAnimationFrame(function() { var element = document.getElementById(controlId(id)); if (element && element.getClientRects().length) { element.focus(); element.scrollIntoView({ block: "nearest" }); } }); }
   function prepare() {
     var next = topsTalentMessage(mode, fields, permission);
     if (!next) { setError("Enter a valid email address and short, single-line details." + (mode === "interest" ? " Check the contact permission box if you want VBS recruiting contact." : "")); return; }
@@ -7998,42 +8062,44 @@ function CareerTalentContact(props) {
     try { if (!navigator.clipboard || !navigator.clipboard.writeText) throw Error("unavailable"); await navigator.clipboard.writeText(value); setStatus(part === "address" ? "Email address copied. Nothing was sent." : "Message copied. Paste it into your email app and decide whether to send it."); }
     catch (e) { setStatus("Copy is unavailable. Select and copy the address or message shown below manually."); }
   }
-  function field(key, label, max, type) { return React.createElement("div", { key: key }, React.createElement("label", { htmlFor: "tops-talent-" + key }, label), React.createElement("input", { id: "tops-talent-" + key, type: type || "text", maxLength: max, autoComplete: "off", value: fields[key], required: key === "email", "aria-describedby": "tops-talent-notice" + (error ? " tops-talent-error" : ""), style: input, onChange: function(event) { change(key, event.target.value); } })); }
-  return React.createElement("details", { id: "tops-talent-contact", style: { borderTop: "1px solid " + C.border, margin: "16px 0 0", paddingTop: 4 } },
+  function field(key, label, max, type) { return React.createElement("div", { key: key }, React.createElement("label", { htmlFor: controlId("tops-talent-" + key) }, label), React.createElement("input", { id: controlId("tops-talent-" + key), type: type || "text", maxLength: max, autoComplete: "off", value: fields[key], required: key === "email", "aria-describedby": controlId("tops-talent-notice") + (error ? " " + controlId("tops-talent-error") : ""), style: input, onChange: function(event) { change(key, event.target.value); } })); }
+  return React.createElement("details", { hidden: !!props.hidden, id: controlId("tops-talent-contact"), style: { borderTop: "1px solid " + C.border, margin: "16px 0 0", paddingTop: 4 } },
     React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", fontWeight: 700, cursor: "pointer" } }, props.summary || "Talk with Dean about your next role (optional)"),
     props.invitation && React.createElement("p", { style: { lineHeight: 1.5 } }, props.invitation),
     React.createElement("p", { style: { lineHeight: 1.5 } }, "Dean is a recruiter with Veteran Bridge Solutions. Book a conversation or introduce yourself by email. Neither guarantees a response, interview or job."),
-    React.createElement("a", { id: "tops-talent-booking", href: TOPS_TALENT_BOOKING, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, control, { display: "inline-flex", alignItems: "center", boxSizing: "border-box", maxWidth: "100%", overflowWrap: "anywhere", lineHeight: 1.4 }) }, "Book a 30-minute call"),
+    React.createElement("a", { id: controlId("tops-talent-booking"), href: TOPS_TALENT_BOOKING, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, control, { display: "inline-flex", alignItems: "center", boxSizing: "border-box", maxWidth: "100%", overflowWrap: "anywhere", lineHeight: 1.4 }) }, "Book a 30-minute call"),
     React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "30-minute VBS Workforce Call on Calendly. Opens a new tab. Booking is separate from recruiting permission."),
-    React.createElement("details", { id: "tops-talent-email-section" },
+    React.createElement("details", { id: controlId("tops-talent-email-section") },
     React.createElement("summary", { style: Object.assign({}, control, { fontWeight: 700, margin: "12px 0" }) }, "Email Dean"),
-    React.createElement("label", { htmlFor: "tops-talent-purpose" }, "What would you like to do?"),
-    React.createElement("select", { id: "tops-talent-purpose", value: mode, style: input, onChange: function(event) { setMode(event.target.value); setPermission(false); invalidate(); } },
-      React.createElement("option", { value: "interest" }, "Share my recruiting interests"), React.createElement("option", { value: "update" }, "Update an earlier request"), React.createElement("option", { value: "withdraw" }, "Withdraw recruiting contact permission")),
-    React.createElement("p", { id: "tops-talent-notice", style: { fontSize: 14, lineHeight: 1.5 } }, "Review first. Opening your email app passes the reviewed details to it; you decide whether to send to Dean. These fields are not saved with your plan. Leave out benefits, disability and other sensitive details."),
+    React.createElement("label", { htmlFor: controlId("tops-talent-purpose") }, "What would you like to do?"),
+    React.createElement("select", { id: controlId("tops-talent-purpose"), value: mode, style: input, onChange: function(event) { setMode(event.target.value); setPermission(false); invalidate(); } },
+      React.createElement("option", { value: "question" }, props.searchContext ? "Ask about this search" : "Ask a question"), React.createElement("option", { value: "interest" }, "Share my recruiting interests"), React.createElement("option", { value: "update" }, "Update an earlier request"), React.createElement("option", { value: "withdraw" }, "Withdraw recruiting contact permission")),
+    React.createElement("p", { id: controlId("tops-talent-notice"), style: { fontSize: 14, lineHeight: 1.5 } }, "Review first. Opening your email app passes the reviewed details to it; you decide whether to send to Dean. These fields are not saved with your plan. Leave out benefits, disability and other sensitive details."),
     !review && React.createElement("div", null,
       field("email", "Your email address (required)", 120, "email"),
-      mode === "interest" ? React.createElement("div", null,
-        props.role && !fields.roles && React.createElement("button", { id: "tops-talent-use-role", type: "button", style: control, onClick: function() { change("roles", props.role.slice(0, 180)); focus("tops-talent-roles"); } }, "Use my chosen role: " + props.role),
+      ["question", "interest"].includes(mode) ? React.createElement("div", null,
+        props.searchContext && !fields.roles && !fields.location && React.createElement("button", { id: controlId("tops-talent-use-search"), type: "button", style: control, onClick: function() { setFields(function(previous) { return Object.assign({}, previous, { roles: props.searchContext.role.slice(0, 180), location: props.searchContext.location.slice(0, 120) }); }); setPermission(false); invalidate(); focus("tops-talent-roles"); } }, "Use this role and location: " + props.searchContext.role + " in " + props.searchContext.location),
+        !props.searchContext && props.role && !fields.roles && React.createElement("button", { id: controlId("tops-talent-use-role"), type: "button", style: control, onClick: function() { change("roles", props.role.slice(0, 180)); focus("tops-talent-roles"); } }, "Use my chosen role: " + props.role),
         field("roles", "Roles or interests (optional)", 180), field("location", "Location or remote preference (optional)", 120),
-        React.createElement("details", { id: "tops-talent-extra" }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Add name or availability (optional)"), field("name", "Name (optional)", 80), field("availability", "Availability (optional)", 120))) : field("note", "Request details (optional)", 240),
-      mode === "interest" && React.createElement("label", { style: { display: "flex", alignItems: "center", gap: 10, minHeight: 44, margin: "8px 0", lineHeight: 1.5 } }, React.createElement("input", { id: "tops-talent-permission", type: "checkbox", checked: permission, onChange: function(event) { setPermission(event.target.checked); invalidate(); } }), "I want Veteran Bridge Solutions to email me about future job opportunities. I can request withdrawal using the menu above."),
-      mode !== "interest" && React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "This prepares a request for Dean to review. It does not change an inbox record or confirm removal."),
-      React.createElement("button", { id: "tops-talent-prepare", type: "button", style: control, onClick: prepare }, "Review email message")),
-    review && React.createElement("section", { "aria-labelledby": "tops-talent-review-heading" },
-      React.createElement("h4", { id: "tops-talent-review-heading", tabIndex: -1 }, "Review your email"),
+        mode === "question" ? field("note", "Your question (optional)", 240) : React.createElement("details", { id: controlId("tops-talent-extra") }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Add name or availability (optional)"), field("name", "Name (optional)", 80), field("availability", "Availability (optional)", 120))) : field("note", "Request details (optional)", 240),
+      mode === "interest" && React.createElement("label", { style: { display: "flex", alignItems: "center", gap: 10, minHeight: 44, margin: "8px 0", lineHeight: 1.5 } }, React.createElement("input", { id: controlId("tops-talent-permission"), type: "checkbox", checked: permission, onChange: function(event) { setPermission(event.target.checked); invalidate(); } }), "I want Veteran Bridge Solutions to email me about future job opportunities. I can request withdrawal using the menu above."),
+      mode === "question" && React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "Ask a one-time question. This does not give permission for ongoing recruiting contact."),
+      ["update", "withdraw"].includes(mode) && React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "This prepares a request for Dean to review. It does not change an inbox record or confirm removal."),
+      React.createElement("button", { id: controlId("tops-talent-prepare"), type: "button", style: control, onClick: prepare }, "Review email message")),
+    review && React.createElement("section", { "aria-labelledby": controlId("tops-talent-review-heading") },
+      React.createElement("h4", { id: controlId("tops-talent-review-heading"), tabIndex: -1 }, "Review your email"),
       React.createElement("p", { style: { overflowWrap: "anywhere" } }, "To: ", review.to), React.createElement("p", null, "Subject: ", review.subject),
-      React.createElement("label", { htmlFor: "tops-talent-message" }, "Exact message"),
-      React.createElement("textarea", { id: "tops-talent-message", readOnly: true, rows: 10, value: review.body, style: Object.assign({}, input, { whiteSpace: "pre-wrap" }) }),
-      React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, mode === "interest" ? "Want to share a resume? Attach it yourself in your email app after reviewing it. No resume is attached here. Sending uses your email provider and VBS's inbox; ask Dean about handling or removing your information." : "Send this request from your email app. Dean will need to handle it; opening this draft does not confirm an update or withdrawal."),
+      React.createElement("label", { htmlFor: controlId("tops-talent-message") }, "Exact message"),
+      React.createElement("textarea", { id: controlId("tops-talent-message"), readOnly: true, rows: 10, value: review.body, style: Object.assign({}, input, { whiteSpace: "pre-wrap" }) }),
+      React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, mode === "interest" ? "Want to share a resume? Attach it yourself in your email app after reviewing it. No resume is attached here. Sending uses your email provider and VBS's inbox; ask Dean about handling or removing your information." : mode === "question" ? "Review this one-time question in your email app and choose whether to send it. No resume is attached. Sending uses your email provider and VBS's inbox; opening the draft does not confirm delivery." : "Send this request from your email app. Dean will need to handle it; opening this draft does not confirm an update or withdrawal."),
       React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
-        React.createElement("button", { id: "tops-talent-open", type: "button", style: Object.assign({}, control, { background: C.green, color: C.textOnFill }), onClick: openDraft }, "Open in my email app"),
-        React.createElement("button", { id: "tops-talent-edit", type: "button", style: control, onClick: function() { setPermission(false); invalidate(); focus("tops-talent-email"); } }, "Edit details"),
-        React.createElement("button", { id: "tops-talent-copy-message", type: "button", style: control, onClick: function() { copy("message"); } }, "Copy message"),
-        React.createElement("button", { id: "tops-talent-copy-address", type: "button", style: control, onClick: function() { copy("address"); } }, "Copy email address"))),
-    error && React.createElement("p", { id: "tops-talent-error", role: "alert", style: { lineHeight: 1.5 } }, error),
-    React.createElement("p", { id: "tops-talent-status", role: "status", "aria-live": "polite", style: { lineHeight: 1.5 } }, status),
-    React.createElement("button", { id: "tops-talent-clear", type: "button", style: control, onClick: function() { setFields(blank()); setPermission(false); setReview(null); setError(""); setStatus("Form cleared here. This does not change messages in your email app or VBS's inbox."); focus("tops-talent-purpose"); } }, "Clear these fields")));
+        React.createElement("button", { id: controlId("tops-talent-open"), type: "button", style: Object.assign({}, control, { background: C.green, color: C.textOnFill }), onClick: openDraft }, "Open in my email app"),
+        React.createElement("button", { id: controlId("tops-talent-edit"), type: "button", style: control, onClick: function() { setPermission(false); invalidate(); focus("tops-talent-email"); } }, "Edit details"),
+        React.createElement("button", { id: controlId("tops-talent-copy-message"), type: "button", style: control, onClick: function() { copy("message"); } }, "Copy message"),
+        React.createElement("button", { id: controlId("tops-talent-copy-address"), type: "button", style: control, onClick: function() { copy("address"); } }, "Copy email address"))),
+    error && React.createElement("p", { id: controlId("tops-talent-error"), role: "alert", style: { lineHeight: 1.5 } }, error),
+    React.createElement("p", { id: controlId("tops-talent-status"), role: "status", "aria-live": "polite", style: { lineHeight: 1.5 } }, status),
+    React.createElement("button", { id: controlId("tops-talent-clear"), type: "button", style: control, onClick: function() { setFields(blank()); setPermission(false); setReview(null); setError(""); setStatus("Form cleared here. This does not change messages in your email app or VBS's inbox."); focus("tops-talent-purpose"); } }, "Clear these fields")));
 }
 
 // Member-entered estimates only. Integer cents keep calculations exact; blank is not zero.
@@ -8340,7 +8406,8 @@ function CareerJourney(props) {
       (primary === (!learningNext && !networkingNext && intent === "find")) && intent !== "grow" && React.createElement("button", { type: "button", style: Object.assign({}, button, !learningNext && !networkingNext && saved && intent === "find" ? { background: C.green, color: C.textOnFill } : {}), onClick: function() { props.openTool("jobs", role); } }, "Search jobs by area"),
       !promoteResume && (primary === (!learningNext && !networkingNext && intent === "pursue")) && intent === "pursue" && resumeToolButton(!learningNext && !networkingNext && saved),
       (primary === (!learningNext && !networkingNext && intent === "grow")) && saved && React.createElement("button", { type: "button", style: Object.assign({}, button, !learningNext && !networkingNext && intent === "grow" ? { background: C.green, color: C.textOnFill } : {}), onClick: props.home }, "Continue on Home")); }
-  return React.createElement("section", { hidden: !!props.hidden, "aria-labelledby": "tops-career-start-heading", className: "tops-career-workspace" + (stage === 1 ? " tops-career-intake" : stage === 2 ? " tops-career-review" : ""), style: { "--career-soft": C.bgCard, "--career-border": C.border, "--career-accent": C.green, "--career-secondary": C.textSecondary, background: C.bg, color: C.textBody, borderRadius: 16, boxShadow: C.isLight ? "0 4px 24px rgba(14,18,11,.055)" : "0 4px 24px rgba(0,0,0,.16)" } },
+  var searchStart = stage === 0 && !entryGoal && !showIntroduction && !hasVisitWork && !coherentSavedPlan && !myJobReview;
+  return React.createElement("section", { hidden: !!props.hidden, "aria-labelledby": "tops-career-start-heading", className: "tops-career-workspace" + (searchStart ? " tops-career-search-entry" : stage === 1 ? " tops-career-intake" : stage === 2 ? " tops-career-review" : ""), style: { "--career-soft": C.bgCard, "--career-border": C.border, "--career-accent": C.green, "--career-secondary": C.textSecondary, background: C.bg, color: C.textBody, borderRadius: 16, boxShadow: C.isLight ? "0 4px 24px rgba(14,18,11,.055)" : "0 4px 24px rgba(0,0,0,.16)" } },
     pendingNetworking && !(stage === 2 && reviewPanel) && React.createElement("button", { id: "tops-networking-cancel", type: "button", style: button, onClick: cancelNetworking }, "Keep my previous step"),
     stage > 0 && !myJobReview && !reviewPanel && React.createElement("div", { id: "tops-career-workspace-context", className: "tops-career-context" },
       React.createElement("button", { id: "tops-career-back", type: "button", className: "tops-career-back", style: button, onClick: function() { if (stage === 1 && (draft || comparisonCheckpoint)) returnToCareerDraft(); else { setStage(0); setAiActive(false); setStatus(""); } } }, stage === 1 && (draft || comparisonCheckpoint) ? "Back to my next step" : "Back to Career start"),
@@ -8350,7 +8417,7 @@ function CareerJourney(props) {
       React.createElement("p", null, "This opens work for " + myJobReview.job.role + ". Your saved career goal, current next step, resume and message are not replaced by opening it."),
       !["introduction", "followup"].includes(myJobReview.requestedAction) && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44 } }, "Review the posting change"), React.createElement("p", null, "Current posting: ", source ? source.posting || "None" : props.gapState.draft.rows.map(function(row) { return row.requirement; }).filter(Boolean).join("\n") || "None"), React.createElement("p", { style: { whiteSpace: "pre-wrap" } }, "Job excerpt: ", myJobReview.job.qualifications || "No excerpt saved. Add the posting in the next screen.")),
       React.createElement("button", { id: "tops-my-job-task-continue", type: "button", style: button, onClick: continueMyJob }, "Continue with this job"), " ", React.createElement("button", { type: "button", style: button, onClick: function() { setMyJobReview(null); focusCareerControl("tops-career-start-heading"); } }, "Keep my current work")),
-    React.createElement("h2", { id: "tops-career-start-heading", hidden: !!myJobReview, tabIndex: -1, style: { color: C.textPrimary } }, stage === 0 ? (showIntroduction ? introduction.prepared ? "Your message" : (introduction.purpose || "specialist") === "specialist" ? "Prepare for career help" : "Prepare a career conversation" : hasVisitWork ? "Continue where you left off" : "What would you like to explore?") : stage === 1 ? (intent === "pursue" ? "Let's look at the job together" : intent === "grow" ? "Build on what you already do" : "Start with your experience") : choosingDirection ? "Choose a role to explore" : role || (intent === "grow" ? "Your next growth conversation" : "Your next career move")),
+    React.createElement("h2", { id: "tops-career-start-heading", hidden: !!myJobReview, tabIndex: -1, style: { color: C.textPrimary } }, stage === 0 ? (showIntroduction ? introduction.prepared ? "Your message" : (introduction.purpose || "specialist") === "specialist" ? "Prepare for career help" : "Prepare a career conversation" : hasVisitWork ? "Continue where you left off" : searchStart ? "Find jobs and resources" : "What would you like to explore?") : stage === 1 ? (intent === "pursue" ? "Let's look at the job together" : intent === "grow" ? "Build on what you already do" : "Start with your experience") : choosingDirection ? "Choose a role to explore" : role || (intent === "grow" ? "Your next growth conversation" : "Your next career move")),
     stage === 0 && entryGoal && React.createElement("section", { "aria-labelledby": "tops-entry-goal-heading" },
       React.createElement("h3", { id: "tops-entry-goal-heading" }, "You chose a different career goal"),
       React.createElement("p", null, "You have an unfinished draft. Keep working on it, or use its experience for " + ({ find: "exploring career options", grow: "career growth", pursue: "comparing a job" }[entryGoal]) + ". Your saved plan stays unchanged."),
@@ -8358,7 +8425,8 @@ function CareerJourney(props) {
       React.createElement("button", { id: "tops-entry-use-goal", type: "button", style: button, onClick: function() { var goal = entryGoal; setEntryGoal(""); start(goal); } }, "Use this goal with my experience")),
     stage === 0 && !entryGoal && React.createElement("div", { hidden: !!myJobReview },
       !showIntroduction && !hasVisitWork && !coherentSavedPlan && React.createElement("div", null,
-        React.createElement("p", { className: "tops-career-lede" }, "Start with your experience or explore a role first."),
+        React.createElement(CareerSearchStart, { colors: C, state: props.searchState, setState: props.setSearchState, onOpen: props.onSearch }),
+        React.createElement("p", { className: "tops-career-lede" }, "Need help choosing a role? Start with your experience."),
         React.createElement("div", { className: "tops-career-entry-options" },
           React.createElement("button", { id: "tops-career-experience-first", type: "button", style: button, onClick: function() { start("find"); } }, React.createElement("strong", null, "Use my resume"), React.createElement("span", null, "Add a file or paste experience.")),
           React.createElement("button", { id: "tops-career-explore-first", type: "button", style: button, onClick: exploreWithoutResume }, React.createElement("strong", null, "Start without a resume"), React.createElement("span", null, "Choose a role and find jobs.")))),
@@ -8451,7 +8519,7 @@ function CareerJourney(props) {
       React.createElement(CareerSpecialistSupport, { colors: C, button: button, field: field, role: role, rows: draft.rows, onJobs: function() { props.openTool("my-jobs"); }, state: introduction, setState: setIntroduction, action: action, onPlan: planNetworking, retainReviewedContext: networkingTransfer.current, consumeReviewedContext: function() { networkingTransfer.current = false; } }),
       (sameConversationRole || pendingCheckin || checkin.takeaway || checkin.next || checkin.date) && React.createElement(CareerConversationCheckin, { colors: C, button: button, field: field, role: role, state: checkin, saved: saved, hasPending: !!pendingCheckin, prep: props.gapState.draft.prep, action: action, getBase: checkinBase, getSnapshot: checkinSnapshot, onEdit: function(value) { setCheckin(value); setSaved(false); setStatus(""); setChecked(false); setReplace(false); }, onStage: stageCheckin, onClear: clearCheckin })))),
     stage === 2 && draft && !myJobReview && !aiActive && !reviewPanel && React.createElement(CareerMoveComparison, { colors: C, value: props.moveComparison, onChange: props.setMoveComparison }),
-    stage === 2 && draft && !myJobReview && !aiActive && !reviewPanel && React.createElement(CareerTalentContact, { colors: C, role: role }),
+    stage === 2 && draft && !myJobReview && !aiActive && !reviewPanel && React.createElement(CareerTalentContact, { colors: C, role: role, hidden: props.hidden, contextKey: "career" }),
     stage > 0 && !myJobReview && !aiActive && !reviewPanel && introduction.prepared && introductionButton(),
     !saved && hasVisitWork && React.createElement("details", { className: "tops-career-draft-options" }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0" } }, "Draft options"),
       React.createElement("p", null, "This unfinished draft stays while you move between tools in this tab. Refreshing or closing the tab clears it. It is not included in plan backups."),
@@ -9429,7 +9497,7 @@ function App() {
   const resumeHeaderLocationRef = useRef(null);
   const resumeHeaderEmailRef = useRef(null);
   const resumeHeaderPhoneRef = useRef(null);
-  const [jobsQ, setJobsQ] = useState({ open: false, keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "" });
+  const [jobsQ, setJobsQ] = useState(function() { var query = topsReadJobSearchURL(window.location.href); return Object.assign({ open: !!query, keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "", searchRequest: 0 }, query || {}); });
   const jobsVisited = useRef(false);
   if (jobsQ.open) jobsVisited.current = true;
   const [careerToolsOpen, setCareerToolsOpen] = useState(false);
@@ -9728,7 +9796,9 @@ function App() {
       ["area", "situation", "need"].forEach(function(key) { if (url.searchParams.has(key)) url.searchParams.delete(key); });
       if (activeTab === "resources" && subTab === "state-help") { var local = topsStateHelpContext(stateHelpContext); url.searchParams.set("view", "state-help"); url.searchParams.delete("guide"); Object.keys(local).forEach(function(key) { url.searchParams.set(key, local[key]); }); wiGuideRequested.current = false; }
       else if (docs) { url.searchParams.set("view", "documents"); url.searchParams.delete("guide"); wiGuideRequested.current = false; }
+      else if (activeTab === "pathway" && careerScreen === "jobs" && topsReadJobSearchURL(window.location.href)) { url.searchParams.set("view", "jobs"); url.searchParams.delete("guide"); wiGuideRequested.current = false; }
       else { if (url.searchParams.has("view")) url.searchParams.delete("view"); if (activeTab === "resources" && wiGuideRequested.current) { if (url.searchParams.get("guide") !== "wisconsin-work-support") url.searchParams.set("guide", "wisconsin-work-support"); } else { if (url.searchParams.has("guide")) url.searchParams.delete("guide"); wiGuideRequested.current = false; } }
+      if (!(activeTab === "pathway" && careerScreen === "jobs" && topsReadJobSearchURL(window.location.href))) { if (url.searchParams.has("role")) url.searchParams.delete("role"); if (url.searchParams.has("location")) url.searchParams.delete("location"); }
       if (url.href !== window.location.href) history.replaceState(history.state, "", url.href);
     } } catch (error) {}
   };
@@ -11378,7 +11448,7 @@ function App() {
     React.createElement("button", { id: "tops-first-change", type: "button", style: { minHeight: 44, padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgCard, font: "inherit", cursor: "pointer" }, onClick: function() { setOnboardStep(0); setShowOnboarding(true); requestAnimationFrame(function() { var heading = document.getElementById("tops-first-visit-heading"); if (heading) heading.focus(); }); } }, "Change starting point"),
     React.createElement("button", { id: "tops-first-local-help", type: "button", style: { minHeight: 44, padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgCard, font: "inherit", cursor: "pointer" }, onClick: function() { openStateHelp(stateHelpContext); } }, stateHelpContext.area === "wi" ? "Wisconsin help" : "State and local help")),
   React.createElement(MyJobs, { key: "jobs-" + guideRestoreRevision, open: activeTab === "pathway" && myJobsOpen, colors: C, state: myJobs, setState: setMyJobs, context: { guide: guideState.draft, action: actionState.draft, gap: gapState.draft, visit: careerVisitDraft }, candidate: myJobCandidate, consumeCandidate: function() { setMyJobCandidate(null); }, onClose: returnToCareerWorkspace, onAction: function(job, raw, requestedAction) { setMyJobsOpen(false); setJobsQ(function(previous) { return Object.assign({}, previous, { open: false }); }); setPathwayMode("journey"); setJourneyTarget(null); setCareerExperienceContext(null); setAiR(function(p) { return Object.assign({}, p, { open: false }); }); setCareerToolsOpen(false); setMyJobRequest({ job: job, raw: raw, requestedAction: requestedAction }); focusCareerWorksheet("tops-my-job-task-heading"); } }),
-  activeTab === "pathway" && pathwayMode === "journey" && !journeyTarget && !careerExperienceContext && React.createElement(CareerJourney, { moveComparison: moveComparison, setMoveComparison: setMoveComparison, onClearSupportReview: clearSupportReview, wisconsinSupport: wisconsinSupport, openWisconsin: openWisconsinGuide, openSupport: function() { openExperienceTool("resources"); }, key: guideRestoreRevision, hidden: careerScreen !== "workspace", onStage: setCareerStage, stageRequest: careerStageRequest, consumeStageRequest: function() { setCareerStageRequest(null); }, jobRequest: myJobRequest, consumeJobRequest: function() { setMyJobRequest(null); }, entry: careerEntry, onIntroductionBack: function() { continuationFocus.current = null; }, consumeEntry: function() { setCareerEntry(""); }, compareRequest: careerCompareRequest, consumeCompare: function() { setCareerCompareRequest(0); }, introduction: introduction, setIntroduction: setIntroduction, visitDraft: careerVisitDraft, setVisitDraft: setCareerVisitDraft, diskGuard: careerDiskGuard.current, colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gapState: gapState, setGapState: setGapState, openTool: function(tool, role) { if (tool === "my-jobs") { activateCareerScreen("my-jobs"); focusCareerWorksheet("tops-my-jobs-heading"); } else if (tool === "jobs") { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, keyword: role || previous.keyword || guideState.draft.targetRole || "" }); }); focusCareerWorksheet("tops-live-jobs-panel"); } else if (tool === "resume") { setJobsQ(function(p) { return Object.assign({}, p, { open: false }); }); setAiR(function(previous) { var occupied = previous.loading || ["role", "years", "target", "skills", "certs", "exp", "posting", "facts", "out"].some(function(key) { return !!previous[key]; }); return Object.assign({}, previous, occupied ? { open: true, handoff: "kept" } : { open: true, handoff: "added", target: role.role, exp: role.experience, posting: role.posting }); }); focusCareerWorksheet("tops-resume-drafter-panel"); } else if (tool === "readiness") { openPlanRoute("readiness", "tops-plan-readiness", "tops-career-start-heading"); } else { setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-heading"); } }, home: function(focus) { continuationFocus.current = focus === "tops-loop-reflection" ? focus : "tops-loop-title"; setActiveTab("dashboard"); } }),
+  activeTab === "pathway" && pathwayMode === "journey" && !journeyTarget && !careerExperienceContext && React.createElement(CareerJourney, { searchState: jobsQ, setSearchState: setJobsQ, onSearch: function() { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, searchRequest: Date.now() }); }); focusCareerWorksheet("tops-job-role"); }, moveComparison: moveComparison, setMoveComparison: setMoveComparison, onClearSupportReview: clearSupportReview, wisconsinSupport: wisconsinSupport, openWisconsin: openWisconsinGuide, openSupport: function() { openExperienceTool("resources"); }, key: guideRestoreRevision, hidden: careerScreen !== "workspace", onStage: setCareerStage, stageRequest: careerStageRequest, consumeStageRequest: function() { setCareerStageRequest(null); }, jobRequest: myJobRequest, consumeJobRequest: function() { setMyJobRequest(null); }, entry: careerEntry, onIntroductionBack: function() { continuationFocus.current = null; }, consumeEntry: function() { setCareerEntry(""); }, compareRequest: careerCompareRequest, consumeCompare: function() { setCareerCompareRequest(0); }, introduction: introduction, setIntroduction: setIntroduction, visitDraft: careerVisitDraft, setVisitDraft: setCareerVisitDraft, diskGuard: careerDiskGuard.current, colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gapState: gapState, setGapState: setGapState, openTool: function(tool, role) { if (tool === "my-jobs") { activateCareerScreen("my-jobs"); focusCareerWorksheet("tops-my-jobs-heading"); } else if (tool === "jobs") { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, keyword: role || previous.keyword || guideState.draft.targetRole || "" }); }); focusCareerWorksheet("tops-live-jobs-panel"); } else if (tool === "resume") { setJobsQ(function(p) { return Object.assign({}, p, { open: false }); }); setAiR(function(previous) { var occupied = previous.loading || ["role", "years", "target", "skills", "certs", "exp", "posting", "facts", "out"].some(function(key) { return !!previous[key]; }); return Object.assign({}, previous, occupied ? { open: true, handoff: "kept" } : { open: true, handoff: "added", target: role.role, exp: role.experience, posting: role.posting }); }); focusCareerWorksheet("tops-resume-drafter-panel"); } else if (tool === "readiness") { openPlanRoute("readiness", "tops-plan-readiness", "tops-career-start-heading"); } else { setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-heading"); } }, home: function(focus) { continuationFocus.current = focus === "tops-loop-reflection" ? focus : "tops-loop-title"; setActiveTab("dashboard"); } }),
   activeTab === "pathway" && React.createElement("nav", { "aria-label": "Career shortcuts", style: { display: careerScreen !== "tools" ? "none" : "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 } },
     [["Start here", "tops-career-start-heading"], ["Career plan", "career-gap-heading"], ["Resume drafter", "tops-resume-drafter-panel"], ["Business ownership", "tops-ownership-heading"]].map(function(item) {
       return React.createElement("button", { key: item[1], type: "button", onClick: function() {
