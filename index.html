@@ -5263,7 +5263,7 @@ function AboutModal(props) {
     style: bodyText
   }, "Transition OPS uses Google Analytics to measure site visits. Google uses cookies and receives page-view information, browser and device details, and network request metadata."), /*#__PURE__*/React.createElement("div", {
     style: sectionLabel
-  }, "FEDERAL JOB SEARCH"), /*#__PURE__*/React.createElement("p", { style: bodyText }, "When connected, searching federal openings sends your entered role and area through our Netlify-hosted service to USAJOBS. That search request does not include your resume, saved plan or service profile. The hosting service and USAJOBS may process operational request records. Opening an official announcement takes you to USAJOBS, where its privacy terms apply. My jobs saves selected job details, public source excerpts, progress and your chosen action/date on this browser only after you save. Plan backup files include that list. Removing a job does not remove copies in earlier downloads. My jobs does not store resume text or networking messages."), /*#__PURE__*/React.createElement("div", { style: sectionLabel }, "PUSH ALERTS"), /*#__PURE__*/React.createElement("p", {
+  }, "FEDERAL JOB SEARCH"), /*#__PURE__*/React.createElement("p", { style: bodyText }, "When connected, searching federal openings sends your entered role and area through our Netlify-hosted service to USAJOBS. That search request does not include your resume, saved plan or service profile. The hosting service and USAJOBS may process operational request records. Opening an official announcement takes you to USAJOBS, where its privacy terms apply. My jobs saves selected job details, public source excerpts, progress and your chosen action/date on this browser only after you save. Plan backup files include that list. Removing a job does not remove copies in earlier downloads. My jobs does not store resume text or networking messages."), /*#__PURE__*/React.createElement("div", { style: sectionLabel }, "MOVE COMPARISON STORAGE"), /*#__PURE__*/React.createElement("p", { style: bodyText }, "Move comparison entries stay in this visit unless you choose Save comparison on this device. The saved copy is on this browser and device only, without an account. Anyone using this browser can see saved amounts. Later edits need Save again. Delete saved comparison removes that copy after confirmation; Clear current entries does not delete it. Comparison entries are excluded from plan backups, AI requests, job searches and recruiting emails."), /*#__PURE__*/React.createElement("div", { style: sectionLabel }, "PUSH ALERTS"), /*#__PURE__*/React.createElement("p", {
     style: bodyText
   }, "Push alerts are currently disabled. Earlier browsers may still use an older push setup that could have contacted OneSignal before the current choice was available. Privacy and deletion questions: ", /*#__PURE__*/React.createElement("strong", {
     style: { color: C.goldBright }
@@ -8240,6 +8240,54 @@ function topsMoveExpenseTotal(costs) {
   var total = amounts.reduce(function(sum, value) { return sum + value; }, 0);
   return total <= 100000000 ? total : null;
 }
+// Explicit local save only. No source context, derived amounts, or navigation state is stored.
+const TOPS_MOVE_SAVE_KEY = "tops_move_comparison_v1";
+function topsMoveSnapshot(plan) { return { cash: plan.cash, options: plan.options.map(function(o) { return { label: o.label, income: o.income, expenses: o.expenses, monthlySavings: o.monthlySavings, moving: o.moving, service: o.service, includeService: o.includeService, costs: { housing: o.costs.housing, transport: o.costs.transport, health: o.costs.health, other: o.costs.other } }; }) }; }
+function topsMoveSame(a, b) { return !!a && !!b && JSON.stringify(topsMoveSnapshot(a)) === JSON.stringify(topsMoveSnapshot(b)); }
+function topsMoveDraftError(plan) {
+  function shape(value, keys) { return !!value && typeof value === "object" && !Array.isArray(value) && Object.keys(value).sort().join("|") === keys.slice().sort().join("|"); }
+  function amount(value) { return typeof value === "string" && value.length <= 10 && !/[\u0000-\u001f\u007f-\u009f]/.test(value) && (!value.trim() || topsMoveCents(value) !== null); }
+  if (!shape(plan, ["cash", "options"]) || !Array.isArray(plan.options) || plan.options.length !== 2) return { field: "heading", message: "Comparison format could not be saved." };
+  if (!amount(plan.cash)) return { field: "cash", message: "Check cash available before saving." };
+  for (var i = 0; i < 2; i++) {
+    var option = plan.options[i];
+    if (!shape(option, ["label", "income", "expenses", "monthlySavings", "moving", "service", "includeService", "costs"]) || typeof option.includeService !== "boolean" || !shape(option.costs, ["housing", "transport", "health", "other"])) return { field: "heading", message: "Comparison format could not be saved." };
+    if (typeof option.label !== "string" || option.label.length > 60 || /[\u0000-\u001f\u007f-\u009f]/.test(option.label)) return { option: i, field: "label", message: "Check the option name before saving. Use up to 60 characters without control characters." };
+    var fields = ["income", "expenses", "monthlySavings", "moving", "service"];
+    for (var j = 0; j < fields.length; j++) if (!amount(option[fields[j]])) return { option: i, field: fields[j] === "monthlySavings" ? "savings" : fields[j], message: "Check the amount in Option " + (i + 1) + " before saving. Leave unknown amounts blank or use 0 to 1,000,000 with up to two decimal places." };
+    var costs = ["housing", "transport", "health", "other"];
+    for (var k = 0; k < costs.length; k++) if (!amount(option.costs[costs[k]])) return { option: i, field: "cost-" + costs[k], message: "Check the expense helper amount in Option " + (i + 1) + " before saving." };
+  }
+  return null;
+}
+function topsReadMoveSaved() {
+  try {
+    if (window.__IS_IFRAME || window.self !== window.top) return { raw: null, value: null, ready: false, embedded: true, error: "Saving is unavailable in an embedded page. Open the app directly; your entries can still be used for this visit." };
+    var raw = localStorage.getItem(TOPS_MOVE_SAVE_KEY);
+    if (raw === null) return { raw: null, value: null, ready: true, error: "" };
+    var value;
+    try {
+      if (raw.length > 4096) throw new Error("size");
+      value = JSON.parse(raw);
+      if (!value || Array.isArray(value) || Object.keys(value).sort().join("|") !== "comparison|version" || value.version !== 1 || topsMoveDraftError(value.comparison)) throw new Error("shape");
+    } catch (error) { return { raw: raw, value: null, ready: true, error: "The saved comparison cannot be read. Current entries are unchanged. You can delete the unreadable saved copy." }; }
+    return { raw: raw, value: Object.assign({ selected: 0 }, value.comparison), ready: true, error: "" };
+  } catch (error) { return { raw: null, value: null, ready: false, error: "Saved comparison storage could not be checked. Your current entries are still available in this visit." }; }
+}
+function topsWriteMoveSaved(expected, plan, remove) {
+  var current = topsReadMoveSaved();
+  if (!current.ready) return { ok: false, message: current.error };
+  if (!expected.ready || current.raw !== expected.raw) return { ok: false, message: "The saved copy changed or was not checked. Current entries are unchanged. Load the saved copy before saving or deleting." };
+  if (!remove && current.error) return { ok: false, message: current.error };
+  var snapshot = remove ? null : topsMoveSnapshot(plan), invalid = remove ? null : topsMoveDraftError(snapshot);
+  if (invalid) return { ok: false, message: invalid.message, invalid: invalid };
+  var raw = remove ? null : JSON.stringify({ version: 1, comparison: snapshot });
+  try {
+    if (remove) localStorage.removeItem(TOPS_MOVE_SAVE_KEY); else localStorage.setItem(TOPS_MOVE_SAVE_KEY, raw);
+    if (localStorage.getItem(TOPS_MOVE_SAVE_KEY) !== raw) return { ok: false, message: (remove ? "Deletion" : "Saving") + " could not be confirmed. Current entries are unchanged. Check the saved copy before trying again." };
+  } catch (error) { return { ok: false, message: (remove ? "Deletion" : "Saving") + " could not be confirmed. Browser storage may be blocked or full. Current entries are unchanged. Check the saved copy before trying again." }; }
+  return { ok: true, saved: { raw: raw, value: remove ? null : JSON.parse(JSON.stringify(plan)), ready: true, error: "" } };
+}
 function CareerMoveComparison(props) {
   var C = props.colors, plan = props.value, selected = plan.selected, option = plan.options[selected];
   var [helperError, setHelperError] = useState(""), [message, setMessage] = useState("");
@@ -8253,7 +8301,7 @@ function CareerMoveComparison(props) {
   function field(key, label, value, onChange, hint) {
     var id = "tops-move-" + key, invalid = !!value.trim() && topsMoveCents(value) === null;
     return React.createElement("div", { style: { marginBottom: 12 } }, React.createElement("label", { htmlFor: id, style: { display: "block", lineHeight: 1.4 } }, label),
-      React.createElement("input", { id: id, type: "text", inputMode: "decimal", autoComplete: "off", maxLength: 10, value: value, style: input, "aria-invalid": invalid, "aria-describedby": "tops-move-format" + (hint ? " " + id + "-hint" : "") + (invalid ? " " + id + "-error" : ""), onChange: function(event) { onChange(event.target.value); } }),
+      React.createElement("input", { id: id, type: "text", inputMode: "decimal", autoComplete: "off", maxLength: 10, value: value, style: input, "aria-invalid": invalid, "aria-describedby": "tops-move-format tops-move-storage-status" + (hint ? " " + id + "-hint" : "") + (invalid ? " " + id + "-error" : ""), onChange: function(event) { onChange(event.target.value); } }),
       hint && React.createElement("p", { id: id + "-hint", style: { fontSize: 14, margin: "5px 0 0", lineHeight: 1.4 } }, hint),
       invalid && React.createElement("p", { id: id + "-error", role: "alert", style: { fontSize: 14, margin: "5px 0 0" } }, "Use 0 to 1,000,000, with up to two decimal places and no commas."));
   }
@@ -8278,11 +8326,11 @@ function CareerMoveComparison(props) {
     React.createElement("summary", { id: "tops-move-heading", style: { minHeight: 44, padding: "12px 0", fontWeight: 700, cursor: "pointer" } }, "Can I afford my next move?"),
     React.createElement("p", { style: { lineHeight: 1.5 } }, "Compare two places or job options using your own estimates. Start with one; add the other when you're ready."),
     props.context && (props.context.role || props.context.location) && React.createElement("p", { id: "tops-move-context", style: { lineHeight: 1.5, overflowWrap: "anywhere" } }, "Opened from: " + [props.context.role, props.context.location].filter(Boolean).join(" - ") + ". Your existing comparison entries are unchanged."),
-    React.createElement("p", { id: "tops-move-notice", style: { fontSize: 14, lineHeight: 1.5 } }, "These estimates stay in this open app while you use other tools. Refreshing or Clear comparison clears them. They are not added to your saved plan, backup, AI request or recruiting email."),
+    React.createElement("p", { id: "tops-move-notice", style: { fontSize: 14, lineHeight: 1.5 } }, "Entries stay in this visit unless you choose Save comparison on this device. Refresh restores only the last saved copy; later edits are not saved automatically. Comparison entries are excluded from plan backups, AI requests, job searches and recruiting emails."),
     React.createElement("p", { id: "tops-move-format", style: { fontSize: 14, lineHeight: 1.5 } }, "Amounts are in US dollars. Leave unknown amounts blank; enter 0 only when the amount is zero. These are estimates, not a recommendation to move."),
     field("cash", "Cash available for this move", plan.cash, function(value) { props.onChange(function(previous) { return Object.assign({}, previous, { cash: value }); }); setMessage(""); }, "Use cash you could spend after setting aside any money you want to protect. This same amount is used for both options."),
     React.createElement("div", { role: "group", "aria-label": "Choose which option to edit", style: { display: "flex", gap: 8, marginBottom: 14 } }, [0, 1].map(function(number) { return React.createElement("button", { key: number, id: "tops-move-option-" + number, type: "button", "aria-pressed": selected === number, style: Object.assign({}, control, { flex: 1, fontWeight: selected === number ? 700 : 400, border: (selected === number ? "2px solid " + C.textPrimary : "1px solid " + C.border), cursor: "pointer" }), onClick: function() { props.onChange(function(previous) { return Object.assign({}, previous, { selected: number }); }); setHelperError(""); setMessage(""); } }, "Option " + (number + 1)); })),
-    React.createElement("div", { style: { marginBottom: 12 } }, React.createElement("label", { htmlFor: "tops-move-label" }, "Place or option name (optional)"), React.createElement("input", { id: "tops-move-label", value: option.label, type: "text", autoComplete: "off", maxLength: 60, style: input, onChange: function(event) { update("label", event.target.value); } })),
+    React.createElement("div", { style: { marginBottom: 12 } }, React.createElement("label", { htmlFor: "tops-move-label" }, "Place or option name (optional)"), React.createElement("input", { id: "tops-move-label", value: option.label, "aria-describedby": "tops-move-storage-status", type: "text", autoComplete: "off", maxLength: 60, style: input, onChange: function(event) { update("label", event.target.value); } })),
     field("income", "Monthly take-home pay", option.income, function(value) { update("income", value); }, "After taxes and payroll deductions, not a job's advertised salary. Leave out the optional service income below."),
     field("expenses", "Total monthly expenses", option.expenses, function(value) { update("expenses", value); }),
     field("savings", "Monthly savings target (optional)", option.monthlySavings, function(value) { update("monthlySavings", value); }, "Extra savings from take-home pay, not already in your expenses. Leave out 401(k) or TSP contributions already taken from your paycheck."),
@@ -8305,8 +8353,9 @@ function CareerMoveComparison(props) {
       React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "MIT's Living Wage Calculator is a starting point for local basic needs, not your full budget. Savings, emergencies and leisure are outside its estimate. Enter your own amounts here; this app does not import those costs."),
       React.createElement("a", { id: "tops-move-mit", href: "https://livingwage.mit.edu/", target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, control, { display: "flex", alignItems: "center", lineHeight: 1.4, marginBottom: 8 }) }, "Explore costs by county with MIT (new tab)"),
       React.createElement("a", { id: "tops-move-mos", href: "https://www.militaryonesource.mil/financial-legal/personal-finance/financial-tools-and-services/", target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, control, { display: "flex", alignItems: "center", lineHeight: 1.4 }) }, "Military OneSource financial tools (new tab)")),
+    props.storageControls,
     React.createElement("p", { role: "status", style: { fontSize: 14 } }, message),
-    React.createElement("button", { id: "tops-move-clear", type: "button", style: Object.assign({}, control, { cursor: "pointer" }), onClick: function() { props.onChange(topsMoveBlank()); setHelperError(""); setMessage("Comparison cleared. Your career plan is unchanged."); requestAnimationFrame(function() { var field = document.getElementById("tops-move-cash"); if (field) field.focus(); }); } }, "Clear comparison"));
+    React.createElement("button", { id: "tops-move-clear", type: "button", style: Object.assign({}, control, { cursor: "pointer" }), onClick: function() { props.onChange(topsMoveBlank()); setHelperError(""); setMessage(props.hasSavedCopy ? "Current entries cleared. The saved comparison and your career plan are unchanged." : "Current entries cleared. Your career plan is unchanged."); requestAnimationFrame(function() { var field = document.getElementById("tops-move-cash"); if (field) field.focus(); }); } }, "Clear current entries"));
 }
 
 function CareerJourney(props) {
@@ -9389,7 +9438,7 @@ function PlanBackup(props) {
   return React.createElement("section", { "aria-label": "Plan backup", style: { border: "1px solid " + C.border, borderRadius: 12, padding: "4px 16px", marginBottom: 14, background: C.bgCard, color: C.textPrimary } },
     React.createElement("details", { id: "tops-plan-backup" }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Back up or restore my plan"),
       React.createElement("p", { style: { lineHeight: 1.6 } }, "Download your career plan and progress currently open in this page, including unsaved career edits and your saved My jobs list. This does not save those edits in the app. No account is needed."),
-      React.createElement("p", { style: { lineHeight: 1.6 } }, "Includes saved My jobs details, source excerpts and progress, career comparison notes, guide details, your career step and its goal details, career worksheet and counselor notes, My Plan task and document checkmarks, completed reminders, and follow-up statuses and dates. Does not include your unfinished support update, unfinished career draft, visit-only career introduction, Resume Drafter content, Navigator chats, service profile or separation date, readiness answers, VA or pay inputs, or alert settings."),
+      React.createElement("p", { style: { lineHeight: 1.6 } }, "Includes saved My jobs details, source excerpts and progress, career comparison notes, guide details, your career step and its goal details, career worksheet and counselor notes, My Plan task and document checkmarks, completed reminders, and follow-up statuses and dates. Does not include your unfinished support update, unfinished career draft, visit-only career introduction, Resume Drafter content, Navigator chats, service profile or separation date, readiness answers, VA or pay inputs, or alert settings. Saved move comparisons are not included in backups."),
       React.createElement("p", { style: { lineHeight: 1.6 } }, "This readable file contains your notes and progress and is not encrypted. Keep it somewhere private. Anyone with the file can read what you entered."),
       React.createElement("button", { type: "button", style: button, onClick: download }, "Download my plan"),
       React.createElement("label", { htmlFor: "tops-backup-file", style: { display: "block", marginTop: 16 } }, "Restore my plan"),
@@ -9431,8 +9480,46 @@ function topsCurrentToolURL(href, tool) {
   try { var url = new URL(href); if (url.searchParams.get("tool") === tool) return href; url.searchParams.set("tool", tool); return url.href; } catch (error) { return null; }
 }
 function App() {
-  // Deliberately separate from persisted career/profile state and all outbound tools.
-  const [moveComparison, setMoveComparison] = useState(topsMoveBlank);
+  // This optional saved copy is separate from career/profile state and all outbound tools.
+  const [moveSaved, setMoveSaved] = useState(topsReadMoveSaved);
+  const [moveComparison, setMoveComparison] = useState(function() { return moveSaved.value ? JSON.parse(JSON.stringify(moveSaved.value)) : topsMoveBlank(); });
+  const [moveStorageStatus, setMoveStorageStatus] = useState("");
+  const [moveStorageRecovery, setMoveStorageRecovery] = useState(false);
+  const [moveDeleteReview, setMoveDeleteReview] = useState(null);
+  function changeMoveComparison(update) {
+    setMoveComparison(update); setMoveStorageStatus(""); setMoveDeleteReview(null);
+  }
+  function focusMove(id) {
+    requestAnimationFrame(function() { var node = document.getElementById(id); if (!node) return; var parent = node.parentElement; while (parent) { if (parent.tagName === "DETAILS") parent.open = true; parent = parent.parentElement; } node.focus(); });
+  }
+  function saveMoveComparison() {
+    var invalid = topsMoveDraftError(topsMoveSnapshot(moveComparison));
+    if (invalid) { setMoveStorageStatus(invalid.message); if (invalid.option !== undefined) setMoveComparison(function(plan) { return Object.assign({}, plan, { selected: invalid.option }); }); focusMove("tops-move-" + invalid.field); return; }
+    var result = topsWriteMoveSaved(moveSaved, moveComparison, false);
+    setMoveDeleteReview(null);
+    if (!result.ok) { setMoveStorageStatus(result.message); setMoveStorageRecovery(true); return; }
+    setMoveSaved(result.saved); setMoveStorageRecovery(false); setMoveStorageStatus("Saved on this browser. Later edits need Save again.");
+  }
+  function recoverMoveComparison() {
+    var current = topsReadMoveSaved();
+    setMoveDeleteReview(null);
+    if (!current.ready) { setMoveStorageStatus(current.error); setMoveStorageRecovery(true); return; }
+    setMoveSaved(current); setMoveStorageRecovery(false);
+    if (current.value) { setMoveComparison(JSON.parse(JSON.stringify(current.value))); setMoveStorageStatus("Saved copy loaded. It replaced the current entries."); }
+    else setMoveStorageStatus(current.error || "There is no saved comparison on this browser. Current entries are unchanged.");
+    focusMove("tops-move-storage-status");
+  }
+  function deleteMoveComparison(surface) {
+    if (!moveDeleteReview || moveDeleteReview.surface !== surface) return;
+    var result = topsWriteMoveSaved(moveDeleteReview.saved, null, true);
+    setMoveDeleteReview(null);
+    if (!result.ok) { setMoveStorageStatus(result.message); setMoveStorageRecovery(true); focusMove(surface === "home" ? "tops-home-move-status" : "tops-move-storage-status"); return; }
+    var matching = topsMoveSame(moveComparison, moveSaved.value);
+    if (matching) setMoveComparison(topsMoveBlank());
+    setMoveSaved(result.saved); setMoveStorageRecovery(false);
+    setMoveStorageStatus(matching ? "Saved comparison deleted and current entries cleared. Your other plans are unchanged." : "Saved copy deleted. Your unsaved changes remain in this visit. Your other plans are unchanged.");
+    focusMove(surface === "home" ? "tops-home-move-status" : "tops-move-storage-status");
+  }
   const [moveComparisonEntry, setMoveComparisonEntry] = useState(null);
   function openMoveComparison(context) {
     setMoveComparisonEntry({ role: context.role || "", location: context.location || "" });
@@ -9644,6 +9731,7 @@ function App() {
       var validTabs = TOPS_TOOL_ROUTES;
       var t = new URLSearchParams(window.location.search).get("tool");
       if (t && validTabs.indexOf(t) !== -1) return false;
+      if (!moveSaved.embedded && (moveSaved.raw !== null || moveSaved.error)) return false;
       var returningKeys = [TOPS_GUIDE_KEY, TOPS_ACTION_KEY, TOPS_GAP_KEY, "tops_member_jobs_v1", "tops_sep_date", "taskProgress", "docProgress"];
       if (returningKeys.some(function(key) { return !!window.__safeGet(key); })) return false;
       return !window.__safeGet("tops_onboarded");
@@ -10986,6 +11074,47 @@ function App() {
         React.createElement("button", { type: "button", style: button, onClick: function() { setPlanQuestionOpen(false); continuationFocus.current = "tops-page-title"; setContinuationRevision(function(value) { return value + 1; }); } }, "Return to existing Navigator chat"),
         React.createElement("button", { type: "button", style: button, disabled: navBusy, onClick: function() { setPlanQuestion(null); setPlanQuestionOpen(false); continuationFocus.current = "tops-loop-title"; setActiveTab("dashboard"); } }, "Discard this draft and answer")));
   }
+  function moveStorageMessage() {
+    if (moveStorageStatus) return moveStorageStatus;
+    if (moveSaved.error) return moveSaved.error;
+    if (moveStorageRecovery) return "The saved copy needs checking. Current entries are still available in this visit.";
+    if (moveSaved.value) return topsMoveSame(moveComparison, moveSaved.value) ? "Saved on this browser." : "Changes not saved. Save again to keep them after refresh.";
+    return "Current entries are only in this visit. Nothing is saved yet.";
+  }
+  function moveDeleteControls(surface, button) {
+    var id = surface === "home" ? "tops-home-move" : "tops-move";
+    if (moveSaved.raw === null) return null;
+    return moveDeleteReview && moveDeleteReview.surface === surface ? React.createElement("div", { id: id + "-delete-review" },
+      React.createElement("p", { style: { lineHeight: 1.5 } }, topsMoveSame(moveComparison, moveSaved.value) ? "Delete this saved comparison from this browser? This also clears the open comparison. Your other plans stay." : "Delete the saved copy? Your unsaved changes will stay open until refresh. Your other plans stay."),
+      React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
+        React.createElement("button", { id: id + "-delete-confirm", type: "button", style: button, onClick: function() { deleteMoveComparison(surface); } }, "Delete saved comparison"),
+        React.createElement("button", { id: id + "-delete-cancel", type: "button", style: button, onClick: function() { setMoveDeleteReview(null); focusMove(id + "-delete"); } }, "Cancel"))) :
+      React.createElement("button", { id: id + "-delete", type: "button", style: button, onClick: function() { setMoveDeleteReview({ surface: surface, saved: moveSaved }); focusMove(id + "-delete-cancel"); } }, "Delete saved comparison");
+  }
+  function renderMoveStorageControls() {
+    var button = { minHeight: 44, padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 8, font: "inherit", background: C.bgCard, color: C.textPrimary, cursor: "pointer", textDecoration: "none" };
+    return React.createElement("section", { "aria-label": "Save this comparison", style: { margin: "16px 0" } },
+      React.createElement("p", { id: "tops-move-save-notice", style: { fontSize: 14, lineHeight: 1.5 } }, "Anyone using this browser can see saved amounts. Saved here only, on this browser and device; no account. Save again to keep later edits."),
+      React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
+        React.createElement("button", { id: "tops-move-save", type: "button", style: button, "aria-describedby": "tops-move-save-notice tops-move-storage-status", onClick: saveMoveComparison }, "Save comparison on this device"),
+        moveDeleteControls("comparison", button)),
+      React.createElement("p", { id: "tops-move-storage-status", role: "status", tabIndex: -1, style: { lineHeight: 1.5 } }, moveStorageMessage()),
+      (moveStorageRecovery || !moveSaved.ready && !moveSaved.embedded || moveSaved.value && !topsMoveSame(moveComparison, moveSaved.value)) && React.createElement("button", { id: "tops-move-recover", type: "button", style: button, onClick: recoverMoveComparison }, "Load saved copy (replaces this comparison's entries)"));
+  }
+  function resumeMoveComparison() {
+    setActiveTab("pathway"); activateCareerScreen("workspace"); openMoveComparison({});
+  }
+  function renderMoveComparisonResume() {
+    var show = !moveSaved.embedded && (moveSaved.raw !== null || moveSaved.error || moveStorageRecovery);
+    if (!show) return moveStorageStatus ? React.createElement("p", { id: "tops-home-move-status", role: "status", tabIndex: -1, style: { lineHeight: 1.5 } }, moveStorageStatus) : null;
+    var button = { minHeight: 44, padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 8, font: "inherit", background: C.bgCard, color: C.textPrimary, cursor: "pointer", textDecoration: "none" };
+    return React.createElement("section", { id: "tops-home-move", "aria-labelledby": "tops-home-move-heading", style: { padding: 16, marginBottom: 16, border: "1px solid " + C.border, borderRadius: 10, background: C.bgCard } },
+      React.createElement("h2", { id: "tops-home-move-heading", style: { fontSize: 19, margin: "0 0 8px" } }, "Your move comparison"),
+      React.createElement("p", { id: "tops-home-move-status", role: "status", tabIndex: -1, style: { lineHeight: 1.5 } }, moveStorageMessage()),
+      React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
+        React.createElement("button", { id: "tops-home-move-resume", type: "button", style: button, onClick: resumeMoveComparison }, "Resume comparison"),
+        moveDeleteControls("home", button)));
+  }
   function renderCareerConversationResume() {
     var worksheet = topsValidateGap(gapState.draft);
     var conversation = worksheet && topsConversationResume(worksheet.prep);
@@ -11605,7 +11734,7 @@ function App() {
   React.createElement(MyJobs, { onMove: openMoveComparison, learningPlan: learningPlan, key: "jobs-" + guideRestoreRevision, open: activeTab === "pathway" && myJobsOpen, colors: C, state: myJobs, setState: setMyJobs, context: { guide: guideState.draft, action: actionState.draft, gap: gapState.draft, visit: careerVisitDraft }, candidate: myJobCandidate, consumeCandidate: function() { setMyJobCandidate(null); }, onClose: returnToCareerWorkspace, onAction: function(job, raw, requestedAction) { setMyJobsOpen(false); setJobsQ(function(previous) { return Object.assign({}, previous, { open: false }); }); setPathwayMode("journey"); setJourneyTarget(null); setCareerExperienceContext(null); setAiR(function(p) { return Object.assign({}, p, { open: false }); }); setCareerToolsOpen(false); setMyJobRequest({ job: job, raw: raw, requestedAction: requestedAction }); focusCareerWorksheet("tops-my-job-task-heading"); } }),
   activeTab === "pathway" && pathwayMode === "journey" && !journeyTarget && !careerExperienceContext && React.createElement(CareerJourney, { searchState: jobsQ, setSearchState: setJobsQ, onSearch: function() { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, searchRequest: Date.now() }); }); focusCareerWorksheet("tops-job-role"); }, onClearSupportReview: clearSupportReview, wisconsinSupport: wisconsinSupport, openWisconsin: openWisconsinGuide, openSupport: function() { openExperienceTool("resources"); }, key: guideRestoreRevision, hidden: careerScreen !== "workspace", onStage: setCareerStage, stageRequest: careerStageRequest, consumeStageRequest: function() { setCareerStageRequest(null); }, jobRequest: myJobRequest, consumeJobRequest: function() { setMyJobRequest(null); }, entry: careerEntry, onIntroductionBack: function() { continuationFocus.current = null; }, consumeEntry: function() { setCareerEntry(""); }, compareRequest: careerCompareRequest, consumeCompare: function() { setCareerCompareRequest(0); }, introduction: introduction, setIntroduction: setIntroduction, visitDraft: careerVisitDraft, setVisitDraft: setCareerVisitDraft, diskGuard: careerDiskGuard.current, colors: C, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gapState: gapState, setGapState: setGapState, openTool: function(tool, role) { if (tool === "my-jobs") { activateCareerScreen("my-jobs"); focusCareerWorksheet("tops-my-jobs-heading"); } else if (tool === "jobs") { setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, keyword: role || (topsJobSearchQuery(previous.keyword, previous.state) ? previous.keyword : previous.keyword || guideState.draft.targetRole || "") }); }); focusCareerWorksheet("tops-live-jobs-panel"); } else if (tool === "resume") { setJobsQ(function(p) { return Object.assign({}, p, { open: false }); }); setAiR(function(previous) { var occupied = previous.loading || ["role", "years", "target", "skills", "certs", "exp", "posting", "facts", "out"].some(function(key) { return !!previous[key]; }); return Object.assign({}, previous, occupied ? { open: true, handoff: "kept" } : { open: true, handoff: "added", target: role.role, exp: role.experience, posting: role.posting }); }); focusCareerWorksheet("tops-resume-drafter-panel"); } else if (tool === "readiness") { openPlanRoute("readiness", "tops-plan-readiness", "tops-career-start-heading"); } else { setPathwayMode("planner"); setPathwayStep(1); focusCareerWorksheet("career-gap-heading"); } }, home: function(focus) { continuationFocus.current = focus === "tops-loop-reflection" ? focus : "tops-loop-title"; setActiveTab("dashboard"); } }),
   activeTab === "pathway" && careerScreen === "workspace" && careerStage === 0 && React.createElement("button", { id: "tops-career-move", type: "button", style: { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgCard, color: C.textPrimary, font: "inherit", cursor: "pointer" }, onClick: function() { openMoveComparison({ role: "", location: "" }); } }, "Compare living and moving costs"),
-  activeTab === "pathway" && React.createElement(CareerMoveComparison, { colors: C, value: moveComparison, onChange: setMoveComparison, context: moveComparisonEntry, hidden: careerScreen === "resume" || !(moveComparisonEntry || (careerScreen === "workspace" && careerStage === 2)) }),
+  activeTab === "pathway" && React.createElement(CareerMoveComparison, { colors: C, value: moveComparison, onChange: changeMoveComparison, context: moveComparisonEntry, hasSavedCopy: moveSaved.raw !== null, storageControls: renderMoveStorageControls(), hidden: careerScreen === "resume" || !(moveComparisonEntry || (careerScreen === "workspace" && careerStage === 2)) }),
   activeTab === "pathway" && React.createElement("nav", { "aria-label": "Career shortcuts", style: { display: careerScreen !== "tools" ? "none" : "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 } },
     [["Start here", "tops-career-start-heading"], ["Career plan", "career-gap-heading"], ["Resume drafter", "tops-resume-drafter-panel"], ["Business ownership", "tops-ownership-heading"]].map(function(item) {
       return React.createElement("button", { key: item[1], type: "button", onClick: function() {
@@ -11702,6 +11831,7 @@ function App() {
     // ═══════════ GUARD / RESERVE DASHBOARD ═══════════
     if (userStatus === "guard") {
       return React.createElement("div", null,
+        renderMoveComparisonResume(),
         renderMemberLoop(),
         React.createElement("section", { className: "tops-home-toolkit", "aria-label": "Tools and progress" }, renderHomeSearch(), renderHomeTools()),
         React.createElement(ServiceProfileEditor, { colors: C, value: userStatus, onSave: function(value) { serviceProfileEdit.current = true; setUserStatus(value); } }),
@@ -11986,6 +12116,7 @@ function App() {
       ),
 
       // ═══ v49 INSTRUMENT: timeline ring + ETS countdown fused ═══
+      renderMoveComparisonResume(),
       renderMemberLoop(),
       renderCareerConversationResume(),
       React.createElement("section", { className: "tops-home-toolkit", "aria-label": "Tools and progress" }, renderHomeSearch(), renderHomeTools()),
