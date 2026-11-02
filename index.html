@@ -8222,16 +8222,17 @@ function topsMoveCents(value) {
   return Number.isSafeInteger(cents) && cents <= 100000000 ? cents : null;
 }
 function topsMoveBlank() {
-  function option() { return { label: "", income: "", expenses: "", moving: "", service: "", includeService: false, costs: { housing: "", transport: "", health: "", other: "" } }; }
+  function option() { return { label: "", income: "", expenses: "", monthlySavings: "", moving: "", service: "", includeService: false, costs: { housing: "", transport: "", health: "", other: "" } }; }
   return { cash: "", selected: 0, options: [option(), option()] };
 }
 function topsMoveResult(option, cash) {
   var income = topsMoveCents(option.income), expenses = topsMoveCents(option.expenses), moving = topsMoveCents(option.moving), savings = topsMoveCents(cash), service = topsMoveCents(option.service);
+  var savingsTarget = topsMoveCents(option.monthlySavings), monthlyTarget = expenses === null || savingsTarget === null ? null : expenses + savingsTarget;
   var balance = income === null || expenses === null ? null : income - expenses;
   var remaining = savings === null || moving === null ? null : savings - moving;
   function runway(monthly) { return monthly !== null && monthly < 0 && remaining !== null && remaining >= 0 ? Math.floor(remaining * 10 / -monthly) / 10 : null; }
   var whatIf = option.includeService && service !== null && balance !== null ? balance + service : null;
-  return { balance: balance, cash: remaining, runway: runway(balance), whatIf: whatIf, whatIfRunway: runway(whatIf) };
+  return { balance: balance, cash: remaining, runway: runway(balance), whatIf: whatIf, whatIfRunway: runway(whatIf), savingsTarget: savingsTarget, monthlyTarget: monthlyTarget, targetBalance: income === null || monthlyTarget === null ? null : income - monthlyTarget, whatIfTargetBalance: whatIf === null || savingsTarget === null ? null : whatIf - savingsTarget };
 }
 function topsMoveExpenseTotal(costs) {
   var amounts = ["housing", "transport", "health", "other"].map(function(key) { return topsMoveCents(costs[key]); });
@@ -8257,17 +8258,21 @@ function CareerMoveComparison(props) {
       invalid && React.createElement("p", { id: id + "-error", role: "alert", style: { fontSize: 14, margin: "5px 0 0" } }, "Use 0 to 1,000,000, with up to two decimal places and no commas."));
   }
   function result(item, number) {
-    var r = topsMoveResult(item, plan.cash), needed = topsMoveCents(item.expenses), name = item.label.trim() || "Option " + (number + 1);
-    function monthly(value) { return value === 0 ? "Income matches expenses in these estimates." : value > 0 ? money(value) + " left each month after expenses." : money(-value) + " monthly gap to cover."; }
+    var r = topsMoveResult(item, plan.cash), needed = topsMoveCents(item.expenses), name = item.label.trim() || "Option " + (number + 1), hasSavingsTarget = !!item.monthlySavings.trim();
+    function monthly(value) { return value === 0 ? "Income matches entered expenses in these estimates." : value > 0 ? money(value) + " left each month after entered expenses." : money(-value) + " monthly gap to cover entered expenses."; }
+    function withSavings(value, expenseBalance) { return value === 0 ? "Income covers entered expenses and your savings goal exactly." : value > 0 ? money(value) + " left each month after entered expenses and your savings goal." : expenseBalance >= 0 ? "Covers entered expenses. " + money(-value) + " short of your savings goal." : money(-value) + " more each month would cover entered expenses and your savings goal."; }
     return React.createElement("section", { key: number, "aria-labelledby": "tops-move-result-" + number, style: { background: C.bg, border: "1px solid " + C.border, borderRadius: 10, padding: 12, minWidth: 0, overflowWrap: "anywhere" } },
       React.createElement("h4", { id: "tops-move-result-" + number, style: { margin: "0 0 8px", fontSize: 17 } }, name),
       React.createElement("p", { id: "tops-move-needed-" + number, style: { margin: "0 0 8px", lineHeight: 1.5 } }, needed === null ? "Take-home needed: add monthly expenses first." : "Monthly take-home needed to cover entered expenses: " + money(needed) + "."),
       React.createElement("p", { style: { margin: "0 0 8px", fontWeight: 700, lineHeight: 1.5 } }, r.balance === null ? "Add take-home pay and monthly expenses to see your monthly balance." : monthly(r.balance)),
+      React.createElement("p", { id: "tops-move-target-" + number, style: { margin: "0 0 8px", lineHeight: 1.5 } }, !hasSavingsTarget ? "Monthly savings target: not included." : r.savingsTarget === null ? "Savings target not calculated. Enter a valid amount or leave it blank." : r.monthlyTarget === null ? "Add monthly expenses to include your savings target." : "Monthly take-home target for entered expenses and chosen savings: " + money(r.monthlyTarget) + "."),
+      hasSavingsTarget && r.savingsTarget !== null && React.createElement("p", { id: "tops-move-target-balance-" + number, style: { margin: "0 0 8px", lineHeight: 1.5 } }, r.targetBalance === null ? "Add valid take-home pay and monthly expenses to check your savings goal." : withSavings(r.targetBalance, r.balance)),
       React.createElement("p", { style: { margin: "0 0 8px", lineHeight: 1.5 } }, r.cash === null ? "Cash after moving: add available cash and moving costs." : r.cash < 0 ? "Moving costs exceed available cash by " + money(-r.cash) + "." : money(r.cash) + " cash left after moving."),
-      r.runway !== null && React.createElement("p", { style: { margin: "0 0 8px", lineHeight: 1.5 } }, "That cash covers about " + r.runway.toFixed(1) + " months of this monthly gap (rounded down)."),
-      r.balance !== null && r.balance >= 0 && (r.cash === null || r.cash >= 0) && React.createElement("p", { style: { margin: "0 0 8px", fontSize: 14, lineHeight: 1.5 } }, "No monthly gap in these estimates. This does not account for unexpected costs."),
+      r.runway !== null && React.createElement("p", { style: { margin: "0 0 8px", lineHeight: 1.5 } }, "That cash covers about " + r.runway.toFixed(1) + " months of the entered-expense gap (rounded down). This runway excludes the savings goal."),
+      r.balance !== null && r.balance >= 0 && (r.cash === null || r.cash >= 0) && React.createElement("p", { style: { margin: "0 0 8px", fontSize: 14, lineHeight: 1.5 } }, "No monthly gap for entered expenses. This does not account for unexpected costs."),
       r.balance !== null && React.createElement("p", { style: { margin: "8px 0", fontSize: 14, lineHeight: 1.5 } }, r.cash !== null && r.cash < 0 ? "Next: review moving costs or the cash you can use. Covering monthly bills and paying moving costs are separate." : r.cash === null ? "Next: add cash and moving costs to check the upfront part of this option." : r.balance < 0 ? "Next: check your largest monthly expense, or test a different take-home estimate." : "Next: check for missing costs and money you want to set aside before comparing the other option."),
-      item.includeService && React.createElement("p", { style: { borderTop: "1px solid " + C.border, paddingTop: 8, marginBottom: 0, lineHeight: 1.5 } }, r.whatIf === null ? "Service-income what-if: add a valid amount and both monthly estimates." : "With your optional service-income estimate: " + monthly(r.whatIf) + (r.whatIfRunway !== null ? " Cash covers about " + r.whatIfRunway.toFixed(1) + " months of that gap." : "")));
+      item.includeService && React.createElement("div", { style: { borderTop: "1px solid " + C.border, paddingTop: 8, lineHeight: 1.5 } }, React.createElement("p", { style: { margin: "0 0 8px" } }, r.whatIf === null ? "Service-income what-if: add a valid amount and both monthly estimates." : "With your optional service-income estimate: " + monthly(r.whatIf) + (r.whatIfRunway !== null ? " Cash covers about " + r.whatIfRunway.toFixed(1) + " months of that entered-expense gap." : "")),
+        hasSavingsTarget && r.savingsTarget !== null && React.createElement("p", { id: "tops-move-service-target-" + number, style: { margin: 0 } }, r.whatIfTargetBalance === null ? "Service-income savings what-if: add valid income, expenses and service income." : "Including service income and your savings goal: " + withSavings(r.whatIfTargetBalance, r.whatIf))));
   }
   return React.createElement("details", { id: "tops-move-comparison", hidden: props.hidden, style: { borderTop: "1px solid " + C.border, marginTop: 16, paddingTop: 4 } },
     React.createElement("summary", { id: "tops-move-heading", style: { minHeight: 44, padding: "12px 0", fontWeight: 700, cursor: "pointer" } }, "Can I afford my next move?"),
@@ -8280,6 +8285,7 @@ function CareerMoveComparison(props) {
     React.createElement("div", { style: { marginBottom: 12 } }, React.createElement("label", { htmlFor: "tops-move-label" }, "Place or option name (optional)"), React.createElement("input", { id: "tops-move-label", value: option.label, type: "text", autoComplete: "off", maxLength: 60, style: input, onChange: function(event) { update("label", event.target.value); } })),
     field("income", "Monthly take-home pay", option.income, function(value) { update("income", value); }, "After taxes and payroll deductions, not a job's advertised salary. Leave out the optional service income below."),
     field("expenses", "Total monthly expenses", option.expenses, function(value) { update("expenses", value); }),
+    field("savings", "Monthly savings target (optional)", option.monthlySavings, function(value) { update("monthlySavings", value); }, "Extra savings from take-home pay, not already in your expenses. Leave out 401(k) or TSP contributions already taken from your paycheck."),
     React.createElement("details", { style: { margin: "0 0 12px" } }, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", cursor: "pointer" } }, "Help me add up monthly expenses"),
       React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "Include costs you pay from your take-home income. Include utilities with housing; add food, debt, childcare and training in Everything else."),
       React.createElement("details", { style: { marginBottom: 12 } }, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", cursor: "pointer" } }, "Check housing costs by ZIP"),
@@ -8294,7 +8300,7 @@ function CareerMoveComparison(props) {
       field("service", "Optional monthly service income", option.service, function(value) { update("service", value); }),
       React.createElement("label", { style: { display: "flex", gap: 10, minHeight: 44, alignItems: "center", lineHeight: 1.5 } }, React.createElement("input", { id: "tops-move-include-service", type: "checkbox", checked: option.includeService, onChange: function(event) { update("includeService", event.target.checked); } }), "Show a separate result including this estimate")),
     React.createElement("div", { id: "tops-move-results", "aria-live": "polite", "aria-atomic": true, style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: 10, margin: "16px 0" } }, plan.options.map(result)),
-    React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "Take-home needed covers only the monthly costs you entered. It is not a gross salary estimate or a complete affordability check. Moving and setup cash are separate."),
+    React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "Expense coverage and your savings target use only the amounts you enter. They are not gross salary estimates or a complete affordability check. Moving and setup cash are separate."),
     React.createElement("details", { style: { marginBottom: 12 } }, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", cursor: "pointer" } }, "Need help estimating local costs?"),
       React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "MIT's Living Wage Calculator is a starting point for local basic needs, not your full budget. Savings, emergencies and leisure are outside its estimate. Enter your own amounts here; this app does not import those costs."),
       React.createElement("a", { id: "tops-move-mit", href: "https://livingwage.mit.edu/", target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, control, { display: "flex", alignItems: "center", lineHeight: 1.4, marginBottom: 8 }) }, "Explore costs by county with MIT (new tab)"),
