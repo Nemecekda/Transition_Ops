@@ -2919,3 +2919,41 @@ EXPIRES: NONE; contacts and eligibility require current agency review
 
 Runtime summary: Use WDVA's county map to find the VORP coordinator for your area and ask for help connecting with housing, utilities and community services.
 Runtime boundary: People who have served, including current Guard and Reserve members, can contact VORP. Use the listed supervisor when a regional position is vacant. A referral does not guarantee funding, a bed or immediate intake.
+
+
+---
+
+## V-2026-11-14-TRICARE-OPEN-SEASON - TRICARE Open Season 2026 dates and scope (verified 14 November 2026)
+
+**Status:** CONFIRMED. Wording was put to Dean in PR #211 on 14 November 2026 and he ordered release in chat the same day ("push and merge now"). Carried on branch `claude/calendar-home-tricare-notice-20261114`.
+
+**Claim:** TRICARE Open Season runs Nov. 9 to Dec. 8, 2026. Changes take effect Jan. 1, 2027. A member who wants to keep the current plan takes no action and coverage continues in 2027 while eligible. It applies to people who have or are eligible for TRICARE Prime options or TRICARE Select. It does not apply to active duty service members or to TRICARE For Life, TRICARE Reserve Select, TRICARE Retired Reserve, or TRICARE Young Adult coverage. Enrollment or change is made online through milConnect, by phone with the regional contractor or designated provider, or by mail or fax.
+
+**Source:** https://www.tricare.mil/About/Changes/OpenSeason , page "TRICARE Open Season", "Last Updated 11/13/2026". Read 14 November 2026.
+
+**Ladder tier:** Tier 2, orchestrator browser (Claude in Chrome, Dean's session). Tier 1 WebFetch was refused by the workspace allowlist, an access limit and not a source wall. No CAPTCHA was presented or solved.
+
+**Cross-check:** A second tricare.mil page (East Region enrollment, "Last Updated 10/8/2026") and the tricare.mil Open Season road map PDF returned the same Nov. 9 and Dec. 8, 2026 dates in search retrieval. Those two were not opened directly. The Federal Register CY 2027 notice was not read; one secondary outlet reports an internal date inconsistency in it. The app copy rests on the tricare.mil page read above.
+
+**Not carried into the app:** The same page gives Federal Benefits Open Season (FEDVIP dental and vision) as Nov. 9 to Dec. 14, 2026. That date is not in the notice and has not been cross-checked against OPM or BENEFEDS.
+
+**App module:** Reminders screen, dated notice `tops-tricare-open-season-2026`, gated by `topsTricareOpenSeason2026Active` to local dates 2026-11-09 through 2026-12-08.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-14 | revisit NONE
+A1 population: ALREADY SEPARATED (retirees and others who have or are eligible for TRICARE Prime or Select), SPOUSE/FAMILY (family members who have or are eligible for Prime or Select).   band: condition-triggered calendar window; no separation band or day-offset.   excluded: This does not apply to active duty service members, or to people with TRICARE For Life, TRICARE Reserve Select, TRICARE Retired Reserve, or TRICARE Young Adult coverage.   timing: ACT AVAILABLE NOW through 8 December 2026.
+A2 act: "If you have or are eligible for TRICARE Prime or TRICARE Select and want to enroll or change plans for 2027, sign in to milConnect or call your TRICARE regional contractor by Dec. 8, 2026."
+A3 surface(s): reminders (dated notice above the list).   token: NONE   sweep trigger: FIRED - confusable-adjacent: the FEDVIP retirement-window reminders (`r-1-fedvip`, `r-p1-fedvip`) versus Federal Benefits Open Season; and `r-9-tri26`, which says Open Season "runs Nov-Dec annually" and still describes 1 JAN 2026 costs. Detection only. validation-gate owns the sweep; it has NOT been executed.
+A4 cost: A CLOSED WINDOW
+EXPIRES: 2026-12-08
+
+## V-2026-11-14-VA-RATES-2027-HOLD - 2027 VA disability compensation tables (checked 14 November 2026)
+
+**Status:** UNVERIFIED for any 2027 dollar figure. Does not ship. No app change staged. The runtime stays on the official 2026 table.
+
+**Checked:** https://www.va.gov/disability/compensation-rates/veteran-rates/ read 14 November 2026 at Tier 2 (orchestrator browser). The page is titled "Current Veterans disability compensation rates", says "Review 2026 Veterans disability compensation rates", shows "Effective December 1, 2025", and carries "Last updated: November 2, 2026". No 2027 table is posted.
+
+**Tips only, not citations:** Secondary outlets report a 3.6% adjustment effective December 1, 2026 with a first payment on December 31, 2026, and at least one reported in late October that the annual compensation COLA act had not passed. Enactment status was not read at Congress.gov in this session.
+
+**Member-impact:** NOT RUN. A finding below CONFIRMED is not assessed.
+
+**Standing release conditions:** unchanged from `intel/va-rates-2027-staging-20261025/README.md`. Recheck VA.gov before 1 December 2026. The estimator's "2026 rates" label stays true until VA posts the new table.
