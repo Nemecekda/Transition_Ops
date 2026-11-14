@@ -12353,6 +12353,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.gold, marginTop: 6 } }, "POLICY CHANGES \u2014 TAP FOR SOURCES")
         )
       ),
+      separationDate && React.createElement("button", { id: "tops-home-calendar-export", type: "button", onClick: function() { if (downloadDeadlineICS(separationDate, window.__trackEvent)) showToast("Calendar file downloaded. Import it, then check the reminder settings."); else showToast("Could not create the calendar file. Check your transition date and try again."); }, style: { width: "100%", minHeight: 44, marginBottom: 12, padding: "13px", background: "none", border: "1px dashed " + C.gold, borderRadius: 8, color: C.gold, fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1.5, cursor: "pointer" } }, "\uD83D\uDCC5 ADD MY DEADLINES TO CALENDAR (.ICS)"),
 
       // v75 BRIEFING DASHBOARD: mission state + next actions stay up top; everything else recedes here
       (() => {
