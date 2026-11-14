@@ -4075,6 +4075,51 @@ function generateCriticalWindowReminders(userStatus) {
   return reminders;
 }
 
+// Reminder list grouping. Pure function: no storage, no network, no dates read here.
+// - One card per critical window: the most recently reached checkpoint that is still
+//   open, otherwise the nearest upcoming one. Completing a checkpoint retires the
+//   older checkpoints of the same window instead of resurfacing them.
+// - Three groups by months to separation: "now" (the existing immediate window, plus
+//   any earlier CRITICAL item still incomplete), "ahead", and "earlier".
+// Falls back to a single unlabeled group when no date is set or completed items are shown.
+function topsReminderSections(list, allWindowReminders, etsMonths, dismissed, showDismissed) {
+  var items = Array.isArray(list) ? list.slice() : [];
+  if (etsMonths === null || !Number.isFinite(etsMonths) || showDismissed) return [{ key: "all", items: items }];
+  var done = dismissed || {};
+  var retiredAt = {};
+  (allWindowReminders || []).forEach(function(r) {
+    if (r.origin === "cw" && done[r.id] && (retiredAt[r.cwId] === undefined || r.mo < retiredAt[r.cwId])) retiredAt[r.cwId] = r.mo;
+  });
+  var keep = {};
+  items.forEach(function(r) {
+    if (r.origin !== "cw") return;
+    if (retiredAt[r.cwId] !== undefined && r.mo >= retiredAt[r.cwId]) return;
+    var best = keep[r.cwId];
+    var reached = r.mo >= etsMonths;
+    if (!best) { keep[r.cwId] = r; return; }
+    var bestReached = best.mo >= etsMonths;
+    if (reached && (!bestReached || r.mo < best.mo)) keep[r.cwId] = r;
+    else if (!reached && !bestReached && r.mo > best.mo) keep[r.cwId] = r;
+  });
+  items = items.filter(function(r) { return r.origin !== "cw" || keep[r.cwId] === r; });
+  var groupOf = function(r) {
+    if (r.mo >= etsMonths - 1 && r.mo <= etsMonths + 2) return "now";
+    if (r.mo < etsMonths - 1) return "ahead";
+    return r.pri === "CRITICAL" ? "now" : "earlier";
+  };
+  var groups = { now: [], ahead: [], earlier: [] };
+  items.forEach(function(r) { groups[groupOf(r)].push(r); });
+  var rank = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, ADVISORY: 3 };
+  groups.now.sort(function(a, b) { var p = (rank[a.pri] === undefined ? 9 : rank[a.pri]) - (rank[b.pri] === undefined ? 9 : rank[b.pri]); return p !== 0 ? p : Math.abs(a.mo - etsMonths) - Math.abs(b.mo - etsMonths); });
+  groups.ahead.sort(function(a, b) { return b.mo - a.mo; });
+  groups.earlier.sort(function(a, b) { return a.mo - b.mo; });
+  return [
+    { key: "now", label: "Act on these now", items: groups.now },
+    { key: "ahead", label: "Coming up", items: groups.ahead },
+    { key: "earlier", label: "Earlier milestones to confirm", items: groups.earlier, collapsed: true }
+  ].filter(function(section) { return section.items.length > 0; });
+}
+
 const REMINDER_PRIORITIES_BY_THEME = {
   tactical: {CRITICAL:{bg:"#3d1111",bdr:"#8B0000",txt:"#ff6b6b",bdg:"#8B0000"},HIGH:{bg:"#3d3011",bdr:"#B8860B",txt:"#f0c040",bdg:"#8B6D0B"},ADVISORY:{bg:"#1a2810",bdr:"#4A5D23",txt:"#8faf5f",bdg:"#4A5D23"}},
   professional: {CRITICAL:{bg:"#FBEAE8",bdr:"#C0392B",txt:"#8E2418",bdg:"#C0392B"},HIGH:{bg:"#FDF3E0",bdr:"#8B6D0B",txt:"#6B5A1E",bdg:"#8B6D0B"},ADVISORY:{bg:"#EDF3E4",bdr:"#2C5234",txt:"#2C5234",bdg:"#2C5234"}}
@@ -12353,6 +12398,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.gold, marginTop: 6 } }, "POLICY CHANGES \u2014 TAP FOR SOURCES")
         )
       ),
+      separationDate && React.createElement("button", { id: "tops-home-calendar-export", type: "button", onClick: function() { if (downloadDeadlineICS(separationDate, window.__trackEvent)) showToast("Calendar file downloaded. Import it, then check the reminder settings."); else showToast("Could not create the calendar file. Check your transition date and try again."); }, style: { width: "100%", minHeight: 44, marginBottom: 12, padding: "13px", background: "none", border: "1px dashed " + C.gold, borderRadius: 8, color: C.gold, fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1.5, cursor: "pointer" } }, "\uD83D\uDCC5 ADD MY DEADLINES TO CALENDAR (.ICS)"),
 
       // v75 BRIEFING DASHBOARD: mission state + next actions stay up top; everything else recedes here
       (() => {
@@ -19063,7 +19109,10 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         React.createElement("button", { onClick: function() { setShowDismissed(!showDismissed); }, style: { background: "none", border: "none", color: C.inactive, fontSize: 11, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, cursor: "pointer" } }, (showDismissed ? "HIDE" : "SHOW") + " COMPLETED (" + Object.keys(dismissedReminders).length + ")")
       ),
       filtered.length === 0 ? React.createElement("div", { style: { padding: "40px 0", textAlign: "center", fontSize: 14, color: C.inactive } }, reminderTimedOnly ? "No incomplete reminders match this timing window. You can still browse all reminders." : etsMonths === null ? "Set your ETS date to see personalized reminders." : "No reminders match current filters.") :
-      filtered.map(function(r) {
+      (reminderTimedOnly ? [{ key: "timed", items: filtered }] : topsReminderSections(filtered, generateCriticalWindowReminders(userStatus), etsMonths, dismissedReminders, showDismissed)).map(function(section) {
+        return React.createElement(section.collapsed ? "details" : "section", { key: section.key, "aria-label": section.collapsed ? undefined : section.label, style: { marginBottom: 14 } },
+          section.label && React.createElement(section.collapsed ? "summary" : "h3", { style: { minHeight: section.collapsed ? 44 : undefined, padding: section.collapsed ? "12px 0" : 0, margin: section.collapsed ? 0 : "6px 0 10px", fontSize: 16, fontWeight: 700, color: C.textPrimary, cursor: section.collapsed ? "pointer" : undefined } }, section.label + " (" + section.items.length + ")"),
+          section.items.map(function(r) {
         var ps = REMINDER_PRIORITIES[r.pri] || REMINDER_PRIORITIES.ADVISORY;
         var isExp = reminderExpanded === r.id;
         var isDis = dismissedReminders[r.id];
@@ -19099,6 +19148,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
             )
           )
         );
+      }));
       })
     );
   })()),
