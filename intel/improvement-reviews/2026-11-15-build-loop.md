@@ -43,7 +43,7 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 10 | What's New and the verified stamp | See what changed since the last visit | None | ADOPT on Dean's order of 15 November, 10:30 | Cycle 9, merged as #228 |
 | 11 | Best Military Resume link | Resume and interview practice | Third-party account | REJECT for now: s2-vetting found no verifiable legal entity; reopens on Dean's outreach to the founder | Parked |
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
-| 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below; cycle 13's gate found four more, listed in its baseline note |
+| 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below; cycle 13's gate found four more; cycle 14 repaired two of those and found the other two are right |
 | 14 | TRICARE 2027 costs: a Policy Intel entry and a costs link in the open season notice | Choose a 2027 plan with the costs in hand before 8 DEC 2026 | None; the member's browser opens tricare.mil | SHIP - ACT under `member-impact` | Cycle 10, merged as #229 |
 | 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None; the member's browser opens benefeds.gov | SHIP - ACT under `member-impact` | Cycle 11, merged as #230 |
 | 16 | Share a deadline or one state's links; reachable app share | Pass a useful, specific thing to another service member | None; fixed text and one address, no tracking | ADOPT on Dean's order of 15 November, 12:36 | Cycle 13 |
@@ -283,3 +283,23 @@ Baseline note from cycle 13's gate: five older regressions fail the same way on 
 `home-visual-browser` passed 4 of 6 runs on this branch and 5 of 5 on `main`. Both failures were the "Invalid InterceptionId" request race recorded in earlier cycles.
 
 Lead from the same probe, same on `main`: the welcome screen shows on a visitor's first load of the root address only. The first load writes `taskProgress` and `docProgress`, and the app reads either key as a returning visitor. A visitor who reloads before choosing a starting point lands on Home.
+
+## Cycle 14 - Repair two stale test scripts
+Tests only. No app file changes. No cache bump.
+
+What cycle 13's gate showed: five older regressions fail on untouched `main`. Each was diagnosed against the app.
+
+Repaired here:
+- `navigation-refresh`: the bottom navigation reads `subTab`, and the script's sandbox never defined it. The script now defines it and checks five Resources sub-views. Documents belongs to My Plan. The other four belong to Benefits.
+- `tool-url-continuity-browser`: the last scenario expected the welcome screen for a visitor with saved work. Since #163 (21 OCT) saved work marks a returning visitor. The scenario now states each rule on its own, and adds the linked-state address rules from cycle 13.
+- `home-visual-browser`: its paused-request handler now ignores Chrome's "Invalid InterceptionId" answer for a request whose page has reloaded, as 58 of the 93 browser regressions already do. It rethrows anything else.
+
+One pin for Dean's ruling: the address script pins today's first-visit behavior. The welcome screen shows on the first load only, and a reload before any choice lands on Home. If Dean rules that the welcome screen should return, the app and that pin change together.
+
+Found, and carried to cycle 15: the two other failing scripts are right. Each caught a defect on Guard and Reserve Home that dates from October.
+- `profile-access-browser`: saving a service profile change between Guard or Reserve and any other profile rebuilds the editor. The save then throws an error, focus drops to the page body, and "Service profile updated." never shows. Since `5f96b7c` (7 OCT).
+- `guard-reserve-browser`: "Open transition timeline" on Guard and Reserve Home opens the My Plan hub. Since `d071539` (10 OCT). Two of its steps also reload from the career plan and expect Home, which went stale with tool addresses on 9 OCT.
+
+Still failing after this cycle: those two scripts, until cycle 15 merges, and the three job-search scripts in row 13.
+
+Evidence: `navigation-refresh` 1 of 1, `tool-url-continuity-browser` 3 of 3, `home-visual-browser` 4 of 4. Run against untouched `main`, the repaired address script fails at the linked-state step, as it should before #233.
