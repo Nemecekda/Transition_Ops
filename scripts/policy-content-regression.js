@@ -415,7 +415,7 @@ check(occurrences(verificationLog, "## V-2026-11-15-VA-CLAIM-ONE-YEAR ") === 1, 
 // What's New entry and the two verified stamps. V-2026-11-15-VERIFIED-STAMP.
 check(occurrences(index, 'const APP_VERSION = "v99";') === 1 && /const WHATS_NEW = \[\n  \{ v: "v99", date: "15 NOV 2026", note: "TAMP for Guard and Reserve: a DoD memo clarified who qualifies/.test(index),
   "the app version and the first What's New entry are both v99, dated 15 NOV 2026");
-check(occurrences(index, 'const DATA_VERIFIED = "1 AUG 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK_DATE = "15 NOV 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 18:26 UTC";') === 1,
+check(occurrences(index, 'const DATA_VERIFIED = "1 AUG 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK_DATE = "15 NOV 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 19:18 UTC";') === 1,
   "the full-review date is unchanged and the latest-check stamp carries a date and a time");
 check(index.includes('or both. Full data review " + DATA_VERIFIED + ". Latest source check " + DATA_LATEST_CHECK + "."') && index.includes('SOURCED \\u00B7 LATEST CHECK " + DATA_LATEST_CHECK_DATE)') && occurrences(index, '"Last verified: " + DATA_VERIFIED + ""') === 1 && !index.includes('VERIFIED " + DATA_VERIFIED)'),
   "Critical Windows shows both stamps, the policy panel shows the latest check, and the directory footnote keeps the full-review date");
@@ -599,5 +599,20 @@ check(occurrences(verificationLog, "## V-2026-11-15-STATE-STARTING-POINTS ") ===
     "a linked state leaves the address when the member chooses for themselves or leaves State and local help");
 }
 check(occurrences(verificationLog, "## V-2026-11-15-SHARE-TEXT ") === 1, "the share text carries one verification record");
+
+// Retirement FEDVIP reminders, re-read against BENEFEDS on 15 NOV 2026. V-2026-11-15-FEDVIP-RETIREMENT-WINDOW.
+{
+  const rung = (id) => { const start = index.indexOf('{id:"' + id + '"'); return index.slice(start, index.indexOf("},\n", start) + 1); };
+  const first = rung("r-1-fedvip"), backstop = rung("r-p1-fedvip");
+  check(first.length > 200 && first.length < 2400 && backstop.length > 200 && backstop.length < 2400, "both retirement FEDVIP reminders are extractable");
+  check(occurrences(first, '"Vision coverage requires enrollment in a TRICARE health plan","If a family member enrolled in FEDVIP vision while you were on active duty, their enrollment cannot continue after you retire","Notify BENEFEDS of your retirement, then enroll as a retired uniformed service member in this window and add them as a dependent","Gray area reservists under age 60 are also eligible",') === 1,
+    "the one-month reminder states that a family member's own vision enrollment cannot continue, then the step: notify BENEFEDS, enroll, add the dependent");
+  check(occurrences(backstop, '"If a family member held FEDVIP vision while you were on active duty, notify BENEFEDS of your retirement and enroll as a retired uniformed service member to add them as a dependent",') === 1 && occurrences(index, "notify BENEFEDS of your retirement") + occurrences(index, "Notify BENEFEDS of your retirement") === 2,
+    "the 30-days-left reminder carries the same step, and no other place in the app gives that instruction");
+  check(occurrences(first, '"Enroll BEFORE your retirement date to avoid a dental coverage gap","Window: 31 days before retirement date through 60 days after",') === 1 && occurrences(first, '"Miss the window and you wait for the next Federal Benefits Open Season","Enroll at BENEFEDS.gov or 1-877-888-3337"]') === 1 && !/qualifying life event|QLE/.test(first),
+    "the statements BENEFEDS was re-read against are unchanged, and the reminder does not call retirement a qualifying life event");
+  check(!/\$\d/.test(first) && !/\$\d/.test(backstop) && !/belated|three months/i.test(first + backstop), "neither reminder carries a dollar figure or the belated-enrollment exception, which was not confirmed for retirees");
+}
+check(occurrences(verificationLog, "## V-2026-11-15-FEDVIP-RETIREMENT-WINDOW ") === 1, "the retirement FEDVIP re-read carries one verification record");
 
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");

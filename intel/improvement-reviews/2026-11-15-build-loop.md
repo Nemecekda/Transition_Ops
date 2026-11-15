@@ -47,6 +47,7 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 14 | TRICARE 2027 costs: a Policy Intel entry and a costs link in the open season notice | Choose a 2027 plan with the costs in hand before 8 DEC 2026 | None; the member's browser opens tricare.mil | SHIP - ACT under `member-impact` | Cycle 10, merged as #229 |
 | 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None; the member's browser opens benefeds.gov | SHIP - ACT under `member-impact` | Cycle 11, merged as #230 |
 | 16 | Share a deadline or one state's links; reachable app share | Pass a useful, specific thing to another service member | None; fixed text and one address, no tracking | ADOPT on Dean's order of 15 November, 12:36 | Cycle 13 |
+| 17 | Family step in the retirement FEDVIP reminders | Keep a family member's vision coverage across the sponsor's retirement | None | SHIP - ACT under `member-impact` | Cycle 16 |
 
 ## Needs Dean
 - Best Military Resume: legal entity name and registration, current free and paid terms, whether a mock interview tool exists, and what "Partner Organizations" receive. The current site gives a free account 2 tailored resumes and 2 company research reports; cover letters are paid; resume building needs an account.
@@ -329,3 +330,16 @@ Baseline note from cycle 15's gate: three more Home regressions fail the same wa
 - `member-priority-browser`: an assertion at line 54.
 
 Two of the four scripts diagnosed so far were right about the app, so these three are next. A run of every script against `main` was started to map the rest.
+
+## Cycle 16 - One family step in the retirement FEDVIP reminders
+Record: V-2026-11-15-FEDVIP-RETIREMENT-WINDOW.
+
+Why: a lead left open in cycle 11. A Tier 2 read of four BENEFEDS pages closed it. Every FEDVIP statement in the two retirement reminders matches BENEFEDS, and BENEFEDS's line that retirement is not a qualifying life event does not conflict with them.
+
+What the read found that the app did not carry: a family member who enrolled in FEDVIP vision while the sponsor was on active duty cannot keep that enrollment after the sponsor retires. BENEFEDS must be notified. The sponsor enrolls as a retired uniformed service member and adds the family member as a dependent. Two BENEFEDS pages state it.
+
+What ships: two checklist lines in `r-1-fedvip` and one in `r-p1-fedvip`. The latest-check stamp moves to 19:18 UTC.
+
+Left out on purpose: belated enrollment and the loss-of-other-insurance window. Each needs one more read before an act can be written. The log entry says which.
+
+Same hour, from s2-intel's rung 1 pass on issue #232: the Dole grants rule is BLOCKED at rung 1 and needs a Tier 2 read. OPM's direct final rule on FMLA (document 2026-21104) is PROBABLE: it says certain honorable active military service counts toward FMLA eligibility in a title 5 federal job. It takes effect 14 DEC 2026 unless OPM withdraws it. A Tier 2 read and a `member-impact` pass are queued.
