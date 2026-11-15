@@ -9429,7 +9429,7 @@ function MemberPlanningLoop(props) {
   var field = { display: "block", width: "100%", boxSizing: "border-box", minHeight: 44, padding: 10, margin: "6px 0 12px", border: "1px solid " + C.border, borderRadius: 6, background: C.bg, color: C.textPrimary, font: "inherit", fontSize: 16 };
   function editDirection(key, value) { setDirection(Object.assign({}, direction, { [key]: value })); }
   function applyDirection(save) {
-    var next = topsValidateGuide(direction);
+    var next = topsValidateGuide(Object.assign({}, direction, { pathway: direction.pathway || workingGuide.pathway || "" }));
     if (!next || !next.pathway) { setMessage("Choose a direction first."); return; }
     if (save && !topsSaveGuide(next)) { setMessage("Your direction could not be saved. You can use it in this page instead."); return; }
     props.setGuideState({ draft: next, ready: true, status: save ? "Direction saved on this browser." : "Using this direction in this page. Save it to return to it later." });
@@ -9530,9 +9530,9 @@ function MemberPlanningLoop(props) {
       !props.hasDraft && React.createElement("p", { style: { whiteSpace: "pre-wrap", lineHeight: 1.6 }, "aria-label": "Question preview" }, helpDraft),
       React.createElement("button", { type: "button", style: button, onClick: function() { props.onDraft(helpDraft); } }, props.hasDraft ? "Resume my Navigator draft" : "Open draft in Navigator"));
   var directionUI = React.createElement("details", { id: "tops-loop-direction", style: { marginTop: 12 } },
-      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, g.pathway ? "Review or change my direction" : "Set my direction, role and goal"),
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, g.pathway ? "Review or change my direction" : "Add a target role or goal"),
       React.createElement("label", { htmlFor: "tops-loop-path" }, "My focus"),
-      React.createElement("select", { id: "tops-loop-path", value: direction.pathway, style: field, onChange: function(event) { editDirection("pathway", event.target.value); } }, React.createElement("option", { value: "" }, "Choose a direction"), Object.keys(TOPS_GUIDE_PATHS).map(function(key) { return React.createElement("option", { key: key, value: key }, TOPS_GUIDE_PATHS[key]); })),
+      React.createElement("select", { id: "tops-loop-path", value: direction.pathway || workingGuide.pathway || "", style: field, onChange: function(event) { editDirection("pathway", event.target.value); } }, React.createElement("option", { value: "" }, "Choose a direction"), Object.keys(TOPS_GUIDE_PATHS).map(function(key) { return React.createElement("option", { key: key, value: key }, TOPS_GUIDE_PATHS[key]); })),
       React.createElement("label", { htmlFor: "tops-loop-target" }, "Role or field I want to explore (optional)"),
       React.createElement("input", { id: "tops-loop-target", value: direction.targetRole, maxLength: 120, style: field, onChange: function(event) { editDirection("targetRole", event.target.value); } }),
       React.createElement("label", { htmlFor: "tops-loop-goal" }, "What I want to accomplish next (optional)"),
@@ -11360,7 +11360,9 @@ function App() {
     return React.createElement(MemberPlanningLoop, { planHub: !!planHub, priority: memberPriority, setPriority: setMemberPriority, colors: C, comparisonState: comparisonState, setComparisonState: setComparisonState, profile: userStatus, guideState: guideState, setGuideState: setGuideState, actionState: actionState, setActionState: setActionState, gap: gapState.draft, supportPlan: { clearReview: clearSupportReview, review: supportReview, setReview: setSupportReview, message: supportMessage, setMessage: setSupportMessage, getPlan: wisconsinPlanSnapshot, applyStep: applySupportOutcome }, hasDraft: !!planQuestion, onDraft: navUnlocked ? function(text) {
       if (!planQuestion) setPlanQuestion({ text: text, reply: "", answered: false, guide: topsValidateGuide(guideState.draft), profile: userStatus });
       setPlanQuestionOpen(true); continuationFocus.current = "tops-plan-question"; continuationReturn.current = "tops-loop-title"; setActiveTab("navigator");
-    } : null, onRoute: function(route, moment) {
+    } : null, onRoute: memberLoopRoute });
+  }
+  function memberLoopRoute(route, moment) {
       if (route === "state-help") { openStateHelp(moment); return; }
       if (route === "wi-work-support") { openWisconsinGuide(); return; }
       if (route === "work-support") { openExperienceTool("resources"); return; }
@@ -11387,7 +11389,6 @@ function App() {
       continuationReturn.current = "tops-loop-title";
       focusCareerWorksheet(route === "guide" ? "tops-guide-heading" : route === "conversation" ? "career-service-prep-heading" : "career-gap-heading");
       setActiveTab("pathway");
-    } });
   }
   function renderPlanQuestion() {
     var button = { minHeight: 44, minWidth: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, background: C.bgElevated, color: C.textPrimary, font: "inherit", cursor: "pointer" };
@@ -11561,6 +11562,15 @@ function App() {
       }));
     })()
   ); }
+  function renderHomeJobs() {
+    if (!(memberPriority || guideState.draft.pathway || actionState.draft.text) || memberPriority === "work" || memberPriority === "explore") return null;
+    return React.createElement("section", { id: "tops-home-jobs", "aria-labelledby": "tops-home-jobs-title", className: "tops-quick-tools", style: { marginBottom: 24 } },
+      React.createElement("div", null, React.createElement("h2", { id: "tops-home-jobs-title", style: { fontSize: 20, color: C.textPrimary, margin: "0 0 8px" } }, "Find a job or a new role")),
+      React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 } },
+        [["jobs", "Search jobs by area"], ["career-explore", "Find roles from my experience"]].map(function(item) {
+          return React.createElement("button", { key: item[0], id: "tops-home-jobs-" + item[0], type: "button", onClick: function() { memberLoopRoute(item[0]); continuationReturn.current = "tops-home-jobs-" + item[0]; }, style: { minHeight: 60, padding: "14px 12px", textAlign: "left", border: "1px solid " + C.border, borderRadius: 10, background: C.bgCard, color: C.textPrimary, font: "inherit", fontSize: 15, lineHeight: 1.4, cursor: "pointer" } }, React.createElement("span", null, item[1]), React.createElement("span", { "aria-hidden": true }));
+        })));
+  }
   function renderHomeTools() {
     return React.createElement("section", { "aria-labelledby": "tops-home-tools-title", className: "tops-quick-tools", style: { marginBottom: 16 } },
       React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" } },
@@ -12164,6 +12174,7 @@ function App() {
       return React.createElement("div", null,
         renderMoveComparisonResume(),
         renderMemberLoop(),
+        renderHomeJobs(),
         React.createElement("section", { className: "tops-home-toolkit", "aria-label": "Tools and progress" }, renderHomeSearch(), renderHomeTools()),
         React.createElement(ServiceProfileEditor, { colors: C, value: userStatus, onSave: function(value) { serviceProfileEdit.current = true; setUserStatus(value); } }),
         separationDate && React.createElement("details", { id: "tops-home-date", style: { marginBottom: 14 } },
@@ -12452,6 +12463,7 @@ function App() {
       // ═══ v49 INSTRUMENT: timeline ring + ETS countdown fused ═══
       renderMoveComparisonResume(),
       renderMemberLoop(),
+      renderHomeJobs(),
       renderCareerConversationResume(),
       React.createElement("section", { className: "tops-home-toolkit", "aria-label": "Tools and progress" }, renderHomeSearch(), renderHomeTools()),
       React.createElement(ServiceProfileEditor, { colors: C, value: userStatus, onSave: function(value) { serviceProfileEdit.current = true; setUserStatus(value); } }),

@@ -6,7 +6,8 @@ const root=path.resolve(__dirname,'..'),source=fs.readFileSync(path.join(root,'s
 const h=new Function('fs','path','os','spawn',source.slice(source.indexOf('function findChrome()'),source.indexOf('const PROBE_SCRIPT ='))+'\nreturn {findChrome,launchChrome,stopChrome,evaluate,waitForExpression};')(fs,path,os,spawn);
 const server=http.createServer((req,res)=>{const p=new URL(req.url,'http://localhost').pathname,f=path.join(root,p==='/'?'index.html':p);if(!fs.existsSync(f)||!fs.statSync(f).isFile()){res.writeHead(404);return res.end();}res.setHeader('Content-Type',f.endsWith('.js')?'text/javascript':f.endsWith('.html')?'text/html':'application/octet-stream');res.end(fs.readFileSync(f));});
 const STARTS=[['Find work soon','Find a job to pursue','Search jobs by area'],['Explore a different career','Explore career options','Explore career options'],['Grow in my current career','Prepare a growth conversation','Prepare a growth conversation'],['Prepare to leave service','Review your transition checklist','Review my transition checklist']];
-const OPTIONS=['Change priority',"I'm stuck on this step",'Set my direction, role and goal','Draft a question for Navigator'];
+const OPTIONS=['Change priority',"I'm stuck on this step",'Add a target role or goal','Draft a question for Navigator'];
+const JOBS=['Search jobs by area','Find roles from my experience'];
 const firstWords=labels=>labels.map(label=>label.split(' ')[0].toLowerCase());
 (async()=>{let chrome;const errors=[],requests=[];try{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port;
@@ -24,7 +25,8 @@ const firstWords=labels=>labels.map(label=>label.split(' ')[0].toLowerCase());
  await c.send('Page.navigate',{url:origin+'/'});await wait('!!window.__safeSet','loaded');await ev('localStorage.clear();sessionStorage.clear();localStorage.setItem("tops_onboarded","1")');await home();
  let state=await card();
  assert.equal(state.heading,'What matters most right now?');assert.deepEqual(state.actions,[]);
- assert.deepEqual(state.all,['Choose a priority (optional)','Set my direction, role and goal','Draft a question for Navigator']);
+ assert.deepEqual(state.all,['Choose a priority (optional)','Add a target role or goal','Draft a question for Navigator']);
+ assert.equal(await ev('!!document.getElementById("tops-home-jobs")'),false,'the job block stays out while the four starting points are open');
  assert.equal(await ev('document.querySelectorAll("#tops-member-starts button").length'),4);
 
  // After each starting point: two actions and four options, in a fixed order, and no two of the six begin with the same word.
@@ -37,6 +39,9 @@ const firstWords=labels=>labels.map(label=>label.split(' ')[0].toLowerCase());
   assert.equal(new Set(six).size,6,title+': six different labels');
   assert.equal(new Set(firstWords(six)).size,6,title+': six different first words: '+firstWords(six).join(', '));
   assert.ok(state.status.startsWith('Priority updated for this visit.'),title+': the status line is unchanged');
+  const jobs=await ev('(()=>{const s=document.getElementById("tops-home-jobs");return s?{heading:s.querySelector("h2").textContent,buttons:Array.from(s.querySelectorAll("button")).map(n=>n.textContent.trim()),after:!!(document.getElementById("tops-loop-title").closest("section").compareDocumentPosition(s)&Node.DOCUMENT_POSITION_FOLLOWING),tall:Array.from(s.querySelectorAll("button")).every(n=>n.getBoundingClientRect().height>=44)}:null})()');
+  if(title==='Find work soon'||title==='Explore a different career')assert.equal(jobs,null,title+': the card already leads with this choice, so the block is not repeated');
+  else{assert.deepEqual(jobs,{heading:'Find a job or a new role',buttons:JOBS,after:true,tall:true},title+': the job block follows the card');assert.equal(six.some(label=>JOBS.includes(label)),false,title+': the block repeats no label from the card');const page=await ev('Array.from(document.querySelectorAll("main button,main summary,#root button,#root summary")).filter(n=>n.getClientRects().length>0).map(n=>n.textContent.trim())');for(const label of JOBS)assert.equal(page.filter(text=>text===label).length,1,title+': one control on Home named '+label);}
  }
  assert.equal(await ev('localStorage.getItem("tops_personal_guide_v1")'),null);assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
 
@@ -65,10 +70,26 @@ const firstWords=labels=>labels.map(label=>label.split(' ')[0].toLowerCase());
  assert.equal(await ev('document.getElementById("tops-action-text").value'),'Review my transition checklist and choose one item to work on');
  assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);assert.equal(await ev('localStorage.getItem("tops_personal_guide_v1")'),null);
 
+ // The direction editor starts from the starting point the member just chose. Using it for the visit saves nothing.
+ for(const [title,pathway] of [['Find work soon','change'],['Grow in my current career','skills'],['Prepare to leave service','transition']]){
+  await ev('localStorage.clear();localStorage.setItem("tops_onboarded","1")');await home();await start(title);await wait('document.querySelector(".tops-loop-utilities>#tops-loop-direction")!==null','options for '+title);
+  await ev('document.querySelector("#tops-loop-direction>summary").click()');
+  assert.equal(await ev('document.getElementById("tops-loop-path").value'),pathway,title+': the focus is already set');
+ }
+ await ev('(()=>{const n=document.getElementById("tops-loop-target");Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value").set.call(n,"SYNTHETIC role");n.dispatchEvent(new Event("input",{bubbles:true}));})()');
+ await press('Use for this visit');await wait('document.querySelector(".tops-loop-meta").textContent==="Direction updated for this page; not saved."','direction used for the visit');
+ assert.equal(await ev('localStorage.getItem("tops_personal_guide_v1")'),null);
+ assert.ok((await ev('document.getElementById("tops-loop-title").closest("section").textContent')).includes('Your direction: Prepare to leave service - SYNTHETIC role'));
+ assert.ok((await card()).all.includes('Review or change my direction'));
+ // With no starting point and nothing saved, the editor still asks for a direction before it will apply one.
+ await ev('localStorage.clear();localStorage.setItem("tops_onboarded","1")');await home();await ev('document.querySelector("#tops-loop-direction>summary").click()');
+ assert.equal(await ev('document.getElementById("tops-loop-path").value'),'');await press('Use for this visit');
+ await wait('document.querySelector(".tops-loop-meta").textContent==="Choose a direction first."','direction still required');
+
  // A member with a saved direction keeps the label that names it.
  await ev('localStorage.setItem("tops_personal_guide_v1",JSON.stringify({version:1,pathway:"transition",currentRole:"",targetRole:"",goal:""}))');await home();
  state=await card();
- assert.ok(state.all.includes('Review or change my direction'),JSON.stringify(state.all));assert.equal(state.all.includes('Set my direction, role and goal'),false);
+ assert.ok(state.all.includes('Review or change my direction'),JSON.stringify(state.all));assert.equal(state.all.includes('Add a target role or goal'),false);
  assert.equal(new Set(state.all.concat(state.actions)).size,state.all.length+state.actions.length,'no repeated label with a saved direction');
 
  // Phone widths: every option row is a full touch target and nothing overflows.
@@ -78,7 +99,20 @@ const firstWords=labels=>labels.map(label=>label.split(' ')[0].toLowerCase());
   assert.equal(await ev('document.documentElement.scrollWidth<=window.innerWidth'),true,'no overflow at '+width);
   assert.equal(await ev('Array.from(document.querySelectorAll(".tops-loop-utilities>details>summary")).every(n=>n.getBoundingClientRect().height>=44)'),true,'44px rows at '+width);
   assert.deepEqual((await card()).options,OPTIONS);
+  assert.equal(await ev('Array.from(document.querySelectorAll("#tops-home-jobs button")).length===2&&Array.from(document.querySelectorAll("#tops-home-jobs button")).every(n=>n.getBoundingClientRect().height>=44)'),true,'two job tiles of 44px or more at '+width);
  }
- assert.deepEqual(errors,[]);assert.equal(requests.some(url=>url.includes('/.netlify/')),false);
- console.log('NEXT MOVE OPTIONS PASS: four starting points; two actions and four options with six different labels and first words; each option opens its own control; one label per button with the check-in open; choosing a step saves nothing; saved-direction label kept; 320 and 393 px; no provider calls.');
+ // Every scenario above ran without one request to a server function.
+ assert.equal(requests.some(url=>url.includes('/.netlify/')),false);
+
+ // The job block's two buttons use the card's own routes, and Home returns focus to the button the member used.
+ const nav=async label=>{await ev('Array.from(document.querySelectorAll(".bottom-nav button")).find(n=>n.querySelector(".nav-label").textContent==='+JSON.stringify(label)+').click()');};
+ await home();await start('Prepare to leave service');await wait('!!document.getElementById("tops-home-jobs-jobs")','job block');
+ await ev('document.getElementById("tops-home-jobs-jobs").click()');await wait('new URL(location.href).searchParams.get("tool")==="pathway"&&!!document.getElementById("tops-live-jobs-panel")','job search opens');
+ await nav('Home');await wait('document.activeElement.id==="tops-home-jobs-jobs"','focus returns to Search jobs by area');
+ await ev('document.getElementById("tops-home-jobs-career-explore").click()');await wait('new URL(location.href).searchParams.get("tool")==="pathway"&&!!document.getElementById("tops-career-start-heading")','career options open');
+ await nav('Home');await wait('document.activeElement.id==="tops-home-jobs-career-explore"','focus returns to Find roles from my experience');
+ assert.equal(await ev('localStorage.getItem("tops_personal_guide_v1")'),null);assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
+ // Opening job search asks the federal jobs function whether it is set up (config=1, no member content). Nothing else may reach a function.
+ assert.deepEqual(errors,[]);assert.deepEqual(requests.filter(url=>url.includes('/.netlify/')&&!/\/\.netlify\/functions\/federal-jobs\?config=1$/.test(url)),[]);
+ console.log('NEXT MOVE OPTIONS PASS: four starting points; two actions and four options with six different labels and first words; each option opens its own control; one label per button with the check-in open; choosing a step saves nothing; saved-direction label kept; the direction editor starts from the starting point; the Home job block shows only where the card does not lead with jobs, opens both routes and takes focus back; 320 and 393 px; zero function requests before job search, and only the content-free federal jobs configuration check after it.');
 }catch(e){if(chrome){try{console.error(await h.evaluate(chrome.client,'({url:location.href,text:document.body.innerText.slice(0,900)})',true));}catch{}}throw e;}finally{if(chrome){await h.stopChrome(chrome);chrome.child.stderr?.destroy();}await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e.stack);process.exitCode=1;});

@@ -48,7 +48,8 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None; the member's browser opens benefeds.gov | SHIP - ACT under `member-impact` | Cycle 11, merged as #230 |
 | 16 | Share a deadline or one state's links; reachable app share | Pass a useful, specific thing to another service member | None; fixed text and one address, no tracking | ADOPT on Dean's order of 15 November, 12:36 | Cycle 13 |
 | 17 | Family step in the retirement FEDVIP reminders | Keep a family member's vision coverage across the sponsor's retirement | None | SHIP - ACT under `member-impact` | Cycle 16 |
-| 18 | Distinct labels on the Home next-move card | Tell six controls apart at a glance | None | ADOPT on Dean's order of 15 November, 13:57 | Cycle 17 |
+| 18 | Distinct labels on the Home next-move card | Tell six controls apart at a glance | None | ADOPT on Dean's order of 15 November, 13:57 | Cycle 17, merged as #237 |
+| 19 | Find a job or a new role on Home | Reach job search and role exploration from Home in one press | None; the two existing Career routes | ADOPT on Dean's order of 15 November, 14:18 | Cycle 18 |
 
 ## Needs Dean
 - Best Military Resume: legal entity name and registration, current free and paid terms, whether a mock interview tool exists, and what "Partner Organizations" receive. The current site gives a free account 2 tailored resumes and 2 company research reports; cover letters are paid; resume building needs an account.
@@ -388,3 +389,34 @@ One run of all 123 scripts against untouched `main` at `4729654`, with a rerun o
 - Each failure was seen once, apart from the reruns named here. A repair cycle starts by confirming it.
 
 Two of the first four failures diagnosed were real defects in the app. Backlog row 13 now covers the whole set.
+
+## Merge record, continued (5)
+- 14:18 Central: Dean ordered "fix them all and merge. I also want. lets find a new role or job or someting on that page." #237 merged at its verified head `45ddc06`, carrying #233, #234, #235 and #236. Merge commit `6e676a4`. Production moved from v332 to v336; served bytes matched the commit at 20:24 UTC. v333, v334 and v335 were preview-only.
+- The merge covered the five pull requests staged at that moment. Work built after it is staged for a new order, because its wording had not been in front of Dean.
+
+Cycle 18 onward is built on `main` at `6e676a4`.
+
+## Cycle 18 - Find a job or a new role on Home
+Order: the second sentence of Dean's 14:18 message, and the overlap that cycle 17 left for his call.
+
+What ships:
+- A block under the next-move card: "Find a job or a new role", with two tiles. "Search jobs by area" opens job search. "Find roles from my experience" opens the Career start that works from a resume or from experience. Both use routes the card already had. When the member comes back to Home, focus returns to the tile they used.
+- The block stays out where it would repeat the card: before a starting point is chosen, when the four starting points are open, and after "Find work soon" or "Explore a different career", when the card's own button leads to the same place.
+- The direction editor now starts from the starting point the member just chose. Before, a member who chose "Prepare to leave service" opened it and was asked to choose a direction again from a nearly identical list.
+- Its label with nothing saved changes from "Set my direction, role and goal" to "Add a target role or goal", which names what is left to add.
+
+Unchanged: what is saved and when. "Use for this visit" still saves nothing, and with no starting point and nothing saved the editor still asks for a direction first.
+
+Why a block under the card and why two tiles: the card held no path to a job once a member chose "Prepare to leave service" or "Grow in my current career". From the card, the two routes were behind "Change priority". The tiles carry the look of "Tools for your next step", so Home gains one pattern it already has.
+
+Structure note: the card's route handler was an inline function. It is now `memberLoopRoute`, with the same body, so Home can call the same routes.
+
+Test: `next-move-options-browser-regression.js` now also covers where the block shows, both routes, the return of focus, one control per label on Home, the tile height at 320 and 393 px, and the direction editor's starting value for three starting points.
+
+Changed assertion: the script used to end by requiring zero requests to a server function. That rule still runs at full strength for every scenario that existed before. The job-route scenario runs last, because opening job search asks the federal jobs function whether it is set up (`?config=1`, no member content). After it, that one address is the only function request the script accepts.
+
+Checked in a browser against the built files: the block on the Guard and Reserve Home, the block for four saved directions with no label repeated on Home, and the second tile's destination, which opens on the heading "Start with your experience".
+
+Gate on the final tree: structural gate exit 0. Six semantic commands and the public build pass. Of 28 related browser regressions, 27 pass.
+
+The one failure: `wisconsin-pathway-browser` timed out once waiting for the Home card after a reload. Its script reloads right after pressing Home, with no wait for Home's address to settle. That is the race form repaired in `guard-reserve-browser` in cycle 15 and the likely cause here; the failing run left no address in its log to confirm it. The script passed in the full run made before the options test was reordered, and 3 of 3 times alone afterward. The app files are identical across those runs. It joins the test repair list.
