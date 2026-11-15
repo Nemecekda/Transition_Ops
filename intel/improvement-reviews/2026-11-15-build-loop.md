@@ -536,3 +536,30 @@ A one-for-one repair means rewriting each script against today's Career. The che
 `dd214-upload-browser` passes and still stalls about 1 run in 6.
 
 Standing after this batch: 124 scripts, 86 pass, 38 fail. The 38 are 29 Career scripts and 9 others.
+
+## Merge record, continued (6)
+- 17:21 Central: Dean ordered "merge". #242 merged at its verified head `9b6d16c`, carrying #238, #239, #240 and #241. Merge commit `a78cfb3`. Production moved from v336 to v339; served bytes matched the commit at 23:22 UTC. v337 and v338 were preview-only.
+- The order answered a status report that listed all five pull requests and their wording. It approved cycles 18 to 22 as staged.
+
+Cycle 23 onward is built on `main` at `a78cfb3`.
+
+## Cycle 23 - Federal jobs: active service counts toward family leave
+Lead: J1 scan issue #232, queued as a Tier 2 read since the morning.
+
+Finding: honorable active service counts toward the 12 months of service a federal civilian employee needs for FMLA leave under title 5, and so for paid parental leave. It has been law since 22 December 2023. OPM published a rule on 15 October 2026 that writes it into the regulations. Record: V-2026-11-15-FMLA-MILITARY-SERVICE, CONFIRMED at Tier 2 against four primary pages.
+
+Impact: SHIP - ACT. The act is to ask the agency's servicing human resources office to count active service when invoking FMLA leave, and to elect paid parental leave for a birth or placement. The cost of not knowing is money: up to 12 workweeks of paid parental leave that cannot be used after the 12 months following the birth or placement.
+
+What ships: one Policy Intel entry, second in the list, dated 15 OCT 2026. The latest-check stamp moves to 23:33 UTC. Cache v340.
+
+What the entry leaves out, on purpose: any document step, because no source read named one; the rule's effective date and comment deadline, which would go stale within a month; and dual-status technicians, whose coverage was not read.
+
+Left unread: OPM memorandum CPM 2024-05, which the browser showed without readable text. Every claim rests on the four pages that were read.
+
+Test: six new assertions in `policy-content-regression.js`, now 211. Browser check on the built files: 13 checks pass at 393 px and 320 px, in both themes.
+
+Gate: structural gate exit 0. Six semantic commands, the public build and seven Home regressions pass, 14 lines in all.
+
+Open: the entry runs 1,136 characters. That is long for a phone, and the exclusions make up a third of it. The length is Dean's call.
+
+Queued: the Dole State and Tribal Outreach Grant Program rule publishes 16 November. A recheck of this rule belongs on or after 14 December 2026, its effective date.
