@@ -48,6 +48,7 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None; the member's browser opens benefeds.gov | SHIP - ACT under `member-impact` | Cycle 11, merged as #230 |
 | 16 | Share a deadline or one state's links; reachable app share | Pass a useful, specific thing to another service member | None; fixed text and one address, no tracking | ADOPT on Dean's order of 15 November, 12:36 | Cycle 13 |
 | 17 | Family step in the retirement FEDVIP reminders | Keep a family member's vision coverage across the sponsor's retirement | None | SHIP - ACT under `member-impact` | Cycle 16 |
+| 18 | Distinct labels on the Home next-move card | Tell six controls apart at a glance | None | ADOPT on Dean's order of 15 November, 13:57 | Cycle 17 |
 
 ## Needs Dean
 - Best Military Resume: legal entity name and registration, current free and paid terms, whether a mock interview tool exists, and what "Partner Organizations" receive. The current site gives a free account 2 tailored resumes and 2 company research reports; cover letters are paid; resume building needs an account.
@@ -343,3 +344,47 @@ What ships: two checklist lines in `r-1-fedvip` and one in `r-p1-fedvip`. The la
 Left out on purpose: belated enrollment and the loss-of-other-insurance window. Each needs one more read before an act can be written. The log entry says which.
 
 Same hour, from s2-intel's rung 1 pass on issue #232: the Dole grants rule is BLOCKED at rung 1 and needs a Tier 2 read. OPM's direct final rule on FMLA (document 2026-21104) is PROBABLE: it says certain honorable active military service counts toward FMLA eligibility in a title 5 federal job. It takes effect 14 DEC 2026 unless OPM withdraws it. A Tier 2 read and a `member-impact` pass are queued.
+
+## Cycle 17 - One job and one label for each control on the next-move card
+Order: Dean, 13:57 Central on 15 November, with a phone screenshot of Home: "These options look similar? Fix it".
+
+What the screenshot showed, after a member picks a starting point:
+- The heading and both actions began with "Review".
+- Four options followed, and they read as two pairs. "Change priority" and "Choose my direction" both pick what to work on. "Stuck or need a different approach?" and "Get help choosing my next step" both ask for help.
+- With the check-in open, two buttons on the card carried the same label for two different steps.
+
+What changed. Labels and the order of two options. No control was added or removed, and nothing behaves differently.
+
+| Control | Before | After |
+|---|---|---|
+| Second action after a starting point | Review this as my next step | Choose this next step |
+| Check-in | Stuck or need a different approach? | I'm stuck on this step |
+| Button inside the check-in | Review this as my next step | Use this step instead |
+| Navigator draft | Get help choosing my next step | Draft a question for Navigator |
+| Direction editor, nothing saved | Choose my direction | Set my direction, role and goal |
+
+Unchanged: "Change priority", "Choose a priority (optional)", "Review or change my direction", and each starting point's own button.
+
+"Choose this next step" was already the label for the same action in two other states of the card. The options now run priority, stuck, direction, Navigator, so on a phone the left column holds what the member is working on and the right column holds help.
+
+Aligned with the change:
+- The four test scripts that named the old shared label. Each reference now names the button it means. All four already fail on `main` for other reasons, recorded below.
+- The Wisconsin Guard leadership demo walkthrough, which names three of these labels.
+
+New test: `scripts/next-move-options-browser-regression.js`. Until now no script named any of the four option labels.
+
+Left for Dean: the labels are distinct, and two of the options still overlap in substance. "Change priority" picks one of four starting points for the visit. "Set my direction, role and goal" picks one of four directions to save, with a role and a goal. A member answers nearly the same question twice. Merging them into one picker is a behavior change and needs his call.
+
+Diagnosed while here, all three stale and all three failing on `main`:
+- `member-loop-browser` waits for the old first-visit button, which #163 replaced.
+- `member-priority-browser` passes every step and then requires zero function requests. The jobs screen now asks the federal jobs function whether search is configured, a request that carries no member detail.
+- `member-action-hierarchy-browser` caps the card heading at 32 px. The product-shell design sets it larger.
+
+## Full baseline of the regression scripts, 15 November
+One run of all 123 scripts against untouched `main` at `4729654`, with a rerun of the three that stopped on the paused-request race: 77 pass and 46 fail.
+- 30 of the 45 `career-*` scripts fail. Most look for a control that the October Career changes renamed or removed, such as "Open my current career plan" or "Return to my draft".
+- 16 others fail. Four are repaired or fixed in cycles 14 and 15. Two cannot run in this workspace because they need commits that are not present (`guard-reserve-regression`, `vgli-window-regression`). Three are the Home scripts above. Seven are not yet diagnosed: `counselor-preparation`, `federal-jobs-browser`, `my-jobs-browser`, `personal-guide-browser`, `support-compact-review-browser`, `tap-integration` and `tap-worksheet-browser`.
+- The six gate commands pass. They do not run these scripts.
+- Each failure was seen once, apart from the reruns named here. A repair cycle starts by confirming it.
+
+Two of the first four failures diagnosed were real defects in the app. Backlog row 13 now covers the whole set.

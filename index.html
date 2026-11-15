@@ -9497,7 +9497,7 @@ function MemberPlanningLoop(props) {
       React.createElement("p", { style: { fontSize: 14, lineHeight: 1.6 } }, "Kept in this tab until refresh. Choosing a priority does not change your plan."),
       props.priority && React.createElement("button", { type: "button", style: button, onClick: function() { props.setPriority(""); requestAnimationFrame(function() { var heading = document.getElementById("tops-loop-title"); if (heading) heading.focus(); }); } }, "Clear priority"));
   var checkinUI = workingGuide.pathway && React.createElement("details", { id: "tops-loop-checkin", style: { marginTop: 12 } },
-      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Stuck or need a different approach?"),
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "I'm stuck on this step"),
       React.createElement("label", { htmlFor: "tops-loop-blocker" }, "What is getting in the way?"),
       React.createElement("select", { id: "tops-loop-blocker", value: blocker, style: field, onChange: function(event) { setBlocker(event.target.value); setReplaceStep(false); setSessionMinutes(""); setServiceMoment(""); } },
         [["", "Choose what you need"], ["direction", "I am not sure which direction fits"], ["skills", "I need skills or experience"], ["time", "I have limited time"], ["person", "I need help from a person"]].concat(props.profile === "guard" ? [["service", "Service commitments"]] : []).map(function(option) { return React.createElement("option", { key: option[0], value: option[0] }, option[1]); })),
@@ -9522,15 +9522,15 @@ function MemberPlanningLoop(props) {
             if (workingGuide.pathway && workingGuide.pathway !== g.pathway) props.setGuideState({ draft: workingGuide, ready: true, status: "Direction prepared for this visit. Review before saving." });
             props.setActionState({ draft: { version: 1, text: alternative.title, date: "", done: false, context: topsValidateGuide(workingGuide) }, status: "Alternative step added for review, not saved. Edit it to fit your situation, then choose Save step." });
             openStepEditor(); setBlocker(""); setReplaceStep(false);
-          } }, "Review this as my next step"))));
+          } }, "Use this step instead"))));
   var helpUI = props.onDraft && React.createElement("details", { id: "tops-loop-help", style: { marginTop: 12 } },
-      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Get help choosing my next step"),
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Draft a question for Navigator"),
       React.createElement("p", null, props.hasDraft ? "Your earlier draft is still available. Resume it to edit, send, or discard it before starting a new question." : "Choose any details to include. Nothing is selected automatically. You can edit the draft before sending it to Navigator."),
       !props.hasDraft && helpFacts.map(function(row) { return React.createElement("label", { key: row[0], style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10, lineHeight: 1.6 } }, React.createElement("input", { type: "checkbox", checked: !!share[row[0]], onChange: function(e) { setShare(Object.assign({}, share, { [row[0]]: e.target.checked })); } }), row[1] + ": " + row[2]); }),
       !props.hasDraft && React.createElement("p", { style: { whiteSpace: "pre-wrap", lineHeight: 1.6 }, "aria-label": "Question preview" }, helpDraft),
       React.createElement("button", { type: "button", style: button, onClick: function() { props.onDraft(helpDraft); } }, props.hasDraft ? "Resume my Navigator draft" : "Open draft in Navigator"));
   var directionUI = React.createElement("details", { id: "tops-loop-direction", style: { marginTop: 12 } },
-      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, g.pathway ? "Review or change my direction" : "Choose my direction"),
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, g.pathway ? "Review or change my direction" : "Set my direction, role and goal"),
       React.createElement("label", { htmlFor: "tops-loop-path" }, "My focus"),
       React.createElement("select", { id: "tops-loop-path", value: direction.pathway, style: field, onChange: function(event) { editDirection("pathway", event.target.value); } }, React.createElement("option", { value: "" }, "Choose a direction"), Object.keys(TOPS_GUIDE_PATHS).map(function(key) { return React.createElement("option", { key: key, value: key }, TOPS_GUIDE_PATHS[key]); })),
       React.createElement("label", { htmlFor: "tops-loop-target" }, "Role or field I want to explore (optional)"),
@@ -9592,7 +9592,7 @@ function MemberPlanningLoop(props) {
     props.priority && move.kind !== "priority" && React.createElement("p", { style: { fontSize: 14, lineHeight: 1.6 } }, "Priority: " + TOPS_MEMBER_PRIORITIES.find(function(item) { return item.id === props.priority; }).title + ". Your existing work stays first. Review it before choosing a replacement."),
     React.createElement("div", { className: "tops-next-move-actions", style: { display: "flex", flexWrap: "wrap", gap: 8 } },
       move.kind === "priority" && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(move.route); } }, move.label),
-      move.kind === "priority" && React.createElement("button", { type: "button", style: button, onClick: chooseStep }, "Review this as my next step"),
+      move.kind === "priority" && React.createElement("button", { type: "button", style: button, onClick: chooseStep }, "Choose this next step"),
       supportStep && !currentWisconsin && !currentStateHelp && !supportReview && React.createElement("button", { id: "tops-loop-support-open", className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { reviewSupport("edit", "tops-loop-support-open"); } }, "Update this step"),
       currentStateHelp && React.createElement("button", { id: "tops-loop-state-help", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute("state-help", currentStateHelp); } }, currentStateHelp.area === "wi" ? "Open Wisconsin help" : "Open state and local help"),
       currentStateHelp && supportStep && !supportReview && React.createElement("button", { type: "button", style: button, onClick: function() { reviewSupport("edit", "tops-loop-state-help"); } }, "Update this step"),
@@ -9634,7 +9634,7 @@ function MemberPlanningLoop(props) {
     } }, "Plan around my service commitments"),
     !supportReview && editing && g.pathway && React.createElement(CareerAction, { colors: C, state: props.actionState, setState: props.setActionState, guide: g, onClear: props.supportPlan.clearReview }),
     ),
-    !supportReview && React.createElement(props.planHub ? "details" : "div", { id: props.planHub ? "tops-plan-options" : undefined, className: "tops-loop-utilities", style: { borderTop: "1px solid " + C.border } }, props.planHub && React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Review direction or get help with this step"), move.kind !== "choose" && priorityUI, checkinUI, helpUI, directionUI, comparisonUI),
+    !supportReview && React.createElement(props.planHub ? "details" : "div", { id: props.planHub ? "tops-plan-options" : undefined, className: "tops-loop-utilities", style: { borderTop: "1px solid " + C.border } }, props.planHub && React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Review direction or get help with this step"), move.kind !== "choose" && priorityUI, checkinUI, directionUI, helpUI, comparisonUI),
     !supportReview && React.createElement("p", { className: "tops-loop-meta", role: "status", "aria-live": "polite", style: { fontSize: 13, lineHeight: 1.5, margin: 0, color: C.textSecondary } }, message || (props.guideState.status === "Use this guide without saving, or choose Save guide details to keep them on this browser." ? "" : props.guideState.status)));
 }
 // MEMBER_LOOP_END
