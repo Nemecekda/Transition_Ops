@@ -3589,3 +3589,51 @@ A2 act: "If you are eligible for FEDVIP dental or vision coverage and want to en
 A3 surface(s): reminders (dated disclosure above the list, under the TRICARE notice).   token: NONE   sweep trigger: FIRED - confusable-adjacent: TRICARE Open Season ends Dec. 8 and this season ends Dec. 14; the retirement enrollment window in `r-1-fedvip` is a third FEDVIP date range. The notice names the TRICARE dates and says the two windows are separate. The retirement reminders are unchanged and carry their own labels.
 A4 cost: A CLOSED WINDOW
 EXPIRES: 2026-12-14, enforced in code at 05:00 UTC on 15 December 2026.
+
+## V-2026-11-15-STATE-STARTING-POINTS - State veterans offices and state job banks, 55 states and territories (verified 15 November 2026)
+
+**Status:** CONFIRMED as a statement about two federal lists: each link is the one the list gave on the read date, with three documented adjustments. Wording staged for Dean's approval on branch `claude/loop-12-state-starting-points-20261115`. Not released at the time of this entry.
+
+**What is claimed:** the app rates no state office and no job bank. It says VA's directory lists this office and CareerOneStop lists this job bank, as read on 15 NOV 2026.
+
+**Sources, read 15 November 2026 at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.**
+- VA's directory of state veterans affairs offices. https://www.va.gov/statedva.htm now redirects to https://discover.va.gov/external-resources/?_resource_type=state-veterans-affairs-office . 18:05 UTC. Page "External Resources", "Last updated September 4, 2026". It calls itself "A listing of VA approved resources outside the Department." Filter "State Veterans Affairs Office (55)". All 55 cards were read from the page's own markup at 100 items per page.
+- CareerOneStop, "State job banks", https://www.careeronestop.org/Veterans/JobSearch/FindOpenings/state-job-banks.aspx . 18:11 UTC. 55 links, each labeled with a state or territory name.
+- NH.gov, "State Government Agencies", https://www.nh.gov/government/state-government-agencies . 18:09 UTC. It lists "Department of Military Veterans Services" at https://www.nhveterans.nh.gov/ .
+
+**Transcription proof:** the browser computed a SHA-256 over each list as the page held it. The edit script recomputed both from the data it writes and refuses to run on a mismatch.
+- Office list, 54 lines "CODE|name|url" sorted by code, typographic apostrophes set to plain ones: `8a4d32fbb5d6db6736d4a1be5122ad922b86df5eeb07bebb9730d657a99a9c13`.
+- Job bank list, 55 lines "Name|url" in page order: `d1f819dfa5678aff415531292275de54c0ec7c8add5f560e8bfc395c8bcc224e`.
+- The list as shipped, 55 rows: `5c8cfbbf5b9040cc7d5107a1df62669ed125622e5be154e142dfec262b275d0d`. The content regression pins it.
+
+**What the lists hold:**
+- VA: 50 states, the District of Columbia, Guam, Puerto Rico and the Virgin Islands. The Virgin Islands have two office cards (St. Thomas and St. Croix) with one web address, carried as one row. VA lists no office for American Samoa or the Northern Mariana Islands.
+- CareerOneStop: the same 54 plus the Northern Mariana Islands. It lists no job bank for American Samoa.
+- The app carries 55 rows. The Northern Mariana Islands row has a job bank and no office, and the app says so.
+
+**Adjustments to the listed links, with reasons:**
+- New Hampshire office. VA's link, https://www.dmavs.nh.gov/ , returned DNS NXDOMAIN at 18:08 UTC, with and without "www". NH.gov's agency list gives https://www.nhveterans.nh.gov/ , which loaded at 18:10 UTC as "Department of Military Affairs and Veterans Services". The app links that address and tells the member where it came from.
+- New Mexico office. VA's link, https://www.nmdvs.org/ , redirected to https://www.dvs.nm.gov/ at 18:10 UTC, titled "New Mexico Department of Veteran Services". The app links the .gov address.
+- Colorado job bank. CareerOneStop's link, https://www.connectingcolorado.com/ , redirected to myservices.connectingcolorado.gov at 18:20 UTC. The page carries the Colorado Department of Labor and Employment's address. https://www.connectingcolorado.gov/ reaches the same page, and the app links it.
+
+**Reachability on the read date:** all 109 addresses the app links responded. 104 answered a browser request sent from VA's page. That request is opaque: it shows the host responds and shows nothing about the page. The other five were opened directly and loaded: North Dakota's office site, New Hampshire's replacement address, New Mexico's and Colorado's .gov addresses, and Pennsylvania's job bank.
+
+**Hosts outside .gov, and the vetting screen:** one office site (Florida, floridavets.org, which loaded as "Florida Department of Veterans' Affairs") and 25 job banks after the Colorado change. s2-vetting screened 27 hosts the same day. Its tool was refused by every one of them, so it worked from state pages and search: 13 CLEAR, 9 CLEAR WITH NOTE, 5 HOLD. The orchestrator then read all five HOLD rows at Tier 2, 18:20 to 18:26 UTC:
+- Colorado: resolved by the .gov address above.
+- Florida: floridajobs.org, FloridaCommerce's site, links www.employflorida.com. Employ Florida's own page names FloridaCommerce and CareerSource Florida.
+- Kentucky: kcc.ky.gov links https://kyjobs.usnlx.com/jobs/ as "Kentucky Career Portal". That page's footer reads "2026 Commonwealth of Kentucky".
+- Louisiana: louisiana.gov links louisianaworks.net/hire for unemployment claims, and laworks.net links it as HiRE.
+- Virgin Islands: vidol.gov, the Virgin Islands Department of Labor, links www.vidolviews.org for job search.
+No HOLD remains.
+
+**Notes kept from s2-vetting:**
+- New York's and Puerto Rico's sites are hosted by the National Labor Exchange, which the state workforce agencies' association runs with DirectEmployers.
+- Georgia's portal is managed by the Technical College System of Georgia.
+- The Northern Mariana Islands address may be an older one. s2-vetting reports vacancies at jobs.labor.cnmi.gov. That was not confirmed at Tier 2. The listed page loaded under the title "CNMI Department of Labor".
+- Several portals are vendor-built. CareerOneStop's own term for all of them is "state job banks", which the app uses with CareerOneStop named as the source. s2-vetting suggests "job and workforce portal". That wording is Dean's call.
+
+**Left out on purpose:** phone numbers and street addresses from VA's cards, county offices, and any statement about what a state office or job bank provides.
+
+**Upkeep:** the weekly J4 link audit reads every address in `index.html`, so it will crawl these 109 as well. A re-read of either source page can be compared with the hashes above in one step. Recheck by 15 FEB 2027.
+
+IMPACT: NOT A BENEFITS FINDING. This entry records resource links taken from two federal lists, and `member-impact` does not assess it. Under `member-return-benchmarking`, backlog row 8 moves from WATCH to ADOPT now that the links are read: the member job is finding the veterans office and the job bank for a destination state, it recurs with every move or job search, and it needs no data from the member.
