@@ -4075,6 +4075,14 @@ function generateCriticalWindowReminders(userStatus) {
   return reminders;
 }
 
+// TRICARE Open Season 2026 notice window. Source and verification: intel/verification-log.md,
+// V-2026-11-14-TRICARE-OPEN-SEASON. The notice expires on its own after 8 DEC 2026.
+function topsTricareOpenSeason2026Active(now) {
+  var d = now instanceof Date && Number.isFinite(now.getTime()) ? now : new Date();
+  var key = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+  return key >= 20261109 && key <= 20261208;
+}
+
 const REMINDER_PRIORITIES_BY_THEME = {
   tactical: {CRITICAL:{bg:"#3d1111",bdr:"#8B0000",txt:"#ff6b6b",bdg:"#8B0000"},HIGH:{bg:"#3d3011",bdr:"#B8860B",txt:"#f0c040",bdg:"#8B6D0B"},ADVISORY:{bg:"#1a2810",bdr:"#4A5D23",txt:"#8faf5f",bdg:"#4A5D23"}},
   professional: {CRITICAL:{bg:"#FBEAE8",bdr:"#C0392B",txt:"#8E2418",bdg:"#C0392B"},HIGH:{bg:"#FDF3E0",bdr:"#8B6D0B",txt:"#6B5A1E",bdg:"#8B6D0B"},ADVISORY:{bg:"#EDF3E4",bdr:"#2C5234",txt:"#2C5234",bdg:"#2C5234"}}
@@ -12353,6 +12361,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 9, letterSpacing: 2.5, color: C.gold, marginTop: 6 } }, "POLICY CHANGES \u2014 TAP FOR SOURCES")
         )
       ),
+      separationDate && React.createElement("button", { id: "tops-home-calendar-export", type: "button", onClick: function() { if (downloadDeadlineICS(separationDate, window.__trackEvent)) showToast("Calendar file downloaded. Import it, then check the reminder settings."); else showToast("Could not create the calendar file. Check your transition date and try again."); }, style: { width: "100%", minHeight: 44, marginBottom: 12, padding: "13px", background: "none", border: "1px dashed " + C.gold, borderRadius: 8, color: C.gold, fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1.5, cursor: "pointer" } }, "\uD83D\uDCC5 ADD MY DEADLINES TO CALENDAR (.ICS)"),
 
       // v75 BRIEFING DASHBOARD: mission state + next actions stay up top; everything else recedes here
       (() => {
@@ -19049,6 +19058,13 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           React.createElement("div", { style: { fontSize: 28, fontWeight: 700, color: etsMonths <= 2 ? C.danger : C.green, fontFamily: "'Oswald', sans-serif", lineHeight: 1 } }, etsMonths > 0 ? etsMonths : Math.abs(etsMonths)),
           React.createElement("div", { style: { fontSize: 10, color: C.gold } }, etsMonths > 0 ? "MO TO ETS" : etsMonths === 0 ? "ETS TODAY" : "MO POST-SEP")
         )
+      ),
+      !reminderTimedOnly && topsTricareOpenSeason2026Active() && React.createElement("section", { id: "tops-tricare-open-season-2026", "aria-labelledby": "tops-tricare-open-season-2026-title", style: { padding: 14, marginBottom: 12, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, lineHeight: 1.6, color: C.textBody } },
+        React.createElement("h3", { id: "tops-tricare-open-season-2026-title", style: { margin: "0 0 8px", fontSize: 16, color: C.textPrimary } }, "TRICARE Open Season: Nov. 9 to Dec. 8, 2026"),
+        React.createElement("p", { style: { margin: "0 0 8px" } }, "If you have or are eligible for TRICARE Prime or TRICARE Select and want to enroll or change plans for 2027, sign in to milConnect or call your TRICARE regional contractor by Dec. 8, 2026. Changes take effect Jan. 1, 2027."),
+        React.createElement("p", { style: { margin: "0 0 8px" } }, "To keep your current plan, no action is needed. Your coverage continues in 2027 as long as you remain eligible."),
+        React.createElement("p", { style: { margin: "0 0 8px" } }, "This does not apply to active duty service members, or to TRICARE For Life, TRICARE Reserve Select, TRICARE Retired Reserve, or TRICARE Young Adult coverage."),
+        React.createElement("a", { href: "https://www.tricare.mil/About/Changes/OpenSeason", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "TRICARE Open Season on tricare.mil (new tab)")
       ),
       !reminderTimedOnly && urgentR.length > 0 && React.createElement("div", { style: { padding: "12px 14px", background: (C.isLight ? "#FBEAE8" : "linear-gradient(135deg,#3d1111,#2a0808)"), border: "1px solid #8B0000", borderRadius: 8, marginBottom: 12, animation: "pulse 2s ease-in-out infinite" } },
         React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.danger, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 6 } }, "\u26A0\uFE0F IMMEDIATE ACTION REQUIRED"),
