@@ -3255,7 +3255,7 @@ const DATA_VERIFIED = "1 AUG 2026";
 // DATA_VERIFIED is the date of the last full dataset review and moves only with one.
 // DATA_LATEST_CHECK is the newest primary-source read recorded in intel/verification-log.md. V-2026-11-15-VERIFIED-STAMP.
 const DATA_LATEST_CHECK_DATE = "15 NOV 2026";
-const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 16:55 UTC";
+const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 17:37 UTC";
 const WHATS_NEW = [
   { v: "v99", date: "15 NOV 2026", note: "TAMP for Guard and Reserve: a DoD memo clarified who qualifies and opened reimbursement requests for denials on or after 24 APR 2020. See TRICARE TRANSITION in Critical Windows. Also new: a reminder for the one-year mark on a VA disability claim. Career job search now opens CareerOneStop, the Veterans Job Matcher and the Labor Department's HIRE Vets Medallion employer list, and the Wisconsin guide names the seven 2026 Wisconsin recipients. The SkillBridge feed states the age of its newest batch and points to the official list. The recruiter contact section adds the FRONTLINE Cadre talent network and Veteran Bridge Solutions' open roles page." },
   { v: "v98", date: "8 SEP 2026", note: "Policy Intel: September 8 executive order explained, with current VA claims and TAP next steps." },
@@ -4159,6 +4159,15 @@ function topsTricareOpenSeason2026Active(now) {
   var d = now instanceof Date && Number.isFinite(now.getTime()) ? now : new Date();
   var key = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
   return key >= 20261109 && key <= 20261208;
+}
+
+// Federal Benefits Open Season 2026 notice window (FEDVIP dental and vision). Source and verification:
+// intel/verification-log.md, V-2026-11-15-FEDVIP-OPEN-SEASON. OPM ends the season at 11:59 pm Eastern on
+// Monday, 14 DEC 2026, so the notice ends at that instant on every device: 05:00 UTC on 15 DEC 2026.
+function topsFederalBenefitsOpenSeason2026Active(now) {
+  var d = now instanceof Date && Number.isFinite(now.getTime()) ? now : new Date();
+  var key = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+  return key >= 20261109 && d.getTime() < Date.UTC(2026, 11, 15, 5, 0, 0);
 }
 
 const REMINDER_PRIORITIES_BY_THEME = {
@@ -19179,6 +19188,17 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         React.createElement("p", { id: "tops-tricare-open-season-2026-costs", style: { margin: "0 0 8px" } }, "DoD has published 2027 costs for TRICARE Prime and TRICARE Select, effective Jan. 1, 2027. TRICARE's Health Plan Costs page lists them."),
         React.createElement("a", { href: "https://www.tricare.mil/About/Changes/OpenSeason", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "TRICARE Open Season on tricare.mil (new tab)"),
         React.createElement("div", null, React.createElement("a", { id: "tops-tricare-open-season-2026-costs-link", href: "https://www.tricare.mil/CompareCosts", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "2027 health plan costs on tricare.mil (new tab)"))
+      ),
+      !reminderTimedOnly && topsFederalBenefitsOpenSeason2026Active() && React.createElement("details", { id: "tops-fedvip-open-season-2026", open: !topsTricareOpenSeason2026Active(), style: { padding: "0 14px", marginBottom: 12, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, lineHeight: 1.6, color: C.textBody } },
+        React.createElement("summary", { id: "tops-fedvip-open-season-2026-title", style: { minHeight: 44, padding: "12px 0", cursor: "pointer", color: C.textPrimary, fontWeight: 700, fontSize: 16 } }, "Federal Benefits Open Season (FEDVIP dental and vision): Nov. 9 to Dec. 14, 2026"),
+        React.createElement("p", { style: { margin: "0 0 8px" } }, "If you are eligible for FEDVIP dental or vision coverage and want to enroll or change plans for 2027, use BENEFEDS.gov by 11:59 p.m. Eastern on Dec. 14, 2026. If you cannot enroll online, call BENEFEDS at 1-877-888-3337. BENEFEDS checks your eligibility as the first step. Coverage chosen in open season takes effect Jan. 1, 2027."),
+        React.createElement("p", { style: { margin: "0 0 8px" } }, "If you are already enrolled, your coverage continues each year with no action. Dental and vision are separate enrollments."),
+        React.createElement("p", { style: { margin: "0 0 8px" } }, "BENEFEDS lists retired uniformed service members and Retired Reserve members, including gray area reservists under age 60, as eligible for dental and vision with their eligible family members. Vision requires enrollment in a TRICARE health plan."),
+        React.createElement("p", { style: { margin: "0 0 8px" } }, "Active duty family members, and National Guard or Reserve members enrolled in TRICARE Reserve Select, are eligible for vision only, while enrolled in a TRICARE health plan."),
+        React.createElement("p", { style: { margin: "0 0 8px" } }, "This does not apply to active duty service members, who are not eligible for FEDVIP dental or vision. Survivors and other groups have their own rules on the BENEFEDS eligibility page."),
+        React.createElement("p", { style: { margin: "0 0 8px" } }, "This window is separate from TRICARE Open Season (Nov. 9 to Dec. 8, 2026)."),
+        React.createElement("div", null, React.createElement("a", { id: "tops-fedvip-open-season-2026-eligibility-link", href: "https://www.benefeds.gov/learn/fedvip/fedvip-eligibility-uniformed-services", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "FEDVIP eligibility for uniformed services on BENEFEDS.gov (new tab)")),
+        React.createElement("div", { style: { marginBottom: 6 } }, React.createElement("a", { id: "tops-fedvip-open-season-2026-enroll-link", href: "https://www.benefeds.gov/", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "Enroll or change plans on BENEFEDS.gov (new tab)"))
       ),
       !reminderTimedOnly && urgentR.length > 0 && React.createElement("div", { style: { padding: "12px 14px", background: (C.isLight ? "#FBEAE8" : "linear-gradient(135deg,#3d1111,#2a0808)"), border: "1px solid #8B0000", borderRadius: 8, marginBottom: 12, animation: "pulse 2s ease-in-out infinite" } },
         React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.danger, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 6 } }, "\u26A0\uFE0F IMMEDIATE ACTION REQUIRED"),

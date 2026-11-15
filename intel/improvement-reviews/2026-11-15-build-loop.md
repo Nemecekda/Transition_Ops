@@ -45,7 +45,7 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
 | 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below |
 | 14 | TRICARE 2027 costs: a Policy Intel entry and a costs link in the open season notice | Choose a 2027 plan with the costs in hand before 8 DEC 2026 | None; the member's browser opens tricare.mil | SHIP - ACT under `member-impact` | Cycle 10 |
-| 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None | WATCH until eligibility is read at Tier 2 | Queued, time-bound |
+| 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None; the member's browser opens benefeds.gov | SHIP - ACT under `member-impact` | Cycle 11 |
 
 ## Needs Dean
 - Best Military Resume: legal entity name and registration, current free and paid terms, whether a mock interview tool exists, and what "Partner Organizations" receive. The current site gives a free account 2 tailored resumes and 2 company research reports; cover letters are paid; resume building needs an account.
@@ -210,3 +210,18 @@ Tests: the notice had no regression coverage. The content regression now checks 
 Left for Dean: the title of reminder `r-9-tri26`, and whether each release adds a What's New line.
 
 Next: a dated notice for Federal Benefits Open Season (FEDVIP dental and vision), which closes December 14, 2026. OPM's dates are confirmed. Eligibility needs a Tier 2 read before any wording.
+
+## Cycle 11 - Federal Benefits Open Season notice (FEDVIP)
+Built on the cycle 10 branch at `8d839ad`. Record: V-2026-11-15-FEDVIP-OPEN-SEASON.
+
+Why now: the window closes at 11:59 pm Eastern on 14 DEC 2026, six days after TRICARE Open Season. The app named the season by month only.
+
+What ships: one disclosure in Reminders under the TRICARE notice. It gives the deadline with its time zone, BENEFEDS.gov and its phone number, who is eligible for dental and vision, who is eligible for vision only, and the line that active duty service members are not eligible. It is collapsed while the TRICARE notice shows and open once it stands alone. It ends at the Eastern deadline on every device.
+
+Sources: s2-intel's Tier 1 pass could not read BENEFEDS, so the orchestrator read six live pages at Tier 2.
+
+Left out: survivor and former-spouse rules (linked), TTY and international numbers, premiums.
+
+Staff tooling: s2-intel reported no Grep tool on both taskings today, although its definition lists one. Correlation against the app fell back to the orchestrator both times. force-mod should check the agent definition.
+
+Open lead: s2-intel's Tier 1 read of a BENEFEDS FAQ says retirement is not a qualifying life event and gives the 31-day and 60-day enrollment window. Reminders `r-1-fedvip` and `r-p1-fedvip` rest on that window. A Tier 2 read of the FAQ is queued before either reminder is touched.

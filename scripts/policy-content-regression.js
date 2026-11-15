@@ -415,7 +415,7 @@ check(occurrences(verificationLog, "## V-2026-11-15-VA-CLAIM-ONE-YEAR ") === 1, 
 // What's New entry and the two verified stamps. V-2026-11-15-VERIFIED-STAMP.
 check(occurrences(index, 'const APP_VERSION = "v99";') === 1 && /const WHATS_NEW = \[\n  \{ v: "v99", date: "15 NOV 2026", note: "TAMP for Guard and Reserve: a DoD memo clarified who qualifies/.test(index),
   "the app version and the first What's New entry are both v99, dated 15 NOV 2026");
-check(occurrences(index, 'const DATA_VERIFIED = "1 AUG 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK_DATE = "15 NOV 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 16:55 UTC";') === 1,
+check(occurrences(index, 'const DATA_VERIFIED = "1 AUG 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK_DATE = "15 NOV 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 17:37 UTC";') === 1,
   "the full-review date is unchanged and the latest-check stamp carries a date and a time");
 check(index.includes('or both. Full data review " + DATA_VERIFIED + ". Latest source check " + DATA_LATEST_CHECK + "."') && index.includes('SOURCED \\u00B7 LATEST CHECK " + DATA_LATEST_CHECK_DATE)') && occurrences(index, '"Last verified: " + DATA_VERIFIED + ""') === 1 && !index.includes('VERIFIED " + DATA_VERIFIED)'),
   "Critical Windows shows both stamps, the policy panel shows the latest check, and the directory footnote keeps the full-review date");
@@ -470,5 +470,41 @@ check(occurrences(verificationLog, "## V-2026-11-15-VERIFIED-STAMP ") === 1, "th
     "the open season notice runs from 9 NOV through 8 DEC 2026 on the device's local date and then goes dark");
 }
 check(occurrences(verificationLog, "## V-2026-11-15-TRICARE-2027-COSTS ") === 1, "the TRICARE 2027 costs change carries one verification record");
+
+// Federal Benefits Open Season notice (FEDVIP dental and vision). V-2026-11-15-FEDVIP-OPEN-SEASON. No dollar figure.
+{
+  const fedStart = index.indexOf('React.createElement("details", { id: "tops-fedvip-open-season-2026"');
+  const fed = index.slice(fedStart, index.indexOf("\n      ),\n", fedStart));
+  const tricareStart = index.indexOf('React.createElement("section", { id: "tops-tricare-open-season-2026"');
+  const urgentStart = index.indexOf("!reminderTimedOnly && urgentR.length > 0 && React.createElement(", fedStart);
+  check(fedStart > tricareStart && tricareStart > 0 && urgentStart > fedStart && occurrences(index, 'id: "tops-fedvip-open-season-2026"') === 1 &&
+    occurrences(index, '!reminderTimedOnly && topsFederalBenefitsOpenSeason2026Active() && React.createElement("details", { id: "tops-fedvip-open-season-2026", open: !topsTricareOpenSeason2026Active(), ') === 1,
+    "the FEDVIP notice sits under the TRICARE notice, is gated by its own window and opens by default only when it stands alone");
+  check(occurrences(fed, '"Federal Benefits Open Season (FEDVIP dental and vision): Nov. 9 to Dec. 14, 2026"') === 1 &&
+    occurrences(fed, "use BENEFEDS.gov by 11:59 p.m. Eastern on Dec. 14, 2026. If you cannot enroll online, call BENEFEDS at 1-877-888-3337. BENEFEDS checks your eligibility as the first step. Coverage chosen in open season takes effect Jan. 1, 2027.") === 1,
+    "the FEDVIP notice names the portal, the deadline with its time zone, the phone number and the effective date");
+  check(occurrences(fed, "If you are already enrolled, your coverage continues each year with no action. Dental and vision are separate enrollments.") === 1 &&
+    occurrences(fed, "BENEFEDS lists retired uniformed service members and Retired Reserve members, including gray area reservists under age 60, as eligible for dental and vision with their eligible family members. Vision requires enrollment in a TRICARE health plan.") === 1 &&
+    occurrences(fed, "Active duty family members, and National Guard or Reserve members enrolled in TRICARE Reserve Select, are eligible for vision only, while enrolled in a TRICARE health plan.") === 1,
+    "the FEDVIP notice says who is eligible for dental and vision, who is eligible for vision only, and what an enrollee who does nothing keeps");
+  check(occurrences(fed, "This does not apply to active duty service members, who are not eligible for FEDVIP dental or vision. Survivors and other groups have their own rules on the BENEFEDS eligibility page.") === 1 &&
+    occurrences(fed, "This window is separate from TRICARE Open Season (Nov. 9 to Dec. 8, 2026).") === 1,
+    "the FEDVIP notice carries its exclusion line and separates itself from TRICARE Open Season");
+  check(occurrences(fed, 'id: "tops-fedvip-open-season-2026-eligibility-link", href: "https://www.benefeds.gov/learn/fedvip/fedvip-eligibility-uniformed-services", target: "_blank", rel: "noopener noreferrer"') === 1 &&
+    occurrences(fed, 'id: "tops-fedvip-open-season-2026-enroll-link", href: "https://www.benefeds.gov/", target: "_blank", rel: "noopener noreferrer"') === 1 &&
+    occurrences(fed, "(new tab)\")") === 2 && occurrences(fed, "React.createElement(\"a\", ") === 2 && !/\$\d/.test(fed),
+    "the FEDVIP notice has two BENEFEDS links that open in a new tab and say so, and no dollar figure");
+
+  const fedHelperStart = index.indexOf("function topsFederalBenefitsOpenSeason2026Active(now) {");
+  const fedHelper = index.slice(fedHelperStart, index.indexOf("\n}\n", fedHelperStart) + 3);
+  const fedSandbox = {};
+  // Dates are built inside the sandbox so the helper's instanceof test sees its own Date.
+  vm.runInNewContext(fedHelper + "\nthis.local = function(y, m, d, h) { return topsFederalBenefitsOpenSeason2026Active(new Date(y, m - 1, d, h, 0, 0)); };\nthis.instant = function(ms) { return topsFederalBenefitsOpenSeason2026Active(new Date(ms)); };", fedSandbox);
+  check(fedHelperStart > 0 && occurrences(index, "function topsFederalBenefitsOpenSeason2026Active(now) {") === 1 &&
+    fedSandbox.local(2026, 11, 8, 12) === false && fedSandbox.local(2026, 11, 9, 12) === true && fedSandbox.local(2026, 12, 9, 12) === true &&
+    fedSandbox.instant(Date.UTC(2026, 11, 15, 4, 59, 59)) === true && fedSandbox.instant(Date.UTC(2026, 11, 15, 5, 0, 0)) === false && fedSandbox.instant(Date.UTC(2027, 10, 20, 12, 0, 0)) === false,
+    "the FEDVIP notice starts on 9 NOV 2026 and ends at 11:59 pm Eastern on 14 DEC 2026 on every device");
+}
+check(occurrences(verificationLog, "## V-2026-11-15-FEDVIP-OPEN-SEASON ") === 1, "the FEDVIP open season notice carries one verification record");
 
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");
