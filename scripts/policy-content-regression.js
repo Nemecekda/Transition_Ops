@@ -255,4 +255,22 @@ const mainRecords = verificationLog.slice(verificationLog.indexOf(mainProvenance
     recordId + " published record and any amendment remain within their main source");
 });
 
+// TRICARE pharmacy copays, their exceptions and the Prime travel distance.
+// V-2026-11-14-TRICARE-COPAY-EXCEPTIONS and V-2026-11-14-PRIME-TRAVEL-NONARMED.
+const tricareCard = index.slice(index.indexOf('{id:"r-9-tri26"'), index.indexOf('{id:"r-6-vettec"'));
+check(tricareCard.includes('"Retail (30-day): $16 generic / $48 brand-name"') && tricareCard.includes('"Home delivery (90-day): $14 generic / $44 brand / $85 non-formulary"'),
+  "TRICARE card keeps the general copays");
+check(tricareCard.includes('"TRICARE lists these copays for calendar years 2026 and 2027"'),
+  "TRICARE card states the calendar years its copays cover");
+check(tricareCard.includes("active duty service members, and active duty family members in TRICARE Prime Remote in the U.S., pay $0 for covered drugs at military, retail network and home delivery pharmacies"),
+  "TRICARE card names the two groups that pay $0");
+check(tricareCard.includes("medically retired service members, their family members, and survivors of active duty service members pay lower copays: retail (30-day) $10 generic / $24 brand-name / $50 non-formulary; home delivery (90-day) $0 generic / $20 brand-name / $49 non-formulary"),
+  "TRICARE card carries the frozen copays for medically retired members, their families and survivors");
+check(tricareCard.includes('link:"https://www.tricare.mil/Costs/PharmacyCosts"') && index.includes('src: "TRICARE.mil \\u2014 Pharmacy Costs", url: "https://www.tricare.mil/Costs/PharmacyCosts"'),
+  "TRICARE card and policy entry link to the page that shows the copay figures");
+check(occurrences(index, "Medically retired members, their families, and survivors of active duty service members pay less.") === 2,
+  "both TRICARE copay summaries say who pays less");
+check(occurrences(index, "(PHS and NOAA families and retirees remain at 100 miles)") === 4 && occurrences(index, "(retirees remain at 100 miles)") === 0,
+  "all four Prime travel lines keep PHS, NOAA and retiree families at 100 miles");
+
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");
