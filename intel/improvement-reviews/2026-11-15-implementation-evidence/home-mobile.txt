@@ -1,0 +1,126 @@
+Browser tab: 8, Title: "Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits", URL: "http://127.0.0.1:18815/?tool=dashboard".
+1 AXWebArea Transition OPS™ — Free Military Transition App | VA Math, SkillBridge, Benefits, URL: 127.0.0.1:18815/?tool=dashboard
+	2 container
+		3 container
+			4 text VETERAN BRIDGE SOLUTIONS
+			5 heading TRANSITION OPS™, Value: 1
+				6 text TRANSITION OPS™
+			7 button Switch to dark theme
+				8 text ☀
+				9 text Dark
+			10 button Description: Reminders: 2 timed reminders to review, ID: tops-header-reminders
+				56 text Reminders
+				57 text 2
+		11 container Primary
+			12 button Home
+			13 button My Plan
+			14 button Career
+			15 button (collapsed) Benefits, Secondary Actions: Expand
+			16 button (collapsed) More, Secondary Actions: Expand
+		58 container tops-main-content
+			59 container tops-page-orientation
+				60 heading Home, Value: 2, ID: tops-page-title
+					61 text Home
+				62 button My jobs (1), ID: tops-my-jobs-open
+				63 button Ask Navigator
+				64 button All tools
+			65 button (collapsed) Suicide prevention & support, Secondary Actions: Expand
+				66 text Suicide prevention & support
+			67 button (collapsed) Talk with a person, Secondary Actions: Expand
+				68 text Talk with a person
+			69 container Your next step
+				70 heading Your next step, Value: 2, ID: tops-home-actions-title
+					71 text Your next step
+				72 container
+					73 text NEXT ACTION
+					74 heading DD214 Worksheet Review, Value: 3
+						75 text DD214 Worksheet Review
+					76 text Review as soon as generated — typically 90 days before ETS
+					77 button View steps, ID: tops-home-next-action
+				78 heading Also on your plan, Value: 2
+					79 text Also on your plan
+				80 container
+					81 text HOUSING
+					82 heading Post-Separation Housing Plan, Value: 3
+						83 text Post-Separation Housing Plan
+					84 text Housing secured no later than 60 days before ETS
+					85 button View steps, ID: tops-home-secondary-r-6-house
+				86 container
+					87 text BENEFITS
+					88 heading GI Bill & Education Planning, Value: 3
+						89 text GI Bill & Education Planning
+					90 text School applications 6+ months before start
+					91 button View steps, ID: tops-home-secondary-r-6-gi
+			92 container Pick up where you left off, ID: tops-home-saved-jobs
+				93 heading Pick up where you left off, Value: 2, ID: tops-home-saved-jobs-title
+					94 text Pick up where you left off
+				95 heading Data Analyst — sample, Value: 3
+					96 text Data Analyst — sample
+				97 text Example Wisconsin Company · Milwaukee, WI
+				98 text Next: Review requirements and skill steps.
+				99 button Continue this step, ID: tops-home-job-c6324dca-c3e9-49bc-8ebe-3c61a9a79ec8
+				100 text Saved on this browser. Job availability may have changed.
+			101 button (collapsed) Choose another focus, Secondary Actions: Expand
+				102 text Choose another focus
+			103 container Tools and progress
+				104 text Find a tool or topic
+				105 search text field (settable) Description: Search Transition OPS, ID: tops-home-search
+				106 container Tools for your next step
+					107 heading Tools for your next step, Value: 2, ID: tops-home-tools-title
+						108 text Tools for your next step
+					109 button View my transition timeline
+					110 button Explore careers
+					111 button Calculate a VA rating
+					112 button Find benefits, services & support
+			113 container Service profile
+				114 button (collapsed) My service profile, Secondary Actions: Expand
+					115 text My service profile
+				116 heading Service profile, Value: 2, ID: service-profile-heading
+					117 text Service profile
+			118 button (collapsed) View or edit my transition date, Secondary Actions: Expand
+				119 text View or edit my transition date
+			120 container Start your transition checklist
+				121 heading Start your transition checklist, Value: 2, ID: tops-continue-title
+					122 text Start your transition checklist
+				123 text 0/57 tasks complete; 0/12 documents obtained.
+				124 text Choose a checklist and mark tasks as you complete them. You can also track the documents you need.
+				125 button Choose a checklist, ID: tops-continue-milestone
+				126 button View document checklist, ID: tops-continue-documents
+			127 button (collapsed) Policy updates and sources, Secondary Actions: Expand
+				128 text Policy updates and sources
+			129 button (collapsed) Updates, Secondary Actions: Expand
+				130 text Updates
+			131 button VA MATH
+			132 button VA PAY
+			133 button REMINDERS
+			134 button TAX
+			135 container
+				136 text ⚠ CRITICAL WINDOWS CLOSING 1 window 30D TO CLOSE BDD CLAIM → OPEN CRITICAL WINDOWS
+			137 button ID: tops-home-reminder-count, 2 TIMED REMINDERS TO REVIEW Timing uses your transition date. Review each reminder for applicability.
+				138 text 2
+				139 text TIMED REMINDERS TO REVIEW
+				140 text Timing uses your transition date. Review each reminder for applicability.
+			141 button 10 tracked POLICY CHANGES — TAP FOR SOURCES
+				142 container
+					143 text 10  tracked
+				144 text POLICY CHANGES — TAP FOR SOURCES
+			145 button 📅 ADD MY DEADLINES TO CALENDAR (.ICS), ID: tops-home-calendar-export
+			146 button (collapsed) Install Transition OPS, Secondary Actions: Expand
+				147 text Install Transition OPS
+			148 button MORE TOOLS & INTEL SkillBridge feed · career maps · documents · spouse resources · app updates ›
+				149 text MORE TOOLS & INTEL
+				150 text SkillBridge feed · career maps · documents · spouse resources · app updates
+				151 text ›
+		45 text BUILT BY
+		46 link Description: VETERAN BRIDGE SOLUTIONS, Value: veteranbridgesolutions.com/
+		47 link Description: www.veteranbridgesolutions.com, Value: veteranbridgesolutions.com/
+		48 text Bridging the gap between service and civilian success.
+		49 button ✉ FEEDBACK IS A GIFT, Help: Send feedback to Dean
+			50 text ✉
+			51 text FEEDBACK
+			52 text IS A GIFT
+		53 button Privacy
+		54 button Notification options
+		55 text Push alerts are currently disabled.
+
+The focused UI element is 7 button Switch to dark theme
