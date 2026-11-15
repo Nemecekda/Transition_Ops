@@ -40,15 +40,19 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 7 | Start-date planner | Know and state when civilian work can start | Device-local | LOCAL SYNTHETIC TEST | Queued |
 | 8 | Starting points for every state | Find the state veterans agency and job bank | None | WATCH until S2 verifies the links | Queued |
 | 9 | JST and VMET reading beside the DD214 | Turn records into resume evidence | Device-local read; member-approved excerpts to AI | LOCAL SYNTHETIC TEST; design packet first under `resume-drafter-maintenance` | Queued |
-| 10 | What's New and the verified stamp | See what changed since the last visit | None | ADOPT on Dean's order of 15 November, 10:30 | Cycle 9 |
+| 10 | What's New and the verified stamp | See what changed since the last visit | None | ADOPT on Dean's order of 15 November, 10:30 | Cycle 9, merged as #228 |
 | 11 | Best Military Resume link | Resume and interview practice | Third-party account | REJECT for now: s2-vetting found no verifiable legal entity; reopens on Dean's outreach to the founder | Parked |
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
 | 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below |
+| 14 | TRICARE 2027 costs: a Policy Intel entry and a costs link in the open season notice | Choose a 2027 plan with the costs in hand before 8 DEC 2026 | None; the member's browser opens tricare.mil | SHIP - ACT under `member-impact` | Cycle 10 |
+| 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None | WATCH until eligibility is read at Tier 2 | Queued, time-bound |
 
 ## Needs Dean
 - Best Military Resume: legal entity name and registration, current free and paid terms, whether a mock interview tool exists, and what "Partner Organizations" receive. The current site gives a free account 2 tailored resumes and 2 company research reports; cover letters are paid; resume building needs an account.
 - The first VBS roles to post, and the disclosure line for who pays VBS.
-- Ruling on What's New and the "verified 1 AUG 2026" stamp.
+- A full dataset review. It is what lets the "1 AUG 2026" full-review date move.
+- Whether each release adds a What's New line. Cycle 10 left What's New alone, because each touch needs his approval.
+- The title of reminder `r-9-tri26` before 1 JAN 2027. It carries "TRICARE 2026", and its copays hold through 2027.
 - Rulings still open from 14 November: per-tool counters and push.
 - The organization name on Air Tech's SkillBridge MOU.
 - The VBS intake page says applicant information is never handed to anyone else; its privacy notice says it goes to a prospective employer at the serious-candidate stage. One of the two should change.
@@ -188,3 +192,21 @@ Verified stamp: the full-review date stays at 1 AUG 2026, because no full review
 Medallion employers: the Wisconsin guide now names the seven 2026 recipients as the Department of Labor lists them, with a caption that gives the award year and the read date. s2-vetting screened all seven: 5 CLEAR, 2 CLEAR WITH NOTE, 0 HOLD. The listing expires when the 2027 award year posts. Record: V-2026-11-15-HIREVETS-MEDALLION-NAMES.
 
 Also in flight: issue #226 from the J1 scan points at the CY 2027 TRICARE cost notice, effective 1 JAN 2027. s2-intel rated its figures PROBABLE and held them for a Tier 2 read. That is the next cycle.
+
+## Merge record, continued (2)
+- 10:45 Central: Dean ordered "Merge all and keep building". #228 merged at head `f43855b`, carrying #227. Merge commit `1d8f94c`. Production moved from v327 to v329; served bytes matched the commit at 16:51 UTC. v328 was served on a preview origin only.
+
+Cycle 10 onward is built on `main` at `1d8f94c`.
+
+## Cycle 10 - TRICARE 2027 costs published
+Source: J1 scan issue #226. s2-intel held the figures. The orchestrator read six primary pages at Tier 2. Record: V-2026-11-15-TRICARE-2027-COSTS.
+
+What the read found: the app already carries the open season act. A dated notice in Reminders shipped on 14 November (#211) and expires on its own after 8 DEC 2026. The app shows no Prime or Select cost, so nothing goes stale on 1 JAN 2027.
+
+What ships: one Policy Intel entry that says 2027 costs are published and links TRICARE's Health Plan Costs page, plus one sentence and one link in the open season notice. No dollar figure. A member who returns after a day or more sees "1 new policy change tracked" on Home.
+
+Tests: the notice had no regression coverage. The content regression now checks its text, its links and its date window.
+
+Left for Dean: the title of reminder `r-9-tri26`, and whether each release adds a What's New line.
+
+Next: a dated notice for Federal Benefits Open Season (FEDVIP dental and vision), which closes December 14, 2026. OPM's dates are confirmed. Eligibility needs a Tier 2 read before any wording.
