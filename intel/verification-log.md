@@ -3488,3 +3488,104 @@ EXPIRES: 30 NOV 2027, or when the Department of Labor posts the 2027 award year,
 **Open for Dean:** a full dataset review would let `DATA_VERIFIED` itself move. That is an S2 sweep of every figure and is not part of this change.
 
 IMPACT: NOT A BENEFITS FINDING. This entry records what two of the app's own statements mean. No population, act or cost applies.
+
+## V-2026-11-15-TRICARE-2027-COSTS - Calendar year 2027 TRICARE Prime and Select costs published (verified 15 November 2026)
+
+**Status:** CONFIRMED for claims 1 to 6. No 2027 dollar figure was read or carried. Wording staged for Dean's approval on branch `claude/loop-10-tricare-2027-20261115`. Not released at the time of this entry.
+
+**Lead:** J1 scan issue #226. s2-intel read only the public-inspection PDF through a summarizer and returned HOLD, so the orchestrator read the primary pages at Tier 2. Every figure in that summary stays a lead. None is cited here and none ships.
+
+**Claims:**
+1. The Department of Defense published the calendar year 2027 TRICARE Prime and TRICARE Select out-of-pocket expenses, and the 2027 rates are effective January 1, 2027.
+2. TRICARE's Health Plan Costs page shows calendar year 2027 costs.
+3. TRICARE Open Season runs Nov. 9 to Dec. 8, 2026, and changes made in it take effect Jan. 1, 2027.
+4. Outside open season, a person can enroll in or change enrollment to a TRICARE Prime option or TRICARE Select only with a TRICARE Qualifying Life Event.
+5. TRICARE gives its pharmacy costs for calendar years 2026 and 2027, and the copays this app shows match the two labeled tables on that page.
+6. Federal Benefits Open Season runs November 9 to December 14, 2026.
+
+**Sources, read 15 November 2026 at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.**
+- https://www.federalregister.gov/documents/2026/11/12/2026-23035/tricare-calendar-year-cy-2027-tricare-prime-and-tricare-select-out-of-pocket-expenses . 16:44 UTC. Federal Register document 2026-23035, 91 FR 72858, Office of the Secretary, Department of Defense. SUMMARY: "This notice provides the CY 2027 TRICARE Prime and TRICARE Select out-of-pocket expenses." DATES: "The CY 2027 rates contained in this notice are effective January 1, 2027." Claim 1. The page text held the summary, dates and contact sections. Its cost tables were not in the text read, and no figure was taken from it.
+- https://www.tricare.mil/CompareCosts . 16:44 UTC. Page "Health Plan Costs", "Last Updated 11/5/2026": "The costs below are for calendar year 2027, unless noted." The page links 2026 and 2025 costs separately. Claim 2.
+- https://www.tricare.mil/About/Changes/OpenSeason . 16:44 and 16:52 UTC. "Last Updated 11/13/2026". Claims 3 and 4. The same read confirmed again each sentence of the existing notice (V-2026-11-14-TRICARE-OPEN-SEASON): who it applies to, who it does not apply to, the no-action line, and milConnect or the regional contractor.
+- https://newsroom.tricare.mil/News/TRICARE-News/Article/4642349/get-to-know-your-2027-tricare-health-plan-costs . 16:54 UTC. TRICARE Newsroom, Nov. 5, 2026. Second official publication for claims 1 and 3: health plan costs change starting Jan. 1, 2027, and open season begins Nov. 9 and ends Dec. 8.
+- https://www.tricare.mil/Costs/PharmacyCosts . 16:52 UTC. "Last Updated 4/10/2026": "Costs are for calendar years 2026 and 2027." Claim 5.
+- https://www.opm.gov/healthcare-insurance/open-season/ . 16:55 UTC. OPM gives Open Season as November 9 to December 14, 2026, ending at 11:59 pm Eastern Time on Monday, December 14, 2026 for FEDVIP and FSAFEDS. Claim 6, with the TRICARE Open Season page as the second source.
+
+**Pharmacy page, a trap for the next reader:** the page holds three tables inside collapsed sections. Two carry a heading and a control: "Costs for all beneficiaries except medically retired sponsors and certain survivors" (home delivery $14, $44, $85; retail network $16, $48, $85; $0 for TRICARE Prime Remote) and "Costs for medically retired sponsors and certain survivors" (home delivery $0, $20, $49; retail network $10, $24, $50). Those match reminder `r-9-tri26`. A third collapsed block has no heading and no control, and it holds $13, $38, $76 for home delivery and $16, $43, $76 for retail. A plain text extraction returns that block first. A reader of the page cannot open it. No app figure changed.
+
+**Sweep (successor and confusable-adjacent), executed in this cycle:**
+- `index.html` and `netlify/functions/navigator.mjs` carry no TRICARE Prime or Select enrollment fee, deductible, cost-share or catastrophic cap, so this notice makes no app figure stale on 1 JAN 2027. Searched: every dollar figure near TRICARE, CHCBP, TRS, TRR, TYA, Prime or Select, and the phrases enrollment fee, catastrophic cap, annual deductible, cost-share and out-of-pocket.
+- The three places with pharmacy copays (reminder `r-9-tri26`, the 1 JAN 2026 Policy Intel entry and notification `n34`) match TRICARE's labeled tables as read today.
+- Reminder `r-9-tri26` carries "TRICARE 2026" in its title. Its copays hold through 2027 by TRICARE's own statement. The title is a wording call for Dean before 1 JAN 2027.
+- The FEDVIP reminders (`r-1-fedvip`, `r-p1-fedvip`) name Federal Benefits Open Season by month only. OPM's dates agree with that. The app states one open season end date, Dec. 8, and no second date to confuse it with.
+
+**Not carried, with reasons:**
+- Every 2027 dollar figure. The app shows no Prime or Select cost today, and the Federal Register tables were not read. TRICARE's own page is linked.
+- Federal Benefits Open Season as guidance. OPM now confirms the dates, which closes the open cross-check in V-2026-11-14-TRICARE-OPEN-SEASON. A FEDVIP notice needs its own assessment: eligibility was not read today, so the exclusion line cannot be written (A1c). Queued as its own cycle. That window closes December 14, 2026.
+- Premiums for TRICARE Reserve Select, TRICARE Retired Reserve, TRICARE Young Adult and CHCBP. The notice covers Prime and Select.
+- The secondary report of a date inconsistency inside the notice, noted on 14 November. The SUMMARY and DATES sections read today agree with each other and with TRICARE's pages. The rest of the notice was not read.
+
+**App change (wording staged for Dean's approval):**
+- Policy Intel, new first entry dated 12 NOV 2026, "TRICARE 2027: Prime and Select costs published": "DoD published calendar year 2027 out-of-pocket costs for TRICARE Prime and TRICARE Select, effective 1 JAN 2027. TRICARE's Health Plan Costs page lists them. TRICARE Open Season for 2027 coverage: 9 NOV to 8 DEC 2026. Outside that window, TRICARE allows enrollment in, or a change to, a Prime option or Select only after a Qualifying Life Event. TRICARE lists the pharmacy copays shown in this app for calendar years 2026 and 2027." Source link: https://www.tricare.mil/CompareCosts , labeled "TRICARE Health Plan Costs; Federal Register 91 FR 72858".
+- Reminders, dated notice `tops-tricare-open-season-2026`: one added sentence, "DoD has published 2027 costs for TRICARE Prime and TRICARE Select, effective Jan. 1, 2027. TRICARE's Health Plan Costs page lists them.", and one added link, "2027 health plan costs on tricare.mil (new tab)". The act sentence, the no-action line and the exclusion line are unchanged. The notice still expires on its own after 8 DEC 2026.
+- `DATA_LATEST_CHECK` moves from "15 NOV 2026, 16:13 UTC" to "15 NOV 2026, 16:55 UTC": the OPM read above is now the newest primary-source read recorded in this log.
+- What's New and `APP_VERSION` are untouched.
+- Tests: the content regression gains 9 assertions. One is the first coverage of the notice's date window: off on 8 NOV, on from 9 NOV through 8 DEC, off on 9 DEC.
+
+IMPACT: SHIP - ACT | A2/A3 | orchestrator, Tier 2 | 2026-11-15 | revisit NONE
+A1 population: ALREADY SEPARATED (retirees and others who have or are eligible for TRICARE Prime or Select), SPOUSE/FAMILY (family members who have or are eligible for Prime or Select).   band: condition-triggered calendar window; no separation band or day-offset.   excluded: This does not apply to active duty service members, or to people with TRICARE For Life, TRICARE Reserve Select, TRICARE Retired Reserve, or TRICARE Young Adult coverage.   timing: ACT AVAILABLE NOW through 8 December 2026.
+A2 act: "If you have or are eligible for TRICARE Prime or TRICARE Select and want to enroll or change plans for 2027, sign in to milConnect or call your TRICARE regional contractor by Dec. 8, 2026."  This is the act shipped under V-2026-11-14-TRICARE-OPEN-SEASON. The new copy adds no instruction. It says 2027 costs exist and where TRICARE lists them.
+A3 surface(s): reminders (dated notice above the list); 2026 POLICY INTEL card (`POLICY_CHANGES.map` appears once at this commit).   token: NONE   sweep trigger: FIRED - successor: calendar year 2027 costs follow 2026 costs on 1 JAN 2027. Confusable-adjacent: TRICARE Open Season ends Dec. 8 and Federal Benefits Open Season ends Dec. 14. Sweep executed and recorded above.
+A4 cost: A CLOSED WINDOW
+EXPIRES: 2026-12-08 for the notice sentence and link, which leave with the notice. 2027-11-30 for the Policy Intel entry: review when calendar year 2028 costs publish.
+
+## V-2026-11-15-FEDVIP-OPEN-SEASON - Federal Benefits Open Season 2026 for FEDVIP dental and vision (verified 15 November 2026)
+
+**Status:** CONFIRMED for claims 1 to 9. No premium or other dollar figure was read or carried. Wording staged for Dean's approval on branch `claude/loop-11-fedvip-open-season-20261115`. Not released at the time of this entry.
+
+**How it was read:** s2-intel ran Tier 1 first. Its tool returns a model summary of each page, the BENEFEDS pages came back as a title only, and one TRICARE excerpt it returned is absent from the live page. Its report was used as leads. Every claim below rests on an orchestrator Tier 2 read of the live page.
+
+**Claims:**
+1. Federal Benefits Open Season runs November 9 to December 14, 2026 and ends at 11:59 pm Eastern Time on Monday, December 14, 2026 for FEDVIP.
+2. Open season is the annual opportunity to enroll in, change or cancel a FEDVIP dental or vision plan, and coverage chosen in it is effective January 1.
+3. Once a person is enrolled, coverage continues automatically each year.
+4. Outside open season a person can enroll only when newly eligible or after a qualifying life event.
+5. Retired uniformed service members and Retired Reserve members, including gray area reservists under age 60, are eligible for dental with their eligible family, and for vision if enrolled in a TRICARE health plan.
+6. Family members of an active duty member are not eligible for dental and are eligible for vision if enrolled in a TRICARE health plan.
+7. A National Guard or Reserve member enrolled in TRICARE Reserve Select is not eligible for dental and is eligible for vision, with eligible family, if enrolled in a TRICARE health plan.
+8. An active duty uniformed service member, serving full time for more than 30 days, is not eligible for dental or vision.
+9. BENEFEDS takes enrollments at BENEFEDS.gov, checks eligibility as the first enrollment step, treats dental and vision as separate enrollments, and gives 1-877-888-3337 as its phone number.
+
+**Sources, read 15 November 2026 at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.**
+- https://www.opm.gov/healthcare-insurance/open-season/ . 16:55 UTC. Claim 1.
+- https://www.tricare.mil/About/Changes/OpenSeason . 17:35 UTC. "Last Updated 11/13/2026". The page gives Federal Benefits Open Season as Nov. 9 to Dec. 14, 2026 with changes effective Jan. 1, 2027, and links it to benefeds.gov. Claims 1 and 2.
+- https://www.benefeds.gov/ . 17:36 UTC. "Open season ends December 14, 2026." Claim 1.
+- https://www.benefeds.gov/learn/fedvip/fedvip-enrollment . 17:37 UTC. Claims 2, 3, 4 and 9: "your coverage will automatically continue each year"; enrollment outside open season only if newly eligible or after a QLE; the enrollment steps begin with an eligibility check; dental and vision are enrolled separately.
+- https://www.benefeds.gov/learn/fedvip/fedvip-eligibility-uniformed-services . 17:36 UTC. Claims 5 to 8. The page shows no date.
+- https://www.benefeds.gov/contact . 17:37 UTC. Phone 1-877-888-FEDS (1-877-888-3337). Open season hours are Monday to Friday, 8 a.m. to 9 p.m. Eastern, and to midnight Eastern on the last day. Claim 9.
+
+**Not carried, with reasons:**
+- Survivors, Medal of Honor recipients, unremarried former spouses and the dental exceptions for retiree family members. The eligibility page gives each its own rule. The notice points to that page.
+- The TTY and international numbers. The contact page's text order did not tie each number to its label with certainty.
+- The retirement enrollment window in reminders `r-1-fedvip` and `r-p1-fedvip` (31 days before to 60 days after). It was not re-read at Tier 2 today and is unchanged. s2-intel's Tier 1 lead says a BENEFEDS FAQ states that window and also says retirement is not a qualifying life event. That lead needs a Tier 2 read before either reminder is touched.
+- Premiums and plan comparisons.
+
+**App change (wording staged for Dean's approval):** one disclosure in Reminders, `tops-fedvip-open-season-2026`, directly under the TRICARE Open Season notice. It is collapsed while the TRICARE notice shows and open once it stands alone. It leaves on its own at 11:59 pm Eastern on 14 DEC 2026, the same instant on every device.
+- Summary line: "Federal Benefits Open Season (FEDVIP dental and vision): Nov. 9 to Dec. 14, 2026"
+- "If you are eligible for FEDVIP dental or vision coverage and want to enroll or change plans for 2027, use BENEFEDS.gov by 11:59 p.m. Eastern on Dec. 14, 2026. If you cannot enroll online, call BENEFEDS at 1-877-888-3337. BENEFEDS checks your eligibility as the first step. Coverage chosen in open season takes effect Jan. 1, 2027."
+- "If you are already enrolled, your coverage continues each year with no action. Dental and vision are separate enrollments."
+- "BENEFEDS lists retired uniformed service members and Retired Reserve members, including gray area reservists under age 60, as eligible for dental and vision with their eligible family members. Vision requires enrollment in a TRICARE health plan."
+- "Active duty family members, and National Guard or Reserve members enrolled in TRICARE Reserve Select, are eligible for vision only, while enrolled in a TRICARE health plan."
+- "This does not apply to active duty service members, who are not eligible for FEDVIP dental or vision. Survivors and other groups have their own rules on the BENEFEDS eligibility page."
+- "This window is separate from TRICARE Open Season (Nov. 9 to Dec. 8, 2026)."
+- Links: "FEDVIP eligibility for uniformed services on BENEFEDS.gov (new tab)" and "Enroll or change plans on BENEFEDS.gov (new tab)".
+- `DATA_LATEST_CHECK` moves to "15 NOV 2026, 17:37 UTC", the BENEFEDS reads above.
+
+**Why the end is an instant:** OPM states the close in Eastern Time. A device-local date test would show the notice as open for up to five hours after the close in Hawaii. The helper compares against 05:00 UTC on 15 DEC 2026.
+
+IMPACT: SHIP - ACT | A2/A3 | orchestrator, Tier 2, on s2-intel leads | 2026-11-15 | revisit NONE
+A1 population: ALREADY SEPARATED (retired uniformed service members and Retired Reserve members, including gray area reservists), SPOUSE/FAMILY (eligible family members of those retirees; active duty family members for vision only), GUARD/RESERVE (members enrolled in TRICARE Reserve Select, for vision only).   band: condition-triggered calendar window; no separation band or day-offset.   excluded: This does not apply to active duty service members, who are not eligible for FEDVIP dental or vision.   timing: ACT AVAILABLE NOW through 11:59 pm Eastern on 14 December 2026.
+A2 act: "If you are eligible for FEDVIP dental or vision coverage and want to enroll or change plans for 2027, use BENEFEDS.gov by 11:59 p.m. Eastern on Dec. 14, 2026, or call BENEFEDS at 1-877-888-3337 if you cannot enroll online."  Eligibility is determined at BENEFEDS, which the sentence names.
+A3 surface(s): reminders (dated disclosure above the list, under the TRICARE notice).   token: NONE   sweep trigger: FIRED - confusable-adjacent: TRICARE Open Season ends Dec. 8 and this season ends Dec. 14; the retirement enrollment window in `r-1-fedvip` is a third FEDVIP date range. The notice names the TRICARE dates and says the two windows are separate. The retirement reminders are unchanged and carry their own labels.
+A4 cost: A CLOSED WINDOW
+EXPIRES: 2026-12-14, enforced in code at 05:00 UTC on 15 December 2026.
