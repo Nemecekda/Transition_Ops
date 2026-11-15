@@ -8241,6 +8241,7 @@ function topsCareerDiskSnapshot() { try { return JSON.stringify([TOPS_GUIDE_KEY,
 const TOPS_TALENT_EMAIL = "dean@veteranbridgesolutions.com";
 const TOPS_TALENT_BOOKING = "https://calendly.com/dean-veteranbridgesolutions/30min";
 const TOPS_TALENT_NETWORK = "https://apply.veteranbridgesolutions.com/apply";
+const TOPS_TALENT_ROLES = "https://apply.veteranbridgesolutions.com/roles";
 function topsTalentMessage(mode, fields, permission) {
   if (!["question", "interest", "update", "withdraw"].includes(mode) || !fields || typeof fields !== "object") return null;
   var limits = { name: 80, email: 120, roles: 180, location: 120, availability: 120, note: 240 };
@@ -8295,11 +8296,13 @@ function CareerTalentContact(props) {
   return React.createElement("details", { hidden: !!props.hidden, id: controlId("tops-talent-contact"), style: { borderTop: "1px solid " + C.border, margin: "16px 0 0", paddingTop: 4 } },
     React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", fontWeight: 700, cursor: "pointer" } }, props.summary || "Talk with Dean about your next role (optional)"),
     props.invitation && React.createElement("p", { style: { lineHeight: 1.5 } }, props.invitation),
-    React.createElement("p", { style: { lineHeight: 1.5 } }, "Dean is a recruiter with Veteran Bridge Solutions. Book a conversation, join the VBS talent network or introduce yourself by email. None of these guarantees a response, interview or job."),
+    React.createElement("p", { style: { lineHeight: 1.5 } }, "Dean is a recruiter with Veteran Bridge Solutions. Book a conversation, join the VBS talent network, see the roles VBS is filling or introduce yourself by email. None of these guarantees a response, interview or job."),
     React.createElement("a", { id: controlId("tops-talent-booking"), href: TOPS_TALENT_BOOKING, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, control, { display: "inline-flex", alignItems: "center", boxSizing: "border-box", maxWidth: "100%", overflowWrap: "anywhere", lineHeight: 1.4 }) }, "Book a 30-minute call"),
     React.createElement("p", { style: { fontSize: 14, lineHeight: 1.5 } }, "30-minute VBS Workforce Call on Calendly. Opens a new tab. Booking is separate from recruiting permission."),
     React.createElement("a", { id: controlId("tops-talent-network"), href: TOPS_TALENT_NETWORK, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, control, { display: "inline-flex", alignItems: "center", boxSizing: "border-box", maxWidth: "100%", overflowWrap: "anywhere", lineHeight: 1.4 }) }, "Join the FRONTLINE Cadre talent network"),
     React.createElement("p", { id: controlId("tops-talent-network-note"), style: { fontSize: 14, lineHeight: 1.5 } }, "Veteran Bridge Solutions' own intake form, on a separate VBS site. It requires your name, email and one career area, and no resume. Employers pay VBS to fill roles; joining costs you nothing. Read the form's privacy notice before you submit: it covers storage, AI-assisted review and when VBS shares your information with an employer. Opens a new tab."),
+    React.createElement("a", { id: controlId("tops-talent-open-roles"), href: TOPS_TALENT_ROLES, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, control, { display: "inline-flex", alignItems: "center", boxSizing: "border-box", maxWidth: "100%", overflowWrap: "anywhere", lineHeight: 1.4 }) }, "See open roles Veteran Bridge Solutions is filling"),
+    React.createElement("p", { id: controlId("tops-talent-open-roles-note"), style: { fontSize: 14, lineHeight: 1.5 } }, "Veteran Bridge Solutions' own list of roles it is recruiting for, on the same separate VBS site. Roles change, and the list can be empty. Applying there does not guarantee an interview or a job. Opens a new tab."),
     React.createElement("details", { id: controlId("tops-talent-email-section") },
     React.createElement("summary", { style: Object.assign({}, control, { fontWeight: 700, margin: "12px 0" }) }, "Email Dean"),
     React.createElement("label", { htmlFor: controlId("tops-talent-purpose") }, "What would you like to do?"),

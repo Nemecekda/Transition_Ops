@@ -34,7 +34,7 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 1 | TAMP Guard/Reserve eligibility and reimbursement | Use a health benefit the member has earned | None | SHIP - ACT | Cycle 1, merged as #219 |
 | 2 | CareerOneStop Job Finder and Veterans Job Matcher links | Find private-sector openings by role and area | The member's browser opens a federal site | ADOPT | Cycle 2, merged as #220 |
 | 3 | Candidate handoff to VBS: link to the FRONTLINE Cadre intake form in the recruiter contact section | Reach a recruiter with a usable profile | A separate VBS site the member chooses to open; the app passes nothing | ADOPT on Dean's order of 15 November | Cycle 3, merged as #221 |
-| 4 | VBS roles block with end dates | See named roles, Wisconsin first | A list Dean controls | WATCH: needs Dean's roles and disclosure line | Mechanism can be built; shows nothing until roles exist |
+| 4 | VBS roles: link to the live open roles page on the VBS site | See the roles VBS is filling, Wisconsin first | A page Dean already controls; the app passes nothing | ADOPT on Dean's order of 15 November | Cycle 7 |
 | 5 | SkillBridge feed states its age and points to the official list | Avoid acting on a stale opening | None | ADOPT | Cycle 6 |
 | 6 | HIRE Vets Medallion: links to the official recipient list, national and Wisconsin | Find employers with federal recognition | None; the member's browser opens a federal site | ADOPT | Cycle 4 |
 | 7 | Start-date planner | Know and state when civilian work can start | Device-local | LOCAL SYNTHETIC TEST | Queued |
@@ -142,3 +142,16 @@ Why a rule and no refresh: a refresh fixes today and goes stale again. The rule 
 Data dependency: none. The check uses the device clock and the batch label.
 
 Disposition: ADOPT. Six content checks were added, one of which runs the date reader. Record: V-2026-11-15-SKILLBRIDGE-FEED-AGE. Gate evidence and the hosted preview check are in the pull request.
+
+## Cycle 7 - Link to the VBS open roles page
+Member job: see real roles a recruiter is filling. Business job, stated by Dean: find qualified people for roles, Wisconsin first.
+
+Finding: the VBS intake site already has a live roles page that Dean controls. On 15 November it listed one Wisconsin role. An in-app roles list would be a second copy that goes stale; the page is the source.
+
+What changed: one link and one note in the recruiter contact section, after the talent network link, and an opening sentence that names all four options. The app names no role and no client.
+
+A catch worth recording: my first draft gave the link the id `tops-talent-roles`, which the email form's roles field already owns. The count check in the edit script exposed it before any test ran. The link's id is now `tops-talent-open-roles`, and a content check guards the split.
+
+Data dependency: none in the app. The link passes no data and no referrer. Record: V-2026-11-15-VBS-OPEN-ROLES.
+
+Disposition: ADOPT on Dean's order. Five content checks were added, two existing checks were updated for the fourth option and the second VBS address, and the contact browser regression covers the link.

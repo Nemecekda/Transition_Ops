@@ -333,14 +333,14 @@ check(occurrences(verificationLog, "## V-2026-11-15-CAREERONESTOP-JOB-LINKS ") =
 
 // FRONTLINE Cadre intake link in the recruiter contact section.
 // V-2026-11-15-VBS-TALENT-NETWORK.
-check(occurrences(index, 'const TOPS_TALENT_NETWORK = "https://apply.veteranbridgesolutions.com/apply";') === 1 && occurrences(index, "apply.veteranbridgesolutions.com") === 1,
-  "talent network address is defined once and used through its constant");
+check(occurrences(index, 'const TOPS_TALENT_NETWORK = "https://apply.veteranbridgesolutions.com/apply";') === 1 && occurrences(index, 'const TOPS_TALENT_ROLES = "https://apply.veteranbridgesolutions.com/roles";') === 1 && occurrences(index, "apply.veteranbridgesolutions.com") === 2,
+  "the two VBS addresses are each defined once and used through their constants");
 check(index.includes('{ id: controlId("tops-talent-network"), href: TOPS_TALENT_NETWORK, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer"'),
   "talent network link opens in a new tab with no opener and no referrer");
 check(index.includes("Veteran Bridge Solutions' own intake form, on a separate VBS site. It requires your name, email and one career area, and no resume. Employers pay VBS to fill roles; joining costs you nothing. Read the form's privacy notice before you submit: it covers storage, AI-assisted review and when VBS shares your information with an employer. Opens a new tab."),
   "talent network note says who runs it, what it requires, who pays and what its privacy notice covers");
-check(index.includes('"Dean is a recruiter with Veteran Bridge Solutions. Book a conversation, join the VBS talent network or introduce yourself by email. None of these guarantees a response, interview or job."') && occurrences(index, "Neither guarantees a response, interview or job.") === 0,
-  "contact section names all three options and keeps the no-guarantee statement");
+check(index.includes('"Dean is a recruiter with Veteran Bridge Solutions. Book a conversation, join the VBS talent network, see the roles VBS is filling or introduce yourself by email. None of these guarantees a response, interview or job."') && occurrences(index, "Neither guarantees a response, interview or job.") === 0 && occurrences(index, "join the VBS talent network or introduce yourself by email.") === 0,
+  "contact section names all four options and keeps the no-guarantee statement");
 check(occurrences(verificationLog, "## V-2026-11-15-VBS-TALENT-NETWORK ") === 1, "talent network link carries one verification record");
 
 // HIRE Vets Medallion: links to the Department of Labor's recipient list.
@@ -375,5 +375,17 @@ check(index.includes('"The newest batch in our SkillBridge list covers " + SKILL
 check(occurrences(index, "href: TOPS_SKILLBRIDGE_FINDER_URL, target: \"_blank\", rel: \"noopener noreferrer\"") === 2 && occurrences(index, '"Search official SkillBridge opportunities (new tab)"') === 3,
   "the official list link appears on Home and above the full feed, in a new tab with no opener and no referrer, with the same label the Career search section already uses");
 check(occurrences(verificationLog, "## V-2026-11-15-SKILLBRIDGE-FEED-AGE ") === 1, "the feed-age notices carry one verification record");
+
+// VBS open roles link in the recruiter contact section.
+// V-2026-11-15-VBS-OPEN-ROLES.
+check(index.includes('{ id: controlId("tops-talent-open-roles"), href: TOPS_TALENT_ROLES, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer"') && occurrences(index, '"See open roles Veteran Bridge Solutions is filling"') === 1,
+  "open roles link opens in a new tab with no opener and no referrer");
+check(index.includes("Veteran Bridge Solutions' own list of roles it is recruiting for, on the same separate VBS site. Roles change, and the list can be empty. Applying there does not guarantee an interview or a job. Opens a new tab."),
+  "open roles note says whose list it is, that it changes and that applying guarantees nothing");
+check(!/Wulf|HVAC Service Technician/.test(index.slice(index.indexOf('controlId("tops-talent-open-roles")'), index.indexOf('controlId("tops-talent-open-roles")') + 900)),
+  "the app names no individual role or client beside the link; the VBS page is the source");
+check(occurrences(index, 'controlId("tops-talent-open-roles")') === 1 && occurrences(index, 'controlId("tops-talent-roles")') === 0,
+  "the open roles link has its own id and does not take the id of the email form's roles field");
+check(occurrences(verificationLog, "## V-2026-11-15-VBS-OPEN-ROLES ") === 1, "open roles link carries one verification record");
 
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");

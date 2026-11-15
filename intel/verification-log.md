@@ -3366,3 +3366,36 @@ A2 act: "Search the official SkillBridge list for a current opening before you p
 A3 surface(s): Home; Resources, SkillBridge feed.   token: NONE; direct link.   sweep trigger: NONE
 A4 cost: A CLOSED WINDOW
 EXPIRES: NONE. The notice appears and clears on its own as the newest batch ages or is refreshed.
+
+## V-2026-11-15-VBS-OPEN-ROLES - Open roles page, Veteran Bridge Solutions (verified 15 November 2026)
+
+**Status:** CONFIRMED at Tier 2 for the description of the page. Listed at Dean's direction: his first ask of 15 November 2026 named roles, and his loop order says the app must help Veteran Bridge Solutions find veterans for roles. Wording staged for Dean's approval on branch `claude/loop-07-vbs-open-roles-20261115`. Not released at the time of this entry.
+
+**Claims:**
+1. https://apply.veteranbridgesolutions.com/roles is titled "Open roles | The FRONTLINE Cadre" and is Veteran Bridge Solutions' own list of roles it is recruiting for, on the same site as the intake form.
+2. On the read below the page listed one role: HVAC Service Technician, Level 3, with Wulf Brothers Inc. of Sturgeon Bay, covering Door and Kewaunee County, Wisconsin. The app names neither the role nor the client.
+3. Each role offers "Apply for this role", and a Cadre member can raise a hand for it.
+
+**Source, read 15 November 2026 at 15:54 UTC at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). Nothing was typed and nothing was submitted on this read:**
+- https://apply.veteranbridgesolutions.com/roles . Claims 1 to 3.
+
+**Relationship and disclosure:** Veteran Bridge Solutions is the app owner's firm, and the app owner is the recruiter. The section already says so, and the talent network note above the new link already says employers pay VBS to fill roles.
+
+**Vetting:** TIER 3, commercial. Listed at the owner's direction.
+
+**Not carried into the app:** the page also describes a $500 referral bonus. The app does not mention it.
+
+**Seam with `member-return-benchmarking`:** same as V-2026-11-15-VBS-TALENT-NETWORK. A disclosed referral the member chooses to open; the app passes no data and sends no referrer. The force-mod patch to that skill still waits on Dean's confirmation.
+
+**App change (wording staged for Dean's approval):**
+- Recruiter contact section, opening sentence: "Dean is a recruiter with Veteran Bridge Solutions. Book a conversation, join the VBS talent network, see the roles VBS is filling or introduce yourself by email. None of these guarantees a response, interview or job."
+- New link after the talent network note: "See open roles Veteran Bridge Solutions is filling".
+- New note under it: "Veteran Bridge Solutions' own list of roles it is recruiting for, on the same separate VBS site. Roles change, and the list can be empty. Applying there does not guarantee an interview or a job. Opens a new tab."
+- The section appears in Career job search for any area, in Career, and in the Wisconsin guide, so the link is national.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: All four may read a recruiter's open roles; no eligibility is involved.   band: condition-triggered by a job search; no fixed separation milestone or day-offset.   excluded: The list establishes no interview, job or hiring preference, and it can be empty.   timing: ACT AVAILABLE NOW
+A2 act: "Open Veteran Bridge Solutions' open roles page and read the roles it is recruiting for."
+A3 surface(s): recruiter contact section in Career job search, Career and the Wisconsin guide.   token: NONE; direct link.   sweep trigger: FIRED confusable-adjacent. The section's email form has a field for the roles a member wants, and the new link shows the roles VBS is filling. The link has its own id and its note says whose list it is.
+A4 cost: NOTHING
+EXPIRES: NONE. Recheck when the roles page changes its layout or address.
