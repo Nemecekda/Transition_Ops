@@ -32,8 +32,8 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | # | Item | Member job | Data dependency | Disposition | State |
 |---|---|---|---|---|---|
 | 1 | TAMP Guard/Reserve eligibility and reimbursement | Use a health benefit the member has earned | None | SHIP - ACT | Cycle 1, merged as #219 |
-| 2 | CareerOneStop Job Finder and Veterans Job Matcher links | Find private-sector openings by role and area | The member's browser opens a federal site | ADOPT | Cycle 2, staged |
-| 3 | Candidate introduction to VBS carries role, location, availability and member-chosen experience | Reach a recruiter with a usable summary | The member's own email app; the app sends nothing | LOCAL SYNTHETIC TEST | Queued |
+| 2 | CareerOneStop Job Finder and Veterans Job Matcher links | Find private-sector openings by role and area | The member's browser opens a federal site | ADOPT | Cycle 2, staged as #220 |
+| 3 | Candidate handoff to VBS: link to the FRONTLINE Cadre intake form in the recruiter contact section | Reach a recruiter with a usable profile | A separate VBS site the member chooses to open; the app passes nothing | ADOPT on Dean's order of 15 November | Cycle 3 |
 | 4 | VBS roles block with end dates | See named roles, Wisconsin first | A list Dean controls | WATCH: needs Dean's roles and disclosure line | Mechanism can be built; shows nothing until roles exist |
 | 5 | Replace the hand-kept SkillBridge feed with the official check | Avoid acting on a stale opening | None | ADOPT | Queued |
 | 6 | HIRE Vets Medallion: official awardee table, Wisconsin rows | Find employers with federal recognition | None | WATCH until the 2026 table is read at Tier 2 | Queued |
@@ -43,6 +43,7 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 10 | What's New and the verified stamp | See what changed since the last visit | None | WATCH: needs Dean's ruling | Parked |
 | 11 | Best Military Resume link | Resume and interview practice | Third-party account | REJECT for now: s2-vetting found no verifiable legal entity; reopens on Dean's outreach to the founder | Parked |
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
+| 13 | Repair three stale job-search browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Queued |
 
 ## Needs Dean
 - Best Military Resume: legal entity name and registration, current free and paid terms, whether a mock interview tool exists, and what "Partner Organizations" receive. The current site gives a free account 2 tailored resumes and 2 company research reports; cover letters are paid; resume building needs an account.
@@ -50,6 +51,8 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 - Ruling on What's New and the "verified 1 AUG 2026" stamp.
 - Rulings still open from 14 November: per-tool counters and push.
 - The organization name on Air Tech's SkillBridge MOU.
+- The VBS intake page says applicant information is never handed to anyone else; its privacy notice says it goes to a prospective employer at the serious-candidate stage. One of the two should change.
+- `member-return-benchmarking` lists "commercial lead generation" among things not to recommend. Dean's order of 15 November makes disclosed, member-chosen referral to VBS part of the mission. force-mod should patch the skill to say so once Dean confirms.
 
 ## Reconciliation at loop start
 `origin/main` was `92fb1a8`. Published branches not merged into `main`: the three Claude pull request branches combined in the base, and 14 older `codex/` branches dated 7 September to 25 October whose names match merged pull requests. Those older branches were not re-audited. No `codex/` branch is newer than 25 October.
@@ -79,3 +82,18 @@ Evidence: both tools were read at Tier 2. A test search for "logistics" near Gre
 Data dependency: none new. The link is an ordinary anchor; the role and area travel in the address from the member's browser, as they already do for LinkedIn and USAJOBS. The in-app listing feed stays off until the Jobs API request is approved.
 
 Disposition: ADOPT. Six content checks and one browser regression were added. Gate evidence and the hosted preview check are in the pull request.
+
+Baseline note from cycle 2's gate: three older browser regressions fail the same way on untouched `main` (`career-job-search-flow`, `federal-jobs-browser`, `career-home-search-continuity`). Each looks for an element id the Career redesign removed. Backlog row 13 covers the repair.
+
+## Cycle 3 - FRONTLINE Cadre intake link in the recruiter contact section
+Member job: reach a recruiter with a profile the recruiter can act on. Business job, stated by Dean: find qualified people moving back to Wisconsin first, then the other states.
+
+Before this cycle the section offered a 30-minute call and a member-sent email. The email carries roles, location and availability. The VBS intake form already collects more of what a placement needs: state, career areas, availability, willingness to relocate, military job, separation timing and SkillBridge interest.
+
+What changed: one link to that form, one note, and an opening sentence that names all three options. The note says the form is Veteran Bridge Solutions' own, on a separate site; what it requires; that employers pay VBS and joining costs nothing; and that the member should read the form's privacy notice first. Because the section appears in Career job search for any area, the link is national. The Wisconsin guide carries it too.
+
+Data dependency: none in the app. The link passes no data and no referrer. Collection happens on the VBS site under its own consent and privacy notice, which was read at Tier 2. Record: V-2026-11-15-VBS-TALENT-NETWORK.
+
+Not done here, by design: no roles list. That needs Dean's roles. No change to the email path or its permission wording.
+
+Disposition: ADOPT on Dean's order. Five content checks were added and the contact browser regression now covers the link. Gate evidence and the hosted preview check are in the pull request.

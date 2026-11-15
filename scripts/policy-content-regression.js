@@ -331,4 +331,16 @@ check(occurrences(index, "CareerOneStop, LinkedIn and state job banks open separ
 check(occurrences(verificationLog, "## V-2026-11-15-CAREERONESTOP-JOB-LINKS ") === 1 && !/vetted|guarantee/i.test(index.slice(index.indexOf('id: "tops-job-careeronestop"'), index.indexOf('id: "tops-job-careeronestop"') + 1200)),
   "job links carry one verification record and make no vetting or guarantee claim");
 
+// FRONTLINE Cadre intake link in the recruiter contact section.
+// V-2026-11-15-VBS-TALENT-NETWORK.
+check(occurrences(index, 'const TOPS_TALENT_NETWORK = "https://apply.veteranbridgesolutions.com/apply";') === 1 && occurrences(index, "apply.veteranbridgesolutions.com") === 1,
+  "talent network address is defined once and used through its constant");
+check(index.includes('{ id: controlId("tops-talent-network"), href: TOPS_TALENT_NETWORK, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer"'),
+  "talent network link opens in a new tab with no opener and no referrer");
+check(index.includes("Veteran Bridge Solutions' own intake form, on a separate VBS site. It requires your name, email and one career area, and no resume. Employers pay VBS to fill roles; joining costs you nothing. Read the form's privacy notice before you submit: it covers storage, AI-assisted review and when VBS shares your information with an employer. Opens a new tab."),
+  "talent network note says who runs it, what it requires, who pays and what its privacy notice covers");
+check(index.includes('"Dean is a recruiter with Veteran Bridge Solutions. Book a conversation, join the VBS talent network or introduce yourself by email. None of these guarantees a response, interview or job."') && occurrences(index, "Neither guarantees a response, interview or job.") === 0,
+  "contact section names all three options and keeps the no-guarantee statement");
+check(occurrences(verificationLog, "## V-2026-11-15-VBS-TALENT-NETWORK ") === 1, "talent network link carries one verification record");
+
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");

@@ -3272,3 +3272,41 @@ A2 act: "Open CareerOneStop's Job Finder from Career job search to read current 
 A3 surface(s): Career job search (prepared searches and the collapsed-panel summary).   token: NONE; direct official links.   sweep trigger: NONE
 A4 cost: NOTHING
 EXPIRES: NONE. Recheck if the results address stops returning results or CareerOneStop changes its account or sponsorship statement. The in-app listing feed stays off (`JOBS_LIVE = false`) until the Jobs API request is approved.
+
+## V-2026-11-15-VBS-TALENT-NETWORK - FRONTLINE Cadre intake form, Veteran Bridge Solutions (verified 15 November 2026)
+
+**Status:** CONFIRMED at Tier 2 for the description of the form and its privacy notice. Listed at Dean's direction: his chat order of 15 November 2026, 07:31 Central, says the app must stay free to veterans and still help Veteran Bridge Solutions find veterans for roles. Wording staged for Dean's approval on branch `claude/loop-03-vbs-talent-network-20261115`. Not released at the time of this entry.
+
+**Claims:**
+1. https://apply.veteranbridgesolutions.com/apply is titled "Join the FRONTLINE Cadre | Veteran Bridge Solutions" and is Veteran Bridge Solutions' candidate intake form.
+2. The page says only the applicant's name, email and one career box are required, and that no resume is required.
+3. The page says employers pay to find people and members never pay.
+4. Submitting requires agreeing that Veteran Bridge Solutions may store the information provided.
+5. The form's privacy notice, effective June 29, 2026, says VBS collects what the applicant enters; uses a third-party AI provider to help summarize and organize applications, with a person making every decision; shares information with a prospective employer once the applicant is a serious candidate for a specific role, and names the employer at that point; uses hosting, database, email and AI service providers; does not sell information or share it for advertising; and keeps the applicant in its talent community until removal is requested.
+
+**Sources, read 15 November 2026 at 14:01 to 14:03 UTC at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). Nothing was typed into the form and nothing was submitted:**
+- https://apply.veteranbridgesolutions.com/apply . Claims 1 to 4.
+- https://apply.veteranbridgesolutions.com/privacy . Claim 5.
+
+**Relationship and disclosure:** Veteran Bridge Solutions is the app owner's firm, and the app owner is the recruiter. The contact section already says "Dean is a recruiter with Veteran Bridge Solutions." The new note adds who pays and that the form sits on a separate VBS site.
+
+**Vetting:** TIER 3, commercial. Listed at the owner's direction. The firm's registration and certification were not independently checked in this pass.
+
+**One inconsistency on the VBS site, for Dean:** the intake page says the applicant's information is never sold or handed to anyone else. The privacy notice says it is shared with a prospective employer at the serious-candidate stage and with service providers. The app's note follows the privacy notice.
+
+**Seam with `member-return-benchmarking`:** that skill lists "commercial lead generation" among things not to recommend. This link is a disclosed referral the member chooses to open, ordered by Dean on 15 November 2026. The app passes no data to the VBS site and sends no referrer. The skill's wording should be patched by force-mod to record that ruling; no registry change is made here.
+
+**Privacy check under `privacy-truth-to-implementation`:** an ordinary anchor with `rel="noopener noreferrer"` and `referrerPolicy="no-referrer"`. No form value, saved plan or search term is attached. No function, storage or telemetry changed. The section's existing statement, "These fields are not saved with your plan", concerns the email fields and stays true.
+
+**App change (wording staged for Dean's approval):**
+- Recruiter contact section, opening sentence: "Dean is a recruiter with Veteran Bridge Solutions. Book a conversation, join the VBS talent network or introduce yourself by email. None of these guarantees a response, interview or job."
+- New link after the booking line: "Join the FRONTLINE Cadre talent network".
+- New note under it: "Veteran Bridge Solutions' own intake form, on a separate VBS site. It requires your name, email and one career area, and no resume. Employers pay VBS to fill roles; joining costs you nothing. Read the form's privacy notice before you submit: it covers storage, AI-assisted review and when VBS shares your information with an employer. Opens a new tab."
+- The section appears in Career job search for any area, in Career, and in the Wisconsin guide, so the link is national.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: All four may ask a recruiter about civilian roles; no eligibility is involved.   band: condition-triggered by a job search or career plan; no fixed separation milestone or day-offset.   excluded: Joining establishes no opening, interview, job or hiring preference.   timing: ACT AVAILABLE NOW
+A2 act: "Open the FRONTLINE Cadre intake form to give Veteran Bridge Solutions your name, email and career areas."
+A3 surface(s): recruiter contact section in Career job search, Career and the Wisconsin guide.   token: NONE; direct link.   sweep trigger: FIRED confusable-adjacent. The section now holds three ways to reach the recruiter with different consent: booking carries no recruiting permission, email needs the permission box, and the intake form takes consent on the VBS site. The note says the form is on a separate VBS site and points to its privacy notice.
+A4 cost: NOTHING
+EXPIRES: NONE. Recheck when the intake form or its privacy notice changes; the notice read here is effective June 29, 2026.
