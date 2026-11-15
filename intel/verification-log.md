@@ -3345,3 +3345,24 @@ A2 act: "Open the Department of Labor's HIRE Vets Medallion recipient list, filt
 A3 surface(s): Career job search links; Wisconsin guide, employer section, after Vets Ready.   token: NONE; direct links.   sweep trigger: FIRED confusable-adjacent. Three kinds of employer listing now sit near each other in the Wisconsin guide: Vets Ready (state recognition), HIRE Vets Medallion (federal award) and VBS cohort companies (the app owner's firm). The new note says the federal award is separate from Vets Ready, and the cohort keeps its own heading. The state page's address contains "hirevets" and belongs to a different program from hirevets.gov.
 A4 cost: NOTHING
 EXPIRES: NONE for the links. Recheck each November, when the Department of Labor posts a new award year, and whenever the list's filter values change.
+
+## V-2026-11-15-SKILLBRIDGE-FEED-AGE - Age notice on the hand-kept SkillBridge feed (15 November 2026)
+
+**Status:** Product behavior with one link that was already verified. No new benefits or policy claim. Wording staged for Dean's approval on branch `claude/loop-06-skillbridge-feed-age-20261115`. Not released at the time of this entry.
+
+**Finding:** the SkillBridge feed in `index.html` is kept by hand. Its newest batch is labeled "1-9 JUL 2026". On 15 November 2026 that batch was 129 days old, and Home still showed it under "LATEST BATCH" with entries marked new in July.
+
+**Link used:** https://skillbridge.mil/locations , the SkillBridge program's opportunity search. Verified in WI2-20261016-SKILLBRIDGE-FINDER (root tier 2, 16 October 2026) and used again as a control search in this log on 15 November 2026.
+
+**App change (wording staged for Dean's approval):**
+- A batch older than 45 days, or one whose label carries no readable date, counts as old. The age is read from the last date in the batch label.
+- Home, while the newest batch is old: the company teaser gives way to "The newest batch in our SkillBridge list covers <batch>. Search the official SkillBridge list for current openings.", the link "Search official SkillBridge opportunities (new tab)" and the button "See our dated list". While the batch is fresh, Home shows the teaser as before.
+- Full feed, while the newest batch is old: a notice above the batches reads "The newest batch below covers <batch>, and openings change. Confirm any listing on the official SkillBridge list before you plan around it.", with the same link.
+- No feed entry was added, removed or reworded.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, build loop) | 2026-11-15 | revisit NONE
+A1 population: SEPARATING (active component) and GUARD/RESERVE members weighing SkillBridge; eligibility and approval stay with the member's service.   band: condition-triggered by SkillBridge planning; no fixed day-offset.   excluded: The notice establishes no opening and no approval.   timing: ACT AVAILABLE NOW
+A2 act: "Search the official SkillBridge list for a current opening before you plan around a company in the dated feed."
+A3 surface(s): Home; Resources, SkillBridge feed.   token: NONE; direct link.   sweep trigger: NONE
+A4 cost: A CLOSED WINDOW
+EXPIRES: NONE. The notice appears and clears on its own as the newest batch ages or is refreshed.

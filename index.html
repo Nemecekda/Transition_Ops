@@ -3088,6 +3088,19 @@ const VSO_DIRECTORY = [{
     icon: "\uD83C\uDFD6\uFE0F"
   }]
 }];
+// SkillBridge feed freshness. The feed below is kept by hand, so the app says so when its newest batch is old.
+const TOPS_SKILLBRIDGE_STALE_DAYS = 45;
+const TOPS_SKILLBRIDGE_FINDER_URL = "https://skillbridge.mil/locations";
+function topsSkillbridgeBatchAgeDays(week, now) {
+  var m = /(\d{1,2})\s+(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+(\d{4})\s*$/.exec(String(week || ""));
+  if (!m) return null;
+  var end = Date.UTC(Number(m[3]), ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"].indexOf(m[2]), Number(m[1]));
+  return Math.floor(((typeof now === "number" ? now : Date.now()) - end) / 86400000);
+}
+function topsSkillbridgeFeedIsStale(now) {
+  var age = SKILLBRIDGE_FEED.length ? topsSkillbridgeBatchAgeDays(SKILLBRIDGE_FEED[0].week, now) : null;
+  return age === null || age > TOPS_SKILLBRIDGE_STALE_DAYS;
+}
 const SKILLBRIDGE_FEED = [{
   week: "1-9 JUL 2026",
   companies: [{
@@ -12680,7 +12693,13 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       dashMoreOpen && React.createElement("div", null,
 
       // MOCKUP SKILLBRIDGE INTEL: typographic rows from the live feed, zero box decoration
-      SKILLBRIDGE_FEED.length > 0 && SKILLBRIDGE_FEED[0].companies && React.createElement("div", { style: { margin: "20px 2px 16px" } },
+      SKILLBRIDGE_FEED.length > 0 && SKILLBRIDGE_FEED[0].companies && topsSkillbridgeFeedIsStale() && React.createElement("div", { id: "tops-home-skillbridge-check", style: { margin: "20px 2px 16px" } },
+        React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: C.inactive, marginBottom: 8 } }, "SKILLBRIDGE"),
+        React.createElement("p", { id: "tops-home-skillbridge-check-note", style: { margin: "0 0 8px", fontSize: 14, lineHeight: 1.5, color: C.textSecondary } }, "The newest batch in our SkillBridge list covers " + SKILLBRIDGE_FEED[0].week + ". Search the official SkillBridge list for current openings."),
+        React.createElement("a", { id: "tops-home-skillbridge-finder", href: TOPS_SKILLBRIDGE_FINDER_URL, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-home-skillbridge-check-note", style: { display: "inline-flex", alignItems: "center", minHeight: 44, fontSize: 14, color: C.greenBright } }, "Search official SkillBridge opportunities (new tab)"),
+        React.createElement("button", { id: "tops-home-skillbridge-dated", type: "button", onClick: function() { setSubTab("skillbridge"); setActiveTab("resources"); }, style: { display: "block", minHeight: 44, padding: 0, border: "none", background: "none", font: "inherit", fontSize: 14, color: C.textSecondary, textDecoration: "underline", cursor: "pointer", textAlign: "left" } }, "See our dated list")
+      ),
+      SKILLBRIDGE_FEED.length > 0 && SKILLBRIDGE_FEED[0].companies && !topsSkillbridgeFeedIsStale() && React.createElement("div", { style: { margin: "20px 2px 16px" } },
         React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 10, letterSpacing: 3, color: C.inactive, marginBottom: 8 } }, "SKILLBRIDGE INTEL \u2014 LATEST BATCH (" + (SKILLBRIDGE_FEED[0].week || "") + ")"),
         SKILLBRIDGE_FEED[0].companies.slice(0, 3).map(function(c, i, arr) {
           return React.createElement("a", { key: i, href: c.url, target: "_blank", rel: "noopener noreferrer", style: { display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, padding: "11px 0", borderBottom: i < arr.length - 1 ? "1px solid " + C.border : "none", textDecoration: "none" } },
@@ -18165,7 +18184,10 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       React.createElement("span", { style: { fontSize: 9, background: "rgba(139,184,60,0.15)", color: C.greenBright, padding: "1px 6px", borderRadius: 4, fontFamily: "'Oswald', sans-serif", letterSpacing: 1, marginRight: 6 } }, "DIB-CRITICAL"),
       "= defense industrial base employer per the 3 JUN 2026 SecWar directive \u2014 the services are directed to approve SkillBridge requests supporting these, denying only for readiness. ",
       React.createElement("a", { href: DIB_DIRECTIVE_URL, target: "_blank", rel: "noopener noreferrer", style: { color: C.greenBright, textDecoration: "none" } }, "Read the directive \u2192")
-    ), SKILLBRIDGE_FEED.map((week, wi) => /*#__PURE__*/React.createElement("div", {
+    ), topsSkillbridgeFeedIsStale() ? React.createElement("div", { id: "tops-skillbridge-feed-age", role: "note", style: { margin: "0 0 14px", padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 8 } },
+      React.createElement("p", { id: "tops-skillbridge-feed-age-note", style: { margin: "0 0 6px", fontSize: 14, lineHeight: 1.5, color: C.textPrimary } }, "The newest batch below covers " + (SKILLBRIDGE_FEED[0] ? SKILLBRIDGE_FEED[0].week : "an earlier period") + ", and openings change. Confirm any listing on the official SkillBridge list before you plan around it."),
+      React.createElement("a", { id: "tops-skillbridge-feed-finder", href: TOPS_SKILLBRIDGE_FINDER_URL, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-skillbridge-feed-age-note", style: { display: "inline-flex", alignItems: "center", minHeight: 44, fontSize: 14, color: C.greenBright } }, "Search official SkillBridge opportunities (new tab)")
+    ) : null, SKILLBRIDGE_FEED.map((week, wi) => /*#__PURE__*/React.createElement("div", {
     key: wi,
     style: {
       marginBottom: 16

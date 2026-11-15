@@ -358,4 +358,22 @@ check(!/Salute Mission Critical|REDI Transports|U\.S\. Vet General Contracting|I
   "the app names no award recipient; the official list is the source");
 check(occurrences(verificationLog, "## V-2026-11-15-HIREVETS-MEDALLION ") === 1, "HIRE Vets Medallion links carry one verification record");
 
+// SkillBridge feed freshness: the hand-kept feed states its age and points to the official list.
+// V-2026-11-15-SKILLBRIDGE-FEED-AGE.
+{
+  const ageSource = (index.match(/function topsSkillbridgeBatchAgeDays\(week, now\) \{[\s\S]*?\n\}/) || [])[0];
+  const age = ageSource ? new Function(ageSource + "; return topsSkillbridgeBatchAgeDays;")() : null;
+  check(!!age && age("1-9 JUL 2026", Date.UTC(2026, 10, 15)) === 129 && age("27 JAN - 2 FEB 2026", Date.UTC(2026, 1, 10)) === 8 && age("8-14 JUN 2026", Date.UTC(2026, 5, 14)) === 0 && age("someday", 0) === null && age("", 0) === null,
+    "the batch date reader returns whole days from the last date in the label and null when the label has no date");
+}
+check(occurrences(index, "const TOPS_SKILLBRIDGE_STALE_DAYS = 45;") === 1 && occurrences(index, 'const TOPS_SKILLBRIDGE_FINDER_URL = "https://skillbridge.mil/locations";') === 1 && index.includes("return age === null || age > TOPS_SKILLBRIDGE_STALE_DAYS;"),
+  "a batch older than 45 days, or one whose date cannot be read, counts as old");
+check(occurrences(index, "SKILLBRIDGE_FEED[0].companies && topsSkillbridgeFeedIsStale() && React.createElement(\"div\", { id: \"tops-home-skillbridge-check\"") === 1 && occurrences(index, "SKILLBRIDGE_FEED[0].companies && !topsSkillbridgeFeedIsStale() && React.createElement(\"div\", { style: { margin: \"20px 2px 16px\" } },") === 1,
+  "Home shows the company teaser only while the newest batch is fresh, and the official-list pointer otherwise");
+check(index.includes('"The newest batch in our SkillBridge list covers " + SKILLBRIDGE_FEED[0].week + ". Search the official SkillBridge list for current openings."') && index.includes('", and openings change. Confirm any listing on the official SkillBridge list before you plan around it."'),
+  "both notices state the batch dates and send the member to the official list");
+check(occurrences(index, "href: TOPS_SKILLBRIDGE_FINDER_URL, target: \"_blank\", rel: \"noopener noreferrer\"") === 2 && occurrences(index, '"Search official SkillBridge opportunities (new tab)"') === 3,
+  "the official list link appears on Home and above the full feed, in a new tab with no opener and no referrer, with the same label the Career search section already uses");
+check(occurrences(verificationLog, "## V-2026-11-15-SKILLBRIDGE-FEED-AGE ") === 1, "the feed-age notices carry one verification record");
+
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");

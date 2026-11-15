@@ -35,7 +35,7 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 2 | CareerOneStop Job Finder and Veterans Job Matcher links | Find private-sector openings by role and area | The member's browser opens a federal site | ADOPT | Cycle 2, merged as #220 |
 | 3 | Candidate handoff to VBS: link to the FRONTLINE Cadre intake form in the recruiter contact section | Reach a recruiter with a usable profile | A separate VBS site the member chooses to open; the app passes nothing | ADOPT on Dean's order of 15 November | Cycle 3, merged as #221 |
 | 4 | VBS roles block with end dates | See named roles, Wisconsin first | A list Dean controls | WATCH: needs Dean's roles and disclosure line | Mechanism can be built; shows nothing until roles exist |
-| 5 | Replace the hand-kept SkillBridge feed with the official check | Avoid acting on a stale opening | None | ADOPT | Queued |
+| 5 | SkillBridge feed states its age and points to the official list | Avoid acting on a stale opening | None | ADOPT | Cycle 6 |
 | 6 | HIRE Vets Medallion: links to the official recipient list, national and Wisconsin | Find employers with federal recognition | None; the member's browser opens a federal site | ADOPT | Cycle 4 |
 | 7 | Start-date planner | Know and state when civilian work can start | Device-local | LOCAL SYNTHETIC TEST | Queued |
 | 8 | Starting points for every state | Find the state veterans agency and job bank | None | WATCH until S2 verifies the links | Queued |
@@ -129,3 +129,16 @@ Three job-search harnesses still fail on `main`. Each needs a decision about int
 - `career-home-search-continuity`: waits for `#career-starter-resume` at `/?tool=pathway&case=timeline`, and that element does not render there (line 40).
 
 No app file changed. No cache bump.
+
+## Cycle 6 - SkillBridge feed states its age
+Member job: avoid planning a SkillBridge window around an opening that has closed. It recurs through the whole SkillBridge planning period.
+
+Finding: the feed is kept by hand and its newest batch is "1-9 JUL 2026". On 15 November that batch was 129 days old, and Home still called it the latest batch.
+
+What changed: the app reads the last date in the newest batch label. Past 45 days, Home swaps the company teaser for a pointer to the official SkillBridge list, and the full feed gains a dated caution above its batches. When someone refreshes the feed, both notices clear on their own. No feed entry changed.
+
+Why a rule and no refresh: a refresh fixes today and goes stale again. The rule keeps the app honest between refreshes. A refresh of the entries themselves is S2 work with per-entry verification and stays open.
+
+Data dependency: none. The check uses the device clock and the batch label.
+
+Disposition: ADOPT. Six content checks were added, one of which runs the date reader. Record: V-2026-11-15-SKILLBRIDGE-FEED-AGE. Gate evidence and the hosted preview check are in the pull request.
