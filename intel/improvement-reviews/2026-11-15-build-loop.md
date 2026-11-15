@@ -38,14 +38,17 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 5 | SkillBridge feed states its age and points to the official list | Avoid acting on a stale opening | None | ADOPT | Cycle 6 |
 | 6 | HIRE Vets Medallion: links to the official recipient list, national and Wisconsin | Find employers with federal recognition | None; the member's browser opens a federal site | ADOPT | Cycle 4 |
 | 7 | Start-date planner | Know and state when civilian work can start | Device-local | LOCAL SYNTHETIC TEST | Queued |
-| 8 | Starting points for every state | Find the state veterans agency and job bank | None; the member's browser opens a state site | ADOPT: both federal lists read at Tier 2 on 15 November | Cycle 12 |
+| 8 | Starting points for every state | Find the state veterans agency and job bank | None; the member's browser opens a state site | ADOPT: both federal lists read at Tier 2 on 15 November | Cycle 12, merged as #231 |
 | 9 | JST and VMET reading beside the DD214 | Turn records into resume evidence | Device-local read; member-approved excerpts to AI | LOCAL SYNTHETIC TEST; design packet first under `resume-drafter-maintenance` | Queued |
 | 10 | What's New and the verified stamp | See what changed since the last visit | None | ADOPT on Dean's order of 15 November, 10:30 | Cycle 9, merged as #228 |
 | 11 | Best Military Resume link | Resume and interview practice | Third-party account | REJECT for now: s2-vetting found no verifiable legal entity; reopens on Dean's outreach to the founder | Parked |
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
-| 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below |
+| 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below; cycle 13's gate found four more; cycle 14 repaired two of those and found the other two are right; cycle 15 fixes the app for both |
 | 14 | TRICARE 2027 costs: a Policy Intel entry and a costs link in the open season notice | Choose a 2027 plan with the costs in hand before 8 DEC 2026 | None; the member's browser opens tricare.mil | SHIP - ACT under `member-impact` | Cycle 10, merged as #229 |
 | 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None; the member's browser opens benefeds.gov | SHIP - ACT under `member-impact` | Cycle 11, merged as #230 |
+| 16 | Share a deadline or one state's links; reachable app share | Pass a useful, specific thing to another service member | None; fixed text and one address, no tracking | ADOPT on Dean's order of 15 November, 12:36 | Cycle 13 |
+| 17 | Family step in the retirement FEDVIP reminders | Keep a family member's vision coverage across the sponsor's retirement | None | SHIP - ACT under `member-impact` | Cycle 16 |
+| 18 | Distinct labels on the Home next-move card | Tell six controls apart at a glance | None | ADOPT on Dean's order of 15 November, 13:57 | Cycle 17 |
 
 ## Needs Dean
 - Best Military Resume: legal entity name and registration, current free and paid terms, whether a mock interview tool exists, and what "Partner Organizations" receive. The current site gives a free account 2 tailored resumes and 2 company research reports; cover letters are paid; resume building needs an account.
@@ -247,3 +250,141 @@ Vetting: s2-vetting screened the 27 hosts outside .gov and held five. The orches
 Upkeep: the weekly J4 link audit will crawl the 109 new addresses. A re-read of either list compares with its hash in one step.
 
 Staff tooling: s2-vetting's fetch tool was refused by all 27 hosts, so its screen rested on state pages and search. The browser read is what cleared the holds.
+
+## Merge record, continued (4)
+- 12:36 Central: Dean ordered "merge and keep making this better. i want veterans to want to share it beacuse its so good". #231 merged at head `1649eb2`. Merge commit `4729654`. Production moved from v331 to v332; served bytes matched the commit at 18:38 UTC.
+
+Cycle 13 onward is built on `main` at `4729654`.
+
+## Cycle 13 - Make the useful things shareable
+Record: V-2026-11-15-SHARE-TEXT.
+
+What a probe found: the app share button was about 4,400 pixels down Home under a closed disclosure. Nothing but the Wisconsin guide could be shared on its own. Four handlers assumed a clipboard.
+
+What ships:
+- One share control: the device's share sheet, then the clipboard, then a link to select by hand. It sends fixed text and one address.
+- "Share this deadline" on the TRICARE and FEDVIP notices.
+- "Share these links" for a chosen state. The link opens with that state chosen.
+- "Share Transition OPS" in the More tools menu, two taps from any screen.
+- The older share and copy buttons check for a clipboard and say what to copy when there is none.
+- The app share handler no longer calls a tracking hook that nothing defines.
+
+Why these: people pass along a date or a link that helps someone today. A general pitch for an app travels less.
+
+Drafting: pao-content wrote the share text options. The deadline texts ship with the year added and with no eligibility line.
+
+Left for Dean: the app-wide share line still reads as it did. pao-content offered three replacements. One is quoted in the pull request; the other two were not kept.
+
+Baseline note from cycle 13's gate: five older regressions fail the same way on untouched `main` at `4729654`, so this cycle did not cause them. Four of the five are new to this record. Backlog row 13 covers the repair.
+- `career-home-search-continuity-browser`: already recorded under cycle 2.
+- `tool-url-continuity-browser`: every scenario passes through line 34. The last one, at line 35, expects a visitor with saved work and no `tops_onboarded` key to keep an address with no `tool` value. The app treats saved work as a returning visitor and writes `tool=dashboard`.
+- `navigation-refresh`: the script renders the bottom navigation in a sandbox that has no `subTab` variable, and the navigation code now reads one.
+- `guard-reserve-browser`: stops at "reload Guard" on line 20.
+- `profile-access-browser`: stops at "Home heading focus" on line 19.
+
+`home-visual-browser` passed 4 of 6 runs on this branch and 5 of 5 on `main`. Both failures were the "Invalid InterceptionId" request race recorded in earlier cycles.
+
+Lead from the same probe, same on `main`: the welcome screen shows on a visitor's first load of the root address only. The first load writes `taskProgress` and `docProgress`, and the app reads either key as a returning visitor. A visitor who reloads before choosing a starting point lands on Home.
+
+## Cycle 14 - Repair two stale test scripts
+Tests only. No app file changes. No cache bump.
+
+What cycle 13's gate showed: five older regressions fail on untouched `main`. Each was diagnosed against the app.
+
+Repaired here:
+- `navigation-refresh`: the bottom navigation reads `subTab`, and the script's sandbox never defined it. The script now defines it and checks five Resources sub-views. Documents belongs to My Plan. The other four belong to Benefits.
+- `tool-url-continuity-browser`: the last scenario expected the welcome screen for a visitor with saved work. Since #163 (21 OCT) saved work marks a returning visitor. The scenario now states each rule on its own, and adds the linked-state address rules from cycle 13.
+- `home-visual-browser`: its paused-request handler now ignores Chrome's "Invalid InterceptionId" answer for a request whose page has reloaded, as 58 of the 93 browser regressions already do. It rethrows anything else.
+
+One pin for Dean's ruling: the address script pins today's first-visit behavior. The welcome screen shows on the first load only, and a reload before any choice lands on Home. If Dean rules that the welcome screen should return, the app and that pin change together.
+
+Found, and carried to cycle 15: the two other failing scripts are right. Each caught a defect on Guard and Reserve Home that dates from October.
+- `profile-access-browser`: saving a service profile change between Guard or Reserve and any other profile rebuilds the editor. The save then throws an error, focus drops to the page body, and "Service profile updated." never shows. Since `5f96b7c` (7 OCT).
+- `guard-reserve-browser`: "Open transition timeline" on Guard and Reserve Home opens the My Plan hub. Since `d071539` (10 OCT). Two of its steps also reload from the career plan and expect Home, which went stale with tool addresses on 9 OCT.
+
+Still failing after this cycle: those two scripts, until cycle 15 merges, and the three job-search scripts in row 13.
+
+Evidence: `navigation-refresh` 1 of 1, `tool-url-continuity-browser` 3 of 3, `home-visual-browser` 4 of 4. Run against untouched `main`, the repaired address script fails at the linked-state step, as it should before #233.
+
+## Cycle 15 - Two Guard and Reserve Home fixes
+No policy claim and no new wording. Cache v334.
+
+Both defects were found by regressions that had been failing since October.
+
+1. Service profile save. Home has two layouts: one for Guard and Reserve, one for everyone else. A save that crosses between them rebuilds Home, and the editor with it. Since `5f96b7c` (7 OCT) that save threw "Cannot read properties of null (reading 'focus')", dropped keyboard focus to the page body, and never showed "Service profile updated."
+   - Fix: the save moves focus to the Service profile heading that is on the page after Home settles. The editor being replaced hands its confirmation to the one that replaces it. The new editor shows it a moment after it is on the page, so the status line changes and a screen reader can announce it. A note older than two seconds is dropped.
+2. "Open transition timeline" on Guard and Reserve Home. Since `d071539` (10 OCT) it opened the My Plan hub and left focus on the page body.
+   - Fix: it opens the timeline the way Home's own timeline control does. Focus lands on the timeline, and returns to the control when the member comes back to Home.
+
+Test repairs in the same change:
+- `profile-access-browser` now requires the confirmation after every save, including the two that rebuild Home. Its last scenario evaluated 2,750 lines of app source in isolation and broke on a name defined above them. It now evaluates the profile list and the editor only.
+- `guard-reserve-browser`: two steps reloaded from the career plan and expected Home. They now return Home first and wait for the address to follow. The timeline step now requires focus on the timeline.
+- The three scripts that have shown the paused-request race now tolerate both of its forms: a request whose page reloaded, and a request left paused while Chrome closes.
+
+Proof that the scripts test the fix: run against the app without it, the repaired profile script stops at "Home heading focus" with one uncaught error, and the repaired Guard script stops at "Timeline".
+
+Evidence: `profile-access-browser` passes 3 of 3 and `guard-reserve-browser` 4 of 4. A browser check of both fixes passes 45 of 45 across two themes and two widths. The six gate commands and the build exit 0. Fifteen other related regressions pass.
+
+Baseline note from cycle 15's gate: three more Home regressions fail the same way on untouched `main` at `4729654`. They are not yet diagnosed.
+- `member-loop-browser`: stops at "first visit welcome".
+- `member-action-hierarchy-browser`: an assertion at line 25.
+- `member-priority-browser`: an assertion at line 54.
+
+Two of the four scripts diagnosed so far were right about the app, so these three are next. A run of every script against `main` was started to map the rest.
+
+## Cycle 16 - One family step in the retirement FEDVIP reminders
+Record: V-2026-11-15-FEDVIP-RETIREMENT-WINDOW.
+
+Why: a lead left open in cycle 11. A Tier 2 read of four BENEFEDS pages closed it. Every FEDVIP statement in the two retirement reminders matches BENEFEDS, and BENEFEDS's line that retirement is not a qualifying life event does not conflict with them.
+
+What the read found that the app did not carry: a family member who enrolled in FEDVIP vision while the sponsor was on active duty cannot keep that enrollment after the sponsor retires. BENEFEDS must be notified. The sponsor enrolls as a retired uniformed service member and adds the family member as a dependent. Two BENEFEDS pages state it.
+
+What ships: two checklist lines in `r-1-fedvip` and one in `r-p1-fedvip`. The latest-check stamp moves to 19:18 UTC.
+
+Left out on purpose: belated enrollment and the loss-of-other-insurance window. Each needs one more read before an act can be written. The log entry says which.
+
+Same hour, from s2-intel's rung 1 pass on issue #232: the Dole grants rule is BLOCKED at rung 1 and needs a Tier 2 read. OPM's direct final rule on FMLA (document 2026-21104) is PROBABLE: it says certain honorable active military service counts toward FMLA eligibility in a title 5 federal job. It takes effect 14 DEC 2026 unless OPM withdraws it. A Tier 2 read and a `member-impact` pass are queued.
+
+## Cycle 17 - One job and one label for each control on the next-move card
+Order: Dean, 13:57 Central on 15 November, with a phone screenshot of Home: "These options look similar? Fix it".
+
+What the screenshot showed, after a member picks a starting point:
+- The heading and both actions began with "Review".
+- Four options followed, and they read as two pairs. "Change priority" and "Choose my direction" both pick what to work on. "Stuck or need a different approach?" and "Get help choosing my next step" both ask for help.
+- With the check-in open, two buttons on the card carried the same label for two different steps.
+
+What changed. Labels and the order of two options. No control was added or removed, and nothing behaves differently.
+
+| Control | Before | After |
+|---|---|---|
+| Second action after a starting point | Review this as my next step | Choose this next step |
+| Check-in | Stuck or need a different approach? | I'm stuck on this step |
+| Button inside the check-in | Review this as my next step | Use this step instead |
+| Navigator draft | Get help choosing my next step | Draft a question for Navigator |
+| Direction editor, nothing saved | Choose my direction | Set my direction, role and goal |
+
+Unchanged: "Change priority", "Choose a priority (optional)", "Review or change my direction", and each starting point's own button.
+
+"Choose this next step" was already the label for the same action in two other states of the card. The options now run priority, stuck, direction, Navigator, so on a phone the left column holds what the member is working on and the right column holds help.
+
+Aligned with the change:
+- The four test scripts that named the old shared label. Each reference now names the button it means. All four already fail on `main` for other reasons, recorded below.
+- The Wisconsin Guard leadership demo walkthrough, which names three of these labels.
+
+New test: `scripts/next-move-options-browser-regression.js`. Until now no script named any of the four option labels.
+
+Left for Dean: the labels are distinct, and two of the options still overlap in substance. "Change priority" picks one of four starting points for the visit. "Set my direction, role and goal" picks one of four directions to save, with a role and a goal. A member answers nearly the same question twice. Merging them into one picker is a behavior change and needs his call.
+
+Diagnosed while here, all three stale and all three failing on `main`:
+- `member-loop-browser` waits for the old first-visit button, which #163 replaced.
+- `member-priority-browser` passes every step and then requires zero function requests. The jobs screen now asks the federal jobs function whether search is configured, a request that carries no member detail.
+- `member-action-hierarchy-browser` caps the card heading at 32 px. The product-shell design sets it larger.
+
+## Full baseline of the regression scripts, 15 November
+One run of all 123 scripts against untouched `main` at `4729654`, with a rerun of the three that stopped on the paused-request race: 77 pass and 46 fail.
+- 30 of the 45 `career-*` scripts fail. Most look for a control that the October Career changes renamed or removed, such as "Open my current career plan" or "Return to my draft".
+- 16 others fail. Four are repaired or fixed in cycles 14 and 15. Two cannot run in this workspace because they need commits that are not present (`guard-reserve-regression`, `vgli-window-regression`). Three are the Home scripts above. Seven are not yet diagnosed: `counselor-preparation`, `federal-jobs-browser`, `my-jobs-browser`, `personal-guide-browser`, `support-compact-review-browser`, `tap-integration` and `tap-worksheet-browser`.
+- The six gate commands pass. They do not run these scripts.
+- Each failure was seen once, apart from the reruns named here. A repair cycle starts by confirming it.
+
+Two of the first four failures diagnosed were real defects in the app. Backlog row 13 now covers the whole set.

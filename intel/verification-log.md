@@ -3637,3 +3637,82 @@ No HOLD remains.
 **Upkeep:** the weekly J4 link audit reads every address in `index.html`, so it will crawl these 109 as well. A re-read of either source page can be compared with the hashes above in one step. Recheck by 15 FEB 2027.
 
 IMPACT: NOT A BENEFITS FINDING. This entry records resource links taken from two federal lists, and `member-impact` does not assess it. Under `member-return-benchmarking`, backlog row 8 moves from WATCH to ADOPT now that the links are read: the member job is finding the veterans office and the job bank for a destination state, it recurs with every move or job search, and it needs no data from the member.
+
+## V-2026-11-15-SHARE-TEXT - Share text for the open season notices and state links (15 November 2026)
+
+**Status:** No new finding. The share text restates facts already confirmed in this log. Wording staged for Dean's approval on branch `claude/loop-13-share-20261115`. Not released at the time of this entry.
+
+**Order behind it:** Dean, 12:36 Central on 15 November 2026: "i want veterans to want to share it beacuse its so good".
+
+**What a probe of the live build found first:**
+- The app-wide share button sits under "MORE TOOLS & INTEL" on Home, about 4,400 pixels down a 5,000 pixel page.
+- No deadline and no state's links could be shared on their own. Only the Wisconsin guide had its own share.
+- The Vet Hub share button and three other handlers called the clipboard without checking for one. With no share sheet and no clipboard, the Vet Hub button threw an error and showed nothing.
+- The app share handler still called a tracking hook, `window.__trackEvent`, which nothing in the app defines.
+
+**Share text, each fact tied to its record:**
+- TRICARE: "TRICARE Open Season closes Dec. 8, 2026. This page shows who it covers and how to change plans. Changes take effect Jan. 1, 2027." Dates and effect: V-2026-11-14-TRICARE-OPEN-SEASON, re-read under V-2026-11-15-TRICARE-2027-COSTS.
+- FEDVIP: "Federal Benefits Open Season for FEDVIP dental and vision ends Dec. 14, 2026 at 11:59 p.m. Eastern. This page lists who is eligible and where to enroll." V-2026-11-15-FEDVIP-OPEN-SEASON.
+- State: "{State} veterans office and job bank links are in Transition OPS. Office links come from VA's directory. Job banks come from CareerOneStop." V-2026-11-15-STATE-STARTING-POINTS.
+- Northern Mariana Islands, which has no listed office: "The {State} job bank link is in Transition OPS. It comes from CareerOneStop, which the U.S. Department of Labor sponsors."
+
+**Drafting:** pao-content drafted three options per slot under `brand-voice`. Its state text ships as drafted. The two deadline texts were adjusted: the year was added to each date, and "Active duty is excluded" was dropped, because a family member could read it as leaving out active duty families, who are covered. The shipped deadline texts carry no eligibility statement and no instruction. They point to the page.
+
+**What a share sends:** the text above and one address. Deadline shares send https://transitionops.org/?tool=reminders . A state share sends https://transitionops.org/?tool=resources&view=state-help&area=national&state=XX , where XX is the code of the state the member chose, named on the button. Nothing the member typed is sent, and no request leaves the app when the button is pressed.
+
+**The state value in the address:** a shared state link carries one `state` value, read once when the page opens. The app never writes a member's choice into the address. The linked value leaves the address when the member chooses a state for themselves, and when the member leaves State and local help. A choice is still held for the visit only and saved nowhere.
+
+**What a first-time visitor sees on those links (probed on the built tree with empty storage):** the Reminders link opens Reminders with both notices and no sign-up step. The state link opens State and local help with that state chosen.
+
+**Expiry:** each deadline share button lives inside its notice and leaves with it, on 8 DEC and 14 DEC 2026.
+
+IMPACT: NOT A NEW FINDING. The acts are those already assessed in the three records named above. This entry adds no instruction to any of them.
+
+## V-2026-11-15-FEDVIP-RETIREMENT-WINDOW - FEDVIP enrollment at uniformed service retirement, re-read against BENEFEDS (verified 15 November 2026)
+
+**Status:** CONFIRMED for claims 1 to 7. No premium or other dollar figure was read or carried. Wording staged for Dean's approval on branch `claude/loop-16-fedvip-family-20261115`. Not released at the time of this entry.
+
+**Why this read happened:** V-2026-11-15-FEDVIP-OPEN-SEASON left one lead open. s2-intel's Tier 1 pass reported a BENEFEDS statement that retirement is not a qualifying life event, next to reminders `r-1-fedvip` and `r-p1-fedvip`, which give a window around the retirement date. The lead needed a Tier 2 read before either reminder was touched.
+
+**Claims:**
+1. A retiring uniformed service member may enroll in FEDVIP between 31 days before the military retirement date and 60 days after it.
+2. BENEFEDS treats that member as newly eligible. It states that retirement is not a qualifying life event.
+3. A member who does not enroll in that period must wait for the next open season.
+4. To prevent a gap in dental coverage, the member must enroll before the retirement date.
+5. Retired uniformed service members and Retired Reserve members, including gray area reservists under age 60, are eligible for dental. They are eligible for vision when enrolled in a TRICARE health plan.
+6. A family member who enrolled in FEDVIP vision while the sponsor was on active duty is no longer eligible as a primary enrollee when the sponsor retires. BENEFEDS must be notified, and that coverage is cancelled. The sponsor must then enroll as a retired uniformed service member and add the family member as a dependent.
+7. For vision, BENEFEDS counts TRICARE Select, TRICARE Prime, TRICARE Reserve Select, TRICARE Retired Reserve, TRICARE For Life and the Uniformed Services Family Health Plan. It does not count TRICARE Young Adult, the Transitional Assistance Management Program, the Continued Health Care Benefit Program, or foreign military coverage.
+
+**Sources, read 15 November 2026 at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). No CAPTCHA was presented or solved. No page shows a last-updated date. Each page is paraphrased here, with one short quotation.**
+- https://www.benefeds.gov/learn/fedvip/fedvip-enrollment . 19:13 UTC. Claim 1. Under "Newly eligible", the page gives 60 days as the general rule and names one exception: retiring uniformed service members, who may enroll "between 31 days prior to their military retirement date and 60 days following." It also says enrollment outside open season needs new eligibility or a qualifying life event.
+- https://www.benefeds.gov/learn/fedvip/fedvip-eligibility-uniformed-services . 19:14 UTC. Claim 5. The retired member row includes Retired Reserve members "under age 60 (gray area reservists)" who are not yet receiving retired pay. It answers yes for dental for the member and eligible family, and yes for vision when enrolled in a TRICARE health plan.
+- https://www.benefeds.gov/learn/fedvip/fedvip-faqs . 19:15 and 19:18 UTC. Claims 1, 6 and 7. One answer repeats the period for a status change from active duty to retiree. Another answers an active duty family member with vision coverage: on the sponsor's retirement that person is "no longer eligible for FEDVIP as a primary enrollee", must notify BENEFEDS, and has the coverage inactivated; the sponsor must then enroll as a retired uniformed service member and add eligible family members as dependents. A third gives the two plan lists in claim 7.
+- https://www.benefeds.gov/learn/fedvip/fedvip-qualifying-life-events . 19:17 UTC. Claims 1 to 4 and 6. Under the heading "QLEs do not include retirement", the page says a retiring or recently retired member is newly eligible, gives the same period, says a member who does not enroll in it must wait for the next open season, and says a member who wants no gap in dental coverage must enroll before the retirement date. It then states claim 6 a second time: the member or the family member must notify BENEFEDS, the family member's coverage is cancelled, and the sponsor must enroll and add the family member as a dependent.
+- BENEFEDS's site and phone number, 1-877-888-3337, were confirmed at https://www.benefeds.gov/contact under V-2026-11-15-FEDVIP-OPEN-SEASON.
+
+**What this settles:** every FEDVIP statement in `r-1-fedvip` matches BENEFEDS, and so does the open season sentence in `r-p1-fedvip`. The lead is closed. The app never called retirement a qualifying life event. The TRICARE sentences in `r-p1-fedvip` were not re-read in this pass and are unchanged.
+
+**Not carried, with reasons:**
+- Belated enrollment. The enrollment page says BENEFEDS can extend a deadline for up to three months on evidence of circumstances beyond the member's control. Its wording speaks of an employee. Whether it covers a retiring uniformed service member is not established, and the form was not opened. The reminders keep "HARD DEADLINE", which matches claim 3.
+- Loss of other insurance by a member who is already retired. BENEFEDS calls it a qualifying life event with a window of 31 days before to 60 days after. The full list of qualifying life events was not read, so the act cannot be written yet.
+- One sentence on the qualifying life events page gives an already-retired member who leaves private sector employment 60 days from that retirement to enroll. The FAQ ties that enrollment to a qualifying life event. The two do not read the same way, so neither is carried.
+- Premiums and plan comparisons.
+
+**App change (wording staged for Dean's approval):**
+- `r-1-fedvip` gains two checklist lines after the vision line: "If a family member enrolled in FEDVIP vision while you were on active duty, their enrollment cannot continue after you retire" and "Notify BENEFEDS of your retirement, then enroll as a retired uniformed service member in this window and add them as a dependent".
+- `r-p1-fedvip` gains one line: "If a family member held FEDVIP vision while you were on active duty, notify BENEFEDS of your retirement and enroll as a retired uniformed service member to add them as a dependent".
+- `DATA_LATEST_CHECK` moves to "15 NOV 2026, 19:18 UTC", the last BENEFEDS read above.
+
+IMPACT: SHIP - ACT | A2/A3 | orchestrator, Tier 2, closing an s2-intel lead | 2026-11-15 | revisit NONE
+A1 population: SEPARATING (active component members who are retiring), SPOUSE/FAMILY (a family member who holds FEDVIP vision as a primary enrollee while the sponsor is on active duty).   band: 1 Month Out, and Post-Separation through day-offset T+60, where the enrollment period ends.   excluded: This does not apply to a family with no FEDVIP vision enrollment, or to a member who separates without retiring.   timing: ACT AVAILABLE NOW, from 31 days before the retirement date through 60 days after it.
+A2 act: "If a family member enrolled in FEDVIP vision while you were on active duty, notify BENEFEDS of your retirement at BENEFEDS.gov or 1-877-888-3337, then enroll as a retired uniformed service member between 31 days before and 60 days after your retirement date and add your family member as a dependent."  Eligibility is determined at BENEFEDS, which the sentence names.
+A3 surface(s): reminders (`r-1-fedvip` and `r-p1-fedvip`, which already carry the period, the site and the phone number).   token: NONE   sweep trigger: NONE - the period is the one both reminders already state for the same purpose.
+A4 cost: A CLOSED WINDOW
+EXPIRES: NONE
+
+IMPACT: DECLINE / LOG ONLY | A2 | orchestrator, Tier 2 | 2026-11-15 | revisit NONE
+A1 population: SPOUSE/FAMILY and GUARD/RESERVE members whose TRICARE coverage is one of the plans in claim 7.   band: condition-triggered; no separation band.   excluded: This does not apply to anyone enrolled in a counted TRICARE health plan.   timing: ACT AVAILABLE NOW
+A2 act: NOTHING - context. Claim 7 lists which plans count. It names no step.
+A3 surface(s): NONE   token: NONE   sweep trigger: NONE
+A4 cost: NOTHING
+EXPIRES: NONE

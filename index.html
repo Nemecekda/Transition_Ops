@@ -3255,7 +3255,7 @@ const DATA_VERIFIED = "1 AUG 2026";
 // DATA_VERIFIED is the date of the last full dataset review and moves only with one.
 // DATA_LATEST_CHECK is the newest primary-source read recorded in intel/verification-log.md. V-2026-11-15-VERIFIED-STAMP.
 const DATA_LATEST_CHECK_DATE = "15 NOV 2026";
-const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 18:26 UTC";
+const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 19:18 UTC";
 const WHATS_NEW = [
   { v: "v99", date: "15 NOV 2026", note: "TAMP for Guard and Reserve: a DoD memo clarified who qualifies and opened reimbursement requests for denials on or after 24 APR 2020. See TRICARE TRANSITION in Critical Windows. Also new: a reminder for the one-year mark on a VA disability claim. Career job search now opens CareerOneStop, the Veterans Job Matcher and the Labor Department's HIRE Vets Medallion employer list, and the Wisconsin guide names the seven 2026 Wisconsin recipients. The SkillBridge feed states the age of its newest batch and points to the official list. The recruiter contact section adds the FRONTLINE Cadre talent network and Veteran Bridge Solutions' open roles page." },
   { v: "v98", date: "8 SEP 2026", note: "Policy Intel: September 8 executive order explained, with current VA claims and TAP next steps." },
@@ -3574,11 +3574,11 @@ const SMART_REMINDERS = [
   {id:"r-3-va",mo:3,cat:"HEALTH",pri:"HIGH",title:"Register for VA Healthcare",brief:"Apply now so coverage is ready on Day 1.",items:["Apply at VA.gov or nearest VA medical center","Understand your Priority Group","Locate nearest VAMC and CBOC","TAMP (if you qualify): 180 days TRICARE after separation","Retirees: review TRICARE Retired options"],deadline:"Apply before separation for seamless coverage",why:"TAMP (when it applies) only lasts 180 days. Gaps put your family at risk.",link:"https://www.va.gov/health-care/apply/"},
   {id:"r-2-fin",mo:2,cat:"FINANCE",pri:"HIGH",title:"Final Financial Readiness Check",brief:"Do you have 3-6 months saved? Know when the money stops.",items:["Verify final pay date and amount with finance","Calculate terminal leave (sell back vs take leave)","Ensure 3-6 months emergency fund accessible","Budget first 90 days without military pay","Cancel military-specific allotments","File unemployment on Day 1 — most separating members qualify (varies by state)"],deadline:"No later than 60 days before ETS",why:"35% of veterans report financial hardship in Year 1. Don't be a statistic.",link:null},
   {id:"r-1-final",mo:1,cat:"ADMIN",pri:"CRITICAL",title:"Final Out-Processing & Life Admin",brief:"You're on the objective. Execute with discipline.",items:["Complete TAP Capstone","USPS mail forwarding","Update banks, credit cards, insurance","Obtain 10+ certified DD214 copies","Verify final LES","Letter of service for employment verification","Download all military email contacts"],deadline:"All items complete before ETS",why:"Loose ends after separation become 10x harder without base access.",link:null},
-  {id:"r-1-fedvip",mo:1,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F FEDVIP Dental/Vision Window OPEN (Retirees)",brief:"Your FEDVIP enrollment window opens 31 days before your retirement date. Enrollment is not automatic.",items:["Enroll BEFORE your retirement date to avoid a dental coverage gap","Window: 31 days before retirement date through 60 days after","Vision coverage requires enrollment in a TRICARE health plan","Gray area reservists under age 60 are also eligible","Miss the window and you wait for the next Federal Benefits Open Season","Enroll at BENEFEDS.gov or 1-877-888-3337"],deadline:"60 days after retirement date \u2014 HARD DEADLINE",why:"Active duty dental ends at retirement. FEDVIP replaced the TRICARE Retiree Dental Program \u2014 no dental coverage is waiting on the other side unless you enroll.",link:"https://www.benefeds.gov/"},
+  {id:"r-1-fedvip",mo:1,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F FEDVIP Dental/Vision Window OPEN (Retirees)",brief:"Your FEDVIP enrollment window opens 31 days before your retirement date. Enrollment is not automatic.",items:["Enroll BEFORE your retirement date to avoid a dental coverage gap","Window: 31 days before retirement date through 60 days after","Vision coverage requires enrollment in a TRICARE health plan","If a family member enrolled in FEDVIP vision while you were on active duty, their enrollment cannot continue after you retire","Notify BENEFEDS of your retirement, then enroll as a retired uniformed service member in this window and add them as a dependent","Gray area reservists under age 60 are also eligible","Miss the window and you wait for the next Federal Benefits Open Season","Enroll at BENEFEDS.gov or 1-877-888-3337"],deadline:"60 days after retirement date \u2014 HARD DEADLINE",why:"Active duty dental ends at retirement. FEDVIP replaced the TRICARE Retiree Dental Program \u2014 no dental coverage is waiting on the other side unless you enroll.",link:"https://www.benefeds.gov/"},
   {id:"r-1-gar",mo:1,cat:"GUARD/RESERVE",pri:"HIGH",title:"Entering the Gray Area \u2014 Establish Your DFAS Future Retiree Account",brief:"Guard/Reserve with 20 good years: your link to retired pay runs through a myPay account most members never set up.",items:["Establish your Future Retiree myPay account at mypay.dfas.mil \u2014 easier now while your login is active","Keep contact info current in THREE systems: DFAS, DEERS, and your branch \u2014 updates do not transfer between them","DFAS sends a retired pay prompt at age 59 ONLY if your account has a current email on file","Retired pay is NOT automatic \u2014 apply through your service (Army: HRC Gray Area Retirements Branch, not DFAS) 9 months to 90 days before eligibility age","Gray area retains commissary, exchange, MWR access, and select TRICARE plans"],deadline:"Set up before losing routine myPay access",why:"Members who fall off the radar in the gray area face serious delays when retired pay eligibility arrives.",link:"https://www.dfas.mil/RetiredMilitary/plan/Gray-Area-Retirees/"},
   {id:"r-0-ets",mo:0,cat:"ADMIN",pri:"CRITICAL",title:"SEPARATION DAY — Verify Everything",brief:"Before you drive off for the last time, make sure your paperwork is squared away.",items:["VERIFY DD214 — read every line before signing","Obtain multiple certified copies","Verify sep code, RE code, characterization","Secure medical and dental records"],deadline:"TODAY",why:"Your DD214 is your new birth certificate. Get it right.",link:null},
   {id:"r-p1",mo:-1,cat:"BENEFITS",pri:"CRITICAL",title:"First 30 Days — File Unemployment & Activate Benefits",brief:"Several critical windows open at separation and close fast.",items:["File unemployment IMMEDIATELY (DD214 = proof)","Register for VA healthcare if not done","Monitor VA.gov for C&P exam schedule","Apply veteran's preference (SF-15)","Veteran driver's license designation"],deadline:"State unemployment deadlines start from sep date",why:"Unemployment (UCX) can mean roughly $1,300-$2,200/month of bridge income depending on your state. Don't leave it on the table.",link:null},
-  {id:"r-p1-fedvip",mo:-1,cat:"BENEFITS",pri:"HIGH",title:"FEDVIP Backstop \u2014 30 Days Left on the Window (Retirees)",brief:"If you retired without enrolling in FEDVIP dental/vision, the 60-day window is half gone.",items:["Enroll now at BENEFEDS.gov \u2014 after day 60 the next opportunity is Federal Benefits Open Season (Nov\u2013Dec)","After active-duty retirement, complete eligible Prime/Select enrollment through milConnect BWE within 90 days and pay required fees. If late, request retroactive enrollment through your TRICARE contractor within 12 months; required back fees apply."],deadline:"Day 60 after retirement date (FEDVIP); day 90 (TRICARE QLE)",why:"FEDVIP and retiree TRICARE have separate enrollment rules. For Prime/Select after active-duty retirement, the normal enrollment window is 90 days; the contractor can handle a retroactive request within 12 months.",link:"https://www.benefeds.gov/"},
+  {id:"r-p1-fedvip",mo:-1,cat:"BENEFITS",pri:"HIGH",title:"FEDVIP Backstop \u2014 30 Days Left on the Window (Retirees)",brief:"If you retired without enrolling in FEDVIP dental/vision, the 60-day window is half gone.",items:["Enroll now at BENEFEDS.gov \u2014 after day 60 the next opportunity is Federal Benefits Open Season (Nov\u2013Dec)","If a family member held FEDVIP vision while you were on active duty, notify BENEFEDS of your retirement and enroll as a retired uniformed service member to add them as a dependent","After active-duty retirement, complete eligible Prime/Select enrollment through milConnect BWE within 90 days and pay required fees. If late, request retroactive enrollment through your TRICARE contractor within 12 months; required back fees apply."],deadline:"Day 60 after retirement date (FEDVIP); day 90 (TRICARE QLE)",why:"FEDVIP and retiree TRICARE have separate enrollment rules. For Prime/Select after active-duty retirement, the normal enrollment window is 90 days; the contractor can handle a retroactive request within 12 months.",link:"https://www.benefeds.gov/"},
   {id:"r-p4",mo:-4,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F SGLI to VGLI — The Clock Is Running",brief:"Review replacement coverage before ordinary SGLI coverage ends at 120 days. Eligible VGLI applicants do not need a health review within 240 days.",items:["Confirm your SGLI status and the service event that starts your application window","Within 240 days: eligible VGLI applicants do not need a health review","After 240 days: evidence of good health is required for the usual application path","The usual final application window is one year and 120 days; confirm your exact deadline with OSGLI","An approved SGLI Disability Extension has a separate process; ask OSGLI which rules apply","Apply through the official VA VGLI page or call OSGLI at 800-419-1473"],deadline:"240-day health-review cutoff for eligible applicants; confirm your service-event date",why:"Waiting beyond the 240-day period adds a health-evidence requirement. Confirm eligibility and receipt of a complete application before the applicable deadline.",link:"https://www.va.gov/life-insurance/options-eligibility/vgli/"},
   {id:"r-p6",mo:-6,cat:"HEALTH",pri:"HIGH",title:"TAMP Coverage Check",brief:"If your service confirmed TAMP, its 180-day coverage period may be ending. Verify your coverage dates in milConnect.",items:["VA-rated: verify enrollment and Priority Group","Employed: enroll in employer healthcare","Active-duty retirees: Prime/Select enrollment rules apply; TRICARE For Life requires Medicare Part A and Part B","Otherwise: ACA marketplace (HealthCare.gov)","VA dental eligibility has several classes; ask a VA dental clinic which may apply to you"],deadline:"Your actual TAMP end date, if eligible",why:"One ER visit without coverage averages $2,200+.",link:"https://www.tricare.mil/Plans/Leaving"},
   {id:"r-p10-claim",mo:-10,cat:"BENEFITS",pri:"CRITICAL",title:"VA Disability Claim: One-Year Mark Ahead",brief:"If you have not filed a VA disability compensation claim, check the calendar. VA says that if it gets your claim within 1 year of the day you left active service, the effective date can be as early as the day following separation. This reminder does not establish eligibility or a rating.",items:["If you already filed, this reminder needs no action","Find your separation date on your DD214 and mark its first anniversary","File VA Form 21-526EZ on VA.gov so VA receives it before that anniversary","Past the one-year mark, the effective date is generally the later of the date VA gets the claim or the date entitlement arose"],deadline:"VA must receive the claim within 1 year of the day you left active service",why:"VA describes the effective date as the day you can start getting disability benefits. VA states this rule for direct service connection. Presumptive conditions follow different rules, and this reminder does not address Guard or Reserve periods of service.",link:"https://www.va.gov/disability/effective-date/"},
@@ -5151,38 +5151,21 @@ function handleShareApp(setToast) {
     text: 'Free military transition app — VA Math, VA Pay, SkillBridge, state tax intel, and personalized timelines. Built by a veteran.',
     url: 'https://transitionops.org'
   };
-  const trackShare = function (method) {
-    if (window.__trackEvent) {
-      window.__trackEvent('app_shared', {
-        'method': method
-      });
-    }
-  };
   if (navigator.share) {
-    navigator.share(shareData).then(function () {
-      trackShare('native');
-    }).catch(function (err) {
-      // User cancelled — don't track as share
-      if (err.name !== 'AbortError') {
-        trackShare('native_failed');
-      }
-    });
+    navigator.share(shareData).catch(function () {});
   } else if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText('https://transitionops.org').then(function () {
-      trackShare('clipboard');
       setToast('Link copied — share with a battle buddy');
       setTimeout(function () {
         setToast(null);
       }, 3000);
     }).catch(function () {
-      trackShare('clipboard_failed');
       setToast('Copy failed — share https://transitionops.org');
       setTimeout(function () {
         setToast(null);
       }, 4000);
     });
   } else {
-    trackShare('unsupported');
     setToast('Share https://transitionops.org with a battle buddy');
     setTimeout(function () {
       setToast(null);
@@ -7092,6 +7075,9 @@ const TOPS_TOOL_CHOICES = [
   { id: "critical", title: "Critical windows", description: "Review time-sensitive transition guidance", keywords: "critical windows deadlines" },
   { id: "navigator", title: "Navigator", description: "Ask for help choosing a next step", keywords: "ask navigator help" }
 ];
+// A save that moves between Guard or Reserve and any other profile rebuilds Home, and this editor with it.
+// The editor being replaced hands its confirmation to the one that replaces it. A note older than two seconds is dropped.
+var topsServiceProfileHandoff = null;
 function ServiceProfileEditor(props) {
   var C = props.colors;
   var valid = function(value) { return TOPS_SERVICE_PROFILES.some(function(row) { return row[0] === value; }); };
@@ -7099,6 +7085,12 @@ function ServiceProfileEditor(props) {
   var messagePair = React.useState(""), message = messagePair[0], setMessage = messagePair[1];
   var detailsRef = React.useRef(null), summaryRef = React.useRef(null), headingRef = React.useRef(null);
   var sessionOnly = window.__IS_IFRAME === true;
+  React.useEffect(function() {
+    var note = topsServiceProfileHandoff; topsServiceProfileHandoff = null;
+    if (!note || Date.now() - note.at > 2000) return;
+    var timer = window.setTimeout(function() { setMessage(note.text); }, 80);
+    return function() { window.clearTimeout(timer); };
+  }, []);
   var controlStyle = { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 6, background: C.bgCard, color: C.textPrimary, fontSize: 14, cursor: "pointer" };
   function cancel() { setDraft(valid(props.value) ? props.value : ""); setMessage(""); detailsRef.current.open = false; summaryRef.current.focus(); }
   function save() {
@@ -7107,10 +7099,12 @@ function ServiceProfileEditor(props) {
       try { window.__safeSet("tops_user_status", draft); if (window.__safeGet("tops_user_status") !== draft) throw new Error("not_saved"); }
       catch (e) { setMessage("Not saved. Your app view has not changed. Try again or cancel."); return; }
     }
+    var saved = sessionOnly ? "Service profile updated for this session only." : "Service profile updated.";
+    topsServiceProfileHandoff = { text: saved, at: Date.now() };
     props.onSave(draft);
-    setMessage(sessionOnly ? "Service profile updated for this session only." : "Service profile updated.");
+    setMessage(saved);
     detailsRef.current.open = false;
-    window.requestAnimationFrame(function() { headingRef.current.focus(); });
+    window.requestAnimationFrame(function() { var heading = document.getElementById("service-profile-heading"); if (heading) heading.focus(); });
   }
   return React.createElement("section", { "aria-labelledby": "service-profile-heading", style: { marginBottom: 14 } },
     React.createElement("details", { ref: detailsRef },
@@ -8060,6 +8054,49 @@ function WisconsinNextChapter(props) {
       ["start", "work"].includes(context.need) && React.createElement("p", { id: "tops-wisconsin-cohort-ask", style: { margin: "12px 0 4px" } }, "To ask about roles with these employers, use \"Talk with Dean at Veteran Bridge Solutions\" on this page. No response, interview or job is guaranteed.")),
     TOPS_WISCONSIN_SETTLE_IN.length > 0 && React.createElement("details", { id: "tops-wisconsin-settle-in", style: section }, React.createElement("summary", { style: summary }, "Make Wisconsin home"), TOPS_WISCONSIN_SETTLE_IN.map(function(item) { return React.createElement("div", { key: item.id }, React.createElement("p", { style: { margin: "4px 0 8px" } }, item.body), item.note && React.createElement("p", { style: { margin: "4px 0 8px", fontSize: 14, color: C.textSecondary } }, item.note), link(item)); })));
 }
+// Share control. It uses the device's share sheet when there is one, then the clipboard, then a link to select by hand.
+// It sends the fixed text and address it is given. It reads nothing the member typed and makes no tracking call.
+// Share text sources: intel/verification-log.md, V-2026-11-15-SHARE-TEXT.
+const TOPS_SHARE_ORIGIN = "https://transitionops.org";
+const TOPS_SHARE_TEXT = {
+  tricare: "TRICARE Open Season closes Dec. 8, 2026. This page shows who it covers and how to change plans. Changes take effect Jan. 1, 2027.",
+  fedvip: "Federal Benefits Open Season for FEDVIP dental and vision ends Dec. 14, 2026 at 11:59 p.m. Eastern. This page lists who is eligible and where to enroll.",
+  state: "{State} veterans office and job bank links are in Transition OPS. Office links come from VA's directory. Job banks come from CareerOneStop.",
+  stateJobsOnly: "The {State} job bank link is in Transition OPS. It comes from CareerOneStop, which the U.S. Department of Labor sponsors."
+};
+// A shared state link carries one "state" value. It only chooses the state shown when the page opens.
+function topsStateStartFromURL(href) {
+  try { var q = new URL(href).searchParams; if (!topsIsStateHelpURL(href) || q.getAll("state").length !== 1) return ""; var code = String(q.get("state") || "").toUpperCase(); return TOPS_STATE_START.some(function(row) { return row[0] === code; }) ? code : ""; } catch (error) { return ""; }
+}
+// The app never writes a member's choice into the address. Once the member chooses for themselves, the linked value comes out.
+function topsDropStateStartFromURL() {
+  try { var url = new URL(window.location.href); if (!url.searchParams.has("state")) return; url.searchParams.delete("state"); history.replaceState(history.state, "", url.href); } catch (error) {}
+}
+function TopsShareControl(props) {
+  var C = props.colors, [status, setStatus] = useState(""), [manual, setManual] = useState(false), [busy, setBusy] = useState(false), pending = React.useRef(false);
+  var button = { display: "inline-flex", alignItems: "center", minHeight: 44, minWidth: 44, maxWidth: "100%", boxSizing: "border-box", padding: "10px 14px", margin: 0, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: props.fill || C.bgElevated, font: "inherit", lineHeight: 1.5, textAlign: "left", cursor: "pointer" };
+  var field = { display: "block", width: "100%", boxSizing: "border-box", minHeight: 48, padding: "10px 12px", margin: "6px 0 8px", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", fontSize: 16 };
+  async function share() {
+    if (pending.current) return;
+    pending.current = true; setBusy(true); setStatus(""); setManual(false);
+    try {
+      if (typeof navigator.share === "function") {
+        try { await navigator.share({ title: props.title, text: props.text, url: props.url }); setStatus("Share options closed."); return; }
+        catch (error) { if (error && error.name === "AbortError") { setStatus("Sharing canceled."); return; } }
+      }
+      try {
+        if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") throw new Error("Clipboard unavailable");
+        await navigator.clipboard.writeText(props.text + " " + props.url);
+        setStatus("Copied. Paste it into a message.");
+      } catch (error) { setManual(true); setStatus("Select and copy the link below."); }
+    } finally { pending.current = false; setBusy(false); }
+  }
+  return React.createElement("div", { id: props.id, style: { margin: "6px 0 10px" } },
+    React.createElement("button", { id: props.id + "-button", type: "button", style: button, disabled: busy, "aria-describedby": props.id + "-status", onClick: share }, busy ? "Opening share options..." : props.label),
+    React.createElement("p", { id: props.id + "-status", role: "status", "aria-live": "polite", "aria-atomic": "true", style: { margin: "4px 0 0", fontSize: 14 } }, status),
+    manual && React.createElement("label", { htmlFor: props.id + "-url", style: { display: "block", fontSize: 14, marginTop: 4 } }, "Link to copy"),
+    manual && React.createElement("input", { id: props.id + "-url", type: "text", readOnly: true, value: props.url, style: field, onFocus: function(event) { event.target.select(); } }));
+}
 function WisconsinGuideShare(props) {
   var [status, setStatus] = useState(""), [manual, setManual] = useState(false), [busy, setBusy] = useState(false), pending = React.useRef(false);
   var url = "https://transitionops.org/wisconsin";
@@ -8094,7 +8131,7 @@ function WisconsinGuideShare(props) {
 }
 function StateLocalHelp(props) {
   var C = props.colors, context = topsStateHelpContext(props.context), items = topsStateHelpItems(context), main = items[0], [review, setReview] = useState(null), [replace, setReplace] = useState(false), [message, setMessage] = useState(""), [stepReady, setStepReady] = useState(false);
-  var startPick = useState(""), startCode = startPick[0], setStartCode = startPick[1], startRow = TOPS_STATE_START.find(function(row) { return row[0] === startCode; }) || null;
+  var startPick = useState(function() { return topsStateStartFromURL(window.location.href); }), startCode = startPick[0], setStartCode = startPick[1], startRow = TOPS_STATE_START.find(function(row) { return row[0] === startCode; }) || null;
   var button = { display: "inline-flex", alignItems: "center", minHeight: 44, minWidth: 44, maxWidth: "100%", boxSizing: "border-box", padding: "10px 14px", margin: "4px 8px 4px 0", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgElevated, font: "inherit", lineHeight: 1.5, textDecoration: "none", cursor: "pointer" };
   var field = { display: "block", width: "100%", boxSizing: "border-box", minHeight: 48, padding: "10px 12px", margin: "6px 0 14px", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", fontSize: 16 };
   function focus(id) { requestAnimationFrame(function() { var n = document.getElementById(id); if (n) n.focus(); }); }
@@ -8145,7 +8182,7 @@ function StateLocalHelp(props) {
       React.createElement("h3", { id: "tops-state-start-heading", style: { fontSize: 20, lineHeight: 1.35, margin: "0 0 8px" } }, "Go straight to your state"),
       React.createElement("p", { style: { margin: "8px 0", lineHeight: 1.5 } }, "Pick a state or territory to open its veterans office and its job bank."),
       React.createElement("label", { htmlFor: "tops-state-start-select", style: { display: "block", fontSize: 14, fontWeight: 600 } }, "State or territory"),
-      React.createElement("select", { id: "tops-state-start-select", value: startCode, style: field, "aria-describedby": "tops-state-start-caption", onChange: function(e) { setStartCode(e.target.value); } },
+      React.createElement("select", { id: "tops-state-start-select", value: startCode, style: field, "aria-describedby": "tops-state-start-caption", onChange: function(e) { setStartCode(e.target.value); topsDropStateStartFromURL(); } },
         React.createElement("option", { value: "" }, "Select a state or territory"),
         TOPS_STATE_START.map(function(row) { return React.createElement("option", { key: row[0], value: row[0] }, row[1]); })),
       React.createElement("p", { id: "tops-state-start-status", className: "sr-only", role: "status", "aria-live": "polite" }, startRow ? "Links for " + startRow[1] + " are shown." : ""),
@@ -8154,7 +8191,8 @@ function StateLocalHelp(props) {
         startRow[3] && React.createElement("a", { id: "tops-state-start-office", href: startRow[3], target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }) }, "Open the " + startRow[1] + " veterans office site (new tab)"),
         startRow[5] && React.createElement("p", { id: "tops-state-start-note", style: { fontSize: 14, margin: "4px 0 8px" } }, startRow[5]),
         React.createElement("a", { id: "tops-state-start-jobs", href: startRow[4], target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: button }, "Open the " + startRow[1] + " job bank (new tab)"),
-        startRow[0] === "WI" && React.createElement("button", { id: "tops-state-start-wisconsin", type: "button", style: button, onClick: function() { choose("area", "wi"); focus("tops-state-help-heading"); } }, "Open the Wisconsin guide")),
+        startRow[0] === "WI" && React.createElement("button", { id: "tops-state-start-wisconsin", type: "button", style: button, onClick: function() { choose("area", "wi"); focus("tops-state-help-heading"); } }, "Open the Wisconsin guide"),
+        React.createElement(TopsShareControl, { key: startRow[0], id: "tops-state-start-share", colors: C, label: startRow[3] ? "Share these " + startRow[1] + " links" : "Share this " + startRow[1] + " link", title: startRow[3] ? startRow[1] + " veterans office and job bank" : startRow[1] + " job bank", text: (startRow[3] ? TOPS_SHARE_TEXT.state : TOPS_SHARE_TEXT.stateJobsOnly).replace("{State}", startRow[1]), url: TOPS_SHARE_ORIGIN + "/?tool=resources&view=state-help&area=national&state=" + startRow[0] })),
       React.createElement("p", { id: "tops-state-start-caption", style: { fontSize: 14, margin: "8px 0 0", lineHeight: 1.5, color: C.textSecondary } }, "Office links come from VA's directory of state veterans affairs offices. Job bank links come from CareerOneStop, which the U.S. Department of Labor sponsors. Both lists were read on " + TOPS_STATE_START_READ + " and can change. Choosing a state here does not establish residence or eligibility.")),
     context.area === "wi" && ["start", "work"].includes(context.need) && React.createElement(CareerTalentContact, { colors: C, summary: "Talk with Dean at Veteran Bridge Solutions", invitation: "Looking for your next role or a connection to Wisconsin employers? Let’s talk about what you’re working toward." }),
     React.createElement(WisconsinNextChapter, { colors: C, context: context, button: button }),
@@ -9459,7 +9497,7 @@ function MemberPlanningLoop(props) {
       React.createElement("p", { style: { fontSize: 14, lineHeight: 1.6 } }, "Kept in this tab until refresh. Choosing a priority does not change your plan."),
       props.priority && React.createElement("button", { type: "button", style: button, onClick: function() { props.setPriority(""); requestAnimationFrame(function() { var heading = document.getElementById("tops-loop-title"); if (heading) heading.focus(); }); } }, "Clear priority"));
   var checkinUI = workingGuide.pathway && React.createElement("details", { id: "tops-loop-checkin", style: { marginTop: 12 } },
-      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Stuck or need a different approach?"),
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "I'm stuck on this step"),
       React.createElement("label", { htmlFor: "tops-loop-blocker" }, "What is getting in the way?"),
       React.createElement("select", { id: "tops-loop-blocker", value: blocker, style: field, onChange: function(event) { setBlocker(event.target.value); setReplaceStep(false); setSessionMinutes(""); setServiceMoment(""); } },
         [["", "Choose what you need"], ["direction", "I am not sure which direction fits"], ["skills", "I need skills or experience"], ["time", "I have limited time"], ["person", "I need help from a person"]].concat(props.profile === "guard" ? [["service", "Service commitments"]] : []).map(function(option) { return React.createElement("option", { key: option[0], value: option[0] }, option[1]); })),
@@ -9484,15 +9522,15 @@ function MemberPlanningLoop(props) {
             if (workingGuide.pathway && workingGuide.pathway !== g.pathway) props.setGuideState({ draft: workingGuide, ready: true, status: "Direction prepared for this visit. Review before saving." });
             props.setActionState({ draft: { version: 1, text: alternative.title, date: "", done: false, context: topsValidateGuide(workingGuide) }, status: "Alternative step added for review, not saved. Edit it to fit your situation, then choose Save step." });
             openStepEditor(); setBlocker(""); setReplaceStep(false);
-          } }, "Review this as my next step"))));
+          } }, "Use this step instead"))));
   var helpUI = props.onDraft && React.createElement("details", { id: "tops-loop-help", style: { marginTop: 12 } },
-      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Get help choosing my next step"),
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Draft a question for Navigator"),
       React.createElement("p", null, props.hasDraft ? "Your earlier draft is still available. Resume it to edit, send, or discard it before starting a new question." : "Choose any details to include. Nothing is selected automatically. You can edit the draft before sending it to Navigator."),
       !props.hasDraft && helpFacts.map(function(row) { return React.createElement("label", { key: row[0], style: { display: "flex", alignItems: "center", minHeight: 44, gap: 10, lineHeight: 1.6 } }, React.createElement("input", { type: "checkbox", checked: !!share[row[0]], onChange: function(e) { setShare(Object.assign({}, share, { [row[0]]: e.target.checked })); } }), row[1] + ": " + row[2]); }),
       !props.hasDraft && React.createElement("p", { style: { whiteSpace: "pre-wrap", lineHeight: 1.6 }, "aria-label": "Question preview" }, helpDraft),
       React.createElement("button", { type: "button", style: button, onClick: function() { props.onDraft(helpDraft); } }, props.hasDraft ? "Resume my Navigator draft" : "Open draft in Navigator"));
   var directionUI = React.createElement("details", { id: "tops-loop-direction", style: { marginTop: 12 } },
-      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, g.pathway ? "Review or change my direction" : "Choose my direction"),
+      React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, g.pathway ? "Review or change my direction" : "Set my direction, role and goal"),
       React.createElement("label", { htmlFor: "tops-loop-path" }, "My focus"),
       React.createElement("select", { id: "tops-loop-path", value: direction.pathway, style: field, onChange: function(event) { editDirection("pathway", event.target.value); } }, React.createElement("option", { value: "" }, "Choose a direction"), Object.keys(TOPS_GUIDE_PATHS).map(function(key) { return React.createElement("option", { key: key, value: key }, TOPS_GUIDE_PATHS[key]); })),
       React.createElement("label", { htmlFor: "tops-loop-target" }, "Role or field I want to explore (optional)"),
@@ -9554,7 +9592,7 @@ function MemberPlanningLoop(props) {
     props.priority && move.kind !== "priority" && React.createElement("p", { style: { fontSize: 14, lineHeight: 1.6 } }, "Priority: " + TOPS_MEMBER_PRIORITIES.find(function(item) { return item.id === props.priority; }).title + ". Your existing work stays first. Review it before choosing a replacement."),
     React.createElement("div", { className: "tops-next-move-actions", style: { display: "flex", flexWrap: "wrap", gap: 8 } },
       move.kind === "priority" && React.createElement("button", { className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute(move.route); } }, move.label),
-      move.kind === "priority" && React.createElement("button", { type: "button", style: button, onClick: chooseStep }, "Review this as my next step"),
+      move.kind === "priority" && React.createElement("button", { type: "button", style: button, onClick: chooseStep }, "Choose this next step"),
       supportStep && !currentWisconsin && !currentStateHelp && !supportReview && React.createElement("button", { id: "tops-loop-support-open", className: "tops-move-primary", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { reviewSupport("edit", "tops-loop-support-open"); } }, "Update this step"),
       currentStateHelp && React.createElement("button", { id: "tops-loop-state-help", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onRoute("state-help", currentStateHelp); } }, currentStateHelp.area === "wi" ? "Open Wisconsin help" : "Open state and local help"),
       currentStateHelp && supportStep && !supportReview && React.createElement("button", { type: "button", style: button, onClick: function() { reviewSupport("edit", "tops-loop-state-help"); } }, "Update this step"),
@@ -9596,7 +9634,7 @@ function MemberPlanningLoop(props) {
     } }, "Plan around my service commitments"),
     !supportReview && editing && g.pathway && React.createElement(CareerAction, { colors: C, state: props.actionState, setState: props.setActionState, guide: g, onClear: props.supportPlan.clearReview }),
     ),
-    !supportReview && React.createElement(props.planHub ? "details" : "div", { id: props.planHub ? "tops-plan-options" : undefined, className: "tops-loop-utilities", style: { borderTop: "1px solid " + C.border } }, props.planHub && React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Review direction or get help with this step"), move.kind !== "choose" && priorityUI, checkinUI, helpUI, directionUI, comparisonUI),
+    !supportReview && React.createElement(props.planHub ? "details" : "div", { id: props.planHub ? "tops-plan-options" : undefined, className: "tops-loop-utilities", style: { borderTop: "1px solid " + C.border } }, props.planHub && React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Review direction or get help with this step"), move.kind !== "choose" && priorityUI, checkinUI, directionUI, helpUI, comparisonUI),
     !supportReview && React.createElement("p", { className: "tops-loop-meta", role: "status", "aria-live": "polite", style: { fontSize: 13, lineHeight: 1.5, margin: 0, color: C.textSecondary } }, message || (props.guideState.status === "Use this guide without saving, or choose Save guide details to keep them on this browser." ? "" : props.guideState.status)));
 }
 // MEMBER_LOOP_END
@@ -10302,6 +10340,7 @@ function App() {
     if (showOnboarding) return;
     try { var next = topsCurrentToolURL(window.location.href, activeTab); if (next) { var url = new URL(next), docs = activeTab === "resources" && subTab === "documents";
       ["area", "situation", "need"].forEach(function(key) { if (url.searchParams.has(key)) url.searchParams.delete(key); });
+      if (!(activeTab === "resources" && subTab === "state-help") && url.searchParams.has("state")) url.searchParams.delete("state");
       if (activeTab === "resources" && subTab === "state-help") { var local = topsStateHelpContext(stateHelpContext); url.searchParams.set("view", "state-help"); url.searchParams.delete("guide"); Object.keys(local).forEach(function(key) { url.searchParams.set(key, local[key]); }); wiGuideRequested.current = false; }
       else if (docs) { url.searchParams.set("view", "documents"); url.searchParams.delete("guide"); wiGuideRequested.current = false; }
       else if (activeTab === "pathway" && careerScreen === "jobs" && topsReadJobSearchURL(window.location.href)) { url.searchParams.set("view", "jobs"); url.searchParams.delete("guide"); wiGuideRequested.current = false; }
@@ -12331,7 +12370,7 @@ function App() {
         ),
 
         // Planning to separate callout
-        React.createElement("button", { type: "button", className: "dash-card", style: { width: "100%", minHeight: 44, textAlign: "left", color: C.textPrimary, borderColor: C.goldBright, borderStyle: "dashed", margin: "14px 0 10px", cursor: "pointer" }, onClick: function() { setActiveTab("timeline"); window.scrollTo(0, 0); } },
+        React.createElement("button", { id: "tops-guard-open-timeline", type: "button", className: "dash-card", style: { width: "100%", minHeight: 44, textAlign: "left", color: C.textPrimary, borderColor: C.goldBright, borderStyle: "dashed", margin: "14px 0 10px", cursor: "pointer" }, onClick: function() { openPlanRoute("timeline", "tops-plan-timeline", "tops-guard-open-timeline"); } },
           React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
             React.createElement("span", { style: { fontSize: 20 } }, "\u2694\uFE0F"),
             React.createElement("div", { style: { flex: 1 } },
@@ -12346,8 +12385,9 @@ function App() {
 
         // Share + VBS
         React.createElement("button", { onClick: function() {
-          if (navigator.share) { navigator.share({ title: "Transition OPS", text: "Military career tools \u2014 translate your training into civilian careers.", url: window.location.href }); }
-          else { navigator.clipboard.writeText(window.location.href); showToast("LINK COPIED"); }
+          if (navigator.share) { navigator.share({ title: "Transition OPS", text: "Military career tools \u2014 translate your training into civilian careers.", url: window.location.href }).catch(function() {}); }
+          else if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") { navigator.clipboard.writeText(window.location.href).then(function() { showToast("LINK COPIED"); }).catch(function() { showToast("Copy this link: " + window.location.href); }); }
+          else { showToast("Copy this link: " + window.location.href); }
         }, style: { width: "100%", padding: "12px", background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 10 } },
           React.createElement("span", { style: { fontSize: 16 } }, "\uD83D\uDCE4"),
           React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.textSecondary, letterSpacing: 1 } }, "SHARE WITH YOUR UNIT")
@@ -12595,8 +12635,11 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       }
     }, "Copy this link and paste it in Safari. Chrome and other browsers cannot install apps on iPhone."), /*#__PURE__*/React.createElement("button", {
       onClick: () => {
-        navigator.clipboard.writeText(window.location.href);
-        showToast("LINK COPIED — Paste in Safari.");
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          navigator.clipboard.writeText(window.location.href).then(function() { showToast("LINK COPIED — Paste in Safari."); }).catch(function() { showToast("Copy this link: " + window.location.href); });
+        } else {
+          showToast("Copy this link: " + window.location.href);
+        }
       },
       style: {
         marginTop: 8,
@@ -12972,10 +13015,11 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           title: "Transition OPS",
           text: "Military transition planning tool by Veteran Bridge Solutions",
           url: window.location.href
-        });
+        }).catch(function() {});
+      } else if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        navigator.clipboard.writeText(window.location.href).then(function() { showToast("LINK COPIED — Share it with your crew."); }).catch(function() { showToast("Copy this link: " + window.location.href); });
       } else {
-        navigator.clipboard.writeText(window.location.href);
-        showToast("LINK COPIED — Share it with your crew.");
+        showToast("Copy this link: " + window.location.href);
       }
     },
     style: {
@@ -16268,10 +16312,11 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           title: "Transition OPS \u2014 Veteran Career Hub",
           text: "Free career tools, unclaimed benefits finder, and veteran employer connections. Check your Veteran Career Score.",
           url: window.location.href
-        });
+        }).catch(function() {});
+      } else if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        navigator.clipboard.writeText(window.location.href).then(function() { showToast("LINK COPIED"); }).catch(function() { showToast("Copy this link: " + window.location.href); });
       } else {
-        navigator.clipboard.writeText(window.location.href);
-        showToast("LINK COPIED");
+        showToast("Copy this link: " + window.location.href);
       }
     },
     style: {
@@ -19264,7 +19309,8 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         React.createElement("p", { style: { margin: "0 0 8px" } }, "This does not apply to active duty service members, or to TRICARE For Life, TRICARE Reserve Select, TRICARE Retired Reserve, or TRICARE Young Adult coverage."),
         React.createElement("p", { id: "tops-tricare-open-season-2026-costs", style: { margin: "0 0 8px" } }, "DoD has published 2027 costs for TRICARE Prime and TRICARE Select, effective Jan. 1, 2027. TRICARE's Health Plan Costs page lists them."),
         React.createElement("a", { href: "https://www.tricare.mil/About/Changes/OpenSeason", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "TRICARE Open Season on tricare.mil (new tab)"),
-        React.createElement("div", null, React.createElement("a", { id: "tops-tricare-open-season-2026-costs-link", href: "https://www.tricare.mil/CompareCosts", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "2027 health plan costs on tricare.mil (new tab)"))
+        React.createElement("div", null, React.createElement("a", { id: "tops-tricare-open-season-2026-costs-link", href: "https://www.tricare.mil/CompareCosts", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "2027 health plan costs on tricare.mil (new tab)")),
+        React.createElement(TopsShareControl, { id: "tops-tricare-open-season-2026-share", colors: C, fill: C.bgCard, label: "Share this deadline", title: "TRICARE Open Season", text: TOPS_SHARE_TEXT.tricare, url: TOPS_SHARE_ORIGIN + "/?tool=reminders" })
       ),
       !reminderTimedOnly && topsFederalBenefitsOpenSeason2026Active() && React.createElement("details", { id: "tops-fedvip-open-season-2026", open: !topsTricareOpenSeason2026Active(), style: { padding: "0 14px", marginBottom: 12, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, lineHeight: 1.6, color: C.textBody } },
         React.createElement("summary", { id: "tops-fedvip-open-season-2026-title", style: { minHeight: 44, padding: "12px 0", cursor: "pointer", color: C.textPrimary, fontWeight: 700, fontSize: 16 } }, "Federal Benefits Open Season (FEDVIP dental and vision): Nov. 9 to Dec. 14, 2026"),
@@ -19275,7 +19321,8 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         React.createElement("p", { style: { margin: "0 0 8px" } }, "This does not apply to active duty service members, who are not eligible for FEDVIP dental or vision. Survivors and other groups have their own rules on the BENEFEDS eligibility page."),
         React.createElement("p", { style: { margin: "0 0 8px" } }, "This window is separate from TRICARE Open Season (Nov. 9 to Dec. 8, 2026)."),
         React.createElement("div", null, React.createElement("a", { id: "tops-fedvip-open-season-2026-eligibility-link", href: "https://www.benefeds.gov/learn/fedvip/fedvip-eligibility-uniformed-services", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "FEDVIP eligibility for uniformed services on BENEFEDS.gov (new tab)")),
-        React.createElement("div", { style: { marginBottom: 6 } }, React.createElement("a", { id: "tops-fedvip-open-season-2026-enroll-link", href: "https://www.benefeds.gov/", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "Enroll or change plans on BENEFEDS.gov (new tab)"))
+        React.createElement("div", { style: { marginBottom: 6 } }, React.createElement("a", { id: "tops-fedvip-open-season-2026-enroll-link", href: "https://www.benefeds.gov/", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "Enroll or change plans on BENEFEDS.gov (new tab)")),
+        React.createElement(TopsShareControl, { id: "tops-fedvip-open-season-2026-share", colors: C, fill: C.bgCard, label: "Share this deadline", title: "Federal Benefits Open Season", text: TOPS_SHARE_TEXT.fedvip, url: TOPS_SHARE_ORIGIN + "/?tool=reminders" })
       ),
       !reminderTimedOnly && urgentR.length > 0 && React.createElement("div", { style: { padding: "12px 14px", background: (C.isLight ? "#FBEAE8" : "linear-gradient(135deg,#3d1111,#2a0808)"), border: "1px solid #8B0000", borderRadius: 8, marginBottom: 12, animation: "pulse 2s ease-in-out infinite" } },
         React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.danger, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 6 } }, "\u26A0\uFE0F IMMEDIATE ACTION REQUIRED"),
@@ -20149,7 +20196,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       );
     }),
     showMoreMenu !== "benefits" && navUnlocked && React.createElement("button", { className: "tops-more-tool", type: "button", onClick: function() { primaryNavFocus.current = true; setActiveTab("navigator"); setShowMoreMenu(false); } }, "Navigator"),
-    showMoreMenu !== "benefits" && React.createElement("button", { className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); window.requestAnimationFrame(handleInstallBannerClick); } }, "Install Transition OPS"),
+    showMoreMenu !== "benefits" && React.createElement("button", { className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); window.requestAnimationFrame(handleInstallBannerClick); } }, "Install Transition OPS"), showMoreMenu !== "benefits" && React.createElement("button", { id: "tops-menu-share", className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); handleShareApp(setToast); } }, "Share Transition OPS"),
     React.createElement("button", { onClick: function() { setShowMoreMenu(false); }, style: { marginTop: 10, padding: "14px 0", background: "none", border: "1px solid " + C.border, borderRadius: 12, color: C.inactive, fontSize: 12, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer", width: "100%", textAlign: "center" } }, "CLOSE")
   ),
 

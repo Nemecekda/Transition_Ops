@@ -54,14 +54,14 @@ assert.equal(await ev(`!!document.querySelector('[aria-label="Alternative next s
 for(const [moment,phrase] of [['balance','realistic career work session'],['away','work handoff'],['return','return-to-work conversation']]){
  await input('tops-loop-service-moment',moment);
  assert.ok((await ev(`document.querySelector('[aria-label="Alternative next step"]').textContent`)).includes(phrase));
- assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Review this as my next step").disabled'),true);
+ assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Use this step instead").disabled'),true);
  assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),JSON.stringify(serviceAction));
 }
 await ev(`document.querySelector('[aria-label="Alternative next step"] input[type=checkbox]').click()`);
 await input('tops-loop-service-moment','away');
 assert.equal(await ev(`document.querySelector('[aria-label="Alternative next step"] input[type=checkbox]').checked`),false);
 await ev(`document.querySelector('[aria-label="Alternative next step"] input[type=checkbox]').click()`);
-await click('Review this as my next step');await wait('document.activeElement.id==="tops-action-heading"','service step editor');
+await click('Use this step instead');await wait('document.activeElement.id==="tops-action-heading"','service step editor');
 assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),JSON.stringify(serviceAction));
 await click('Save step');
 assert.ok(JSON.parse(await ev('localStorage.getItem("tops_career_action_v1")')).text.includes('work handoff'));
@@ -95,7 +95,7 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
   assert.equal(await ev('localStorage.getItem("tops_personal_guide_v1")'),null);
   assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),null);
   assert.equal(await ev('localStorage.getItem("tops_sep_date")'),null);
-  assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("Review this as my next step")'));
+  assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("Choose this next step")'));
   assert.ok(await ev('Array.from(document.querySelectorAll("#tops-page-orientation button")).some(n=>n.textContent==="All tools"&&n.getClientRects().length>0&&n.getBoundingClientRect().height>=44)'));
   await home();
  }
@@ -183,7 +183,7 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
  for(const blocker of ['direction','skills','time','person']){
   await input('tops-loop-blocker',blocker);
   assert.ok(await ev('Array.from(document.querySelectorAll("[role=region]")).some(n=>n.getAttribute("aria-label")==="Alternative next step")'));
-  assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Review this as my next step").disabled'),true);
+  assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Use this step instead").disabled'),true);
   assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),unchanged);
   if(blocker==='time'){
    for(const minutes of ['10','30','60']){
@@ -193,7 +193,7 @@ for(const [profile,pathway] of [['','change'],['active','transition'],['separate
     assert.ok(detail.includes('not a promise to finish'));
     if(profile==='guard')assert.ok(detail.includes('service commitments'));
     assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),unchanged);
-    assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Review this as my next step").disabled'),true);
+    assert.equal(await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent==="Use this step instead").disabled'),true);
     await ev('document.querySelector("#tops-loop-checkin input[type=checkbox]").click()');
    }
    await input('tops-loop-minutes','');
@@ -235,7 +235,7 @@ assert.equal(await ev('localStorage.getItem("tops_personal_guide_v1")'),null);
 await ev('document.querySelector("#tops-loop-checkin summary").click()');await input('tops-loop-blocker','time');
 const beforeAlternative=await ev('localStorage.getItem("tops_career_action_v1")');
 await ev('document.querySelector("#tops-loop-checkin input[type=checkbox]").click()');
-await click('Review this as my next step');
+await click('Use this step instead');
 await wait('document.activeElement.id==="tops-action-heading"','alternative focuses editor even when already open');
 assert.equal(await ev('localStorage.getItem("tops_career_action_v1")'),beforeAlternative);
 assert.ok(await ev('document.getElementById("tops-action-text").value.includes("one small part")'));
@@ -244,7 +244,7 @@ assert.notEqual(await ev('localStorage.getItem("tops_career_action_v1")'),before
 await ev('document.getElementById("tops-loop-direction").open=true');await click('Save my direction');
 await input('tops-loop-blocker','time');await input('tops-loop-minutes','10');
 await ev('document.querySelector("#tops-loop-checkin input[type=checkbox]").click()');
-await click('Review this as my next step');
+await click('Use this step instead');
 assert.ok(await ev('document.getElementById("tops-action-text").value.startsWith("10-minute session:")'));
 await click('Save step');await home();
 assert.ok(await ev('document.getElementById("tops-loop-title").closest("section").textContent.includes("10-minute session:")'));
