@@ -38,14 +38,15 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 5 | SkillBridge feed states its age and points to the official list | Avoid acting on a stale opening | None | ADOPT | Cycle 6 |
 | 6 | HIRE Vets Medallion: links to the official recipient list, national and Wisconsin | Find employers with federal recognition | None; the member's browser opens a federal site | ADOPT | Cycle 4 |
 | 7 | Start-date planner | Know and state when civilian work can start | Device-local | LOCAL SYNTHETIC TEST | Queued |
-| 8 | Starting points for every state | Find the state veterans agency and job bank | None; the member's browser opens a state site | ADOPT: both federal lists read at Tier 2 on 15 November | Cycle 12 |
+| 8 | Starting points for every state | Find the state veterans agency and job bank | None; the member's browser opens a state site | ADOPT: both federal lists read at Tier 2 on 15 November | Cycle 12, merged as #231 |
 | 9 | JST and VMET reading beside the DD214 | Turn records into resume evidence | Device-local read; member-approved excerpts to AI | LOCAL SYNTHETIC TEST; design packet first under `resume-drafter-maintenance` | Queued |
 | 10 | What's New and the verified stamp | See what changed since the last visit | None | ADOPT on Dean's order of 15 November, 10:30 | Cycle 9, merged as #228 |
 | 11 | Best Military Resume link | Resume and interview practice | Third-party account | REJECT for now: s2-vetting found no verifiable legal entity; reopens on Dean's outreach to the founder | Parked |
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
-| 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below |
+| 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below; cycle 13's gate found four more, listed in its baseline note |
 | 14 | TRICARE 2027 costs: a Policy Intel entry and a costs link in the open season notice | Choose a 2027 plan with the costs in hand before 8 DEC 2026 | None; the member's browser opens tricare.mil | SHIP - ACT under `member-impact` | Cycle 10, merged as #229 |
 | 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None; the member's browser opens benefeds.gov | SHIP - ACT under `member-impact` | Cycle 11, merged as #230 |
+| 16 | Share a deadline or one state's links; reachable app share | Pass a useful, specific thing to another service member | None; fixed text and one address, no tracking | ADOPT on Dean's order of 15 November, 12:36 | Cycle 13 |
 
 ## Needs Dean
 - Best Military Resume: legal entity name and registration, current free and paid terms, whether a mock interview tool exists, and what "Partner Organizations" receive. The current site gives a free account 2 tailored resumes and 2 company research reports; cover letters are paid; resume building needs an account.
@@ -247,3 +248,38 @@ Vetting: s2-vetting screened the 27 hosts outside .gov and held five. The orches
 Upkeep: the weekly J4 link audit will crawl the 109 new addresses. A re-read of either list compares with its hash in one step.
 
 Staff tooling: s2-vetting's fetch tool was refused by all 27 hosts, so its screen rested on state pages and search. The browser read is what cleared the holds.
+
+## Merge record, continued (4)
+- 12:36 Central: Dean ordered "merge and keep making this better. i want veterans to want to share it beacuse its so good". #231 merged at head `1649eb2`. Merge commit `4729654`. Production moved from v331 to v332; served bytes matched the commit at 18:38 UTC.
+
+Cycle 13 onward is built on `main` at `4729654`.
+
+## Cycle 13 - Make the useful things shareable
+Record: V-2026-11-15-SHARE-TEXT.
+
+What a probe found: the app share button was about 4,400 pixels down Home under a closed disclosure. Nothing but the Wisconsin guide could be shared on its own. Four handlers assumed a clipboard.
+
+What ships:
+- One share control: the device's share sheet, then the clipboard, then a link to select by hand. It sends fixed text and one address.
+- "Share this deadline" on the TRICARE and FEDVIP notices.
+- "Share these links" for a chosen state. The link opens with that state chosen.
+- "Share Transition OPS" in the More tools menu, two taps from any screen.
+- The older share and copy buttons check for a clipboard and say what to copy when there is none.
+- The app share handler no longer calls a tracking hook that nothing defines.
+
+Why these: people pass along a date or a link that helps someone today. A general pitch for an app travels less.
+
+Drafting: pao-content wrote the share text options. The deadline texts ship with the year added and with no eligibility line.
+
+Left for Dean: the app-wide share line still reads as it did. pao-content offered three replacements, listed in the pull request.
+
+Baseline note from cycle 13's gate: five older regressions fail the same way on untouched `main` at `4729654`, so this cycle did not cause them. Four of the five are new to this record. Backlog row 13 covers the repair.
+- `career-home-search-continuity-browser`: already recorded under cycle 2.
+- `tool-url-continuity-browser`: every scenario passes through line 34. The last one, at line 35, expects a visitor with saved work and no `tops_onboarded` key to keep an address with no `tool` value. The app treats saved work as a returning visitor and writes `tool=dashboard`.
+- `navigation-refresh`: the script renders the bottom navigation in a sandbox that has no `subTab` variable, and the navigation code now reads one.
+- `guard-reserve-browser`: stops at "reload Guard" on line 20.
+- `profile-access-browser`: stops at "Home heading focus" on line 19.
+
+`home-visual-browser` passed 4 of 6 runs on this branch and 5 of 5 on `main`. Both failures were the "Invalid InterceptionId" request race recorded in earlier cycles.
+
+Lead from the same probe, same on `main`: the welcome screen shows on a visitor's first load of the root address only. The first load writes `taskProgress` and `docProgress`, and the app reads either key as a returning visitor. A visitor who reloads before choosing a starting point lands on Home.

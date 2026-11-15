@@ -3637,3 +3637,33 @@ No HOLD remains.
 **Upkeep:** the weekly J4 link audit reads every address in `index.html`, so it will crawl these 109 as well. A re-read of either source page can be compared with the hashes above in one step. Recheck by 15 FEB 2027.
 
 IMPACT: NOT A BENEFITS FINDING. This entry records resource links taken from two federal lists, and `member-impact` does not assess it. Under `member-return-benchmarking`, backlog row 8 moves from WATCH to ADOPT now that the links are read: the member job is finding the veterans office and the job bank for a destination state, it recurs with every move or job search, and it needs no data from the member.
+
+## V-2026-11-15-SHARE-TEXT - Share text for the open season notices and state links (15 November 2026)
+
+**Status:** No new finding. The share text restates facts already confirmed in this log. Wording staged for Dean's approval on branch `claude/loop-13-share-20261115`. Not released at the time of this entry.
+
+**Order behind it:** Dean, 12:36 Central on 15 November 2026: "i want veterans to want to share it beacuse its so good".
+
+**What a probe of the live build found first:**
+- The app-wide share button sits under "MORE TOOLS & INTEL" on Home, about 4,400 pixels down a 5,000 pixel page.
+- No deadline and no state's links could be shared on their own. Only the Wisconsin guide had its own share.
+- The Vet Hub share button and three other handlers called the clipboard without checking for one. With no share sheet and no clipboard, the Vet Hub button threw an error and showed nothing.
+- The app share handler still called a tracking hook, `window.__trackEvent`, which nothing in the app defines.
+
+**Share text, each fact tied to its record:**
+- TRICARE: "TRICARE Open Season closes Dec. 8, 2026. This page shows who it covers and how to change plans. Changes take effect Jan. 1, 2027." Dates and effect: V-2026-11-14-TRICARE-OPEN-SEASON, re-read under V-2026-11-15-TRICARE-2027-COSTS.
+- FEDVIP: "Federal Benefits Open Season for FEDVIP dental and vision ends Dec. 14, 2026 at 11:59 p.m. Eastern. This page lists who is eligible and where to enroll." V-2026-11-15-FEDVIP-OPEN-SEASON.
+- State: "{State} veterans office and job bank links are in Transition OPS. Office links come from VA's directory. Job banks come from CareerOneStop." V-2026-11-15-STATE-STARTING-POINTS.
+- Northern Mariana Islands, which has no listed office: "The {State} job bank link is in Transition OPS. It comes from CareerOneStop, which the U.S. Department of Labor sponsors."
+
+**Drafting:** pao-content drafted three options per slot under `brand-voice`. Its state text ships as drafted. The two deadline texts were adjusted: the year was added to each date, and "Active duty is excluded" was dropped, because a family member could read it as leaving out active duty families, who are covered. The shipped deadline texts carry no eligibility statement and no instruction. They point to the page.
+
+**What a share sends:** the text above and one address. Deadline shares send https://transitionops.org/?tool=reminders . A state share sends https://transitionops.org/?tool=resources&view=state-help&area=national&state=XX , where XX is the code of the state the member chose, named on the button. Nothing the member typed is sent, and no request leaves the app when the button is pressed.
+
+**The state value in the address:** a shared state link carries one `state` value, read once when the page opens. The app never writes a member's choice into the address. The linked value leaves the address when the member chooses a state for themselves, and when the member leaves State and local help. A choice is still held for the visit only and saved nowhere.
+
+**What a first-time visitor sees on those links (probed on the built tree with empty storage):** the Reminders link opens Reminders with both notices and no sign-up step. The state link opens State and local help with that state chosen.
+
+**Expiry:** each deadline share button lives inside its notice and leaves with it, on 8 DEC and 14 DEC 2026.
+
+IMPACT: NOT A NEW FINDING. The acts are those already assessed in the three records named above. This entry adds no instruction to any of them.

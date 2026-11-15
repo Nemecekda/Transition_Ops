@@ -536,9 +536,68 @@ check(occurrences(verificationLog, "## V-2026-11-15-FEDVIP-OPEN-SEASON ") === 1,
     occurrences(index, '" veterans office site (new tab)"') === 1 && occurrences(index, '" job bank (new tab)"') === 1,
     "both state links open a new tab without a referrer and say so");
   check(occurrences(index, "\"Office links come from VA's directory of state veterans affairs offices. Job bank links come from CareerOneStop, which the U.S. Department of Labor sponsors. Both lists were read on \" + TOPS_STATE_START_READ + \" and can change. Choosing a state here does not establish residence or eligibility.\"") === 1 &&
-    occurrences(index, 'const TOPS_STATE_START_READ = "15 NOV 2026";') === 1 && occurrences(index, 'var startPick = useState("")') === 1 && !/tops_state_start|localStorage[^;]{0,80}startCode|startCode[^;]{0,80}localStorage/.test(index),
-    "the caption names both sources and the read date, and the choice is held for the visit and saved nowhere");
+    occurrences(index, 'const TOPS_STATE_START_READ = "15 NOV 2026";') === 1 && occurrences(index, 'var startPick = useState(function() { return topsStateStartFromURL(window.location.href); }), startCode = startPick[0]') === 1 && occurrences(index, "useState(function() { return topsStateStartFromURL(") === 1 &&
+    !/tops_state_start|localStorage[^;]{0,80}startCode|startCode[^;]{0,80}localStorage/.test(index) && !/searchParams\.(set|append)\("state"/.test(index),
+    "the caption names both sources and the read date, and the choice is held for the visit, saved nowhere and never written into the address");
 }
 check(occurrences(verificationLog, "## V-2026-11-15-STATE-STARTING-POINTS ") === 1, "the state starting points carry one verification record");
+
+// Share control, share text and the shared state link. V-2026-11-15-SHARE-TEXT.
+{
+  const textStart = index.indexOf("const TOPS_SHARE_TEXT = {\n");
+  const textBox = {};
+  vm.runInNewContext(index.slice(textStart, index.indexOf("\n};\n", textStart) + 4) + "\nthis.t = JSON.stringify(TOPS_SHARE_TEXT);", textBox);
+  const shareText = JSON.parse(textBox.t);
+  check(textStart > 0 && Object.keys(shareText).sort().join(",") === "fedvip,state,stateJobsOnly,tricare" &&
+    Object.values(shareText).every((t) => t.replace("{State}", "Northern Mariana Islands").length <= 160 && /^[\x20-\x7e]+$/.test(t) && !/\$\d|!/.test(t)),
+    "four share texts, each 160 characters or fewer with the longest name, plain characters, no dollar figure and no exclamation point");
+  check(shareText.tricare === "TRICARE Open Season closes Dec. 8, 2026. This page shows who it covers and how to change plans. Changes take effect Jan. 1, 2027." &&
+    shareText.fedvip === "Federal Benefits Open Season for FEDVIP dental and vision ends Dec. 14, 2026 at 11:59 p.m. Eastern. This page lists who is eligible and where to enroll.",
+    "the two deadline share texts carry the dates, the year and the time zone already in the notices, and no instruction of their own");
+  check(shareText.state === "{State} veterans office and job bank links are in Transition OPS. Office links come from VA's directory. Job banks come from CareerOneStop." &&
+    shareText.stateJobsOnly === "The {State} job bank link is in Transition OPS. It comes from CareerOneStop, which the U.S. Department of Labor sponsors.",
+    "the state share texts name both sources, and the one territory without a listed office gets a text that promises no office link");
+
+  const controlStart = index.indexOf("function TopsShareControl(props) {");
+  const control = index.slice(controlStart, index.indexOf("\n}\n", controlStart));
+  check(controlStart > 0 && !/__trackEvent|window\.location|localStorage|sessionStorage|fetch\(|XMLHttpRequest|sendBeacon/.test(control) &&
+    occurrences(control, "navigator.share({ title: props.title, text: props.text, url: props.url })") === 1 &&
+    occurrences(control, 'if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") throw new Error("Clipboard unavailable");') === 1 &&
+    occurrences(control, 'navigator.clipboard.writeText(props.text + " " + props.url)') === 1,
+    "the share control sends only the text and address it is given: no tracking call, no storage, no request, no address read from the page");
+  check(occurrences(control, 'role: "status", "aria-live": "polite", "aria-atomic": "true"') === 1 && occurrences(control, '"Link to copy"') === 1 && occurrences(control, "readOnly: true, value: props.url") === 1 &&
+    occurrences(control, '"Share options closed."') === 1 && occurrences(control, '"Sharing canceled."') === 1 && occurrences(control, '"Copied. Paste it into a message."') === 1 && occurrences(control, '"Select and copy the link below."') === 1,
+    "the share control reports each outcome and falls back to a labeled link the member can select");
+  check(occurrences(index, 'React.createElement(TopsShareControl, { id: "tops-tricare-open-season-2026-share", colors: C, fill: C.bgCard, label: "Share this deadline", title: "TRICARE Open Season", text: TOPS_SHARE_TEXT.tricare, url: TOPS_SHARE_ORIGIN + "/?tool=reminders" })') === 1 &&
+    occurrences(index, 'React.createElement(TopsShareControl, { id: "tops-fedvip-open-season-2026-share", colors: C, fill: C.bgCard, label: "Share this deadline", title: "Federal Benefits Open Season", text: TOPS_SHARE_TEXT.fedvip, url: TOPS_SHARE_ORIGIN + "/?tool=reminders" })') === 1 &&
+    occurrences(index, 'url: TOPS_SHARE_ORIGIN + "/?tool=resources&view=state-help&area=national&state=" + startRow[0] })') === 1 && occurrences(index, 'const TOPS_SHARE_ORIGIN = "https://transitionops.org";') === 1 && occurrences(index, "React.createElement(TopsShareControl, ") === 3,
+    "three share controls: both open season notices share the Reminders address, and a state shares its own address");
+
+  const appShareStart = index.indexOf("function handleShareApp(setToast) {");
+  const appShare = index.slice(appShareStart, index.indexOf("function AboutModal(props) {", appShareStart));
+  check(appShareStart > 0 && !/__trackEvent|trackShare|app_shared/.test(appShare) && occurrences(appShare, "navigator.share(shareData).catch(function () {});") === 1 && occurrences(appShare, "url: 'https://transitionops.org'") === 1 &&
+    occurrences(index, "navigator.clipboard.writeText(window.location.href);") === 0 && occurrences(index, 'showToast("Copy this link: " + window.location.href);') === 8,
+    "sharing the app makes no tracking call, and no button assumes a clipboard: four older handlers now check for one and say what to copy");
+  check(occurrences(index, 'React.createElement("button", { id: "tops-menu-share", className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); handleShareApp(setToast); } }, "Share Transition OPS")') === 1,
+    "the More tools menu offers Share Transition OPS");
+
+  const readerStart = index.indexOf("function topsStateStartFromURL(href) {");
+  const isStart = index.indexOf("function topsIsStateHelpURL(href) {");
+  const listStart2 = index.indexOf("const TOPS_STATE_START = [\n");
+  const readerBox = { URL };
+  vm.runInNewContext(index.slice(listStart2, index.indexOf("\n];\n", listStart2) + 4) + index.slice(isStart, index.indexOf("\n}\n", isStart) + 3) + index.slice(readerStart, index.indexOf("\n}\n", readerStart) + 3) + "\nthis.read = topsStateStartFromURL;", readerBox);
+  const stateLink = "https://transitionops.org/?tool=resources&view=state-help&area=national&state=";
+  check(readerStart > 0 && readerBox.read(stateLink + "TX") === "TX" && readerBox.read(stateLink + "tx") === "TX" && readerBox.read(stateLink + "MP") === "MP" && readerBox.read(stateLink + "ZZ") === "" && readerBox.read(stateLink + "TX&state=CA") === "" &&
+    readerBox.read(stateLink + "") === "" && readerBox.read("https://transitionops.org/?tool=reminders&state=TX") === "" && readerBox.read("https://transitionops.org/?tool=resources&view=state-help&guide=x&state=TX") === "" && readerBox.read("not an address") === "" &&
+    occurrences(index, "var startPick = useState(function() { return topsStateStartFromURL(window.location.href); })") === 1,
+    "a shared state link chooses a listed state once, in either letter case, and anything else chooses nothing");
+  const dropStart = index.indexOf("function topsDropStateStartFromURL() {");
+  const drop = index.slice(dropStart, index.indexOf("\n}\n", dropStart));
+  check(dropStart > 0 && occurrences(drop, 'url.searchParams.delete("state"); history.replaceState(history.state, "", url.href);') === 1 && !/searchParams\.(set|append)/.test(drop) &&
+    occurrences(index, 'onChange: function(e) { setStartCode(e.target.value); topsDropStateStartFromURL(); } },') === 1 && occurrences(index, "topsDropStateStartFromURL()") === 2 &&
+    occurrences(index, 'if (!(activeTab === "resources" && subTab === "state-help") && url.searchParams.has("state")) url.searchParams.delete("state");') === 1,
+    "a linked state leaves the address when the member chooses for themselves or leaves State and local help");
+}
+check(occurrences(verificationLog, "## V-2026-11-15-SHARE-TEXT ") === 1, "the share text carries one verification record");
 
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");

@@ -5151,38 +5151,21 @@ function handleShareApp(setToast) {
     text: 'Free military transition app — VA Math, VA Pay, SkillBridge, state tax intel, and personalized timelines. Built by a veteran.',
     url: 'https://transitionops.org'
   };
-  const trackShare = function (method) {
-    if (window.__trackEvent) {
-      window.__trackEvent('app_shared', {
-        'method': method
-      });
-    }
-  };
   if (navigator.share) {
-    navigator.share(shareData).then(function () {
-      trackShare('native');
-    }).catch(function (err) {
-      // User cancelled — don't track as share
-      if (err.name !== 'AbortError') {
-        trackShare('native_failed');
-      }
-    });
+    navigator.share(shareData).catch(function () {});
   } else if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText('https://transitionops.org').then(function () {
-      trackShare('clipboard');
       setToast('Link copied — share with a battle buddy');
       setTimeout(function () {
         setToast(null);
       }, 3000);
     }).catch(function () {
-      trackShare('clipboard_failed');
       setToast('Copy failed — share https://transitionops.org');
       setTimeout(function () {
         setToast(null);
       }, 4000);
     });
   } else {
-    trackShare('unsupported');
     setToast('Share https://transitionops.org with a battle buddy');
     setTimeout(function () {
       setToast(null);
@@ -8060,6 +8043,49 @@ function WisconsinNextChapter(props) {
       ["start", "work"].includes(context.need) && React.createElement("p", { id: "tops-wisconsin-cohort-ask", style: { margin: "12px 0 4px" } }, "To ask about roles with these employers, use \"Talk with Dean at Veteran Bridge Solutions\" on this page. No response, interview or job is guaranteed.")),
     TOPS_WISCONSIN_SETTLE_IN.length > 0 && React.createElement("details", { id: "tops-wisconsin-settle-in", style: section }, React.createElement("summary", { style: summary }, "Make Wisconsin home"), TOPS_WISCONSIN_SETTLE_IN.map(function(item) { return React.createElement("div", { key: item.id }, React.createElement("p", { style: { margin: "4px 0 8px" } }, item.body), item.note && React.createElement("p", { style: { margin: "4px 0 8px", fontSize: 14, color: C.textSecondary } }, item.note), link(item)); })));
 }
+// Share control. It uses the device's share sheet when there is one, then the clipboard, then a link to select by hand.
+// It sends the fixed text and address it is given. It reads nothing the member typed and makes no tracking call.
+// Share text sources: intel/verification-log.md, V-2026-11-15-SHARE-TEXT.
+const TOPS_SHARE_ORIGIN = "https://transitionops.org";
+const TOPS_SHARE_TEXT = {
+  tricare: "TRICARE Open Season closes Dec. 8, 2026. This page shows who it covers and how to change plans. Changes take effect Jan. 1, 2027.",
+  fedvip: "Federal Benefits Open Season for FEDVIP dental and vision ends Dec. 14, 2026 at 11:59 p.m. Eastern. This page lists who is eligible and where to enroll.",
+  state: "{State} veterans office and job bank links are in Transition OPS. Office links come from VA's directory. Job banks come from CareerOneStop.",
+  stateJobsOnly: "The {State} job bank link is in Transition OPS. It comes from CareerOneStop, which the U.S. Department of Labor sponsors."
+};
+// A shared state link carries one "state" value. It only chooses the state shown when the page opens.
+function topsStateStartFromURL(href) {
+  try { var q = new URL(href).searchParams; if (!topsIsStateHelpURL(href) || q.getAll("state").length !== 1) return ""; var code = String(q.get("state") || "").toUpperCase(); return TOPS_STATE_START.some(function(row) { return row[0] === code; }) ? code : ""; } catch (error) { return ""; }
+}
+// The app never writes a member's choice into the address. Once the member chooses for themselves, the linked value comes out.
+function topsDropStateStartFromURL() {
+  try { var url = new URL(window.location.href); if (!url.searchParams.has("state")) return; url.searchParams.delete("state"); history.replaceState(history.state, "", url.href); } catch (error) {}
+}
+function TopsShareControl(props) {
+  var C = props.colors, [status, setStatus] = useState(""), [manual, setManual] = useState(false), [busy, setBusy] = useState(false), pending = React.useRef(false);
+  var button = { display: "inline-flex", alignItems: "center", minHeight: 44, minWidth: 44, maxWidth: "100%", boxSizing: "border-box", padding: "10px 14px", margin: 0, border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: props.fill || C.bgElevated, font: "inherit", lineHeight: 1.5, textAlign: "left", cursor: "pointer" };
+  var field = { display: "block", width: "100%", boxSizing: "border-box", minHeight: 48, padding: "10px 12px", margin: "6px 0 8px", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", fontSize: 16 };
+  async function share() {
+    if (pending.current) return;
+    pending.current = true; setBusy(true); setStatus(""); setManual(false);
+    try {
+      if (typeof navigator.share === "function") {
+        try { await navigator.share({ title: props.title, text: props.text, url: props.url }); setStatus("Share options closed."); return; }
+        catch (error) { if (error && error.name === "AbortError") { setStatus("Sharing canceled."); return; } }
+      }
+      try {
+        if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") throw new Error("Clipboard unavailable");
+        await navigator.clipboard.writeText(props.text + " " + props.url);
+        setStatus("Copied. Paste it into a message.");
+      } catch (error) { setManual(true); setStatus("Select and copy the link below."); }
+    } finally { pending.current = false; setBusy(false); }
+  }
+  return React.createElement("div", { id: props.id, style: { margin: "6px 0 10px" } },
+    React.createElement("button", { id: props.id + "-button", type: "button", style: button, disabled: busy, "aria-describedby": props.id + "-status", onClick: share }, busy ? "Opening share options..." : props.label),
+    React.createElement("p", { id: props.id + "-status", role: "status", "aria-live": "polite", "aria-atomic": "true", style: { margin: "4px 0 0", fontSize: 14 } }, status),
+    manual && React.createElement("label", { htmlFor: props.id + "-url", style: { display: "block", fontSize: 14, marginTop: 4 } }, "Link to copy"),
+    manual && React.createElement("input", { id: props.id + "-url", type: "text", readOnly: true, value: props.url, style: field, onFocus: function(event) { event.target.select(); } }));
+}
 function WisconsinGuideShare(props) {
   var [status, setStatus] = useState(""), [manual, setManual] = useState(false), [busy, setBusy] = useState(false), pending = React.useRef(false);
   var url = "https://transitionops.org/wisconsin";
@@ -8094,7 +8120,7 @@ function WisconsinGuideShare(props) {
 }
 function StateLocalHelp(props) {
   var C = props.colors, context = topsStateHelpContext(props.context), items = topsStateHelpItems(context), main = items[0], [review, setReview] = useState(null), [replace, setReplace] = useState(false), [message, setMessage] = useState(""), [stepReady, setStepReady] = useState(false);
-  var startPick = useState(""), startCode = startPick[0], setStartCode = startPick[1], startRow = TOPS_STATE_START.find(function(row) { return row[0] === startCode; }) || null;
+  var startPick = useState(function() { return topsStateStartFromURL(window.location.href); }), startCode = startPick[0], setStartCode = startPick[1], startRow = TOPS_STATE_START.find(function(row) { return row[0] === startCode; }) || null;
   var button = { display: "inline-flex", alignItems: "center", minHeight: 44, minWidth: 44, maxWidth: "100%", boxSizing: "border-box", padding: "10px 14px", margin: "4px 8px 4px 0", border: "1px solid " + C.border, borderRadius: 8, color: C.textPrimary, background: C.bgElevated, font: "inherit", lineHeight: 1.5, textDecoration: "none", cursor: "pointer" };
   var field = { display: "block", width: "100%", boxSizing: "border-box", minHeight: 48, padding: "10px 12px", margin: "6px 0 14px", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", fontSize: 16 };
   function focus(id) { requestAnimationFrame(function() { var n = document.getElementById(id); if (n) n.focus(); }); }
@@ -8145,7 +8171,7 @@ function StateLocalHelp(props) {
       React.createElement("h3", { id: "tops-state-start-heading", style: { fontSize: 20, lineHeight: 1.35, margin: "0 0 8px" } }, "Go straight to your state"),
       React.createElement("p", { style: { margin: "8px 0", lineHeight: 1.5 } }, "Pick a state or territory to open its veterans office and its job bank."),
       React.createElement("label", { htmlFor: "tops-state-start-select", style: { display: "block", fontSize: 14, fontWeight: 600 } }, "State or territory"),
-      React.createElement("select", { id: "tops-state-start-select", value: startCode, style: field, "aria-describedby": "tops-state-start-caption", onChange: function(e) { setStartCode(e.target.value); } },
+      React.createElement("select", { id: "tops-state-start-select", value: startCode, style: field, "aria-describedby": "tops-state-start-caption", onChange: function(e) { setStartCode(e.target.value); topsDropStateStartFromURL(); } },
         React.createElement("option", { value: "" }, "Select a state or territory"),
         TOPS_STATE_START.map(function(row) { return React.createElement("option", { key: row[0], value: row[0] }, row[1]); })),
       React.createElement("p", { id: "tops-state-start-status", className: "sr-only", role: "status", "aria-live": "polite" }, startRow ? "Links for " + startRow[1] + " are shown." : ""),
@@ -8154,7 +8180,8 @@ function StateLocalHelp(props) {
         startRow[3] && React.createElement("a", { id: "tops-state-start-office", href: startRow[3], target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }) }, "Open the " + startRow[1] + " veterans office site (new tab)"),
         startRow[5] && React.createElement("p", { id: "tops-state-start-note", style: { fontSize: 14, margin: "4px 0 8px" } }, startRow[5]),
         React.createElement("a", { id: "tops-state-start-jobs", href: startRow[4], target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: button }, "Open the " + startRow[1] + " job bank (new tab)"),
-        startRow[0] === "WI" && React.createElement("button", { id: "tops-state-start-wisconsin", type: "button", style: button, onClick: function() { choose("area", "wi"); focus("tops-state-help-heading"); } }, "Open the Wisconsin guide")),
+        startRow[0] === "WI" && React.createElement("button", { id: "tops-state-start-wisconsin", type: "button", style: button, onClick: function() { choose("area", "wi"); focus("tops-state-help-heading"); } }, "Open the Wisconsin guide"),
+        React.createElement(TopsShareControl, { key: startRow[0], id: "tops-state-start-share", colors: C, label: startRow[3] ? "Share these " + startRow[1] + " links" : "Share this " + startRow[1] + " link", title: startRow[3] ? startRow[1] + " veterans office and job bank" : startRow[1] + " job bank", text: (startRow[3] ? TOPS_SHARE_TEXT.state : TOPS_SHARE_TEXT.stateJobsOnly).replace("{State}", startRow[1]), url: TOPS_SHARE_ORIGIN + "/?tool=resources&view=state-help&area=national&state=" + startRow[0] })),
       React.createElement("p", { id: "tops-state-start-caption", style: { fontSize: 14, margin: "8px 0 0", lineHeight: 1.5, color: C.textSecondary } }, "Office links come from VA's directory of state veterans affairs offices. Job bank links come from CareerOneStop, which the U.S. Department of Labor sponsors. Both lists were read on " + TOPS_STATE_START_READ + " and can change. Choosing a state here does not establish residence or eligibility.")),
     context.area === "wi" && ["start", "work"].includes(context.need) && React.createElement(CareerTalentContact, { colors: C, summary: "Talk with Dean at Veteran Bridge Solutions", invitation: "Looking for your next role or a connection to Wisconsin employers? Let’s talk about what you’re working toward." }),
     React.createElement(WisconsinNextChapter, { colors: C, context: context, button: button }),
@@ -10302,6 +10329,7 @@ function App() {
     if (showOnboarding) return;
     try { var next = topsCurrentToolURL(window.location.href, activeTab); if (next) { var url = new URL(next), docs = activeTab === "resources" && subTab === "documents";
       ["area", "situation", "need"].forEach(function(key) { if (url.searchParams.has(key)) url.searchParams.delete(key); });
+      if (!(activeTab === "resources" && subTab === "state-help") && url.searchParams.has("state")) url.searchParams.delete("state");
       if (activeTab === "resources" && subTab === "state-help") { var local = topsStateHelpContext(stateHelpContext); url.searchParams.set("view", "state-help"); url.searchParams.delete("guide"); Object.keys(local).forEach(function(key) { url.searchParams.set(key, local[key]); }); wiGuideRequested.current = false; }
       else if (docs) { url.searchParams.set("view", "documents"); url.searchParams.delete("guide"); wiGuideRequested.current = false; }
       else if (activeTab === "pathway" && careerScreen === "jobs" && topsReadJobSearchURL(window.location.href)) { url.searchParams.set("view", "jobs"); url.searchParams.delete("guide"); wiGuideRequested.current = false; }
@@ -12346,8 +12374,9 @@ function App() {
 
         // Share + VBS
         React.createElement("button", { onClick: function() {
-          if (navigator.share) { navigator.share({ title: "Transition OPS", text: "Military career tools \u2014 translate your training into civilian careers.", url: window.location.href }); }
-          else { navigator.clipboard.writeText(window.location.href); showToast("LINK COPIED"); }
+          if (navigator.share) { navigator.share({ title: "Transition OPS", text: "Military career tools \u2014 translate your training into civilian careers.", url: window.location.href }).catch(function() {}); }
+          else if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") { navigator.clipboard.writeText(window.location.href).then(function() { showToast("LINK COPIED"); }).catch(function() { showToast("Copy this link: " + window.location.href); }); }
+          else { showToast("Copy this link: " + window.location.href); }
         }, style: { width: "100%", padding: "12px", background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 10 } },
           React.createElement("span", { style: { fontSize: 16 } }, "\uD83D\uDCE4"),
           React.createElement("span", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 12, color: C.textSecondary, letterSpacing: 1 } }, "SHARE WITH YOUR UNIT")
@@ -12595,8 +12624,11 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       }
     }, "Copy this link and paste it in Safari. Chrome and other browsers cannot install apps on iPhone."), /*#__PURE__*/React.createElement("button", {
       onClick: () => {
-        navigator.clipboard.writeText(window.location.href);
-        showToast("LINK COPIED — Paste in Safari.");
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          navigator.clipboard.writeText(window.location.href).then(function() { showToast("LINK COPIED — Paste in Safari."); }).catch(function() { showToast("Copy this link: " + window.location.href); });
+        } else {
+          showToast("Copy this link: " + window.location.href);
+        }
       },
       style: {
         marginTop: 8,
@@ -12972,10 +13004,11 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           title: "Transition OPS",
           text: "Military transition planning tool by Veteran Bridge Solutions",
           url: window.location.href
-        });
+        }).catch(function() {});
+      } else if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        navigator.clipboard.writeText(window.location.href).then(function() { showToast("LINK COPIED — Share it with your crew."); }).catch(function() { showToast("Copy this link: " + window.location.href); });
       } else {
-        navigator.clipboard.writeText(window.location.href);
-        showToast("LINK COPIED — Share it with your crew.");
+        showToast("Copy this link: " + window.location.href);
       }
     },
     style: {
@@ -16268,10 +16301,11 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
           title: "Transition OPS \u2014 Veteran Career Hub",
           text: "Free career tools, unclaimed benefits finder, and veteran employer connections. Check your Veteran Career Score.",
           url: window.location.href
-        });
+        }).catch(function() {});
+      } else if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        navigator.clipboard.writeText(window.location.href).then(function() { showToast("LINK COPIED"); }).catch(function() { showToast("Copy this link: " + window.location.href); });
       } else {
-        navigator.clipboard.writeText(window.location.href);
-        showToast("LINK COPIED");
+        showToast("Copy this link: " + window.location.href);
       }
     },
     style: {
@@ -19264,7 +19298,8 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         React.createElement("p", { style: { margin: "0 0 8px" } }, "This does not apply to active duty service members, or to TRICARE For Life, TRICARE Reserve Select, TRICARE Retired Reserve, or TRICARE Young Adult coverage."),
         React.createElement("p", { id: "tops-tricare-open-season-2026-costs", style: { margin: "0 0 8px" } }, "DoD has published 2027 costs for TRICARE Prime and TRICARE Select, effective Jan. 1, 2027. TRICARE's Health Plan Costs page lists them."),
         React.createElement("a", { href: "https://www.tricare.mil/About/Changes/OpenSeason", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "TRICARE Open Season on tricare.mil (new tab)"),
-        React.createElement("div", null, React.createElement("a", { id: "tops-tricare-open-season-2026-costs-link", href: "https://www.tricare.mil/CompareCosts", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "2027 health plan costs on tricare.mil (new tab)"))
+        React.createElement("div", null, React.createElement("a", { id: "tops-tricare-open-season-2026-costs-link", href: "https://www.tricare.mil/CompareCosts", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "2027 health plan costs on tricare.mil (new tab)")),
+        React.createElement(TopsShareControl, { id: "tops-tricare-open-season-2026-share", colors: C, fill: C.bgCard, label: "Share this deadline", title: "TRICARE Open Season", text: TOPS_SHARE_TEXT.tricare, url: TOPS_SHARE_ORIGIN + "/?tool=reminders" })
       ),
       !reminderTimedOnly && topsFederalBenefitsOpenSeason2026Active() && React.createElement("details", { id: "tops-fedvip-open-season-2026", open: !topsTricareOpenSeason2026Active(), style: { padding: "0 14px", marginBottom: 12, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, lineHeight: 1.6, color: C.textBody } },
         React.createElement("summary", { id: "tops-fedvip-open-season-2026-title", style: { minHeight: 44, padding: "12px 0", cursor: "pointer", color: C.textPrimary, fontWeight: 700, fontSize: 16 } }, "Federal Benefits Open Season (FEDVIP dental and vision): Nov. 9 to Dec. 14, 2026"),
@@ -19275,7 +19310,8 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         React.createElement("p", { style: { margin: "0 0 8px" } }, "This does not apply to active duty service members, who are not eligible for FEDVIP dental or vision. Survivors and other groups have their own rules on the BENEFEDS eligibility page."),
         React.createElement("p", { style: { margin: "0 0 8px" } }, "This window is separate from TRICARE Open Season (Nov. 9 to Dec. 8, 2026)."),
         React.createElement("div", null, React.createElement("a", { id: "tops-fedvip-open-season-2026-eligibility-link", href: "https://www.benefeds.gov/learn/fedvip/fedvip-eligibility-uniformed-services", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "FEDVIP eligibility for uniformed services on BENEFEDS.gov (new tab)")),
-        React.createElement("div", { style: { marginBottom: 6 } }, React.createElement("a", { id: "tops-fedvip-open-season-2026-enroll-link", href: "https://www.benefeds.gov/", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "Enroll or change plans on BENEFEDS.gov (new tab)"))
+        React.createElement("div", { style: { marginBottom: 6 } }, React.createElement("a", { id: "tops-fedvip-open-season-2026-enroll-link", href: "https://www.benefeds.gov/", target: "_blank", rel: "noopener noreferrer", style: { display: "inline-flex", alignItems: "center", minHeight: 44, color: C.textPrimary, textDecoration: "underline" } }, "Enroll or change plans on BENEFEDS.gov (new tab)")),
+        React.createElement(TopsShareControl, { id: "tops-fedvip-open-season-2026-share", colors: C, fill: C.bgCard, label: "Share this deadline", title: "Federal Benefits Open Season", text: TOPS_SHARE_TEXT.fedvip, url: TOPS_SHARE_ORIGIN + "/?tool=reminders" })
       ),
       !reminderTimedOnly && urgentR.length > 0 && React.createElement("div", { style: { padding: "12px 14px", background: (C.isLight ? "#FBEAE8" : "linear-gradient(135deg,#3d1111,#2a0808)"), border: "1px solid #8B0000", borderRadius: 8, marginBottom: 12, animation: "pulse 2s ease-in-out infinite" } },
         React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.danger, letterSpacing: 2, fontFamily: "'Oswald', sans-serif", marginBottom: 6 } }, "\u26A0\uFE0F IMMEDIATE ACTION REQUIRED"),
@@ -20149,7 +20185,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       );
     }),
     showMoreMenu !== "benefits" && navUnlocked && React.createElement("button", { className: "tops-more-tool", type: "button", onClick: function() { primaryNavFocus.current = true; setActiveTab("navigator"); setShowMoreMenu(false); } }, "Navigator"),
-    showMoreMenu !== "benefits" && React.createElement("button", { className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); window.requestAnimationFrame(handleInstallBannerClick); } }, "Install Transition OPS"),
+    showMoreMenu !== "benefits" && React.createElement("button", { className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); window.requestAnimationFrame(handleInstallBannerClick); } }, "Install Transition OPS"), showMoreMenu !== "benefits" && React.createElement("button", { id: "tops-menu-share", className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); handleShareApp(setToast); } }, "Share Transition OPS"),
     React.createElement("button", { onClick: function() { setShowMoreMenu(false); }, style: { marginTop: 10, padding: "14px 0", background: "none", border: "1px solid " + C.border, borderRadius: 12, color: C.inactive, fontSize: 12, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer", width: "100%", textAlign: "center" } }, "CLOSE")
   ),
 
