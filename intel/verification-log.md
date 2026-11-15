@@ -3068,7 +3068,7 @@ Source(s):
 
 Tier 2 orchestrator browser reads on 2026-11-15 (Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.
 
-Not on the authorized list the same day: Johnsonville, Therma-Tron-X and Air Tech Heating. The list does show "Airtech Mechanical Services, Inc", MOU expiration date 10/14/2028. No source ties that name to Air Tech Heating, Inc. of Fond du Lac. Dean was asked and had not answered when this entry was written, so no SkillBridge claim is made for Air Tech.
+Not on the authorized list the same day: Johnsonville, Therma-Tron-X and Air Tech Heating. The list does show "Airtech Mechanical Services, Inc", MOU expiration date 10/14/2028. Asked whether that is his Air Tech, Dean answered in chat on 15 November 2026: "yes air tech in fon du lac". The SkillBridge claim is still held. Air Tech's own site and its Bryant dealer page use the name Air Tech Heating, Inc., and a web search returns an HVAC company named Airtech Mechanical Services, Inc. in New Bern, North Carolina (search retrieval only). No source ties the listed name to Air Tech Heating, Inc. of Fond du Lac. The note can be added once the organization name on Air Tech's MOU is confirmed against the official list.
 
 This entry supersedes, for these two companies only, the line in the 16 October packet that cohort identity carries no program approval. The listed authorization still does not establish a position, a placement or a member's approval.
 
