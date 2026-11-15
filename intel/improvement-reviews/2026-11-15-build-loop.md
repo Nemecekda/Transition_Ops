@@ -271,7 +271,7 @@ Why these: people pass along a date or a link that helps someone today. A genera
 
 Drafting: pao-content wrote the share text options. The deadline texts ship with the year added and with no eligibility line.
 
-Left for Dean: the app-wide share line still reads as it did. pao-content offered three replacements, listed in the pull request.
+Left for Dean: the app-wide share line still reads as it did. pao-content offered three replacements. One is quoted in the pull request; the other two were not kept.
 
 Baseline note from cycle 13's gate: five older regressions fail the same way on untouched `main` at `4729654`, so this cycle did not cause them. Four of the five are new to this record. Backlog row 13 covers the repair.
 - `career-home-search-continuity-browser`: already recorded under cycle 2.
