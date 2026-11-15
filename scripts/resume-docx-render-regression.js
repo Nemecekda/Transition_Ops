@@ -618,7 +618,7 @@ function renderActualDocx(tooling, bytes, resumeText, label, expectedPages, subs
     const pageCount = Number(pagesMatch[1]);
     assert.equal(pageCount, expectedPages, label + " renders the expected page count");
 
-    const textConversion = runChecked(tooling.libreOffice, ["-env:UserInstallation=" + profileUri, "--headless", "--convert-to", "txt:Text", "--outdir", outputDir, docxPath], label + " LibreOffice text export");
+    const textConversion = runChecked(tooling.libreOffice, ["-env:UserInstallation=" + profileUri, "--headless", "--convert-to", "txt:Text (encoded):UTF8", "--outdir", outputDir, docxPath], label + " LibreOffice text export");
     assert.doesNotMatch(String(textConversion.stderr || "") + String(textConversion.stdout || ""), /error|corrupt|repair|damaged/i, label + " text export has no compatibility error");
     const renderedTextPath = path.join(outputDir, label + ".txt");
     assert.ok(fs.existsSync(renderedTextPath), label + " produced renderer-extracted text");
