@@ -3005,3 +3005,232 @@ EXPIRES: NONE; re-verify when VA updates the page.
 **Member-impact:** NOT RE-RUN. Nothing new ships from this entry. An exclusion line, if Dean wants one, gets its own assessment first.
 
 EXPIRES: 2027-12-31 for the copay figures.
+
+## V-2026-11-14-BDD-PHRASE-RECHECK - "standard disability claim" is VA's own wording (verified 14 November 2026)
+
+**Status:** CONFIRMED. No app change. This entry corrects the "Wording check" note in V-2026-11-14-BDD-WINDOW-CARD.
+
+**Claim checked (existing app sentence, unchanged):** "You can still file a standard disability claim. Review VA's requirements using the resource link below." Shown on reminder `r-6-bdd2` and on the `[BDD CLAIM]` window cards once fewer than 90 days remain.
+
+**Source:** https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/ , "Last updated: June 18, 2026". Read 14 November 2026, including the collapsed sections under "How do I file a claim for disability compensation before I leave the service?"
+
+**Ladder tier:** Tier 2, orchestrator browser (Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.
+
+**Finding:** VA uses both phrases on the same page for a member with less than 90 days left on active duty.
+- The question "What if I have less than 90 days left on active duty?" is answered with: "You can't file a pre-discharge claim through the BDD program. But you can still file a pre-discharge disability claim before you separate from active duty."
+- The filing instructions carry a section titled "If you have less than 90 days left on active duty: File a standard claim". Its first sentence reads: "If you have less than 90 days left on active duty, you can file a standard disability claim." The section links to https://www.va.gov/disability/how-to-file-claim/evidence-needed/standard-claims .
+
+The app's sentence uses the term VA uses in its filing instructions. The earlier note quoted only the first passage. The second sits in a collapsed section that a visible-text read does not return. The wording flag raised to Dean on 14 November 2026 is withdrawn. Nothing was changed in the app.
+
+**Method note for the next verifier:** VA.gov and tricare.mil both hold content in collapsed sections. Read those sections before recording that a page does not say something.
+
+**Member-impact:** NOT RE-RUN. Nothing new ships from this entry. The IMPACT block on V-2026-11-14-BDD-WINDOW-CARD stands.
+
+EXPIRES: NONE; re-verify when VA updates the page.
+
+## V-2026-11-14-TRICARE-COPAY-EXCEPTIONS - Who the general pharmacy copays leave out, and the years they cover (verified 14 November 2026)
+
+**Status:** CONFIRMED. Wording staged for Dean's approval on branch `claude/tricare-card-exceptions-20261114`. Not released at the time of this entry.
+
+**Claims:**
+1. TRICARE lists its pharmacy costs for calendar years 2026 and 2027.
+2. Active duty service members have no costs for covered drugs at a military pharmacy, TRICARE Pharmacy Home Delivery, or a TRICARE retail network pharmacy.
+3. Active duty family members with TRICARE Prime Remote in the U.S. have no costs for covered drugs at military pharmacies, home delivery, and retail network pharmacies, as of Feb. 28, 2026.
+4. Medically retired service members and their family members, and survivors of active duty service members, pay copays frozen at 2017 rates. Retail network pharmacy, up to a 30-day supply: $10 generic, $24 brand-name, $50 non-formulary. Home delivery, up to a 90-day supply: $0 generic, $20 brand-name, $49 non-formulary.
+
+**Sources, both read 14 November 2026 at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). No CAPTCHA was presented or solved:**
+- https://www.tricare.mil/Costs/PharmacyCosts , "Last Updated 4/10/2026". Claims 1, 2, 3 and 4. The frozen table sits in the section "Costs for medically retired sponsors and certain survivors", which cites Section 702 of the NDAA for FY 2018 and names two groups: medically retired service members and their family members, and survivors of active duty service members.
+- https://www.tricare.mil/changes , "Last Updated 10/6/2026". Claim 3, with the year: "TRICARE Prime Remote pharmacy copayment waiver (effective Feb. 28, 2026)". This page names home delivery and retail network pharmacies.
+
+**Corroboration, search retrieval only:** the TRICARE Newsroom article "Preview your 2026 TRICARE pharmacy costs" states that 2026 copayments do not change for survivors of active duty service members and for medically retired service members and their family members. The page tricare.mil/FAQs/Pharmacy/PharmProg_Copays states that the same groups have lower costs.
+
+**Second primary source for the frozen dollar figures:** none found beyond the Pharmacy Costs page. The figures were read twice on 14 November 2026.
+
+**Page note for the next verifier:** the Pharmacy Costs page source also holds an older table ($13, $38, $76 home delivery; $16, $43, $76 retail network) inside a collapsed block that has no heading and no control to open it. A visitor cannot reach it. The two sections a visitor can open carry the figures in claim 4 and the figures already on the card. Do not read the unreachable block as current.
+
+**Link finding:** reminder `r-9-tri26` and the POLICY_CHANGES entry dated 1 JAN 2026 both linked to https://www.tricare.mil/changes . On 14 November 2026 that page lists three changes (myAuth logins, TENS coverage, and the Prime Remote waiver). It no longer shows the 1 January 2026 copays or the Prime travel distance. Both links now point to the Pharmacy Costs page, which shows the copay figures.
+
+**App change (wording staged for Dean's approval):**
+- Reminder `r-9-tri26`, three items added after the military pharmacy line:
+  - "TRICARE lists these copays for calendar years 2026 and 2027"
+  - "Exception: active duty service members, and active duty family members in TRICARE Prime Remote in the U.S., pay $0 for covered drugs at military, retail network and home delivery pharmacies"
+  - "Exception: medically retired service members, their family members, and survivors of active duty service members pay lower copays: retail (30-day) $10 generic / $24 brand-name / $50 non-formulary; home delivery (90-day) $0 generic / $20 brand-name / $49 non-formulary"
+- Reminder `r-9-tri26`: resource link changed to https://www.tricare.mil/Costs/PharmacyCosts .
+- Notification `n34` and the POLICY_CHANGES entry dated 1 JAN 2026, one sentence added to each: "Medically retired members, their families, and survivors of active duty service members pay less."
+- POLICY_CHANGES entry dated 1 JAN 2026: source label changed from "Changes" to "Pharmacy Costs", and its link changed to the Pharmacy Costs page.
+- The dollar figures already on these three surfaces are unchanged.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-14 | revisit NONE
+A1 population: SEPARATING (active component); GUARD/RESERVE; SPOUSE/FAMILY; ALREADY SEPARATED. All four are asserted because each holds a group the general copay table leaves out: active duty service members, including activated Guard and Reserve members; active duty family members in TRICARE Prime Remote in the U.S.; medically retired service members and their family members; and survivors of active duty service members.   band: 9 Months Out, the card's band, and Post-Separation at any day-offset, where the card stays listed as an earlier milestone.   excluded: This does not apply to retirees, retiree family members and the other beneficiaries the general table covers, who pay the copays already on the card.   timing: ACT AVAILABLE NOW.
+A2 act: "Open tricare.mil/Costs/PharmacyCosts and budget with the table for your group: 'Costs for all beneficiaries except medically retired sponsors and certain survivors' or 'Costs for medically retired sponsors and certain survivors'."
+A3 surface(s): reminders (card `r-9-tri26`); notification list (`n34`); POLICY_CHANGES entry dated 1 JAN 2026.   token: NONE   sweep trigger: FIRED confusable-adjacent. Two copay tables, general and frozen, now sit on one card. Every surface carrying the general figures was checked in the same change: the card, `n34` and the POLICY_CHANGES entry. The Navigator corpus carries no pharmacy copay figure.
+A4 cost: NOTHING
+EXPIRES: 2027-12-31 for the general copay figures. The frozen figures carry no end date on the page; re-verify with the general figures.
+
+## V-2026-11-14-PRIME-TRAVEL-NONARMED - Prime Travel Benefit distance for PHS and NOAA families (verified 14 November 2026)
+
+**Status:** CONFIRMED. Wording staged for Dean's approval on branch `claude/tricare-card-exceptions-20261114`. Not released at the time of this entry.
+
+**Claim:** For the Prime Travel Benefit, a referral qualifies when the specialty care provider is more than 75 miles one-way from the primary care manager's office for dependents of members of an armed uniformed service on active duty. The distance is 100 miles one-way for dependents of members of a non-armed uniformed service (PHS, NOAA) on active duty, and 100 miles one-way for retirees and retiree family members.
+
+**Source:** https://tricare.mil/PrimeTravel , "Last Updated 5/27/2026". Read 14 November 2026.
+
+**Ladder tier:** Tier 2, orchestrator browser (Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.
+
+**App change (wording staged for Dean's approval):** four surfaces said 75 miles applies to "active-duty family members (retirees remain at 100 miles)". Each parenthetical now reads "(PHS and NOAA families and retirees remain at 100 miles)". Surfaces: reminder `r-9-tri26`, notification `n34`, the POLICY_CHANGES entry dated 1 JAN 2026, and the FY26 NDAA panel line. The 75-mile and 100-mile figures are unchanged.
+
+IMPACT: DECLINE / INOCULATE | A2 | Claude (chat session, at Dean's direction) | 2026-11-14 | revisit NONE
+A1 population: SPOUSE/FAMILY, limited to dependents of active duty members of the Public Health Service and NOAA.   band: NONE. This finding is condition-triggered: it applies whenever a TRICARE Prime enrollee in that group is referred for specialty care.   excluded: This does not apply to dependents of active duty members of an armed uniformed service, who qualify at 75 miles, or to retirees and retiree family members, whose 100-mile distance the app already stated.   timing: ACT AVAILABLE NOW.
+A2 act: NOTHING - context
+A3 surface(s): reminders (card `r-9-tri26`); notification list (`n34`); POLICY_CHANGES entry dated 1 JAN 2026; FY26 NDAA panel line.   token: NONE   sweep trigger: FIRED confusable-adjacent. The 75-mile and 100-mile distances apply to different groups. All four surfaces carried the same parenthetical and were changed together.
+A4 cost: NOTHING
+INOCULATE limbs: 1 PUBLIC SALIENCE - TRICARE publishes both distances on its Prime Travel page. 2 WRONG INFERENCE - "A PHS or NOAA family reads '75 miles for active-duty family members' and expects reimbursement for a specialty care trip between 75 and 100 miles." 3 CLOSURE - the reader's next question is "what is my distance?", and the same parenthetical answers it: 100 miles.
+EXPIRES: NONE; re-verify when TRICARE updates the page.
+
+# Cohort employer verification append packet (15 November 2026)
+
+Checked 2026-11-15, America/Chicago. CONFIRMED means the narrow claim only. Employer identity is first-party evidence. Cohort or partner status is Dean-reported, not federal certification. SkillBridge authorization is read from the official list and is separate from a listed position, a placement or a member's approval. Wording is staged for Dean's approval on branch `claude/partner-employers-20261115`.
+
+## WI5-20261115-JOHNSONVILLE - Johnsonville
+
+Rating: **CONFIRMED**. The company's own careers site confirms its identity, career page and the bounded field description. Dean named the company as one of his partner organizations in chat on 15 November 2026; this is relationship provenance, not government approval.
+
+Source(s):
+- [JOHNSONVILLE](https://careers.johnsonville.com/Johnsonville)
+
+Tier 2 orchestrator browser read on 2026-11-15 (Claude in Chrome, Dean's session). No CAPTCHA was presented or solved. The page lists locations in Sheboygan Falls and Watertown, Wisconsin, in Holton, Kansas and in Hinesburg, Vermont. Its career areas include hourly manufacturing, trucking, supply chain and office support. Only identity and career subject verified. A cookie banner was shown and was not accepted.
+
+Vetting: TIER 3, commercial employer. No rejection flag: no fee for federal benefits, no claims assistance, verifiable corporate identity. Disposition: listed at Dean's direction.
+
+SkillBridge: not on the official list of authorized SkillBridge organizations when checked 2026-11-15. No SkillBridge claim is made.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: All four may explore civilian career information; eligibility for employment, training or SkillBridge is separately determined.   band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset.   excluded: Cohort membership does not establish a current opening, VA training approval, SkillBridge authorization, preferred access or an endorsement.   timing: ACT AVAILABLE NOW
+A2 act: "Open Johnsonville's official careers page to review its role information and application instructions."
+A3 surface(s): RESOURCES Wisconsin guide (cohort companies); Career job search for Wisconsin areas.   token: NONE; direct official link.   sweep trigger: FIRED - local company and cohort identity must stay separate from official SkillBridge program and position approval. The same data now feeds both surfaces.
+A4 cost: NOTHING
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: Manufacturing, trucking, supply chain and office careers. Wisconsin locations in Sheboygan Falls and Watertown.
+Runtime boundary: Employer career information. Confirm openings, location, requirements and any SkillBridge arrangement directly; no job, benefit or approved placement is promised.
+
+## WI5-20261115-TTX - Therma-Tron-X, Inc. (TTX)
+
+Rating: **CONFIRMED**. The company's own website confirms its identity, career page and the bounded field description. Dean identified "TTX" as the Sturgeon Bay company in chat on 15 November 2026, after the railcar company TTX Company was put to him as a candidate and rejected. This is relationship provenance, not government approval.
+
+Source(s):
+- [TTX](https://www.ttxinc.com/careers)
+
+Tier 2 orchestrator browser read on 2026-11-15 (Claude in Chrome, Dean's session). No CAPTCHA was presented or solved. The page is titled "Careers | Therma-Tron-X, Inc.", gives a Sturgeon Bay, WI 54235 address, and lists positions the company often hires for: mechanical, electrical and chemical engineers, project engineer, PLC programmer, sales engineer, industrial electrician, industrial plumber and welder/fitter. Its current openings link goes to jobs.lever.co/ttxinc. Only identity and career subject verified.
+
+Vetting: TIER 3, commercial employer. No rejection flag: no fee for federal benefits, no claims assistance, verifiable corporate identity. Disposition: listed at Dean's direction.
+
+SkillBridge: not on the official list of authorized SkillBridge organizations when checked 2026-11-15. No SkillBridge claim is made.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: All four may explore civilian career information; eligibility for employment, training or SkillBridge is separately determined.   band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset.   excluded: Cohort membership does not establish a current opening, VA training approval, SkillBridge authorization, preferred access or an endorsement.   timing: ACT AVAILABLE NOW
+A2 act: "Open Therma-Tron-X's official careers page to review its role information and application instructions."
+A3 surface(s): RESOURCES Wisconsin guide (cohort companies); Career job search for Wisconsin areas.   token: NONE; direct official link.   sweep trigger: FIRED - local company and cohort identity must stay separate from official SkillBridge program and position approval. The same data now feeds both surfaces.
+A4 cost: NOTHING
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: Engineering, PLC programming, industrial electrician and welder careers in Sturgeon Bay.
+Runtime boundary: Employer career information. Confirm openings, location, requirements and any SkillBridge arrangement directly; no job, benefit or approved placement is promised.
+
+## WI5-20261115-SKILLBRIDGE-AUTHORIZED - Two cohort employers are on the official list of authorized SkillBridge organizations
+
+Rating: **CONFIRMED** for the narrow claim. On 15 November 2026 the official list of authorized SkillBridge organizations included "THE KRIETE GROUP, LLC", MOU expiration date 10/19/2028, and "WISCONSIN MANAGEMENT COMPANY, INC.", MOU expiration date 10/29/2028. On the same day the official opportunity search returned no position for the keywords "Kriete" or "Wisconsin Management".
+
+Source(s):
+- [SB-ORGS](https://www.skillbridge.mil/organizations): the authorized list, 6,762 organizations, read twice. The page states that an authorized organization with nothing in the locations table has been cleared and is either finalizing details with the Services and installation commanders or is in a dormant phase for training and placement.
+- [SB-FINDER](https://www.skillbridge.mil/locations): the opportunity search. Control searches returned 2 positions for "Clarios" and 19 for "Trek", so the zero results are real results.
+- [KRIETE-PRIVACY](https://krietetrucks.com/privacy-policy): names Kriete Group, LLC, 333 E Wisconsin Ave, Milwaukee, as the company behind krietetrucks.com (effective September 25, 2026). This ties the listed name to Kriete Truck Centers.
+- [WMC](https://www.wisconsinmanagement.com/careers): the company's own site carries the name Wisconsin Management Company, Inc.
+
+Tier 2 orchestrator browser reads on 2026-11-15 (Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.
+
+Not on the authorized list the same day: Johnsonville, Therma-Tron-X and Air Tech Heating. The list does show "Airtech Mechanical Services, Inc", MOU expiration date 10/14/2028. Asked whether that is his Air Tech, Dean answered in chat on 15 November 2026: "yes air tech in fon du lac". The SkillBridge claim is still held. Air Tech's own site and its Bryant dealer page use the name Air Tech Heating, Inc., and a web search returns an HVAC company named Airtech Mechanical Services, Inc. in New Bern, North Carolina (search retrieval only). No source ties the listed name to Air Tech Heating, Inc. of Fond du Lac. The note can be added once the organization name on Air Tech's MOU is confirmed against the official list.
+
+This entry supersedes, for these two companies only, the line in the 16 October packet that cohort identity carries no program approval. The listed authorization still does not establish a position, a placement or a member's approval.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: SEPARATING (active component); GUARD/RESERVE considering authorized participation.   band: Condition-triggered program exploration; no fixed separation offset.   excluded: This does not apply to already-separated veterans or to spouses and family, for whom this entry establishes no SkillBridge participation, or to the three cohort employers that are not on the official list.   timing: ACT AVAILABLE NOW
+A2 act: "Ask The Kriete Group or Wisconsin Management Company, and your service Education or Transition Office, whether a SkillBridge placement is available, and check the official opportunity search for a listed position before making plans."
+A3 surface(s): RESOURCES Wisconsin guide (cohort companies); Career job search for Wisconsin areas.   token: NONE; direct official link.   sweep trigger: FIRED - authorized organization, listed position and member approval are three separate facts. The runtime note states the first two and the guide tells the member to ask before planning.
+A4 cost: NOTHING
+EXPIRES: 2028-10-19, the earlier MOU expiration date. Re-check the list and the opportunity search before then, and whenever this block is edited.
+
+Runtime note, Wisconsin Management Company: The official list of authorized SkillBridge organizations includes Wisconsin Management Company, Inc. (checked 15 NOV 2026). No position was listed in the official opportunity search that day.
+Runtime note, Kriete Truck Centers: The official list of authorized SkillBridge organizations includes The Kriete Group, LLC, the company behind Kriete Truck Centers (checked 15 NOV 2026). No position was listed in the official opportunity search that day.
+
+## Assumptions and unresolved material in this packet
+
+- Placement is unchanged. The cohort block still shows only in the Wisconsin guide and on Wisconsin job searches. A regression has asserted since 1 November that the job search block does not appear outside Wisconsin areas. Dean was asked whether to show it on every search and had not answered.
+- The job search block no longer says roles are "coming soon" or "not posted yet". It points to the existing Talk with Dean option. Dean was asked whether candidates should also be sent to the Cadre intake and had not answered, so no intake link was added.
+- UNVERIFIED and not shipped: any named employer's current opening, pay, veteran hiring program or preferred access. None was checked.
+
+## V-2026-11-15-TAMP-RESERVE-ELIGIBILITY - DoD memo on TAMP eligibility for Guard and Reserve members (verified 15 November 2026)
+
+**Status:** CONFIRMED at Tier 2. Wording staged for Dean's approval on branch `claude/loop-01-tamp-reserve-20261115`. Not released at the time of this entry. This entry updates the Guard/Reserve route recorded in V-2026-022; the other TAMP categories in that entry are unchanged.
+
+**Claims:**
+1. A DoD memorandum, subject "Transitional Assistance Management Program Eligibility", marked "*Corrected Copy*", stamped AUG 27 2026 and signed by Anthony J. Tata on the letterhead of the Under Secretary of War for Personnel and Readiness, states that TAMP eligibility applies to Reserve Component Service members who were called or ordered to, or retained on, active duty for at least 31 days under 10 U.S.C. 12304b or a contingency operation as defined in 10 U.S.C. 101(a)(13).
+2. The memo states that this also includes Service members who volunteered for active duty under 10 U.S.C. 12301(d).
+3. The memo states that, to be eligible, a Service member does not need to demonstrate that the service period was substantively connected in some way to a war, a contingency operation, or a national emergency.
+4. The memo states that eligibility will be evaluated in line with the revised policy and that the Assistant Secretary of War for Manpower and Reserve Affairs will ensure coding in DEERS is adjusted to implement the change.
+5. The memo's footnote reads: in the second paragraph, second sentence, "30 days" is amended to read "31 days" to align with 10 U.S.C. 1145(a)(2)(B).
+6. On 15 November 2026 the rendered page tricare.mil/TAMP read "Last Updated 5/15/2025". Its visible eligibility list still gave the Guard/Reserve route as more than 30 consecutive days of active duty served for a preplanned mission or in support of a contingency operation. The page did not mention the memo, 12301(d) or reimbursement, and showed no banner.
+
+**Sources, read 15 November 2026 between 13:30 and 13:40 UTC at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). No CAPTCHA was presented or solved:**
+- The memo itself: https://www.hqrio.afrc.af.mil/Portals/149/Documents/27%20Aug%202026%20%E2%80%93%20Transitional%20Assistance%20Management%20Program%20Eligibility%20Memo.pdf . One page, 562,468 bytes, SHA-256 `43036520f358a692ef1881a88a892cd464811f984da16115bb940c126b7f79dc`. The file is a scanned page with a text layer on the letterhead only, so the body was read from the rendered page in the browser's PDF viewer (viewer title "Under Secretary of War for Personnel and Readiness Memorandum"). Claims 1 to 5.
+- Air Force Reserve, Headquarters Readiness and Integration Organization, "Major Updates to TAMP Eligibility for Reserve Component Airmen", published Sept. 21, 2026: https://www.hqrio.afrc.af.mil/Guidance-Updates/Article/4607608/major-updates-to-tamp-eligibility-for-reserve-component-airmen/ . It states that the Under Secretary issued the policy memorandum on 10 August 2026, summarises it, and links the PDF above. The corrected copy is the document read.
+- https://www.tricare.mil/TAMP , rendered view, each list item checked as visible on the page. Claim 6.
+
+**Tier 1, same day (s2-intel):** tricare.mil/TAMP text matched the rendered view. 10 U.S.C. 1145(a)(2) was read in the govinfo 2024 edition: subparagraph (B) covers a reserve component member separated from active duty to which called or ordered under 12304b or a provision referred to in 101(a)(13)(B), for a period of more than 30 days. Currency of that edition through 2026 was not confirmed. s2-intel found no primary copy of the memo at Tier 1 and correctly rated the lead UNVERIFIED until this Tier 2 read.
+
+**Leads that prompted the check (not the basis for the rating):** Federal News Network, August 2026, and an NVLSP release dated 18 August 2026.
+
+**Wording decisions:**
+- The app keeps "more than 30 consecutive days", which is tricare.mil's wording and was verified in V-2026-022. The memo's corrected "at least 31 days" is the same threshold. "Consecutive" is tricare.mil's word; it appears in neither the memo nor 1145(a)(2)(B).
+- The app repeats the memo's terms "preplanned mission (10 U.S.C. 12304b)", "contingency operation" and "10 U.S.C. 12301(d)" and does not define them. 10 U.S.C. 101(a)(13) was not read for this entry.
+- The app says tricare.mil/TAMP "did not yet show the memo when checked 15 NOV 2026". That sentence is dated and must be rechecked; see the triggers below.
+
+**Not established:** any order type beyond those the memo names; an effective date other than the memo's own date; whether DEERS coding is complete for any service; how each service is applying the memo. The Air Force Reserve notice is one service's field guidance.
+
+**App change (wording staged for Dean's approval):**
+- CRITICAL WINDOWS, TRICARE TRANSITION, eligibility list: the Guard/Reserve item now reads "Guard/Reserve release after more than 30 consecutive days of active duty for a preplanned mission (10 U.S.C. 12304b) or a contingency operation, including members who volunteered for active duty under 10 U.S.C. 12301(d)", followed by a new item "Guard/Reserve members do not need to show that the service was connected to a war, a contingency operation or a national emergency (DoD memo, corrected copy dated 27 AUG 2026)".
+- Same window: the note names the memo, the dated tricare.mil check and the DEERS coding change; the list heading reads "TAMP CATEGORIES IN TRICARE AND DOD GUIDANCE - SERVICE DETERMINES ELIGIBILITY"; two sources added (the memo and the Air Force Reserve notice).
+- Guard/Reserve demobilization checklist and the Navigator corpus DEMOBILIZATION line: the route sentence now includes voluntary active duty under 12301(d) and the memo's no-connection statement.
+- POLICY_CHANGES: new entry dated 27 AUG 2026.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: GUARD/RESERVE; SPOUSE/FAMILY, as covered family members of those Guard and Reserve members.   band: condition-triggered by release from a qualifying period of active duty; none of the seven separation bands.   excluded: This does not apply to active-component members who are separating or retiring, whose TAMP categories are unchanged, or to National Guard duty under Title 32 section 502(f), which the memo does not address.   timing: ACT AVAILABLE NOW.
+A2 act: "Ask your service personnel office to determine your TAMP eligibility under the DoD memo dated 27 August 2026 and verify the DEERS record in milConnect."
+A3 surface(s): CRITICAL WINDOWS (TRICARE TRANSITION list, note, sources); Guard/Reserve module demobilization checklist; Navigator CORPUS; POLICY_CHANGES.   token: [CRITICAL WINDOWS]   sweep trigger: FIRED successor signal. The memo calls itself a revised policy, and the app's list carried the earlier route wording. Every surface with that wording was changed in the same ship: the list item, the demobilization line and the Navigator corpus line. A regression now fails if the superseded wording returns.
+A4 cost: MONEY
+EXPIRES: NONE for the memo. The dated tricare.mil sentence expires when tricare.mil/TAMP changes. Recheck triggers: the "Last Updated" stamp on tricare.mil/TAMP moves past 5/15/2025; a TRICARE Policy Manual or Federal Register change on TAMP eligibility; a superseding memo; any service notice that reads the memo differently.
+
+## V-2026-11-15-TAMP-REIMBURSEMENT - Reimbursement request for TAMP denials on or after 24 April 2020 (verified 15 November 2026)
+
+**Status:** CONFIRMED at Tier 2. Wording staged for Dean's approval on branch `claude/loop-01-tamp-reserve-20261115`. Not released at the time of this entry.
+
+**Claims:**
+1. The memo in V-2026-11-15-TAMP-RESERVE-ELIGIBILITY states that retroactive eligibility applies only if the Service member's TAMP benefits were denied on or after April 24, 2020.
+2. It states that Service members found ineligible for TAMP on or after April 24, 2020, because their activation was not considered as being under a provision of law referred to in 10 U.S.C. 101(a)(13), or their service was not deemed connected in some way to a war, a contingency operation, or a national emergency, may seek reimbursement for civilian expenses for health coverage and care, including premiums and out-of-pocket costs, incurred by themselves and their covered family members, if those expenses would not have been incurred had they been found eligible for TAMP benefits.
+3. It states that, to request reimbursement, Service members should email the Defense Health Agency at dha.san-diego.healthcare-ops.mbx.thp-eligibility-adj@health.mil .
+4. The Air Force Reserve notice of Sept. 21, 2026 advises eligible members to gather orders, separation documents, and civilian healthcare receipts or Explanations of Benefits.
+
+**Sources:** the same two documents and the same Tier 2 read as V-2026-11-15-TAMP-RESERVE-ELIGIBILITY. Claims 1 to 3 are the memo's own text. Claim 4 is Air Force Reserve field guidance; other services' instructions were not read.
+
+**Not established:** a claim form, a deadline for requests, a processing time, or the documents the Defense Health Agency requires. The memo names only the mailbox. The address was read from the memo and matches the address in the Air Force Reserve notice character for character.
+
+**App change (wording staged for Dean's approval):**
+- CRITICAL WINDOWS, TRICARE TRANSITION, action steps: new second step "Guard/Reserve found ineligible for TAMP on or after 24 APR 2020 because the activation was not treated as qualifying: email the Defense Health Agency at dha.san-diego.healthcare-ops.mbx.thp-eligibility-adj@health.mil to request reimbursement of civilian health coverage and care costs for you and covered family members, with your orders, separation documents and receipts or Explanations of Benefits".
+- The Guard/Reserve demobilization line points to that step. The POLICY_CHANGES entry and the Navigator corpus carry the same request and address.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: GUARD/RESERVE; ALREADY SEPARATED, as former Reserve Component members; SPOUSE/FAMILY, whose covered costs the member's request may include.   band: condition-triggered by a past denial; for former members, Post-Separation at any day-offset.   excluded: This does not apply to members whose TAMP was denied before 24 April 2020, or to denials for reasons other than the two the memo names.   timing: ACT AVAILABLE NOW.
+A2 act: "Email the Defense Health Agency at dha.san-diego.healthcare-ops.mbx.thp-eligibility-adj@health.mil to request reimbursement of civilian health coverage and care costs if you were found ineligible for TAMP on or after 24 April 2020 because your activation was not treated as qualifying, and include your orders, separation documents and receipts or Explanations of Benefits."
+A3 surface(s): CRITICAL WINDOWS (TRICARE TRANSITION action steps); POLICY_CHANGES; Navigator CORPUS; Guard/Reserve module pointer.   token: [CRITICAL WINDOWS]   sweep trigger: NONE. The app carried no earlier statement on TAMP reimbursement.
+A4 cost: MONEY
+EXPIRES: NONE stated by the memo. Recheck on any Defense Health Agency page, form or deadline for these requests, and on any change to the mailbox.

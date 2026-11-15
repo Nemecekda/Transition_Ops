@@ -35,6 +35,23 @@ function requireAbsent(haystack, needle, label) {
 check(occurrences(index, "function calcVACombined(") === 1,
   "calcVACombined has one canonical implementation");
 
+// Cohort employers: identity links, and a SkillBridge note only where the official list shows the company.
+// WI5-20261115-JOHNSONVILLE, WI5-20261115-TTX, WI5-20261115-SKILLBRIDGE-AUTHORIZED.
+const cohortStart = index.indexOf("const TOPS_WISCONSIN_COHORT_EMPLOYERS = ") + "const TOPS_WISCONSIN_COHORT_EMPLOYERS = ".length;
+const cohort = JSON.parse(index.slice(cohortStart, index.indexOf("\n", cohortStart)).replace(/;\s*$/, ""));
+check(JSON.stringify(cohort.map((item) => item.id)) === JSON.stringify(["WI2-20261016-AIRTECH", "WI2-20261016-WMC", "WI2-20261016-KRIETE", "WI5-20261115-JOHNSONVILLE", "WI5-20261115-TTX"]),
+  "cohort lists the five employers Dean named, in order");
+check(JSON.stringify(cohort.map((item) => item.url)) === JSON.stringify(["https://airtechhtg.com/careers/", "https://www.wisconsinmanagement.com/careers", "https://krietetrucks.com/careers/", "https://careers.johnsonville.com/Johnsonville", "https://www.ttxinc.com/careers"]),
+  "each cohort employer links to its own careers page");
+check(JSON.stringify(cohort.filter((item) => item.skillbridge).map((item) => item.id)) === JSON.stringify(["WI2-20261016-WMC", "WI2-20261016-KRIETE"]),
+  "only the two organizations on the official list carry a SkillBridge note");
+check(cohort.filter((item) => item.skillbridge).every((item) => /official list of authorized SkillBridge organizations/.test(item.skillbridge) && /checked 15 NOV 2026/.test(item.skillbridge) && /No position was listed in the official opportunity search that day/.test(item.skillbridge) && item.skillbridgeVerification === "WI5-20261115-SKILLBRIDGE-AUTHORIZED"),
+  "each SkillBridge note states the list, the check date and the empty opportunity search");
+check(cohort.every((item) => occurrences(verificationLog, "## " + item.verification + " ") === 1),
+  "every cohort employer has exactly one verification record");
+check(occurrences(index, "roles coming soon") === 0 && occurrences(index, "are not posted yet") === 0,
+  "the job search block no longer promises or denies posted roles");
+
 const functionMatch = index.match(
   /function calcVACombined\(conditions\) \{[\s\S]*?\n\}\n\nfunction calcReadiness/
 );
@@ -254,5 +271,48 @@ const mainRecords = verificationLog.slice(verificationLog.indexOf(mainProvenance
   check(occurrences(mainRecords, "## " + recordId + " —") === (recordId === "V-2026-017" ? 2 : 1),
     recordId + " published record and any amendment remain within their main source");
 });
+
+// TRICARE pharmacy copays, their exceptions and the Prime travel distance.
+// V-2026-11-14-TRICARE-COPAY-EXCEPTIONS and V-2026-11-14-PRIME-TRAVEL-NONARMED.
+const tricareCard = index.slice(index.indexOf('{id:"r-9-tri26"'), index.indexOf('{id:"r-6-vettec"'));
+check(tricareCard.includes('"Retail (30-day): $16 generic / $48 brand-name"') && tricareCard.includes('"Home delivery (90-day): $14 generic / $44 brand / $85 non-formulary"'),
+  "TRICARE card keeps the general copays");
+check(tricareCard.includes('"TRICARE lists these copays for calendar years 2026 and 2027"'),
+  "TRICARE card states the calendar years its copays cover");
+check(tricareCard.includes("active duty service members, and active duty family members in TRICARE Prime Remote in the U.S., pay $0 for covered drugs at military, retail network and home delivery pharmacies"),
+  "TRICARE card names the two groups that pay $0");
+check(tricareCard.includes("medically retired service members, their family members, and survivors of active duty service members pay lower copays: retail (30-day) $10 generic / $24 brand-name / $50 non-formulary; home delivery (90-day) $0 generic / $20 brand-name / $49 non-formulary"),
+  "TRICARE card carries the frozen copays for medically retired members, their families and survivors");
+check(tricareCard.includes('link:"https://www.tricare.mil/Costs/PharmacyCosts"') && index.includes('src: "TRICARE.mil \\u2014 Pharmacy Costs", url: "https://www.tricare.mil/Costs/PharmacyCosts"'),
+  "TRICARE card and policy entry link to the page that shows the copay figures");
+check(occurrences(index, "Medically retired members, their families, and survivors of active duty service members pay less.") === 2,
+  "both TRICARE copay summaries say who pays less");
+check(occurrences(index, "(PHS and NOAA families and retirees remain at 100 miles)") === 4 && occurrences(index, "(retirees remain at 100 miles)") === 0,
+  "all four Prime travel lines keep PHS, NOAA and retiree families at 100 miles");
+
+// TAMP Guard/Reserve eligibility and the reimbursement request.
+// V-2026-11-15-TAMP-RESERVE-ELIGIBILITY and V-2026-11-15-TAMP-REIMBURSEMENT.
+const tampDha = "dha.san-diego.healthcare-ops.mbx.thp-eligibility-adj@health.mil";
+const tampWindow = index.slice(index.indexOf('id:"tricare", num:6'), index.indexOf('{"label":"milConnect BWE"'));
+check(tampWindow.length > 2000 && tampWindow.includes('"Guard/Reserve release after more than 30 consecutive days of active duty for a preplanned mission (10 U.S.C. 12304b) or a contingency operation, including members who volunteered for active duty under 10 U.S.C. 12301(d)"'),
+  "TAMP list names the 12304b, contingency and 12301(d) routes");
+check(tampWindow.includes('"Guard/Reserve members do not need to show that the service was connected to a war, a contingency operation or a national emergency (DoD memo, corrected copy dated 27 AUG 2026)"'),
+  "TAMP list carries the memo's no-connection statement");
+check(occurrences(index, 'for a preplanned mission or contingency operation"') === 0 && occurrences(index, "preplanned mission or contingency, and") === 0 && occurrences(navigator, "preplanned mission or contingency, and") === 0,
+  "no surface keeps the superseded Guard/Reserve TAMP route wording");
+check(tampWindow.includes("found ineligible for TAMP on or after 24 APR 2020 because the activation was not treated as qualifying: email the Defense Health Agency at " + tampDha),
+  "TAMP window gives the reimbursement request and its 24 APR 2020 look-back");
+check(tampWindow.includes("tricare.mil/TAMP did not yet show the memo when checked 15 NOV 2026") && tampWindow.includes("this list is not a self-certification"),
+  "TAMP note dates the tricare.mil check and keeps the service determination");
+check(tampWindow.includes('{"label":"TAMP eligibility","url":"https://www.tricare.mil/TAMP"},{"label":"DoD TAMP eligibility memo, 27 AUG 2026 (PDF)","url":"https://www.hqrio.afrc.af.mil/Portals/149/Documents/27%20Aug%202026%20%E2%80%93%20Transitional%20Assistance%20Management%20Program%20Eligibility%20Memo.pdf"}'),
+  "TAMP window links the memo beside the TRICARE page");
+check(index.includes("including voluntary active duty under 10 U.S.C. 12301(d), and more than 30 consecutive days of qualifying National Guard Title 32 section 502(f) duty. A DoD memo (corrected copy dated 27 AUG 2026) says you do not need to show a connection to a war, contingency operation or national emergency.") &&
+  navigator.includes("including voluntary active duty under 10 U.S.C. 12301(d), and more than 30 consecutive days of qualifying National Guard Title 32 section 502(f) duty. A DoD memo (corrected copy dated 27 AUG 2026) says Guard/Reserve members do not need to show the service was connected to a war, contingency operation or national emergency."),
+  "Guard demobilization line and Navigator corpus state the same TAMP routes");
+check(occurrences(index, tampDha) === 2 && occurrences(navigator, tampDha) === 1 && occurrences(index, "thp-eligibility-adj@") === 2 && occurrences(navigator, "thp-eligibility-adj@") === 1,
+  "the Defense Health Agency address is spelled the same on every surface");
+check(index.includes('{ date: "27 AUG 2026", title: "TAMP: Guard/Reserve eligibility clarified, with reimbursement for past denials"') &&
+  occurrences(verificationLog, "## V-2026-11-15-TAMP-RESERVE-ELIGIBILITY ") === 1 && occurrences(verificationLog, "## V-2026-11-15-TAMP-REIMBURSEMENT ") === 1,
+  "TAMP policy entry exists with one verification record per finding");
 
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");
