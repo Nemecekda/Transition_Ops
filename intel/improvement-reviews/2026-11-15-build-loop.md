@@ -40,7 +40,7 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 7 | Start-date planner | Know and state when civilian work can start | Device-local | LOCAL SYNTHETIC TEST | Queued |
 | 8 | Starting points for every state | Find the state veterans agency and job bank | None | WATCH until S2 verifies the links | Queued |
 | 9 | JST and VMET reading beside the DD214 | Turn records into resume evidence | Device-local read; member-approved excerpts to AI | LOCAL SYNTHETIC TEST; design packet first under `resume-drafter-maintenance` | Queued |
-| 10 | What's New and the verified stamp | See what changed since the last visit | None | WATCH: needs Dean's ruling | Parked |
+| 10 | What's New and the verified stamp | See what changed since the last visit | None | ADOPT on Dean's order of 15 November, 10:30 | Cycle 9 |
 | 11 | Best Military Resume link | Resume and interview practice | Third-party account | REJECT for now: s2-vetting found no verifiable legal entity; reopens on Dean's outreach to the founder | Parked |
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
 | 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below |
@@ -177,3 +177,14 @@ Two design corrections inside the cycle, both caught by the existing Home action
 Not done: the calendar export does not carry this reminder yet. `guard-reserve-regression` cannot run from a fresh clone because it reads commit `b9b11a2`, which the remote does not have.
 
 Disposition: ADOPT. Content checks and a nine-point day ladder were added. Gate evidence and the hosted preview check are in the pull request.
+
+## Cycle 9 - What's New, a verified stamp with a time, and the seven Medallion employers
+Dean's order, 10:30 Central: "lets add whats new and verified with a time stamp, the seven medallion employers and keep building".
+
+What's New: one entry, v99, dated 15 NOV 2026, covering today's changes. The app version moves with it because the release check requires the two to match.
+
+Verified stamp: the full-review date stays at 1 AUG 2026, because no full review has happened since. A second stamp carries the newest primary-source read with its time, 15 NOV 2026, 16:13 UTC. A content check ties that stamp to the newest dated entry in the verification log. Record: V-2026-11-15-VERIFIED-STAMP.
+
+Medallion employers: the Wisconsin guide now names the seven 2026 recipients as the Department of Labor lists them, with a caption that gives the award year and the read date. s2-vetting screened all seven: 5 CLEAR, 2 CLEAR WITH NOTE, 0 HOLD. The listing expires when the 2027 award year posts. Record: V-2026-11-15-HIREVETS-MEDALLION-NAMES.
+
+Also in flight: issue #226 from the J1 scan points at the CY 2027 TRICARE cost notice, effective 1 JAN 2027. s2-intel rated its figures PROBABLE and held them for a Tier 2 read. That is the next cycle.

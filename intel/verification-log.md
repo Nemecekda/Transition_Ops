@@ -3441,3 +3441,50 @@ A2 act: "File VA Form 21-526EZ on VA.gov so VA receives it before the first anni
 A3 surface(s): reminders (Home actions, banner, next action, timed list).   token: NONE.   sweep trigger: FIRED confusable-adjacent. The app also carries the BDD filing window of 180 to 90 days before separation and VA dental's 180 days after it. This reminder names the one-year mark and its own form and says what it does not cover.
 A4 cost: A LOST OR FORECLOSED ELECTION
 EXPIRES: NONE. Recheck when the "Last updated" date on VA.gov's effective-date page changes.
+
+## V-2026-11-15-HIREVETS-MEDALLION-NAMES - Naming the seven 2026 Wisconsin recipients (15 November 2026)
+
+**Status:** Commander ruling. Dean ordered at 10:30 Central on 15 November 2026 that the app name the seven Wisconsin employers. This replaces the link-only design choice recorded in V-2026-11-15-HIREVETS-MEDALLION. Wording staged for his approval on branch `claude/loop-09-whats-new-verified-20261115`. Not released at the time of this entry.
+
+**Source for the names:** https://www.hirevets.gov/awardees_table?field_employer_state_value=51 , read at Tier 2 at 14:36 UTC the same day. Names follow the Department of Labor rows. The city for row 3 is written "McFarland"; the list shows "Mcfarland".
+
+**Vetting (s2-vetting, same day, web research): 5 CLEAR, 2 CLEAR WITH NOTE, 0 HOLD.** No closure, dissolution, fee to job seekers, pay-to-play model, fraud finding or identity mismatch was found for any of the seven. Limits: the Wisconsin DFI corporate search was not usable, so existence rests on company sites, federal registries and directories; the enforcement search was shallow for three of the seven.
+1. Salute Mission Critical, LLC, Franklin, Gold: CLEAR.
+2. REDI Transports, Green Bay, Platinum: CLEAR WITH NOTE. List the name only and add no description. A different entity, "REDI Transport Inc", also exists.
+3. U.S. Vet General Contracting, LLC, McFarland, Gold: CLEAR.
+4. ITU AbsorbTech, New Berlin, Gold: CLEAR WITH NOTE, for the record only. A third-party mirror of OSHA data shows a 2017 inspection at the company's Neenah facility with two other-than-serious citations. It is old, concerns another facility and changes nothing the app displays.
+5. Vocational Rehabilitation Specialists Inc, River Falls, Gold: CLEAR. It operates in several states; River Falls is the city on the Department of Labor row.
+6. Sakom Services WI LLC, Shawano, Platinum: CLEAR.
+7. Outdoor Services of the Coulee Region Inc., doing business as Outdoor Services, Inc., West Salem, Gold: CLEAR.
+
+**App change (wording staged for Dean's approval):** in the Wisconsin guide's HIRE Vets Medallion section, after the boundary note:
+- Caption: "The Department of Labor's list showed these seven Wisconsin recipients for the 2026 award year when read on 15 NOV 2026. The official list is the source and can change."
+- A list of seven lines, each as name, city and award level, for example "REDI Transports, Green Bay (Platinum)".
+- No description of any business, no link to an employer's own site and no claim that any of them is hiring.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit 30 NOV 2027
+A1 population: All four may read a public federal award list; no eligibility is involved.   band: condition-triggered by a job search in Wisconsin.   excluded: A name on the list establishes no opening, interview, job, hiring preference or SkillBridge approval.   timing: ACT AVAILABLE NOW
+A2 act: "Check the current postings of any listed employer that fits you, and confirm the list on the Department of Labor's site."
+A3 surface(s): Wisconsin guide, employer block, HIRE Vets Medallion section.   token: NONE.   sweep trigger: FIRED confusable-adjacent. Named award recipients now sit above the VBS cohort companies. The caption says who listed them and when, and the cohort keeps its own heading and its own disclosure.
+A4 cost: NOTHING
+EXPIRES: 30 NOV 2027, or when the Department of Labor posts the 2027 award year, whichever comes first. The names and the caption must be re-read then.
+
+## V-2026-11-15-VERIFIED-STAMP - What the app's verified stamps mean, and a What's New entry (15 November 2026)
+
+**Status:** Commander ruling. Dean ordered at 10:30 Central on 15 November 2026: add What's New and a verified stamp with a time. Wording staged for his approval on the same branch. Not released at the time of this entry.
+
+**Finding:** `DATA_VERIFIED` reads "1 AUG 2026" in three places. Earlier entries in this log held it at 1 AUG on purpose, because each of them verified a few rules and never the whole dataset. Moving that date to today would claim a full review that has not happened.
+
+**Change:**
+- `DATA_VERIFIED` stays "1 AUG 2026". It is the date of the last full dataset review and moves only with one.
+- New `DATA_LATEST_CHECK` is "15 NOV 2026, 16:13 UTC": the newest primary-source read recorded in this log, the govinfo.gov read in V-2026-11-15-VA-CLAIM-ONE-YEAR.
+- Critical Windows intro: "Full data review 1 AUG 2026. Latest source check 15 NOV 2026, 16:13 UTC."
+- Policy changes panel heading: "SOURCED · LATEST CHECK 15 NOV 2026". Its newest entry, the TAMP memo, was verified on that date.
+- The claims-help directory footnote keeps "Last verified: 1 AUG 2026", because that directory was not re-read.
+- `APP_VERSION` moves from v98 to v99 with a new first What's New entry dated 15 NOV 2026. The release check requires the two to match.
+
+**Guard:** the content regression now fails when the newest dated entry in this log is newer than `DATA_LATEST_CHECK_DATE`, so the stamp cannot fall behind the log without a failing test.
+
+**Open for Dean:** a full dataset review would let `DATA_VERIFIED` itself move. That is an S2 sweep of every figure and is not part of this change.
+
+IMPACT: NOT A BENEFITS FINDING. This entry records what two of the app's own statements mean. No population, act or cost applies.

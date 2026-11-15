@@ -354,8 +354,15 @@ check(occurrences(index, "const TOPS_WISCONSIN_MEDALLION = ") === 1 && index.inc
 check(index.includes("This federal award is separate from Wisconsin's Vets Ready recognition. Employers apply for it and attest to the information they submit, and the Department of Labor checks for violations of veteran-related labor laws. An award does not establish a current opening, job quality for every worker, hiring preference, or SkillBridge approval.") &&
   index.includes('React.createElement("section", { id: "tops-wisconsin-hire-vets", style: { padding: "8px 0 14px" } }'),
   "Wisconsin note separates the federal award from Vets Ready and states how it is verified and what it does not establish");
-check(!/Salute Mission Critical|REDI Transports|U\.S\. Vet General Contracting|ITU AbsorbTech|Vocational Rehabilitation Specialists|Sakom Services|Outdoor Services/.test(index),
-  "the app names no award recipient; the official list is the source");
+{
+  const medallionLine = (index.match(/const TOPS_WISCONSIN_MEDALLION = [^\n]*\n/) || [""])[0];
+  const recipients = ["Salute Mission Critical, LLC", "REDI Transports", "U.S. Vet General Contracting, LLC", "ITU AbsorbTech", "Vocational Rehabilitation Specialists Inc", "Sakom Services WI LLC", "Outdoor Services of the Coulee Region Inc., doing business as Outdoor Services, Inc."];
+  check(recipients.every(function (name) { return occurrences(index, '"name":"' + name + '"') === 1 && medallionLine.includes('"name":"' + name + '"'); }) && occurrences(medallionLine, '"name":"') === 7,
+    "the seven 2026 Wisconsin recipients are named once each, as the Department of Labor rows spell them, and only in the Wisconsin list");
+  check(medallionLine.includes('"recipientsCaption":"The Department of Labor\'s list showed these seven Wisconsin recipients for the 2026 award year when read on 15 NOV 2026. The official list is the source and can change."') && index.includes('{ id: "tops-wisconsin-hire-vets-recipients", "aria-describedby": "tops-wisconsin-hire-vets-caption"'),
+    "the recipient list carries its issuer, award year and read date, and says the official list is the source");
+}
+check(occurrences(verificationLog, "## V-2026-11-15-HIREVETS-MEDALLION-NAMES ") === 1, "naming the recipients carries its own verification record");
 check(occurrences(verificationLog, "## V-2026-11-15-HIREVETS-MEDALLION ") === 1, "HIRE Vets Medallion links carry one verification record");
 
 // SkillBridge feed freshness: the hand-kept feed states its age and points to the official list.
@@ -404,5 +411,22 @@ check(occurrences(index, "var RUNG_CLAIM_YEAR_WINDOW = { start: -270, end: -360 
 check(index.indexOf('{id:"r-p6",mo:-6,') < index.indexOf('{id:"r-p10-claim",mo:-10,') && index.indexOf('{id:"r-p10-claim",mo:-10,') < index.indexOf('{id:"r-p12",mo:-12,') && occurrences(index, '"r-p10-claim"') === 6 && index.includes('rung.id !== "r-p10-claim" && !bddWindowCard') && index.includes('rung.id === "r-p10-claim" ? RUNG_CLAIM_YEAR_WINDOW.start : rungTriggerDay(rung)'),
   "the reminder sits between the month 6 and month 12 reminders, and its timing note follows its own window");
 check(occurrences(verificationLog, "## V-2026-11-15-VA-CLAIM-ONE-YEAR ") === 1, "the one-year claim reminder carries one verification record");
+
+// What's New entry and the two verified stamps. V-2026-11-15-VERIFIED-STAMP.
+check(occurrences(index, 'const APP_VERSION = "v99";') === 1 && /const WHATS_NEW = \[\n  \{ v: "v99", date: "15 NOV 2026", note: "TAMP for Guard and Reserve: a DoD memo clarified who qualifies/.test(index),
+  "the app version and the first What's New entry are both v99, dated 15 NOV 2026");
+check(occurrences(index, 'const DATA_VERIFIED = "1 AUG 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK_DATE = "15 NOV 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 16:13 UTC";') === 1,
+  "the full-review date is unchanged and the latest-check stamp carries a date and a time");
+check(index.includes('or both. Full data review " + DATA_VERIFIED + ". Latest source check " + DATA_LATEST_CHECK + "."') && index.includes('SOURCED \\u00B7 LATEST CHECK " + DATA_LATEST_CHECK_DATE)') && occurrences(index, '"Last verified: " + DATA_VERIFIED + ""') === 1 && !index.includes('VERIFIED " + DATA_VERIFIED)'),
+  "Critical Windows shows both stamps, the policy panel shows the latest check, and the directory footnote keeps the full-review date");
+{
+  const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  const dated = Array.from(verificationLog.matchAll(/^## V-(\d{4})-(\d{2})-(\d{2})-/gm)).map(function (m) { return m[1] + m[2] + m[3]; }).sort();
+  const newest = dated[dated.length - 1] || "";
+  const stamp = newest ? String(Number(newest.slice(6, 8))) + " " + months[Number(newest.slice(4, 6)) - 1] + " " + newest.slice(0, 4) : "";
+  check(stamp === "15 NOV 2026" && index.includes('const DATA_LATEST_CHECK_DATE = "' + stamp + '";'),
+    "the latest-check date equals the date of the newest dated entry in the verification log");
+}
+check(occurrences(verificationLog, "## V-2026-11-15-VERIFIED-STAMP ") === 1, "the verified stamps carry one verification record");
 
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");
