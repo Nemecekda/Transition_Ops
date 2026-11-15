@@ -12205,6 +12205,8 @@ function App() {
           )
         ),
 
+        separationDate && React.createElement("button", { id: "tops-home-calendar-export", type: "button", onClick: function() { if (downloadDeadlineICS(separationDate, window.__trackEvent)) showToast("Calendar file downloaded. Import it, then check the reminder settings."); else showToast("Could not create the calendar file. Check your transition date and try again."); }, style: { width: "100%", minHeight: 44, marginBottom: 12, padding: "13px", background: "none", border: "1px dashed " + C.gold, borderRadius: 8, color: C.gold, fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1.5, cursor: "pointer" } }, "\uD83D\uDCC5 ADD MY DEADLINES TO CALENDAR (.ICS)"),
+
         // Share + VBS
         React.createElement("button", { onClick: function() {
           if (navigator.share) { navigator.share({ title: "Transition OPS", text: "Military career tools \u2014 translate your training into civilian careers.", url: window.location.href }); }
