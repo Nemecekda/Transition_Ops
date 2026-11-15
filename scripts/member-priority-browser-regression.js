@@ -51,6 +51,7 @@ for(const [label,pathway,action,destination] of [['Find work soon','change','Sea
  assert.equal(await ev('Array.from(document.getElementById("tops-loop-title").closest("section").querySelectorAll("button")).some(n=>n.textContent==="Continue my career work")'),false);
  assert.equal(await ev('topsMemberPriorityContinuation({...JSON.parse(localStorage.getItem("tops_career_action_v1")),text:"Custom action"},JSON.parse(localStorage.getItem("tops_personal_guide_v1")))'),null);
 }
-assert.equal(await ev('sessionStorage.length'),0);assert.deepEqual(errors,[]);assert.equal(requests.some(request=>request.includes('/.netlify/functions/')),false);
+assert.equal(await ev('sessionStorage.length'),0);assert.deepEqual(errors,[]);// Job search asks the federal jobs function whether it is set up: a GET with a fixed query and no body. Nothing else may reach a function.
+assert.deepEqual(requests.filter(request=>request.includes('/.netlify/functions/')&&request!==url+'/.netlify/functions/federal-jobs?config=1 '),[]);
 console.log('PASS adaptive priorities: immediate no-profile routes, visit continuity/reload clear, smaller step, human help/introduction resume, custom action protection, completion/reflection and mobile reflow');
 }finally{if(chrome)await h.stopChrome(chrome);await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e);process.exit(1);});

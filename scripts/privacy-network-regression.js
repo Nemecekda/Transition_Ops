@@ -519,7 +519,16 @@ class CdpClient {
         return;
       }
       const handlers = this.listeners.get(message.method) || [];
-      handlers.forEach(function(handler) { handler(message.params || {}); });
+      handlers.forEach(function(handler) {
+        const outcome = handler(message.params || {});
+        // A paused request can be gone before its continue call lands, at a navigation or at teardown. Chrome then
+        // answers "Invalid InterceptionId", or the call times out. Nothing is left to continue, so that one outcome
+        // is ignored. Every other failure in an async handler still ends the run.
+        if (outcome && typeof outcome.then === "function") outcome.then(null, function(error) {
+          if (/Invalid InterceptionId|CDP timeout for Fetch\./.test(String(error && error.message))) { console.error("ignored interception race: " + error.message); return; }
+          throw error;
+        });
+      });
     });
   }
 

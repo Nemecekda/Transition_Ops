@@ -473,3 +473,31 @@ Browser check on the built files: 10 checks pass across a share sheet, a clipboa
 Gate: structural gate exit 0. Six semantic commands, the public build and six Home regressions pass, 13 lines in all.
 
 Still open on this subject: the page title and the link preview card describe the app in their own words, and those claims have not been checked against the build.
+
+## Cycle 21 - Test repairs, batch 1
+Order: Dean's 14:18 "fix them all". Tests only. No app file changed, so the cache stays at v339.
+
+Each failure was confirmed and diagnosed before its script was edited. No assertion was loosened.
+
+| Script | What was wrong | Repair |
+|---|---|---|
+| `member-priority-browser` | It required zero requests to a server function. Job search sends one content-free check, `federal-jobs?config=1`, twice in the run and nothing else. | The rule accepts that one address with no body, and nothing else. |
+| `member-action-hierarchy-browser` | It capped a saved step's heading at 32 px. The 29 October design (`179e987`) sets 29 px on phones and 3.6vw up to 40 px above them. | The size is pinned exactly at each width, and the variant is pinned too. |
+| `personal-step-calendar-browser` | It failed about 1 run in 6. A render between its storage patch and its click used up the reads it counts. A debug copy showed the count at 2 before the click. | The patch and the click run in one evaluation, in both places. 18 of 18 runs pass. |
+| `wisconsin-pathway-browser` | It reloaded right after pressing Home, before Home's address settled. | It waits for Home's address first. 6 of 6 runs pass. |
+| Shared browser client | 91 of the 94 browser scripts had no guard for the request-interception race, so any of them could fail on it. | An async handler whose only failure is that race no longer ends the run. Each ignored outcome is written to the error stream. Every other failure still ends the run. |
+| 13 scripts | Their saved-bytes snapshot watched `tops_member_jobs_v1`, a key the app has never written. | Each now watches `tops_my_jobs_v1`. All 13 still pass. |
+
+The shared client lives in `privacy-network-regression.js`, which is also a gate command. Its own assertions are unchanged.
+
+Evidence: structural gate exit 0. Six semantic commands and the public build pass. Of 84 scripts swept, 83 pass.
+
+Found and left for the next batch:
+- `dd214-upload-browser` stalls loading the upload screen about 1 run in 6. It did so before this change too, 1 run in 6 on the cycle 20 tree.
+- `personal-guide-browser` failed on the race in the baseline. With the race handled it fails on a missing control at its line 94.
+- `career-action-browser` is the same story. It now fails on a wait named "keyboard disclosure".
+- `counselor-preparation` pins a SHA-256 of everything above `TOPS_GAP_KEY` against a 20 September commit. It is a point-in-time preservation proof, and every later approved change in that span breaks it. Whether to keep re-pinning it or file it as historical evidence is Dean's call.
+- `member-loop-browser` opens with the welcome screen that #163 replaced. It needs its first block rewritten.
+- 11 Career scripts fail on one control, "Open my current career plan". One cause may repair many.
+
+Standing after this batch: 124 scripts, 84 pass, 40 fail. The 40 are 30 Career scripts and 10 others, two of which cannot run in this workspace.
