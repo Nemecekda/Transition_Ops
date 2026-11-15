@@ -3310,3 +3310,92 @@ A2 act: "Open the FRONTLINE Cadre intake form to give Veteran Bridge Solutions y
 A3 surface(s): recruiter contact section in Career job search, Career and the Wisconsin guide.   token: NONE; direct link.   sweep trigger: FIRED confusable-adjacent. The section now holds three ways to reach the recruiter with different consent: booking carries no recruiting permission, email needs the permission box, and the intake form takes consent on the VBS site. The note says the form is on a separate VBS site and points to its privacy notice.
 A4 cost: NOTHING
 EXPIRES: NONE. Recheck when the intake form or its privacy notice changes; the notice read here is effective June 29, 2026.
+
+## V-2026-11-15-HIREVETS-MEDALLION - HIRE Vets Medallion Award recipient list, U.S. Department of Labor (verified 15 November 2026)
+
+**Status:** CONFIRMED. The program description was read at Tier 1 and the recipient list at Tier 2. Wording staged for Dean's approval on branch `claude/loop-04-hire-vets-medallion-20261115`. Not released at the time of this entry.
+
+**Claims:**
+1. The HIRE Vets Medallion Award is run by the U.S. Department of Labor's Veterans' Employment and Training Service under the HIRE Vets Act of 2017, and it recognizes employer efforts to recruit, employ and retain veterans.
+2. Employers apply for the award. Verification includes the applicant's self-attestation and a Department of Labor check for violations of veteran-related labor laws.
+3. https://www.hirevets.gov/awardees_table is the official recipient list. It filters by award year and by state. Opened with no filter value it showed 2026 recipients, the first year the filter offers.
+4. https://www.hirevets.gov/awardees_table?field_employer_state_value=51 opens the list filtered to Wisconsin. On the read below it showed 2026 selected and seven Wisconsin recipients.
+
+**Sources, read 15 November 2026:**
+- https://www.hirevets.gov/about . Tier 1 (WebFetch), about 14:35 UTC. The page gives its last update as January 28, 2026. Claims 1 and 2.
+- https://www.hirevets.gov/awardees_table . Tier 2 (orchestrator browser, Claude in Chrome, Dean's session), 14:36 UTC. Claim 3. The form sends `created` for the award year and `field_employer_state_value` for the state. The year filter listed 2026 first with value 1; the state filter listed 56 values, with Wisconsin as value 51.
+- https://www.hirevets.gov/awardees_table?field_employer_state_value=51 . Tier 2, 14:36 UTC. Claim 4.
+
+**Recipients shown for Wisconsin, 2026, on that read (kept here as evidence; the app names none of them):** Salute Mission Critical, LLC (Franklin, Large, Gold); REDI Transports (Green Bay, Small, Platinum); U.S. Vet General Contracting, LLC (McFarland, Small, Gold); ITU AbsorbTech (New Berlin, Large, Gold); Vocational Rehabilitation Specialists Inc (River Falls, Medium, Gold); Sakom Services WI LLC (Shawano, Small, Platinum); Outdoor Services of the Coulee Region Inc., doing business as Outdoor Services, Inc. (West Salem, Small, Gold).
+
+**Design choice:** the app links to the official list and names no recipient. This follows the Vets Ready entry (WI3-20261016-VETS-READY), which links to the state's list and names no employer. Naming a commercial employer inside the app is an inclusion decision for `s2-vetting` and Dean. A link to a federal list needs no such decision.
+
+**Vetting:** TIER 1, .gov. The linked resource is a U.S. Department of Labor site.
+
+**Link behavior, for maintenance:** the year filter uses position values, and value 1 was 2026 on this read. The app's links carry no year value and open on the list's own default. The Wisconsin link depends on state value 51.
+
+**App change (wording staged for Dean's approval):**
+- Career job search, after the Veterans Job Matcher link: "See employers with a HIRE Vets Medallion Award (new tab)", linking to https://www.hirevets.gov/awardees_table .
+- Note under it: "The U.S. Department of Labor gives this award to employers for hiring and retaining veterans. Filter the official list by state and award year. Employers apply for it and attest to the information they submit, and an award does not establish a current opening or a hiring preference."
+- Wisconsin guide, "Wisconsin employers to explore", new section after Vets Ready. Title: "HIRE Vets Medallion employers in Wisconsin". Body: "See Wisconsin employers that hold the U.S. Department of Labor's HIRE Vets Medallion Award for hiring and retaining veterans." Instructions: "The official list opens filtered to Wisconsin. Use its year filter to see other award years." Link: "See Wisconsin HIRE Vets Medallion recipients (new tab)". Note: "This federal award is separate from Wisconsin's Vets Ready recognition. Employers apply for it and attest to the information they submit, and the Department of Labor checks for violations of veteran-related labor laws. An award does not establish a current opening, job quality for every worker, hiring preference, or SkillBridge approval." Attribution: "Award program of the U.S. Department of Labor, Veterans' Employment and Training Service."
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, build loop) | 2026-11-15 | revisit NONE
+A1 population: All four may use a public federal list to find employers; no eligibility is involved.   band: condition-triggered by a job search; no fixed separation milestone or day-offset.   excluded: The list establishes no opening, interview, job or hiring preference, and no SkillBridge approval.   timing: ACT AVAILABLE NOW
+A2 act: "Open the Department of Labor's HIRE Vets Medallion recipient list, filter it to your state, and check each employer's current postings."
+A3 surface(s): Career job search links; Wisconsin guide, employer section, after Vets Ready.   token: NONE; direct links.   sweep trigger: FIRED confusable-adjacent. Three kinds of employer listing now sit near each other in the Wisconsin guide: Vets Ready (state recognition), HIRE Vets Medallion (federal award) and VBS cohort companies (the app owner's firm). The new note says the federal award is separate from Vets Ready, and the cohort keeps its own heading. The state page's address contains "hirevets" and belongs to a different program from hirevets.gov.
+A4 cost: NOTHING
+EXPIRES: NONE for the links. Recheck each November, when the Department of Labor posts a new award year, and whenever the list's filter values change.
+
+## V-2026-11-15-SKILLBRIDGE-FEED-AGE - Age notice on the hand-kept SkillBridge feed (15 November 2026)
+
+**Status:** Product behavior with one link that was already verified. No new benefits or policy claim. Wording staged for Dean's approval on branch `claude/loop-06-skillbridge-feed-age-20261115`. Not released at the time of this entry.
+
+**Finding:** the SkillBridge feed in `index.html` is kept by hand. Its newest batch is labeled "1-9 JUL 2026". On 15 November 2026 that batch was 129 days old, and Home still showed it under "LATEST BATCH" with entries marked new in July.
+
+**Link used:** https://skillbridge.mil/locations , the SkillBridge program's opportunity search. Verified in WI2-20261016-SKILLBRIDGE-FINDER (root tier 2, 16 October 2026) and used again as a control search in this log on 15 November 2026.
+
+**App change (wording staged for Dean's approval):**
+- A batch older than 45 days, or one whose label carries no readable date, counts as old. The age is read from the last date in the batch label.
+- Home, while the newest batch is old: the company teaser gives way to "The newest batch in our SkillBridge list covers <batch>. Search the official SkillBridge list for current openings.", the link "Search official SkillBridge opportunities (new tab)" and the button "See our dated list". While the batch is fresh, Home shows the teaser as before.
+- Full feed, while the newest batch is old: a notice above the batches reads "The newest batch below covers <batch>, and openings change. Confirm any listing on the official SkillBridge list before you plan around it.", with the same link.
+- No feed entry was added, removed or reworded.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, build loop) | 2026-11-15 | revisit NONE
+A1 population: SEPARATING (active component) and GUARD/RESERVE members weighing SkillBridge; eligibility and approval stay with the member's service.   band: condition-triggered by SkillBridge planning; no fixed day-offset.   excluded: The notice establishes no opening and no approval.   timing: ACT AVAILABLE NOW
+A2 act: "Search the official SkillBridge list for a current opening before you plan around a company in the dated feed."
+A3 surface(s): Home; Resources, SkillBridge feed.   token: NONE; direct link.   sweep trigger: NONE
+A4 cost: A CLOSED WINDOW
+EXPIRES: NONE. The notice appears and clears on its own as the newest batch ages or is refreshed.
+
+## V-2026-11-15-VBS-OPEN-ROLES - Open roles page, Veteran Bridge Solutions (verified 15 November 2026)
+
+**Status:** CONFIRMED at Tier 2 for the description of the page. Listed at Dean's direction: his first ask of 15 November 2026 named roles, and his loop order says the app must help Veteran Bridge Solutions find veterans for roles. Wording staged for Dean's approval on branch `claude/loop-07-vbs-open-roles-20261115`. Not released at the time of this entry.
+
+**Claims:**
+1. https://apply.veteranbridgesolutions.com/roles is titled "Open roles | The FRONTLINE Cadre" and is Veteran Bridge Solutions' own list of roles it is recruiting for, on the same site as the intake form.
+2. On the read below the page listed one role: HVAC Service Technician, Level 3, with Wulf Brothers Inc. of Sturgeon Bay, covering Door and Kewaunee County, Wisconsin. The app names neither the role nor the client.
+3. Each role offers "Apply for this role", and a Cadre member can raise a hand for it.
+
+**Source, read 15 November 2026 at 15:54 UTC at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). Nothing was typed and nothing was submitted on this read:**
+- https://apply.veteranbridgesolutions.com/roles . Claims 1 to 3.
+
+**Relationship and disclosure:** Veteran Bridge Solutions is the app owner's firm, and the app owner is the recruiter. The section already says so, and the talent network note above the new link already says employers pay VBS to fill roles.
+
+**Vetting:** TIER 3, commercial. Listed at the owner's direction.
+
+**Not carried into the app:** the page also describes a $500 referral bonus. The app does not mention it.
+
+**Seam with `member-return-benchmarking`:** same as V-2026-11-15-VBS-TALENT-NETWORK. A disclosed referral the member chooses to open; the app passes no data and sends no referrer. The force-mod patch to that skill still waits on Dean's confirmation.
+
+**App change (wording staged for Dean's approval):**
+- Recruiter contact section, opening sentence: "Dean is a recruiter with Veteran Bridge Solutions. Book a conversation, join the VBS talent network, see the roles VBS is filling or introduce yourself by email. None of these guarantees a response, interview or job."
+- New link after the talent network note: "See open roles Veteran Bridge Solutions is filling".
+- New note under it: "Veteran Bridge Solutions' own list of roles it is recruiting for, on the same separate VBS site. Roles change, and the list can be empty. Applying there does not guarantee an interview or a job. Opens a new tab."
+- The section appears in Career job search for any area, in Career, and in the Wisconsin guide, so the link is national.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: All four may read a recruiter's open roles; no eligibility is involved.   band: condition-triggered by a job search; no fixed separation milestone or day-offset.   excluded: The list establishes no interview, job or hiring preference, and it can be empty.   timing: ACT AVAILABLE NOW
+A2 act: "Open Veteran Bridge Solutions' open roles page and read the roles it is recruiting for."
+A3 surface(s): recruiter contact section in Career job search, Career and the Wisconsin guide.   token: NONE; direct link.   sweep trigger: FIRED confusable-adjacent. The section's email form has a field for the roles a member wants, and the new link shows the roles VBS is filling. The link has its own id and its note says whose list it is.
+A4 cost: NOTHING
+EXPIRES: NONE. Recheck when the roles page changes its layout or address.

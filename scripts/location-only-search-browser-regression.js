@@ -88,6 +88,10 @@ const server = http.createServer(async (req, res) => {
     assert.deepEqual([careerOneStop.target, careerOneStop.rel, careerOneStop.text, careerOneStop.described, careerOneStop.visible], ['_blank', 'noopener noreferrer', 'Search CareerOneStop jobs (new tab)', 'tops-job-sharing tops-job-careeronestop-note', true]);
     assert.deepEqual([careerOneStop.matcher, careerOneStop.matcherTarget, careerOneStop.matcherRel], ['https://www.careeronestop.org/Toolkit/Jobs/match-veteran-jobs.aspx', '_blank', 'noopener noreferrer']);
     assert.match(careerOneStop.note, /^CareerOneStop is sponsored by the U\.S\. Department of Labor\./);
+    const medallion = await ev('(()=>{const a=document.getElementById("tops-job-hire-vets-medallion"),n=document.getElementById("tops-job-hire-vets-medallion-note");return a&&n?{href:a.href,target:a.target,rel:a.rel,text:a.textContent,described:a.getAttribute("aria-describedby"),visible:a.checkVisibility(),note:n.textContent}:null;})()');
+    assert.ok(medallion, 'HIRE Vets Medallion link and its note are present');
+    assert.deepEqual([medallion.href, medallion.target, medallion.rel, medallion.text, medallion.described, medallion.visible], ['https://www.hirevets.gov/awardees_table', '_blank', 'noopener noreferrer', 'See employers with a HIRE Vets Medallion Award (new tab)', 'tops-job-hire-vets-medallion-note', true]);
+    assert.match(medallion.note, /^The U\.S\. Department of Labor gives this award/); assert.match(medallion.note, /does not establish a current opening or a hiring preference\.$/);
 
     // Public-query sharing preserves the empty keyword and does not restore or send private state.
     assert.equal(await ev('!!document.getElementById("tops-job-share-url")'), false); await tap('tops-job-share-prepare');
