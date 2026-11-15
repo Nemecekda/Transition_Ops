@@ -2957,3 +2957,51 @@ EXPIRES: 2026-12-08
 **Member-impact:** NOT RUN. A finding below CONFIRMED is not assessed.
 
 **Standing release conditions:** unchanged from `intel/va-rates-2027-staging-20261025/README.md`. Recheck VA.gov before 1 December 2026. The estimator's "2026 rates" label stays true until VA posts the new table.
+
+
+---
+
+## V-2026-11-14-BDD-WINDOW-CARD - BDD window close and the [BDD CLAIM] window cards (verified 14 November 2026)
+
+**Status:** CONFIRMED. Release ordered by Dean in chat on 14 November 2026 ("do them all and merge"). Carried on branch `claude/guard-calendar-bdd-context-20261114`.
+
+**Claim:** A pre-discharge claim through the Benefits Delivery at Discharge (BDD) program is filed 180 to 90 days before leaving the military. With less than 90 days left on active duty, a member cannot file through BDD and can still file a pre-discharge disability claim before separating.
+
+**Source:** https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/ , "Last updated: June 18, 2026". Read 14 November 2026.
+
+**Ladder tier:** Tier 2, orchestrator browser (Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.
+
+**App change:** logic only. No sentence was added or reworded. The generated `[BDD CLAIM]` window cards (ids `cw-bdd-*`) now follow the same close as reminder `r-6-bdd2`. Once fewer than 90 days remain, a card is no longer treated as a current item: it loses the immediate highlight, it is grouped under "Earlier milestones to confirm" and not "Around now", and when opened it shows the sentence `r-6-bdd2` already shows in that state: "This reminder's scheduled period has passed. You can still review its steps and update your progress. This is not a current alert or an eligibility decision. You can still file a standard disability claim. Review VA's requirements using the resource link below." The card's resource link is the VA page above. Before and during the window the cards behave as before, and with no date saved they show no timing note, as before.
+
+**Wording check, not changed:** the app's existing sentence says "standard disability claim". VA's page says "pre-discharge disability claim before you separate from active duty". The existing sentence also has to hold after separation, so it was left as written. Adopting VA's phrase for the pre-separation case is a wording call for Dean.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-14 | revisit NONE
+A1 population: SEPARATING (active component); GUARD/RESERVE members on qualifying full-time active duty with a known separation date.   band: 3 Months Out and 1 Month Out (fewer than 90 days remaining), and Post-Separation at any day-offset, where the card still appears as an earlier milestone.   excluded: This does not apply to SPOUSE/FAMILY profiles, for which no window cards are generated, or to members whose claims need the special handling VA lists on the same page.   timing: ACT AVAILABLE NOW.
+A2 act: "If you have less than 90 days left on active duty, open VA's instructions for filing a claim less than 90 days before discharge from the pre-discharge claim page and file a pre-discharge disability claim before you separate."
+A3 surface(s): reminders (window cards `cw-bdd-*`, list view and focused view).   token: NONE   sweep trigger: NONE. `r-6-bdd2` carries the same sentence for the same window, by design.
+A4 cost: A CLOSED WINDOW
+EXPIRES: NONE; re-verify when VA updates the page.
+
+## V-2026-11-14-TRICARE-PHARMACY-CARD - Pharmacy copays and Prime travel distance on reminder r-9-tri26 (verified 14 November 2026)
+
+**Status:** CONFIRMED current. No app change.
+
+**Claims checked (existing card text):** retail network, 30-day supply: $16 generic, $48 brand-name. Home delivery, 90-day supply: $14 generic, $44 brand-name, $85 non-formulary. Military pharmacies: $0 for covered drugs. Prime travel benefit distance: 75 miles for active duty family members, 100 miles for retirees.
+
+**Sources, both read 14 November 2026 at Tier 2 (orchestrator browser):**
+- https://www.tricare.mil/Costs/PharmacyCosts , "Last Updated 4/10/2026". The page states "Costs are for calendar years 2026 and 2027." Its table for all beneficiaries except medically retired sponsors and certain survivors matches every dollar figure on the card.
+- https://tricare.mil/PrimeTravel , "Last Updated 5/27/2026". 75 miles one-way for dependents of members of an armed uniformed service on active duty. 100 miles for retirees and retiree family members.
+
+**Corroboration, search retrieval only:** the TRICARE Newsroom article "Preview your 2026 TRICARE pharmacy costs" states the costs are in effect through Dec. 31, 2027.
+
+**Finding:** the card is accurate today, and its dollar figures hold through 31 December 2027. It was flagged as stale on 14 November 2026 in error. The flag is withdrawn.
+
+**Gaps noted, not changed. Wording is Dean's call:**
+1. The card gives the general copays with no exclusion line. The same page lists lower copays, frozen at 2017 rates, for medically retired service members and their family members and for survivors of active duty service members: home delivery $0 generic, $20 brand-name, $49 non-formulary; retail network $10, $24, $50.
+2. The same page states that, as of Feb. 28, active duty family members with TRICARE Prime Remote in the U.S. have no costs for covered drugs at military pharmacies, home delivery and retail network pharmacies. The card does not carry this.
+3. The Prime travel page keeps 100 miles for dependents of members of a non-armed uniformed service (PHS, NOAA). The card's "active-duty family members" does not draw that line.
+4. The card's title says "TRICARE 2026". Its figures run through 2027.
+
+**Member-impact:** NOT RE-RUN. Nothing new ships from this entry. An exclusion line, if Dean wants one, gets its own assessment first.
+
+EXPIRES: 2027-12-31 for the copay figures.
