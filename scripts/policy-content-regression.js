@@ -415,7 +415,7 @@ check(occurrences(verificationLog, "## V-2026-11-15-VA-CLAIM-ONE-YEAR ") === 1, 
 // What's New entry and the two verified stamps. V-2026-11-15-VERIFIED-STAMP.
 check(occurrences(index, 'const APP_VERSION = "v99";') === 1 && /const WHATS_NEW = \[\n  \{ v: "v99", date: "15 NOV 2026", note: "TAMP for Guard and Reserve: a DoD memo clarified who qualifies/.test(index),
   "the app version and the first What's New entry are both v99, dated 15 NOV 2026");
-check(occurrences(index, 'const DATA_VERIFIED = "1 AUG 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK_DATE = "15 NOV 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 17:37 UTC";') === 1,
+check(occurrences(index, 'const DATA_VERIFIED = "1 AUG 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK_DATE = "15 NOV 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 18:26 UTC";') === 1,
   "the full-review date is unchanged and the latest-check stamp carries a date and a time");
 check(index.includes('or both. Full data review " + DATA_VERIFIED + ". Latest source check " + DATA_LATEST_CHECK + "."') && index.includes('SOURCED \\u00B7 LATEST CHECK " + DATA_LATEST_CHECK_DATE)') && occurrences(index, '"Last verified: " + DATA_VERIFIED + ""') === 1 && !index.includes('VERIFIED " + DATA_VERIFIED)'),
   "Critical Windows shows both stamps, the policy panel shows the latest check, and the directory footnote keeps the full-review date");
@@ -506,5 +506,39 @@ check(occurrences(verificationLog, "## V-2026-11-15-TRICARE-2027-COSTS ") === 1,
     "the FEDVIP notice starts on 9 NOV 2026 and ends at 11:59 pm Eastern on 14 DEC 2026 on every device");
 }
 check(occurrences(verificationLog, "## V-2026-11-15-FEDVIP-OPEN-SEASON ") === 1, "the FEDVIP open season notice carries one verification record");
+
+// Starting points by state: veterans office and job bank. V-2026-11-15-STATE-STARTING-POINTS.
+{
+  const listStart = index.indexOf("const TOPS_STATE_START = [\n");
+  const listEnd = index.indexOf("\n];\n", listStart);
+  const listBox = {};
+  vm.runInNewContext(index.slice(listStart, listEnd + 4) + "\nthis.rows = JSON.stringify(TOPS_STATE_START);", listBox);
+  const rows = JSON.parse(listBox.rows);
+  check(listStart > 0 && rows.length === 55 && new Set(rows.map((r) => r[0])).size === 55 && new Set(rows.map((r) => r[1])).size === 55 &&
+    rows.every((r, i) => /^[A-Z]{2}$/.test(r[0]) && (i === 0 || rows[i - 1][1] < r[1])),
+    "the state list holds 55 states and territories, each once, in name order");
+  check(rows.every((r) => /^https:\/\/[a-z0-9.-]+\/\S*$/.test(r[4]) && (r[3] === "" ? r[2] === "" && r[0] === "MP" : /^https:\/\/[a-z0-9.-]+\/\S*$/.test(r[3]) && r[2].length > 10)) &&
+    rows.filter((r) => r[3] === "").length === 1 && rows.every((r) => r.length === 5 || (r.length === 6 && r[0] === "NH")),
+    "every row has an https job bank link, and an office name with an https link except the one territory VA lists no office for");
+  check(require("node:crypto").createHash("sha256").update(rows.map((r) => r.join("|")).join("\n"), "utf8").digest("hex") === "5c8cfbbf5b9040cc7d5107a1df62669ed125622e5be154e142dfec262b275d0d",
+    "the state list equals the reviewed list byte for byte; any change needs a new source read and a new log entry");
+  const row = (code) => rows.find((r) => r[0] === code);
+  check(row("NH")[3] === "https://www.nhveterans.nh.gov/" && row("NH")[5] === "VA's link for New Hampshire did not load on 15 NOV 2026. This address comes from NH.gov's list of state agencies." && row("NM")[3] === "https://www.dvs.nm.gov/" && row("CO")[4] === "https://www.connectingcolorado.gov/",
+    "New Hampshire carries its own sourced address and note, and New Mexico and Colorado use the .gov address their listed link leads to");
+  check(row("WI")[3] === "https://dva.wi.gov/Pages/Home.aspx" && row("WI")[4] === "https://jobcenterofwisconsin.com/" && row("TX")[2] === "Texas Veterans Commission" && row("TX")[4] === "https://www.workintexas.com/vosnet/Default.aspx" && row("OR")[4] === "https://secure.emp.state.or.us/jobs/index.cfm?bkmk=w9",
+    "spot checks: Wisconsin, Texas and the one job bank address with a query string");
+  check(occurrences(index, 'context.area !== "wi" && React.createElement("section", { id: "tops-state-start", "aria-labelledby": "tops-state-start-heading"') === 1 &&
+    occurrences(index, 'React.createElement("label", { htmlFor: "tops-state-start-select"') === 1 && occurrences(index, 'React.createElement("select", { id: "tops-state-start-select", value: startCode, style: field, "aria-describedby": "tops-state-start-caption"') === 1 &&
+    occurrences(index, 'id: "tops-state-start-status", className: "sr-only", role: "status", "aria-live": "polite"') === 1,
+    "the state control shows only outside the Wisconsin guide, has a label and a caption, and announces its result");
+  check(occurrences(index, 'id: "tops-state-start-office", href: startRow[3], target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer"') === 1 &&
+    occurrences(index, 'id: "tops-state-start-jobs", href: startRow[4], target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer"') === 1 &&
+    occurrences(index, '" veterans office site (new tab)"') === 1 && occurrences(index, '" job bank (new tab)"') === 1,
+    "both state links open a new tab without a referrer and say so");
+  check(occurrences(index, "\"Office links come from VA's directory of state veterans affairs offices. Job bank links come from CareerOneStop, which the U.S. Department of Labor sponsors. Both lists were read on \" + TOPS_STATE_START_READ + \" and can change. Choosing a state here does not establish residence or eligibility.\"") === 1 &&
+    occurrences(index, 'const TOPS_STATE_START_READ = "15 NOV 2026";') === 1 && occurrences(index, 'var startPick = useState("")') === 1 && !/tops_state_start|localStorage[^;]{0,80}startCode|startCode[^;]{0,80}localStorage/.test(index),
+    "the caption names both sources and the read date, and the choice is held for the visit and saved nowhere");
+}
+check(occurrences(verificationLog, "## V-2026-11-15-STATE-STARTING-POINTS ") === 1, "the state starting points carry one verification record");
 
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");

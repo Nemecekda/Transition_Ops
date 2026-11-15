@@ -38,14 +38,14 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 5 | SkillBridge feed states its age and points to the official list | Avoid acting on a stale opening | None | ADOPT | Cycle 6 |
 | 6 | HIRE Vets Medallion: links to the official recipient list, national and Wisconsin | Find employers with federal recognition | None; the member's browser opens a federal site | ADOPT | Cycle 4 |
 | 7 | Start-date planner | Know and state when civilian work can start | Device-local | LOCAL SYNTHETIC TEST | Queued |
-| 8 | Starting points for every state | Find the state veterans agency and job bank | None | WATCH until S2 verifies the links | Queued |
+| 8 | Starting points for every state | Find the state veterans agency and job bank | None; the member's browser opens a state site | ADOPT: both federal lists read at Tier 2 on 15 November | Cycle 12 |
 | 9 | JST and VMET reading beside the DD214 | Turn records into resume evidence | Device-local read; member-approved excerpts to AI | LOCAL SYNTHETIC TEST; design packet first under `resume-drafter-maintenance` | Queued |
 | 10 | What's New and the verified stamp | See what changed since the last visit | None | ADOPT on Dean's order of 15 November, 10:30 | Cycle 9, merged as #228 |
 | 11 | Best Military Resume link | Resume and interview practice | Third-party account | REJECT for now: s2-vetting found no verifiable legal entity; reopens on Dean's outreach to the founder | Parked |
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
 | 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below |
-| 14 | TRICARE 2027 costs: a Policy Intel entry and a costs link in the open season notice | Choose a 2027 plan with the costs in hand before 8 DEC 2026 | None; the member's browser opens tricare.mil | SHIP - ACT under `member-impact` | Cycle 10 |
-| 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None; the member's browser opens benefeds.gov | SHIP - ACT under `member-impact` | Cycle 11 |
+| 14 | TRICARE 2027 costs: a Policy Intel entry and a costs link in the open season notice | Choose a 2027 plan with the costs in hand before 8 DEC 2026 | None; the member's browser opens tricare.mil | SHIP - ACT under `member-impact` | Cycle 10, merged as #229 |
+| 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None; the member's browser opens benefeds.gov | SHIP - ACT under `member-impact` | Cycle 11, merged as #230 |
 
 ## Needs Dean
 - Best Military Resume: legal entity name and registration, current free and paid terms, whether a mock interview tool exists, and what "Partner Organizations" receive. The current site gives a free account 2 tailored resumes and 2 company research reports; cover letters are paid; resume building needs an account.
@@ -225,3 +225,25 @@ Left out: survivor and former-spouse rules (linked), TTY and international numbe
 Staff tooling: s2-intel reported no Grep tool on both taskings today, although its definition lists one. Correlation against the app fell back to the orchestrator both times. force-mod should check the agent definition.
 
 Open lead: s2-intel's Tier 1 read of a BENEFEDS FAQ says retirement is not a qualifying life event and gives the 31-day and 60-day enrollment window. Reminders `r-1-fedvip` and `r-p1-fedvip` rest on that window. A Tier 2 read of the FAQ is queued before either reminder is touched.
+
+## Merge record, continued (3)
+- 11:54 Central: Dean ordered "merge and keep impriving. best app for veterans". #230 merged at head `bd47d50`, carrying #229. Merge commit `0b47bc9`. Production moved from v329 to v331; served bytes matched the commit at 18:02 UTC. v330 was served on a preview origin only.
+
+Cycle 12 onward is built on `main` at `0b47bc9`.
+
+## Cycle 12 - Starting points for every state
+Record: V-2026-11-15-STATE-STARTING-POINTS.
+
+Why: outside Wisconsin, State and local help sent every member to one VA directory page. Dean's mission names Wisconsin first and then every other state.
+
+What ships: one control in the "All states" view. A member picks a state or territory and gets its veterans office and its job bank, 55 rows in all. The choice is held for the visit and saved nowhere.
+
+Sources: VA's directory of state veterans affairs offices and CareerOneStop's state job bank list, both read in the browser. A hash of each list as the page held it proves the copy.
+
+What the read caught: VA's New Hampshire link is dead, and the app uses the address NH.gov gives. New Mexico's office and Colorado's job bank now sit on .gov hosts, and the app links those.
+
+Vetting: s2-vetting screened the 27 hosts outside .gov and held five. The orchestrator read all five in the browser and each one is linked from its state's own site.
+
+Upkeep: the weekly J4 link audit will crawl the 109 new addresses. A re-read of either list compares with its hash in one step.
+
+Staff tooling: s2-vetting's fetch tool was refused by all 27 hosts, so its screen rested on state pages and search. The browser read is what cleared the holds.
