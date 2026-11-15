@@ -64,6 +64,7 @@ assert.ok(/bdd/.test(t140.calls[0][1]), "T-140 prioritizes the existing BDD crit
 for (const [id, cases] of [
   ["r-6-bdd2", [[181, false], [180, true], [140, true], [90, true], [89, false], [30, false]]],
   ["r-p5-dental", [[-149, false], [-150, true], [-164, true], [-165, false], [-180, false]]],
+  ["r-p10-claim", [[-240, false], [-269, false], [-270, true], [-300, true], [-335, true], [-360, true], [-361, false], [-365, false], [-400, false]]],
   ["r-1-fedvip", [[32, false], [31, true], [17, true], [16, false]]],
   ["r-p1-fedvip", [[-29, false], [-30, true], [-44, true], [-45, false]]],
   ["r-0-ets", [[1, false], [0, true], [-1, false], [-14, false]]]
@@ -86,7 +87,7 @@ for (const [id, cases] of [
     assert.equal(note === "", expected, "Timing context " + id + " days=" + days);
     if (!expected) {
       assert.match(note, /not a current alert or an eligibility decision/);
-      assert.match(note, days > (id === "r-6-bdd2" ? 180 : context.rungTriggerDay(record)) ? /scheduled for later/ : /scheduled period has passed/);
+      assert.match(note, days > (id === "r-6-bdd2" ? 180 : id === "r-p10-claim" ? -270 : context.rungTriggerDay(record)) ? /scheduled for later/ : /scheduled period has passed/);
     }
   }
 }

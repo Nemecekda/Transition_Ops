@@ -40,7 +40,7 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 7 | Start-date planner | Know and state when civilian work can start | Device-local | LOCAL SYNTHETIC TEST | Queued |
 | 8 | Starting points for every state | Find the state veterans agency and job bank | None | WATCH until S2 verifies the links | Queued |
 | 9 | JST and VMET reading beside the DD214 | Turn records into resume evidence | Device-local read; member-approved excerpts to AI | LOCAL SYNTHETIC TEST; design packet first under `resume-drafter-maintenance` | Queued |
-| 10 | What's New and the verified stamp | See what changed since the last visit | None | WATCH: needs Dean's ruling | Parked |
+| 10 | What's New and the verified stamp | See what changed since the last visit | None | ADOPT on Dean's order of 15 November, 10:30 | Cycle 9 |
 | 11 | Best Military Resume link | Resume and interview practice | Third-party account | REJECT for now: s2-vetting found no verifiable legal entity; reopens on Dean's outreach to the founder | Parked |
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
 | 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below |
@@ -155,3 +155,36 @@ A catch worth recording: my first draft gave the link the id `tops-talent-roles`
 Data dependency: none in the app. The link passes no data and no referrer. Record: V-2026-11-15-VBS-OPEN-ROLES.
 
 Disposition: ADOPT on Dean's order. Five content checks were added, two existing checks were updated for the fourth option and the second VBS address, and the contact browser regression covers the link.
+
+## Merge record, continued
+- 10:04 Central: Dean ordered "merge all and keep working the loop". #225 merged at head `eaf2c2b`, carrying #222, #223 and #224. Production moved from v324 to v327; served bytes matched `main` at 16:07 UTC.
+
+Cycle 8 onward is built on `main` at `9aaec96`.
+
+## Cycle 8 - Reminder for the one-year mark on a VA disability claim
+Standing instruction from the project: add reminders for timing on things members should be thinking about.
+
+Review: all eight windows in the critical windows brief already carry reminders, and the VA dental 180-day window has one. The gap is the stretch between month 6 and month 12 after separation. A veteran who has not filed a VA claim gets no warning that the one-year mark affects the effective date, and the month 12 review arrives too late.
+
+Verification: s2-intel confirmed the rule on VA.gov at Tier 1 and flagged that it had the regulation and statute from a mirror only. The orchestrator read VA.gov, eCFR 3.400(b)(2)(i) and 38 U.S.C. 5110(b)(1) at Tier 2. Record: V-2026-11-15-VA-CLAIM-ONE-YEAR.
+
+What changed: one reminder, current from day 270 to day 360 after separation. It tells a veteran who has not filed to get the claim to VA before the first anniversary. It leaves out intent to file, Guard and Reserve periods, presumptive conditions and any dollar figure, because none of those cleared verification.
+
+Two design corrections inside the cycle, both caught by the existing Home actions regression before anything staged:
+- A month-based reminder would have stayed on Home past the anniversary. The reminder now has its own window, modeled on the BDD reminder.
+- The banner tolerates a narrower month range than Home. The reminder sits in month 10 so every day of its window falls inside both.
+
+Not done: the calendar export does not carry this reminder yet. `guard-reserve-regression` cannot run from a fresh clone because it reads commit `b9b11a2`, which the remote does not have.
+
+Disposition: ADOPT. Content checks and a nine-point day ladder were added. Gate evidence and the hosted preview check are in the pull request.
+
+## Cycle 9 - What's New, a verified stamp with a time, and the seven Medallion employers
+Dean's order, 10:30 Central: "lets add whats new and verified with a time stamp, the seven medallion employers and keep building".
+
+What's New: one entry, v99, dated 15 NOV 2026, covering today's changes. The app version moves with it because the release check requires the two to match.
+
+Verified stamp: the full-review date stays at 1 AUG 2026, because no full review has happened since. A second stamp carries the newest primary-source read with its time, 15 NOV 2026, 16:13 UTC. A content check ties that stamp to the newest dated entry in the verification log. Record: V-2026-11-15-VERIFIED-STAMP.
+
+Medallion employers: the Wisconsin guide now names the seven 2026 recipients as the Department of Labor lists them, with a caption that gives the award year and the read date. s2-vetting screened all seven: 5 CLEAR, 2 CLEAR WITH NOTE, 0 HOLD. The listing expires when the 2027 award year posts. Record: V-2026-11-15-HIREVETS-MEDALLION-NAMES.
+
+Also in flight: issue #226 from the J1 scan points at the CY 2027 TRICARE cost notice, effective 1 JAN 2027. s2-intel rated its figures PROBABLE and held them for a Tier 2 read. That is the next cycle.
