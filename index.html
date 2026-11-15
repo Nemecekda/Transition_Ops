@@ -3575,6 +3575,7 @@ const SMART_REMINDERS = [
   {id:"r-p1-fedvip",mo:-1,cat:"BENEFITS",pri:"HIGH",title:"FEDVIP Backstop \u2014 30 Days Left on the Window (Retirees)",brief:"If you retired without enrolling in FEDVIP dental/vision, the 60-day window is half gone.",items:["Enroll now at BENEFEDS.gov \u2014 after day 60 the next opportunity is Federal Benefits Open Season (Nov\u2013Dec)","After active-duty retirement, complete eligible Prime/Select enrollment through milConnect BWE within 90 days and pay required fees. If late, request retroactive enrollment through your TRICARE contractor within 12 months; required back fees apply."],deadline:"Day 60 after retirement date (FEDVIP); day 90 (TRICARE QLE)",why:"FEDVIP and retiree TRICARE have separate enrollment rules. For Prime/Select after active-duty retirement, the normal enrollment window is 90 days; the contractor can handle a retroactive request within 12 months.",link:"https://www.benefeds.gov/"},
   {id:"r-p4",mo:-4,cat:"BENEFITS",pri:"CRITICAL",title:"\u26A0\uFE0F SGLI to VGLI — The Clock Is Running",brief:"Review replacement coverage before ordinary SGLI coverage ends at 120 days. Eligible VGLI applicants do not need a health review within 240 days.",items:["Confirm your SGLI status and the service event that starts your application window","Within 240 days: eligible VGLI applicants do not need a health review","After 240 days: evidence of good health is required for the usual application path","The usual final application window is one year and 120 days; confirm your exact deadline with OSGLI","An approved SGLI Disability Extension has a separate process; ask OSGLI which rules apply","Apply through the official VA VGLI page or call OSGLI at 800-419-1473"],deadline:"240-day health-review cutoff for eligible applicants; confirm your service-event date",why:"Waiting beyond the 240-day period adds a health-evidence requirement. Confirm eligibility and receipt of a complete application before the applicable deadline.",link:"https://www.va.gov/life-insurance/options-eligibility/vgli/"},
   {id:"r-p6",mo:-6,cat:"HEALTH",pri:"HIGH",title:"TAMP Coverage Check",brief:"If your service confirmed TAMP, its 180-day coverage period may be ending. Verify your coverage dates in milConnect.",items:["VA-rated: verify enrollment and Priority Group","Employed: enroll in employer healthcare","Active-duty retirees: Prime/Select enrollment rules apply; TRICARE For Life requires Medicare Part A and Part B","Otherwise: ACA marketplace (HealthCare.gov)","VA dental eligibility has several classes; ask a VA dental clinic which may apply to you"],deadline:"Your actual TAMP end date, if eligible",why:"One ER visit without coverage averages $2,200+.",link:"https://www.tricare.mil/Plans/Leaving"},
+  {id:"r-p10-claim",mo:-10,cat:"BENEFITS",pri:"CRITICAL",title:"VA Disability Claim: One-Year Mark Ahead",brief:"If you have not filed a VA disability compensation claim, check the calendar. VA says that if it gets your claim within 1 year of the day you left active service, the effective date can be as early as the day following separation. This reminder does not establish eligibility or a rating.",items:["If you already filed, this reminder needs no action","Find your separation date on your DD214 and mark its first anniversary","File VA Form 21-526EZ on VA.gov so VA receives it before that anniversary","Past the one-year mark, the effective date is generally the later of the date VA gets the claim or the date entitlement arose"],deadline:"VA must receive the claim within 1 year of the day you left active service",why:"VA describes the effective date as the day you can start getting disability benefits. VA states this rule for direct service connection. Presumptive conditions follow different rules, and this reminder does not address Guard or Reserve periods of service.",link:"https://www.va.gov/disability/effective-date/"},
   {id:"r-p12",mo:-12,cat:"BENEFITS",pri:"HIGH",title:"One-Year AAR — Benefits & Career",brief:"You've been out a year. Time for an honest after-action review.",items:["Review VA claim — file supplemental if needed","Career at target level and salary?","If underemployed, use VET HUB tools","Check VR&E (Ch.31) eligibility","Rebalance TSP/retirement accounts"],deadline:"Self-imposed 12-month AAR",why:"Veterans who don't course-correct in Year 1 are more likely to stay underemployed.",link:null},
   {id:"r-18-iler",mo:18,cat:"BENEFITS",pri:"HIGH",title:"Verify Your ILER Exposure Record",brief:"FY26 NDAA codified the Individual Longitudinal Exposure Record. Your toxic exposure history now flows directly to the VA — verify it while you can still fix it.",items:["Pull your ILER through milConnect","Cross-check deployments, burn pit locations, and known exposure events","Report gaps or errors through your medical channel NOW — corrections are 10x harder after DD214","Gather buddy statements for any exposure not yet documented"],deadline:"Before separation — while records can still be corrected in uniform",why:"The VA now receives your complete exposure history up front to speed toxic-exposure claims. Errors or gaps in that record follow you into the claims process.",link:"https://milconnect.dmdc.osd.mil"},
   {id:"r-15-tap26",mo:15,cat:"ADMIN",pri:"ADVISORY",title:"New TAP Rules In Effect — FY26 NDAA",brief:"Congress overhauled TAP in December 2025. Know what changed and use it.",items:["Pre-separation counseling now delivered in person whenever possible — request it","DoD now tracks WHEN you start TAP — late starts are visible to your command","Financial counseling expanded: individualized guidance on loans and debt management","Spouses: TAP pilot program launching at 5 installations — ask your Transition Center","Guard/Reserve: waiver provision allows TAP every 3 years unless circumstances changed"],deadline:"Statutory TAP start remains NLT 365 days before separation",why:"Only about half of transitioning service members start TAP on time. Congress added these accountability measures because late starts cost real money in missed benefits.",link:"https://www.dodtap.mil"},
@@ -3599,6 +3600,9 @@ const SMART_REMINDERS = [
 var RUNG_DAY_TRIGGERS = { "r-1-fedvip": 31, "r-p1-fedvip": -30, "r-p5-dental": -150 };
 // V-2026-10-04-CODEX-BDD-TIMING: filing window, not an eligibility determination.
 var RUNG_BDD_WINDOW = { start: 180, end: 90 };
+// V-2026-11-15-VA-CLAIM-ONE-YEAR: days after separation during which the one-year claim reminder is current.
+// It goes dark five days before the first anniversary, so it never reads "ahead" on or after that day.
+var RUNG_CLAIM_YEAR_WINDOW = { start: -270, end: -360 };
 
 // ── STALENESS TIERS (values S2-fixed; mechanism ours) ──────────────────────
 // A rung whose window has closed must never surface. A late "30 Days Left on
@@ -3634,6 +3638,7 @@ function rungIsDue(rung, dateStr) {
   var d = daysToETSDate(dateStr);
   if (rung.id === "r-0-ets") return d === 0;
   if (rung.id === "r-6-bdd2") return Number.isFinite(d) && d <= RUNG_BDD_WINDOW.start && d >= RUNG_BDD_WINDOW.end;
+  if (rung.id === "r-p10-claim") return Number.isFinite(d) && d <= RUNG_CLAIM_YEAR_WINDOW.start && d >= RUNG_CLAIM_YEAR_WINDOW.end;
   if (Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)) {
     if (d === null || isNaN(d)) return false;
     var trig = RUNG_DAY_TRIGGERS[rung.id];
@@ -3654,6 +3659,7 @@ function rungIsStale(rung, dateStr) {
   var d = daysToETSDate(dateStr);
   if (d === null || isNaN(d)) return false;
   if (rung.id === "r-6-bdd2") return d < RUNG_BDD_WINDOW.end;
+  if (rung.id === "r-p10-claim") return d < RUNG_CLAIM_YEAR_WINDOW.end;
   // A day-anchored rung's own ceiling overrides the class table.
   var ceiling = Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)
     ? RUNG_DAY_TRIGGER_CEILING_DAYS
@@ -3666,7 +3672,7 @@ function rungIsStale(rung, dateStr) {
 function reminderHasCurrentDayContext(rung, dateStr) {
   var d = daysToETSDate(dateStr);
   if (d === null || !Number.isFinite(d)) return false;
-  if (rung.id === "r-6-bdd2") return rungIsDue(rung, dateStr);
+  if (rung.id === "r-6-bdd2" || rung.id === "r-p10-claim") return rungIsDue(rung, dateStr);
   // The generated [BDD CLAIM] window cards share that window. Before and during it they behave as before;
   // once fewer than 90 days remain they are no longer a current item. V-2026-11-14-BDD-WINDOW-CARD.
   if (rung.origin === "cw" && rung.cwId === "bdd") return d >= RUNG_BDD_WINDOW.end;
@@ -3678,11 +3684,11 @@ function reminderHasCurrentDayContext(rung, dateStr) {
 
 function reminderTimingContext(rung, dateStr) {
   var bddWindowCard = rung.origin === "cw" && rung.cwId === "bdd";
-  if (rung.id !== "r-0-ets" && rung.id !== "r-6-bdd2" && !bddWindowCard && !Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)) return "";
+  if (rung.id !== "r-0-ets" && rung.id !== "r-6-bdd2" && rung.id !== "r-p10-claim" && !bddWindowCard && !Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)) return "";
   var days = daysToETSDate(dateStr);
   if (days === null || !Number.isFinite(days)) return bddWindowCard ? "" : "Add or review your transition date to check when this reminder applies. Timing does not establish eligibility.";
   if (reminderHasCurrentDayContext(rung, dateStr)) return "";
-  var start = rung.id === "r-6-bdd2" || bddWindowCard ? RUNG_BDD_WINDOW.start : rungTriggerDay(rung);
+  var start = rung.id === "r-6-bdd2" || bddWindowCard ? RUNG_BDD_WINDOW.start : rung.id === "r-p10-claim" ? RUNG_CLAIM_YEAR_WINDOW.start : rungTriggerDay(rung);
   return (days > start ? "This reminder is scheduled for later." : "This reminder's scheduled period has passed.") + " You can still review its steps and update your progress. This is not a current alert or an eligibility decision." + ((rung.id === "r-6-bdd2" || bddWindowCard) && days < RUNG_BDD_WINDOW.end ? " You can still file a standard disability claim. Review VA's requirements using the resource link below." : "");
 }
 
