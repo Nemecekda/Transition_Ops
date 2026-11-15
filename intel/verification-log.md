@@ -3716,3 +3716,29 @@ A2 act: NOTHING - context. Claim 7 lists which plans count. It names no step.
 A3 surface(s): NONE   token: NONE   sweep trigger: NONE
 A4 cost: NOTHING
 EXPIRES: NONE
+
+## V-2026-11-15-APP-SHARE-LINE - The line the app sends when a member shares Transition OPS (15 November 2026)
+
+**Status:** No new finding. The line names four parts of the app and who built it. Wording staged for Dean's approval on branch `claude/loop-20-share-line-20261115`. Not released at the time of this entry.
+
+**Order behind it:** Dean, 14:18 Central on 15 November 2026: "fix them all and merge." The app share line was on the fix list sent to him at 14:19.
+
+**The line:** "A free transition app from a retired Army officer: VA disability math, benefit deadlines, state veterans office and job bank links, and resume tools."
+
+**What it replaces:** a line that named VA Math, VA Pay, SkillBridge, state tax intel and personalized timelines, and closed with "Built by a veteran."
+
+**Each part named, and where it lives in the build:**
+- VA disability math: the VA rating calculator at `?tool=vamath`, and the `va-math/` page.
+- Benefit deadlines: Reminders at `?tool=reminders`. Two dated notices are live today, under V-2026-11-14-TRICARE-OPEN-SEASON and V-2026-11-15-FEDVIP-OPEN-SEASON.
+- State veterans office and job bank links: State and local help, under V-2026-11-15-STATE-STARTING-POINTS.
+- Resume tools: the Resume Drafter in Career, `?tool=pathway`.
+
+**Who built it:** Dean Nemecek, Lieutenant Colonel, U.S. Army, Retired.
+
+**Drafting:** pao-content drafted the line under `brand-voice` during cycle 13 of the 15 November build loop. It ships as drafted.
+
+**What a share sends:** the title "Transition OPS", the line above and https://transitionops.org . Nothing about the member is sent.
+
+**Form:** 149 characters, plain characters only, no dollar figure.
+
+IMPACT: NOT A NEW FINDING. The line describes the app. It adds no benefit claim, no date and no instruction for a member.

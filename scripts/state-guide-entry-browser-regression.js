@@ -39,7 +39,7 @@ const server = http.createServer((req, res) => {
   const frames = () => ev('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
   const load = async route => { const loaded = new Promise(r => c.on('Page.loadEventFired', r)); await c.send('Page.navigate', { url: origin + route }); await loaded; await wait('!!document.getElementById("tops-main-content")'); await frames(); };
   const reload = async () => { const loaded = new Promise(r => c.on('Page.loadEventFired', r)); await c.send('Page.reload'); await loaded; await wait('!!document.getElementById("tops-main-content")'); await frames(); };
-  const disk = () => ev('JSON.stringify(["tops_personal_guide_v1","tops_career_action_v1","tops_career_gap_v1","tops_user_status","tops_sep_date","taskProgress","docProgress","tops_member_jobs_v1"].map(k=>localStorage.getItem(k)))');
+  const disk = () => ev('JSON.stringify(["tops_personal_guide_v1","tops_career_action_v1","tops_career_gap_v1","tops_user_status","tops_sep_date","taskProgress","docProgress","tops_my_jobs_v1"].map(k=>localStorage.getItem(k)))');
   const click = async id => { await ev(`document.getElementById(${JSON.stringify(id)}).click()`); await frames(); };
   const nav = async label => { await ev(`[...document.querySelectorAll('[aria-label="Primary"] button')].find(n=>n.textContent===${JSON.stringify(label)}).click()`); await frames(); };
   const change = async (id, value) => { await ev(`(()=>{const n=document.getElementById(${JSON.stringify(id)});n.value=${JSON.stringify(value)};n.dispatchEvent(new Event('change',{bubbles:true}));})()`); await frames(); };

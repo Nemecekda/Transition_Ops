@@ -43,12 +43,14 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 10 | What's New and the verified stamp | See what changed since the last visit | None | ADOPT on Dean's order of 15 November, 10:30 | Cycle 9, merged as #228 |
 | 11 | Best Military Resume link | Resume and interview practice | Third-party account | REJECT for now: s2-vetting found no verifiable legal entity; reopens on Dean's outreach to the founder | Parked |
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
-| 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below; cycle 13's gate found four more; cycle 14 repaired two of those and found the other two are right; cycle 15 fixes the app for both |
+| 13 | Repair stale browser test scripts | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search test scripts remain, diagnosed below; cycle 13's gate found four more; cycle 14 repaired two of those and found the other two are right; cycle 15 fixes the app for both; cycle 21 repaired two and steadied two; cycle 22 repaired two more and dated the Career family's cause |
 | 14 | TRICARE 2027 costs: a Policy Intel entry and a costs link in the open season notice | Choose a 2027 plan with the costs in hand before 8 DEC 2026 | None; the member's browser opens tricare.mil | SHIP - ACT under `member-impact` | Cycle 10, merged as #229 |
 | 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None; the member's browser opens benefeds.gov | SHIP - ACT under `member-impact` | Cycle 11, merged as #230 |
 | 16 | Share a deadline or one state's links; reachable app share | Pass a useful, specific thing to another service member | None; fixed text and one address, no tracking | ADOPT on Dean's order of 15 November, 12:36 | Cycle 13 |
 | 17 | Family step in the retirement FEDVIP reminders | Keep a family member's vision coverage across the sponsor's retirement | None | SHIP - ACT under `member-impact` | Cycle 16 |
-| 18 | Distinct labels on the Home next-move card | Tell six controls apart at a glance | None | ADOPT on Dean's order of 15 November, 13:57 | Cycle 17 |
+| 18 | Distinct labels on the Home next-move card | Tell six controls apart at a glance | None | ADOPT on Dean's order of 15 November, 13:57 | Cycle 17, merged as #237 |
+| 19 | Find a job or a new role on Home | Reach job search and role exploration from Home in one press | None; the two existing Career routes | ADOPT on Dean's order of 15 November, 14:18 | Cycle 18 |
+| 20 | Welcome screen returns until a start is picked | See the starting choices on a first real visit to the front door | None; reads keys the app already writes | ADOPT on Dean's order of 15 November, 14:18 | Cycle 19 |
 
 ## Needs Dean
 - Best Military Resume: legal entity name and registration, current free and paid terms, whether a mock interview tool exists, and what "Partner Organizations" receive. The current site gives a free account 2 tailored resumes and 2 company research reports; cover letters are paid; resume building needs an account.
@@ -123,14 +125,14 @@ Data dependency: none. Two ordinary links. The app passes no search term to the 
 
 Disposition: ADOPT. Six content checks were added, and two browser regressions now cover the links. Gate evidence and the hosted preview check are in the pull request.
 
-Baseline note from cycle 4's gate: `wisconsin-pathway-browser-regression` fails while waiting for a "For this visit" status after the member chooses to use a plan for one visit. The same failure occurs on `main` at `5543926` and at `92fb1a8`, the commit before today's first merge, so this cycle did not cause it. The cause is not yet diagnosed. Either the harness is stale or the status does not render. Backlog row 13 covers it.
+Baseline note from cycle 4's gate: `wisconsin-pathway-browser-regression` fails while waiting for a "For this visit" status after the member chooses to use a plan for one visit. The same failure occurs on `main` at `5543926` and at `92fb1a8`, the commit before today's first merge, so this cycle did not cause it. The cause is not yet diagnosed. Either the test script is stale or the status does not render. Backlog row 13 covers it.
 
 One layout fix inside this cycle: the first browser check showed the job-search note running straight into the paragraph after it. The note now carries a 14 px bottom margin.
 
 ## Cycle 5 - Stale test repair (tests only)
 `wisconsin-pathway-browser-regression` waited for a status containing "For this visit". Commit `90611aa` (#156, "Clarify saved and temporary next steps") changed that message to "This step is not saved." and left the test behind. The app behaves as #156 designed it. The test now expects the current wording and passes end to end. One expectation changed; it is as strict as before.
 
-Three job-search harnesses still fail on `main`. Each needs a decision about intended behavior, so they stay queued:
+Three job-search test scripts still fail on `main`. Each needs a decision about intended behavior, so they stay queued:
 - `career-job-search-flow`: `#tops-career-find-jobs` exists but does not take focus when the test calls `focus()` (line 15).
 - `federal-jobs-browser`: a helper reads `parentElement` of an element that is no longer on the page (line 12).
 - `career-home-search-continuity`: waits for `#career-starter-resume` at `/?tool=pathway&case=timeline`, and that element does not render there (line 40).
@@ -273,7 +275,7 @@ Why these: people pass along a date or a link that helps someone today. A genera
 
 Drafting: pao-content wrote the share text options. The deadline texts ship with the year added and with no eligibility line.
 
-Left for Dean: the app-wide share line still reads as it did. pao-content offered three replacements. One is quoted in the pull request; the other two were not kept.
+Left for Dean: the app-wide share line still reads as it did. pao-content offered three replacements. One is quoted in the pull request; the other two were not kept. Cycle 20 stages that one.
 
 Baseline note from cycle 13's gate: five older regressions fail the same way on untouched `main` at `4729654`, so this cycle did not cause them. Four of the five are new to this record. Backlog row 13 covers the repair.
 - `career-home-search-continuity-browser`: already recorded under cycle 2.
@@ -388,3 +390,149 @@ One run of all 123 scripts against untouched `main` at `4729654`, with a rerun o
 - Each failure was seen once, apart from the reruns named here. A repair cycle starts by confirming it.
 
 Two of the first four failures diagnosed were real defects in the app. Backlog row 13 now covers the whole set.
+
+## Merge record, continued (5)
+- 14:18 Central: Dean ordered "fix them all and merge. I also want. lets find a new role or job or someting on that page." #237 merged at its verified head `45ddc06`, carrying #233, #234, #235 and #236. Merge commit `6e676a4`. Production moved from v332 to v336; served bytes matched the commit at 20:24 UTC. v333, v334 and v335 were preview-only.
+- The merge covered the five pull requests staged at that moment. Work built after it is staged for a new order, because its wording had not been in front of Dean.
+
+Cycle 18 onward is built on `main` at `6e676a4`.
+
+## Cycle 18 - Find a job or a new role on Home
+Order: the second sentence of Dean's 14:18 message, and the overlap that cycle 17 left for his call.
+
+What ships:
+- A block under the next-move card: "Find a job or a new role", with two tiles. "Search jobs by area" opens job search. "Find roles from my experience" opens the Career start that works from a resume or from experience. Both use routes the card already had. When the member comes back to Home, focus returns to the tile they used.
+- The block stays out where it would repeat the card: before a starting point is chosen, when the four starting points are open, and after "Find work soon" or "Explore a different career", when the card's own button leads to the same place.
+- The direction editor now starts from the starting point the member just chose. Before, a member who chose "Prepare to leave service" opened it and was asked to choose a direction again from a nearly identical list.
+- Its label with nothing saved changes from "Set my direction, role and goal" to "Add a target role or goal", which names what is left to add.
+
+Unchanged: what is saved and when. "Use for this visit" still saves nothing, and with no starting point and nothing saved the editor still asks for a direction first.
+
+Why a block under the card and why two tiles: the card held no path to a job once a member chose "Prepare to leave service" or "Grow in my current career". From the card, the two routes were behind "Change priority". The tiles carry the look of "Tools for your next step", so Home gains one pattern it already has.
+
+Structure note: the card's route handler was an inline function. It is now `memberLoopRoute`, with the same body, so Home can call the same routes.
+
+Test: `next-move-options-browser-regression.js` now also covers where the block shows, both routes, the return of focus, one control per label on Home, the tile height at 320 and 393 px, and the direction editor's starting value for three starting points.
+
+Changed assertion: the script used to end by requiring zero requests to a server function. That rule still runs at full strength for every scenario that existed before. The job-route scenario runs last, because opening job search asks the federal jobs function whether it is set up (`?config=1`, no member content). After it, that one address is the only function request the script accepts.
+
+Checked in a browser against the built files: the block on the Guard and Reserve Home, the block for four saved directions with no label repeated on Home, and the second tile's destination, which opens on the heading "Start with your experience".
+
+Gate on the final tree: structural gate exit 0. Six semantic commands and the public build pass. Of 28 related browser regressions, 27 pass.
+
+The one failure: `wisconsin-pathway-browser` timed out once waiting for the Home card after a reload. Its script reloads right after pressing Home, with no wait for Home's address to settle. That is the race form repaired in `guard-reserve-browser` in cycle 15 and the likely cause here; the failing run left no address in its log to confirm it. The script passed in the full run made before the options test was reordered, and 3 of 3 times alone afterward. The app files are identical across those runs. It joins the test repair list.
+
+## Cycle 19 - The welcome screen returns until the visitor picks a start
+Order: Dean's 14:18 "fix them all". The welcome screen was on the fix list sent to him at 14:19.
+
+What was wrong:
+- A first visit to the front door shows the welcome screen. That same load saves the plan and the document list with nothing checked.
+- The rule that decides who is a returning member counted those two keys as saved work. A visitor who reloaded or came back before choosing went to Home, and the welcome screen never showed again in that browser.
+- The same rule named a saved-jobs key the app has never written, `tops_member_jobs_v1`. The app writes `tops_my_jobs_v1`. The two first-load keys masked the mistake, because every visitor already counted as returning.
+
+What ships:
+- The welcome screen shows at the front door until the visitor picks one of its starts or presses "Explore all tools".
+- A member with saved work still goes to Home with no onboarding flag. The new helper `topsMemberHasSavedWork` lists what counts: a direction, a chosen step, a career worksheet, a job list, comparison notes, reminder progress, a separation date and a service profile. A checked task or a document marked obtained counts too.
+- A deep link into a tool is unchanged. It never shows the welcome screen.
+
+Who notices:
+- A visitor who left the welcome screen without choosing sees it again at the front door.
+- A visitor who first arrived by a shared link and saved nothing sees it the first time they open the front door.
+
+A member with saved work sees no change. No wording changed.
+
+Test: the pin of the old behavior in `tool-url-continuity-browser-regression.js` is replaced by the rule. The script now covers the reload, a checked task, an obtained document, a saved job list, a saved profile, a saved date, a deep link followed by the front door, and "Explore all tools".
+
+Browser check on the built files: 38 checks pass, including each member-written key alone and the first-load keys alone. On the live build the same check confirms the old behavior.
+
+Gate: structural gate exit 0. Six semantic commands and the public build pass.
+
+Sweep of the 82 scripts that pass on `main` or were repaired in this loop: 79 pass. Three failed once and pass alone.
+- `career-direction-browser` and `service-career-browser` hit the request-interception race ("Invalid InterceptionId") and pass 3 of 3 alone.
+- `personal-step-calendar-browser` fails about 1 run in 6 with a missing calendar button. It fails at the same rate on the cycle 18 tree, so the cause predates this cycle.
+
+Found for the test repair list:
+- 13 scripts keep `tops_member_jobs_v1` in their saved-bytes snapshot, so none of them watches the real saved-jobs key.
+- The three scripts above, plus `wisconsin-pathway-browser` from cycle 18.
+
+## Cycle 20 - The app share line
+Order: Dean's 14:18 "fix them all". The app share line was on the fix list sent to him at 14:19.
+
+What ships: the text a member's share sheet receives when they share Transition OPS itself.
+- Before: a line naming VA Math, VA Pay, SkillBridge, state tax intel and personalized timelines, closing with "Built by a veteran." It held a dash.
+- After: "A free transition app from a retired Army officer: VA disability math, benefit deadlines, state veterans office and job bank links, and resume tools."
+
+The line is pao-content's draft from cycle 13, shipped as drafted. Each part it names has its tool in the build, and the log record V-2026-11-15-APP-SHARE-LINE ties each one to its place.
+
+Unchanged: the title "Transition OPS", the address https://transitionops.org and the two toast lines shown when no share sheet exists. With no share sheet the app copies the address alone, so the line travels only through a share sheet.
+
+Test: four new assertions in `policy-content-regression.js`, now 205. They pin the line, its length and characters, the absence of the old line, the four tools it names and the log record.
+
+Browser check on the built files: 10 checks pass across a share sheet, a clipboard and neither. Sharing sends no request.
+
+Gate: structural gate exit 0. Six semantic commands, the public build and six Home regressions pass, 13 lines in all.
+
+Still open on this subject: the page title and the link preview card describe the app in their own words, and those claims have not been checked against the build.
+
+## Cycle 21 - Test repairs, batch 1
+Order: Dean's 14:18 "fix them all". Tests only. No app file changed, so the cache stays at v339.
+
+Each failure was confirmed and diagnosed before its script was edited. No assertion was loosened.
+
+| Script | What was wrong | Repair |
+|---|---|---|
+| `member-priority-browser` | It required zero requests to a server function. Job search sends one content-free check, `federal-jobs?config=1`, twice in the run and nothing else. | The rule accepts that one address with no body, and nothing else. |
+| `member-action-hierarchy-browser` | It capped a saved step's heading at 32 px. The 29 October design (`179e987`) sets 29 px on phones and 3.6vw up to 40 px above them. | The size is pinned exactly at each width, and the variant is pinned too. |
+| `personal-step-calendar-browser` | It failed about 1 run in 6. A render between its storage patch and its click used up the reads it counts. A debug copy showed the count at 2 before the click. | The patch and the click run in one evaluation, in both places. 18 of 18 runs pass. |
+| `wisconsin-pathway-browser` | It reloaded right after pressing Home, before Home's address settled. | It waits for Home's address first. 6 of 6 runs pass. |
+| Shared browser client | 91 of the 94 browser scripts had no guard for the request-interception race, so any of them could fail on it. | An async handler whose only failure is that race no longer ends the run. Each ignored outcome is written to the error stream. Every other failure still ends the run. |
+| 13 scripts | Their saved-bytes snapshot watched `tops_member_jobs_v1`, a key the app has never written. | Each now watches `tops_my_jobs_v1`. All 13 still pass. |
+
+The shared client lives in `privacy-network-regression.js`, which is also a gate command. Its own assertions are unchanged.
+
+Evidence: structural gate exit 0. Six semantic commands and the public build pass. Of 84 scripts swept, 83 pass.
+
+Found and left for the next batch:
+- `dd214-upload-browser` stalls loading the upload screen about 1 run in 6. It did so before this change too, 1 run in 6 on the cycle 20 tree.
+- `personal-guide-browser` failed on the race in the baseline. With the race handled it fails on a missing control at its line 94.
+- `career-action-browser` is the same story. It now fails on a wait named "keyboard disclosure".
+- `counselor-preparation` pins a SHA-256 of everything above `TOPS_GAP_KEY` against a 20 September commit. It is a point-in-time preservation proof, and every later approved change in that span breaks it. Whether to keep re-pinning it or file it as historical evidence is Dean's call.
+- `member-loop-browser` opens with the welcome screen that #163 replaced. It needs its first block rewritten.
+- 11 Career scripts fail on one control, "Open my current career plan". One cause may repair many.
+
+Standing after this batch: 124 scripts, 84 pass, 40 fail. The 40 are 30 Career scripts and 10 others, two of which cannot run in this workspace.
+
+## Cycle 22 - Test repairs, batch 2
+Order: Dean's 14:18 "fix them all", continued at the 16:36 check-in. Tests only. The cache stays at v339.
+
+| Script | What was wrong | Repair |
+|---|---|---|
+| `personal-guide-browser` | Last edited 8 October. Four later changes passed it by: Home search results put the name before its type; the topic picker gained State benefits and local help (#154); the document checklist moved into My Plan (#148); and the picker is absent on that checklist. | Four edits. The count is exact at 11, nine topics are checked in the picker, and the two that open their own page are each checked for where they land. |
+| `career-action-browser` | The career guide panel shows only on the Other Career tools screen since 10 October (`017b87c`). A downloaded plan backup is version 4 with a `memberJobs` section since 9 October (`0cbb657`). | The script opens that screen first. Its version 1 and version 2 fixtures drop `memberJobs`, as they already dropped the other later sections. |
+
+Both pass 3 of 3. Structural gate exit 0. Six semantic commands, the public build and four related scripts pass.
+
+### The Career family, dated
+- 29 Career scripts still fail. They were written for the Career that existed before two redesigns.
+- `42b6c78` on 10 October opens a coherent saved plan directly and removed "Back to career choices".
+- #147 (`f948e3b`) on 13 October removed "Review and save", "Continue my career draft", "Return to my draft" and "Start with my experience".
+
+11 of the 29 stop at "Open my current career plan", a press Career now skips. I probed four of them past that point and each failed again: three on a control #147 removed, one on a draft panel that no longer shows.
+
+A one-for-one repair means rewriting each script against today's Career. The cheaper path is to decide which of those features still exist, cover them with a smaller set of current scripts, and file the rest. Filing removes assertions, so the choice is Dean's.
+
+### Other open scripts, with the first thing each one fails on
+| Script | First failure |
+|---|---|
+| `member-loop-browser` | Its first block tests the welcome screen that #163 replaced |
+| `my-jobs-browser` | Looks for "Return to my draft", removed by #147 |
+| `federal-jobs-browser` | A control lookup returns nothing at its line 12 |
+| `support-compact-review-browser` | A layout budget: the save control sits lower than its 572 or 668 px limit |
+| `tap-worksheet-browser` | Waits for a worksheet that does not render |
+| `tap-integration` | Pins the text of the transition milestones, which later approved cycles changed |
+| `counselor-preparation` | Point-in-time hash of the source above `TOPS_GAP_KEY` |
+| `guard-reserve-regression`, `vgli-window-regression` | Need commits this workspace does not hold |
+
+`dd214-upload-browser` passes and still stalls about 1 run in 6.
+
+Standing after this batch: 124 scripts, 86 pass, 38 fail. The 38 are 29 Career scripts and 9 others.

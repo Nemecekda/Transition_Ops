@@ -91,7 +91,7 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
  assert.equal(await ev('document.getElementById("tops-home-date").open'),false);
  for(const pair of [["resume","Career"],["VA math","VA rating calculator"],["DD214","DD214 and service records"]]){
   await input("tops-home-search",pair[0]);
-  await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent.startsWith('+JSON.stringify("TOOL"+pair[1])+')).click()');
+  await ev('Array.from(document.querySelectorAll("button")).find(n=>n.textContent.startsWith('+JSON.stringify(pair[1]+"Tool")+')).click()');
   await wait('document.getElementById("tops-page-title")?.textContent==='+JSON.stringify(pair[1]),'search destination');
   assert.equal(await ev('Array.from(document.querySelectorAll("button")).some(n=>n.closest(".bottom-nav") && n.textContent==="Home")'),true);
   await ev('Array.from(document.querySelectorAll("button")).find(n=>n.closest(".bottom-nav") && n.textContent==="Home").click()');
@@ -105,8 +105,9 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
  assert.equal(await ev('document.getElementById("tops-continue-title").textContent'),"Start your transition checklist");
  await click("Find benefits, services & support");
  await wait('document.getElementById("tops-resource-topic")?.value==="directory"','Home opens all resources');
- assert.equal(await ev('document.getElementById("tops-resource-topic").options.length'),10);
- for(const topic of ["vsos","tap","mindset","leadership","spouse","perks","skillbridge","healthcare","documents","directory"]){
+ assert.equal(await ev('document.getElementById("tops-resource-topic").options.length'),11);
+ // Nine topics keep the picker. The document checklist and State and local help each open their own page, checked after this loop.
+ for(const topic of ["vsos","tap","mindset","leadership","spouse","perks","skillbridge","healthcare","directory"]){
   await input("tops-resource-topic",topic);
   assert.equal(await ev('document.getElementById("tops-resource-topic").value'),topic);
   for(const width of [320,375]){
@@ -119,10 +120,13 @@ const server=http.createServer((req,res)=>{const route=req.url.split("?")[0],p=p
   const resourceShot=await c.send("Page.captureScreenshot",{format:"png"});
   fs.writeFileSync(path.join(process.env.TOPS_HOME_SCREENSHOT_DIR,"resources-375.png"),Buffer.from(resourceShot.data,"base64"));
  }
+ await input("tops-resource-topic","documents");await wait('!!document.getElementById("tops-plan-documents")','the document checklist opens in My Plan');
+ await click("Home");await wait('!!document.getElementById("tops-home-search")','Home again');await click("Find benefits, services & support");await wait('document.getElementById("tops-resource-topic")?.value==="directory"','all resources again');
+ await input("tops-resource-topic","state-help");await wait('!!document.getElementById("tops-state-help")','State and local help opens');
  await click("Home");await wait('!!document.getElementById("tops-continue-documents")','Home document shortcut');
  await ev('document.getElementById("tops-continue-documents").click()');
  await wait('document.activeElement.id==="tops-plan-documents"','document shortcut focus');
- assert.equal(await ev('document.getElementById("tops-resource-topic").value'),"documents");
+ assert.deepEqual(await ev('({view:new URL(location.href).searchParams.get("view"),title:document.getElementById("tops-page-title").textContent,picker:!!document.getElementById("tops-resource-topic")})'),{view:"documents",title:"Document checklist",picker:false});
  await click("Home");await wait('!!document.getElementById("tops-home-search")','Home after resources');
  for(const width of [320,375,1280]){
   await c.send("Emulation.setDeviceMetricsOverride",{width,height:900,deviceScaleFactor:1,mobile:width<600});
