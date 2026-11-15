@@ -3168,3 +3168,69 @@ Runtime note, Kriete Truck Centers: The official list of authorized SkillBridge 
 - Placement is unchanged. The cohort block still shows only in the Wisconsin guide and on Wisconsin job searches. A regression has asserted since 1 November that the job search block does not appear outside Wisconsin areas. Dean was asked whether to show it on every search and had not answered.
 - The job search block no longer says roles are "coming soon" or "not posted yet". It points to the existing Talk with Dean option. Dean was asked whether candidates should also be sent to the Cadre intake and had not answered, so no intake link was added.
 - UNVERIFIED and not shipped: any named employer's current opening, pay, veteran hiring program or preferred access. None was checked.
+
+## V-2026-11-15-TAMP-RESERVE-ELIGIBILITY - DoD memo on TAMP eligibility for Guard and Reserve members (verified 15 November 2026)
+
+**Status:** CONFIRMED at Tier 2. Wording staged for Dean's approval on branch `claude/loop-01-tamp-reserve-20261115`. Not released at the time of this entry. This entry updates the Guard/Reserve route recorded in V-2026-022; the other TAMP categories in that entry are unchanged.
+
+**Claims:**
+1. A DoD memorandum, subject "Transitional Assistance Management Program Eligibility", marked "*Corrected Copy*", stamped AUG 27 2026 and signed by Anthony J. Tata on the letterhead of the Under Secretary of War for Personnel and Readiness, states that TAMP eligibility applies to Reserve Component Service members who were called or ordered to, or retained on, active duty for at least 31 days under 10 U.S.C. 12304b or a contingency operation as defined in 10 U.S.C. 101(a)(13).
+2. The memo states that this also includes Service members who volunteered for active duty under 10 U.S.C. 12301(d).
+3. The memo states that, to be eligible, a Service member does not need to demonstrate that the service period was substantively connected in some way to a war, a contingency operation, or a national emergency.
+4. The memo states that eligibility will be evaluated in line with the revised policy and that the Assistant Secretary of War for Manpower and Reserve Affairs will ensure coding in DEERS is adjusted to implement the change.
+5. The memo's footnote reads: in the second paragraph, second sentence, "30 days" is amended to read "31 days" to align with 10 U.S.C. 1145(a)(2)(B).
+6. On 15 November 2026 the rendered page tricare.mil/TAMP read "Last Updated 5/15/2025". Its visible eligibility list still gave the Guard/Reserve route as more than 30 consecutive days of active duty served for a preplanned mission or in support of a contingency operation. The page did not mention the memo, 12301(d) or reimbursement, and showed no banner.
+
+**Sources, read 15 November 2026 between 13:30 and 13:40 UTC at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). No CAPTCHA was presented or solved:**
+- The memo itself: https://www.hqrio.afrc.af.mil/Portals/149/Documents/27%20Aug%202026%20%E2%80%93%20Transitional%20Assistance%20Management%20Program%20Eligibility%20Memo.pdf . One page, 562,468 bytes, SHA-256 `43036520f358a692ef1881a88a892cd464811f984da16115bb940c126b7f79dc`. The file is a scanned page with a text layer on the letterhead only, so the body was read from the rendered page in the browser's PDF viewer (viewer title "Under Secretary of War for Personnel and Readiness Memorandum"). Claims 1 to 5.
+- Air Force Reserve, Headquarters Readiness and Integration Organization, "Major Updates to TAMP Eligibility for Reserve Component Airmen", published Sept. 21, 2026: https://www.hqrio.afrc.af.mil/Guidance-Updates/Article/4607608/major-updates-to-tamp-eligibility-for-reserve-component-airmen/ . It states that the Under Secretary issued the policy memorandum on 10 August 2026, summarises it, and links the PDF above. The corrected copy is the document read.
+- https://www.tricare.mil/TAMP , rendered view, each list item checked as visible on the page. Claim 6.
+
+**Tier 1, same day (s2-intel):** tricare.mil/TAMP text matched the rendered view. 10 U.S.C. 1145(a)(2) was read in the govinfo 2024 edition: subparagraph (B) covers a reserve component member separated from active duty to which called or ordered under 12304b or a provision referred to in 101(a)(13)(B), for a period of more than 30 days. Currency of that edition through 2026 was not confirmed. s2-intel found no primary copy of the memo at Tier 1 and correctly rated the lead UNVERIFIED until this Tier 2 read.
+
+**Leads that prompted the check (not the basis for the rating):** Federal News Network, August 2026, and an NVLSP release dated 18 August 2026.
+
+**Wording decisions:**
+- The app keeps "more than 30 consecutive days", which is tricare.mil's wording and was verified in V-2026-022. The memo's corrected "at least 31 days" is the same threshold. "Consecutive" is tricare.mil's word; it appears in neither the memo nor 1145(a)(2)(B).
+- The app repeats the memo's terms "preplanned mission (10 U.S.C. 12304b)", "contingency operation" and "10 U.S.C. 12301(d)" and does not define them. 10 U.S.C. 101(a)(13) was not read for this entry.
+- The app says tricare.mil/TAMP "did not yet show the memo when checked 15 NOV 2026". That sentence is dated and must be rechecked; see the triggers below.
+
+**Not established:** any order type beyond those the memo names; an effective date other than the memo's own date; whether DEERS coding is complete for any service; how each service is applying the memo. The Air Force Reserve notice is one service's field guidance.
+
+**App change (wording staged for Dean's approval):**
+- CRITICAL WINDOWS, TRICARE TRANSITION, eligibility list: the Guard/Reserve item now reads "Guard/Reserve release after more than 30 consecutive days of active duty for a preplanned mission (10 U.S.C. 12304b) or a contingency operation, including members who volunteered for active duty under 10 U.S.C. 12301(d)", followed by a new item "Guard/Reserve members do not need to show that the service was connected to a war, a contingency operation or a national emergency (DoD memo, corrected copy dated 27 AUG 2026)".
+- Same window: the note names the memo, the dated tricare.mil check and the DEERS coding change; the list heading reads "TAMP CATEGORIES IN TRICARE AND DOD GUIDANCE - SERVICE DETERMINES ELIGIBILITY"; two sources added (the memo and the Air Force Reserve notice).
+- Guard/Reserve demobilization checklist and the Navigator corpus DEMOBILIZATION line: the route sentence now includes voluntary active duty under 12301(d) and the memo's no-connection statement.
+- POLICY_CHANGES: new entry dated 27 AUG 2026.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: GUARD/RESERVE; SPOUSE/FAMILY, as covered family members of those Guard and Reserve members.   band: condition-triggered by release from a qualifying period of active duty; none of the seven separation bands.   excluded: This does not apply to active-component members who are separating or retiring, whose TAMP categories are unchanged, or to National Guard duty under Title 32 section 502(f), which the memo does not address.   timing: ACT AVAILABLE NOW.
+A2 act: "Ask your service personnel office to determine your TAMP eligibility under the DoD memo dated 27 August 2026 and verify the DEERS record in milConnect."
+A3 surface(s): CRITICAL WINDOWS (TRICARE TRANSITION list, note, sources); Guard/Reserve module demobilization checklist; Navigator CORPUS; POLICY_CHANGES.   token: [CRITICAL WINDOWS]   sweep trigger: FIRED successor signal. The memo calls itself a revised policy, and the app's list carried the earlier route wording. Every surface with that wording was changed in the same ship: the list item, the demobilization line and the Navigator corpus line. A regression now fails if the superseded wording returns.
+A4 cost: MONEY
+EXPIRES: NONE for the memo. The dated tricare.mil sentence expires when tricare.mil/TAMP changes. Recheck triggers: the "Last Updated" stamp on tricare.mil/TAMP moves past 5/15/2025; a TRICARE Policy Manual or Federal Register change on TAMP eligibility; a superseding memo; any service notice that reads the memo differently.
+
+## V-2026-11-15-TAMP-REIMBURSEMENT - Reimbursement request for TAMP denials on or after 24 April 2020 (verified 15 November 2026)
+
+**Status:** CONFIRMED at Tier 2. Wording staged for Dean's approval on branch `claude/loop-01-tamp-reserve-20261115`. Not released at the time of this entry.
+
+**Claims:**
+1. The memo in V-2026-11-15-TAMP-RESERVE-ELIGIBILITY states that retroactive eligibility applies only if the Service member's TAMP benefits were denied on or after April 24, 2020.
+2. It states that Service members found ineligible for TAMP on or after April 24, 2020, because their activation was not considered as being under a provision of law referred to in 10 U.S.C. 101(a)(13), or their service was not deemed connected in some way to a war, a contingency operation, or a national emergency, may seek reimbursement for civilian expenses for health coverage and care, including premiums and out-of-pocket costs, incurred by themselves and their covered family members, if those expenses would not have been incurred had they been found eligible for TAMP benefits.
+3. It states that, to request reimbursement, Service members should email the Defense Health Agency at dha.san-diego.healthcare-ops.mbx.thp-eligibility-adj@health.mil .
+4. The Air Force Reserve notice of Sept. 21, 2026 advises eligible members to gather orders, separation documents, and civilian healthcare receipts or Explanations of Benefits.
+
+**Sources:** the same two documents and the same Tier 2 read as V-2026-11-15-TAMP-RESERVE-ELIGIBILITY. Claims 1 to 3 are the memo's own text. Claim 4 is Air Force Reserve field guidance; other services' instructions were not read.
+
+**Not established:** a claim form, a deadline for requests, a processing time, or the documents the Defense Health Agency requires. The memo names only the mailbox. The address was read from the memo and matches the address in the Air Force Reserve notice character for character.
+
+**App change (wording staged for Dean's approval):**
+- CRITICAL WINDOWS, TRICARE TRANSITION, action steps: new second step "Guard/Reserve found ineligible for TAMP on or after 24 APR 2020 because the activation was not treated as qualifying: email the Defense Health Agency at dha.san-diego.healthcare-ops.mbx.thp-eligibility-adj@health.mil to request reimbursement of civilian health coverage and care costs for you and covered family members, with your orders, separation documents and receipts or Explanations of Benefits".
+- The Guard/Reserve demobilization line points to that step. The POLICY_CHANGES entry and the Navigator corpus carry the same request and address.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: GUARD/RESERVE; ALREADY SEPARATED, as former Reserve Component members; SPOUSE/FAMILY, whose covered costs the member's request may include.   band: condition-triggered by a past denial; for former members, Post-Separation at any day-offset.   excluded: This does not apply to members whose TAMP was denied before 24 April 2020, or to denials for reasons other than the two the memo names.   timing: ACT AVAILABLE NOW.
+A2 act: "Email the Defense Health Agency at dha.san-diego.healthcare-ops.mbx.thp-eligibility-adj@health.mil to request reimbursement of civilian health coverage and care costs if you were found ineligible for TAMP on or after 24 April 2020 because your activation was not treated as qualifying, and include your orders, separation documents and receipts or Explanations of Benefits."
+A3 surface(s): CRITICAL WINDOWS (TRICARE TRANSITION action steps); POLICY_CHANGES; Navigator CORPUS; Guard/Reserve module pointer.   token: [CRITICAL WINDOWS]   sweep trigger: NONE. The app carried no earlier statement on TAMP reimbursement.
+A4 cost: MONEY
+EXPIRES: NONE stated by the memo. Recheck on any Defense Health Agency page, form or deadline for these requests, and on any change to the mailbox.

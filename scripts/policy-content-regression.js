@@ -290,4 +290,29 @@ check(occurrences(index, "Medically retired members, their families, and survivo
 check(occurrences(index, "(PHS and NOAA families and retirees remain at 100 miles)") === 4 && occurrences(index, "(retirees remain at 100 miles)") === 0,
   "all four Prime travel lines keep PHS, NOAA and retiree families at 100 miles");
 
+// TAMP Guard/Reserve eligibility and the reimbursement request.
+// V-2026-11-15-TAMP-RESERVE-ELIGIBILITY and V-2026-11-15-TAMP-REIMBURSEMENT.
+const tampDha = "dha.san-diego.healthcare-ops.mbx.thp-eligibility-adj@health.mil";
+const tampWindow = index.slice(index.indexOf('id:"tricare", num:6'), index.indexOf('{"label":"milConnect BWE"'));
+check(tampWindow.length > 2000 && tampWindow.includes('"Guard/Reserve release after more than 30 consecutive days of active duty for a preplanned mission (10 U.S.C. 12304b) or a contingency operation, including members who volunteered for active duty under 10 U.S.C. 12301(d)"'),
+  "TAMP list names the 12304b, contingency and 12301(d) routes");
+check(tampWindow.includes('"Guard/Reserve members do not need to show that the service was connected to a war, a contingency operation or a national emergency (DoD memo, corrected copy dated 27 AUG 2026)"'),
+  "TAMP list carries the memo's no-connection statement");
+check(occurrences(index, 'for a preplanned mission or contingency operation"') === 0 && occurrences(index, "preplanned mission or contingency, and") === 0 && occurrences(navigator, "preplanned mission or contingency, and") === 0,
+  "no surface keeps the superseded Guard/Reserve TAMP route wording");
+check(tampWindow.includes("found ineligible for TAMP on or after 24 APR 2020 because the activation was not treated as qualifying: email the Defense Health Agency at " + tampDha),
+  "TAMP window gives the reimbursement request and its 24 APR 2020 look-back");
+check(tampWindow.includes("tricare.mil/TAMP did not yet show the memo when checked 15 NOV 2026") && tampWindow.includes("this list is not a self-certification"),
+  "TAMP note dates the tricare.mil check and keeps the service determination");
+check(tampWindow.includes('{"label":"TAMP eligibility","url":"https://www.tricare.mil/TAMP"},{"label":"DoD TAMP eligibility memo, 27 AUG 2026 (PDF)","url":"https://www.hqrio.afrc.af.mil/Portals/149/Documents/27%20Aug%202026%20%E2%80%93%20Transitional%20Assistance%20Management%20Program%20Eligibility%20Memo.pdf"}'),
+  "TAMP window links the memo beside the TRICARE page");
+check(index.includes("including voluntary active duty under 10 U.S.C. 12301(d), and more than 30 consecutive days of qualifying National Guard Title 32 section 502(f) duty. A DoD memo (corrected copy dated 27 AUG 2026) says you do not need to show a connection to a war, contingency operation or national emergency.") &&
+  navigator.includes("including voluntary active duty under 10 U.S.C. 12301(d), and more than 30 consecutive days of qualifying National Guard Title 32 section 502(f) duty. A DoD memo (corrected copy dated 27 AUG 2026) says Guard/Reserve members do not need to show the service was connected to a war, contingency operation or national emergency."),
+  "Guard demobilization line and Navigator corpus state the same TAMP routes");
+check(occurrences(index, tampDha) === 2 && occurrences(navigator, tampDha) === 1 && occurrences(index, "thp-eligibility-adj@") === 2 && occurrences(navigator, "thp-eligibility-adj@") === 1,
+  "the Defense Health Agency address is spelled the same on every surface");
+check(index.includes('{ date: "27 AUG 2026", title: "TAMP: Guard/Reserve eligibility clarified, with reimbursement for past denials"') &&
+  occurrences(verificationLog, "## V-2026-11-15-TAMP-RESERVE-ELIGIBILITY ") === 1 && occurrences(verificationLog, "## V-2026-11-15-TAMP-REIMBURSEMENT ") === 1,
+  "TAMP policy entry exists with one verification record per finding");
+
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");
