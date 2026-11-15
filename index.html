@@ -9808,6 +9808,13 @@ function topsCurrentToolURL(href, tool) {
   if (TOPS_TOOL_ROUTES.indexOf(tool) === -1) return null;
   try { var url = new URL(href); if (url.searchParams.get("tool") === tool) return href; url.searchParams.set("tool", tool); return url.href; } catch (error) { return null; }
 }
+// A first load saves the plan and the document list with nothing checked. Those two keys mark a returning
+// member only when a task is checked or a document is marked obtained. A member's own action writes every other key here.
+function topsMemberHasSavedWork() {
+  var keys = [TOPS_GUIDE_KEY, TOPS_ACTION_KEY, TOPS_GAP_KEY, TOPS_JOBS_KEY, TOPS_COMPARISON_KEY, TOPS_FOLLOW_KEY, "tops_dismissed_reminders", "tops_sep_date", "etsDate", "tops_user_status", "tops_user_branch", "tops_user_concern"];
+  if (keys.some(function(key) { return !!window.__safeGet(key); })) return true;
+  return topsRestoreMilestones().some(function(m) { return m.tasks.some(function(t) { return t.done; }); }) || topsRestoreDocuments().some(function(d) { return d.obtained; });
+}
 function App() {
   // This optional saved copy is separate from career/profile state and all outbound tools.
   const [moveSaved, setMoveSaved] = useState(topsReadMoveSaved);
@@ -10061,8 +10068,7 @@ function App() {
       var t = new URLSearchParams(window.location.search).get("tool");
       if (t && validTabs.indexOf(t) !== -1) return false;
       if (!moveSaved.embedded && (moveSaved.raw !== null || moveSaved.error)) return false;
-      var returningKeys = [TOPS_GUIDE_KEY, TOPS_ACTION_KEY, TOPS_GAP_KEY, "tops_member_jobs_v1", "tops_sep_date", "taskProgress", "docProgress"];
-      if (returningKeys.some(function(key) { return !!window.__safeGet(key); })) return false;
+      if (topsMemberHasSavedWork()) return false;
       return !window.__safeGet("tops_onboarded");
     } catch(e) { return true; }
   });

@@ -50,6 +50,7 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 17 | Family step in the retirement FEDVIP reminders | Keep a family member's vision coverage across the sponsor's retirement | None | SHIP - ACT under `member-impact` | Cycle 16 |
 | 18 | Distinct labels on the Home next-move card | Tell six controls apart at a glance | None | ADOPT on Dean's order of 15 November, 13:57 | Cycle 17, merged as #237 |
 | 19 | Find a job or a new role on Home | Reach job search and role exploration from Home in one press | None; the two existing Career routes | ADOPT on Dean's order of 15 November, 14:18 | Cycle 18 |
+| 20 | Welcome screen returns until a start is picked | See the starting choices on a first real visit to the front door | None; reads keys the app already writes | ADOPT on Dean's order of 15 November, 14:18 | Cycle 19 |
 
 ## Needs Dean
 - Best Military Resume: legal entity name and registration, current free and paid terms, whether a mock interview tool exists, and what "Partner Organizations" receive. The current site gives a free account 2 tailored resumes and 2 company research reports; cover letters are paid; resume building needs an account.
@@ -420,3 +421,36 @@ Checked in a browser against the built files: the block on the Guard and Reserve
 Gate on the final tree: structural gate exit 0. Six semantic commands and the public build pass. Of 28 related browser regressions, 27 pass.
 
 The one failure: `wisconsin-pathway-browser` timed out once waiting for the Home card after a reload. Its script reloads right after pressing Home, with no wait for Home's address to settle. That is the race form repaired in `guard-reserve-browser` in cycle 15 and the likely cause here; the failing run left no address in its log to confirm it. The script passed in the full run made before the options test was reordered, and 3 of 3 times alone afterward. The app files are identical across those runs. It joins the test repair list.
+
+## Cycle 19 - The welcome screen returns until the visitor picks a start
+Order: Dean's 14:18 "fix them all". The welcome screen was on the fix list sent to him at 14:19.
+
+What was wrong:
+- A first visit to the front door shows the welcome screen. That same load saves the plan and the document list with nothing checked.
+- The rule that decides who is a returning member counted those two keys as saved work. A visitor who reloaded or came back before choosing went to Home, and the welcome screen never showed again in that browser.
+- The same rule named a saved-jobs key the app has never written, `tops_member_jobs_v1`. The app writes `tops_my_jobs_v1`. The two first-load keys masked the mistake, because every visitor already counted as returning.
+
+What ships:
+- The welcome screen shows at the front door until the visitor picks one of its starts or presses "Explore all tools".
+- A member with saved work still goes to Home with no onboarding flag. The new helper `topsMemberHasSavedWork` lists what counts: a direction, a chosen step, a career worksheet, a job list, comparison notes, reminder progress, a separation date and a service profile. A checked task or a document marked obtained counts too.
+- A deep link into a tool is unchanged. It never shows the welcome screen.
+
+Who notices:
+- A visitor who left the welcome screen without choosing sees it again at the front door.
+- A visitor who first arrived by a shared link and saved nothing sees it the first time they open the front door.
+
+A member with saved work sees no change. No wording changed.
+
+Test: the pin of the old behavior in `tool-url-continuity-browser-regression.js` is replaced by the rule. The script now covers the reload, a checked task, an obtained document, a saved job list, a saved profile, a saved date, a deep link followed by the front door, and "Explore all tools".
+
+Browser check on the built files: 38 checks pass, including each member-written key alone and the first-load keys alone. On the live build the same check confirms the old behavior.
+
+Gate: structural gate exit 0. Six semantic commands and the public build pass.
+
+Sweep of the 82 scripts that pass on `main` or were repaired in this loop: 79 pass. Three failed once and pass alone.
+- `career-direction-browser` and `service-career-browser` hit the request-interception race ("Invalid InterceptionId") and pass 3 of 3 alone.
+- `personal-step-calendar-browser` fails about 1 run in 6 with a missing calendar button. It fails at the same rate on the cycle 18 tree, so the cause predates this cycle.
+
+Found for the test repair list:
+- 13 scripts keep `tops_member_jobs_v1` in their saved-bytes snapshot, so none of them watches the real saved-jobs key.
+- The three scripts above, plus `wisconsin-pathway-browser` from cycle 18.
