@@ -7295,6 +7295,7 @@ function topsJobSearchLinks(role, area) {
   if (topsJobSearchError(role, area)) return null;
   role = role.trim(); area = area.trim();
   return {
+    careeronestop: "https://www.careeronestop.org/Toolkit/Jobs/find-jobs-results.aspx?" + new URLSearchParams({ keyword: role, location: area }).toString(),
     linkedin: "https://www.linkedin.com/jobs/search/?" + new URLSearchParams(Object.assign(role ? { keywords: role } : {}, { location: area })).toString(),
     federal: "https://www.usajobs.gov/Search/Results?" + new URLSearchParams(Object.assign(role ? { k: role } : {}, { l: area })).toString()
   };
@@ -7556,11 +7557,14 @@ function CareerJobSearch(props) {
     React.createElement("p", { id: "tops-job-sharing" }, "Opening a search sends only the role and area shown here to that job site, not your resume or saved plan. Each site opens in a new tab and has its own privacy practices."),
     links ? React.createElement("div", null,
       React.createElement("p", { role: "status" }, "Search for " + (state.keyword.trim() || "all roles") + " in " + state.state.trim()),
+      React.createElement("a", { id: "tops-job-careeronestop", href: links.careeronestop, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing tops-job-careeronestop-note", style: link }, "Search CareerOneStop jobs (new tab)"),
       React.createElement("a", { href: links.linkedin, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing", style: link }, "Search LinkedIn jobs (new tab)"),
-      React.createElement("a", { href: links.federal, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing", style: link }, "Search federal jobs on USAJOBS (new tab)")) : React.createElement("p", { role: "status" }, "Add a city, state or full ZIP code to prepare your searches. Keywords are optional."),
+      React.createElement("a", { href: links.federal, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing", style: link }, "Search federal jobs on USAJOBS (new tab)"),
+      React.createElement("p", { id: "tops-job-careeronestop-note", style: { color: C.textSecondary } }, "CareerOneStop is sponsored by the U.S. Department of Labor. Its listings come from state job banks and employers through the National Labor Exchange, and you can read a posting without an account.")) : React.createElement("p", { role: "status" }, "Add a city, state or full ZIP code to prepare your searches. Keywords are optional."),
     React.createElement("details", { id: "tops-job-remote-help" }, React.createElement("summary", { style: { minHeight: 44, cursor: "pointer" } }, "Remote and hybrid search tips"), React.createElement("p", null, "Looking for remote or hybrid work? Set that filter on the job site. Check each posting's duties, requirements and work location before deciding whether it fits.")),
     React.createElement("a", { href: "https://www.careeronestop.org/Veterans/JobSearch/FindOpenings/state-job-banks.aspx", target: "_blank", rel: "noopener noreferrer", style: link }, "Browse official state job banks (new tab)"),
-    React.createElement("p", { style: { color: C.textSecondary } }, "Federal results are public USAJOBS listings, not verified matches. LinkedIn and state job banks open separately. Search edits and results stay in this visit and do not replace your saved career goal."),
+    React.createElement("a", { id: "tops-job-veteran-matcher", href: "https://www.careeronestop.org/Toolkit/Jobs/match-veteran-jobs.aspx", target: "_blank", rel: "noopener noreferrer", style: link }, "Find civilian careers related to your military job: Veterans Job Matcher (new tab)"),
+    React.createElement("p", { style: { color: C.textSecondary } }, "Federal results are public USAJOBS listings, not verified matches. CareerOneStop, LinkedIn and state job banks open separately. Search edits and results stay in this visit and do not replace your saved career goal."),
     links && React.createElement("section", { "aria-labelledby": "tops-job-share-heading", style: { margin: "20px 0" } },
       React.createElement("h3", { id: "tops-job-share-heading" }, "Keep this search"),
       React.createElement("p", null, "Create a link containing only this role and location. Leave personal details out of these search fields. Anyone with the link can read its query; it does not include your resume, plan or results."),
@@ -13305,7 +13309,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     (activeTab !== "pathway" || careerScreen !== "jobs") && React.createElement("button", { type: "button", "aria-expanded": jobsQ.open, "aria-controls": "tops-live-jobs-panel", onClick: function() { if (jobsQ.open) { returnToCareerWorkspace(); return; } setJobsQ(function(p){ return Object.assign({}, p, { open: true, keyword: topsJobSearchQuery(p.keyword, p.state) ? p.keyword : p.keyword || guideState.draft.targetRole || "" }); }); }, style: { display: "flex", width: "100%", minHeight: 44, padding: 0, background: "transparent", border: "none", justifyContent: "space-between", alignItems: "center", textAlign: "left", color: "inherit", cursor: "pointer" } },
       React.createElement("span", { style: { display: "block", minWidth: 0 } },
         React.createElement("span", { style: { display: "block", fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1.5, color: C.goldBright, fontWeight: 700 } }, JOBS_LIVE ? "Search job openings" : "Find jobs by role and area"),
-        React.createElement("span", { style: { display: "block", fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, JOBS_LIVE ? "Search CareerOneStop job listings by keyword and location." : "Search public federal openings when connected, or open LinkedIn and USAJOBS searches. No automatic job matching.")),
+        React.createElement("span", { style: { display: "block", fontSize: 11.5, color: C.textSecondary, marginTop: 3, lineHeight: 1.5 } }, JOBS_LIVE ? "Search CareerOneStop job listings by keyword and location." : "Search public federal openings when connected, or open CareerOneStop, LinkedIn and USAJOBS searches. No automatic job matching.")),
       React.createElement("span", { "aria-hidden": "true", style: { color: C.goldBright, fontSize: 16, transform: jobsQ.open ? "rotate(90deg)" : "none" } }, "\u203A")),
     !jobsQ.open && (!jobsVisited.current || JOBS_LIVE) && React.createElement("div", { id: "tops-live-jobs-panel", hidden: true }),
     jobsVisited.current && !JOBS_LIVE && React.createElement("div", { id: "tops-live-jobs-panel", hidden: !jobsQ.open, tabIndex: -1, style: { marginTop: 12 } },

@@ -31,8 +31,8 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 
 | # | Item | Member job | Data dependency | Disposition | State |
 |---|---|---|---|---|---|
-| 1 | TAMP Guard/Reserve eligibility and reimbursement | Use a health benefit the member has earned | None | SHIP - ACT | Cycle 1 |
-| 2 | CareerOneStop Job Finder and Veterans Job Matcher links | Find private-sector openings by role and area | The member's browser opens a federal site | ADOPT | Next |
+| 1 | TAMP Guard/Reserve eligibility and reimbursement | Use a health benefit the member has earned | None | SHIP - ACT | Cycle 1, merged as #219 |
+| 2 | CareerOneStop Job Finder and Veterans Job Matcher links | Find private-sector openings by role and area | The member's browser opens a federal site | ADOPT | Cycle 2, staged |
 | 3 | Candidate introduction to VBS carries role, location, availability and member-chosen experience | Reach a recruiter with a usable summary | The member's own email app; the app sends nothing | LOCAL SYNTHETIC TEST | Queued |
 | 4 | VBS roles block with end dates | See named roles, Wisconsin first | A list Dean controls | WATCH: needs Dean's roles and disclosure line | Mechanism can be built; shows nothing until roles exist |
 | 5 | Replace the hand-kept SkillBridge feed with the official check | Avoid acting on a stale opening | None | ADOPT | Queued |
@@ -66,3 +66,16 @@ What changed: the TAMP eligibility list, note, heading, action steps and sources
 Tooling note: the Navigator text lives in an OpenAI entry function, which triggers gate step 4N. `netlify-cli` 26.1.0, the version in the project's records, was installed in the Claude workspace before the gate so that step could run as written.
 
 Gate evidence and the hosted preview check are in the pull request.
+
+Outcome: staged as #219 on top of #216, #217 and #218. Dean ordered "merge all and keep building" in chat at 07:55 Central. Merged at head `658f5df`; `main` became `a59ba9f`. Production served the merged files with cache v322 at 13:59 UTC. The order was read as covering what was staged at that moment; later cycles wait for their own order.
+
+## Cycle 2 - CareerOneStop Job Finder and Veterans Job Matcher links
+Member job: find private-sector openings by role and area. Before this cycle the app searched federal openings and linked out to LinkedIn, USAJOBS and the state job bank directory.
+
+What changed: Career job search now prepares a CareerOneStop Job Finder search from the same role and area, with one line saying what the site is. A Veterans Job Matcher link sits beside the state job banks link. Two summaries name CareerOneStop.
+
+Evidence: both tools were read at Tier 2. A test search for "logistics" near Green Bay returned 92 listings on CareerOneStop; the same search inside the app on 14 November returned one federal opening. Record: V-2026-11-15-CAREERONESTOP-JOB-LINKS.
+
+Data dependency: none new. The link is an ordinary anchor; the role and area travel in the address from the member's browser, as they already do for LinkedIn and USAJOBS. The in-app listing feed stays off until the Jobs API request is approved.
+
+Disposition: ADOPT. Six content checks and one browser regression were added. Gate evidence and the hosted preview check are in the pull request.

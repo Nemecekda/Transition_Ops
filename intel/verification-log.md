@@ -3234,3 +3234,41 @@ A2 act: "Email the Defense Health Agency at dha.san-diego.healthcare-ops.mbx.thp
 A3 surface(s): CRITICAL WINDOWS (TRICARE TRANSITION action steps); POLICY_CHANGES; Navigator CORPUS; Guard/Reserve module pointer.   token: [CRITICAL WINDOWS]   sweep trigger: NONE. The app carried no earlier statement on TAMP reimbursement.
 A4 cost: MONEY
 EXPIRES: NONE stated by the memo. Recheck on any Defense Health Agency page, form or deadline for these requests, and on any change to the mailbox.
+
+## V-2026-11-15-CAREERONESTOP-JOB-LINKS - CareerOneStop Job Finder and Veterans Job Matcher (verified 15 November 2026)
+
+**Status:** CONFIRMED at Tier 2. Wording staged for Dean's approval on branch `claude/loop-02-job-links-20261115`. Not released at the time of this entry.
+
+**Claims:**
+1. CareerOneStop's header reads "Sponsored by the U.S. Department of Labor."
+2. Its Job Finder says it searches thousands of job postings updated daily, that a visitor can see complete postings and job details without creating an account, and that a posting links to the employer website or state job bank to apply.
+3. Job Finder results open from the address `https://www.careeronestop.org/Toolkit/Jobs/find-jobs-results.aspx` with two query keys, `keyword` and `location`. A city and state, a ZIP code and an empty keyword all returned results.
+4. CareerOneStop's job postings come from NLx, the National Labor Exchange, which includes jobs posted on state job banks and by private employers.
+5. The Veterans Job Matcher at `https://www.careeronestop.org/Toolkit/Jobs/match-veteran-jobs.aspx` asks for a military job and returns related civilian careers, with career information and links to job postings in the visitor's area.
+
+**Sources, read 15 November 2026 at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). No CAPTCHA was presented or solved. No account was created:**
+- https://www.careeronestop.org/Toolkit/Jobs/find-jobs.aspx , about 13:17 and 13:58 UTC. Claims 1 and 2.
+- Results address, about 13:16 to 13:20 UTC: `keyword=logistics` with `location=54301` returned "92 jobs found"; `keyword=logistics` with `location=Green+Bay%2C+WI` returned "92 jobs found for logistics in Green Bay, WI". About 13:54 UTC: an empty `keyword` with `location=54211` returned "315 jobs found". Claim 3. Result counts are that moment's and are not app content.
+- https://www.careeronestop.org/Toolkit/Jobs/match-veteran-jobs.aspx , about 13:24 UTC. Claim 5. Its branch choices were All branches, Air Force, Army, Coast Guard, Marines and Navy. No Space Force choice was shown, so the app's label says "military job" and names no code system.
+
+**Tier 1, search retrieval the same day:** CareerOneStop's Job Finder help page states claim 4 and adds that a scam can still get posted. The Department of Labor's veterans page at dol.gov/veterans/findajob lists both tools.
+
+**One failed request, recorded:** the first results request at 13:15 UTC, with the space written as `%20`, returned a Cloudflare 520 error. The same search with `+` succeeded a minute later. The app builds the address with `URLSearchParams`, which writes `+`.
+
+**Vetting:** treated as TIER 1. The site runs on a .org domain under U.S. Department of Labor sponsorship, and a dol.gov page links both tools. No fee, no account requirement to read postings, no claims assistance.
+
+**What the app does not say:** it does not call the listings vetted, verified or matched, and it promises no opening. CareerOneStop tags some employers "Federal Contractor" in results; the app does not mention that tag, and its meaning was not verified.
+
+**Privacy check under `privacy-truth-to-implementation`:** the new link is an ordinary anchor. Opening it sends the role and area in the address to careeronestop.org from the member's browser, the same pattern as the existing LinkedIn and USAJOBS links. The existing sentence on that panel already states this: "Opening a search sends only the role and area shown here to that job site, not your resume or saved plan. Each site opens in a new tab and has its own privacy practices." No function, storage or telemetry changed.
+
+**App change (wording staged for Dean's approval):**
+- Career job search, prepared searches: new first link "Search CareerOneStop jobs (new tab)", followed by the note "CareerOneStop is sponsored by the U.S. Department of Labor. Its listings come from state job banks and employers through the National Labor Exchange, and you can read a posting without an account."
+- Same panel: new link "Find civilian careers related to your military job: Veterans Job Matcher (new tab)" after the state job banks link.
+- Two summaries now name CareerOneStop: "CareerOneStop, LinkedIn and state job banks open separately." and "...or open CareerOneStop, LinkedIn and USAJOBS searches. No automatic job matching."
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: All four may search civilian job listings; no eligibility is involved.   band: condition-triggered by a job search; no fixed separation milestone or day-offset.   excluded: The links establish no opening, hiring preference or match for any member.   timing: ACT AVAILABLE NOW
+A2 act: "Open CareerOneStop's Job Finder from Career job search to read current postings for your role and area."
+A3 surface(s): Career job search (prepared searches and the collapsed-panel summary).   token: NONE; direct official links.   sweep trigger: NONE
+A4 cost: NOTHING
+EXPIRES: NONE. Recheck if the results address stops returning results or CareerOneStop changes its account or sponsorship statement. The in-app listing feed stays off (`JOBS_LIVE = false`) until the Jobs API request is approved.
