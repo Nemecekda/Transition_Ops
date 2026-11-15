@@ -43,7 +43,7 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 10 | What's New and the verified stamp | See what changed since the last visit | None | ADOPT on Dean's order of 15 November, 10:30 | Cycle 9, merged as #228 |
 | 11 | Best Military Resume link | Resume and interview practice | Third-party account | REJECT for now: s2-vetting found no verifiable legal entity; reopens on Dean's outreach to the founder | Parked |
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
-| 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below; cycle 13's gate found four more; cycle 14 repaired two of those and found the other two are right; cycle 15 fixes the app for both |
+| 13 | Repair stale browser test scripts | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search test scripts remain, diagnosed below; cycle 13's gate found four more; cycle 14 repaired two of those and found the other two are right; cycle 15 fixes the app for both; cycle 21 repaired two and steadied two; cycle 22 repaired two more and dated the Career family's cause |
 | 14 | TRICARE 2027 costs: a Policy Intel entry and a costs link in the open season notice | Choose a 2027 plan with the costs in hand before 8 DEC 2026 | None; the member's browser opens tricare.mil | SHIP - ACT under `member-impact` | Cycle 10, merged as #229 |
 | 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None; the member's browser opens benefeds.gov | SHIP - ACT under `member-impact` | Cycle 11, merged as #230 |
 | 16 | Share a deadline or one state's links; reachable app share | Pass a useful, specific thing to another service member | None; fixed text and one address, no tracking | ADOPT on Dean's order of 15 November, 12:36 | Cycle 13 |
@@ -125,14 +125,14 @@ Data dependency: none. Two ordinary links. The app passes no search term to the 
 
 Disposition: ADOPT. Six content checks were added, and two browser regressions now cover the links. Gate evidence and the hosted preview check are in the pull request.
 
-Baseline note from cycle 4's gate: `wisconsin-pathway-browser-regression` fails while waiting for a "For this visit" status after the member chooses to use a plan for one visit. The same failure occurs on `main` at `5543926` and at `92fb1a8`, the commit before today's first merge, so this cycle did not cause it. The cause is not yet diagnosed. Either the harness is stale or the status does not render. Backlog row 13 covers it.
+Baseline note from cycle 4's gate: `wisconsin-pathway-browser-regression` fails while waiting for a "For this visit" status after the member chooses to use a plan for one visit. The same failure occurs on `main` at `5543926` and at `92fb1a8`, the commit before today's first merge, so this cycle did not cause it. The cause is not yet diagnosed. Either the test script is stale or the status does not render. Backlog row 13 covers it.
 
 One layout fix inside this cycle: the first browser check showed the job-search note running straight into the paragraph after it. The note now carries a 14 px bottom margin.
 
 ## Cycle 5 - Stale test repair (tests only)
 `wisconsin-pathway-browser-regression` waited for a status containing "For this visit". Commit `90611aa` (#156, "Clarify saved and temporary next steps") changed that message to "This step is not saved." and left the test behind. The app behaves as #156 designed it. The test now expects the current wording and passes end to end. One expectation changed; it is as strict as before.
 
-Three job-search harnesses still fail on `main`. Each needs a decision about intended behavior, so they stay queued:
+Three job-search test scripts still fail on `main`. Each needs a decision about intended behavior, so they stay queued:
 - `career-job-search-flow`: `#tops-career-find-jobs` exists but does not take focus when the test calls `focus()` (line 15).
 - `federal-jobs-browser`: a helper reads `parentElement` of an element that is no longer on the page (line 12).
 - `career-home-search-continuity`: waits for `#career-starter-resume` at `/?tool=pathway&case=timeline`, and that element does not render there (line 40).
@@ -501,3 +501,38 @@ Found and left for the next batch:
 - 11 Career scripts fail on one control, "Open my current career plan". One cause may repair many.
 
 Standing after this batch: 124 scripts, 84 pass, 40 fail. The 40 are 30 Career scripts and 10 others, two of which cannot run in this workspace.
+
+## Cycle 22 - Test repairs, batch 2
+Order: Dean's 14:18 "fix them all", continued at the 16:36 check-in. Tests only. The cache stays at v339.
+
+| Script | What was wrong | Repair |
+|---|---|---|
+| `personal-guide-browser` | Last edited 8 October. Four later changes passed it by: Home search results put the name before its type; the topic picker gained State benefits and local help (#154); the document checklist moved into My Plan (#148); and the picker is absent on that checklist. | Four edits. The count is exact at 11, nine topics are checked in the picker, and the two that open their own page are each checked for where they land. |
+| `career-action-browser` | The career guide panel shows only on the Other Career tools screen since 10 October (`017b87c`). A downloaded plan backup is version 4 with a `memberJobs` section since 9 October (`0cbb657`). | The script opens that screen first. Its version 1 and version 2 fixtures drop `memberJobs`, as they already dropped the other later sections. |
+
+Both pass 3 of 3. Structural gate exit 0. Six semantic commands, the public build and four related scripts pass.
+
+### The Career family, dated
+- 29 Career scripts still fail. They were written for the Career that existed before two redesigns.
+- `42b6c78` on 10 October opens a coherent saved plan directly and removed "Back to career choices".
+- #147 (`f948e3b`) on 13 October removed "Review and save", "Continue my career draft", "Return to my draft" and "Start with my experience".
+
+11 of the 29 stop at "Open my current career plan", a press Career now skips. I probed four of them past that point and each failed again: three on a control #147 removed, one on a draft panel that no longer shows.
+
+A one-for-one repair means rewriting each script against today's Career. The cheaper path is to decide which of those features still exist, cover them with a smaller set of current scripts, and file the rest. Filing removes assertions, so the choice is Dean's.
+
+### Other open scripts, with the first thing each one fails on
+| Script | First failure |
+|---|---|
+| `member-loop-browser` | Its first block tests the welcome screen that #163 replaced |
+| `my-jobs-browser` | Looks for "Return to my draft", removed by #147 |
+| `federal-jobs-browser` | A control lookup returns nothing at its line 12 |
+| `support-compact-review-browser` | A layout budget: the save control sits lower than its 572 or 668 px limit |
+| `tap-worksheet-browser` | Waits for a worksheet that does not render |
+| `tap-integration` | Pins the text of the transition milestones, which later approved cycles changed |
+| `counselor-preparation` | Point-in-time hash of the source above `TOPS_GAP_KEY` |
+| `guard-reserve-regression`, `vgli-window-regression` | Need commits this workspace does not hold |
+
+`dd214-upload-browser` passes and still stalls about 1 run in 6.
+
+Standing after this batch: 124 scripts, 86 pass, 38 fail. The 38 are 29 Career scripts and 9 others.
