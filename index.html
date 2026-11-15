@@ -7075,6 +7075,9 @@ const TOPS_TOOL_CHOICES = [
   { id: "critical", title: "Critical windows", description: "Review time-sensitive transition guidance", keywords: "critical windows deadlines" },
   { id: "navigator", title: "Navigator", description: "Ask for help choosing a next step", keywords: "ask navigator help" }
 ];
+// A save that moves between Guard or Reserve and any other profile rebuilds Home, and this editor with it.
+// The editor being replaced hands its confirmation to the one that replaces it. A note older than two seconds is dropped.
+var topsServiceProfileHandoff = null;
 function ServiceProfileEditor(props) {
   var C = props.colors;
   var valid = function(value) { return TOPS_SERVICE_PROFILES.some(function(row) { return row[0] === value; }); };
@@ -7082,6 +7085,12 @@ function ServiceProfileEditor(props) {
   var messagePair = React.useState(""), message = messagePair[0], setMessage = messagePair[1];
   var detailsRef = React.useRef(null), summaryRef = React.useRef(null), headingRef = React.useRef(null);
   var sessionOnly = window.__IS_IFRAME === true;
+  React.useEffect(function() {
+    var note = topsServiceProfileHandoff; topsServiceProfileHandoff = null;
+    if (!note || Date.now() - note.at > 2000) return;
+    var timer = window.setTimeout(function() { setMessage(note.text); }, 80);
+    return function() { window.clearTimeout(timer); };
+  }, []);
   var controlStyle = { minHeight: 44, padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 6, background: C.bgCard, color: C.textPrimary, fontSize: 14, cursor: "pointer" };
   function cancel() { setDraft(valid(props.value) ? props.value : ""); setMessage(""); detailsRef.current.open = false; summaryRef.current.focus(); }
   function save() {
@@ -7090,10 +7099,12 @@ function ServiceProfileEditor(props) {
       try { window.__safeSet("tops_user_status", draft); if (window.__safeGet("tops_user_status") !== draft) throw new Error("not_saved"); }
       catch (e) { setMessage("Not saved. Your app view has not changed. Try again or cancel."); return; }
     }
+    var saved = sessionOnly ? "Service profile updated for this session only." : "Service profile updated.";
+    topsServiceProfileHandoff = { text: saved, at: Date.now() };
     props.onSave(draft);
-    setMessage(sessionOnly ? "Service profile updated for this session only." : "Service profile updated.");
+    setMessage(saved);
     detailsRef.current.open = false;
-    window.requestAnimationFrame(function() { headingRef.current.focus(); });
+    window.requestAnimationFrame(function() { var heading = document.getElementById("service-profile-heading"); if (heading) heading.focus(); });
   }
   return React.createElement("section", { "aria-labelledby": "service-profile-heading", style: { marginBottom: 14 } },
     React.createElement("details", { ref: detailsRef },
@@ -12359,7 +12370,7 @@ function App() {
         ),
 
         // Planning to separate callout
-        React.createElement("button", { type: "button", className: "dash-card", style: { width: "100%", minHeight: 44, textAlign: "left", color: C.textPrimary, borderColor: C.goldBright, borderStyle: "dashed", margin: "14px 0 10px", cursor: "pointer" }, onClick: function() { setActiveTab("timeline"); window.scrollTo(0, 0); } },
+        React.createElement("button", { id: "tops-guard-open-timeline", type: "button", className: "dash-card", style: { width: "100%", minHeight: 44, textAlign: "left", color: C.textPrimary, borderColor: C.goldBright, borderStyle: "dashed", margin: "14px 0 10px", cursor: "pointer" }, onClick: function() { openPlanRoute("timeline", "tops-plan-timeline", "tops-guard-open-timeline"); } },
           React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
             React.createElement("span", { style: { fontSize: 20 } }, "\u2694\uFE0F"),
             React.createElement("div", { style: { flex: 1 } },

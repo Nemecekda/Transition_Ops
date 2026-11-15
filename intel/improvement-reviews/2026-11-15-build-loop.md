@@ -43,7 +43,7 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 10 | What's New and the verified stamp | See what changed since the last visit | None | ADOPT on Dean's order of 15 November, 10:30 | Cycle 9, merged as #228 |
 | 11 | Best Military Resume link | Resume and interview practice | Third-party account | REJECT for now: s2-vetting found no verifiable legal entity; reopens on Dean's outreach to the founder | Parked |
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
-| 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below; cycle 13's gate found four more; cycle 14 repaired two of those and found the other two are right |
+| 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below; cycle 13's gate found four more; cycle 14 repaired two of those and found the other two are right; cycle 15 fixes the app for both |
 | 14 | TRICARE 2027 costs: a Policy Intel entry and a costs link in the open season notice | Choose a 2027 plan with the costs in hand before 8 DEC 2026 | None; the member's browser opens tricare.mil | SHIP - ACT under `member-impact` | Cycle 10, merged as #229 |
 | 15 | Dated notice for Federal Benefits Open Season (FEDVIP dental and vision) | Enroll before the window closes on 14 DEC 2026 | None; the member's browser opens benefeds.gov | SHIP - ACT under `member-impact` | Cycle 11, merged as #230 |
 | 16 | Share a deadline or one state's links; reachable app share | Pass a useful, specific thing to another service member | None; fixed text and one address, no tracking | ADOPT on Dean's order of 15 November, 12:36 | Cycle 13 |
@@ -303,3 +303,29 @@ Found, and carried to cycle 15: the two other failing scripts are right. Each ca
 Still failing after this cycle: those two scripts, until cycle 15 merges, and the three job-search scripts in row 13.
 
 Evidence: `navigation-refresh` 1 of 1, `tool-url-continuity-browser` 3 of 3, `home-visual-browser` 4 of 4. Run against untouched `main`, the repaired address script fails at the linked-state step, as it should before #233.
+
+## Cycle 15 - Two Guard and Reserve Home fixes
+No policy claim and no new wording. Cache v334.
+
+Both defects were found by regressions that had been failing since October.
+
+1. Service profile save. Home has two layouts: one for Guard and Reserve, one for everyone else. A save that crosses between them rebuilds Home, and the editor with it. Since `5f96b7c` (7 OCT) that save threw "Cannot read properties of null (reading 'focus')", dropped keyboard focus to the page body, and never showed "Service profile updated."
+   - Fix: the save moves focus to the Service profile heading that is on the page after Home settles. The editor being replaced hands its confirmation to the one that replaces it. The new editor shows it a moment after it is on the page, so the status line changes and a screen reader can announce it. A note older than two seconds is dropped.
+2. "Open transition timeline" on Guard and Reserve Home. Since `d071539` (10 OCT) it opened the My Plan hub and left focus on the page body.
+   - Fix: it opens the timeline the way Home's own timeline control does. Focus lands on the timeline, and returns to the control when the member comes back to Home.
+
+Test repairs in the same change:
+- `profile-access-browser` now requires the confirmation after every save, including the two that rebuild Home. Its last scenario evaluated 2,750 lines of app source in isolation and broke on a name defined above them. It now evaluates the profile list and the editor only.
+- `guard-reserve-browser`: two steps reloaded from the career plan and expected Home. They now return Home first and wait for the address to follow. The timeline step now requires focus on the timeline.
+- The three scripts that have shown the paused-request race now tolerate both of its forms: a request whose page reloaded, and a request left paused while Chrome closes.
+
+Proof that the scripts test the fix: run against the app without it, the repaired profile script stops at "Home heading focus" with one uncaught error, and the repaired Guard script stops at "Timeline".
+
+Evidence: `profile-access-browser` passes 3 of 3 and `guard-reserve-browser` 4 of 4. A browser check of both fixes passes 45 of 45 across two themes and two widths. The six gate commands and the build exit 0. Fifteen other related regressions pass.
+
+Baseline note from cycle 15's gate: three more Home regressions fail the same way on untouched `main` at `4729654`. They are not yet diagnosed.
+- `member-loop-browser`: stops at "first visit welcome".
+- `member-action-hierarchy-browser`: an assertion at line 25.
+- `member-priority-browser`: an assertion at line 54.
+
+Two of the four scripts diagnosed so far were right about the app, so these three are next. A run of every script against `main` was started to map the rest.
