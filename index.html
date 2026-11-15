@@ -3653,6 +3653,9 @@ function reminderHasCurrentDayContext(rung, dateStr) {
   var d = daysToETSDate(dateStr);
   if (d === null || !Number.isFinite(d)) return false;
   if (rung.id === "r-6-bdd2") return rungIsDue(rung, dateStr);
+  // The generated [BDD CLAIM] window cards share that window. Before and during it they behave as before;
+  // once fewer than 90 days remain they are no longer a current item. V-2026-11-14-BDD-WINDOW-CARD.
+  if (rung.origin === "cw" && rung.cwId === "bdd") return d >= RUNG_BDD_WINDOW.end;
   if (rung.id === "r-0-ets" || Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)) {
     return rungIsDue(rung, dateStr) && !rungIsStale(rung, dateStr);
   }
@@ -3660,12 +3663,13 @@ function reminderHasCurrentDayContext(rung, dateStr) {
 }
 
 function reminderTimingContext(rung, dateStr) {
-  if (rung.id !== "r-0-ets" && rung.id !== "r-6-bdd2" && !Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)) return "";
+  var bddWindowCard = rung.origin === "cw" && rung.cwId === "bdd";
+  if (rung.id !== "r-0-ets" && rung.id !== "r-6-bdd2" && !bddWindowCard && !Object.prototype.hasOwnProperty.call(RUNG_DAY_TRIGGERS, rung.id)) return "";
   var days = daysToETSDate(dateStr);
-  if (days === null || !Number.isFinite(days)) return "Add or review your transition date to check when this reminder applies. Timing does not establish eligibility.";
+  if (days === null || !Number.isFinite(days)) return bddWindowCard ? "" : "Add or review your transition date to check when this reminder applies. Timing does not establish eligibility.";
   if (reminderHasCurrentDayContext(rung, dateStr)) return "";
-  var start = rung.id === "r-6-bdd2" ? RUNG_BDD_WINDOW.start : rungTriggerDay(rung);
-  return (days > start ? "This reminder is scheduled for later." : "This reminder's scheduled period has passed.") + " You can still review its steps and update your progress. This is not a current alert or an eligibility decision." + (rung.id === "r-6-bdd2" && days < RUNG_BDD_WINDOW.end ? " You can still file a standard disability claim. Review VA's requirements using the resource link below." : "");
+  var start = rung.id === "r-6-bdd2" || bddWindowCard ? RUNG_BDD_WINDOW.start : rungTriggerDay(rung);
+  return (days > start ? "This reminder is scheduled for later." : "This reminder's scheduled period has passed.") + " You can still review its steps and update your progress. This is not a current alert or an eligibility decision." + ((rung.id === "r-6-bdd2" || bddWindowCard) && days < RUNG_BDD_WINDOW.end ? " You can still file a standard disability claim. Review VA's requirements using the resource link below." : "");
 }
 
 // Due rungs the member has not already been notified about, most urgent first.
@@ -12204,6 +12208,8 @@ function App() {
             React.createElement("span", { style: { fontSize: 14, color: C.goldBright } }, "\u2192")
           )
         ),
+
+        separationDate && React.createElement("button", { id: "tops-home-calendar-export", type: "button", onClick: function() { if (downloadDeadlineICS(separationDate, window.__trackEvent)) showToast("Calendar file downloaded. Import it, then check the reminder settings."); else showToast("Could not create the calendar file. Check your transition date and try again."); }, style: { width: "100%", minHeight: 44, marginBottom: 12, padding: "13px", background: "none", border: "1px dashed " + C.gold, borderRadius: 8, color: C.gold, fontFamily: "'Oswald', sans-serif", fontSize: 12, letterSpacing: 1.5, cursor: "pointer" } }, "\uD83D\uDCC5 ADD MY DEADLINES TO CALENDAR (.ICS)"),
 
         // Share + VBS
         React.createElement("button", { onClick: function() {
