@@ -3005,3 +3005,85 @@ EXPIRES: NONE; re-verify when VA updates the page.
 **Member-impact:** NOT RE-RUN. Nothing new ships from this entry. An exclusion line, if Dean wants one, gets its own assessment first.
 
 EXPIRES: 2027-12-31 for the copay figures.
+
+# Cohort employer verification append packet (15 November 2026)
+
+Checked 2026-11-15, America/Chicago. CONFIRMED means the narrow claim only. Employer identity is first-party evidence. Cohort or partner status is Dean-reported, not federal certification. SkillBridge authorization is read from the official list and is separate from a listed position, a placement or a member's approval. Wording is staged for Dean's approval on branch `claude/partner-employers-20261115`.
+
+## WI5-20261115-JOHNSONVILLE - Johnsonville
+
+Rating: **CONFIRMED**. The company's own careers site confirms its identity, career page and the bounded field description. Dean named the company as one of his partner organizations in chat on 15 November 2026; this is relationship provenance, not government approval.
+
+Source(s):
+- [JOHNSONVILLE](https://careers.johnsonville.com/Johnsonville)
+
+Tier 2 orchestrator browser read on 2026-11-15 (Claude in Chrome, Dean's session). No CAPTCHA was presented or solved. The page lists locations in Sheboygan Falls and Watertown, Wisconsin, in Holton, Kansas and in Hinesburg, Vermont. Its career areas include hourly manufacturing, trucking, supply chain and office support. Only identity and career subject verified. A cookie banner was shown and was not accepted.
+
+Vetting: TIER 3, commercial employer. No rejection flag: no fee for federal benefits, no claims assistance, verifiable corporate identity. Disposition: listed at Dean's direction.
+
+SkillBridge: not on the official list of authorized SkillBridge organizations when checked 2026-11-15. No SkillBridge claim is made.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: All four may explore civilian career information; eligibility for employment, training or SkillBridge is separately determined.   band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset.   excluded: Cohort membership does not establish a current opening, VA training approval, SkillBridge authorization, preferred access or an endorsement.   timing: ACT AVAILABLE NOW
+A2 act: "Open Johnsonville's official careers page to review its role information and application instructions."
+A3 surface(s): RESOURCES Wisconsin guide (cohort companies); Career job search for Wisconsin areas.   token: NONE; direct official link.   sweep trigger: FIRED - local company and cohort identity must stay separate from official SkillBridge program and position approval. The same data now feeds both surfaces.
+A4 cost: NOTHING
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: Manufacturing, trucking, supply chain and office careers. Wisconsin locations in Sheboygan Falls and Watertown.
+Runtime boundary: Employer career information. Confirm openings, location, requirements and any SkillBridge arrangement directly; no job, benefit or approved placement is promised.
+
+## WI5-20261115-TTX - Therma-Tron-X, Inc. (TTX)
+
+Rating: **CONFIRMED**. The company's own website confirms its identity, career page and the bounded field description. Dean identified "TTX" as the Sturgeon Bay company in chat on 15 November 2026, after the railcar company TTX Company was put to him as a candidate and rejected. This is relationship provenance, not government approval.
+
+Source(s):
+- [TTX](https://www.ttxinc.com/careers)
+
+Tier 2 orchestrator browser read on 2026-11-15 (Claude in Chrome, Dean's session). No CAPTCHA was presented or solved. The page is titled "Careers | Therma-Tron-X, Inc.", gives a Sturgeon Bay, WI 54235 address, and lists positions the company often hires for: mechanical, electrical and chemical engineers, project engineer, PLC programmer, sales engineer, industrial electrician, industrial plumber and welder/fitter. Its current openings link goes to jobs.lever.co/ttxinc. Only identity and career subject verified.
+
+Vetting: TIER 3, commercial employer. No rejection flag: no fee for federal benefits, no claims assistance, verifiable corporate identity. Disposition: listed at Dean's direction.
+
+SkillBridge: not on the official list of authorized SkillBridge organizations when checked 2026-11-15. No SkillBridge claim is made.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: All four may explore civilian career information; eligibility for employment, training or SkillBridge is separately determined.   band: Condition-triggered inquiry or planning; no fixed separation milestone or day-offset.   excluded: Cohort membership does not establish a current opening, VA training approval, SkillBridge authorization, preferred access or an endorsement.   timing: ACT AVAILABLE NOW
+A2 act: "Open Therma-Tron-X's official careers page to review its role information and application instructions."
+A3 surface(s): RESOURCES Wisconsin guide (cohort companies); Career job search for Wisconsin areas.   token: NONE; direct official link.   sweep trigger: FIRED - local company and cohort identity must stay separate from official SkillBridge program and position approval. The same data now feeds both surfaces.
+A4 cost: NOTHING
+EXPIRES: NONE; changing source status and individual arrangements require rechecking.
+
+Runtime summary: Engineering, PLC programming, industrial electrician and welder careers in Sturgeon Bay.
+Runtime boundary: Employer career information. Confirm openings, location, requirements and any SkillBridge arrangement directly; no job, benefit or approved placement is promised.
+
+## WI5-20261115-SKILLBRIDGE-AUTHORIZED - Two cohort employers are on the official list of authorized SkillBridge organizations
+
+Rating: **CONFIRMED** for the narrow claim. On 15 November 2026 the official list of authorized SkillBridge organizations included "THE KRIETE GROUP, LLC", MOU expiration date 10/19/2028, and "WISCONSIN MANAGEMENT COMPANY, INC.", MOU expiration date 10/29/2028. On the same day the official opportunity search returned no position for the keywords "Kriete" or "Wisconsin Management".
+
+Source(s):
+- [SB-ORGS](https://www.skillbridge.mil/organizations): the authorized list, 6,762 organizations, read twice. The page states that an authorized organization with nothing in the locations table has been cleared and is either finalizing details with the Services and installation commanders or is in a dormant phase for training and placement.
+- [SB-FINDER](https://www.skillbridge.mil/locations): the opportunity search. Control searches returned 2 positions for "Clarios" and 19 for "Trek", so the zero results are real results.
+- [KRIETE-PRIVACY](https://krietetrucks.com/privacy-policy): names Kriete Group, LLC, 333 E Wisconsin Ave, Milwaukee, as the company behind krietetrucks.com (effective September 25, 2026). This ties the listed name to Kriete Truck Centers.
+- [WMC](https://www.wisconsinmanagement.com/careers): the company's own site carries the name Wisconsin Management Company, Inc.
+
+Tier 2 orchestrator browser reads on 2026-11-15 (Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.
+
+Not on the authorized list the same day: Johnsonville, Therma-Tron-X and Air Tech Heating. The list does show "Airtech Mechanical Services, Inc", MOU expiration date 10/14/2028. No source ties that name to Air Tech Heating, Inc. of Fond du Lac. Dean was asked and had not answered when this entry was written, so no SkillBridge claim is made for Air Tech.
+
+This entry supersedes, for these two companies only, the line in the 16 October packet that cohort identity carries no program approval. The listed authorization still does not establish a position, a placement or a member's approval.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-15 | revisit NONE
+A1 population: SEPARATING (active component); GUARD/RESERVE considering authorized participation.   band: Condition-triggered program exploration; no fixed separation offset.   excluded: This does not apply to already-separated veterans or to spouses and family, for whom this entry establishes no SkillBridge participation, or to the three cohort employers that are not on the official list.   timing: ACT AVAILABLE NOW
+A2 act: "Ask The Kriete Group or Wisconsin Management Company, and your service Education or Transition Office, whether a SkillBridge placement is available, and check the official opportunity search for a listed position before making plans."
+A3 surface(s): RESOURCES Wisconsin guide (cohort companies); Career job search for Wisconsin areas.   token: NONE; direct official link.   sweep trigger: FIRED - authorized organization, listed position and member approval are three separate facts. The runtime note states the first two and the guide tells the member to ask before planning.
+A4 cost: NOTHING
+EXPIRES: 2028-10-19, the earlier MOU expiration date. Re-check the list and the opportunity search before then, and whenever this block is edited.
+
+Runtime note, Wisconsin Management Company: The official list of authorized SkillBridge organizations includes Wisconsin Management Company, Inc. (checked 15 NOV 2026). No position was listed in the official opportunity search that day.
+Runtime note, Kriete Truck Centers: The official list of authorized SkillBridge organizations includes The Kriete Group, LLC, the company behind Kriete Truck Centers (checked 15 NOV 2026). No position was listed in the official opportunity search that day.
+
+## Assumptions and unresolved material in this packet
+
+- Placement is unchanged. The cohort block still shows only in the Wisconsin guide and on Wisconsin job searches. A regression has asserted since 1 November that the job search block does not appear outside Wisconsin areas. Dean was asked whether to show it on every search and had not answered.
+- The job search block no longer says roles are "coming soon" or "not posted yet". It points to the existing Talk with Dean option. Dean was asked whether candidates should also be sent to the Cadre intake and had not answered, so no intake link was added.
+- UNVERIFIED and not shipped: any named employer's current opening, pay, veteran hiring program or preferred access. None was checked.

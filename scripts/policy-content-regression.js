@@ -35,6 +35,23 @@ function requireAbsent(haystack, needle, label) {
 check(occurrences(index, "function calcVACombined(") === 1,
   "calcVACombined has one canonical implementation");
 
+// Cohort employers: identity links, and a SkillBridge note only where the official list shows the company.
+// WI5-20261115-JOHNSONVILLE, WI5-20261115-TTX, WI5-20261115-SKILLBRIDGE-AUTHORIZED.
+const cohortStart = index.indexOf("const TOPS_WISCONSIN_COHORT_EMPLOYERS = ") + "const TOPS_WISCONSIN_COHORT_EMPLOYERS = ".length;
+const cohort = JSON.parse(index.slice(cohortStart, index.indexOf("\n", cohortStart)).replace(/;\s*$/, ""));
+check(JSON.stringify(cohort.map((item) => item.id)) === JSON.stringify(["WI2-20261016-AIRTECH", "WI2-20261016-WMC", "WI2-20261016-KRIETE", "WI5-20261115-JOHNSONVILLE", "WI5-20261115-TTX"]),
+  "cohort lists the five employers Dean named, in order");
+check(JSON.stringify(cohort.map((item) => item.url)) === JSON.stringify(["https://airtechhtg.com/careers/", "https://www.wisconsinmanagement.com/careers", "https://krietetrucks.com/careers/", "https://careers.johnsonville.com/Johnsonville", "https://www.ttxinc.com/careers"]),
+  "each cohort employer links to its own careers page");
+check(JSON.stringify(cohort.filter((item) => item.skillbridge).map((item) => item.id)) === JSON.stringify(["WI2-20261016-WMC", "WI2-20261016-KRIETE"]),
+  "only the two organizations on the official list carry a SkillBridge note");
+check(cohort.filter((item) => item.skillbridge).every((item) => /official list of authorized SkillBridge organizations/.test(item.skillbridge) && /checked 15 NOV 2026/.test(item.skillbridge) && /No position was listed in the official opportunity search that day/.test(item.skillbridge) && item.skillbridgeVerification === "WI5-20261115-SKILLBRIDGE-AUTHORIZED"),
+  "each SkillBridge note states the list, the check date and the empty opportunity search");
+check(cohort.every((item) => occurrences(verificationLog, "## " + item.verification + " ") === 1),
+  "every cohort employer has exactly one verification record");
+check(occurrences(index, "roles coming soon") === 0 && occurrences(index, "are not posted yet") === 0,
+  "the job search block no longer promises or denies posted roles");
+
 const functionMatch = index.match(
   /function calcVACombined\(conditions\) \{[\s\S]*?\n\}\n\nfunction calcReadiness/
 );

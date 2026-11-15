@@ -308,7 +308,7 @@ const server = http.createServer(async (req, res) => {
     await tap('tops-career-search-start'); await wait('!!document.getElementById("tops-federal-results")');
     assert.equal(calls.length, beforeZIP + 1);
     assert.deepEqual(calls.at(-1), { keyword: 'Data Analyst', location: '53202' }, 'the original ZIP is sent without inferred city or state');
-    const wisconsinLinks = ['https://vets2pm.zohorecruit.com/careers', 'https://airtechhtg.com/careers/', 'https://www.wisconsinmanagement.com/careers', 'https://krietetrucks.com/careers'];
+    const wisconsinLinks = ['https://vets2pm.zohorecruit.com/careers', 'https://airtechhtg.com/careers/', 'https://www.wisconsinmanagement.com/careers', 'https://krietetrucks.com/careers/', 'https://careers.johnsonville.com/Johnsonville', 'https://www.ttxinc.com/careers'];
     const assertWisconsinDiscovery = async area => {
       assert.equal(await ev('!!document.getElementById("tops-vbs-cohort")'), true, 'Wisconsin discovery must be offered for ' + area);
       assert.equal(await ev('document.querySelector("#tops-vbs-cohort > summary").checkVisibility()'), true);
@@ -317,6 +317,10 @@ const server = http.createServer(async (req, res) => {
       assert.ok(wisconsinLinks.every(url => visibleLinks.includes(url)), 'provider and VBS employer resources remain accessible for ' + area);
       assert.match(await ev('document.getElementById("tops-search-skillbridge").innerText'), /Current intake capacity is not confirmed/);
       assert.match(await ev('document.getElementById("tops-vbs-cohort").innerText'), /not confirmed VBS or SkillBridge openings or matches for your search/);
+      assert.deepEqual(await ev('[...document.querySelectorAll("#tops-vbs-cohort [data-cohort-employer]")].map(node => node.getAttribute("data-cohort-employer"))'), ['WI2-20261016-AIRTECH', 'WI2-20261016-WMC', 'WI2-20261016-KRIETE', 'WI5-20261115-JOHNSONVILLE', 'WI5-20261115-TTX'], 'all five cohort employers are listed for ' + area);
+      assert.deepEqual(await ev('[...document.querySelectorAll("#tops-vbs-cohort [data-skillbridge-status]")].map(node => node.getAttribute("data-skillbridge-status"))'), ['WI2-20261016-WMC', 'WI2-20261016-KRIETE'], 'only the two listed organizations carry a SkillBridge note');
+      assert.match(await ev('document.getElementById("tops-vbs-cohort-ask").innerText'), /Talk with Dean \(optional\)/);
+      assert.doesNotMatch(await ev('document.getElementById("tops-vbs-cohort").innerText'), /coming soon|not posted yet/);
     };
     await assertWisconsinDiscovery('53202');
     await tap('tops-job-share-prepare');
