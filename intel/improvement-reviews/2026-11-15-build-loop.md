@@ -43,7 +43,7 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | 10 | What's New and the verified stamp | See what changed since the last visit | None | WATCH: needs Dean's ruling | Parked |
 | 11 | Best Military Resume link | Resume and interview practice | Third-party account | REJECT for now: s2-vetting found no verifiable legal entity; reopens on Dean's outreach to the founder | Parked |
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
-| 13 | Repair three stale job-search browser harnesses, and diagnose `wisconsin-pathway-browser-regression` | Keep the safety net honest | None; tests only until the cause is known | AUTO lane for tests; any app fix returns to Dean | Queued |
+| 13 | Repair stale browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Cycle 5 repaired `wisconsin-pathway`; three job-search harnesses remain, diagnosed below |
 
 ## Needs Dean
 - Best Military Resume: legal entity name and registration, current free and paid terms, whether a mock interview tool exists, and what "Partner Organizations" receive. The current site gives a free account 2 tailored resumes and 2 company research reports; cover letters are paid; resume building needs an account.
@@ -119,3 +119,13 @@ Disposition: ADOPT. Six content checks were added, and two browser regressions n
 Baseline note from cycle 4's gate: `wisconsin-pathway-browser-regression` fails while waiting for a "For this visit" status after the member chooses to use a plan for one visit. The same failure occurs on `main` at `5543926` and at `92fb1a8`, the commit before today's first merge, so this cycle did not cause it. The cause is not yet diagnosed. Either the harness is stale or the status does not render. Backlog row 13 covers it.
 
 One layout fix inside this cycle: the first browser check showed the job-search note running straight into the paragraph after it. The note now carries a 14 px bottom margin.
+
+## Cycle 5 - Stale test repair (tests only)
+`wisconsin-pathway-browser-regression` waited for a status containing "For this visit". Commit `90611aa` (#156, "Clarify saved and temporary next steps") changed that message to "This step is not saved." and left the test behind. The app behaves as #156 designed it. The test now expects the current wording and passes end to end. One expectation changed; it is as strict as before.
+
+Three job-search harnesses still fail on `main`. Each needs a decision about intended behavior, so they stay queued:
+- `career-job-search-flow`: `#tops-career-find-jobs` exists but does not take focus when the test calls `focus()` (line 15).
+- `federal-jobs-browser`: a helper reads `parentElement` of an element that is no longer on the page (line 12).
+- `career-home-search-continuity`: waits for `#career-starter-resume` at `/?tool=pathway&case=timeline`, and that element does not render there (line 40).
+
+No app file changed. No cache bump.
