@@ -3,7 +3,7 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
 const root=path.resolve(__dirname,".."),source=fs.readFileSync(path.join(root,"index.html"),"utf8");
 let days=-149;
 const rungCode=source.slice(source.indexOf("const SMART_REMINDERS ="),source.indexOf("var RUNG_LEDGER_KEY ="));
-const api=vm.runInNewContext(rungCode+";({due:dueRungs,all:SMART_REMINDERS})",{daysToETSDate:()=>days,moToETS:()=>Math.round(days/30.44)});
+const api=vm.runInNewContext(rungCode+";({due:dueRungs,all:SMART_REMINDERS,context:topsReminderContext,memberDue:topsMemberDueReminders})",{daysToETSDate:()=>days,moToETS:()=>Math.round(days/30.44)});
 assert.equal(api.due("",{}).length,0);
 for(const [elapsed,included] of [[149,false],[150,true],[164,true],[165,false],[180,false]]){
   days=-elapsed;assert.equal(api.due("synthetic",{}).some(r=>r.id==="r-p5-dental"),included,"dental day "+elapsed);
@@ -13,13 +13,15 @@ const done=Object.fromEntries(api.all.map(r=>[r.id,true]));done.orphan=true;
 assert.equal(api.due("synthetic",done).length,0);
 const countStart=source.indexOf("          var hasReminderDate =");
 const countCode=source.slice(countStart,source.indexOf("        })(),",countStart));
-function card(month,date,completed){const sandbox={etsMonths:month,separationDate:date,dismissedReminders:completed,dueRungs:api.due,C:{},topsKeyboardActivate(){},setActiveTab(){},React:{createElement:(type,props,...children)=>({type,props,children})}};return vm.runInNewContext("(function(){"+countCode+"})()",sandbox);}
-for(const [month,date] of [[null,""],[NaN,"bad"]])assert.equal(card(month,date,{}).children[0].children[0],"ADD A DATE");
-assert.equal(card(-5,"synthetic",done).children[0].children[0],0);
-const one={...done,"r-p5-dental":false};assert.equal(card(-5,"synthetic",one).children[0].children[0],1);
-const several={...one,"r-p4":false};assert.equal(card(-5,"synthetic",several).children[0].children[0],2);
+function card(month,date,completed,profile="separated"){const sandbox={etsMonths:month,separationDate:date,userStatus:profile,dismissedReminders:completed,topsReminderContext:api.context,currentTimedReminders:api.memberDue(date,profile,completed),C:{},topsKeyboardActivate(){},openTimedReminderReview(){},React:{createElement:(type,props,...children)=>({type,props,children})}};return vm.runInNewContext("(function(){"+countCode+"})()",sandbox);}
+for(const [month,date] of [[null,""],[NaN,"bad"],[-5,"2026-02-30"]])assert.equal(card(month,date,{}).children[0].children[0],"SET TIMING");
+const validDate="2026-06-18";
+for(const profile of ["","guard","spouse"]){assert.equal(card(-5,validDate,{},profile).children[0].children[0],"SET TIMING");assert.equal(api.memberDue(validDate,profile,{}).length,0,"no personal timing without a supported profile: "+profile);}
+assert.equal(card(-5,validDate,done).children[0].children[0],0);
+const one={...done,"r-p5-dental":false};assert.equal(card(-5,validDate,one).children[0].children[0],1);
+const several={...one,"r-p4":false};assert.equal(card(-5,validDate,several).children[0].children[0],2);
 assert.doesNotMatch(source,/REMINDERS OPEN|REMINDERS DUE THIS MONTH/);
-console.log("REMINDER COUNT PASS: absent/invalid date; zero and one unresolved; orphan completion key; exact dental start/end and dismissed exclusion");
+console.log("REMINDER COUNT PASS: absent/invalid/calendar-overflow date and unsupported profile; zero, one and several unresolved; orphan completion key; exact dental start/end and dismissed exclusion");
 
 const utility=fs.readFileSync(path.join(root,"scripts/privacy-network-regression.js"),"utf8");
 const h=new Function("fs","path","os","spawn",utility.slice(utility.indexOf("function findChrome()"),utility.indexOf("const PROBE_SCRIPT ="))+"\nreturn {findChrome,launchChrome,stopChrome,evaluate,waitForExpression};")(fs,path,os,spawn);
@@ -32,7 +34,7 @@ const server=http.createServer((req,res)=>{const p=path.join(root,req.url.split(
  await c.send("Page.enable");await c.send("Emulation.setDeviceMetricsOverride",{width:320,height:812,deviceScaleFactor:1,mobile:true});
  await c.send("Page.addScriptToEvaluateOnNewDocument",{source:'localStorage.setItem("tops_onboarded","1");localStorage.setItem("tops_user_status","separated");'});
  const home=async()=>{await c.send("Page.navigate",{url:url+"/?tool=dashboard"});await wait('!!document.getElementById("tops-home-reminder-count")','Home reminder count');};
- await home();assert.match(await ev('document.getElementById("tops-home-reminder-count").textContent'),/ADD A DATE/);
+ await home();assert.match(await ev('document.getElementById("tops-home-reminder-count").textContent'),/SET TIMING/);
  await ev('document.getElementById("tops-home-reminder-count").focus()');await c.send("Input.dispatchKeyEvent",{type:"keyDown",key:"Enter",code:"Enter",windowsVirtualKeyCode:13});await c.send("Input.dispatchKeyEvent",{type:"keyUp",key:"Enter",code:"Enter",windowsVirtualKeyCode:13});
  await wait('!!document.querySelector(\'input[aria-label="Separation date"]\')','reminders date entry');
  await ev('var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-150);var date=[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");localStorage.setItem("tops_sep_date",date);localStorage.setItem("etsDate",date);localStorage.setItem("tops_dismissed_reminders",'+JSON.stringify(JSON.stringify(one))+');');
