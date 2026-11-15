@@ -275,7 +275,7 @@ Why these: people pass along a date or a link that helps someone today. A genera
 
 Drafting: pao-content wrote the share text options. The deadline texts ship with the year added and with no eligibility line.
 
-Left for Dean: the app-wide share line still reads as it did. pao-content offered three replacements. One is quoted in the pull request; the other two were not kept.
+Left for Dean: the app-wide share line still reads as it did. pao-content offered three replacements. One is quoted in the pull request; the other two were not kept. Cycle 20 stages that one.
 
 Baseline note from cycle 13's gate: five older regressions fail the same way on untouched `main` at `4729654`, so this cycle did not cause them. Four of the five are new to this record. Backlog row 13 covers the repair.
 - `career-home-search-continuity-browser`: already recorded under cycle 2.
@@ -454,3 +454,22 @@ Sweep of the 82 scripts that pass on `main` or were repaired in this loop: 79 pa
 Found for the test repair list:
 - 13 scripts keep `tops_member_jobs_v1` in their saved-bytes snapshot, so none of them watches the real saved-jobs key.
 - The three scripts above, plus `wisconsin-pathway-browser` from cycle 18.
+
+## Cycle 20 - The app share line
+Order: Dean's 14:18 "fix them all". The app share line was on the fix list sent to him at 14:19.
+
+What ships: the text a member's share sheet receives when they share Transition OPS itself.
+- Before: a line naming VA Math, VA Pay, SkillBridge, state tax intel and personalized timelines, closing with "Built by a veteran." It held a dash.
+- After: "A free transition app from a retired Army officer: VA disability math, benefit deadlines, state veterans office and job bank links, and resume tools."
+
+The line is pao-content's draft from cycle 13, shipped as drafted. Each part it names has its tool in the build, and the log record V-2026-11-15-APP-SHARE-LINE ties each one to its place.
+
+Unchanged: the title "Transition OPS", the address https://transitionops.org and the two toast lines shown when no share sheet exists. With no share sheet the app copies the address alone, so the line travels only through a share sheet.
+
+Test: four new assertions in `policy-content-regression.js`, now 205. They pin the line, its length and characters, the absence of the old line, the four tools it names and the log record.
+
+Browser check on the built files: 10 checks pass across a share sheet, a clipboard and neither. Sharing sends no request.
+
+Gate: structural gate exit 0. Six semantic commands, the public build and six Home regressions pass, 13 lines in all.
+
+Still open on this subject: the page title and the link preview card describe the app in their own words, and those claims have not been checked against the build.

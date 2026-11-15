@@ -600,6 +600,21 @@ check(occurrences(verificationLog, "## V-2026-11-15-STATE-STARTING-POINTS ") ===
 }
 check(occurrences(verificationLog, "## V-2026-11-15-SHARE-TEXT ") === 1, "the share text carries one verification record");
 
+// The line sent when a member shares the app itself. V-2026-11-15-APP-SHARE-LINE.
+{
+  const line = "A free transition app from a retired Army officer: VA disability math, benefit deadlines, state veterans office and job bank links, and resume tools.";
+  const start = index.indexOf("function handleShareApp(setToast) {");
+  const handler = index.slice(start, index.indexOf("function AboutModal(props) {", start));
+  check(start > 0 && occurrences(handler, "    text: '" + line + "',\n") === 1 && occurrences(handler, "text: '") === 1 &&
+    line.length <= 160 && /^[\x20-\x7e]+$/.test(line) && !/\$\d|!/.test(line),
+    "sharing the app sends one line of 160 characters or fewer, in plain characters, with no dollar figure and no exclamation point");
+  check(!index.includes("state tax intel, and personalized timelines. Built by a veteran."), "the earlier app share line is gone");
+  const routes = JSON.parse((index.match(/const TOPS_TOOL_ROUTES = (\[[^\]]+\]);/) || [null, "[]"])[1]);
+  check(["vamath", "reminders", "resources", "pathway"].every((tool) => routes.includes(tool)),
+    "each part of the app the share line names still has its tool: the VA calculator, Reminders, State and local help, and Career");
+}
+check(occurrences(verificationLog, "## V-2026-11-15-APP-SHARE-LINE ") === 1, "the app share line carries one verification record");
+
 // Retirement FEDVIP reminders, re-read against BENEFEDS on 15 NOV 2026. V-2026-11-15-FEDVIP-RETIREMENT-WINDOW.
 {
   const rung = (id) => { const start = index.indexOf('{id:"' + id + '"'); return index.slice(start, index.indexOf("},\n", start) + 1); };
