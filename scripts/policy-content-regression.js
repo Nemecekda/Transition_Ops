@@ -315,4 +315,32 @@ check(index.includes('{ date: "27 AUG 2026", title: "TAMP: Guard/Reserve eligibi
   occurrences(verificationLog, "## V-2026-11-15-TAMP-RESERVE-ELIGIBILITY ") === 1 && occurrences(verificationLog, "## V-2026-11-15-TAMP-REIMBURSEMENT ") === 1,
   "TAMP policy entry exists with one verification record per finding");
 
+// CareerOneStop Job Finder and Veterans Job Matcher links in Career job search.
+// V-2026-11-15-CAREERONESTOP-JOB-LINKS.
+check(index.includes('careeronestop: "https://www.careeronestop.org/Toolkit/Jobs/find-jobs-results.aspx?" + new URLSearchParams({ keyword: role, location: area }).toString(),'),
+  "job search builds the CareerOneStop results address from the role and area only");
+check(occurrences(index, '"Search CareerOneStop jobs (new tab)"') === 1 && index.includes('{ id: "tops-job-careeronestop", href: links.careeronestop, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing tops-job-careeronestop-note", style: link }'),
+  "CareerOneStop search opens in a new tab and is described by the sharing notice");
+check(index.includes('"CareerOneStop is sponsored by the U.S. Department of Labor. Its listings come from state job banks and employers through the National Labor Exchange, and you can read a posting without an account."'),
+  "CareerOneStop note states sponsor, listing source and account-free reading");
+check(index.includes('{ id: "tops-job-veteran-matcher", href: "https://www.careeronestop.org/Toolkit/Jobs/match-veteran-jobs.aspx", target: "_blank", rel: "noopener noreferrer", style: link }, "Find civilian careers related to your military job: Veterans Job Matcher (new tab)"'),
+  "Veterans Job Matcher link is offered beside the state job banks");
+check(occurrences(index, "CareerOneStop, LinkedIn and state job banks open separately.") === 1 && occurrences(index, "or open CareerOneStop, LinkedIn and USAJOBS searches. No automatic job matching.") === 1 &&
+  occurrences(index, ". LinkedIn and state job banks open separately.") === 0 && occurrences(index, "or open LinkedIn and USAJOBS searches.") === 0,
+  "both job search summaries name CareerOneStop and neither keeps the two-site wording");
+check(occurrences(verificationLog, "## V-2026-11-15-CAREERONESTOP-JOB-LINKS ") === 1 && !/vetted|guarantee/i.test(index.slice(index.indexOf('id: "tops-job-careeronestop"'), index.indexOf('id: "tops-job-careeronestop"') + 1200)),
+  "job links carry one verification record and make no vetting or guarantee claim");
+
+// FRONTLINE Cadre intake link in the recruiter contact section.
+// V-2026-11-15-VBS-TALENT-NETWORK.
+check(occurrences(index, 'const TOPS_TALENT_NETWORK = "https://apply.veteranbridgesolutions.com/apply";') === 1 && occurrences(index, "apply.veteranbridgesolutions.com") === 1,
+  "talent network address is defined once and used through its constant");
+check(index.includes('{ id: controlId("tops-talent-network"), href: TOPS_TALENT_NETWORK, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer"'),
+  "talent network link opens in a new tab with no opener and no referrer");
+check(index.includes("Veteran Bridge Solutions' own intake form, on a separate VBS site. It requires your name, email and one career area, and no resume. Employers pay VBS to fill roles; joining costs you nothing. Read the form's privacy notice before you submit: it covers storage, AI-assisted review and when VBS shares your information with an employer. Opens a new tab."),
+  "talent network note says who runs it, what it requires, who pays and what its privacy notice covers");
+check(index.includes('"Dean is a recruiter with Veteran Bridge Solutions. Book a conversation, join the VBS talent network or introduce yourself by email. None of these guarantees a response, interview or job."') && occurrences(index, "Neither guarantees a response, interview or job.") === 0,
+  "contact section names all three options and keeps the no-guarantee statement");
+check(occurrences(verificationLog, "## V-2026-11-15-VBS-TALENT-NETWORK ") === 1, "talent network link carries one verification record");
+
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");

@@ -82,6 +82,12 @@ const server = http.createServer(async (req, res) => {
     const external = await ev('[...document.querySelectorAll("#tops-live-jobs-panel a")].filter(a=>a.href.includes("linkedin.com/jobs/search")||a.href.includes("usajobs.gov/Search/Results")).map(a=>a.href)');
     assert.equal(external.length, 2);
     for (const href of external) { const url = new URL(href); assert.equal(url.searchParams.get(url.hostname.includes('linkedin') ? 'location' : 'l'), '54211'); assert.equal(url.searchParams.has(url.hostname.includes('linkedin') ? 'keywords' : 'k'), false, 'location-only external search omits the keyword key'); }
+    const careerOneStop = await ev('(()=>{const a=document.getElementById("tops-job-careeronestop"),m=document.getElementById("tops-job-veteran-matcher"),n=document.getElementById("tops-job-careeronestop-note");return a&&m&&n?{href:a.href,target:a.target,rel:a.rel,text:a.textContent,described:a.getAttribute("aria-describedby"),visible:a.checkVisibility(),matcher:m.href,matcherTarget:m.target,matcherRel:m.rel,note:n.textContent}:null;})()');
+    assert.ok(careerOneStop, 'CareerOneStop search, its note and the Veterans Job Matcher link are present');
+    { const url = new URL(careerOneStop.href); assert.equal(url.origin + url.pathname, 'https://www.careeronestop.org/Toolkit/Jobs/find-jobs-results.aspx'); assert.deepEqual([...url.searchParams.keys()].sort(), ['keyword', 'location'], 'CareerOneStop search carries only the role and area'); assert.equal(url.searchParams.get('keyword'), '', 'location-only CareerOneStop search keeps an empty keyword'); assert.equal(url.searchParams.get('location'), '54211'); }
+    assert.deepEqual([careerOneStop.target, careerOneStop.rel, careerOneStop.text, careerOneStop.described, careerOneStop.visible], ['_blank', 'noopener noreferrer', 'Search CareerOneStop jobs (new tab)', 'tops-job-sharing tops-job-careeronestop-note', true]);
+    assert.deepEqual([careerOneStop.matcher, careerOneStop.matcherTarget, careerOneStop.matcherRel], ['https://www.careeronestop.org/Toolkit/Jobs/match-veteran-jobs.aspx', '_blank', 'noopener noreferrer']);
+    assert.match(careerOneStop.note, /^CareerOneStop is sponsored by the U\.S\. Department of Labor\./);
 
     // Public-query sharing preserves the empty keyword and does not restore or send private state.
     assert.equal(await ev('!!document.getElementById("tops-job-share-url")'), false); await tap('tops-job-share-prepare');
