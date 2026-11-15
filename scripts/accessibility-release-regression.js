@@ -972,7 +972,12 @@ async function runPrivacyClearanceMatrix(client, origin) {
 }
 
 async function runKeyboardChecks(client) {
-  await evaluate(client, "(() => { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); window.scrollTo(0, 0); return true; })()", false);
+  // Start the walk from the top of the page on every platform. blur() alone leaves the browser's
+  // sequential-focus starting point on the last control the preceding checks used. When that is the
+  // last control on the page, Chrome on Linux sends the next Tab out of the page and focus reads as
+  // the document, while Chrome on macOS continues with the first control. Focusing the body resets
+  // the starting point, so the first Tab lands on the first control everywhere.
+  await evaluate(client, "(() => { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); const body = document.body; const had = body.hasAttribute('tabindex'); const previous = body.getAttribute('tabindex'); body.setAttribute('tabindex', '-1'); body.focus({ preventScroll: true }); if (had) body.setAttribute('tabindex', previous); else body.removeAttribute('tabindex'); window.scrollTo(0, 0); return true; })()", false);
   const visited = new Set();
   for (let index = 0; index < 16; index += 1) {
     await dispatchKey(client, "Tab", 0);

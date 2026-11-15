@@ -11,10 +11,19 @@ const render = source.slice(start, end);
 const dataStart = source.indexOf("const SMART_REMINDERS = [");
 const ctx = {};
 vm.runInNewContext(source.slice(dataStart, source.indexOf("\n];", dataStart) + 3) + "\nthis.data = SMART_REMINDERS;", ctx);
+// The focused view now asks the app's own timing rules which reminder comes next and what timing note to show.
+// Load those real functions (the same source slice reminder-count-regression.js evaluates) for this fixture's
+// 140 days to separation, which is the day count behind the etsMonths value below.
+const rungCode = source.slice(source.indexOf("const SMART_REMINDERS ="), source.indexOf("var RUNG_LEDGER_KEY ="));
+const timing = vm.runInNewContext(rungCode + ";({ dueRungs, reminderHasCurrentDayContext, reminderTimingContext })", { daysToETSDate: () => 140, moToETS: () => Math.round(140 / 30.44) });
+for (const name of ["dueRungs", "reminderHasCurrentDayContext", "reminderTimingContext"]) assert.equal(typeof timing[name], "function", name + " loaded from the app source");
 const bdd = ctx.data.find(r => /bdd/i.test(r.id));
 assert.ok(bdd);
 const state = { focusedReminderId: bdd.id, dismissedReminders: {}, reminderNotice: "", etsMonths: 140 / 30.44 };
 const sandbox = Object.assign(state, {
+  reminderTimedOnly: false, separationDate: "synthetic", homeSearchSelection: null, searchReturnControl: () => null,
+  dueRungs: timing.dueRungs, reminderHasCurrentDayContext: timing.reminderHasCurrentDayContext, reminderTimingContext: timing.reminderTimingContext,
+  setReminderTimedOnly: value => { state.reminderTimedOnly = value; }, setHomeSearchSelection: value => { state.homeSearchSelection = value; },
   SMART_REMINDERS: ctx.data, generateCriticalWindowReminders: () => [], userStatus: "active", ReminderProgress: () => {}, followProgress: {}, saveFollowProgress: (id, status) => { if (status === "done") state.dismissedReminders[id] = true; else delete state.dismissedReminders[id]; return true; }, C: {}, continuationFocus: { current: null }, continuationReturn: { current: null },
   React: { createElement: (type, props, ...children) => ({ type, props: props || {}, children: children.flat(Infinity) }) },
   setDismissedReminders: fn => { state.dismissedReminders = fn(state.dismissedReminders); },
