@@ -32,18 +32,18 @@ Dispositions use the closed set in `member-return-benchmarking`, except row 1, w
 | # | Item | Member job | Data dependency | Disposition | State |
 |---|---|---|---|---|---|
 | 1 | TAMP Guard/Reserve eligibility and reimbursement | Use a health benefit the member has earned | None | SHIP - ACT | Cycle 1, merged as #219 |
-| 2 | CareerOneStop Job Finder and Veterans Job Matcher links | Find private-sector openings by role and area | The member's browser opens a federal site | ADOPT | Cycle 2, staged as #220 |
-| 3 | Candidate handoff to VBS: link to the FRONTLINE Cadre intake form in the recruiter contact section | Reach a recruiter with a usable profile | A separate VBS site the member chooses to open; the app passes nothing | ADOPT on Dean's order of 15 November | Cycle 3 |
+| 2 | CareerOneStop Job Finder and Veterans Job Matcher links | Find private-sector openings by role and area | The member's browser opens a federal site | ADOPT | Cycle 2, merged as #220 |
+| 3 | Candidate handoff to VBS: link to the FRONTLINE Cadre intake form in the recruiter contact section | Reach a recruiter with a usable profile | A separate VBS site the member chooses to open; the app passes nothing | ADOPT on Dean's order of 15 November | Cycle 3, merged as #221 |
 | 4 | VBS roles block with end dates | See named roles, Wisconsin first | A list Dean controls | WATCH: needs Dean's roles and disclosure line | Mechanism can be built; shows nothing until roles exist |
 | 5 | Replace the hand-kept SkillBridge feed with the official check | Avoid acting on a stale opening | None | ADOPT | Queued |
-| 6 | HIRE Vets Medallion: official awardee table, Wisconsin rows | Find employers with federal recognition | None | WATCH until the 2026 table is read at Tier 2 | Queued |
+| 6 | HIRE Vets Medallion: links to the official recipient list, national and Wisconsin | Find employers with federal recognition | None; the member's browser opens a federal site | ADOPT | Cycle 4 |
 | 7 | Start-date planner | Know and state when civilian work can start | Device-local | LOCAL SYNTHETIC TEST | Queued |
 | 8 | Starting points for every state | Find the state veterans agency and job bank | None | WATCH until S2 verifies the links | Queued |
 | 9 | JST and VMET reading beside the DD214 | Turn records into resume evidence | Device-local read; member-approved excerpts to AI | LOCAL SYNTHETIC TEST; design packet first under `resume-drafter-maintenance` | Queued |
 | 10 | What's New and the verified stamp | See what changed since the last visit | None | WATCH: needs Dean's ruling | Parked |
 | 11 | Best Military Resume link | Resume and interview practice | Third-party account | REJECT for now: s2-vetting found no verifiable legal entity; reopens on Dean's outreach to the founder | Parked |
 | 12 | "Returning to Wisconsin" landing page | Be found by search | Widens the public build allowlist | WATCH: deploy pipeline ruling | Parked |
-| 13 | Repair three stale job-search browser harnesses | Keep the safety net honest | None; tests only | AUTO lane | Queued |
+| 13 | Repair three stale job-search browser harnesses, and diagnose `wisconsin-pathway-browser-regression` | Keep the safety net honest | None; tests only until the cause is known | AUTO lane for tests; any app fix returns to Dean | Queued |
 
 ## Needs Dean
 - Best Military Resume: legal entity name and registration, current free and paid terms, whether a mock interview tool exists, and what "Partner Organizations" receive. The current site gives a free account 2 tailored resumes and 2 company research reports; cover letters are paid; resume building needs an account.
@@ -97,3 +97,25 @@ Data dependency: none in the app. The link passes no data and no referrer. Colle
 Not done here, by design: no roles list. That needs Dean's roles. No change to the email path or its permission wording.
 
 Disposition: ADOPT on Dean's order. Five content checks were added and the contact browser regression now covers the link. Gate evidence and the hosted preview check are in the pull request.
+
+## Merge record, 15 November 2026
+- 07:55 Central: Dean ordered "merge all and keep building". #219 merged, carrying #216, #217 and #218. Production moved from v319 to v322.
+- 08:16 Central: Dean ordered "merge all". #221 merged at head `022c16d`, carrying #220. Production moved to v324; served bytes matched `main` at 14:31 UTC.
+- Each order covered what was staged at that moment. Later cycles stage and wait for the next order.
+
+Cycle 4 onward is built on `main` at `5543926`.
+
+## Cycle 4 - HIRE Vets Medallion links, national and Wisconsin
+Member job: find employers with a record of hiring veterans in the state the member is moving to. It recurs when the target area changes and each November, when the Department of Labor posts a new award year.
+
+What changed: Career job search gains one link to the Department of Labor's recipient list, with a note on who gives the award, how to filter it and what an award does not establish. The Wisconsin guide gains a section after Vets Ready that opens the same list filtered to Wisconsin.
+
+Why links and no names: the Vets Ready section set the pattern of linking to the issuer's list. A federal list is TIER 1. Naming seven commercial employers inside the app would be an inclusion decision for `s2-vetting` and Dean, and the names would age each November. The seven 2026 Wisconsin recipients are recorded in V-2026-11-15-HIREVETS-MEDALLION for Dean's own use.
+
+Data dependency: none. Two ordinary links. The app passes no search term to the list.
+
+Disposition: ADOPT. Six content checks were added, and two browser regressions now cover the links. Gate evidence and the hosted preview check are in the pull request.
+
+Baseline note from cycle 4's gate: `wisconsin-pathway-browser-regression` fails while waiting for a "For this visit" status after the member chooses to use a plan for one visit. The same failure occurs on `main` at `5543926` and at `92fb1a8`, the commit before today's first merge, so this cycle did not cause it. The cause is not yet diagnosed. Either the harness is stale or the status does not render. Backlog row 13 covers it.
+
+One layout fix inside this cycle: the first browser check showed the job-search note running straight into the paragraph after it. The note now carries a 14 px bottom margin.

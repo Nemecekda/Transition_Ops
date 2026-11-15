@@ -3310,3 +3310,38 @@ A2 act: "Open the FRONTLINE Cadre intake form to give Veteran Bridge Solutions y
 A3 surface(s): recruiter contact section in Career job search, Career and the Wisconsin guide.   token: NONE; direct link.   sweep trigger: FIRED confusable-adjacent. The section now holds three ways to reach the recruiter with different consent: booking carries no recruiting permission, email needs the permission box, and the intake form takes consent on the VBS site. The note says the form is on a separate VBS site and points to its privacy notice.
 A4 cost: NOTHING
 EXPIRES: NONE. Recheck when the intake form or its privacy notice changes; the notice read here is effective June 29, 2026.
+
+## V-2026-11-15-HIREVETS-MEDALLION - HIRE Vets Medallion Award recipient list, U.S. Department of Labor (verified 15 November 2026)
+
+**Status:** CONFIRMED. The program description was read at Tier 1 and the recipient list at Tier 2. Wording staged for Dean's approval on branch `claude/loop-04-hire-vets-medallion-20261115`. Not released at the time of this entry.
+
+**Claims:**
+1. The HIRE Vets Medallion Award is run by the U.S. Department of Labor's Veterans' Employment and Training Service under the HIRE Vets Act of 2017, and it recognizes employer efforts to recruit, employ and retain veterans.
+2. Employers apply for the award. Verification includes the applicant's self-attestation and a Department of Labor check for violations of veteran-related labor laws.
+3. https://www.hirevets.gov/awardees_table is the official recipient list. It filters by award year and by state. Opened with no filter value it showed 2026 recipients, the first year the filter offers.
+4. https://www.hirevets.gov/awardees_table?field_employer_state_value=51 opens the list filtered to Wisconsin. On the read below it showed 2026 selected and seven Wisconsin recipients.
+
+**Sources, read 15 November 2026:**
+- https://www.hirevets.gov/about . Tier 1 (WebFetch), about 14:35 UTC. The page gives its last update as January 28, 2026. Claims 1 and 2.
+- https://www.hirevets.gov/awardees_table . Tier 2 (orchestrator browser, Claude in Chrome, Dean's session), 14:36 UTC. Claim 3. The form sends `created` for the award year and `field_employer_state_value` for the state. The year filter listed 2026 first with value 1; the state filter listed 56 values, with Wisconsin as value 51.
+- https://www.hirevets.gov/awardees_table?field_employer_state_value=51 . Tier 2, 14:36 UTC. Claim 4.
+
+**Recipients shown for Wisconsin, 2026, on that read (kept here as evidence; the app names none of them):** Salute Mission Critical, LLC (Franklin, Large, Gold); REDI Transports (Green Bay, Small, Platinum); U.S. Vet General Contracting, LLC (McFarland, Small, Gold); ITU AbsorbTech (New Berlin, Large, Gold); Vocational Rehabilitation Specialists Inc (River Falls, Medium, Gold); Sakom Services WI LLC (Shawano, Small, Platinum); Outdoor Services of the Coulee Region Inc., doing business as Outdoor Services, Inc. (West Salem, Small, Gold).
+
+**Design choice:** the app links to the official list and names no recipient. This follows the Vets Ready entry (WI3-20261016-VETS-READY), which links to the state's list and names no employer. Naming a commercial employer inside the app is an inclusion decision for `s2-vetting` and Dean. A link to a federal list needs no such decision.
+
+**Vetting:** TIER 1, .gov. The linked resource is a U.S. Department of Labor site.
+
+**Link behavior, for maintenance:** the year filter uses position values, and value 1 was 2026 on this read. The app's links carry no year value and open on the list's own default. The Wisconsin link depends on state value 51.
+
+**App change (wording staged for Dean's approval):**
+- Career job search, after the Veterans Job Matcher link: "See employers with a HIRE Vets Medallion Award (new tab)", linking to https://www.hirevets.gov/awardees_table .
+- Note under it: "The U.S. Department of Labor gives this award to employers for hiring and retaining veterans. Filter the official list by state and award year. Employers apply for it and attest to the information they submit, and an award does not establish a current opening or a hiring preference."
+- Wisconsin guide, "Wisconsin employers to explore", new section after Vets Ready. Title: "HIRE Vets Medallion employers in Wisconsin". Body: "See Wisconsin employers that hold the U.S. Department of Labor's HIRE Vets Medallion Award for hiring and retaining veterans." Instructions: "The official list opens filtered to Wisconsin. Use its year filter to see other award years." Link: "See Wisconsin HIRE Vets Medallion recipients (new tab)". Note: "This federal award is separate from Wisconsin's Vets Ready recognition. Employers apply for it and attest to the information they submit, and the Department of Labor checks for violations of veteran-related labor laws. An award does not establish a current opening, job quality for every worker, hiring preference, or SkillBridge approval." Attribution: "Award program of the U.S. Department of Labor, Veterans' Employment and Training Service."
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, build loop) | 2026-11-15 | revisit NONE
+A1 population: All four may use a public federal list to find employers; no eligibility is involved.   band: condition-triggered by a job search; no fixed separation milestone or day-offset.   excluded: The list establishes no opening, interview, job or hiring preference, and no SkillBridge approval.   timing: ACT AVAILABLE NOW
+A2 act: "Open the Department of Labor's HIRE Vets Medallion recipient list, filter it to your state, and check each employer's current postings."
+A3 surface(s): Career job search links; Wisconsin guide, employer section, after Vets Ready.   token: NONE; direct links.   sweep trigger: FIRED confusable-adjacent. Three kinds of employer listing now sit near each other in the Wisconsin guide: Vets Ready (state recognition), HIRE Vets Medallion (federal award) and VBS cohort companies (the app owner's firm). The new note says the federal award is separate from Vets Ready, and the cohort keeps its own heading. The state page's address contains "hirevets" and belongs to a different program from hirevets.gov.
+A4 cost: NOTHING
+EXPIRES: NONE for the links. Recheck each November, when the Department of Labor posts a new award year, and whenever the list's filter values change.

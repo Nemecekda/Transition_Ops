@@ -343,4 +343,19 @@ check(index.includes('"Dean is a recruiter with Veteran Bridge Solutions. Book a
   "contact section names all three options and keeps the no-guarantee statement");
 check(occurrences(verificationLog, "## V-2026-11-15-VBS-TALENT-NETWORK ") === 1, "talent network link carries one verification record");
 
+// HIRE Vets Medallion: links to the Department of Labor's recipient list.
+// V-2026-11-15-HIREVETS-MEDALLION.
+check(occurrences(index, '{ id: "tops-job-hire-vets-medallion", href: "https://www.hirevets.gov/awardees_table", target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-hire-vets-medallion-note", style: link }, "See employers with a HIRE Vets Medallion Award (new tab)"') === 1,
+  "job search offers the federal award list once, in a new tab with no opener and no referrer");
+check(index.includes('{ id: "tops-job-hire-vets-medallion-note", style: { color: C.textSecondary, margin: "0 0 14px" } }, "The U.S. Department of Labor gives this award to employers for hiring and retaining veterans. Filter the official list by state and award year. Employers apply for it and attest to the information they submit, and an award does not establish a current opening or a hiring preference."'),
+  "job search note names the issuer, the filters, the self-attestation and the award boundary");
+check(occurrences(index, "const TOPS_WISCONSIN_MEDALLION = ") === 1 && index.includes('"url":"https://www.hirevets.gov/awardees_table?field_employer_state_value=51"') && occurrences(index, "hirevets.gov/awardees_table") === 2 && !/awardees_table[^"]*created=/.test(index),
+  "Wisconsin section links the official list filtered to Wisconsin, the list is linked in two places only, and no link pins an award year");
+check(index.includes("This federal award is separate from Wisconsin's Vets Ready recognition. Employers apply for it and attest to the information they submit, and the Department of Labor checks for violations of veteran-related labor laws. An award does not establish a current opening, job quality for every worker, hiring preference, or SkillBridge approval.") &&
+  index.includes('React.createElement("section", { id: "tops-wisconsin-hire-vets", style: { padding: "8px 0 14px" } }'),
+  "Wisconsin note separates the federal award from Vets Ready and states how it is verified and what it does not establish");
+check(!/Salute Mission Critical|REDI Transports|U\.S\. Vet General Contracting|ITU AbsorbTech|Vocational Rehabilitation Specialists|Sakom Services|Outdoor Services/.test(index),
+  "the app names no award recipient; the official list is the source");
+check(occurrences(verificationLog, "## V-2026-11-15-HIREVETS-MEDALLION ") === 1, "HIRE Vets Medallion links carry one verification record");
+
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");
