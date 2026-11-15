@@ -3005,3 +3005,84 @@ EXPIRES: NONE; re-verify when VA updates the page.
 **Member-impact:** NOT RE-RUN. Nothing new ships from this entry. An exclusion line, if Dean wants one, gets its own assessment first.
 
 EXPIRES: 2027-12-31 for the copay figures.
+
+## V-2026-11-14-BDD-PHRASE-RECHECK - "standard disability claim" is VA's own wording (verified 14 November 2026)
+
+**Status:** CONFIRMED. No app change. This entry corrects the "Wording check" note in V-2026-11-14-BDD-WINDOW-CARD.
+
+**Claim checked (existing app sentence, unchanged):** "You can still file a standard disability claim. Review VA's requirements using the resource link below." Shown on reminder `r-6-bdd2` and on the `[BDD CLAIM]` window cards once fewer than 90 days remain.
+
+**Source:** https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/ , "Last updated: June 18, 2026". Read 14 November 2026, including the collapsed sections under "How do I file a claim for disability compensation before I leave the service?"
+
+**Ladder tier:** Tier 2, orchestrator browser (Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.
+
+**Finding:** VA uses both phrases on the same page for a member with less than 90 days left on active duty.
+- The question "What if I have less than 90 days left on active duty?" is answered with: "You can't file a pre-discharge claim through the BDD program. But you can still file a pre-discharge disability claim before you separate from active duty."
+- The filing instructions carry a section titled "If you have less than 90 days left on active duty: File a standard claim". Its first sentence reads: "If you have less than 90 days left on active duty, you can file a standard disability claim." The section links to https://www.va.gov/disability/how-to-file-claim/evidence-needed/standard-claims .
+
+The app's sentence uses the term VA uses in its filing instructions. The earlier note quoted only the first passage. The second sits in a collapsed section that a visible-text read does not return. The wording flag raised to Dean on 14 November 2026 is withdrawn. Nothing was changed in the app.
+
+**Method note for the next verifier:** VA.gov and tricare.mil both hold content in collapsed sections. Read those sections before recording that a page does not say something.
+
+**Member-impact:** NOT RE-RUN. Nothing new ships from this entry. The IMPACT block on V-2026-11-14-BDD-WINDOW-CARD stands.
+
+EXPIRES: NONE; re-verify when VA updates the page.
+
+## V-2026-11-14-TRICARE-COPAY-EXCEPTIONS - Who the general pharmacy copays leave out, and the years they cover (verified 14 November 2026)
+
+**Status:** CONFIRMED. Wording staged for Dean's approval on branch `claude/tricare-card-exceptions-20261114`. Not released at the time of this entry.
+
+**Claims:**
+1. TRICARE lists its pharmacy costs for calendar years 2026 and 2027.
+2. Active duty service members have no costs for covered drugs at a military pharmacy, TRICARE Pharmacy Home Delivery, or a TRICARE retail network pharmacy.
+3. Active duty family members with TRICARE Prime Remote in the U.S. have no costs for covered drugs at military pharmacies, home delivery, and retail network pharmacies, as of Feb. 28, 2026.
+4. Medically retired service members and their family members, and survivors of active duty service members, pay copays frozen at 2017 rates. Retail network pharmacy, up to a 30-day supply: $10 generic, $24 brand-name, $50 non-formulary. Home delivery, up to a 90-day supply: $0 generic, $20 brand-name, $49 non-formulary.
+
+**Sources, both read 14 November 2026 at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). No CAPTCHA was presented or solved:**
+- https://www.tricare.mil/Costs/PharmacyCosts , "Last Updated 4/10/2026". Claims 1, 2, 3 and 4. The frozen table sits in the section "Costs for medically retired sponsors and certain survivors", which cites Section 702 of the NDAA for FY 2018 and names two groups: medically retired service members and their family members, and survivors of active duty service members.
+- https://www.tricare.mil/changes , "Last Updated 10/6/2026". Claim 3, with the year: "TRICARE Prime Remote pharmacy copayment waiver (effective Feb. 28, 2026)". This page names home delivery and retail network pharmacies.
+
+**Corroboration, search retrieval only:** the TRICARE Newsroom article "Preview your 2026 TRICARE pharmacy costs" states that 2026 copayments do not change for survivors of active duty service members and for medically retired service members and their family members. The page tricare.mil/FAQs/Pharmacy/PharmProg_Copays states that the same groups have lower costs.
+
+**Second primary source for the frozen dollar figures:** none found beyond the Pharmacy Costs page. The figures were read twice on 14 November 2026.
+
+**Page note for the next verifier:** the Pharmacy Costs page source also holds an older table ($13, $38, $76 home delivery; $16, $43, $76 retail network) inside a collapsed block that has no heading and no control to open it. A visitor cannot reach it. The two sections a visitor can open carry the figures in claim 4 and the figures already on the card. Do not read the unreachable block as current.
+
+**Link finding:** reminder `r-9-tri26` and the POLICY_CHANGES entry dated 1 JAN 2026 both linked to https://www.tricare.mil/changes . On 14 November 2026 that page lists three changes (myAuth logins, TENS coverage, and the Prime Remote waiver). It no longer shows the 1 January 2026 copays or the Prime travel distance. Both links now point to the Pharmacy Costs page, which shows the copay figures.
+
+**App change (wording staged for Dean's approval):**
+- Reminder `r-9-tri26`, three items added after the military pharmacy line:
+  - "TRICARE lists these copays for calendar years 2026 and 2027"
+  - "Exception: active duty service members, and active duty family members in TRICARE Prime Remote in the U.S., pay $0 for covered drugs at military, retail network and home delivery pharmacies"
+  - "Exception: medically retired service members, their family members, and survivors of active duty service members pay lower copays: retail (30-day) $10 generic / $24 brand-name / $50 non-formulary; home delivery (90-day) $0 generic / $20 brand-name / $49 non-formulary"
+- Reminder `r-9-tri26`: resource link changed to https://www.tricare.mil/Costs/PharmacyCosts .
+- Notification `n34` and the POLICY_CHANGES entry dated 1 JAN 2026, one sentence added to each: "Medically retired members, their families, and survivors of active duty service members pay less."
+- POLICY_CHANGES entry dated 1 JAN 2026: source label changed from "Changes" to "Pharmacy Costs", and its link changed to the Pharmacy Costs page.
+- The dollar figures already on these three surfaces are unchanged.
+
+IMPACT: SHIP - ACT | A2/A3 | Claude (chat session, at Dean's direction) | 2026-11-14 | revisit NONE
+A1 population: SEPARATING (active component); GUARD/RESERVE; SPOUSE/FAMILY; ALREADY SEPARATED. All four are asserted because each holds a group the general copay table leaves out: active duty service members, including activated Guard and Reserve members; active duty family members in TRICARE Prime Remote in the U.S.; medically retired service members and their family members; and survivors of active duty service members.   band: 9 Months Out, the card's band, and Post-Separation at any day-offset, where the card stays listed as an earlier milestone.   excluded: This does not apply to retirees, retiree family members and the other beneficiaries the general table covers, who pay the copays already on the card.   timing: ACT AVAILABLE NOW.
+A2 act: "Open tricare.mil/Costs/PharmacyCosts and budget with the table for your group: 'Costs for all beneficiaries except medically retired sponsors and certain survivors' or 'Costs for medically retired sponsors and certain survivors'."
+A3 surface(s): reminders (card `r-9-tri26`); notification list (`n34`); POLICY_CHANGES entry dated 1 JAN 2026.   token: NONE   sweep trigger: FIRED confusable-adjacent. Two copay tables, general and frozen, now sit on one card. Every surface carrying the general figures was checked in the same change: the card, `n34` and the POLICY_CHANGES entry. The Navigator corpus carries no pharmacy copay figure.
+A4 cost: NOTHING
+EXPIRES: 2027-12-31 for the general copay figures. The frozen figures carry no end date on the page; re-verify with the general figures.
+
+## V-2026-11-14-PRIME-TRAVEL-NONARMED - Prime Travel Benefit distance for PHS and NOAA families (verified 14 November 2026)
+
+**Status:** CONFIRMED. Wording staged for Dean's approval on branch `claude/tricare-card-exceptions-20261114`. Not released at the time of this entry.
+
+**Claim:** For the Prime Travel Benefit, a referral qualifies when the specialty care provider is more than 75 miles one-way from the primary care manager's office for dependents of members of an armed uniformed service on active duty. The distance is 100 miles one-way for dependents of members of a non-armed uniformed service (PHS, NOAA) on active duty, and 100 miles one-way for retirees and retiree family members.
+
+**Source:** https://tricare.mil/PrimeTravel , "Last Updated 5/27/2026". Read 14 November 2026.
+
+**Ladder tier:** Tier 2, orchestrator browser (Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.
+
+**App change (wording staged for Dean's approval):** four surfaces said 75 miles applies to "active-duty family members (retirees remain at 100 miles)". Each parenthetical now reads "(PHS and NOAA families and retirees remain at 100 miles)". Surfaces: reminder `r-9-tri26`, notification `n34`, the POLICY_CHANGES entry dated 1 JAN 2026, and the FY26 NDAA panel line. The 75-mile and 100-mile figures are unchanged.
+
+IMPACT: DECLINE / INOCULATE | A2 | Claude (chat session, at Dean's direction) | 2026-11-14 | revisit NONE
+A1 population: SPOUSE/FAMILY, limited to dependents of active duty members of the Public Health Service and NOAA.   band: NONE. This finding is condition-triggered: it applies whenever a TRICARE Prime enrollee in that group is referred for specialty care.   excluded: This does not apply to dependents of active duty members of an armed uniformed service, who qualify at 75 miles, or to retirees and retiree family members, whose 100-mile distance the app already stated.   timing: ACT AVAILABLE NOW.
+A2 act: NOTHING - context
+A3 surface(s): reminders (card `r-9-tri26`); notification list (`n34`); POLICY_CHANGES entry dated 1 JAN 2026; FY26 NDAA panel line.   token: NONE   sweep trigger: FIRED confusable-adjacent. The 75-mile and 100-mile distances apply to different groups. All four surfaces carried the same parenthetical and were changed together.
+A4 cost: NOTHING
+INOCULATE limbs: 1 PUBLIC SALIENCE - TRICARE publishes both distances on its Prime Travel page. 2 WRONG INFERENCE - "A PHS or NOAA family reads '75 miles for active-duty family members' and expects reimbursement for a specialty care trip between 75 and 100 miles." 3 CLOSURE - the reader's next question is "what is my distance?", and the same parenthetical answers it: 100 miles.
+EXPIRES: NONE; re-verify when TRICARE updates the page.
