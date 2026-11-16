@@ -37,10 +37,9 @@ await home();await openConversation('away');
 assert.equal(await ev('document.getElementById("career-gap-target").value'),guide.targetRole);
 assert.equal(await ev('localStorage.getItem("tops_career_gap_v1")'),null);
 assert.ok(await ev('document.body.textContent.includes("chosen career target was added")'));
-await home();await click('All tools');await wait(`!!document.querySelector('[role=dialog][aria-label="More tools"]')`,'all tools');
-const toolText=await ev('document.querySelector("[role=dialog]").textContent');
-for(const label of ['Career','VA MATH CALCULATOR','VA PAY ESTIMATOR','REMINDERS & ALERTS','TAX INTEL','VET HUB','RESOURCES'])assert.ok(toolText.includes(label),label+' remains accessible');
-await ev(`document.querySelector('[aria-label="Close More menu"]').click()`);
+await home();await click('All tools');await wait(`!!document.querySelector('[role=dialog][aria-labelledby="tops-tools-heading"]')`,'all tools');
+for(const id of ['pathway','vamath','vapay','reminders','taxes','vethub','resources'])assert.ok(await ev(`document.getElementById('tops-menu-${id}').checkVisibility()`),id+' remains accessible');
+await ev(`document.querySelector('[aria-label="Close Tools menu"]').click()`);
 assert.equal(await ev('document.querySelectorAll(".dash-card").length'),1);
 assert.ok(await ev('document.querySelector(".dash-card").textContent.includes("Open transition timeline")'));
 for(const mode of ['existing-target','existing-notes']){

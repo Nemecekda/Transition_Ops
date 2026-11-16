@@ -50,7 +50,7 @@ const server = http.createServer((req, res) => {
     await load('/?tool=dashboard');
     await ev(`(()=>{localStorage.clear();localStorage.setItem('tops_onboarded','1');localStorage.setItem('tops_theme',${JSON.stringify(theme)});localStorage.setItem('tops_user_status','guard');const guide={version:1,pathway:'support',currentRole:'SYNTHETIC current role',targetRole:'SYNTHETIC target',goal:'SYNTHETIC preserve goal'};localStorage.setItem('tops_personal_guide_v1',JSON.stringify(guide));localStorage.setItem('tops_career_action_v1',JSON.stringify({version:1,text:'SYNTHETIC preserve next step',date:'2027-01-05',done:false,context:guide}));localStorage.setItem('tops_career_gap_v1',JSON.stringify(topsEmptyGap()));localStorage.setItem('docProgress',JSON.stringify({dd214:true}));})()`);
     await load('/?tool=dashboard'); const before = await disk();
-    for (const menu of ['Benefits', 'More']) {
+    for (const menu of ['Benefits', 'Tools']) {
       console.log('MENU',menu); await nav(menu);
       assert.equal(await ev('document.querySelectorAll("#tops-menu-state-help").length'), 1);
       if (menu === 'Benefits') assert.equal(await ev('document.querySelector(".more-overlay .tops-more-tool").id'), 'tops-menu-state-help');
