@@ -63,6 +63,8 @@ const server = http.createServer(async (req, res) => {
     console.log('PASS Guard context and neutral planning library');
     // The welcome route exposes one search form immediately; blank-role ZIP search is accepted.
     await seed({}); await ev("localStorage.removeItem('tops_onboarded')"); await load('/');
+    assert.equal(await ev('document.getElementById("tops-first-veteran").checkVisibility()'), false);
+    await ev('document.querySelector("#tops-welcome-service-paths>summary").click()'); await frames();
     await click('tops-first-veteran'); await wait('!!document.getElementById("tops-career-search-start")');
     assert.equal(await ev('document.activeElement.id'), 'tops-career-start-heading');
     assert.equal(await ev('!!document.getElementById("career-starter-resume")'), false);

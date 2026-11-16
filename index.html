@@ -747,17 +747,29 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 .tops-welcome-title{font-size:clamp(34px,4.7vw,60px);line-height:1.06;letter-spacing:-.045em;font-weight:750;margin:0 0 18px;color:#fbfbf2}
 .tops-welcome-title span{display:block}.tops-welcome-title span:last-child{color:#ead59b}
 .tops-welcome-intro>p{font-size:17px;line-height:1.6;max-width:36ch;margin:0;color:#e2e9df}
-.tops-welcome-paths legend{font-size:13px;letter-spacing:.025em;color:#eef2e9;font-weight:650;margin-bottom:12px}
+.tops-welcome-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;color:#ead59b;margin-bottom:14px}
+.tops-welcome-search{padding:24px;border-radius:18px;background:var(--welcome-card);color:var(--welcome-text);box-shadow:0 12px 32px #071d1730;min-width:0}
+.tops-welcome-search h2{font-size:22px;line-height:1.25;letter-spacing:-.025em;margin:0 0 18px;color:var(--welcome-heading)}
+.tops-welcome-search #tops-career-search-start-form{margin:0!important}
+.tops-welcome-search label{display:block;font-size:14px;font-weight:600;line-height:1.35}
+.tops-welcome-search #tops-career-search-notice{font-size:12px!important;line-height:1.5!important;margin:2px 0 12px!important}
+.tops-welcome-search #tops-career-search-start{font-weight:650;min-height:48px!important;border-radius:10px!important}
+.tops-welcome-alternatives{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.tops-welcome-alternative{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:84px;padding:18px 20px;border:1px solid var(--welcome-border);border-radius:14px;background:var(--welcome-card);color:var(--welcome-heading);font:inherit;text-align:left;cursor:pointer}
+.tops-welcome-alternative strong{display:block;font-size:17px;line-height:1.3}.tops-welcome-alternative small{display:block;font-size:13px;line-height:1.4;margin-top:5px;color:var(--welcome-muted)}
+.tops-welcome-secondary{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-top:18px}
+.tops-welcome-paths{flex:1;min-width:0}.tops-welcome-paths>summary{display:flex;align-items:center;min-height:44px;padding:10px 2px;cursor:pointer;font-size:14px;font-weight:600;color:var(--welcome-heading)}
+.tops-welcome-paths>summary:before{content:"+";margin-right:10px;font-size:20px;line-height:1}.tops-welcome-paths[open]>summary:before{content:"\2212"}
+.tops-welcome-paths legend{font-size:13px;line-height:1.5;color:var(--welcome-muted);margin-bottom:12px}
 .tops-welcome-choice{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:78px;text-align:left;margin-bottom:10px;padding:16px 18px;border:1px solid #e2e8dc;border-radius:14px;background:#f7f8f0;color:#18372b;font:inherit;cursor:pointer;box-sizing:border-box;box-shadow:0 4px 14px #071d171c}
 .tops-welcome-choice strong{display:block;font-size:17px;line-height:1.3}.tops-welcome-choice-detail{display:block;font-size:13px;line-height:1.4;color:#435b4d;margin-top:5px}
 .tops-welcome-arrow{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;border-radius:50%;background:#e6ecdf;color:#244a38;font-size:22px}
-.tops-welcome-choice:hover{background:#fffef5;border-color:#ead59b;box-shadow:0 5px 18px #071d1729}.tops-welcome-choice:focus-visible,.tops-welcome-skip:focus-visible{outline:3px solid #ffe6a0;outline-offset:3px}
-.tops-welcome-skip{width:100%;min-height:44px;margin-top:2px;padding:10px;border:0;border-radius:8px;color:#f5f7ec;background:transparent;font:inherit;font-size:14px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
-.tops-welcome-preview{margin:22px 2px 0;font-size:14px;line-height:1.6}
-.tops-welcome-footer{font-size:12px;line-height:1.6;margin:18px 2px 0;max-width:90ch}
-@media(min-width:820px){.tops-welcome-page{padding:32px 32px 40px}.tops-welcome-layout{grid-template-columns:1.05fr 1fr;gap:48px;min-height:450px;padding:48px}.tops-welcome-title span:last-child{white-space:nowrap}}
-@media(max-width:480px){.tops-welcome-page{padding:18px 16px 28px}.tops-welcome-brand{padding-bottom:18px}.tops-welcome-layout{padding:24px 20px;gap:22px;border-radius:20px}.tops-welcome-title{font-size:clamp(32px,9.5vw,40px);margin-bottom:12px}.tops-welcome-intro>p{font-size:15px;line-height:1.5}.tops-welcome-choice{padding:13px 14px;min-height:74px}.tops-welcome-choice strong{font-size:16px}.tops-welcome-choice-detail{font-size:12px}.tops-welcome-preview{margin-top:20px}}
-@media(forced-colors:active){.tops-welcome-layout,.tops-welcome-mark,.tops-welcome-choice,.tops-welcome-arrow{background:Canvas;color:CanvasText;border-color:CanvasText;box-shadow:none}.tops-welcome-title,.tops-welcome-title span:last-child,.tops-welcome-intro>p,.tops-welcome-paths legend,.tops-welcome-choice-detail,.tops-welcome-skip{color:CanvasText}.tops-welcome-choice:focus-visible,.tops-welcome-skip:focus-visible{outline-color:Highlight}}
+.tops-welcome-choice:hover{background:#fffef5;border-color:#ead59b;box-shadow:0 5px 18px #071d1729}.tops-welcome-page :is(button,a,summary,input,select,textarea):focus-visible{outline:3px solid var(--welcome-focus)!important;outline-offset:3px}
+.tops-welcome-skip{flex:0 0 auto;min-height:44px;padding:10px 2px;border:0;border-radius:8px;color:var(--welcome-heading);background:transparent;font:inherit;font-size:14px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.tops-welcome-footer{font-size:12px;line-height:1.6;margin:12px 2px 0;max-width:90ch}
+@media(min-width:820px){.tops-welcome-page{padding:32px 32px 40px}.tops-welcome-layout{grid-template-columns:1fr 1.04fr;gap:48px;min-height:450px;padding:40px}.tops-welcome-title span:last-child{white-space:nowrap}.tops-welcome-alternatives{gap:16px}.tops-welcome-alternative{padding:20px 24px}}
+@media(max-width:480px){.tops-welcome-page{padding:16px 14px 24px}.tops-welcome-brand{padding-bottom:16px}.tops-welcome-layout{padding:22px 16px 16px;gap:18px;border-radius:20px}.tops-welcome-title{font-size:clamp(32px,9.5vw,40px);margin-bottom:10px}.tops-welcome-intro>p{font-size:14px;line-height:1.5}.tops-welcome-eyebrow{font-size:10px;margin-bottom:10px}.tops-welcome-search{padding:16px;border-radius:14px}.tops-welcome-search h2{font-size:19px;margin-bottom:14px}.tops-welcome-alternatives{gap:8px;margin-top:12px}.tops-welcome-alternative{padding:12px;min-height:80px;gap:5px}.tops-welcome-alternative strong{font-size:14px}.tops-welcome-alternative small{font-size:12px}.tops-welcome-alternative .tops-welcome-arrow{display:none}.tops-welcome-choice{padding:13px 14px;min-height:74px}.tops-welcome-choice strong{font-size:16px}.tops-welcome-choice-detail{font-size:12px}.tops-welcome-secondary{gap:10px;margin-top:10px}.tops-welcome-skip,.tops-welcome-paths>summary{font-size:12px}}
+@media(forced-colors:active){.tops-welcome-layout,.tops-welcome-mark,.tops-welcome-search,.tops-welcome-alternative,.tops-welcome-choice,.tops-welcome-arrow{background:Canvas;color:CanvasText;border-color:CanvasText;box-shadow:none}.tops-welcome-title,.tops-welcome-title span:last-child,.tops-welcome-eyebrow,.tops-welcome-intro>p,.tops-welcome-paths legend,.tops-welcome-paths>summary,.tops-welcome-choice-detail,.tops-welcome-skip,.tops-welcome-alternative small{color:CanvasText}.tops-welcome-page :is(button,a,summary,input,select,textarea):focus-visible{outline-color:Highlight!important}}
 @media(max-width:760px){.tops-product-shell .tops-next-move-continue .tops-next-move-main{padding:22px 20px}.tops-product-shell .tops-next-move-continue .tops-next-move-heading{font-size:26px}}
 .tops-product-shell .tops-next-move-main>h2{font-size:11px!important;letter-spacing:.15em!important;opacity:.85}
 .tops-product-shell .tops-next-move-actions>button:not(.tops-move-primary){color:inherit!important}
@@ -7373,9 +7385,12 @@ function CareerSearchStart(props) {
   var [error, setError] = useState(null);
   var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 10, margin: "4px 0 10px", font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 8 };
   function change(key, value) { setError(null); props.setState(function(previous) { return Object.assign({}, previous, { [key]: value, searchRequest: 0 }); }); }
+  var roleField = React.createElement(React.Fragment, { key: "role" },
+    React.createElement("label", { htmlFor: "tops-career-search-role", style: { margin: 0 } }, "Role or keywords (optional)"), React.createElement("input", { id: "tops-career-search-role", value: state.keyword, maxLength: 120, "aria-invalid": error && error.field === "role" ? true : undefined, "aria-describedby": error && error.field === "role" ? "tops-career-search-error" : undefined, placeholder: props.rolePlaceholder || "Leave blank to search all roles in this area", style: field, onChange: function(event) { change("keyword", event.target.value); } }));
+  var areaField = React.createElement(React.Fragment, { key: "area" },
+    React.createElement("label", { htmlFor: "tops-career-search-area", style: { margin: 0 } }, "City and state, or ZIP code"), React.createElement("input", { id: "tops-career-search-area", value: state.state, maxLength: 80, required: true, "aria-invalid": error && error.field === "area" ? true : undefined, "aria-describedby": error && error.field === "area" ? "tops-career-search-error" : undefined, enterKeyHint: "search", placeholder: "For example, Milwaukee, WI", style: field, onChange: function(event) { change("state", event.target.value); } }));
   return React.createElement("form", { id: "tops-career-search-start-form", noValidate: true, onSubmit: function(event) { event.preventDefault(); var invalid = topsJobSearchError(state.keyword, state.state); setError(invalid); if (invalid) { document.getElementById("tops-career-search-" + invalid.field).focus(); return; } if (query) props.onOpen(); }, style: { margin: "0 0 20px" } },
-    React.createElement("label", { htmlFor: "tops-career-search-role", style: { margin: 0 } }, "Role or keywords (optional)"), React.createElement("input", { id: "tops-career-search-role", value: state.keyword, maxLength: 120, "aria-invalid": error && error.field === "role" ? true : undefined, "aria-describedby": error && error.field === "role" ? "tops-career-search-error" : undefined, placeholder: "Leave blank to search all roles in this area", style: field, onChange: function(event) { change("keyword", event.target.value); } }),
-    React.createElement("label", { htmlFor: "tops-career-search-area", style: { margin: 0 } }, "City and state, or ZIP code"), React.createElement("input", { id: "tops-career-search-area", value: state.state, maxLength: 80, required: true, "aria-invalid": error && error.field === "area" ? true : undefined, "aria-describedby": error && error.field === "area" ? "tops-career-search-error" : undefined, enterKeyHint: "search", placeholder: "For example, Milwaukee, WI", style: field, onChange: function(event) { change("state", event.target.value); } }),
+    props.locationFirst ? [areaField, roleField] : [roleField, areaField],
     error && React.createElement("p", { id: "tops-career-search-error", role: "alert" }, error.message),
     React.createElement("p", { id: "tops-career-search-notice", style: { fontSize: 14, lineHeight: 1.5, margin: "2px 0 12px" } }, "Search all roles here, or add keywords. Sends this search to USAJOBS through Transition OPS when connected. Your resume is not included. No sign-in needed."),
     React.createElement("button", { id: "tops-career-search-start", type: "submit", "aria-describedby": "tops-career-search-notice", style: { width: "100%", minHeight: 44, padding: "12px 16px", font: "inherit", border: "1px solid " + C.border, borderRadius: 8, background: C.green, color: C.textOnFill, cursor: "pointer" } }, "Find jobs and resources"));
@@ -10146,7 +10161,7 @@ function App() {
   const resumeHeaderLocationRef = useRef(null);
   const resumeHeaderEmailRef = useRef(null);
   const resumeHeaderPhoneRef = useRef(null);
-  const [jobsQ, setJobsQ] = useState(function() { var query = topsReadJobSearchURL(window.location.href); return Object.assign({ open: !!query, keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "", searchRequest: 0 }, query || {}); });
+  const [jobsQ, setJobsQ] = useState(function() { var query = topsReadJobSearchURL(window.location.href), welcomeQuery = history.state && history.state.welcomeStart && history.state.welcomeQuery; if (!query && welcomeQuery) query = topsJobSearchQuery(welcomeQuery.keyword, welcomeQuery.state); return Object.assign({ open: !!query && !(history.state && history.state.welcomeStart), keyword: "", state: "", loading: false, jobs: null, count: 0, err: "", note: "", searchRequest: 0 }, query || {}); });
   const jobsVisited = useRef(false);
   if (jobsQ.open) jobsVisited.current = true;
   const [careerToolsOpen, setCareerToolsOpen] = useState(false);
@@ -10166,6 +10181,7 @@ function App() {
       if (t && validTabs.indexOf(t) !== -1) return false;
       if (!moveSaved.embedded && (moveSaved.raw !== null || moveSaved.error)) return false;
       if (topsMemberHasSavedWork()) return false;
+      if (history.state && history.state.welcomeStart === true) return true;
       return !window.__safeGet("tops_onboarded");
     } catch(e) { return true; }
   });
@@ -10412,6 +10428,8 @@ function App() {
   useEffect(function() { if (activeTab === "pathway" && careerEntry) activateCareerScreen("workspace"); }, [activeTab, careerEntry]);
   const __histDepth = useRef((history.state && history.state.tops) || 0);
   const __documentEntryBase = useRef(topsIsDocumentURL(window.location.href) && (!history.state || typeof history.state.tops !== "number" || history.state.documentEntryBase === true) ? 2 : 0);
+  const __welcomeEntryBase = useRef(history.state && history.state.welcomeEntryBase === true ? 1 : 0);
+  const __welcomeNavigation = useRef(null);
   const __histSkipSync = useRef(false);
   const __histSuppress = useRef(0);
   const [__histRevision, __setHistRevision] = useState(0);
@@ -10437,6 +10455,14 @@ function App() {
   } };
   __planHistory.current = { active: activeTab === "timeline", view: planView, milestone: selectedMilestone, overlay: showMoreMenu || feedbackOpen || aboutOpen || whatsNewOpen || policyPanelOpen, restore: function(view) { setSelectedMilestone(null); setPlanView(view); continuationFocus.current = view === "hub" ? "tops-loop-title" : "tops-plan-timeline"; } };
   __careerHistory.current = { screen: careerScreen, stage: careerStage, active: activeTab === "pathway", restore: function(screen, stage) { activateCareerScreen(screen); if ([0,1,2].includes(stage)) { setCareerStage(stage); setCareerStageRequest({ stage: stage, nonce: Date.now() }); } } };
+  __welcomeNavigation.current = { visible: showOnboarding, overlay: showMoreMenu || feedbackOpen || aboutOpen || whatsNewOpen || policyPanelOpen, restore: function(task, state) {
+    setJobsQ(function(previous) { return Object.assign({}, previous, { searchRequest: 0 }); });
+    if (task === "start") { __welcomeEntryBase.current = 0; setOnboardStep(0); setShowOnboarding(true); requestAnimationFrame(function() { var heading = document.getElementById("tops-first-visit-heading"); if (heading) { heading.focus(); heading.scrollIntoView({ block: "start" }); } }); return; }
+    setShowOnboarding(false);
+    if (task === "jobs") { var screen = state && ["workspace", "jobs", "my-jobs", "resume", "tools"].includes(state.careerView) ? state.careerView : "jobs", targetQuery = topsReadJobSearchURL(window.location.href); if (targetQuery) setJobsQ(function(previous) { return Object.assign({}, previous, targetQuery, { searchRequest: 0 }); }); __welcomeEntryBase.current = state && state.welcomeEntryBase === true ? 1 : 0; activateCareerScreen(screen); setActiveTab("pathway"); focusCareerWorksheet(screen === "jobs" ? "tops-jobs-skills-heading" : screen === "my-jobs" ? "tops-my-jobs-heading" : "tops-career-start-heading"); }
+    else if (task === "plan") openPlanRoute("readiness", "tops-plan-readiness", "tops-first-change");
+    else if (task === "benefits") openStateHelp(state && state.stateHelp || Object.assign({}, stateHelpContext, { need: "benefits" }));
+  } };
   __syncToolURL.current = function() {
     if (showOnboarding) return;
     try { var next = topsCurrentToolURL(window.location.href, activeTab); if (next) { var url = new URL(next), docs = activeTab === "resources" && subTab === "documents";
@@ -10479,7 +10505,8 @@ function App() {
     }
     if (__histSuppress.current > 0) return;
     if (__documentEntryBase.current && !(activeTab === "resources" && subTab === "documents")) __documentEntryBase.current = 0;
-    depth = Math.max(0, depth - __documentEntryBase.current);
+    if (__welcomeEntryBase.current && (activeTab !== "pathway" || careerScreen !== "jobs")) __welcomeEntryBase.current = 0;
+    depth = Math.max(0, depth - __documentEntryBase.current - (__welcomeEntryBase.current ? 1 + careerStage : 0));
     var prev = __histDepth.current;
     if (depth > prev) {
       for (var i = prev; i < depth; i++) { try { history.pushState(Object.assign({ tops: i + 1 }, activeTab === "pathway" ? { careerView: careerScreen, careerStage: careerStage } : activeTab === "timeline" ? { planView: planView } : {}), ""); } catch (e) {} }
@@ -10490,12 +10517,16 @@ function App() {
       __histSkipSync.current = false;
     }
     __histDepth.current = depth;
-    if (__histSuppress.current === 0) { try { var state = Object.assign({}, history.state); if (__documentEntryBase.current) { state.documentEntryBase = true; state.tops = depth; } else delete state.documentEntryBase; if (activeTab === "pathway") { state.careerView = careerScreen; state.careerStage = careerStage; } else { delete state.careerView; delete state.careerStage; } if (activeTab === "timeline") state.planView = planView; else delete state.planView; if (stateHelpToolActive()) state.stateHelpReturn = stateHelpReturn.current; else { delete state.stateHelpReturn; stateHelpReturn.current = ""; } if (stateHelpToolActive() || (activeTab === "resources" && (subTab === "state-help" || (subTab === "documents" && documentReturn.current === "state-help")))) state.stateHelp = topsStateHelpContext(stateHelpContext); else delete state.stateHelp; if (activeTab === "resources" && TOPS_DOCUMENT_RETURN_TOPICS.includes(subTab)) state.documentParentTopic = subTab; else delete state.documentParentTopic; if (activeTab === "resources" && subTab === "documents" && topsDocumentReturnKey(documentReturn.current)) state.documentReturn = documentReturn.current; else delete state.documentReturn; history.replaceState(state, ""); } catch (e) {} __syncToolURL.current(); }
+    if (__histSuppress.current === 0) { try { var state = Object.assign({}, history.state); if (!showOnboarding) { delete state.welcomeStart; delete state.welcomeQuery; if (__welcomeEntryBase.current) state.welcomeEntryBase = true; else delete state.welcomeEntryBase; if (state.welcomeTask === "jobs" && activeTab !== "pathway" || state.welcomeTask === "plan" && activeTab !== "readiness" || state.welcomeTask === "benefits" && !(activeTab === "resources" && subTab === "state-help")) delete state.welcomeTask; } if (__documentEntryBase.current) { state.documentEntryBase = true; state.tops = depth; } else delete state.documentEntryBase; if (activeTab === "pathway") { state.careerView = careerScreen; state.careerStage = careerStage; } else { delete state.careerView; delete state.careerStage; } if (activeTab === "timeline") state.planView = planView; else delete state.planView; if (stateHelpToolActive()) state.stateHelpReturn = stateHelpReturn.current; else { delete state.stateHelpReturn; stateHelpReturn.current = ""; } if (stateHelpToolActive() || (activeTab === "resources" && (subTab === "state-help" || (subTab === "documents" && documentReturn.current === "state-help")))) state.stateHelp = topsStateHelpContext(stateHelpContext); else delete state.stateHelp; if (activeTab === "resources" && TOPS_DOCUMENT_RETURN_TOPICS.includes(subTab)) state.documentParentTopic = subTab; else delete state.documentParentTopic; if (activeTab === "resources" && subTab === "documents" && topsDocumentReturnKey(documentReturn.current)) state.documentReturn = documentReturn.current; else delete state.documentReturn; history.replaceState(state, ""); } catch (e) {} __syncToolURL.current(); }
   }, [showOnboarding, onboardStep, activeTab, subTab, stateHelpContext, planView, selectedMilestone, journeyTarget, pathwayMode, careerScreen, careerStage, showMoreMenu, feedbackOpen, aboutOpen, whatsNewOpen, policyPanelOpen, __histRevision]);
   useEffect(function() {
     var onPop = function() {
       if (__histSuppress.current > 0) { __histSuppress.current -= 1; __histDepth.current = (history.state && history.state.tops) || 0; if (__histSuppress.current === 0) __setHistRevision(function(value) { return value + 1; }); return; }
       __histSkipSync.current = true;
+      var welcome = __welcomeNavigation.current, entry = history.state || {};
+      __welcomeEntryBase.current = entry.welcomeEntryBase === true ? 1 : 0;
+      if (welcome && entry.welcomeStart === true && !topsMemberHasSavedWork()) { __histDepth.current = entry.tops || 0; ReactDOM.unstable_batchedUpdates(function() { welcome.restore("start"); }); return; }
+      if (welcome && !welcome.overlay && ["jobs", "plan", "benefits"].includes(entry.welcomeTask)) { __histDepth.current = entry.tops || 0; ReactDOM.unstable_batchedUpdates(function() { welcome.restore(entry.welcomeTask, entry); }); return; }
       __documentEntryBase.current = topsIsDocumentURL(window.location.href) && history.state && history.state.documentEntryBase === true ? 2 : 0;
       var documentsRoute = __documentHistory.current;
       if (documentsRoute && !documentsRoute.overlay && (documentsRoute.active || topsIsDocumentURL(window.location.href) || topsIsStateHelpURL(window.location.href))) { __histDepth.current = (history.state && history.state.tops) || 0; documentsRoute.restore(); return; }
@@ -11740,23 +11771,50 @@ function App() {
           if (choice.id === "leave") openPlanRoute("readiness", "tops-plan-readiness", "tops-first-change");
           else { activateCareerScreen("workspace"); setPathwayMode("journey"); setJourneyTarget(""); setCareerExperienceContext(null); setCareerEntry(""); continuationFocus.current = "tops-career-start-heading"; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("pathway"); }
         }
-        return React.createElement("main", { id: "tops-first-visit", className: "tops-welcome-page", style: { background: C.bg, color: C.textBody } },
+        function openWelcomeTask(task) {
+          if (!["jobs", "plan", "benefits"].includes(task)) return;
+          try {
+            var query = topsJobSearchQuery(jobsQ.keyword, jobsQ.state), startURL = new URL(window.location.href);
+            ["tool", "view", "role", "location", "area", "situation", "need", "guide", "state"].forEach(function(key) { startURL.searchParams.delete(key); });
+            history.replaceState({ tops: 0, welcomeStart: true, welcomeQuery: query }, "", startURL.href);
+            history.pushState(Object.assign({ tops: 1, welcomeTask: task }, task === "jobs" ? { careerView: "jobs", careerStage: careerStage, welcomeEntryBase: true } : {}), "", task === "jobs" ? topsJobSearchURL(jobsQ.keyword, jobsQ.state, startURL.href) : startURL.href);
+            __histDepth.current = 1; __welcomeEntryBase.current = task === "jobs" ? 1 : 0;
+          } catch (error) { __welcomeEntryBase.current = 0; }
+          window.__safeSet("tops_onboarded", "explored");
+          setOnboardData(function(previous) { return Object.assign({}, previous, { journey: "direct" }); });
+          setShowOnboarding(false);
+          if (task === "jobs") {
+            setPathwayMode("journey"); setJourneyTarget(""); setCareerExperienceContext(null); setCareerEntry("");
+            activateCareerScreen("jobs");
+            setJobsQ(function(previous) { return Object.assign({}, previous, { open: true, searchRequest: Date.now() }); });
+            setActiveTab("pathway"); focusCareerWorksheet("tops-live-jobs-panel");
+          } else if (task === "plan") openPlanRoute("readiness", "tops-plan-readiness", "tops-first-change");
+          else if (task === "benefits") openStateHelp(Object.assign({}, stateHelpContext, { need: "benefits" }));
+        }
+        return React.createElement("main", { id: "tops-first-visit", className: "tops-welcome-page", style: { background: C.bg, color: C.textBody, "--welcome-card": C.bgCard, "--welcome-text": C.textBody, "--welcome-heading": C.textPrimary, "--welcome-muted": C.textSecondary, "--welcome-border": C.border, "--welcome-focus": C.isLight ? C.green : C.goldBright } },
           React.createElement("div", { style: { maxWidth: 1140, margin: "0 auto" } },
             React.createElement("header", { className: "tops-welcome-brand" },
               React.createElement("span", { "aria-hidden": true, className: "tops-welcome-mark" }, "V"),
               React.createElement("div", null, React.createElement("div", { style: { fontWeight: 800, fontSize: 20, letterSpacing: ".025em", color: C.textPrimary } }, "TRANSITION OPS"), React.createElement("div", { style: { fontSize: 10, marginTop: 4, letterSpacing: ".1em", color: C.textSecondary } }, "BY VETERAN BRIDGE SOLUTIONS"))),
             React.createElement("div", { className: "tops-welcome-layout" },
               React.createElement("div", { className: "tops-welcome-intro" },
-                React.createElement("h1", { id: "tops-first-visit-heading", tabIndex: -1, className: "tops-welcome-title" }, React.createElement("span", null, "Your service. "), React.createElement("span", null, "Your next move.")),
-                React.createElement("p", null, "Find your next career, understand your benefits and build a plan that works for you.")),
-              React.createElement("div", { className: "tops-welcome-paths" },
+                React.createElement("div", { className: "tops-welcome-eyebrow" }, "CAREERS. BENEFITS. WHAT'S NEXT."),
+                React.createElement("h1", { id: "tops-first-visit-heading", tabIndex: -1, className: "tops-welcome-title" }, React.createElement("span", null, "Your next move, "), React.createElement("span", null, "made clear.")),
+                React.createElement("p", null, "Find jobs and free learning, or start with your transition and benefits.")),
+              React.createElement("section", { className: "tops-welcome-search", "aria-labelledby": "tops-welcome-search-heading" },
+                React.createElement("h2", { id: "tops-welcome-search-heading" }, "Find jobs and free learning"),
+                React.createElement(CareerSearchStart, { colors: C, state: jobsQ, setState: setJobsQ, locationFirst: true, rolePlaceholder: "Any role, or try Logistics", onOpen: function() { openWelcomeTask("jobs"); } }))),
+            React.createElement("nav", { className: "tops-welcome-alternatives", "aria-label": "Other ways to start" },
+              [["plan", "Plan my transition", "Open your checklist"], ["benefits", "Find benefits help", "Start with a veterans office"]].map(function(item) { return React.createElement("button", { key: item[0], id: "tops-first-" + item[0], type: "button", className: "tops-welcome-alternative", onClick: function() { openWelcomeTask(item[0]); } }, React.createElement("span", null, React.createElement("strong", null, item[1]), React.createElement("small", null, item[2])), React.createElement("span", { className: "tops-welcome-arrow", "aria-hidden": true }, "\u2192")); })),
+            React.createElement("div", { className: "tops-welcome-secondary" },
+              React.createElement("details", { className: "tops-welcome-paths", id: "tops-welcome-service-paths" },
+                React.createElement("summary", null, "Choose a service path"),
                 React.createElement("fieldset", { style: { padding: 0, margin: 0, border: 0 } },
-                  React.createElement("legend", null, "Where would you like to start?"),
+                  React.createElement("legend", null, "Choose the starting point that fits you today."),
                   TOPS_FIRST_VISIT_CHOICES.map(function(item) { return React.createElement("button", { id: "tops-first-" + item.id, key: item.id, type: "button", className: "tops-welcome-choice", "aria-label": item.title + ". " + item.action, onClick: function() { begin(item); } },
                     React.createElement("span", null, React.createElement("strong", null, item.title), React.createElement("span", { className: "tops-welcome-choice-detail" }, item.detail)),
-                    React.createElement("span", { "aria-hidden": true, className: "tops-welcome-arrow" }, "\u2192")); })),
-                React.createElement("button", { id: "tops-first-skip", type: "button", className: "tops-welcome-skip", onClick: function() { window.__safeSet("tops_onboarded", "explored"); setOnboardData(function(previous) { return Object.assign({}, previous, { journey: "" }); }); setShowOnboarding(false); continuationFocus.current = "tops-home-tools-title"; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("dashboard"); } }, "Explore all tools"))),
-            React.createElement("p", { className: "tops-welcome-preview", style: { color: C.textSecondary } }, "Explore careers, find benefits and local help, and compare the costs of your next move."),
+                    React.createElement("span", { "aria-hidden": true, className: "tops-welcome-arrow" }, "\u2192")); }))),
+              React.createElement("button", { id: "tops-first-skip", type: "button", className: "tops-welcome-skip", onClick: function() { window.__safeSet("tops_onboarded", "explored"); setOnboardData(function(previous) { return Object.assign({}, previous, { journey: "" }); }); setShowOnboarding(false); continuationFocus.current = "tops-home-tools-title"; setContinuationRevision(function(value) { return value + 1; }); setActiveTab("dashboard"); } }, "Explore all tools")),
             React.createElement("p", { className: "tops-welcome-footer", style: { color: C.textSecondary } }, "Families and anyone unsure where to start are welcome. No resume or separation date required. State and local guidance is available inside.")));
       },
             // Step 1: Military Status
