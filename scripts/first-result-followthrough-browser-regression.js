@@ -42,7 +42,7 @@ const server = http.createServer(async (req, res) => {
     const form = () => ev('JSON.stringify(["career-starter-resume","career-starter-posting","tops-journey-role"].map(id=>[id,document.getElementById(id)?.value]))');
     const shot = async name => { if(!process.env.TOPS_FOLLOWTHROUGH_EVIDENCE)return; const dir=path.resolve(process.env.TOPS_FOLLOWTHROUGH_EVIDENCE); fs.mkdirSync(dir,{recursive:true}); const image=await c.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(dir,name+'.png'),Buffer.from(image.data,'base64')); };
 
-    const search = async () => { await wait('!document.getElementById("tops-federal-search").disabled'); await click('tops-federal-search'); await wait('!!document.getElementById("tops-federal-results")'); };
+    const search = async () => { if(await ev('!!document.getElementById("tops-job-change-search")'))await click('tops-job-change-search'); await wait('!document.getElementById("tops-federal-search").disabled'); await click('tops-federal-search'); await wait('!!document.getElementById("tops-federal-results")'); };
     const searchRoute = '/?tool=pathway&view=jobs&role=&location=54211';
     jobs = [
       {...fixture,id:'1',title:'SYNTHETIC nationwide',location:'Anywhere in the U.S. (remote job)',url:'https://www.usajobs.gov/job/1'},
@@ -65,14 +65,14 @@ const server = http.createServer(async (req, res) => {
     await ev('document.getElementById("tops-federal-results").scrollIntoView({block:"start"})'); await frames(); await shot('mixed-results-375');
     await select('tops-job-family', 'Operations'); assert.equal(posts.length, 1, 'choosing a family is not submission');
     assert.equal(await ev('document.getElementById("tops-job-role").value'), '');
-    await click('tops-job-family-search'); await wait('document.getElementById("tops-federal-results")?.textContent.includes("logistics")');
+    await click('tops-job-family-search'); await wait('document.getElementById("tops-jobs-skills-heading")?.textContent.includes("logistics")&&!!document.getElementById("tops-federal-results")');
     assert.deepEqual(posts[1], {keyword:'logistics',location:'54211'}); assert.equal(posts.length, 2, 'one explicit family search');
     assert.equal(await ev('document.getElementById("tops-job-area").value'), '54211');
     assert.equal(await ev('!!document.getElementById("tops-job-family-refinement")'), false);
-    await input('tops-job-role', 'SYNTHETIC custom keyword'); assert.equal(posts.length, 2); await search();
+    await click('tops-job-change-search'); await input('tops-job-role', 'SYNTHETIC custom keyword'); assert.equal(posts.length, 2); await search();
     assert.deepEqual(posts[2], {keyword:'SYNTHETIC custom keyword',location:'54211'}); assert.equal(await disk(), clean);
     // All-remote, zero-result and filter changes describe only the returned set.
-    await input('tops-job-role',''); jobs=jobs.filter(j=>j.id==='1'); await search();
+    await click('tops-job-change-search'); await input('tops-job-role',''); jobs=jobs.filter(j=>j.id==='1'); await search();
     assert.equal(await ev('!!document.getElementById("tops-job-other-locations")'), false);
     assert.equal(await ev('document.querySelectorAll("#tops-job-remote-locations article").length'), 1);
     await ev('document.getElementById("tops-federal-results").scrollIntoView({block:"start"})'); await frames(); await shot('remote-results-375');
