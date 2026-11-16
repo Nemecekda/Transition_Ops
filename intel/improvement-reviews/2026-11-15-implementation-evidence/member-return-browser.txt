@@ -1,0 +1,20 @@
+Recorded from successful tool execution on 2026-11-15 (not a second test run).
+Working directory: /private/tmp/tops-return-20261115
+Command: node scripts/member-return-browser-regression.js
+Exit code: 0
+index.html SHA256: 539055571811e6930ebddc934c9cc071c0b43a467911385f37014e726b32d0c1
+Conditions: local HTTP server, headless Chrome, synthetic data only; external requests blocked, USAJOBS response mocked; mobile viewports 320/375px, professional/tactical themes. No field/retention evidence.
+
+PASS reminder context: unknown
+PASS reminder context: no date
+PASS reminder context: invalid calendar date
+PASS reminder context: unknown profile
+PASS reminder context: spouse profile
+PASS reminder context: future
+PASS reminder context: current
+PASS reminder context: expired BDD
+PASS reminder context: post separation
+PASS Guard context and neutral planning library
+PASS welcome direct ZIP search, save, public sharing, reload and exact continuation
+PASS multiple jobs, explicit action precedence, unchanged plan, closed/expired jobs
+MEMBER RETURN PASS: dated/profile-scoped reminders; exact saved-work continuation; direct ZIP search; public-only post-save sharing; failure recovery; both themes at 320/375px. Synthetic search calls: 1. Model calls: 0.

@@ -1,0 +1,5 @@
+Error: browser evaluation failed: Error: missing Return to my draft
+    at <anonymous>:1:121
+    at <anonymous>:1:320
+    at Object.evaluate (eval at <anonymous> (/private/tmp/tops-return-baseline-20261115/scripts/my-jobs-browser-regression.js:5:9), <anonymous>:175:11)
+    at async /private/tmp/tops-return-baseline-20261115/scripts/my-jobs-browser-regression.js:27:359

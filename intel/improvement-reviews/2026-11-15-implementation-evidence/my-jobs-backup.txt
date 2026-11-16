@@ -1,0 +1,1 @@
+MY JOBS BACKUP PASS: v4 nine-section roundtrip; v1-v3 exact raw shortlist preservation and key alignment; explicit empty restore; closed shape/provenance/URL/date/IDs/limits; nine rollback boundaries; malformed/read/quota/stale/mutate-then-throw/readback/embed guards; UTF-8 128KiB limit and multibyte roundtrip; unrelated data preserved.

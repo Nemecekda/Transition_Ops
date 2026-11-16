@@ -408,7 +408,7 @@ check(occurrences(verificationLog, "## V-2026-11-15-VBS-OPEN-ROLES ") === 1, "op
 }
 check(occurrences(index, "var RUNG_CLAIM_YEAR_WINDOW = { start: -270, end: -360 };") === 1 && occurrences(index, 'if (rung.id === "r-p10-claim") return Number.isFinite(d) && d <= RUNG_CLAIM_YEAR_WINDOW.start && d >= RUNG_CLAIM_YEAR_WINDOW.end;') === 1 && occurrences(index, 'if (rung.id === "r-p10-claim") return d < RUNG_CLAIM_YEAR_WINDOW.end;') === 1 && occurrences(index, 'if (rung.id === "r-6-bdd2" || rung.id === "r-p10-claim") return rungIsDue(rung, dateStr);') === 1,
   "the reminder is current from day 270 to day 360 after separation and dark after that, on Home and in the ladder");
-check(index.indexOf('{id:"r-p6",mo:-6,') < index.indexOf('{id:"r-p10-claim",mo:-10,') && index.indexOf('{id:"r-p10-claim",mo:-10,') < index.indexOf('{id:"r-p12",mo:-12,') && occurrences(index, '"r-p10-claim"') === 6 && index.includes('rung.id !== "r-p10-claim" && !bddWindowCard') && index.includes('rung.id === "r-p10-claim" ? RUNG_CLAIM_YEAR_WINDOW.start : rungTriggerDay(rung)'),
+check(index.indexOf('{id:"r-p6",mo:-6,') < index.indexOf('{id:"r-p10-claim",mo:-10,') && index.indexOf('{id:"r-p10-claim",mo:-10,') < index.indexOf('{id:"r-p12",mo:-12,') && occurrences(index, '"r-p10-claim"') === 7 && occurrences(index, '"r-p10-claim": "VA disability claim: first-year timing"') === 1 && index.includes('rung.id !== "r-p10-claim" && !bddWindowCard') && index.includes('rung.id === "r-p10-claim" ? RUNG_CLAIM_YEAR_WINDOW.start : rungTriggerDay(rung)'),
   "the reminder sits between the month 6 and month 12 reminders, and its timing note follows its own window");
 check(occurrences(verificationLog, "## V-2026-11-15-VA-CLAIM-ONE-YEAR ") === 1, "the one-year claim reminder carries one verification record");
 
@@ -570,8 +570,8 @@ check(occurrences(verificationLog, "## V-2026-11-15-STATE-STARTING-POINTS ") ===
     "the share control reports each outcome and falls back to a labeled link the member can select");
   check(occurrences(index, 'React.createElement(TopsShareControl, { id: "tops-tricare-open-season-2026-share", colors: C, fill: C.bgCard, label: "Share this deadline", title: "TRICARE Open Season", text: TOPS_SHARE_TEXT.tricare, url: TOPS_SHARE_ORIGIN + "/?tool=reminders" })') === 1 &&
     occurrences(index, 'React.createElement(TopsShareControl, { id: "tops-fedvip-open-season-2026-share", colors: C, fill: C.bgCard, label: "Share this deadline", title: "Federal Benefits Open Season", text: TOPS_SHARE_TEXT.fedvip, url: TOPS_SHARE_ORIGIN + "/?tool=reminders" })') === 1 &&
-    occurrences(index, 'url: TOPS_SHARE_ORIGIN + "/?tool=resources&view=state-help&area=national&state=" + startRow[0] })') === 1 && occurrences(index, 'const TOPS_SHARE_ORIGIN = "https://transitionops.org";') === 1 && occurrences(index, "React.createElement(TopsShareControl, ") === 3,
-    "three share controls: both open season notices share the Reminders address, and a state shares its own address");
+    occurrences(index, 'url: TOPS_SHARE_ORIGIN + "/?tool=resources&view=state-help&area=national&state=" + startRow[0] })') === 1 && occurrences(index, 'React.createElement(TopsShareControl, { id: "tops-saved-result-share", colors: C, label: "Share Career tools", title: "Transition OPS career tools", text: "Find jobs and free learning resources in Transition OPS.", url: TOPS_SHARE_ORIGIN + "/?tool=pathway" })') === 1 && occurrences(index, 'const TOPS_SHARE_ORIGIN = "https://transitionops.org";') === 1 && occurrences(index, "React.createElement(TopsShareControl, ") === 4,
+    "four share controls: both open season notices share Reminders, a state shares its address, and the saved-result control shares only the generic Career route");
 
   const appShareStart = index.indexOf("function handleShareApp(setToast) {");
   const appShare = index.slice(appShareStart, index.indexOf("function AboutModal(props) {", appShareStart));
