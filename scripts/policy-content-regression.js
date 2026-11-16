@@ -319,7 +319,13 @@ check(index.includes('{ date: "27 AUG 2026", title: "TAMP: Guard/Reserve eligibi
 // V-2026-11-15-CAREERONESTOP-JOB-LINKS.
 check(index.includes('careeronestop: "https://www.careeronestop.org/Toolkit/Jobs/find-jobs-results.aspx?" + new URLSearchParams({ keyword: role, location: area }).toString(),'),
   "job search builds the CareerOneStop results address from the role and area only");
-check(occurrences(index, '"Search CareerOneStop jobs (new tab)"') === 1 && index.includes('{ id: "tops-job-careeronestop", href: links.careeronestop, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing tops-job-careeronestop-note", style: link }'),
+// #246 and #250 restyled this link and gave it a short label for the compact results view. This pins what the
+// message states: one link, the new-tab attributes, both descriptions, and a "(new tab)" label in each view.
+check(occurrences(index, '{ id: "tops-job-careeronestop", href: links.careeronestop, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing tops-job-careeronestop-note", style: ') === 1 &&
+  occurrences(index, 'id: "tops-job-careeronestop"') === 1 &&
+  occurrences(index, 'compact ? "CareerOneStop jobs (new tab)" : "Search employer jobs on CareerOneStop (new tab)"),') === 1 &&
+  occurrences(index, '"Search CareerOneStop jobs (new tab)"') === 0 &&
+  occurrences(index, '{ id: "tops-job-sharing" }') === 1 && occurrences(index, '{ id: "tops-job-careeronestop-note", ') === 1,
   "CareerOneStop search opens in a new tab and is described by the sharing notice");
 check(index.includes('"CareerOneStop is sponsored by the U.S. Department of Labor. Its listings come from state job banks and employers through the National Labor Exchange, and you can read a posting without an account."'),
   "CareerOneStop note states sponsor, listing source and account-free reading");
@@ -415,7 +421,7 @@ check(occurrences(verificationLog, "## V-2026-11-15-VA-CLAIM-ONE-YEAR ") === 1, 
 // What's New entry and the two verified stamps. V-2026-11-15-VERIFIED-STAMP.
 check(occurrences(index, 'const APP_VERSION = "v99";') === 1 && /const WHATS_NEW = \[\n  \{ v: "v99", date: "15 NOV 2026", note: "TAMP for Guard and Reserve: a DoD memo clarified who qualifies/.test(index),
   "the app version and the first What's New entry are both v99, dated 15 NOV 2026");
-check(occurrences(index, 'const DATA_VERIFIED = "1 AUG 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK_DATE = "15 NOV 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 19:18 UTC";') === 1,
+check(occurrences(index, 'const DATA_VERIFIED = "1 AUG 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK_DATE = "15 NOV 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 23:33 UTC";') === 1,
   "the full-review date is unchanged and the latest-check stamp carries a date and a time");
 check(index.includes('or both. Full data review " + DATA_VERIFIED + ". Latest source check " + DATA_LATEST_CHECK + "."') && index.includes('SOURCED \\u00B7 LATEST CHECK " + DATA_LATEST_CHECK_DATE)') && occurrences(index, '"Last verified: " + DATA_VERIFIED + ""') === 1 && !index.includes('VERIFIED " + DATA_VERIFIED)'),
   "Critical Windows shows both stamps, the policy panel shows the latest check, and the directory footnote keeps the full-review date");
@@ -578,7 +584,9 @@ check(occurrences(verificationLog, "## V-2026-11-15-STATE-STARTING-POINTS ") ===
   check(appShareStart > 0 && !/__trackEvent|trackShare|app_shared/.test(appShare) && occurrences(appShare, "navigator.share(shareData).catch(function () {});") === 1 && occurrences(appShare, "url: 'https://transitionops.org'") === 1 &&
     occurrences(index, "navigator.clipboard.writeText(window.location.href);") === 0 && occurrences(index, 'showToast("Copy this link: " + window.location.href);') === 8,
     "sharing the app makes no tracking call, and no button assumes a clipboard: four older handlers now check for one and say what to copy");
-  check(occurrences(index, 'React.createElement("button", { id: "tops-menu-share", className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); handleShareApp(setToast); } }, "Share Transition OPS")') === 1,
+  // #252 gave this item a style. The id, class, action and label are pinned; the style value is not.
+  check(occurrences(index, 'React.createElement("button", { id: "tops-menu-share", className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); handleShareApp(setToast); }') === 1 &&
+    occurrences(index, 'id: "tops-menu-share"') === 1 && /id: "tops-menu-share"[^\n]{0,240}\}, "Share Transition OPS"\)/.test(index),
     "the More tools menu offers Share Transition OPS");
 
   const readerStart = index.indexOf("function topsStateStartFromURL(href) {");
@@ -614,6 +622,28 @@ check(occurrences(verificationLog, "## V-2026-11-15-SHARE-TEXT ") === 1, "the sh
     "each part of the app the share line names still has its tool: the VA calculator, Reminders, State and local help, and Career");
 }
 check(occurrences(verificationLog, "## V-2026-11-15-APP-SHARE-LINE ") === 1, "the app share line carries one verification record");
+
+// Federal jobs: active service counts toward family leave. V-2026-11-15-FMLA-MILITARY-SERVICE. No dollar figure.
+{
+  const tricare = (index.match(/  \{ date: "12 NOV 2026", title: "TRICARE 2027: Prime and Select costs published",[^\n]*\},\n/) || [""])[0];
+  const entry = (index.match(/  \{ date: "15 OCT 2026", title: "Federal jobs: active service counts toward family leave",[^\n]*\},\n/) || [""])[0];
+  check(entry.length > 0 && tricare.length > 0 && index.indexOf(entry) === index.indexOf(tricare) + tricare.length &&
+    occurrences(index, 'title: "Federal jobs: active service counts toward family leave"') === 1,
+    "the family leave entry is the second Policy Intel entry, in date order, and appears once");
+  check(entry.includes("Honorable active service in the Army, Navy, Air Force, Space Force or Marine Corps counts toward the 12 months of service a federal civilian employee needs") &&
+    entry.includes("That has been law since 22 DEC 2023, and OPM published a rule on 15 OCT 2026") && entry.includes("OPM counts full-time National Guard duty and Reserve active duty"),
+    "the entry names the five services, both dates and OPM's reading of active service");
+  check(entry.includes("Ask your agency's servicing human resources office to count your active service when you invoke FMLA leave.") &&
+    entry.includes("elect paid parental leave: up to 12 workweeks, used within 12 months of the birth or placement, with an agreement to work 12 weeks afterward."),
+    "the entry carries the act and the three paid parental leave limits");
+  check(entry.includes("Not covered: jobs on an intermittent schedule or a temporary appointment of one year or less; Postal Service and GAO jobs and private employers, which follow Labor Department rules; and Coast Guard or Public Health Service commissioned corps service, with narrow exceptions.") &&
+    entry.includes("FAA, TSA, the Federal Reserve Board and some VA health care jobs run under their own leave rules."),
+    "the entry says who is left out: two kinds of appointment, Labor Department employers, two services, and agencies with their own rules");
+  check(!/\$\d/.test(entry) && !/DD.?214|guarantee|automatic|entitled/i.test(entry) &&
+    entry.includes('url: "https://www.opm.gov/policy-data-oversight/pay-leave/leave-administration/fact-sheets/family-and-medical-leave/"'),
+    "the entry carries no dollar figure, no document step and no promise, and it links OPM's fact sheet");
+}
+check(occurrences(verificationLog, "## V-2026-11-15-FMLA-MILITARY-SERVICE ") === 1, "the family leave finding carries one verification record");
 
 // Retirement FEDVIP reminders, re-read against BENEFEDS on 15 NOV 2026. V-2026-11-15-FEDVIP-RETIREMENT-WINDOW.
 {

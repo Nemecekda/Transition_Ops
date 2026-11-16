@@ -3742,3 +3742,59 @@ EXPIRES: NONE
 **Form:** 149 characters, plain characters only, no dollar figure.
 
 IMPACT: NOT A NEW FINDING. The line describes the app. It adds no benefit claim, no date and no instruction for a member.
+
+## V-2026-11-15-FMLA-MILITARY-SERVICE - Active military service counts toward FMLA and paid parental leave eligibility in federal civilian jobs (verified 15 November 2026)
+
+**Status:** CONFIRMED for claims 1 to 9. Wording staged for Dean's approval on branch `claude/loop-23-fmla-military-service-20261115`. Not released at the time of this entry.
+
+**Lead:** J1 scan issue #232. s2-intel rated the OPM rule PROBABLE at rung 1 on tool-relayed text, so the orchestrator read the primary pages at Tier 2.
+
+**Claims:**
+1. A federal civilian employee must have completed 12 months of qualifying service to be eligible for FMLA leave under title 5.
+2. Service that qualifies as honorable active service in the Army, Navy, Air Force, Space Force or Marine Corps counts toward those 12 months. The amendment took effect on enactment, 22 December 2023 (Pub. L. 118-31, sec. 1114(a)).
+3. Qualifying civilian service and qualifying military service may be combined. The 12 months need not be consecutive or recent.
+4. OPM reads active service to include full-time National Guard duty and active duty performed by a member of the Reserves of the Army, Navy, Air Force or Marine Corps, using the title 10 definitions.
+5. Active service in the Coast Guard or the commissioned corps of the Public Health Service counts in two cases only: when USERRA covers it, or when it was performed during an interruption in federal civilian service. Outside those cases this provision leaves it out.
+6. Paid parental leave is substituted for unpaid FMLA leave, so an employee must meet FMLA eligibility to use it. It is up to 12 administrative workweeks per qualifying birth or placement, usable only in the 12 months after the birth or placement, and it requires a written agreement to work 12 weeks after the leave ends.
+7. Employees on an intermittent schedule or on a temporary appointment not to exceed one year are excluded from title 5 FMLA eligibility.
+8. Title I of the FMLA, administered by the Department of Labor, covers private sector employees and some federal employees, including those of the Postal Service, the Postal Regulatory Commission and the Government Accountability Office. Some other federal categories get FMLA under separate authorities, among them FAA, TSA, the Federal Reserve Board and certain Veterans Health Administration occupations.
+9. OPM directs questions about coverage or eligibility to the employee's human resources office, and tells employees to consult their servicing HR office on the process for requesting paid parental leave.
+
+**Sources, read 15 November 2026 at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.**
+- https://www.govinfo.gov/content/pkg/FR-2026-10-15/html/2026-21104.htm . About 23:25 UTC. Federal Register, 91 FR 65437 to 65441, FR Doc 2026-21104, Office of Personnel Management, 5 CFR Part 630, RIN 3206-AP18, "Family and Medical Leave Act", direct final rule published 15 October 2026. Read in full. It is effective 14 December 2026 unless OPM receives significant adverse comments by 16 November 2026, in which case OPM withdraws the affected provisions. The preamble describes the 2023 amendment as "The amended law, currently in effect". Claims 1 to 5. The rule adds paragraph (H) to 5 CFR 630.1201(b)(1)(ii) and three definitions to 630.1202.
+- https://www.govinfo.gov/content/pkg/USCODE-2024-title5/html/USCODE-2024-title5-partIII-subpartE-chap63-subchapV-sec6381.htm . About 23:26 UTC. United States Code, 2024 Edition, 5 U.S.C. 6381. Paragraph (1)(B)(ii) credits service "which qualifies as honorable active service" in the five named services. The amendment note cites Pub. L. 118-31, sec. 1114(a), 22 December 2023. Claims 1 and 2, second primary source.
+- https://www.opm.gov/policy-data-oversight/pay-leave/leave-administration/fact-sheets/family-and-medical-leave/ . Read in full about 23:29 UTC; nine statements confirmed again on the live page at 23:32 UTC. OPM fact sheet "Family and Medical Leave Act (FMLA) 12-Week Entitlement". The 12 months "do not need to be consecutive or recent". Claims 1, 2, 3, 5, 7, 8 and 9.
+- https://www.opm.gov/policy-data-oversight/pay-leave/leave-administration/fact-sheets/paid-parental-leave/ . Read about 23:28 UTC through the Work Obligation section; six statements confirmed again on the live page at 23:33 UTC. OPM fact sheet "Paid Parental Leave": "up to 12 administrative workweeks" per qualifying birth or placement. Claims 6 and 9. The last five sections of the page were not read.
+
+**Not read:**
+- OPM memorandum CPM 2024-05 of 13 February 2024. The browser showed the PDF without readable text. The Federal Register preamble states OPM's position and names the memorandum, so no claim rests on the memorandum itself.
+- The eCFR text of 5 CFR part 630 subpart L. The rule's amendments are not in force until 14 December 2026, and no claim rests on the current regulation text.
+- uscode.house.gov returned "Page Not Found" for the address tried. The GPO edition above was read in its place.
+
+**Effective dates:** the statute has applied since 22 December 2023. The rule that writes it into the regulations takes effect 14 December 2026 unless withdrawn. The app copy rests on the statute and on OPM's fact sheets, and states the rule only as published.
+
+**Sweep (successor and confusable-adjacent), executed in this cycle:**
+- `index.html` and `netlify/functions/navigator.mjs` hold no statement about FMLA, parental leave or a service requirement for federal leave, so nothing in the app is corrected by this finding.
+- The app carries other "12-week" figures: paid fellowships in the SpouseWorks entry and a Hiring Our Heroes resource, a cloud training course and a resume example. The new entry names its 12 workweeks as paid parental leave in a federal civilian job.
+- The app carries "within 12 months of" lines for program eligibility around separation. The new entry ties its two 12-month figures to service completed and to the birth or placement.
+
+**Not carried, with reasons:**
+- Any documentation step, such as presenting a DD214. No source read today names one, so the copy gives none.
+- Paid parental leave detail beyond the three limits in claim 6. OPM's fact sheet is linked.
+- The rule's effective date and comment deadline. Neither changes what a member does, and both would go stale within a month.
+- Dual-status military technicians. Whether title 5 leave covers them was not read.
+
+**App change (wording staged for Dean's approval):**
+- Policy Intel, new second entry dated 15 OCT 2026, "Federal jobs: active service counts toward family leave". The full text is in the pull request.
+- `DATA_LATEST_CHECK` moves from "15 NOV 2026, 19:18 UTC" to "15 NOV 2026, 23:33 UTC": the OPM read above is now the newest primary-source read recorded in this log.
+- What's New and `APP_VERSION` are untouched.
+- Tests: the content regression gains 6 assertions.
+
+**Recheck:** on or after 14 December 2026, read the Federal Register for a withdrawal notice. The app copy holds either way, because it rests on the statute.
+
+IMPACT: SHIP - ACT | A2/A3 | orchestrator, Tier 2 | 2026-11-15 | revisit NONE
+A1 population: ALREADY SEPARATED, SEPARATING (active component) and GUARD/RESERVE, each only once employed in a federal civilian job covered by title 5 leave and holding qualifying active service.   band: condition-triggered by a federal civilian hire date; for a separating member it falls in Post-Separation with no fixed day-offset.   excluded: This does not apply to jobs outside the federal government; to Postal Service, Postal Regulatory Commission or Government Accountability Office jobs, which follow the Labor Department's FMLA rules; to federal employees on an intermittent schedule or a temporary appointment of one year or less; to FAA, TSA, Federal Reserve Board and certain Veterans Health Administration jobs under separate leave authorities; to Coast Guard or Public Health Service commissioned corps service outside the two narrower cases OPM names; or to a spouse's federal job on the strength of the member's service.   timing: ACT AVAILABLE NOW
+A2 act: "Ask your agency's servicing human resources office to count your honorable active service toward the 12 months of service required when you invoke title 5 FMLA leave, and for a birth or a placement for adoption or foster care elect paid parental leave within the 12 months after it, under a written agreement to work 12 weeks afterward."
+A3 surface(s): 2026 POLICY INTEL card (`POLICY_CHANGES`, second entry).   token: NONE   sweep trigger: FIRED - successor terms: the statute "amended" the service requirement and the rule "amends" 5 CFR part 630; no predecessor statement exists in the app. Confusable-adjacent: other 12-week and 12-month figures, handled as recorded in the sweep above.
+A4 cost: MONEY
+EXPIRES: NONE
