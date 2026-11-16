@@ -70,7 +70,7 @@ const server = http.createServer(async (req, res) => {
     await input('tops-career-search-area', '53202'); await click('tops-career-search-start'); await wait('!!document.getElementById("tops-federal-results")');
     assert.equal(posts.length, 1); assert.equal(posts[0].keyword, ''); assert.equal(posts[0].location, '53202');
     assert.equal(await ev('!!document.getElementById("tops-saved-result-tools")'), false);
-    await textClick('Keep in My jobs'); await click('tops-my-job-save'); await wait('!!document.getElementById("tops-saved-result-tools")');
+    await textClick('Save job and see next step'); await wait('!!document.getElementById("tops-saved-result-tools")');
     const raw = await ev('localStorage.getItem("tops_my_jobs_v1")'), job = JSON.parse(raw).jobs[0];
     // Sharing contains only a public app route, even after a personal saved result exists.
     await ev(`window.__shared=[];Object.defineProperty(navigator,'share',{configurable:true,value:async value=>window.__shared.push(value)})`);
