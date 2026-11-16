@@ -181,7 +181,8 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(var(--t-picker
 .bottom-nav button .nav-icon{font-size:20px;line-height:1}
 .bottom-nav button .nav-label{font-size:12px;letter-spacing:0.2px;font-family:'Oswald',sans-serif}
 .more-overlay{position:fixed;inset:0;background:var(--t-overlay);z-index:250;display:flex;flex-direction:column;justify-content:flex-start;padding:40px 24px 70px;overflow-y:auto;animation:slideUp 0.25s ease}
-.more-overlay button{display:flex;align-items:center;gap:14px;padding:18px 16px;background:var(--t-bg-card);border:1px solid var(--t-border);border-radius:12px;margin-bottom:10px;cursor:pointer;width:100%;text-align:left}
+.more-overlay > *{flex-shrink:0}
+.more-overlay button{flex-shrink:0;min-height:44px;display:flex;align-items:center;gap:14px;padding:18px 16px;background:var(--t-bg-card);border:1px solid var(--t-border);border-radius:12px;margin-bottom:10px;cursor:pointer;width:100%;text-align:left}
 .content-area:empty{padding:0 !important}
 .dash-card{background:var(--t-bg-card);border:1px solid var(--t-border);border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s}
 .dash-card:active{border-color:#4A5D23}
@@ -7098,20 +7099,30 @@ function ReminderProgress(props) {
 const TOPS_SERVICE_PROFILES = [["active", "Active duty"], ["guard", "Guard / Reserve"], ["separated", "Already separated"], ["retired", "Retired"], ["spouse", "Military spouse"]];
 // Shared destinations keep Home, search and page orientation consistent.
 const TOPS_TOOL_CHOICES = [
-  { id: "timeline", title: "My Plan", description: "Continue your next step or review your separation timeline", keywords: "next step checklist transition date" },
-  { id: "pathway", title: "Career", description: "Explore roles, business ownership, your plan or resume", keywords: "career guide job skills resume worksheet business ownership entrepreneur operation ownership milwaukee wisconsin succession Dan Carey" },
-  { id: "vamath", title: "VA rating calculator", description: "Estimate a combined disability rating", keywords: "va math disability percentage calculator" },
-  { id: "vapay", title: "VA pay estimator", description: "Explore compensation estimates", keywords: "va pay money benefits compensation" },
-  { id: "resources", title: "Resources and support", description: "Find services, training and document guidance", keywords: "help vso support training skillbridge documents" },
-  { id: "reminders", title: "Reminders and follow-ups", description: "Review deadlines and steps you are working on", keywords: "next action deadline reminder followup" },
-  { id: "dd214", title: "DD214 and service records", description: "Review your record and experience", keywords: "dd214 dd 214 service record military experience" },
-  { id: "taxes", title: "State tax information", description: "Explore state guidance for planning", keywords: "tax state residency retired pay" },
-  { id: "readiness", title: "Transition checklist", description: "Review confirmed items and what needs attention", keywords: "readiness assessment score checklist" },
-  { id: "finalpcs", title: "Final move", description: "Open the final PCS planning tools", keywords: "final pcs move moving relocation" },
-  { id: "vethub", title: "Veteran hub", description: "Explore veteran career and benefit resources", keywords: "veteran employers benefits training" },
-  { id: "critical", title: "Critical windows", description: "Review time-sensitive transition guidance", keywords: "critical windows deadlines" },
-  { id: "navigator", title: "Navigator", description: "Ask for help choosing a next step", keywords: "ask navigator help" }
+  { id: "pathway", group: "Work and skills", icon: "target", title: "Career", description: "Explore roles, business ownership, your plan or resume", keywords: "career guide job skills worksheet business ownership entrepreneur operation ownership milwaukee wisconsin succession Dan Carey" },
+  { id: "my-jobs", group: "Work and skills", icon: "briefcase", title: "Saved jobs", description: "Continue a saved job and its next step", keywords: "my jobs saved roles applications opportunities" },
+  { id: "resume", group: "Work and skills", icon: "doc", title: "Prepare a resume", description: "Draft or continue your resume", keywords: "resume CV curriculum vitae draft experience" },
+  { id: "vethub", group: "Work and skills", icon: "medal", title: "Veteran hub", description: "Explore veteran career and benefit resources", keywords: "veteran employers benefits training" },
+  { id: "navigator", group: "Work and skills", icon: "compass", title: "Navigator", description: "Ask for help choosing a next step", keywords: "ask navigator help" },
+  { id: "budget", group: "Money and moving", icon: "calc", title: "Build a budget", description: "Compare pay, living costs and a possible move", keywords: "budget money income salary expenses cost of living affordability moving comparison" },
+  { id: "finalpcs", group: "Money and moving", icon: "box", title: "Final move", description: "Open the final PCS planning tools", keywords: "final pcs move moving relocation" },
+  { id: "vapay", group: "Money and moving", icon: "dollar", benefits: true, title: "VA pay estimator", description: "Explore compensation estimates", keywords: "va pay money benefits compensation" },
+  { id: "taxes", group: "Money and moving", icon: "percent", benefits: true, title: "State tax information", description: "Explore state guidance for planning", keywords: "tax state residency retired pay MSRRA" },
+  { id: "timeline", group: "Plan and records", icon: "calendar", title: "My Plan", description: "Continue your next step or review your separation timeline", keywords: "next step checklist transition date" },
+  { id: "readiness", group: "Plan and records", icon: "gauge", title: "Transition checklist", description: "Review confirmed items and what needs attention", keywords: "readiness assessment score checklist" },
+  { id: "reminders", group: "Plan and records", icon: "bell", title: "Reminders and follow-ups", description: "Review deadlines and steps you are working on", keywords: "next action deadline reminder followup" },
+  { id: "documents", group: "Plan and records", icon: "doc", title: "Document checklist", description: "Review the records to gather for your transition", keywords: "documents paperwork files records DD214" },
+  { id: "dd214", group: "Plan and records", icon: "doc", title: "DD214 and service records", description: "Review your record and experience", keywords: "dd214 dd 214 service record military experience" },
+  { id: "state-help", group: "Benefits and support", icon: "link", benefits: true, title: "State benefits and local help", description: "Find the right office for where you live or plan to move", keywords: "national Wisconsin local office moving returning Guard Reserve school college education health housing family taxes work training licenses" },
+  { id: "resources", group: "Benefits and support", icon: "link", benefits: true, title: "Resources and support", description: "Find services, training and document guidance", keywords: "help vso support training skillbridge documents" },
+  { id: "vamath", group: "Benefits and support", icon: "calc", benefits: true, title: "VA rating calculator", description: "Estimate a combined disability rating", keywords: "va math disability percentage calculator" },
+  { id: "critical", group: "Benefits and support", icon: "alert", benefits: true, title: "Critical windows", label: "Important deadlines", description: "Review time-sensitive transition guidance", keywords: "critical windows benefit deadlines BDD benefits delivery at discharge" }
 ];
+function topsToolSearchScore(tool, query) {
+  var title = (tool.label || tool.title).toLowerCase(), text = [tool.label || "", tool.title, tool.description, tool.keywords].join(" ").toLowerCase(), words = String(query || "").trim().toLowerCase().split(/\s+/).filter(Boolean), score = 0;
+  for (var word of words) { if (text.indexOf(word) === -1) return 0; score += title.indexOf(word) !== -1 ? 2 : 1; }
+  return words.length ? score : 1;
+}
 // A save that moves between Guard or Reserve and any other profile rebuilds Home, and this editor with it.
 // The editor being replaced hands its confirmation to the one that replaces it. A note older than two seconds is dropped.
 var topsServiceProfileHandoff = null;
@@ -10349,6 +10360,8 @@ function App() {
     };
   }, [showOnboarding]);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [toolsQuery, setToolsQuery] = useState("");
+  useEffect(function() { setToolsQuery(""); }, [showMoreMenu]);
   const primaryNavFocus = useRef(false);
   const toolsDialogRef = useRef(null);
   React.useLayoutEffect(function() {
@@ -11408,6 +11421,15 @@ function App() {
     setActiveTab(id);
     window.scrollTo(0, 0);
   }
+  function openToolDestination(id, query) {
+    if (!TOPS_TOOL_CHOICES.some(function(tool) { return tool.id === id; }) || id === "navigator" && !navUnlocked) return;
+    setShowMoreMenu(false);
+    if (id === "my-jobs" || id === "resume") { primaryNavFocus.current = false; setActiveTab("pathway"); focusCareerWorksheet(id === "my-jobs" ? "tops-my-jobs-heading" : "tops-resume-drafter-panel"); return; }
+    if (id === "budget") { primaryNavFocus.current = false; resumeMoveComparison(); return; }
+    if (id === "documents") { primaryNavFocus.current = false; openPlanRoute("resources", "tops-plan-documents", "tops-home-tools-title"); return; }
+    if (id === "state-help") { openStateHelp(/\bwisconsin\b/i.test(query || "") ? { area: "wi", situation: topsStateHelpDefault(userStatus).situation, need: "start" } : null); return; }
+    openExperienceTool(id);
+  }
   function openStateHelp(context, focusId) {
     primaryNavFocus.current = false; stateHelpReturn.current = ""; wiGuideRequested.current = false;
     if (context) setStateHelpContext(topsStateHelpContext(context));
@@ -11672,7 +11694,7 @@ function App() {
       return;
     }
     setHomeSearchSelection(null);
-    if (hit.act === "state-help") openStateHelp(hit.context); else if (hit.act === "wi-work-support") openWisconsinGuide(); else openExperienceTool(hit.tab);
+    if (hit.act === "state-help") openStateHelp(hit.context); else if (hit.act === "wi-work-support") openWisconsinGuide(); else openToolDestination(hit.tab, searchQ);
   }
   useEffect(function() {
     if (!homeSearchSelection) return;
@@ -11705,8 +11727,8 @@ function App() {
       }
       var hits = [];
       TOPS_TOOL_CHOICES.filter(function(tool) { return tool.id !== "navigator" || navUnlocked; }).forEach(function(tool) {
-        var s = score([tool.title, tool.description, tool.keywords]);
-        if (s > 0) hits.push({ s: s + 4, tag: "TOOL", tagColor: C.textPrimary, title: tool.title, snip: tool.description, act: "tab", tab: tool.id });
+        var s = topsToolSearchScore(tool, searchQ);
+        if (s > 0) hits.push({ s: s + 4, tag: "TOOL", tagColor: C.textPrimary, title: tool.label || tool.title, snip: tool.description, act: "tab", tab: tool.id });
       });
       SMART_REMINDERS.forEach(function(r) {
         var s = score([r.title, r.brief || "", r.why || "", r.cat || "", (r.items || []).join(" ")]);
@@ -11716,8 +11738,6 @@ function App() {
         var s = score([(w.name || "") + " " + (w.fullName || ""), w.shortDesc || "", w.whyMatters || "", w.authority || ""]);
         if (s > 0) hits.push({ s: s + 1, tag: "CRITICAL WINDOW", tagColor: C.danger, title: w.fullName || w.name, snip: w.shortDesc || "", act: "window", id: w.id });
       });
-      var stateHelpScore = score(["State benefits and local help", "Wisconsin local office moving returning Guard Reserve school college education health housing family taxes work training licenses"]);
-      if (stateHelpScore > 0) hits.push({ s: stateHelpScore + 5, tag: "RESOURCE", tagColor: C.textPrimary, title: "State benefits and local help", snip: "Choose national resources or Wisconsin guidance. Find one useful next step.", act: "state-help", context: /\bwisconsin\b/i.test(searchQ) ? { area: "wi", situation: topsStateHelpDefault(userStatus).situation, need: "start" } : null });
       var wiSupportScore = score([TOPS_WISCONSIN_WORK_SUPPORT.title, TOPS_WISCONSIN_WORK_SUPPORT.description, TOPS_WISCONSIN_WORK_SUPPORT.keywords]);
       if (wiSupportScore > 0) hits.push({ s: wiSupportScore + 4, tag: "RESOURCE", tagColor: C.textPrimary, title: TOPS_WISCONSIN_WORK_SUPPORT.title, snip: "Ask a Wisconsin Job Center about eligibility and approval before buying tools or starting training.", act: "wi-work-support" });
       RESOURCES.forEach(function(r) {
@@ -12096,7 +12116,7 @@ function App() {
 
   // ═══════════ BOTTOM NAVIGATION BAR ═══════════
   /*#__PURE__*/React.createElement("div", { className: "bottom-nav", role: "navigation", "aria-label": "Primary" },
-    [{id:"dashboard",icon:"home",label:"Home"},{id:"timeline",icon:"calendar",label:"My Plan"},{id:"pathway",icon:"target",label:"Career"},{id:"benefits",icon:"medal",label:"Benefits"},{id:"more",icon:"grid",label:"More"}].map(function(n) {
+    [{id:"dashboard",icon:"home",label:"Home"},{id:"timeline",icon:"calendar",label:"My Plan"},{id:"pathway",icon:"target",label:"Career"},{id:"benefits",icon:"medal",label:"Benefits"},{id:"more",icon:"grid",label:"Tools"}].map(function(n) {
       var isActive = showMoreMenu ? n.id === (showMoreMenu === "benefits" ? "benefits" : "more") : n.id === "more" ? ["finalpcs","navigator"].indexOf(activeTab) !== -1 : n.id === "benefits" ? ["critical","vamath","vapay","resources","taxes"].indexOf(activeTab) !== -1 && !(activeTab === "resources" && subTab === "documents") : n.id === "timeline" ? ["timeline","reminders","readiness","dd214"].indexOf(activeTab) !== -1 || (activeTab === "resources" && subTab === "documents") : n.id === "pathway" ? ["pathway","vethub"].indexOf(activeTab) !== -1 : activeTab === n.id;
       return React.createElement("button", { key: n.id, type: "button", "aria-current": isActive && !showMoreMenu ? "page" : undefined, "aria-expanded": n.id === "more" || n.id === "benefits" ? (n.id === "more" ? showMoreMenu === true : showMoreMenu === "benefits") : undefined, onClick: function() {
         if (n.id === "more") { setShowMoreMenu(showMoreMenu === true ? false : true); }
@@ -20282,30 +20302,30 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     }
   }, "Bridging the gap between service and civilian success.")),
 
-  // ═══════════  MENU OVERLAY ═══════════
-  showMoreMenu && /*#__PURE__*/React.createElement("div", { ref: toolsDialogRef, tabIndex: -1, className: "more-overlay", role: "dialog", "aria-modal": true, "aria-label": showMoreMenu === "benefits" ? "Benefits" : "More tools", style: { left: 0, right: 0, marginLeft: "auto", marginRight: "auto", transform: "none" } },
-    React.createElement("div", { style: { textAlign: "right", marginBottom: 20 } },
-      React.createElement("button", { "aria-label": showMoreMenu === "benefits" ? "Close Benefits menu" : "Close More menu", onClick: function() { setShowMoreMenu(false); }, style: { background: "none", border: "none", color: C.textPrimary, fontSize: 28, cursor: "pointer", padding: "0 4px" } }, "\u2715")
-    ),
-    React.createElement("h2", { style: { fontSize: 26, lineHeight: 1.25, color: C.textPrimary, letterSpacing: 0.5, fontFamily: "'Oswald', sans-serif", marginBottom: 14 } }, showMoreMenu === "benefits" ? "Benefits" : "More tools"),
-    showMoreMenu === "benefits" && React.createElement("p", { style: { color: C.textSecondary, lineHeight: 1.6, marginBottom: 16 } }, "Find guidance and tools for your benefits decisions."),
-    showMoreMenu !== "benefits" && TOPS_TOOL_CHOICES.filter(function(tool) { return tool.id === "timeline" || tool.id === "pathway"; }).map(function(tool) {
-      return React.createElement("button", { key: tool.id, type: "button", className: "tops-more-tool", onClick: function() { openExperienceTool(tool.id); } }, tool.title);
-    }),
-    React.createElement("button", { id: "tops-menu-state-help", type: "button", className: "tops-more-tool", onClick: function() { openStateHelp(); } }, React.createElement("span", { style: { color: C.gold, flexShrink: 0 } }, TIcon("link", 30)), React.createElement("div", null, React.createElement("strong", null, "State benefits and local help"), React.createElement("div", { style: { fontSize: 14, color: C.textSecondary, marginTop: 4 } }, "Find the right office for where you live or plan to move."))),
-    [{id:"reminders",icon:"bell",label:"REMINDERS & ALERTS",desc:"Deadline reminders timed to your separation date"},{id:"critical",icon:"alert",label:"CRITICAL WINDOWS",desc:"Time-bound windows where missing the date costs money or benefits"},{id:"readiness",icon:"gauge",label:"TRANSITION CHECKLIST",desc:"Review and confirm your transition tasks"},{id:"vamath",icon:"calc",label:"VA MATH CALCULATOR",desc:"Estimate a combined rating using 38 CFR 4.25 Table I"},{id:"vapay",icon:"dollar",label:"VA PAY ESTIMATOR",desc:"Calculate your monthly disability compensation"},{id:"finalpcs",icon:"box",label:"FINAL PCS ENTITLEMENTS",desc:"Weight allowances, MALT, move timelines by grade"},{id:"vethub",icon:"medal",label:"VET HUB",desc:"Career score, benefits, employers, entrepreneurship"},{id:"resources",icon:"link",label:"RESOURCES",desc:"VSOs, SkillBridge, healthcare, document checklist"},{id:"taxes",icon:"percent",label:"TAX INTEL",desc:"State tax on retired pay, MSRRA, residency"},{id:"dd214",icon:"doc",label:"DD214 GUIDE",desc:"Verification checklist, service record review"}].filter(function(m) { return showMoreMenu !== "benefits" || ["critical","vamath","vapay","resources","taxes"].indexOf(m.id) !== -1; }).map(function(m) {
-      return React.createElement("button", { key: m.id, className: "tops-more-tool", onClick: function() { if (m.id === "resources") { openExperienceTool("resources"); return; } primaryNavFocus.current = true; setActiveTab(m.id); setShowMoreMenu(false); }, style: undefined },
-        React.createElement("span", { style: { color: C.gold, flexShrink: 0 } }, TopsToolArt(m.id, m.icon, 54)),
-        React.createElement("div", { style: { flex: 1 } },
-          React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 15, color: C.textPrimary, letterSpacing: 1 } }, m.label),
-          React.createElement("div", { style: { fontSize: 13, color: C.textSecondary, marginTop: 2, lineHeight: 1.4 } }, m.desc)
-        ),
-        React.createElement("span", { style: { color: C.gold, fontSize: 18 } }, "\u2192")
-      );
-    }),
-    showMoreMenu !== "benefits" && navUnlocked && React.createElement("button", { className: "tops-more-tool", type: "button", onClick: function() { primaryNavFocus.current = true; setActiveTab("navigator"); setShowMoreMenu(false); } }, "Navigator"),
-    showMoreMenu !== "benefits" && React.createElement("button", { className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); window.requestAnimationFrame(handleInstallBannerClick); } }, "Install Transition OPS"), showMoreMenu !== "benefits" && React.createElement("button", { id: "tops-menu-share", className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); handleShareApp(setToast); } }, "Share Transition OPS"),
-    React.createElement("button", { onClick: function() { setShowMoreMenu(false); }, style: { marginTop: 10, padding: "14px 0", background: "none", border: "1px solid " + C.border, borderRadius: 12, color: C.inactive, fontSize: 12, fontFamily: "'Oswald', sans-serif", letterSpacing: 2, cursor: "pointer", width: "100%", textAlign: "center" } }, "CLOSE")
+  // Shared tool directory; opening it never starts a search or changes saved work.
+  showMoreMenu && React.createElement("div", { ref: toolsDialogRef, tabIndex: -1, className: "more-overlay", role: "dialog", "aria-modal": true, "aria-labelledby": "tops-tools-heading", style: { left: 0, right: 0, marginLeft: "auto", marginRight: "auto", transform: "none", top: 0, bottom: 0, height: "auto", animation: "none", paddingTop: 20, background: C.bg } },
+    React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 12 } },
+      React.createElement("h2", { id: "tops-tools-heading", style: { fontSize: 26, lineHeight: 1.25, color: C.textPrimary, margin: 0 } }, showMoreMenu === "benefits" ? "Benefits" : "Tools"),
+      React.createElement("button", { id: "tops-tools-close", type: "button", "aria-label": showMoreMenu === "benefits" ? "Close Benefits menu" : "Close Tools menu", onClick: function() { setShowMoreMenu(false); }, style: { width: 44, minHeight: 44, flexShrink: 0, justifyContent: "center", padding: 8, margin: 0, color: C.textPrimary, fontSize: 24 } }, "\u2715")),
+    React.createElement("label", { htmlFor: "tops-tools-search", style: { display: "block", fontWeight: 600, color: C.textPrimary, marginBottom: 6 } }, showMoreMenu === "benefits" ? "Find a benefits tool" : "Find a tool"),
+    React.createElement("input", { id: "tops-tools-search", type: "search", value: toolsQuery, onChange: function(event) { setToolsQuery(event.target.value); }, placeholder: showMoreMenu === "benefits" ? "Try VA pay, BDD or state help" : "Try budget, saved jobs or DD214", style: { boxSizing: "border-box", width: "100%", minHeight: 48, padding: "12px 14px", background: C.bgCard, color: C.textPrimary, border: "1px solid " + C.border, borderRadius: 8, font: "inherit", fontSize: 16 } }),
+    toolsQuery && React.createElement("button", { type: "button", onClick: function() { setToolsQuery(""); document.getElementById("tops-tools-search").focus(); }, style: { padding: "8px 12px", margin: "8px 0 0", minHeight: 44, width: "auto", alignSelf: "flex-start", color: C.textPrimary, font: "inherit" } }, "Clear search"),
+    (function() {
+      var tools = TOPS_TOOL_CHOICES.filter(function(tool) { return (tool.id !== "navigator" || navUnlocked) && (showMoreMenu !== "benefits" || tool.benefits) && topsToolSearchScore(tool, toolsQuery) > 0; }), groups = [...new Set(tools.map(function(tool) { return tool.group; }))];
+      if (showMoreMenu === "benefits") groups.sort(function(a, b) { return (a === "Benefits and support" ? 0 : 1) - (b === "Benefits and support" ? 0 : 1); });
+      return React.createElement(React.Fragment, null,
+        React.createElement("p", { id: "tops-tools-count", role: "status", style: { margin: "10px 0 0", color: C.textSecondary, fontSize: 14, lineHeight: 1.5 } }, tools.length ? toolsQuery ? tools.length + (tools.length === 1 ? " tool found" : " tools found") : "Choose a task, or search by name." : "No tools match. Try a shorter name or clear your search."),
+        groups.map(function(group) { return React.createElement("section", { key: group, "aria-label": group, style: { marginTop: 20, flexShrink: 0 } },
+          React.createElement("h3", { style: { margin: "0 0 8px", fontSize: 16, color: C.textSecondary } }, group),
+          tools.filter(function(tool) { return tool.group === group; }).map(function(tool) { return React.createElement("button", { key: tool.id, id: "tops-menu-" + tool.id, type: "button", className: "tops-more-tool", "data-tool-destination": tool.id, onClick: function() { openToolDestination(tool.id, toolsQuery); }, style: { padding: "12px 14px", gap: 12, minHeight: 66, font: "inherit", color: C.textPrimary } },
+            React.createElement("span", { "aria-hidden": true, style: { color: C.gold, flexShrink: 0 } }, TIcon(tool.icon, 28)),
+            React.createElement("span", { style: { flex: 1, minWidth: 0, overflowWrap: "anywhere" } }, React.createElement("strong", { style: { display: "block", fontSize: 16, lineHeight: 1.35 } }, tool.label || tool.title), React.createElement("span", { style: { display: "block", fontSize: 14, lineHeight: 1.4, marginTop: 3, color: C.textSecondary } }, tool.description)), React.createElement("span", { "aria-hidden": true }, "\u203A")); })); }));
+    })(),
+    showMoreMenu !== "benefits" && React.createElement("section", { "aria-label": "Keep Transition OPS handy", style: { marginTop: 20 } },
+      React.createElement("h3", { style: { margin: "0 0 8px", fontSize: 16, color: C.textSecondary } }, "Keep it handy"),
+      React.createElement("button", { className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); window.requestAnimationFrame(handleInstallBannerClick); }, style: { color: C.textPrimary, font: "inherit" } }, "Install Transition OPS"),
+      React.createElement("button", { id: "tops-menu-share", className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); handleShareApp(setToast); }, style: { color: C.textPrimary, font: "inherit" } }, "Share Transition OPS")),
+    React.createElement("button", { type: "button", onClick: function() { setShowMoreMenu(false); }, style: { marginTop: 12, color: C.textPrimary, font: "inherit", justifyContent: "center" } }, "Close tools")
   ),
 
   !window.__IS_IFRAME && TOPS_PUSH_ENABLED && showPushConsent && /*#__PURE__*/React.createElement(PushConsentModal, {

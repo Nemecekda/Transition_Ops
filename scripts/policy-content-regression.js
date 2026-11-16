@@ -584,7 +584,9 @@ check(occurrences(verificationLog, "## V-2026-11-15-STATE-STARTING-POINTS ") ===
   check(appShareStart > 0 && !/__trackEvent|trackShare|app_shared/.test(appShare) && occurrences(appShare, "navigator.share(shareData).catch(function () {});") === 1 && occurrences(appShare, "url: 'https://transitionops.org'") === 1 &&
     occurrences(index, "navigator.clipboard.writeText(window.location.href);") === 0 && occurrences(index, 'showToast("Copy this link: " + window.location.href);') === 8,
     "sharing the app makes no tracking call, and no button assumes a clipboard: four older handlers now check for one and say what to copy");
-  check(occurrences(index, 'React.createElement("button", { id: "tops-menu-share", className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); handleShareApp(setToast); } }, "Share Transition OPS")') === 1,
+  // #252 gave this item a style. The id, class, action and label are pinned; the style value is not.
+  check(occurrences(index, 'React.createElement("button", { id: "tops-menu-share", className: "tops-more-tool", type: "button", onClick: function() { setShowMoreMenu(false); handleShareApp(setToast); }') === 1 &&
+    occurrences(index, 'id: "tops-menu-share"') === 1 && /id: "tops-menu-share"[^\n]{0,240}\}, "Share Transition OPS"\)/.test(index),
     "the More tools menu offers Share Transition OPS");
 
   const readerStart = index.indexOf("function topsStateStartFromURL(href) {");

@@ -550,7 +550,7 @@ Finding: honorable active service counts toward the 12 months of service a feder
 
 Impact: SHIP - ACT. The act is to ask the agency's servicing human resources office to count active service when invoking FMLA leave, and to elect paid parental leave for a birth or placement. The cost of not knowing is money: up to 12 workweeks of paid parental leave that cannot be used after the 12 months following the birth or placement.
 
-What ships: one Policy Intel entry, second in the list, dated 15 OCT 2026. The latest-check stamp moves to 23:33 UTC. Cache v340 at staging, v350 after the 16 November reconciliation below.
+What ships: one Policy Intel entry, second in the list, dated 15 OCT 2026. The latest-check stamp moves to 23:33 UTC. Cache v340 at staging, v353 after the 16 November reconciliation below.
 
 What the entry leaves out, on purpose: any document step, because no source read named one; the rule's effective date and comment deadline, which would go stale within a month; and dual-status technicians, whose coverage was not read.
 
@@ -599,3 +599,4 @@ Standing: 132 scripts. 85 pass. 47 fail: the 38 from before, which were not reru
 Repairs stay paused. The screens these scripts cover changed eight times in under 14 hours, and a repair made now would likely break again today. The nine join the standing question on the 29 Career scripts, which is Dean's call.
 
 If main moves again before a merge order, the same steps repeat and one line is added here.
+- 10:45 Central: Dean ordered "keep going and merge". Main had moved to `8dcfe15` (#252, v351, rollback 352), which took 351 above this branch's preview v350. Merged again: `pwa-sw.js` conflicted on line 1 only and took main's file with v353. #252 also repaired the welcome wording in `tool-url-continuity-browser`. It gave the More menu's Share item a style, which broke a second content assertion; that one now pins the item's id, class, action and label.
