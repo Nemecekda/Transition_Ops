@@ -550,7 +550,7 @@ Finding: honorable active service counts toward the 12 months of service a feder
 
 Impact: SHIP - ACT. The act is to ask the agency's servicing human resources office to count active service when invoking FMLA leave, and to elect paid parental leave for a birth or placement. The cost of not knowing is money: up to 12 workweeks of paid parental leave that cannot be used after the 12 months following the birth or placement.
 
-What ships: one Policy Intel entry, second in the list, dated 15 OCT 2026. The latest-check stamp moves to 23:33 UTC. Cache v340.
+What ships: one Policy Intel entry, second in the list, dated 15 OCT 2026. The latest-check stamp moves to 23:33 UTC. Cache v340 at staging, v350 after the 16 November reconciliation below.
 
 What the entry leaves out, on purpose: any document step, because no source read named one; the rule's effective date and comment deadline, which would go stale within a month; and dual-status technicians, whose coverage was not read.
 
@@ -563,3 +563,39 @@ Gate: structural gate exit 0. Six semantic commands, the public build and seven 
 Open: the entry runs 1,136 characters. That is long for a phone, and the exclusions make up a third of it. The length is Dean's call.
 
 Queued: the Dole State and Tribal Outreach Grant Program rule publishes 16 November. A recheck of this rule belongs on or after 14 December 2026, its effective date.
+
+## Reconciliation with main, 16 November (cycle 23)
+Main moved overnight. Dean merged eight Codex pull requests, #244 to #251, between 18:07 Central 15 November and 07:33 Central 16 November. Main went from `a78cfb3` (v339) to `59619aa` (v348). #243 at `dc1a563` carried v340, which production had passed, and it conflicted in `pwa-sw.js`.
+
+Method, per `SHARED_DEVELOPMENT.md`: one merge of `origin/main` into the cycle 23 branch, with no file replaced and no forced push. Merge base `a78cfb3`. Main's side is 22 commits, eight of them merges. This side is one commit, `dc1a563`.
+
+Accounting:
+- Preserved from main: every change in #244 to #251. `index.html` merged without conflict.
+- Preserved from this branch: the Policy Intel entry, the 23:33 UTC stamp, record V-2026-11-15-FMLA-MILITARY-SERVICE, six assertions and this record.
+- Conflict: `pwa-sw.js`, line 1. Each side changed the cache integer and no other byte. Resolved as main's file with a new integer.
+- Adapted: one assertion in `policy-content-regression.js`, described below.
+
+After the merge the tree differs from main in five files: two hunks in `index.html`, the log entry, this record, the cache line and the content test.
+
+Cache v350. v348 is production (#251), and #251 names 349 as its rollback. No pushed branch carries 349 or 350. An integer different from the one Codex is likely to take next also means git reports a conflict for whichever pull request merges second, so two candidates cannot ship under one cache name by accident.
+
+Content gate on main: `npm run test:policy-content` has exited 1 on main since #246 (`cbcf6ab`) and still did at `42d7fb2`, the last commit where it was run on main alone. #251 did not touch the test or the link. One assertion fails: "CareerOneStop search opens in a new tab and is described by the sharing notice". #246 renamed the link and filled it. #250 restyled it again and added a short label for the compact results view. The link still opens in a new tab, and both notices it points to still render in the compact view.
+
+The assertion now pins what its message states: one link, the new-tab attributes, both descriptions defined once each, and a "(new tab)" label in each view. It no longer pins the style value, the part that broke twice in a day. With the repair the content test passes at 211 assertions on the merged tree.
+
+Gate on the final tree, the merge with `59619aa`: structural gate exit 0. Six semantic commands and the public build pass.
+
+Sweep: 93 scripts, the 86 that passed at `a78cfb3` and the seven Codex added through #250. It ran on the merge with `42d7fb2`, and #251 merged while it ran. 84 pass. Nine fail, and the same nine fail with the same first error on main alone at `42d7fb2`.
+- First failing at #244 (`e823a79`): `due-followup`, `focused-action`, `home-actions`, `home-search-handoff-browser`, `next-move-browser`, `talent-contact-browser`.
+- First failing at #245 (`0331010`): `career-value-first-browser`, `location-only-search-browser`.
+- First failing at #249 (`6c53997`): `tool-url-continuity-browser`. Its welcome scenario looks for the legend "Where would you like to start?", which #249 replaced. The rule it protects, `topsMemberHasSavedWork`, is still in the code, and #249 uses it in one more place.
+
+`dd214-upload-browser` failed once in the sweep and passed three reruns. That is the known intermittent stall.
+
+After #251: the nine were rerun on the final tree and fail as before. The two scripts #251 touched, `saved-job-learning-browser` and `learning-follow-through-browser`, pass.
+
+Standing: 132 scripts. 85 pass. 47 fail: the 38 from before, which were not rerun, and these nine.
+
+Repairs stay paused. The screens these scripts cover changed eight times in under 14 hours, and a repair made now would likely break again today. The nine join the standing question on the 29 Career scripts, which is Dean's call.
+
+If main moves again before a merge order, the same steps repeat and one line is added here.

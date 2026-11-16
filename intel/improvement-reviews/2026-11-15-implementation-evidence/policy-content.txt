@@ -1,0 +1,210 @@
+
+> transition-ops@1.0.0 test:policy-content
+> node scripts/policy-content-regression.js
+
+PASS calcVACombined has one canonical implementation
+PASS cohort lists the five employers Dean named, in order
+PASS each cohort employer links to its own careers page
+PASS only the two organizations on the official list carry a SkillBridge note
+PASS each SkillBridge note states the list, the check date and the empty opportunity search
+PASS every cohort employer has exactly one verification record
+PASS the job search block no longer promises or denies posted roles
+PASS canonical calculator source is extractable
+PASS [60,30,10] carries 60 -> 72 -> 75 and converts once to 80
+PASS calculator sorts object callers from highest to lowest
+PASS 1,110 deterministic one-, two-, and three-rating vectors match Table I parity
+PASS BDD prohibited phrase absent: C&P exams are VA-scheduled and cannot be rescheduled
+PASS BDD prohibited phrase absent: I have C&P exams being scheduled by the VA that I cannot reschedule
+PASS BDD prohibited phrase absent: BDD is time-sensitive and cannot be rescheduled
+PASS BDD prohibited phrase absent: Medical appointments for BDD claims are VA-scheduled and take priority
+PASS BDD prohibited phrase absent: Transition Center / SFL-TAP office has regulatory authority
+PASS BDD prohibited phrase absent: attendance is a statutory entitlement
+PASS BDD prohibited phrase absent: lose the ability to have a rating on Day 1
+PASS BDD prohibited phrase absent: rating effective the day after separation
+PASS BDD prohibited phrase absent: rating effective day one
+PASS BDD prohibited phrase absent: rating effective Day 1
+PASS BDD prohibited phrase absent: rating decision within weeks of separation
+PASS BDD prohibited phrase absent: decision typically 3-12 months after separation
+PASS BDD prohibited phrase absent: 3-12 month wait
+PASS BDD prohibited phrase absent: Standard post-discharge claims take 3–6 months
+PASS BDD prohibited phrase absent: Missing BDD means 6-18 months
+PASS BDD prohibited phrase absent: delay your rating by 6-12+ months
+PASS BDD prohibited phrase absent: tens of thousands in delayed compensation
+PASS BDD prohibited phrase absent: you lose the fast-track
+PASS BDD prohibited phrase absent: longer treatment history makes conditions far easier
+PASS BDD prohibited phrase absent: longer documented treatment history are easier
+PASS BDD prohibited phrase absent: easier conditions are to rate
+PASS BDD prohibited phrase absent: No record = no claim
+PASS BDD prohibited phrase absent: military accepts VA physical
+PASS BDD prohibited phrase absent: Some leaders will try to block or delay
+PASS BDD prohibited phrase absent: IG complaint is a last resort
+PASS BDD prohibited phrase absent: far harder to claim later
+PASS BDD prohibited phrase absent: under-rated or never file
+PASS BDD prohibited phrase absent: exponentially harder to claim
+PASS BDD prohibited phrase absent: significantly harder to service-connect
+PASS BDD prohibited phrase absent: future VA claims substantially harder to service-connect
+PASS SkillBridge prohibited phrase absent: most members rate 60–120 days
+PASS SkillBridge prohibited phrase absent: most rank categories cap at 60–120 days
+PASS SkillBridge prohibited phrase absent: 60–90 days for many grades
+PASS SkillBridge prohibited phrase absent: Most SkillBridge participants report job offers
+PASS SkillBridge prohibited phrase absent: Missing this window = walking out with no income
+PASS SkillBridge prohibited phrase absent: processing: 60-90 days
+PASS SkillBridge prohibited phrase absent: E1–E5 generally rate up to 120 days
+PASS SkillBridge prohibited phrase absent: SkillBridge Application Window OPENS
+PASS SkillBridge prohibited phrase absent: All services: the clock on command endorsement starts NOW
+PASS SkillBridge prohibited phrase absent: senior grades at 60–90 days must start soon
+PASS SkillBridge prohibited phrase absent: window functionally closed
+PASS SkillBridge prohibited phrase absent: blanket 180-day planning assumption is dead
+PASS SkillBridge prohibited phrase absent: Navy: confirm with your command career counselor
+PASS BDD member copy marks VBA's 30-day target as a non-guaranteed goal
+PASS Navigator marks VBA's 30-day target as a non-guaranteed goal
+PASS BDD exam-availability requirement is present
+PASS BDD exam-rescheduling route is present
+PASS BDD preparation uses evidence-of-record guidance
+PASS BDD closed-window guidance routes to the standard pre-discharge claim
+PASS BDD Guard and Reserve eligibility is qualified
+PASS SkillBridge member copy uses a sourced ceiling range
+PASS Navigator names the 60-120-day service tiers
+PASS Navigator preserves the Coast Guard exception
+PASS Navigator includes the verified Navy tiers
+PASS SkillBridge T-365 reminder is a service-rule check, not a universal opening date
+PASS SkillBridge member copy routes users to current service-specific rules
+PASS SkillBridge execution reminder compares the member's ceiling with time remaining
+PASS SkillBridge channel block is extractable
+PASS SkillBridge hardStartDay remains -180
+PASS Army publication source remains one label-only entry
+PASS Army publication source has no URL field
+PASS SkillBridge source list cites USCG ALCOAST 202/26
+PASS SkillBridge source list cites MyNavyHR directly
+PASS VA calculator avoids an official-result claim
+PASS VA calculator avoids outcome-seeking copy
+PASS VA guide avoids an official-correctness claim
+PASS VA guide does not waive the required ordering rule
+PASS VA calculator entry copy avoids formula shorthand
+PASS VA calculator action copy is framed as an estimate
+PASS VA calculator explanation avoids decimal healthy-portion shorthand
+PASS VA calculator display avoids decimal intermediate output
+PASS VA calculator avoids a universal P&T benefits claim
+PASS VA guide does not promise that the bilateral factor changes the final rounded evaluation
+PASS VA member copy states final-only conversion
+PASS VA guide states intermediate whole-number carry-forward
+PASS VA calculator display explains Table I whole-number carry-forward
+PASS VA calculator steps display whole-number Table I combinations
+PASS VA calculator final display uses the whole-number Table I value
+PASS VA calculator qualifies P&T-related benefit eligibility
+PASS VA guide qualifies the bilateral factor's effect on the final rounded evaluation
+PASS Navigator has two adaptive one-/two-page resume descriptions
+PASS Navigator has no stale one-page-only resume description
+PASS one immutable clone verification source
+PASS one immutable published verification source
+PASS verification source sections remain ordered and separate
+PASS V-2026-016 appears exactly once within its clone source
+PASS V-2026-016 published record and any amendment remain within their main source
+PASS V-2026-017 appears exactly once within its clone source
+PASS V-2026-017 published record and any amendment remain within their main source
+PASS V-2026-018 appears exactly once within its clone source
+PASS V-2026-018 published record and any amendment remain within their main source
+PASS TRICARE card keeps the general copays
+PASS TRICARE card states the calendar years its copays cover
+PASS TRICARE card names the two groups that pay $0
+PASS TRICARE card carries the frozen copays for medically retired members, their families and survivors
+PASS TRICARE card and policy entry link to the page that shows the copay figures
+PASS both TRICARE copay summaries say who pays less
+PASS all four Prime travel lines keep PHS, NOAA and retiree families at 100 miles
+PASS TAMP list names the 12304b, contingency and 12301(d) routes
+PASS TAMP list carries the memo's no-connection statement
+PASS no surface keeps the superseded Guard/Reserve TAMP route wording
+PASS TAMP window gives the reimbursement request and its 24 APR 2020 look-back
+PASS TAMP note dates the tricare.mil check and keeps the service determination
+PASS TAMP window links the memo beside the TRICARE page
+PASS Guard demobilization line and Navigator corpus state the same TAMP routes
+PASS the Defense Health Agency address is spelled the same on every surface
+PASS TAMP policy entry exists with one verification record per finding
+PASS job search builds the CareerOneStop results address from the role and area only
+PASS CareerOneStop search opens in a new tab and is described by the sharing notice
+PASS CareerOneStop note states sponsor, listing source and account-free reading
+PASS Veterans Job Matcher link is offered beside the state job banks
+PASS both job search summaries name CareerOneStop and neither keeps the two-site wording
+PASS job links carry one verification record and make no vetting or guarantee claim
+PASS the two VBS addresses are each defined once and used through their constants
+PASS talent network link opens in a new tab with no opener and no referrer
+PASS talent network note says who runs it, what it requires, who pays and what its privacy notice covers
+PASS contact section names all four options and keeps the no-guarantee statement
+PASS talent network link carries one verification record
+PASS job search offers the federal award list once, in a new tab with no opener and no referrer
+PASS job search note names the issuer, the filters, the self-attestation and the award boundary
+PASS Wisconsin section links the official list filtered to Wisconsin, the list is linked in two places only, and no link pins an award year
+PASS Wisconsin note separates the federal award from Vets Ready and states how it is verified and what it does not establish
+PASS the seven 2026 Wisconsin recipients are named once each, as the Department of Labor rows spell them, and only in the Wisconsin list
+PASS the recipient list carries its issuer, award year and read date, and says the official list is the source
+PASS naming the recipients carries its own verification record
+PASS HIRE Vets Medallion links carry one verification record
+PASS the batch date reader returns whole days from the last date in the label and null when the label has no date
+PASS a batch older than 45 days, or one whose date cannot be read, counts as old
+PASS Home shows the company teaser only while the newest batch is fresh, and the official-list pointer otherwise
+PASS both notices state the batch dates and send the member to the official list
+PASS the official list link appears on Home and above the full feed, in a new tab with no opener and no referrer, with the same label the Career search section already uses
+PASS the feed-age notices carry one verification record
+PASS open roles link opens in a new tab with no opener and no referrer
+PASS open roles note says whose list it is, that it changes and that applying guarantees nothing
+PASS the app names no individual role or client beside the link; the VBS page is the source
+PASS the open roles link has its own id and does not take the id of the email form's roles field
+PASS open roles link carries one verification record
+PASS the one-year claim reminder states VA's rule in VA's own terms and links the VA page
+PASS the reminder excuses members who already filed, limits the rule to direct service connection, claims no eligibility or rating and does not address Guard or Reserve service
+PASS the reminder mentions no intent to file, dollar figure, phone number, BDD or PACT Act
+PASS the reminder is current from day 270 to day 360 after separation and dark after that, on Home and in the ladder
+PASS the reminder sits between the month 6 and month 12 reminders, and its timing note follows its own window
+PASS the one-year claim reminder carries one verification record
+PASS the app version and the first What's New entry are both v99, dated 15 NOV 2026
+PASS the full-review date is unchanged and the latest-check stamp carries a date and a time
+PASS Critical Windows shows both stamps, the policy panel shows the latest check, and the directory footnote keeps the full-review date
+PASS the latest-check date equals the date of the newest dated entry in the verification log
+PASS the verified stamps carry one verification record
+PASS the TRICARE 2027 entry is the first Policy Intel entry and appears once
+PASS the entry gives the effective date, the open season dates and the rule outside the window
+PASS the entry links TRICARE's cost page and cites the Federal Register notice
+PASS the entry carries no dollar figure and states the years TRICARE gives for the pharmacy copays
+PASS the open season notice says 2027 costs are published and where TRICARE lists them
+PASS the notice links TRICARE's cost page in a new tab, keeps its open season link and carries no dollar figure
+PASS the notice keeps its one act sentence, its exclusion line and its date gate
+PASS the open season notice runs from 9 NOV through 8 DEC 2026 on the device's local date and then goes dark
+PASS the TRICARE 2027 costs change carries one verification record
+PASS the FEDVIP notice sits under the TRICARE notice, is gated by its own window and opens by default only when it stands alone
+PASS the FEDVIP notice names the portal, the deadline with its time zone, the phone number and the effective date
+PASS the FEDVIP notice says who is eligible for dental and vision, who is eligible for vision only, and what an enrollee who does nothing keeps
+PASS the FEDVIP notice carries its exclusion line and separates itself from TRICARE Open Season
+PASS the FEDVIP notice has two BENEFEDS links that open in a new tab and say so, and no dollar figure
+PASS the FEDVIP notice starts on 9 NOV 2026 and ends at 11:59 pm Eastern on 14 DEC 2026 on every device
+PASS the FEDVIP open season notice carries one verification record
+PASS the state list holds 55 states and territories, each once, in name order
+PASS every row has an https job bank link, and an office name with an https link except the one territory VA lists no office for
+PASS the state list equals the reviewed list byte for byte; any change needs a new source read and a new log entry
+PASS New Hampshire carries its own sourced address and note, and New Mexico and Colorado use the .gov address their listed link leads to
+PASS spot checks: Wisconsin, Texas and the one job bank address with a query string
+PASS the state control shows only outside the Wisconsin guide, has a label and a caption, and announces its result
+PASS both state links open a new tab without a referrer and say so
+PASS the caption names both sources and the read date, and the choice is held for the visit, saved nowhere and never written into the address
+PASS the state starting points carry one verification record
+PASS four share texts, each 160 characters or fewer with the longest name, plain characters, no dollar figure and no exclamation point
+PASS the two deadline share texts carry the dates, the year and the time zone already in the notices, and no instruction of their own
+PASS the state share texts name both sources, and the one territory without a listed office gets a text that promises no office link
+PASS the share control sends only the text and address it is given: no tracking call, no storage, no request, no address read from the page
+PASS the share control reports each outcome and falls back to a labeled link the member can select
+PASS four share controls: both open season notices share Reminders, a state shares its address, and the saved-result control shares only the generic Career route
+PASS sharing the app makes no tracking call, and no button assumes a clipboard: four older handlers now check for one and say what to copy
+PASS the More tools menu offers Share Transition OPS
+PASS a shared state link chooses a listed state once, in either letter case, and anything else chooses nothing
+PASS a linked state leaves the address when the member chooses for themselves or leaves State and local help
+PASS the share text carries one verification record
+PASS sharing the app sends one line of 160 characters or fewer, in plain characters, with no dollar figure and no exclamation point
+PASS the earlier app share line is gone
+PASS each part of the app the share line names still has its tool: the VA calculator, Reminders, State and local help, and Career
+PASS the app share line carries one verification record
+PASS both retirement FEDVIP reminders are extractable
+PASS the one-month reminder states that a family member's own vision enrollment cannot continue, then the step: notify BENEFEDS, enroll, add the dependent
+PASS the 30-days-left reminder carries the same step, and no other place in the app gives that instruction
+PASS the statements BENEFEDS was re-read against are unchanged, and the reminder does not call retirement a qualifying life event
+PASS neither reminder carries a dollar figure or the belated-enrollment exception, which was not confirmed for retirees
+PASS the retirement FEDVIP re-read carries one verification record
+Policy content regression: PASS (205 assertions; 1110 parity vectors)

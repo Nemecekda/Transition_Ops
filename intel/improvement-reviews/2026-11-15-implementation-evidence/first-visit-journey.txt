@@ -1,0 +1,14 @@
+PASS first visit, native Enter, no-resume result, change, local context/reload, saved-byte protection 320 professional leave
+PASS first visit, native Enter, no-resume result, change, local context/reload, saved-byte protection 320 professional serve
+PASS first visit, native Enter, no-resume result, change, local context/reload, saved-byte protection 320 professional veteran
+PASS first visit, native Enter, no-resume result, change, local context/reload, saved-byte protection 320 tactical leave
+PASS first visit, native Enter, no-resume result, change, local context/reload, saved-byte protection 320 tactical serve
+PASS first visit, native Enter, no-resume result, change, local context/reload, saved-byte protection 320 tactical veteran
+PASS first visit, native Enter, no-resume result, change, local context/reload, saved-byte protection 375 professional leave
+PASS first visit, native Enter, no-resume result, change, local context/reload, saved-byte protection 375 professional serve
+PASS first visit, native Enter, no-resume result, change, local context/reload, saved-byte protection 375 professional veteran
+PASS first visit, native Enter, no-resume result, change, local context/reload, saved-byte protection 375 tactical leave
+PASS first visit, native Enter, no-resume result, change, local context/reload, saved-byte protection 375 tactical serve
+PASS first visit, native Enter, no-resume result, change, local context/reload, saved-byte protection 375 tactical veteran
+PASS explicit conflicting intent keep/use, ordinary draft return, browser Back and unchanged saved work
+FIRST VISIT PASS:12 mobile/theme/situation journeys, general skip, returning saved work, direct links, intent conflict/Back;0 provider POSTs.
