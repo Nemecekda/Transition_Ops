@@ -7524,7 +7524,7 @@ function CareerJobSearch(props) {
   var [locationFilter, setLocationFilter] = useState("all"), [refineFamily, setRefineFamily] = useState("");
   var familySearches = { "Aviation / Trades": "aircraft mechanic", "Business / Management": "management", "Education": "education", "Finance": "financial", "First Responder": "police", "Government": "program analyst", "Government / Intelligence": "intelligence", "Healthcare": "healthcare", "Human Resources": "human resources", "Operations": "logistics", "Sales": "sales", "Sales / Healthcare": "medical sales", "Security": "security", "Skilled Trades": "maintenance", "Technology": "information technology" };
   var jobFamilies = Array.from(new Set(CAREER_TARGETS.map(function(career) { return career.category; }))).filter(function(family) { return familySearches[family]; }).sort();
-  var generation = useRef(0), request = useRef(null), currentQuery = useRef(""), entryRequest = useRef(0);
+  var generation = useRef(0), request = useRef(null), currentQuery = useRef(""), entryRequest = useRef(0), focusIntent = useRef(0), entryFocus = useRef({ request: 0, intent: 0 });
   var query = JSON.stringify([state.keyword, state.state]); currentQuery.current = query;
   useEffect(function() {
     var controller = new AbortController(), active = true;
@@ -7533,7 +7533,9 @@ function CareerJobSearch(props) {
   }, []);
   useEffect(function() { generation.current++; if (request.current) request.current.abort(); setSearching(false); setResult(null); setSearchMessage(""); setInputError(null); setLocationFilter("all"); setShare(null); setShareMessage(""); }, [query]);
   useEffect(function() { if (!state.open) { generation.current++; if (request.current) request.current.abort(); setSearching(false); } }, [state.open]);
-  useEffect(function() { if (!state.open || !state.searchRequest || state.searchRequest === entryRequest.current || available === null) return; entryRequest.current = state.searchRequest; if (available === true) searchFederal(); }, [state.open, state.searchRequest, available]);
+  useEffect(function() { if (!state.open || !state.searchRequest || state.searchRequest === entryRequest.current) return; if (entryFocus.current.request !== state.searchRequest) entryFocus.current = { request: state.searchRequest, intent: focusIntent.current }; if (available === null) return; entryRequest.current = state.searchRequest; if (available === true) searchFederal(entryFocus.current.intent); else focusSearchStart(entryFocus.current.intent); }, [state.open, state.searchRequest, available]);
+  function focusSearchStart(expectedIntent) { var token = generation.current, intent = typeof expectedIntent === "number" ? expectedIntent : focusIntent.current; requestAnimationFrame(function() { if (token !== generation.current || intent !== focusIntent.current) return; var heading = document.getElementById("tops-jobs-skills-heading"); if (heading && heading.checkVisibility()) { heading.focus({ preventScroll: true }); heading.scrollIntoView({ block: "start" }); } }); }
+  function exploreLearning() { focusIntent.current++; var heading = document.getElementById("tops-search-learning-heading"); if (heading) { heading.focus({ preventScroll: true }); heading.scrollIntoView({ block: "start" }); } }
   function compareFederalJob(job) {
     if (!props.onCompare || !result || result.query !== currentQuery.current || searching) { setSearchMessage("This search changed. Search again before choosing a job."); return; }
     var selected = topsFederalComparison(Object.assign({}, job, { retrievedAt: result.retrievedAt }));
@@ -7548,11 +7550,11 @@ function CareerJobSearch(props) {
     return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][month - 1] + " " + day + ", " + year;
   }
   function cancelSearch() { generation.current++; if (request.current) request.current.abort(); setSearching(false); setResult(null); setSearchMessage("Search canceled. Your role and area were kept."); requestAnimationFrame(function() { var n = document.getElementById("tops-federal-search"); if (n) n.focus(); }); }
-  async function searchFederal() {
+  async function searchFederal(expectedIntent) {
     var invalid = topsJobSearchError(state.keyword, state.state); setInputError(invalid);
     if (invalid) { var field = document.getElementById("tops-job-" + invalid.field); if (field) field.focus(); return; }
     if (!links || available !== true || searching) return;
-    var token = ++generation.current, submitted = query, controller = new AbortController(); if (request.current) request.current.abort(); request.current = controller;
+    var token = ++generation.current, submitted = query, focusToken = typeof expectedIntent === "number" ? expectedIntent : focusIntent.current, controller = new AbortController(); if (request.current) request.current.abort(); request.current = controller;
     setSearching(true); setResult(null); setSearchMessage(""); setLocationFilter("all");
     try {
       var response = await fetch("/.netlify/functions/federal-jobs", { method: "POST", credentials: "omit", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ keyword: state.keyword.trim(), location: state.state.trim() }), signal: controller.signal });
@@ -7563,9 +7565,8 @@ function CareerJobSearch(props) {
       if (token !== generation.current || currentQuery.current !== submitted) return;
       setResult({ jobs: jobs, query: submitted, retrievedAt: data.retrievedAt, role: state.keyword.trim(), area: state.state.trim() });
       setSearchMessage(jobs.length ? jobs.length + " public federal " + (jobs.length === 1 ? "opening" : "openings") + " loaded. Check each official announcement." : data.jobs.length ? "No safely linked results could be displayed. Use the official search link." : "No public federal openings could be shown for this search. Try another role or area, or search USAJOBS directly.");
-      requestAnimationFrame(function() { if (token !== generation.current) return; var heading = document.getElementById("tops-federal-results"); if (heading) heading.focus(); });
     } catch (e) { if (token === generation.current && !controller.signal.aborted) setSearchMessage(/^(Federal|USAJOBS)/.test(e.message || "") ? e.message : "Federal jobs could not be loaded. Your search is unchanged; use the official search links or try again."); }
-    finally { if (token === generation.current) setSearching(false); }
+    finally { if (token === generation.current) { setSearching(false); focusSearchStart(focusToken); } }
   }
   var field = { width: "100%", boxSizing: "border-box", minHeight: 44, padding: 12, font: "inherit", fontSize: 16, color: C.textPrimary, background: C.bg, border: "1px solid " + C.border, borderRadius: 8, margin: "6px 0 16px" };
   var link = { display: "block", minHeight: 44, boxSizing: "border-box", padding: "12px 16px", marginBottom: 10, color: C.textPrimary, background: C.bgElevated, border: "1px solid " + C.border, borderRadius: 8, textDecoration: "underline" };
@@ -7610,12 +7611,17 @@ function CareerJobSearch(props) {
       React.createElement("div", null, React.createElement("label", { htmlFor: "tops-job-area", style: { fontWeight: 600 } }, "City and state, or ZIP code"),
         React.createElement("input", { id: "tops-job-area", value: state.state, maxLength: 80, required: true, "aria-invalid": inputError && inputError.field === "area" ? true : undefined, "aria-describedby": inputError && inputError.field === "area" ? "tops-job-search-error" : undefined, enterKeyHint: "search", placeholder: "For example, Milwaukee, WI", onChange: function(e) { change("state", e.target.value); }, onKeyDown: function(e) { if (e.key === "Enter") { e.preventDefault(); searchFederal(); } }, style: field }))),
     inputError && React.createElement("p", { id: "tops-job-search-error", role: "alert" }, inputError.message),
+    links && React.createElement("section", { "aria-labelledby": "tops-jobs-skills-heading", style: { margin: "8px 0 20px" } },
+      React.createElement("h3", { id: "tops-jobs-skills-heading", tabIndex: -1, style: { margin: "0 0 12px", overflowWrap: "anywhere" } }, publicQuery.keyword ? "Jobs and skills for " + publicQuery.keyword + " · " + publicQuery.state : "Jobs and skills in " + publicQuery.state),
+      React.createElement("a", { id: "tops-job-careeronestop", href: links.careeronestop, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing tops-job-careeronestop-note", style: Object.assign({}, link, { background: C.green, color: C.textOnFill }) }, "Search employer jobs on CareerOneStop (new tab)"),
+      React.createElement("button", { id: "tops-job-explore-learning", type: "button", onClick: exploreLearning, style: Object.assign({}, link, { width: "100%", textAlign: "left", font: "inherit", textDecoration: "none", marginBottom: 0 }) }, "Explore free learning")),
     React.createElement("div", { style: { marginBottom: 18, lineHeight: 1.5 } },
+      React.createElement("h4", { style: { margin: "0 0 10px" } }, "Federal openings from USAJOBS"),
       React.createElement("p", { id: "tops-federal-sharing", style: { margin: "0 0 12px", color: C.textSecondary } }, "Search shares the area and any keywords above with USAJOBS through Transition OPS. Leave keywords blank to search all roles in this area."),
       React.createElement("details", { style: { marginBottom: 12 } }, React.createElement("summary", { style: { minHeight: 44, cursor: "pointer" } }, "What is shared?"), React.createElement("p", null, "Search federal jobs sends the role and area above through Transition OPS to USAJOBS. It does not send your resume, profile or saved plan.")),
       React.createElement("button", { id: "tops-federal-search", type: "button", disabled: available !== true || searching, "aria-describedby": "tops-federal-sharing tops-federal-status", onClick: searchFederal, style: { minHeight: 44, padding: "12px 16px", font: "inherit", color: C.bg, background: C.accent, border: "1px solid " + C.border, borderRadius: 8, cursor: "pointer" } }, searching ? "Searching federal jobs…" : "Search federal jobs"),
       searching && React.createElement("button", { type: "button", onClick: cancelSearch, style: { minHeight: 44, marginLeft: 8, padding: "12px 16px", font: "inherit", color: C.textPrimary, background: C.bgCard, border: "1px solid " + C.border, borderRadius: 8 } }, "Cancel search"),
-      React.createElement("p", { id: "tops-federal-status", role: "status", tabIndex: -1 }, searching ? "Searching public federal openings…" : available === null ? "Checking federal search availability…" : available === false ? "Federal job search is not connected here. You can still open the official searches below." : searchMessage || "Search public federal openings when you are ready."),
+      React.createElement("p", { id: "tops-federal-status", role: "status", tabIndex: -1 }, searching ? "Searching public federal openings…" : available === null ? "Checking federal search availability…" : available === false ? "Federal job search is not connected here. CareerOneStop and the other official searches still work." : searchMessage || "Search public federal openings when you are ready."),
       result && result.query === query && React.createElement("section", { "aria-labelledby": "tops-federal-results", style: { marginTop: 16, overflowWrap: "anywhere" } },
         React.createElement("h4", { id: "tops-federal-results", tabIndex: -1 }, result.role ? "Federal openings: " + result.role + " · " + result.area : "Federal openings for " + result.area),
         React.createElement("p", null, "Up to 10 USAJOBS openings. Confirm eligibility and workplace in the announcement."),
@@ -7641,7 +7647,6 @@ function CareerJobSearch(props) {
     React.createElement("p", { id: "tops-job-sharing" }, "Opening a search sends only the role and area shown here to that job site, not your resume or saved plan. Each site opens in a new tab and has its own privacy practices."),
     links ? React.createElement("div", null,
       React.createElement("p", { role: "status" }, "Search for " + (state.keyword.trim() || "all roles") + " in " + state.state.trim()),
-      React.createElement("a", { id: "tops-job-careeronestop", href: links.careeronestop, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing tops-job-careeronestop-note", style: link }, "Search CareerOneStop jobs (new tab)"),
       React.createElement("a", { href: links.linkedin, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing", style: link }, "Search LinkedIn jobs (new tab)"),
       React.createElement("a", { href: links.federal, target: "_blank", rel: "noopener noreferrer", "aria-describedby": "tops-job-sharing", style: link }, "Search federal jobs on USAJOBS (new tab)"),
       React.createElement("p", { id: "tops-job-careeronestop-note", style: { color: C.textSecondary } }, "CareerOneStop is sponsored by the U.S. Department of Labor. Its listings come from state job banks and employers through the National Labor Exchange, and you can read a posting without an account.")) : React.createElement("p", { role: "status" }, "Add a city, state or full ZIP code to prepare your searches. Keywords are optional."),
@@ -7660,7 +7665,7 @@ function CareerJobSearch(props) {
         React.createElement("button", { id: "tops-job-share-copy", type: "button", onClick: copyShare, style: link }, "Copy search link"), React.createElement("button", { id: "tops-job-share-download", type: "button", onClick: downloadShare, style: link }, "Download search link"),
         React.createElement("p", null, "Keep the copied link or downloaded file. Opening it restores your query; choose Search federal jobs to check current openings.")),
       React.createElement("p", { role: "status" }, shareMessage)),
-    links && React.createElement(CareerSearchResources, { colors: C, role: state.keyword.trim(), area: state.state.trim(), linkStyle: link, learningPlan: props.learningPlan, source: { type: "search", query: publicQuery } }),
+    links && React.createElement(CareerSearchResources, { colors: C, role: state.keyword.trim(), area: state.state.trim(), linkStyle: link, learningPlan: props.learningPlan, source: { type: "search", query: publicQuery }, onReturnToSearch: focusSearchStart }),
     React.createElement(CareerTalentContact, { colors: C, hidden: !state.open || !links, contextKey: "search", summary: "Want help with this search? Talk with Dean (optional)", searchContext: { role: state.keyword.trim(), location: state.state.trim() } }),
     links && React.createElement("aside", { style: { borderTop: "1px solid " + C.border, paddingTop: 16, marginTop: 20 } }, React.createElement("h3", null, "For employers"), React.createElement("p", null, "Talk with Veteran Bridge Solutions about building a military hiring program. This is separate from a job seeker's search or recruiting permission."), React.createElement("a", { id: "tops-employer-booking", href: TOPS_TALENT_BOOKING, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: link }, "Discuss a military hiring program (Calendly, new tab)")));
 }
@@ -7878,7 +7883,8 @@ function CareerSearchResources(props) {
   var wisconsin = topsWisconsinSearchArea(props.area);
   return React.createElement("div", null,
     React.createElement("section", { id: "tops-search-learning", "aria-labelledby": "tops-search-learning-heading", style: { margin: "24px 0" } },
-      React.createElement("h3", { id: "tops-search-learning-heading" }, props.role ? "Build a skill for this role" : "Skills useful across careers"),
+      React.createElement("h3", { id: "tops-search-learning-heading", tabIndex: -1 }, props.role ? "Build a skill for this role" : "Skills useful across careers"),
+      props.onReturnToSearch && React.createElement("button", { id: "tops-learning-return-search", type: "button", onClick: props.onReturnToSearch, style: Object.assign({}, props.linkStyle, { font: "inherit", textAlign: "left" }) }, "Back to jobs and skills"),
       !props.role && React.createElement("p", null, "These free learning options apply across careers. Add a role or keywords to see role-based options and review a learning step for your plan."),
       React.createElement(CareerLearningRecommendations, { colors: C, role: props.role, rows: [], linkStyle: props.linkStyle, context: "search", plan: props.role ? props.learningPlan : null, source: props.source }),
       React.createElement("a", { href: "?tool=resources", target: "_blank", rel: "noopener noreferrer", style: props.linkStyle }, "Browse the resource library (new tab)")),
