@@ -1,4 +1,4 @@
-const CACHE_NAME = "transition-ops-v341";
+const CACHE_NAME = "transition-ops-v342";
 const CACHE_PREFIX = "transition-ops-v";
 const NETWORK_TIMEOUT_MS = 3500;
 
