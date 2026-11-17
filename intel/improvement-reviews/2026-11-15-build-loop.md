@@ -629,3 +629,11 @@ What ships:
 - The latest-check stamp moves to 17 NOV 2026, 12:50 UTC. Cache v356; v355 is left as #255's rollback.
 
 Logged, no app change: the Dole State and Tribal Outreach Grant Program proposed rule, DECLINE / LOG ONLY. It funds organizations and gives a member nothing to do. Comments close 16 December 2026.
+
+## Merge record, continued (9)
+- 07:35 Central 17 November: Dean ordered "Merge". #256 merged at `cce4a06` and #257 at `4a41faa`. Production moved to v356; served bytes matched at 13:37 UTC.
+
+## Cycle 27 - The four held ticket programs
+Order: Dean, 07:38 Central, "Go".
+
+Read at Tier 2 with an IRS check. Operation Care and Comfort ships as a California-only entry. Gameday for Heroes, Welcome Home Troops and UMPS CARE Blue Crew are declined, each with a revisit trigger in V-2026-11-17-TICKET-PROGRAMS-HOLD-REVIEW. Cache v358; v357 is left as #256's rollback.

@@ -3890,3 +3890,27 @@ A2 act: NOTHING - context. A member has nothing to file or elect under a propose
 A3 surface(s): NONE   token: NONE   sweep trigger: NONE
 A4 cost: NOTHING
 EXPIRES: 16 December 2026, the comment deadline
+
+## V-2026-11-17-TICKET-PROGRAMS-HOLD-REVIEW - Tier 2 review of the four ticket programs held on 16 November (read 17 November 2026)
+
+**Status:** Operation Care and Comfort CONFIRMED and staged for Dean's approval on branch `claude/loop-27-occ-tickets-20261117`. Gameday for Heroes, Welcome Home Troops and UMPS CARE Blue Crew declined.
+
+**Sources, read 17 November 2026 between about 13:20 and 13:40 UTC at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). welcomehometroops.org showed an automatic connection check that cleared on its own; no CAPTCHA was presented or solved.**
+- https://occ-usa.org/tickets-for-troops-program/ . Free tickets since 2004 with no service fees or mailing costs; sign-up for active duty, reservists, veterans, retirees and Gold Star families located in California; most tickets are Northern California events and are often last minute; requests follow Facebook posts. The page footer gives Tax ID 27-3116300.
+- https://apps.irs.gov/app/eos/ . IRS Tax Exempt Organization Search, EIN 27-3116300: Operation Care and Comfort, Fairfield, California, listed in Pub 78 data.
+- https://gamedayforheroes.org/military-applications . The application reads "coming soon". Eligibility lists active duty, wounded veterans, retirees and distinguished veterans. Members without a .mil address are told to email a DD214, ID card or orders to a general inbox. The featured events are Auburn football gamedays.
+- https://welcomehometroops.org/upcoming-events/ . The featured event is the 15 March 2026 NASCAR tailgate, with a 15 March request deadline, eight months past. Requests ask for a military ID or DD214.
+- https://umpscare.com/programs/blue-crew-tickets-2/ . Blue Crew tickets go to listed partner agencies. No individual or family request path is described.
+
+**Dispositions:**
+- Operation Care and Comfort: SHIP, California only.
+- Gameday for Heroes: DECLINE. The application is not open, events are regional, and the app should not send members to email discharge papers to a general inbox. Revisit when the application opens.
+- Welcome Home Troops: DECLINE. The event page is stale. Revisit when it posts a 2027 event.
+- UMPS CARE Blue Crew: DECLINE. No path for a family to request tickets.
+
+IMPACT: SHIP - ACT | A1/A2 | orchestrator, Tier 2 | 2026-11-17 | revisit NONE
+A1 population: SEPARATING (active component), GUARD/RESERVE and ALREADY SEPARATED, located in California.   band: all bands.   excluded: This does not apply to anyone located outside California.   timing: ACT AVAILABLE NOW
+A2 act: "If you are located in California, submit Operation Care and Comfort's ticket sign-up form and follow its Facebook page for ticket postings."
+A3 surface(s): Resource directory, FREE EVENTS & TICKETS.   token: NONE   sweep trigger: NONE
+A4 cost: MONEY. No source states a figure.
+EXPIRES: NONE
