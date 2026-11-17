@@ -3268,7 +3268,7 @@ const DATA_VERIFIED = "1 AUG 2026";
 // DATA_VERIFIED is the date of the last full dataset review and moves only with one.
 // DATA_LATEST_CHECK is the newest primary-source read recorded in intel/verification-log.md. V-2026-11-15-VERIFIED-STAMP.
 const DATA_LATEST_CHECK_DATE = "17 NOV 2026";
-const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 12:15 UTC";
+const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 12:50 UTC";
 const WHATS_NEW = [
   { v: "v99", date: "15 NOV 2026", note: "TAMP for Guard and Reserve: a DoD memo clarified who qualifies and opened reimbursement requests for denials on or after 24 APR 2020. See TRICARE TRANSITION in Critical Windows. Also new: a reminder for the one-year mark on a VA disability claim. Career job search now opens CareerOneStop, the Veterans Job Matcher and the Labor Department's HIRE Vets Medallion employer list, and the Wisconsin guide names the seven 2026 Wisconsin recipients. The SkillBridge feed states the age of its newest batch and points to the official list. The recruiter contact section adds the FRONTLINE Cadre talent network and Veteran Bridge Solutions' open roles page." },
   { v: "v98", date: "8 SEP 2026", note: "Policy Intel: September 8 executive order explained, with current VA claims and TAP next steps." },
@@ -3499,7 +3499,8 @@ const RESOURCE_CATEGORIES = {
   apprenticeships:  { label: "APPRENTICESHIPS & FELLOWSHIPS", color: "#6B4423", icon: "🛠️" },
   mentorship:       { label: "MENTORSHIP & NETWORKING",      color: "#1B3A4B", icon: "🤝" },
   employment:       { label: "EMPLOYMENT & TRANSITION",      color: "#8B6914", icon: "💼" },
-  entrepreneurship: { label: "ENTREPRENEURSHIP",             color: "#8B0000", icon: "💡" }
+  entrepreneurship: { label: "ENTREPRENEURSHIP",             color: "#8B0000", icon: "💡" },
+  events:           { label: "FREE EVENTS & TICKETS",        color: "#3D3B8E", icon: "🎟️" }
 };
 
 const RESOURCES = [
@@ -3561,7 +3562,11 @@ const RESOURCES = [
   { id: "bunker-labs-ent", name: "Bunker Labs (Entrepreneurship)", url: "https://ivmf.syracuse.edu/bunker-labs/", category: "entrepreneurship", cost: "free", eligibility: ["veteran","active","spouse"], description: "Now part of Syracuse IVMF. Veteran entrepreneur incubator, founder programs, and startup community.",verified: true },
   { id: "vetfran", name: "VetFran", url: "https://www.vetfran.org", category: "entrepreneurship", cost: "paid", eligibility: ["veteran","active","spouse"], description: "Franchise opportunities with veteran discounts. 600+ participating franchisors offering reduced fees.",verified: true },
   { id: "sba-vboc", name: "SBA Veterans Business Outreach Center (VBOC)", url: "https://www.sba.gov/local-assistance/resource-partners/veterans-business-outreach-center-vboc", category: "entrepreneurship", cost: "free", eligibility: ["veteran","active","spouse"], description: "SBA-funded business mentoring, training, and Boots to Business courses.",verified: true },
-  { id: "ivmf-business", name: "Institute for Veterans & Military Families (IVMF)", url: "https://ivmf.syracuse.edu", category: "entrepreneurship", cost: "free", eligibility: ["veteran","active","spouse"], description: "Veteran career, education, and entrepreneurship ecosystem. Programs include EBV, V-WISE, Boots to Business.",verified: true }
+  { id: "ivmf-business", name: "Institute for Veterans & Military Families (IVMF)", url: "https://ivmf.syracuse.edu", category: "entrepreneurship", cost: "free", eligibility: ["veteran","active","spouse"], description: "Veteran career, education, and entrepreneurship ecosystem. Programs include EBV, V-WISE, Boots to Business.",verified: true },
+  // FREE EVENTS & TICKETS. V-2026-11-17-FREE-EVENT-TICKETS.
+  { id: "vet-tix", name: "Vet Tix (Veteran Tickets Foundation)", url: "https://www.vettix.org/signup_start.php", category: "events", cost: "conditional", eligibility: ["active","guard_reserve","veteran"], description: "Donated tickets to events. Accounts are open to those currently serving, honorably discharged veterans and retirees, severely wounded veterans with a Purple Heart, Gold Star primary next of kin, and surviving spouses of service members whose death was service connected. Create an account on Vet Tix to request tickets; check Vet Tix for its verification steps and any delivery fee.", verified: true },
+  { id: "uso-tickets", name: "USO Tickets for Troops (local USO centers)", url: "https://www.uso.org/locations", category: "events", cost: "free", eligibility: ["active","guard_reserve","spouse"], description: "USO centers offer free tickets to cultural, musical, theatrical and sporting events for military personnel and their families. Offers and how to request them vary by center, so find your nearest USO and contact it. Wisconsin: USO Wisconsin runs Tickets for Troops.", verified: true },
+  { id: "wwp-events", name: "Wounded Warrior Project: events and peer connection", url: "https://www.woundedwarriorproject.org/programs/wwp-registration", category: "events", cost: "free", eligibility: ["active","guard_reserve","veteran","spouse"], description: "Register with WWP to join its local social events, sports outings and peer support groups at no cost. Open to veterans who served on or after September 11, 2001, active-duty members, members preparing to transition, eligible Guard and Reserve members, and family, caregivers and others in a warrior's support system. A visible or combat injury is not required.", verified: true }
 ];
 // ═══════════════════════════════════════════════════════════════
 // SMART REMINDER ENGINE — 22 TIMED TRANSITION REMINDERS
@@ -17818,7 +17823,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     style: {
       marginBottom: 3
     }
-  }, "\u2192 Covers tuition AND exam fees for certifications"), /*#__PURE__*/React.createElement("div", null, "\u2192 Must complete within 3 years of start date")), /*#__PURE__*/React.createElement("a", {
+  }, "\u2192 Covers tuition AND exam fees for certifications"), /*#__PURE__*/React.createElement("div", null, "\u2192 Request funding for each course from 60 days before it starts until the day before")), /*#__PURE__*/React.createElement("a", {
     href: "https://mycaa.militaryonesource.mil/mycaa/",
     target: "_blank",
     rel: "noopener noreferrer",
