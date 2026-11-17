@@ -3829,3 +3829,64 @@ A2 act: "Apply for the SpouseWorks Scholarship (formerly MyCAA) at mycaa.militar
 A3 surface(s): Spouse resources card and Home spouse-resources line.   token: NONE   sweep trigger: FIRED - successor terms: "formerly MyCAA", "formerly SECO"
 A4 cost: MONEY. A spouse of an E-7 or above, a W-4 or above, or an O-4 or above read the app's old rank line and would conclude they could not apply for up to $4,000.
 EXPIRES: NONE
+
+## V-2026-11-17-FREE-EVENT-TICKETS - Free event tickets and events for military families: Vet Tix, USO, Wounded Warrior Project (verified 17 November 2026)
+
+**Status:** CONFIRMED for claims 1 to 4. Wording staged for Dean's approval on branch `claude/loop-25-free-events-20261117`. Not released at the time of this entry.
+
+**Lead:** Dean shared an Act Now Education graphic listing seven ticket programs on 16 November. s2-vetting assessed all seven at Tier 1 the same day: three APPROVE WITH CONDITIONS, four HOLD (Gameday for Heroes, Operation Care and Comfort, Welcome Home Troops, UMPS CARE Blue Crew). Only the three cleared programs were read at Tier 2 and only they ship.
+
+**Claims:**
+1. Vet Tix offers ticket-requesting accounts to those currently serving, honorably discharged veterans and retirees, severely wounded veterans with a Purple Heart, Gold Star primary next of kin of someone killed in action, and surviving spouses of service members with a service-connected death.
+2. USO Wisconsin's Tickets for Troops says the USO offers free tickets to cultural, musical, theatrical and sporting events for military personnel and their families. The page names no request process. The USO's center locator lists more than 260 locations.
+3. Wounded Warrior Project registration is open to veterans who served on or after 11 September 2001, active-duty members, members preparing to transition, eligible Guard and Reserve members, and family, support persons and caregivers. A visible or combat injury is not required. Registration connects members to no-cost programs, including local social events, sports outings and peer support groups.
+4. None of the three is a government benefit. Each is a private nonprofit program with its own rules.
+
+**Sources, read 17 November 2026 between about 12:30 and 12:50 UTC at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.**
+- https://www.vettix.org/signup_start.php . Claim 1 (the account categories).
+- https://wi.uso.org/programs/tickets-for-troops . Claim 2.
+- https://www.uso.org/locations . Claim 2 (the center locator).
+- https://www.woundedwarriorproject.org/programs/wwp-registration . Claim 3.
+
+**Not carried, with reasons:** Vet Tix's verification method, lottery and delivery fee were reported by s2-vetting at Tier 1 and not read at Tier 2; the card tells members to check Vet Tix for verification steps and any fee. Nonprofit status was not checked against IRS records; all three are long-established national organizations, and the four HOLD programs stay out until that check and a Tier 2 read.
+
+**App change (wording staged for Dean's approval):** a new resource directory category, FREE EVENTS & TICKETS, with three entries. What's New and `APP_VERSION` are untouched.
+
+IMPACT: SHIP - ACT | A2/A3 | orchestrator, Tier 2 | 2026-11-17 | revisit NONE
+A1 population: SEPARATING (active component), GUARD/RESERVE, SPOUSE/FAMILY and ALREADY SEPARATED, per each program's own eligibility.   band: all bands; condition-triggered by the member's status.   excluded: This does not apply to veterans who served before 11 September 2001 for the Wounded Warrior Project entry, or to veterans and retirees for the USO entry.   timing: ACT AVAILABLE NOW
+A2 act: "Create a Vet Tix account, contact your nearest USO center about Tickets for Troops, or register with Wounded Warrior Project, according to the eligibility each program states."
+A3 surface(s): Resource directory, new category FREE EVENTS & TICKETS.   token: NONE   sweep trigger: NONE
+A4 cost: MONEY. The cost is the price of tickets a family would otherwise buy. No source states a dollar figure, so none is given.
+EXPIRES: NONE
+
+## V-2026-11-17-SPOUSEWORKS-FUNDING-WINDOW - SpouseWorks Scholarship funding is requested per course, from 60 days before it starts (verified 17 November 2026)
+
+**Status:** CONFIRMED. Wording staged for Dean's approval on branch `claude/loop-25-free-events-20261117`.
+
+**Claims:** a spouse may request funding starting 60 days before a class begins and up to the day before it starts, and must submit a new financial assistance request for each course or program.
+
+**Sources, read 17 November 2026 about 12:40 UTC at Tier 2 (browser PDF viewer):**
+- https://download.militaryonesource.mil/spouseworks/spouseworks-scholarship-flowchart.pdf . "7 Steps for MilSpouses to Secure a SpouseWorks Scholarship". The claims above.
+- https://download.militaryonesource.mil/spouseworks/spouseworks-scholarship-factsheet.pdf . Fact sheet, July 2026. It names no completion time limit.
+
+**App change:** the card line "Must complete within 3 years of start date", left unverified by V-2026-11-17-SPOUSEWORKS-SCHOLARSHIP, is replaced with the funding window above. Neither current source states a three-year limit.
+
+IMPACT: SHIP - ACT | A2/A4 | orchestrator, Tier 2 | 2026-11-17 | revisit NONE
+A1 population: SPOUSE/FAMILY of SEPARATING (active component) and GUARD/RESERVE members.   band: condition-triggered by a course start date.   excluded: This does not apply to spouses of members who have already separated.   timing: ACT AVAILABLE NOW
+A2 act: "Request SpouseWorks Scholarship funding for each course in your SpouseWorks Scholarship account between 60 days before the course starts and the day before it starts."
+A3 surface(s): Spouse resources card.   token: NONE   sweep trigger: NONE
+A4 cost: MONEY. A request made on or after the start date falls outside the window the flowchart states.
+EXPIRES: NONE
+
+## V-2026-11-17-DOLE-OUTREACH-GRANT - Dole State and Tribal Outreach Grant Program proposed rule (read 17 November 2026)
+
+**Status:** CONFIRMED as described. No app change.
+
+**Source:** https://www.federalregister.gov/documents/2026/11/16/2026-23220/dole-state-and-tribal-outreach-grant-program . Read about 12:50 UTC at Tier 2. VA proposes regulations, RIN 2900-AS68, for grants to eligible organizations that inform veterans and families about benefits and help them apply. Comments close 16 December 2026.
+
+IMPACT: DECLINE / LOG ONLY | A2 | orchestrator, Tier 2 | 2026-11-17 | revisit NONE
+A1 population: none directly; the grantees are organizations.   band: none.   excluded: This does not apply to individual members.   timing: none; the rule creates no member act
+A2 act: NOTHING - context. A member has nothing to file or elect under a proposed grant rule.
+A3 surface(s): NONE   token: NONE   sweep trigger: NONE
+A4 cost: NOTHING
+EXPIRES: 16 December 2026, the comment deadline

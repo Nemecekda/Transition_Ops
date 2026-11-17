@@ -616,3 +616,16 @@ What ships: the card's heading, body, rank line and button; two other places tha
 Open: the fact sheet was not read, so the card's "complete within 3 years" line is unchanged and not re-verified.
 
 Separate thread: the free event tickets section. Seven programs vetted 16 November: three ready to draft (Vet Tix, USO, Wounded Warrior Project), four on hold. Vet Tix's sign-up categories were read at Tier 2 on 17 November. Wording comes to Dean before any build.
+
+## Merge record, continued (8)
+- 06:49 Central 17 November: Dean ordered "approved, merge". #255 merged at its verified head `4b18ea6`, merge commit `1f0fdbe`, at 12:49 UTC. Production moved to v354; served bytes matched the commit at 12:50 UTC.
+
+## Cycle 25 - Free events and tickets, and the SpouseWorks funding window
+Order: Dean, 06:52 Central 17 November, "take care of it al now".
+
+What ships:
+- A new resource directory category, FREE EVENTS & TICKETS, with Vet Tix, USO Tickets for Troops and Wounded Warrior Project events. Record V-2026-11-17-FREE-EVENT-TICKETS. The four programs on hold stay out.
+- The SpouseWorks Scholarship card's unverified "complete within 3 years" line becomes the funding window the SpouseWorks flowchart states. Record V-2026-11-17-SPOUSEWORKS-FUNDING-WINDOW.
+- The latest-check stamp moves to 17 NOV 2026, 12:50 UTC. Cache v356; v355 is left as #255's rollback.
+
+Logged, no app change: the Dole State and Tribal Outreach Grant Program proposed rule, DECLINE / LOG ONLY. It funds organizations and gives a member nothing to do. Comments close 16 December 2026.
