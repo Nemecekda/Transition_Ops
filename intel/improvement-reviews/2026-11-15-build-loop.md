@@ -600,3 +600,19 @@ Repairs stay paused. The screens these scripts cover changed eight times in unde
 
 If main moves again before a merge order, the same steps repeat and one line is added here.
 - 10:45 Central: Dean ordered "keep going and merge". Main had moved to `8dcfe15` (#252, v351, rollback 352), which took 351 above this branch's preview v350. Merged again: `pwa-sw.js` conflicted on line 1 only and took main's file with v353. #252 also repaired the welcome wording in `tool-url-continuity-browser`. It gave the More menu's Share item a style, which broke a second content assertion; that one now pins the item's id, class, action and label.
+
+## Merge record, continued (7)
+- 10:45 Central 16 November: Dean ordered "keep going and merge". #243 merged at its verified head `bfd6e9f`, merge commit `dc2afb4`, at 16:50 UTC. Production moved to v353; served bytes matched the commit at 16:51 UTC.
+
+## Cycle 24 - SpouseWorks Scholarship (formerly MyCAA)
+Lead: Dean asked on 16 November to add the SpouseWorks page on Military OneSource.
+
+Finding: MyCAA is now the SpouseWorks Scholarship, and it is open at every rank and pay grade, Coast Guard spouses included. The app's card still said MyCAA and limited it to spouses of E-1 to E-9, W-1 to W-3 and O-1 to O-3. Record: V-2026-11-17-SPOUSEWORKS-SCHOLARSHIP, CONFIRMED at Tier 2.
+
+Impact: SHIP - ACT. A spouse of a senior NCO, a senior warrant officer or a field-grade officer was told they did not qualify for up to $4,000.
+
+What ships: the card's heading, body, rank line and button; two other places that named MyCAA; one new resource card for the page Dean named. The latest-check stamp moves to 17 NOV 2026, 12:15 UTC. Cache v354.
+
+Open: the fact sheet was not read, so the card's "complete within 3 years" line is unchanged and not re-verified.
+
+Separate thread: the free event tickets section. Seven programs vetted 16 November: three ready to draft (Vet Tix, USO, Wounded Warrior Project), four on hold. Vet Tix's sign-up categories were read at Tier 2 on 17 November. Wording comes to Dean before any build.

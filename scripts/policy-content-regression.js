@@ -421,7 +421,7 @@ check(occurrences(verificationLog, "## V-2026-11-15-VA-CLAIM-ONE-YEAR ") === 1, 
 // What's New entry and the two verified stamps. V-2026-11-15-VERIFIED-STAMP.
 check(occurrences(index, 'const APP_VERSION = "v99";') === 1 && /const WHATS_NEW = \[\n  \{ v: "v99", date: "15 NOV 2026", note: "TAMP for Guard and Reserve: a DoD memo clarified who qualifies/.test(index),
   "the app version and the first What's New entry are both v99, dated 15 NOV 2026");
-check(occurrences(index, 'const DATA_VERIFIED = "1 AUG 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK_DATE = "15 NOV 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 23:33 UTC";') === 1,
+check(occurrences(index, 'const DATA_VERIFIED = "1 AUG 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK_DATE = "17 NOV 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 12:15 UTC";') === 1,
   "the full-review date is unchanged and the latest-check stamp carries a date and a time");
 check(index.includes('or both. Full data review " + DATA_VERIFIED + ". Latest source check " + DATA_LATEST_CHECK + "."') && index.includes('SOURCED \\u00B7 LATEST CHECK " + DATA_LATEST_CHECK_DATE)') && occurrences(index, '"Last verified: " + DATA_VERIFIED + ""') === 1 && !index.includes('VERIFIED " + DATA_VERIFIED)'),
   "Critical Windows shows both stamps, the policy panel shows the latest check, and the directory footnote keeps the full-review date");
@@ -430,7 +430,7 @@ check(index.includes('or both. Full data review " + DATA_VERIFIED + ". Latest so
   const dated = Array.from(verificationLog.matchAll(/^## V-(\d{4})-(\d{2})-(\d{2})-/gm)).map(function (m) { return m[1] + m[2] + m[3]; }).sort();
   const newest = dated[dated.length - 1] || "";
   const stamp = newest ? String(Number(newest.slice(6, 8))) + " " + months[Number(newest.slice(4, 6)) - 1] + " " + newest.slice(0, 4) : "";
-  check(stamp === "15 NOV 2026" && index.includes('const DATA_LATEST_CHECK_DATE = "' + stamp + '";'),
+  check(stamp === "17 NOV 2026" && index.includes('const DATA_LATEST_CHECK_DATE = "' + stamp + '";'),
     "the latest-check date equals the date of the newest dated entry in the verification log");
 }
 check(occurrences(verificationLog, "## V-2026-11-15-VERIFIED-STAMP ") === 1, "the verified stamps carry one verification record");
@@ -659,5 +659,16 @@ check(occurrences(verificationLog, "## V-2026-11-15-FMLA-MILITARY-SERVICE ") ===
   check(!/\$\d/.test(first) && !/\$\d/.test(backstop) && !/belated|three months/i.test(first + backstop), "neither reminder carries a dollar figure or the belated-enrollment exception, which was not confirmed for retirees");
 }
 check(occurrences(verificationLog, "## V-2026-11-15-FEDVIP-RETIREMENT-WINDOW ") === 1, "the retirement FEDVIP re-read carries one verification record");
+
+// V-2026-11-17-SPOUSEWORKS-SCHOLARSHIP: MyCAA is now the SpouseWorks Scholarship, open at every rank and pay grade.
+check(occurrences(index, '"SPOUSEWORKS SCHOLARSHIP (FORMERLY MyCAA) \\u2014 UP TO $4,000"') === 1 && occurrences(index, '"APPLY FOR THE SPOUSEWORKS SCHOLARSHIP \\u2192"') === 1 && occurrences(index, 'href: "https://mycaa.militaryonesource.mil/mycaa/"') === 1,
+  "the spouse scholarship card uses the program's current name and keeps the official apply link");
+check(occurrences(index, '"\\u2192 Open to spouses at every rank and pay grade, Coast Guard included"') === 1 && occurrences(index, "Spouses of E-1 to E-9, W-1 to W-3, O-1 to O-3 eligible") === 0,
+  "the scholarship card states no rank limit, and the retired rank list is gone");
+check(occurrences(index, "MyCAA") === occurrences(index, "formerly MyCAA") + occurrences(index, "FORMERLY MyCAA") + occurrences(index, "(MyCAA)") + occurrences(index, "APPLY FOR MyCAA") && occurrences(index, "APPLY FOR MyCAA") === 0,
+  "every MyCAA mention presents it as the former name");
+check(occurrences(index, 'url: "https://www.militaryonesource.mil/resources/network/spouseworks/",') === 1 && occurrences(index, 'name: "SpouseWorks Jobs and Employer Partners",') === 1,
+  "the spouse resources list links the SpouseWorks page for the employer partnership");
+check(occurrences(verificationLog, "## V-2026-11-17-SPOUSEWORKS-SCHOLARSHIP ") === 1, "the SpouseWorks Scholarship correction carries one verification record");
 
 console.log("Policy content regression: PASS (" + checks + " assertions; " + vectorCount + " parity vectors)");

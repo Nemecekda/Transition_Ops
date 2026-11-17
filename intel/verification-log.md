@@ -3798,3 +3798,34 @@ A2 act: "Ask your agency's servicing human resources office to count your honora
 A3 surface(s): 2026 POLICY INTEL card (`POLICY_CHANGES`, second entry).   token: NONE   sweep trigger: FIRED - successor terms: the statute "amended" the service requirement and the rule "amends" 5 CFR part 630; no predecessor statement exists in the app. Confusable-adjacent: other 12-week and 12-month figures, handled as recorded in the sweep above.
 A4 cost: MONEY
 EXPIRES: NONE
+
+## V-2026-11-17-SPOUSEWORKS-SCHOLARSHIP - MyCAA is now the SpouseWorks Scholarship, open at every rank (verified 17 November 2026)
+
+**Status:** CONFIRMED for claims 1 to 4. Wording staged for Dean's approval on branch `claude/loop-24-spouseworks-scholarship-20261116`. Not released at the time of this entry.
+
+**Lead:** Dean asked on 16 November to add the SpouseWorks page on Military OneSource. Reading it showed the app's MyCAA card was out of date.
+
+**Claims:**
+1. The scholarship formerly called My Career Advancement Account (MyCAA) is now the SpouseWorks Scholarship, part of the War Department's SpouseWorks program (formerly SECO).
+2. It provides up to $4,000 toward a license, certification, associate degree, or continuing education needed to keep a license or certification.
+3. It is open to eligible spouses regardless of the service member's rank or pay grade. The app said spouses of E-1 to E-9, W-1 to W-3 and O-1 to O-3 only.
+4. Coast Guard spouses are now included (SpouseWorks article). The Military OneSource page lists five services and names Title 10 orders for Guard and Reserve; the app keeps its Title 10 line and links the program, whose fact sheet governs.
+
+**Sources, read 17 November 2026 between about 12:05 and 12:15 UTC at Tier 2 (orchestrator browser, Claude in Chrome, Dean's session). No CAPTCHA was presented or solved.**
+- https://www.militaryonesource.mil/resources/network/spouseworks/ . Military OneSource, "SpouseWorks". Claims 1, 2 and 3; the Military Spouse Employer Partnership counts more than 1,000 employer partners.
+- https://spouseworks.militaryonesource.mil/portal/article/spouseworks-scholarship . SpouseWorks, "SpouseWorks Scholarship". Claims 1 to 4; it says the scholarship is open regardless of rank or pay grade.
+- https://mycaa.militaryonesource.mil/mycaa/ . The app's apply link. It now serves the renamed program and says the MyCAA name is being retired. The link stays.
+- https://www.militaryonesource.mil/benefits/spouseworks-career-education/ . The app's coaching link. Live; unchanged.
+
+**Not read:** the SpouseWorks Scholarship fact sheet and flowchart. The app's "complete within 3 years" line was not re-verified and is unchanged.
+
+**Sweep (successor), executed in this cycle:** `index.html` named MyCAA in four places: the spouse card heading, body and button, the Home spouse-resources line and a spouse tip. All four now use the current name with "formerly MyCAA". The rank line was the only eligibility statement. `netlify/functions/navigator.mjs` does not mention MyCAA.
+
+**App change (wording staged for Dean's approval):** the edits above, plus one resource card, "SpouseWorks Jobs and Employer Partners", linking the page Dean named. `DATA_LATEST_CHECK` moves to "17 NOV 2026, 12:15 UTC". What's New and `APP_VERSION` are untouched. The content regression gains 5 assertions.
+
+IMPACT: SHIP - ACT | A2/A4 | orchestrator, Tier 2 | 2026-11-17 | revisit NONE
+A1 population: SPOUSE/FAMILY of SEPARATING (active component) and GUARD/RESERVE members.   band: 18 Months Out through 1 Month Out; condition-triggered by the member's service status.   excluded: This does not apply to spouses of members who have already separated.   timing: ACT AVAILABLE NOW
+A2 act: "Apply for the SpouseWorks Scholarship (formerly MyCAA) at mycaa.militaryonesource.mil, whatever your service member's rank, for up to $4,000 toward a license, certification or associate degree."
+A3 surface(s): Spouse resources card and Home spouse-resources line.   token: NONE   sweep trigger: FIRED - successor terms: "formerly MyCAA", "formerly SECO"
+A4 cost: MONEY. A spouse of an E-7 or above, a W-4 or above, or an O-4 or above read the app's old rank line and would conclude they could not apply for up to $4,000.
+EXPIRES: NONE

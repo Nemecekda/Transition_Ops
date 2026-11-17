@@ -3267,8 +3267,8 @@ const APP_VERSION = "v99";
 const DATA_VERIFIED = "1 AUG 2026";
 // DATA_VERIFIED is the date of the last full dataset review and moves only with one.
 // DATA_LATEST_CHECK is the newest primary-source read recorded in intel/verification-log.md. V-2026-11-15-VERIFIED-STAMP.
-const DATA_LATEST_CHECK_DATE = "15 NOV 2026";
-const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 23:33 UTC";
+const DATA_LATEST_CHECK_DATE = "17 NOV 2026";
+const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 12:15 UTC";
 const WHATS_NEW = [
   { v: "v99", date: "15 NOV 2026", note: "TAMP for Guard and Reserve: a DoD memo clarified who qualifies and opened reimbursement requests for denials on or after 24 APR 2020. See TRICARE TRANSITION in Critical Windows. Also new: a reminder for the one-year mark on a VA disability claim. Career job search now opens CareerOneStop, the Veterans Job Matcher and the Labor Department's HIRE Vets Medallion employer list, and the Wisconsin guide names the seven 2026 Wisconsin recipients. The SkillBridge feed states the age of its newest batch and points to the official list. The recruiter contact section adds the FRONTLINE Cadre talent network and Veteran Bridge Solutions' open roles page." },
   { v: "v98", date: "8 SEP 2026", note: "Policy Intel: September 8 executive order explained, with current VA claims and TAP next steps." },
@@ -13008,7 +13008,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
         React.createElement("span", { style: { fontSize: 20, flexShrink: 0 } }, "\uD83D\uDC9C"),
         React.createElement("div", { style: { minWidth: 0, flex: 1 } },
           React.createElement("div", { style: { fontFamily: "'Oswald', sans-serif", fontSize: 13, letterSpacing: 1, color: C.textPrimary, fontWeight: 600 } }, "MILITARY SPOUSE RESOURCES"),
-          React.createElement("div", { style: { fontSize: 13, color: C.gold, marginTop: 2, lineHeight: 1.4 } }, "Career, education, and employment programs open to spouses \u2014 SpouseWorks (NEW 1 JUL), MyCAA, MSSA, ACP, and more. Patriot Pipeline names spouses too.")
+          React.createElement("div", { style: { fontSize: 13, color: C.gold, marginTop: 2, lineHeight: 1.4 } }, "Career, education, and employment programs open to spouses \u2014 SpouseWorks (NEW 1 JUL), the SpouseWorks Scholarship (formerly MyCAA), MSSA, ACP, and more. Patriot Pipeline names spouses too.")
         ),
         React.createElement("span", { style: { marginLeft: "auto", color: C.greenBright, fontSize: 18, flexShrink: 0 } }, "\u203A")
       ),
@@ -17792,14 +17792,14 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       fontFamily: "'Oswald', sans-serif",
       marginBottom: 6
     }
-  }, "MyCAA SCHOLARSHIP \u2014 UP TO $4,000 FREE"), /*#__PURE__*/React.createElement("div", {
+  }, "SPOUSEWORKS SCHOLARSHIP (FORMERLY MyCAA) \u2014 UP TO $4,000"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: C.textBody,
       lineHeight: 1.8,
       marginBottom: 8
     }
-  }, "The My Career Advancement Account (MyCAA) provides up to $4,000 for licenses, certificates, certifications, or associate degrees in portable career fields. This is a scholarship \u2014 not a loan."), /*#__PURE__*/React.createElement("div", {
+  }, "The SpouseWorks Scholarship, formerly My Career Advancement Account (MyCAA), provides up to $4,000 for licenses, certifications, associate degrees, or continuing education needed to keep a license or certification. This is a scholarship \u2014 not a loan."), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: C.textSecondary,
@@ -17810,7 +17810,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     style: {
       marginBottom: 3
     }
-  }, "\u2192 Spouses of E-1 to E-9, W-1 to W-3, O-1 to O-3 eligible"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2192 Open to spouses at every rank and pay grade, Coast Guard included"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 3
     }
@@ -17834,11 +17834,16 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       textDecoration: "none",
       textAlign: "center"
     }
-  }, "APPLY FOR MyCAA \u2192")), [{
+  }, "APPLY FOR THE SPOUSEWORKS SCHOLARSHIP \u2192")), [{
     name: "SpouseWorks Career Coaching (formerly SECO)",
     url: "https://www.militaryonesource.mil/benefits/spouseworks-career-education/",
     desc: "FREE one-on-one career coaching via Military OneSource's relaunched SpouseWorks (1 JUL 2026): career exploration, resume help, interview prep, 5,000+ online courses, job matching \u2014 all services including Coast Guard.",
     icon: "\uD83C\uDFAF"
+  }, {
+    name: "SpouseWorks Jobs and Employer Partners",
+    url: "https://www.militaryonesource.mil/resources/network/spouseworks/",
+    desc: "The Military Spouse Employer Partnership: more than 1,000 employers committed to recruiting, hiring, promoting and retaining military spouses. SpouseWorks also runs a job board, fellowships and the SpouseWorks Scholarship.",
+    icon: "\uD83E\uDD1D"
   }, {
     name: "\u2B50 Onward to Opportunity (O2O)",
     url: "https://ivmf.syracuse.edu/programs/career-training/",
@@ -18000,7 +18005,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
     detail: "This is the first time location isn't dictated by the military. Choose a location that serves BOTH careers. Your employment matters for family financial stability — especially if the service member is still figuring out their next move."
   }, {
     tip: "You have your own benefits",
-    detail: "MyCAA, MSEP, non-competitive federal hiring, SpouseWorks coaching, and many of the same free training programs available to veterans. These are YOUR benefits — not your spouse's. Use them."
+    detail: "The SpouseWorks Scholarship (formerly MyCAA), MSEP, non-competitive federal hiring, SpouseWorks coaching, and many of the same free training programs available to veterans. These are YOUR benefits — not your spouse's. Use them."
   }, {
     tip: "Build your own professional identity",
     detail: "You are not 'just a military spouse.' You are a professional who has managed a household through chaos, adapted to new environments constantly, and built community from scratch — repeatedly. That IS a resume."
