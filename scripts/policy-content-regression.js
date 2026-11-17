@@ -421,7 +421,7 @@ check(occurrences(verificationLog, "## V-2026-11-15-VA-CLAIM-ONE-YEAR ") === 1, 
 // What's New entry and the two verified stamps. V-2026-11-15-VERIFIED-STAMP.
 check(occurrences(index, 'const APP_VERSION = "v99";') === 1 && /const WHATS_NEW = \[\n  \{ v: "v99", date: "15 NOV 2026", note: "TAMP for Guard and Reserve: a DoD memo clarified who qualifies/.test(index),
   "the app version and the first What's New entry are both v99, dated 15 NOV 2026");
-check(occurrences(index, 'const DATA_VERIFIED = "1 AUG 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK_DATE = "17 NOV 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 12:50 UTC";') === 1,
+check(occurrences(index, 'const DATA_VERIFIED = "1 AUG 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK_DATE = "17 NOV 2026";') === 1 && occurrences(index, 'const DATA_LATEST_CHECK = DATA_LATEST_CHECK_DATE + ", 13:40 UTC";') === 1,
   "the full-review date is unchanged and the latest-check stamp carries a date and a time");
 check(index.includes('or both. Full data review " + DATA_VERIFIED + ". Latest source check " + DATA_LATEST_CHECK + "."') && index.includes('SOURCED \\u00B7 LATEST CHECK " + DATA_LATEST_CHECK_DATE)') && occurrences(index, '"Last verified: " + DATA_VERIFIED + ""') === 1 && !index.includes('VERIFIED " + DATA_VERIFIED)'),
   "Critical Windows shows both stamps, the policy panel shows the latest check, and the directory footnote keeps the full-review date");
@@ -672,16 +672,19 @@ check(occurrences(index, 'url: "https://www.militaryonesource.mil/resources/netw
 check(occurrences(verificationLog, "## V-2026-11-17-SPOUSEWORKS-SCHOLARSHIP ") === 1, "the SpouseWorks Scholarship correction carries one verification record");
 
 // V-2026-11-17-FREE-EVENT-TICKETS: three vetted programs in a new directory category; the four on hold stay out.
-check(occurrences(index, 'events:           { label: "FREE EVENTS & TICKETS",') === 1 && occurrences(index, 'category: "events"') === 3,
-  "the directory has a FREE EVENTS & TICKETS category with exactly three entries");
+check(occurrences(index, 'events:           { label: "FREE EVENTS & TICKETS",') === 1 && occurrences(index, 'category: "events"') === 4,
+  "the directory has a FREE EVENTS & TICKETS category with exactly four entries");
 check(occurrences(index, '{ id: "vet-tix", name: "Vet Tix (Veteran Tickets Foundation)", url: "https://www.vettix.org/signup_start.php", category: "events", cost: "conditional",') === 1 && index.includes("check Vet Tix for its verification steps and any delivery fee."),
   "Vet Tix links its sign-up page and sends members to Vet Tix for verification steps and any fee");
 check(occurrences(index, '{ id: "uso-tickets", name: "USO Tickets for Troops (local USO centers)", url: "https://www.uso.org/locations", category: "events", cost: "free", eligibility: ["active","guard_reserve","spouse"],') === 1,
   "the USO entry links the center locator and lists serving members and families only");
 check(occurrences(index, '{ id: "wwp-events", name: "Wounded Warrior Project: events and peer connection", url: "https://www.woundedwarriorproject.org/programs/wwp-registration", category: "events", cost: "free",') === 1 && index.includes("Open to veterans who served on or after September 11, 2001,"),
   "the WWP entry links registration and states its post-9/11 veteran limit");
-check(!/Gameday for Heroes|Operation Care and Comfort|Welcome Home Troops|UMPS CARE/i.test(index),
-  "no program on hold appears in the app");
+// V-2026-11-17-TICKET-PROGRAMS-HOLD-REVIEW: three programs declined after a Tier 2 read.
+check(!/Gameday for Heroes|Welcome Home Troops|UMPS CARE/i.test(index),
+  "no declined ticket program appears in the app");
+check(occurrences(index, '{ id: "occ-tickets", name: "Operation Care and Comfort: Tickets for Troops (California)", url: "https://occ-usa.org/tickets-for-troops-program/", category: "events", cost: "free",') === 1 && index.includes('description: "California only. ') && occurrences(verificationLog, "## V-2026-11-17-TICKET-PROGRAMS-HOLD-REVIEW ") === 1,
+  "Operation Care and Comfort is listed as California only and carries one verification record");
 // V-2026-11-17-SPOUSEWORKS-FUNDING-WINDOW.
 check(occurrences(index, '"\\u2192 Request funding for each course from 60 days before it starts until the day before"') === 1 && occurrences(index, "Must complete within 3 years of start date") === 0 && occurrences(verificationLog, "## V-2026-11-17-FREE-EVENT-TICKETS ") === 1 && occurrences(verificationLog, "## V-2026-11-17-SPOUSEWORKS-FUNDING-WINDOW ") === 1 && occurrences(verificationLog, "## V-2026-11-17-DOLE-OUTREACH-GRANT ") === 1,
   "the scholarship card states the funding window, the unverified time limit is gone, and each finding has one record");
