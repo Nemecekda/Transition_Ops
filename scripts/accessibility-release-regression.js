@@ -360,7 +360,7 @@ async function stopChrome(chrome) {
   // Chrome's crash reporter can inherit stderr after the test browser exits.
   // Release our pipe so that helper cannot keep this completed runner alive.
   if (chrome.child && chrome.child.stderr) chrome.child.stderr.destroy();
-  if (chrome.profile) fs.rmSync(chrome.profile, { recursive: true, force: true });
+  if (chrome.profile) fs.rmSync(chrome.profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 }
 
 async function evaluate(client, expression, awaitPromise) {
