@@ -62,11 +62,11 @@ const server = http.createServer((req, res) => {
     for (const route of ['/wisconsin', '/wisconsin/']) {
       console.log('ROUTE',route); await load(route); await wait('!!document.getElementById("tops-state-help")');
       assert.equal(await ev('location.pathname+location.search'), destination);
-      assert.equal(await ev('document.getElementById("tops-state-help-heading").textContent'), 'Coming home to Wisconsin?');
+      assert.equal(await ev('document.getElementById("tops-state-help-heading").textContent'), 'State benefits and local help');
       assert.match(await ev('document.getElementById("tops-state-help-welcome").textContent'), /serving in the Guard or Reserve/);
       assert.match(await ev('document.getElementById("tops-state-help-welcome").textContent'), /Veterans and families welcome/);
-      assert.equal(await ev('document.querySelector("label[for=tops-state-help-area]").textContent'), 'Choose your state');
-      assert.deepEqual(await ev('[...document.getElementById("tops-state-help-area").options].map(n=>n.text)'), ['All states', 'Wisconsin']);
+      assert.equal(await ev('document.querySelector("label[for=tops-state-help-area]").textContent'), 'Where will you live?');
+      assert.equal(await ev('document.getElementById("tops-state-help-area").options.length'), 56); assert.equal(await ev('document.querySelectorAll("#tops-state-start select").length'), 1); assert.equal(await ev('!!document.getElementById("tops-state-start-select")'), false);
       assert.equal(await ev('document.getElementById("tops-state-help-situation").value'), 'browse');
       assert.equal(await ev('document.getElementById("tops-state-help-need").value'), 'start');
       await reload(); assert.equal(await disk(), before);
@@ -83,10 +83,10 @@ const server = http.createServer((req, res) => {
     await ev('[...document.querySelectorAll("button")].find(n=>n.textContent==="Keep my current step").click()'); await frames();
     assert.equal(await disk(), before);
     await change('tops-state-help-area', 'national');
-    assert.equal(await ev('document.querySelector("#tops-state-help-welcome h2").textContent'), 'State and local help');
+    assert.equal(await ev('document.getElementById("tops-state-help-heading").textContent'), 'State benefits and local help');
     assert.equal(await ev('document.querySelector("#tops-wisconsin-skillbridge,#tops-wisconsin-cohort,#tops-wisconsin-local-help")'), null);
-    assert.match(await ev('document.getElementById("tops-state-help-area-hint").textContent'), /National resources are available for every state/);
-    assert.match(await ev('document.getElementById("tops-state-help-area-hint").textContent'), /does not establish residence or eligibility/);
+    assert.equal(await ev('document.getElementById("tops-state-help-next").checkVisibility()'), true); assert.equal(await ev('document.getElementById("tops-state-help-area").value'), 'national');
+    assert.match(await ev('document.getElementById("tops-state-start-caption").textContent'), /does not establish residence or eligibility/);
     assert.equal(await ev('document.documentElement.scrollWidth<=innerWidth+1'), true);
     assert.equal(await ev('[...document.querySelectorAll("#tops-state-help button,#tops-state-help select,#tops-state-help a,#tops-state-help summary")].filter(n=>n.checkVisibility()).every(n=>n.getBoundingClientRect().height>=44)'), true);
     assert.equal(await disk(), before);

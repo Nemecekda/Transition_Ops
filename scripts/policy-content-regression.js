@@ -533,16 +533,16 @@ check(occurrences(verificationLog, "## V-2026-11-15-FEDVIP-OPEN-SEASON ") === 1,
     "New Hampshire carries its own sourced address and note, and New Mexico and Colorado use the .gov address their listed link leads to");
   check(row("WI")[3] === "https://dva.wi.gov/Pages/Home.aspx" && row("WI")[4] === "https://jobcenterofwisconsin.com/" && row("TX")[2] === "Texas Veterans Commission" && row("TX")[4] === "https://www.workintexas.com/vosnet/Default.aspx" && row("OR")[4] === "https://secure.emp.state.or.us/jobs/index.cfm?bkmk=w9",
     "spot checks: Wisconsin, Texas and the one job bank address with a query string");
-  check(occurrences(index, 'context.area !== "wi" && React.createElement("section", { id: "tops-state-start", "aria-labelledby": "tops-state-start-heading"') === 1 &&
-    occurrences(index, 'React.createElement("label", { htmlFor: "tops-state-start-select"') === 1 && occurrences(index, 'React.createElement("select", { id: "tops-state-start-select", value: startCode, style: field, "aria-describedby": "tops-state-start-caption"') === 1 &&
+  check(occurrences(index, 'React.createElement("section", { id: "tops-state-start", "aria-labelledby": "tops-state-start-heading"') === 1 &&
+    occurrences(index, 'React.createElement("label", { htmlFor: "tops-state-help-area"') === 1 && occurrences(index, 'React.createElement("select", { id: "tops-state-help-area", value: startCode === "WI" ? "wi" : startCode || "national", style: field, "aria-describedby": "tops-state-start-caption"') === 1 && !index.includes('id: "tops-state-start-select"') &&
     occurrences(index, 'id: "tops-state-start-status", className: "sr-only", role: "status", "aria-live": "polite"') === 1,
-    "the state control shows only outside the Wisconsin guide, has a label and a caption, and announces its result");
+    "one full state control appears before the guide, has a label and a caption, and announces its result");
   check(occurrences(index, 'id: "tops-state-start-office", href: startRow[3], target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer"') === 1 &&
     occurrences(index, 'id: "tops-state-start-jobs", href: startRow[4], target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer"') === 1 &&
     occurrences(index, '" veterans office site (new tab)"') === 1 && occurrences(index, '" job bank (new tab)"') === 1,
     "both state links open a new tab without a referrer and say so");
   check(occurrences(index, "\"Office links come from VA's directory of state veterans affairs offices. Job bank links come from CareerOneStop, which the U.S. Department of Labor sponsors. Both lists were read on \" + TOPS_STATE_START_READ + \" and can change. Choosing a state here does not establish residence or eligibility.\"") === 1 &&
-    occurrences(index, 'const TOPS_STATE_START_READ = "15 NOV 2026";') === 1 && occurrences(index, 'var startPick = useState(function() { return topsStateStartFromURL(window.location.href); }), startCode = startPick[0]') === 1 && occurrences(index, "useState(function() { return topsStateStartFromURL(") === 1 &&
+    occurrences(index, 'const TOPS_STATE_START_READ = "15 NOV 2026";') === 1 && occurrences(index, 'const [stateStartCode, setStateStartCode] = useState(function() { return topsStateStartFromURL(window.location.href); });') === 1 && occurrences(index, "useState(function() { return topsStateStartFromURL(") === 1 &&
     !/tops_state_start|localStorage[^;]{0,80}startCode|startCode[^;]{0,80}localStorage/.test(index) && !/searchParams\.(set|append)\("state"/.test(index),
     "the caption names both sources and the read date, and the choice is held for the visit, saved nowhere and never written into the address");
 }
@@ -597,12 +597,12 @@ check(occurrences(verificationLog, "## V-2026-11-15-STATE-STARTING-POINTS ") ===
   const stateLink = "https://transitionops.org/?tool=resources&view=state-help&area=national&state=";
   check(readerStart > 0 && readerBox.read(stateLink + "TX") === "TX" && readerBox.read(stateLink + "tx") === "TX" && readerBox.read(stateLink + "MP") === "MP" && readerBox.read(stateLink + "ZZ") === "" && readerBox.read(stateLink + "TX&state=CA") === "" &&
     readerBox.read(stateLink + "") === "" && readerBox.read("https://transitionops.org/?tool=reminders&state=TX") === "" && readerBox.read("https://transitionops.org/?tool=resources&view=state-help&guide=x&state=TX") === "" && readerBox.read("not an address") === "" &&
-    occurrences(index, "var startPick = useState(function() { return topsStateStartFromURL(window.location.href); })") === 1,
+    occurrences(index, "const [stateStartCode, setStateStartCode] = useState(function() { return topsStateStartFromURL(window.location.href); });") === 1,
     "a shared state link chooses a listed state once, in either letter case, and anything else chooses nothing");
   const dropStart = index.indexOf("function topsDropStateStartFromURL() {");
   const drop = index.slice(dropStart, index.indexOf("\n}\n", dropStart));
   check(dropStart > 0 && occurrences(drop, 'url.searchParams.delete("state"); history.replaceState(history.state, "", url.href);') === 1 && !/searchParams\.(set|append)/.test(drop) &&
-    occurrences(index, 'onChange: function(e) { setStartCode(e.target.value); topsDropStateStartFromURL(); } },') === 1 && occurrences(index, "topsDropStateStartFromURL()") === 2 &&
+    occurrences(index, 'onChange: function(e) { chooseState(e.target.value); } },') === 1 && occurrences(index, 'props.onStartCode(value === "wi" ? "WI" : ""); topsDropStateStartFromURL();') === 1 && occurrences(index, "topsDropStateStartFromURL()") === 2 &&
     occurrences(index, 'if (!(activeTab === "resources" && subTab === "state-help") && url.searchParams.has("state")) url.searchParams.delete("state");') === 1,
     "a linked state leaves the address when the member chooses for themselves or leaves State and local help");
 }
