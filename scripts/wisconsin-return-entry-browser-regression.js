@@ -27,9 +27,9 @@ const server=http.createServer((req,res)=>{const p=path.join(root,req.url.split(
  for(const width of [320,375,1280]) {
   await c.send('Emulation.setDeviceMetricsOverride',{width,height:width===1280?900:812,deviceScaleFactor:1,mobile:width<500});
   await help('wi','start');await ev('scrollTo(0,0)');
-  assert.equal(await ev('document.getElementById("tops-state-help-heading").textContent'),'Coming home to Wisconsin?');
+  assert.equal(await ev('document.getElementById("tops-state-help-heading").textContent'),'State benefits and local help');
   assert.equal(await ev('document.querySelectorAll("#tops-wisconsin-return-welcome nav button").length'),4);
-  assert.equal(await ev('document.getElementById("tops-state-help-area").checkVisibility()'),false);
+  assert.equal(await ev('document.getElementById("tops-state-help-area").checkVisibility()'),true);assert.equal(await ev('document.getElementById("tops-wisconsin-guide-heading").textContent'),'Your Wisconsin guide');
   assert.equal(await ev('document.documentElement.scrollWidth<=innerWidth+1'),true);
   const screen=await c.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync('/tmp/wi-return-'+width+'.png',Buffer.from(screen.data,'base64'));
   for(const need of ['work','benefits','moving','start']) {
