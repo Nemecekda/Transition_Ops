@@ -7985,6 +7985,7 @@ function CareerSearchResources(props) {
       wisconsin && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "Provider-listed Wisconsin SkillBridge leads"),
         React.createElement("p", null, "Vets2PM's board listed Data Center Associate Project Manager and Data Center Technician in Racine (posted August 7, 2026), and Field Service Technician in Mosinee (posted July 27, 2026), when checked November 1, 2026. Current intake capacity is not confirmed. Ask the provider about dates, availability and the host employer."),
         React.createElement("a", { href: "https://vets2pm.zohorecruit.com/careers", target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: props.linkStyle }, "Check the Vets2PM opportunity board (new tab)"))),
+    wisconsin && React.createElement(VbsEmployerRoles, { colors: C, surface: "search" }),
     wisconsin && React.createElement("details", { id: "tops-vbs-cohort", style: { margin: "20px 0" } }, React.createElement("summary", { style: { minHeight: 44, padding: "12px 0", cursor: "pointer" } }, "VBS cohort employers in Wisconsin"),
       React.createElement("p", null, "Veteran Bridge Solutions works with these Wisconsin employers. These employer career pages are separate civilian resources to explore, not confirmed VBS or SkillBridge openings or matches for your search."),
       React.createElement("p", { id: "tops-vbs-cohort-ask" }, "To ask about roles with these employers, use \"Want help with this search? Talk with Dean (optional)\" on this page. No response, interview or job is guaranteed."),
@@ -8346,6 +8347,7 @@ function StateLocalHelp(props) {
       stepReady && React.createElement("button", { id: "tops-state-help-view-step", type: "button", style: Object.assign({}, button, { background: C.green, color: C.textOnFill }), onClick: function() { props.onTool("my-plan"); } }, "View my next step"),
       items.length > 1 && React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", cursor: "pointer" } }, "Related options and eligibility"), items.slice(1).map(function(item) { return React.createElement("div", { key: item.id, style: { padding: "12px 0", borderTop: "1px solid " + C.border } }, React.createElement("h4", { style: { margin: "0 0 6px" } }, item.title), React.createElement("p", null, item.summary), React.createElement("p", { style: { fontSize: 14 } }, item.caveat), official(item, false)); })),
       React.createElement("details", null, React.createElement("summary", { style: { minHeight: 44, padding: "10px 0", cursor: "pointer" } }, "Official source"), React.createElement("p", null, main.agency + ". Referral guidance checked October 16, 2026. Programs have separate rules; this is a starting point, not a complete benefits list."), React.createElement("a", { href: main.source || main.url, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: button }, "Read the official guidance (new tab)")))),
+    context.area === "wi" && ["start", "work"].includes(context.need) && React.createElement(VbsEmployerRoles, { colors: C, surface: "wisconsin" }),
     context.area === "wi" && ["start", "work"].includes(context.need) && React.createElement(CareerTalentContact, { colors: C, summary: "Talk with Dean at Veteran Bridge Solutions", invitation: "Looking for your next role or a connection to Wisconsin employers? Let’s talk about what you’re working toward." }),
     React.createElement(WisconsinNextChapter, { colors: C, context: context, button: button }),
     React.createElement("button", { id: "tops-state-help-all", type: "button", style: Object.assign({}, button, { marginBottom: 12 }), onClick: function() { props.onTool("directory"); } }, "All resources"),
@@ -8528,10 +8530,44 @@ function CareerConversationCheckin(props) {
     React.createElement("p", { role: "status", "aria-live": "polite" }, message));
 }
 function topsCareerDiskSnapshot() { try { return JSON.stringify([TOPS_GUIDE_KEY, TOPS_ACTION_KEY, TOPS_GAP_KEY].map(function(key) { return localStorage.getItem(key); })); } catch (e) { return null; } }
+const TOPS_VBS_ROLE_REVIEW_DAYS = 30;
+const TOPS_VBS_EMPLOYER_ROLES = [
+  { id: "johnsonville-maintenance-2", employer: "Johnsonville", title: "Maintenance Team Lead", schedule: "2nd shift, Monday-Friday", location: "Sheboygan, Wisconsin", updated: "2026-11-25" },
+  { id: "johnsonville-electromechanical-2", employer: "Johnsonville", title: "Electro-Mechanical Technician", schedule: "2nd shift, Monday-Friday", location: "Sheboygan, Wisconsin", updated: "2026-11-25" },
+  { id: "johnsonville-electromechanical-3", employer: "Johnsonville", title: "Electro-Mechanical Technician", schedule: "3rd shift, Monday-Friday", location: "Sheboygan, Wisconsin", updated: "2026-11-25" },
+  { id: "kriete-technician", employer: "Kriete Truck Centers", title: "Heavy Duty Diesel Technician", schedule: "Confirm schedule", location: "Location to confirm", updated: "2026-11-25" },
+  { id: "kriete-parts", employer: "Kriete Truck Centers", title: "Parts Counterperson", schedule: "Confirm schedule", location: "Location to confirm", updated: "2026-11-25" },
+  { id: "airtech-residential-installer", employer: "Air Tech Heating, Inc.", title: "Residential New Construction Installer", schedule: "Confirm schedule", location: "Fond du Lac, Wisconsin", updated: "2026-11-25" },
+  { id: "airtech-commercial-installer", employer: "Air Tech Heating, Inc.", title: "Commercial Installer", schedule: "Confirm schedule", location: "Fond du Lac, Wisconsin", updated: "2026-11-25" }
+];
+function topsVbsRoleStatus(item, now) {
+  var date = item && /^\d{4}-\d{2}-\d{2}$/.test(item.updated) ? Date.parse(item.updated + "T00:00:00Z") : NaN;
+  if (!Number.isFinite(date) || new Date(date).toISOString().slice(0, 10) !== item.updated) return "Check current availability on VBS";
+  var age = Math.floor(((typeof now === "number" ? now : Date.now()) - date) / 86400000);
+  return Number.isFinite(age) && age >= 0 && age <= TOPS_VBS_ROLE_REVIEW_DAYS ? "Listed on VBS" : "Check current availability on VBS";
+}
+function VbsEmployerRoles(props) {
+  var C = props.colors, base = "tops-vbs-roles-" + props.surface;
+  return React.createElement("section", { id: base, "aria-labelledby": base + "-heading", style: { margin: "18px 0", padding: 16, border: "1px solid " + C.border, borderRadius: 12, background: C.card } },
+    React.createElement("h3", { id: base + "-heading", style: { margin: "0 0 8px", fontSize: 20 } }, "Jobs with VBS employers"),
+    React.createElement("p", { style: { margin: "0 0 8px", lineHeight: 1.5 } }, "These are employment roles. SkillBridge pathways are in development; no fellowship openings are listed here."),
+    React.createElement("p", { id: base + "-instructions", style: { margin: "0 0 12px", fontSize: 14, lineHeight: 1.5 } }, "On VBS, search by role or choose the employer. Check current availability and application details there."),
+    ["Johnsonville", "Kriete Truck Centers", "Air Tech Heating, Inc."].map(function(employer) {
+      var rows = TOPS_VBS_EMPLOYER_ROLES.filter(function(item) { return item.employer === employer; });
+      return React.createElement("details", { key: employer, "data-vbs-employer": employer, style: { borderTop: "1px solid " + C.border } },
+        React.createElement("summary", { style: { minHeight: 44, boxSizing: "border-box", padding: "12px 0", cursor: "pointer", fontWeight: 700, lineHeight: 1.5 } }, employer + " - " + rows.length + " roles"),
+        rows.map(function(item) { return React.createElement("article", { key: item.id, "data-vbs-role": item.id, "aria-labelledby": base + "-title-" + item.id, style: { padding: "12px 0 18px", borderTop: "1px solid " + C.border } },
+          React.createElement("p", { "data-vbs-role-status": true, style: { margin: "0 0 4px", fontSize: 14, fontWeight: 600 } }, topsVbsRoleStatus(item)),
+          React.createElement("h4", { id: base + "-title-" + item.id, style: { margin: "0 0 6px", fontSize: 18, lineHeight: 1.4 } }, item.title),
+          React.createElement("p", { style: { margin: "0 0 6px", lineHeight: 1.5 } }, item.location + " | " + item.schedule),
+          React.createElement("p", { style: { margin: "0 0 10px", fontSize: 13, lineHeight: 1.5 } }, "Listing updated: " + item.updated),
+          React.createElement("a", { id: base + "-view-" + item.id, href: TOPS_TALENT_ROLES, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", "aria-describedby": base + "-title-" + item.id, style: { display: "inline-flex", alignItems: "center", boxSizing: "border-box", minHeight: 44, maxWidth: "100%", padding: "10px 14px", border: "1px solid " + C.border, borderRadius: 8, color: C.greenBright, fontWeight: 700, lineHeight: 1.5, overflowWrap: "anywhere" } }, "Find this role on VBS (new tab)")); }));
+    }));
+}
 const TOPS_TALENT_EMAIL = "dean@veteranbridgesolutions.com";
 const TOPS_TALENT_BOOKING = "https://calendly.com/dean-veteranbridgesolutions/30min";
 const TOPS_TALENT_NETWORK = "https://apply.veteranbridgesolutions.com/apply";
-const TOPS_TALENT_ROLES = "https://apply.veteranbridgesolutions.com/roles";
+const TOPS_TALENT_ROLES = "https://www.veteranbridgesolutions.com/opportunities";
 function topsTalentMessage(mode, fields, permission) {
   if (!["question", "interest", "update", "withdraw"].includes(mode) || !fields || typeof fields !== "object") return null;
   var limits = { name: 80, email: 120, roles: 180, location: 120, availability: 120, note: 240 };
@@ -8592,7 +8628,7 @@ function CareerTalentContact(props) {
     React.createElement("a", { id: controlId("tops-talent-network"), href: TOPS_TALENT_NETWORK, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, control, { display: "inline-flex", alignItems: "center", boxSizing: "border-box", maxWidth: "100%", overflowWrap: "anywhere", lineHeight: 1.4 }) }, "Join the FRONTLINE Cadre talent network"),
     React.createElement("p", { id: controlId("tops-talent-network-note"), style: { fontSize: 14, lineHeight: 1.5 } }, "Veteran Bridge Solutions' own intake form, on a separate VBS site. It requires your name, email and one career area, and no resume. Employers pay VBS to fill roles; joining costs you nothing. Read the form's privacy notice before you submit: it covers storage, AI-assisted review and when VBS shares your information with an employer. Opens a new tab."),
     React.createElement("a", { id: controlId("tops-talent-open-roles"), href: TOPS_TALENT_ROLES, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer", style: Object.assign({}, control, { display: "inline-flex", alignItems: "center", boxSizing: "border-box", maxWidth: "100%", overflowWrap: "anywhere", lineHeight: 1.4 }) }, "See open roles Veteran Bridge Solutions is filling"),
-    React.createElement("p", { id: controlId("tops-talent-open-roles-note"), style: { fontSize: 14, lineHeight: 1.5 } }, "Veteran Bridge Solutions' own list of roles it is recruiting for, on the same separate VBS site. Roles change, and the list can be empty. Applying there does not guarantee an interview or a job. Opens a new tab."),
+    React.createElement("p", { id: controlId("tops-talent-open-roles-note"), style: { fontSize: 14, lineHeight: 1.5 } }, "Veteran Bridge Solutions' own list of roles it is recruiting for, on the VBS website. Roles change, and the list can be empty. Applying there does not guarantee an interview or a job. Opens a new tab."),
     React.createElement("details", { id: controlId("tops-talent-email-section") },
     React.createElement("summary", { style: Object.assign({}, control, { fontWeight: 700, margin: "12px 0" }) }, "Email Dean"),
     React.createElement("label", { htmlFor: controlId("tops-talent-purpose") }, "What would you like to do?"),
@@ -18350,7 +18386,7 @@ whatsNewUnseen && React.createElement("details", { style: { marginBottom: 12 } }
       lineHeight: 1.7,
       marginTop: 8
     }
-  }, "You earned every one of these benefits. Don't leave anything on the table. The military won't remind you \u2014 that's on you now.")), subTab === "skillbridge" && /*#__PURE__*/React.createElement("div", null, React.createElement("section", { style: { ...S.card, padding: 18 }, "aria-label": "Tools and work gear" }, React.createElement("h3", { style: S.cardTitle }, "Need tools for your SkillBridge role?"), React.createElement("p", { style: S.bodyText }, "WIOA assistance may help eligible participants obtain required tools and work gear. Ask a local workforce provider before buying anything. Eligibility and funding depend on local review."), React.createElement("a", { href: "https://www.careeronestop.org/LocalHelp/AmericanJobCenters/find-american-job-centers.aspx", target: "_blank", rel: "noopener noreferrer", "data-resource-id": "wioa-work-tools", "data-placement": "skillbridge", style: { display: "inline-block", padding: "12px 0", color: C.greenBright, fontWeight: 700 } }, "Find an American Job Center →"), React.createElement("p", { style: S.bodyText }, "Bring your offer letter and required tool list. Obtain funding approval before purchasing; assistance is not guaranteed.")), /*#__PURE__*/React.createElement("div", {
+  }, "You earned every one of these benefits. Don't leave anything on the table. The military won't remind you \u2014 that's on you now.")), subTab === "skillbridge" && /*#__PURE__*/React.createElement("div", null, React.createElement(VbsEmployerRoles, { colors: C, surface: "skillbridge" }), React.createElement("section", { style: { ...S.card, padding: 18 }, "aria-label": "Tools and work gear" }, React.createElement("h3", { style: S.cardTitle }, "Need tools for your SkillBridge role?"), React.createElement("p", { style: S.bodyText }, "WIOA assistance may help eligible participants obtain required tools and work gear. Ask a local workforce provider before buying anything. Eligibility and funding depend on local review."), React.createElement("a", { href: "https://www.careeronestop.org/LocalHelp/AmericanJobCenters/find-american-job-centers.aspx", target: "_blank", rel: "noopener noreferrer", "data-resource-id": "wioa-work-tools", "data-placement": "skillbridge", style: { display: "inline-block", padding: "12px 0", color: C.greenBright, fontWeight: 700 } }, "Find an American Job Center →"), React.createElement("p", { style: S.bodyText }, "Bring your offer letter and required tool list. Obtain funding approval before purchasing; assistance is not guaranteed.")), /*#__PURE__*/React.createElement("div", {
     style: {
       ...S.card,
       padding: 14
