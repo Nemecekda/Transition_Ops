@@ -339,7 +339,7 @@ check(occurrences(verificationLog, "## V-2026-11-15-CAREERONESTOP-JOB-LINKS ") =
 
 // FRONTLINE Cadre intake link in the recruiter contact section.
 // V-2026-11-15-VBS-TALENT-NETWORK.
-check(occurrences(index, 'const TOPS_TALENT_NETWORK = "https://apply.veteranbridgesolutions.com/apply";') === 1 && occurrences(index, 'const TOPS_TALENT_ROLES = "https://apply.veteranbridgesolutions.com/roles";') === 1 && occurrences(index, "apply.veteranbridgesolutions.com") === 2,
+check(occurrences(index, 'const TOPS_TALENT_NETWORK = "https://apply.veteranbridgesolutions.com/apply";') === 1 && occurrences(index, 'const TOPS_TALENT_ROLES = "https://www.veteranbridgesolutions.com/opportunities";') === 1 && occurrences(index, "apply.veteranbridgesolutions.com") === 1,
   "the two VBS addresses are each defined once and used through their constants");
 check(index.includes('{ id: controlId("tops-talent-network"), href: TOPS_TALENT_NETWORK, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer"'),
   "talent network link opens in a new tab with no opener and no referrer");
@@ -393,7 +393,7 @@ check(occurrences(verificationLog, "## V-2026-11-15-SKILLBRIDGE-FEED-AGE ") === 
 // V-2026-11-15-VBS-OPEN-ROLES.
 check(index.includes('{ id: controlId("tops-talent-open-roles"), href: TOPS_TALENT_ROLES, target: "_blank", rel: "noopener noreferrer", referrerPolicy: "no-referrer"') && occurrences(index, '"See open roles Veteran Bridge Solutions is filling"') === 1,
   "open roles link opens in a new tab with no opener and no referrer");
-check(index.includes("Veteran Bridge Solutions' own list of roles it is recruiting for, on the same separate VBS site. Roles change, and the list can be empty. Applying there does not guarantee an interview or a job. Opens a new tab."),
+check(index.includes("Veteran Bridge Solutions' own list of roles it is recruiting for, on the VBS website. Roles change, and the list can be empty. Applying there does not guarantee an interview or a job. Opens a new tab."),
   "open roles note says whose list it is, that it changes and that applying guarantees nothing");
 check(!/Wulf|HVAC Service Technician/.test(index.slice(index.indexOf('controlId("tops-talent-open-roles")'), index.indexOf('controlId("tops-talent-open-roles")') + 900)),
   "the app names no individual role or client beside the link; the VBS page is the source");
