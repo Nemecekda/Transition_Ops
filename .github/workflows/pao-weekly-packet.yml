@@ -26,8 +26,19 @@ on:
   #
   # 12:00 UTC Monday is one hour ahead of J3's 13:00 SITREP, so the packet
   # exists when the SITREP assembles. Actions cron is UTC and ignores DST.
-  schedule:
-    - cron: '0 12 * * 1'
+  #
+  # SCHEDULE RETIRED 28 NOV 2026 (Dean's ruling). No reviewable draft since
+  # issue #48 on 31 AUG; every packet after the October evidence-bound rebuild
+  # returned 0 eligible drafts, and Nov 16 / Nov 23 failed outright
+  # (delta_shape_invalid against the 14 AUG baseline, plus the only task record
+  # expiring 26 OCT). The job can only echo reviewed_copy from a task record
+  # under 14 days old, so it cannot add content on its own. Post drafting runs
+  # through interactive sessions instead. PAO was never in the alarm path (J3
+  # is), so nothing downstream depends on this firing. workflow_dispatch is
+  # kept for on-demand runs. To restore: refresh baseline issue #22, supply a
+  # current task record, then uncomment the two lines below.
+  # schedule:
+  #   - cron: '0 12 * * 1'
   workflow_dispatch:
     inputs:
       dry_run:
